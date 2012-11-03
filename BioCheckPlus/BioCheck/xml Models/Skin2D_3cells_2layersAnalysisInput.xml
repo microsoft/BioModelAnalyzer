@@ -1,0 +1,1152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput ModelName="Skin2D_3cells_2layers">
+  <Variables>
+    <Variable Id="108">
+      <Name>Wnt-ext</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="109">
+      <Name>Ligand-in</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="110">
+      <Name>Wnt-ext</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="111">
+      <Name>Ligand-in</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="112">
+      <Name>Wnt-ext</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="113">
+      <Name>Ligand-in</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="114">
+      <Name>Ligand-in</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="115">
+      <Name>Wnt-ext</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="116">
+      <Name>Ligand-in</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="117">
+      <Name>Wnt-ext</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="118">
+      <Name>Ligand-in</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="119">
+      <Name>Wnt-ext</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="1">
+      <Name>DSH</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="2">
+      <Name>Axin</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="3">
+      <Name>B-Cat</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="4">
+      <Name>GT1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="5">
+      <Name>Notch-IC</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>min(var(11), var(114))</Function>
+    </Variable>
+    <Variable Id="6">
+      <Name>P21</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="7">
+      <Name>Wnt</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="8">
+      <Name>Cask1a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="9">
+      <Name>BCat exp</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="10">
+      <Name>Jagged</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="11">
+      <Name>Notch</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="12">
+      <Name>GT2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="13">
+      <Name>Frizzled</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="14">
+      <Name>DSH</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="15">
+      <Name>Axin</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="16">
+      <Name>B-Cat</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="17">
+      <Name>GT1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="18">
+      <Name>Notch-IC</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>min(var(24), var(116))</Function>
+    </Variable>
+    <Variable Id="19">
+      <Name>P21</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="20">
+      <Name>Wnt</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="21">
+      <Name>Cask1a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="22">
+      <Name>BCat exp</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="23">
+      <Name>Jagged</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="24">
+      <Name>Notch</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="25">
+      <Name>GT2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="26">
+      <Name>Frizzled</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="27">
+      <Name>DSH</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="28">
+      <Name>Axin</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="29">
+      <Name>B-Cat</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="30">
+      <Name>GT1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="31">
+      <Name>Notch-IC</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>min(var(37), var(118))</Function>
+    </Variable>
+    <Variable Id="32">
+      <Name>P21</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="33">
+      <Name>Wnt</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="34">
+      <Name>Cask1a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="35">
+      <Name>BCat exp</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="36">
+      <Name>Jagged</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="37">
+      <Name>Notch</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="38">
+      <Name>GT2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="39">
+      <Name>Frizzled</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="40">
+      <Name>DSH</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="41">
+      <Name>Axin</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="42">
+      <Name>B-Cat</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="43">
+      <Name>GT1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="44">
+      <Name>Notch-IC</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>min(var(81), var(114))</Function>
+    </Variable>
+    <Variable Id="45">
+      <Name>P21</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="46">
+      <Name>Wnt</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="47">
+      <Name>Cask1a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="48">
+      <Name>BCat exp</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="51">
+      <Name>GT2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="79">
+      <Name>Jagged</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="80">
+      <Name>Frizzled</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="81">
+      <Name>Notch</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="82">
+      <Name>DSH</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="83">
+      <Name>Axin</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="84">
+      <Name>B-Cat</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="85">
+      <Name>GT1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="86">
+      <Name>Notch-IC</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>min(var(94), var(116))</Function>
+    </Variable>
+    <Variable Id="87">
+      <Name>P21</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="88">
+      <Name>Wnt</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="89">
+      <Name>Cask1a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="90">
+      <Name>BCat exp</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="91">
+      <Name>GT2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="92">
+      <Name>Jagged</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="93">
+      <Name>Frizzled</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="94">
+      <Name>Notch</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="95">
+      <Name>DSH</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="96">
+      <Name>Axin</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="97">
+      <Name>B-Cat</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="98">
+      <Name>GT1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="99">
+      <Name>Notch-IC</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>min(var(107), var(118))</Function>
+    </Variable>
+    <Variable Id="100">
+      <Name>P21</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="101">
+      <Name>Wnt</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="102">
+      <Name>Cask1a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="103">
+      <Name>BCat exp</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="104">
+      <Name>GT2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="105">
+      <Name>Jagged</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="106">
+      <Name>Frizzled</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="107">
+      <Name>Notch</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="216">
+      <FromVariableId>20</FromVariableId>
+      <ToVariableId>108</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="217">
+      <FromVariableId>46</FromVariableId>
+      <ToVariableId>108</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="218">
+      <FromVariableId>88</FromVariableId>
+      <ToVariableId>115</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="219">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>115</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="220">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>110</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="221">
+      <FromVariableId>33</FromVariableId>
+      <ToVariableId>110</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="222">
+      <FromVariableId>88</FromVariableId>
+      <ToVariableId>110</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="223">
+      <FromVariableId>46</FromVariableId>
+      <ToVariableId>117</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="224">
+      <FromVariableId>101</FromVariableId>
+      <ToVariableId>117</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="225">
+      <FromVariableId>20</FromVariableId>
+      <ToVariableId>117</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="226">
+      <FromVariableId>20</FromVariableId>
+      <ToVariableId>112</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="227">
+      <FromVariableId>101</FromVariableId>
+      <ToVariableId>112</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="228">
+      <FromVariableId>88</FromVariableId>
+      <ToVariableId>119</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="229">
+      <FromVariableId>33</FromVariableId>
+      <ToVariableId>119</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="244">
+      <FromVariableId>114</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="245">
+      <FromVariableId>114</FromVariableId>
+      <ToVariableId>44</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="246">
+      <FromVariableId>116</FromVariableId>
+      <ToVariableId>86</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="247">
+      <FromVariableId>116</FromVariableId>
+      <ToVariableId>18</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="248">
+      <FromVariableId>118</FromVariableId>
+      <ToVariableId>31</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="249">
+      <FromVariableId>118</FromVariableId>
+      <ToVariableId>99</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="250">
+      <FromVariableId>109</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="251">
+      <FromVariableId>111</FromVariableId>
+      <ToVariableId>18</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="252">
+      <FromVariableId>113</FromVariableId>
+      <ToVariableId>31</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="104">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="105">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="106">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="107">
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>6</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="108">
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="109">
+      <FromVariableId>8</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="110">
+      <FromVariableId>9</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="112">
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>12</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="116">
+      <FromVariableId>14</FromVariableId>
+      <ToVariableId>15</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="117">
+      <FromVariableId>15</FromVariableId>
+      <ToVariableId>16</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="118">
+      <FromVariableId>16</FromVariableId>
+      <ToVariableId>17</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="119">
+      <FromVariableId>18</FromVariableId>
+      <ToVariableId>19</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="120">
+      <FromVariableId>19</FromVariableId>
+      <ToVariableId>20</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="121">
+      <FromVariableId>21</FromVariableId>
+      <ToVariableId>15</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="122">
+      <FromVariableId>22</FromVariableId>
+      <ToVariableId>16</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="124">
+      <FromVariableId>18</FromVariableId>
+      <ToVariableId>25</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="128">
+      <FromVariableId>27</FromVariableId>
+      <ToVariableId>28</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="129">
+      <FromVariableId>28</FromVariableId>
+      <ToVariableId>29</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="130">
+      <FromVariableId>29</FromVariableId>
+      <ToVariableId>30</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="131">
+      <FromVariableId>31</FromVariableId>
+      <ToVariableId>32</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="132">
+      <FromVariableId>32</FromVariableId>
+      <ToVariableId>33</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="133">
+      <FromVariableId>34</FromVariableId>
+      <ToVariableId>28</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="134">
+      <FromVariableId>35</FromVariableId>
+      <ToVariableId>29</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="136">
+      <FromVariableId>31</FromVariableId>
+      <ToVariableId>38</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="140">
+      <FromVariableId>40</FromVariableId>
+      <ToVariableId>41</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="141">
+      <FromVariableId>41</FromVariableId>
+      <ToVariableId>42</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="142">
+      <FromVariableId>42</FromVariableId>
+      <ToVariableId>43</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="143">
+      <FromVariableId>44</FromVariableId>
+      <ToVariableId>45</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="144">
+      <FromVariableId>45</FromVariableId>
+      <ToVariableId>46</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="145">
+      <FromVariableId>47</FromVariableId>
+      <ToVariableId>41</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="146">
+      <FromVariableId>48</FromVariableId>
+      <ToVariableId>42</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="148">
+      <FromVariableId>44</FromVariableId>
+      <ToVariableId>51</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="180">
+      <FromVariableId>82</FromVariableId>
+      <ToVariableId>83</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="181">
+      <FromVariableId>83</FromVariableId>
+      <ToVariableId>84</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="182">
+      <FromVariableId>84</FromVariableId>
+      <ToVariableId>85</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="183">
+      <FromVariableId>86</FromVariableId>
+      <ToVariableId>87</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="184">
+      <FromVariableId>87</FromVariableId>
+      <ToVariableId>88</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="185">
+      <FromVariableId>89</FromVariableId>
+      <ToVariableId>83</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="186">
+      <FromVariableId>90</FromVariableId>
+      <ToVariableId>84</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="187">
+      <FromVariableId>86</FromVariableId>
+      <ToVariableId>91</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="192">
+      <FromVariableId>95</FromVariableId>
+      <ToVariableId>96</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="193">
+      <FromVariableId>96</FromVariableId>
+      <ToVariableId>97</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="194">
+      <FromVariableId>97</FromVariableId>
+      <ToVariableId>98</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="195">
+      <FromVariableId>99</FromVariableId>
+      <ToVariableId>100</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="196">
+      <FromVariableId>100</FromVariableId>
+      <ToVariableId>101</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="197">
+      <FromVariableId>102</FromVariableId>
+      <ToVariableId>96</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="198">
+      <FromVariableId>103</FromVariableId>
+      <ToVariableId>97</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="199">
+      <FromVariableId>99</FromVariableId>
+      <ToVariableId>104</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="232">
+      <FromVariableId>10</FromVariableId>
+      <ToVariableId>114</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="234">
+      <FromVariableId>10</FromVariableId>
+      <ToVariableId>111</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="111">
+      <FromVariableId>12</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="114">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="207">
+      <FromVariableId>109</FromVariableId>
+      <ToVariableId>11</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="113">
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="204">
+      <FromVariableId>108</FromVariableId>
+      <ToVariableId>13</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="115">
+      <FromVariableId>13</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="230">
+      <FromVariableId>23</FromVariableId>
+      <ToVariableId>109</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="238">
+      <FromVariableId>23</FromVariableId>
+      <ToVariableId>116</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="240">
+      <FromVariableId>23</FromVariableId>
+      <ToVariableId>113</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="123">
+      <FromVariableId>25</FromVariableId>
+      <ToVariableId>23</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="126">
+      <FromVariableId>17</FromVariableId>
+      <ToVariableId>23</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="208">
+      <FromVariableId>111</FromVariableId>
+      <ToVariableId>24</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="125">
+      <FromVariableId>24</FromVariableId>
+      <ToVariableId>18</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="205">
+      <FromVariableId>110</FromVariableId>
+      <ToVariableId>26</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="127">
+      <FromVariableId>26</FromVariableId>
+      <ToVariableId>14</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="236">
+      <FromVariableId>36</FromVariableId>
+      <ToVariableId>111</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="243">
+      <FromVariableId>36</FromVariableId>
+      <ToVariableId>118</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="135">
+      <FromVariableId>38</FromVariableId>
+      <ToVariableId>36</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="138">
+      <FromVariableId>30</FromVariableId>
+      <ToVariableId>36</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="209">
+      <FromVariableId>113</FromVariableId>
+      <ToVariableId>37</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="137">
+      <FromVariableId>37</FromVariableId>
+      <ToVariableId>31</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="206">
+      <FromVariableId>112</FromVariableId>
+      <ToVariableId>39</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="139">
+      <FromVariableId>39</FromVariableId>
+      <ToVariableId>27</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="231">
+      <FromVariableId>79</FromVariableId>
+      <ToVariableId>109</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="237">
+      <FromVariableId>79</FromVariableId>
+      <ToVariableId>116</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="176">
+      <FromVariableId>51</FromVariableId>
+      <ToVariableId>79</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="177">
+      <FromVariableId>43</FromVariableId>
+      <ToVariableId>79</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="211">
+      <FromVariableId>115</FromVariableId>
+      <ToVariableId>80</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="178">
+      <FromVariableId>80</FromVariableId>
+      <ToVariableId>40</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="210">
+      <FromVariableId>114</FromVariableId>
+      <ToVariableId>81</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="179">
+      <FromVariableId>81</FromVariableId>
+      <ToVariableId>44</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="233">
+      <FromVariableId>92</FromVariableId>
+      <ToVariableId>114</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="235">
+      <FromVariableId>92</FromVariableId>
+      <ToVariableId>111</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="242">
+      <FromVariableId>92</FromVariableId>
+      <ToVariableId>118</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="188">
+      <FromVariableId>91</FromVariableId>
+      <ToVariableId>92</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="189">
+      <FromVariableId>85</FromVariableId>
+      <ToVariableId>92</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="213">
+      <FromVariableId>117</FromVariableId>
+      <ToVariableId>93</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="190">
+      <FromVariableId>93</FromVariableId>
+      <ToVariableId>82</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="212">
+      <FromVariableId>116</FromVariableId>
+      <ToVariableId>94</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="191">
+      <FromVariableId>94</FromVariableId>
+      <ToVariableId>86</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="239">
+      <FromVariableId>105</FromVariableId>
+      <ToVariableId>116</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="241">
+      <FromVariableId>105</FromVariableId>
+      <ToVariableId>113</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="200">
+      <FromVariableId>104</FromVariableId>
+      <ToVariableId>105</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="201">
+      <FromVariableId>98</FromVariableId>
+      <ToVariableId>105</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="215">
+      <FromVariableId>119</FromVariableId>
+      <ToVariableId>106</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="202">
+      <FromVariableId>106</FromVariableId>
+      <ToVariableId>95</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="214">
+      <FromVariableId>118</FromVariableId>
+      <ToVariableId>107</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="203">
+      <FromVariableId>107</FromVariableId>
+      <ToVariableId>99</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</AnalysisInput>

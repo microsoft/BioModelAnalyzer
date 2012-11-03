@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisOutput>
+  <Variables>
+    <Variable Id="1">
+      <Status>Stabilizing</Status>
+      <Name>SEM-60</Name>
+      <Value>2</Value>
+    </Variable>
+    <Variable Id="2">
+      <Name>LET-90</Name>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>4</RangeTo>
+    </Variable>
+    <Variable Id="3">
+      <Name />
+      <RangeFrom />
+      <RangeTo />
+    </Variable>
+    <Variable Id="4">
+      <Name>SEM-9</Name>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>3</RangeTo>
+    </Variable>
+    <Variable Id="5">
+      <Name>SEM-60</Name>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>3</RangeTo>
+    </Variable>
+    <Variable Id="6">
+      <Name>LET-90</Name>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>4</RangeTo>
+    </Variable>
+    <Variable Id="7">
+      <Name />
+      <RangeFrom />
+      <RangeTo />
+    </Variable>
+    <Variable Id="8">
+      <Name>SEM-9</Name>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>3</RangeTo>
+    </Variable>
+  </Variables>
+</AnalysisOutput>

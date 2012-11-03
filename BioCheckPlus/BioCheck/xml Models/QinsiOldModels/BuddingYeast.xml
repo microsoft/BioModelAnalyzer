@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="1" Name="BuddingYeast" BioCheckVersion="2">
+  <Description>This is a new model.</Description>
+  <CreatedDate>2011-12-05T17:36:13.273855+00:00</CreatedDate>
+  <ModifiedDate>2011-12-05T17:42:21.27111+00:00</ModifiedDate>
+  <Layout>
+    <Columns>6</Columns>
+    <Rows>5</Rows>
+    <ZoomLevel>29.73</ZoomLevel>
+    <PanX>0</PanX>
+    <PanY>0</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1">
+      <PositionX>1</PositionX>
+      <PositionY>0</PositionY>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="1" Name="Mass">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>59</PositionX>
+      <PositionY>59</PositionY>
+    </Variable>
+    <Variable Id="2" Name="SBF">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>54</PositionX>
+      <PositionY>182</PositionY>
+    </Variable>
+    <Variable Id="3" Name="Clb2">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>129</PositionX>
+      <PositionY>132</PositionY>
+    </Variable>
+    <Variable Id="4" Name="Swe1">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>129</PositionX>
+      <PositionY>232</PositionY>
+    </Variable>
+    <Variable Id="5" Name="Hsl1">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>204</PositionX>
+      <PositionY>182</PositionY>
+    </Variable>
+    <Variable Id="6" Name="BUD">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>254</PositionX>
+      <PositionY>132</PositionY>
+    </Variable>
+    <Variable Id="7" Name="Mpk1">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula>4-var(BUD)</Formula>
+      <PositionX>204</PositionX>
+      <PositionY>57</PositionY>
+    </Variable>
+    <Variable Id="8" Name="Mih1">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>129</PositionX>
+      <PositionY>57</PositionY>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>6</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="4">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="5">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="6">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>8</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="7">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>8</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="8">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>8</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="9">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="10">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="11">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="12">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="13">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+  </Relationships>
+</Model>

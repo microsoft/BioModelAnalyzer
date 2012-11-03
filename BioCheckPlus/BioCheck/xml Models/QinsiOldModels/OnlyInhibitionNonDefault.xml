@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="1" Name="OnlyInhibitionNonDefault" BioCheckVersion="2">
+  <Description>This is a new model.</Description>
+  <CreatedDate>2011-11-14T11:57:51.035514+00:00</CreatedDate>
+  <ModifiedDate>2011-11-14T12:00:10.307079+00:00</ModifiedDate>
+  <Layout>
+    <Columns>6</Columns>
+    <Rows>5</Rows>
+    <ZoomLevel>25</ZoomLevel>
+    <PanX>0</PanX>
+    <PanY>0</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1">
+      <PositionX>1</PositionX>
+      <PositionY>0</PositionY>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="1" Name="prot1">
+      <ContainerId>1</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>156</PositionX>
+      <PositionY>-20</PositionY>
+    </Variable>
+    <Variable Id="2" Name="prot2">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>79</PositionX>
+      <PositionY>182</PositionY>
+    </Variable>
+    <Variable Id="3" Name="prot3">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula>4-var(prot2)</Formula>
+      <PositionX>179</PositionX>
+      <PositionY>132</PositionY>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+  </Relationships>
+</Model>

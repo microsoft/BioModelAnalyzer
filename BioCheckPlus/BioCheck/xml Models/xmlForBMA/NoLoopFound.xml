@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="1" Name="Default Model" BioCheckVersion="3">
+  <Description>This is the default model.</Description>
+  <CreatedDate>2012-10-01T09:34:01.9209266+01:00</CreatedDate>
+  <ModifiedDate>2012-10-16T12:33:04.3040693+01:00</ModifiedDate>
+  <Layout>
+    <Columns>6</Columns>
+    <Rows>5</Rows>
+    <ZoomLevel>0</ZoomLevel>
+    <PanX>901</PanX>
+    <PanY>0</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1" Name="">
+      <PositionX>2</PositionX>
+      <PositionY>0</PositionY>
+      <Size>1</Size>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="5" Name="a">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>4</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>200</PositionX>
+      <PositionY>125</PositionY>
+      <CellX>1</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="1" Name="b">
+      <ContainerId>1</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula>var(a)/2 - var(e)</Formula>
+      <PositionX>156</PositionX>
+      <PositionY>-20</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="2" Name="c">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula>var(b)</Formula>
+      <PositionX>68</PositionX>
+      <PositionY>118</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="4" Name="d">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula>var(c)</Formula>
+      <PositionX>143</PositionX>
+      <PositionY>218</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="3" Name="e">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula>var(d)</Formula>
+      <PositionX>243</PositionX>
+      <PositionY>118</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="5">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="4">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</Model>
