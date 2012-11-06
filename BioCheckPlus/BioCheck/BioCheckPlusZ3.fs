@@ -50,6 +50,16 @@ let make_z3_bool_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),
 // If there are two possible values then one Boolean variable suffices. When it is true
 // it indicates the first value and when it is false it indicates the second value
 
+
+let my_floor real_input = int (real_input)
+let my_ceil real_input = 
+    let int_floor = int (real_input)
+    let float_floor = float (int_floor) * 1.0
+    if float_floor = real_input then int_floor else int_floor + 1
+let my_round real_input = 
+    let int_round = int (real_input + 0.5)
+    int_round
+
 // Convert an expression to a real value based on map from variables to values
 let rec expr_to_real (qn : QN.node list) (node : QN.node) expr var_values = 
     let rec tr expr = 
@@ -202,9 +212,6 @@ let constraint_for_target_function_boolean (qn:QN.node list) (node : QN.node) in
 
         let list_of_targets = 
             List.map (fun elem -> expr_to_real qn node nodetargetf (create_map_from_var_to_values inputnodes elem)) list_of_possible_combinations 
-        // Is this the right way to convert real to int????????????????????
-        // Probably should have round instead of floor.
-        let my_round real_input = int (real_input)
         let list_of_int_targets = 
             List.map my_round list_of_targets
         let list_of_actual_next_vals = 
@@ -375,9 +382,13 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
     // =================================
     // Check where the loop closes
     let loop_close = ref 0 
-    if (paths.Length = 1) then
-        (loop_close := 0)
-    else
+    // If path length is 1 then the loop closes at time 0.
+    // Otherwise, the loop closes at the point of the first
+    // variable that is true.
+    // So, go over all possible loop variables in order.
+    // Whenever finding one that is false (or does not exist)
+    // increase the loop_close
+    if (paths.Length > 1) then
         for i in 0..(paths.Length - 2) do
             // Notice that the model is not necessarily comprehensive
             // If a truth value of some var does not appear in the model I decide
@@ -386,8 +397,6 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
                 incr loop_close
             elif not (Map.find i !loop) then
                 incr loop_close
-            // else 
-            //    break // does not exist in F#
         ()
     
     // Check the values of all variables
@@ -435,7 +444,6 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
     temp_loop_close, temp_map
     // (!loop_close, !map_of_time_to_map_of_var_to_value)
 
-
 let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) = 
     let (loop_close ,map_time_to_map) = model 
     if not (sat) 
@@ -471,3 +479,39 @@ let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network :
             printfn "%s" line 
             
             incr i
+
+let check_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) = 
+    let (loop_close ,map_time_to_map) = model 
+    if not (sat) 
+    then
+        printfn "Can't check a nonexistent model"
+        ()
+    else
+        // Check also the loop close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        let mutable result_true = true
+        let i = ref 0
+        let previous_time = ref Map.empty
+        while (Map.containsKey !i map_time_to_map) do
+
+            let current_time = Map.find !i map_time_to_map
+            if not (!previous_time).IsEmpty
+            then
+                for node in network do
+                    let computed_target_value = expr_to_real network node node.f !previous_time 
+                    let rounded_target_value = my_round computed_target_value
+                    let next_value = apply_target_function (Map.find node.var !previous_time) rounded_target_value node.min node.max
+                    let current_output_value = Map.find node.var current_time
+                    if not (current_output_value = next_value)
+                    then
+                        printfn "At time %d the value of %s is wrong!!!!!" !i node.name
+                        result_true <- false
+                    
+                    ()
+
+            previous_time := current_time 
+            incr i
+
+        if result_true
+        then
+            printfn "Checked the model and it seems fine!"
+        ()

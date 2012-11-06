@@ -26,11 +26,8 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             // Use the node's original range 
             let v_defn = List.find (fun (n:QN.node) -> n.var = v) qn
             let v_min,v_max = (v_defn.min,v_defn.max)
-            // Don't scale/displace constants. 
-            // SI: do the same Expr.eval. 
             let scale,displacement = 
                 if (v_min<>v_max) then 
-                    // (z.MkRealNumeral( ((node_max - node_min) / (v_max - v_min)):int ), z.MkRealNumeral( (node_min - v_min):int ))
                     let t = z.MkRealNumeral(node_max - node_min)
                     let b = z.MkRealNumeral(v_max - v_min)
                     (z.MkDiv(t,b) , z.MkRealNumeral( (node_min - v_min):int ))
@@ -39,7 +36,6 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let input_var = 
                 let v_t = get_z3_int_var_at_time v_defn time
                 z.MkToReal(z.MkConst(z.MkSymbol v_t, z.MkIntSort()))
-            // z.MkMul(z.MkAdd(input_var,displacement), scale)
             z.MkAdd(z.MkMul(input_var,scale),displacement)
             
         | Const c -> z.MkRealNumeral c
@@ -75,10 +71,8 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let floor = z.MkToReal( z.MkToInt(z1))
             let is_int = z.MkEq (floor, z1)
             let floor_plus_one = z.MkAdd(floor, z.MkRealNumeral(1))
-            //z.MkToReal (z.MkToInt (z.MkAdd(z.MkRealNumeral "99 / 100", z1)))
             let ceil_assert = z.MkTrue 
             z.MkIte(is_int,floor,floor_plus_one)
-//            z.MkToReal (z.MkToInt (z.MkAdd(z.MkRealNumeral "0.5", z1)))
         | Floor e1 ->
             let z1 = tr e1 
             let floor_assert = z.MkTrue

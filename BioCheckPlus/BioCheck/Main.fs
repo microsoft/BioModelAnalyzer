@@ -30,20 +30,8 @@ let main _ =
     let start_time = System.DateTime.Now
 
     let modelsdir = "C:\\Users\\np183\\tools\\BioCheckPlus\\BioCheck\\xml Models\\"
-    //let file = "VerySmallTestCaseAnalysisInput.xml"
-    //let file = "SmallTestCaseAnalysisInput.xml" 
-    //let file = "VPC_lin15ko AnalysisInput.xml"
-    //
-    // Return to these three models! Why doesn't it find a loop?
-    //
-    //let file = "BooleanLoopAnalysisInput.xml"
-    //let file = "NoLoopFoundAnalysisInput.xml"
-    //let file = "Skin1D_TFAnalysisInput.xml"
-    //let file = "Model4AnalysisInput.xml"
     let file = !input_file
-    //let ltl_formula_str = "(Always True)"
     let ltl_formula_str = !formula
-    // let mutable number_of_steps = 0
     let length_of_path = !number_of_steps
 
     // read out the vpc model from xml UI file
@@ -63,13 +51,16 @@ let main _ =
     // initK = the length of prefix + the length of loop, which is used as the initial value of K when doing BMC
     let paths = Paths.OutputPaths network nuRangel !naive_computation
 
-    // Extend the list of paths by repeating the last element the required number of times
-    let padded_paths = Paths.pad_paths paths length_of_path
+    // Extend/truncate the list of paths to the required length
+    // If the list of paths is shorter than needed repeat the last element 
+    // If the list of paths is longer than needed remove the prefix of the list
+    let correct_length_paths = Paths.change_list_to_length paths length_of_path
     
     // given the # of steps and the path, do BMC   
     let (res,model) =
-        BMC.BoundedMC ltl_formula network nuRangel padded_paths
+        BMC.BoundedMC ltl_formula network nuRangel correct_length_paths
 
+    BioCheckPlusZ3.check_model model res network
     BioCheckPlusZ3.print_model model res network
     
     let end_time = System.DateTime.Now

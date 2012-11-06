@@ -154,7 +154,9 @@ let find_paths (network : QN.node list) step rangelist orbounds=
             
         let mutable newPossibleValues : int list = List.empty
 
-        if List.length oldPossibleValues = 1 then newPossibleValues<-oldPossibleValues
+        if List.length oldPossibleValues = 1 
+        then 
+            newPossibleValues <- oldPossibleValues
         else             
             for i in oldPossibleValues do
                     
@@ -169,6 +171,7 @@ let find_paths (network : QN.node list) step rangelist orbounds=
                     newPossibleValues <- i :: newPossibleValues
                 elif sat = LBool.Undef then
                     if (!model = null) then
+                        printfn "z3 returned unknown"
                         newPossibleValues <- i :: newPossibleValues
                     else
                         // (!model).Eval find_the_conjunction_of_assertions

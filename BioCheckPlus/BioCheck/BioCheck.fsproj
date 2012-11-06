@@ -12,10 +12,6 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>BioCheck</Name>
     <TargetFrameworkProfile />
-    <SccProjectName>SAK</SccProjectName>
-    <SccProvider>SAK</SccProvider>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccLocalPath>SAK</SccLocalPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,7 +23,7 @@
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheck.XML</DocumentationFile>
-    <StartArguments>-file VerySmallTestCaseAnalysisInput.xml -path 3 -naive -formula "(&lt;= v2 3)"</StartArguments>
+    <StartArguments>-file SSkin2D_3cells_2layersAnalysisInput.xml -path 15  -formula "(True)"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>

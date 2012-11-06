@@ -29,16 +29,25 @@ let OutputPaths network bounds naive_encoding=
                
     paths
 
-let pad_paths (paths : Map<QN.var, int list> list) (length : int) =
-    let mutable (temp_paths : Map<QN.var, int list> list) = paths
-    while (length > temp_paths.Length) do
-        temp_paths <- temp_paths @ [ List.head (List.rev temp_paths) ]
+// Extend/truncate the list of paths to the required length
+// If the list of paths is shorter than needed repeat the last element 
+// If the list of paths is longer than needed remove the prefix of the list
+let change_list_to_length (paths : Map<QN.var, int list> list) (length : int) =
+    let changed_length_paths = 
+        if (length > paths.Length) 
+        then 
+            let mutable (temp_paths : Map<QN.var, int list> list) = paths
+            while (length > temp_paths.Length) do
+                temp_paths <- temp_paths @ [ List.head (List.rev temp_paths) ]
+            temp_paths
+        elif (length < paths.Length)
+        then
+            let mutable (temp_paths : Map<QN.var, int list> list) = paths
+            while (length < temp_paths.Length) do
+                temp_paths <- List.rev (List.tail (List.rev temp_paths))
+            temp_paths
+        else
+            paths        
 
-    temp_paths        
-
-// SI: a simpler way to implement pad_paths above? 
-let pad_paths' paths len = 
-    let last_elt = List.nth paths (List.length paths - 1)
-    let padding = List.init len (fun _ -> last_elt) 
-    paths @ padding 
+    changed_length_paths      
 //End <-- The list of value range

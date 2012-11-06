@@ -197,17 +197,17 @@ let encode_loop_closure network (z : Context) (ranges : VariableRange list) =
 // times 0,1,2,....,length-2 (ignoring time length-1).
 // We add an implication that v0->v1, v1->v2, ...
 // The possible assignments are:
-// 00...00
-// 00...01
-// 00..011
-// ...
-// 001..11
-// 01...11
 // 11...11
+// 01...11
+// 001..11
+// ...
+// 00..011
+// 00...01
+// 00...00
 // The loop closes at time 0 if v0 (and length >= 2)
 // The loop closes at time 1 if !v0 & v1 
 // The loop closes at time i if !vi-1 & vi
-// The loop closes at time n if !vn
+// The loop closes at time n-1 if !vn-2
 let encode_loop_closure_variables (z : Context) length =
     let list_of_variables = BioCheckPlusZ3.allocate_loop_vars z length
     ignore(BioCheckPlusZ3.create_implication_for_bool_vars list_of_variables z)

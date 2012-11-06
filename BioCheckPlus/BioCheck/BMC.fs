@@ -92,7 +92,7 @@ let BoundedMC (ltl_formula : LTLFormulaType) network initBound (paths : Map<QN.v
     // 5. Solve the constraint.
     let sat = ctx.CheckAndGetModel (model)
 
-    // 6. Translate the model back??? (perhaps the model should be returned and handled at a higher level).
+    // 6. Translate the model back
     let (the_result,the_model) = 
         if sat = LBool.True then
             (true, BioCheckPlusZ3.z3_model_to_loop (!model) paths)
