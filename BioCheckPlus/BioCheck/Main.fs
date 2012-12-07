@@ -16,6 +16,7 @@ let main _ =
     let number_of_steps = ref -1
     let naive_computation = ref false
     let model_check = ref false
+    let modelsdir = ref "C:\\Users\\np183\\tools\\BioCheckPlus\\BioCheck\\xml Models"
     let output_model = ref false
     let output_proof = ref false
 
@@ -31,14 +32,17 @@ let main _ =
                  //
                  ("-proof", ArgType.Unit (fun _ -> output_proof := true), "Output the ranges of variables over time (does not work with naive)");
                  //
-                 ("-path", ArgType.Int (fun i -> number_of_steps := i), "Number of steps"); ]
+                 ("-path", ArgType.Int (fun i -> number_of_steps := i), "Number of steps"); 
+                 //
+                 ("-modelsdir", ArgType.String (fun d -> modelsdir := d), "Models directory"); 
+                 
+                 ]
                |> List.map (fun (n,a,s) -> ArgInfo(n,a,s))
                |> List.toSeq
     ArgParser.Parse(args)
 
     let start_time = System.DateTime.Now
 
-    let modelsdir = "C:\\Users\\np183\\tools\\BioCheckPlus\\BioCheck\\xml Models\\"
     let file = !input_file
 
     // Negate the formula if needed
@@ -51,7 +55,7 @@ let main _ =
 
     // read out the vpc model from xml UI file
     // we cannot use the "range" here directly, as what we need is a list not a pair
-    let network, range = Marshal.model_of_xml(XDocument.Load(modelsdir+file))
+    let network, range = Marshal.model_of_xml(XDocument.Load(!modelsdir + "\\" + file))
     let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str network
 
     LTL.print_in_order ltl_formula
@@ -67,7 +71,7 @@ let main _ =
         // initK = the length of prefix + the length of loop, which is used as the initial value of K when doing BMC
         let paths = Paths.output_paths network nuRangel !naive_computation
 
-        if (!output_proof & not !naive_computation) then
+        if (!output_proof && not !naive_computation) then
             Paths.print_paths network paths
 
 
