@@ -444,12 +444,12 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
     temp_loop_close, temp_map
     // (!loop_close, !map_of_time_to_map_of_var_to_value)
 
-let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) = 
+let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) (output_model : bool) = 
     let (loop_close ,map_time_to_map) = model 
     if not (sat) 
     then
-        printfn "The formula is unsatisfiable!"
-    else
+        printfn "Unsatisfiable!"
+    elif (output_model) then 
         printfn "The model is (csv):"
         // print a line with the names of all the variables
         let mutable all_vars = "time"
@@ -479,39 +479,52 @@ let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network :
             printfn "%s" line 
             
             incr i
+    else
+        printfn "Satisfiable!"
 
 let check_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) = 
+    let result_true = ref true
+    let check_all_nodes (previous_time : Map<var,int>) (current_time : Map<var,int>) (previous_step : int) (current_step : int) =
+        for node in network do
+            let computed_target_value = expr_to_real network node node.f previous_time 
+            let rounded_target_value = my_round computed_target_value
+            let next_value = apply_target_function (Map.find node.var previous_time) rounded_target_value node.min node.max
+            let current_output_value = Map.find node.var current_time
+            if not (current_output_value = next_value)
+            then
+                printfn "At transition from time %d to time %d the value of %s is wrong!!!!!" previous_step current_step node.name
+                result_true := false
+
     let (loop_close ,map_time_to_map) = model 
     if not (sat) 
     then
         printfn "Can't check a nonexistent model"
         ()
     else
-        // Check also the loop close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        let mutable result_true = true
         let i = ref 0
         let previous_time = ref Map.empty
+        let loop_closure = ref Map.empty
         while (Map.containsKey !i map_time_to_map) do
 
             let current_time = Map.find !i map_time_to_map
+
+            if (loop_close = !i)
+            then
+                loop_closure := current_time
+
             if not (!previous_time).IsEmpty
             then
-                for node in network do
-                    let computed_target_value = expr_to_real network node node.f !previous_time 
-                    let rounded_target_value = my_round computed_target_value
-                    let next_value = apply_target_function (Map.find node.var !previous_time) rounded_target_value node.min node.max
-                    let current_output_value = Map.find node.var current_time
-                    if not (current_output_value = next_value)
-                    then
-                        printfn "At time %d the value of %s is wrong!!!!!" !i node.name
-                        result_true <- false
-                    
-                    ()
+                check_all_nodes !previous_time current_time (!i - 1) !i
+            ()
 
             previous_time := current_time 
             incr i
 
-        if result_true
+        // After completion of the loop previous_time is a ref to the last 
+        // map in the list and i is the first index not in the map
+        check_all_nodes !previous_time !loop_closure (!i - 1) loop_close
+    
+        if !result_true
         then
             printfn "Checked the model and it seems fine!"
         ()

@@ -90,7 +90,12 @@ let BoundedMC (ltl_formula : LTLFormulaType) network initBound (paths : Map<QN.v
     EncodingForFormula.encode_formula_loop_fairness ltl_formula network ctx list_of_maps
 
     // 5. Solve the constraint.
+    let start_time = System.DateTime.Now
     let sat = ctx.CheckAndGetModel (model)
+    let end_time = System.DateTime.Now
+    let duration = end_time.Subtract start_time
+    printfn "Satisfiability check time: %A" duration
+
 
     // 6. Translate the model back
     let (the_result,the_model) = 

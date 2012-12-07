@@ -58,6 +58,16 @@ let qn_wf qn =
                 let bad_vv = Set.fold (fun st v -> (string)v + st) "" vv_in_f
                 failwith ("A T input in not a variable: " + bad_vv))
         qn 
+
+
+let  list_of_inputs_excluding_node (n : node) (network : node list) =
+    List.concat [ for var in n.inputs do
+                    yield (List.filter (fun (x:node) -> ((x.var = var) && not (x.var = n.var))) network) ]
+                
+           
+let list_of_inputs_with_node_in_head (n : node) (network : node list) =
+    let list_of_inputs = list_of_inputs_excluding_node n network
+    n :: list_of_inputs                
   
     
         

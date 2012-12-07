@@ -13,6 +13,7 @@ type LTLFormulaType =
     | Release of int list * LTLFormulaType * LTLFormulaType
     | And of int list * LTLFormulaType * LTLFormulaType
     | Or of int list * LTLFormulaType * LTLFormulaType
+    | Implies of int list * LTLFormulaType * LTLFormulaType
     | Not of int list * LTLFormulaType
     | Next of int list * LTLFormulaType
     | Always of int list * LTLFormulaType
@@ -25,6 +26,77 @@ type LTLFormulaType =
     | True
     | Error 
 
+let print_in_order(formula : LTLFormulaType) =
+    let rec print (formula : LTLFormulaType) =
+        let name =
+            match formula with 
+            | Until (_, _, _) -> "Until"
+            | Release (_, _, _) -> "Release"
+            | And (_, _, _) -> "And"
+            | Or (_, _, _) -> "Or"
+            | Implies (_, _, _) -> "Implies"
+            | Not (_, _) -> "Not"
+            | Next (_, _) -> "Next"
+            | Always (_, _) -> "Always"
+            | Eventually (_, _) -> "Eventually"
+            | False -> "FF"
+            | True -> "TT"
+            | _ -> "Err"
+
+        let left = 
+            match formula with
+            | Until (_, l, _) 
+            | Release (_, l, _)
+            | And (_, l, _) 
+            | Or (_, l, _) 
+            | Implies (_, l, _) 
+            | Not (_, l) 
+            | Next (_, l)
+            | Always (_, l) 
+            | Eventually (_, l) ->
+                print l 
+            | _ -> ""
+        let right = 
+            match formula with
+            | Until (_, _, r) 
+            | Release (_, _, r)
+            | And (_, _, r) 
+            | Or (_, _, r) 
+            | Implies (_, _, r) ->
+                print r
+            | _ -> ""
+        let prop = 
+            match formula with
+            | PropGt (_, var, value) -> sprintf "%s>%d" var.name value
+            | PropGtEq (_, var, value) -> sprintf "%s>=%d" var.name value
+            | PropLt (_, var, value) -> sprintf "%s<%d" var.name value
+            | PropLtEq (_, var, value) -> sprintf "%s<=%d" var.name value 
+            | _ -> ""
+
+        let result =
+            match formula with
+            | Until (_, _, _)
+            | Release (_, _, _)
+            | And (_, _, _) 
+            | Or (_, _, _) 
+            | Implies (_, _, _) ->
+                sprintf "(%s %s %s)" left name right
+            | Not (_, _) 
+            | Next (_, _) 
+            | Always (_, _) 
+            | Eventually (_, _) ->
+                sprintf "(%s %s)" name left
+            | PropGt (_, _, _) 
+            | PropGtEq (_, _, _)
+            | PropLt (_, _, _)
+            | PropLtEq (_, _, _) -> 
+                prop
+            | _ -> 
+                name
+        result
+    let string_res = print formula
+    printfn "%s" string_res
+
 let string_to_LTL_formula (s:string) (network : QN) = 
     let until = "Until"
     let release = "Release"
@@ -32,6 +104,7 @@ let string_to_LTL_formula (s:string) (network : QN) =
     let eventually = "Eventually"
     let conjunction = "And"
     let disjunction = "Or"
+    let implication = "Implies"
     let negation = "Not"
     let next = "Next"
     let true_string = "True"
@@ -46,6 +119,7 @@ let string_to_LTL_formula (s:string) (network : QN) =
     let length_of_release = release.Length
     let length_of_and = conjunction.Length
     let length_of_or = disjunction.Length
+    let length_of_implies = implication.Length
     let length_of_not = negation.Length
     let length_of_next = next.Length
     let length_of_always = always.Length
@@ -62,6 +136,7 @@ let string_to_LTL_formula (s:string) (network : QN) =
     let IsRelease (s : string) = s.StartsWith(release + space)
     let IsAnd (s : string) = s.StartsWith(conjunction + space)
     let IsOr (s : string) = s.StartsWith(disjunction + space)
+    let IsImplies (s : string) = s.StartsWith(implication + space)
     let IsNot (s : string) = s.StartsWith(negation + space)
     let IsNext (s : string) = s.StartsWith(next + space)
     let IsEventually (s : string) = s.StartsWith(eventually + space)
@@ -159,6 +234,12 @@ let string_to_LTL_formula (s:string) (network : QN) =
                     Error
                 else
                     (Or (location, sub_formula1, sub_formula2))
+            elif (IsImplies(without_paren)) then
+                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_implies without_paren location
+                if (sub_formula1 = Error || sub_formula2 = Error) then
+                    Error
+                else
+                    (Implies (location, sub_formula1, sub_formula2))
             elif (IsNot(without_paren)) then
                 let sub_formula = analyze_one_operand length_of_not without_paren location
                 if (sub_formula = Error) then

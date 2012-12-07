@@ -93,6 +93,7 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
             | Release (_, op, _)
             | And (_, op, _) 
             | Or (_, op, _) 
+            | Implies (_, op, _) 
             | Not (_, op)
             | Next (_, op)
             | Always (_, op)
@@ -106,7 +107,8 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
             | Until (_, _, op)
             | Release (_, _, op)
             | And (_, _, op) 
-            | Or (_, _, op) ->
+            | Or (_, _, op) 
+            | Implies (_, _, op) ->
                 encode_truth_of_formula op 
             // Unary operators, propositions, true, false
             | _ ->
@@ -144,6 +146,8 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
                 z.MkAnd(l_op_encode,r_op_encode)
             | Or (_, _, _) ->
                 z.MkOr(l_op_encode,r_op_encode)
+            | Implies (_, _, _) ->
+                z.MkImplies(l_op_encode,r_op_encode)
             | Not (_, _) ->
                 z.MkNot(l_op_encode)
             | PropGt (_ , var , _) 
@@ -165,6 +169,7 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         | Eventually (location, _) 
         | And (location, _, _) 
         | Or (location, _, _) 
+        | Implies (location, _, _) 
         | Not (location, _) 
         | PropGt (location, _, _) 
         | PropGtEq (location, _, _) 
@@ -192,7 +197,26 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
 // In the case of encoding a loop closure this constraint should encode that the loop is closing 
 // to this step and only then encode the transition.
 let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : QN) (previous_map : FormulaConstraint) (current_map : FormulaConstraint) (step_prev : int) (step_curr : int) (z : Context) additional_application_constraint = 
-    let rec encode_truth_of_formula ltl_formula =
+    let rec assert_transition_of_formula ltl_formula =
+
+        // Call recursively
+        match ltl_formula with 
+        | Until (_, l, r)
+        | Release (_, l, r)
+        | And (_, l, r) 
+        | Or (_, l, r) 
+        | Implies (_, l, r) -> 
+            assert_transition_of_formula l
+            assert_transition_of_formula r
+            ()
+        | Not (_, op)
+        | Next (_, op)
+        | Always (_, op)
+        | Eventually (_, op) ->
+            assert_transition_of_formula op
+            ()
+        | _ -> 
+            ()
 
         let truez3 = z.MkTrue()
         let falsez3 = z.MkFalse()
@@ -205,6 +229,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
             | Release (location, _, _)
             | And (location, _, _) 
             | Or (location, _, _) 
+            | Implies (location, _, _) 
             | Not (location, _)
             | Next (location, _)
             | Always (location, _)
@@ -235,6 +260,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
             | Release (_, op, _)
             | And (_, op, _) 
             | Or (_, op, _) 
+            | Implies (_, op, _) 
             | Not (_, op)
             | Next (_, op)
             | Always (_, op)
@@ -249,7 +275,8 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
             | Until (_, _, op)
             | Release (_, _, op)
             | And (_, _, op) 
-            | Or (_, _, op) ->
+            | Or (_, _, op) 
+            | Implies (_, _, op) ->
                 constraint_for_formula_and_neg_prev_curr op
             // Unary operators, propositions, true, false
             | _ ->
@@ -331,7 +358,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         | _ ->
             ()
 
-    encode_truth_of_formula ltl_formula
+    assert_transition_of_formula ltl_formula
 
 
 let encode_formula_transition_in_loop (ltl_formula : LTLFormulaType) (network : QN) (last_map : FormulaConstraint) (current_map : FormulaConstraint) (last_step : int) (current_step : int) (z : Context) = 
