@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheck", "BioCheck\BioCheck.fsproj", "{88A744AF-EB88-476F-BC7B-33DC6B0885FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "BioCheckAnalyzercommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
