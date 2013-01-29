@@ -73,9 +73,11 @@ let change_list_to_length (paths : Map<QN.var, int list> list) (length : int) =
             temp_paths
         elif (length < paths.Length)
         then
+            let last_elem = List.nth paths (paths.Length - 1)
             let mutable (temp_paths : Map<QN.var, int list> list) = paths
-            while (length < temp_paths.Length) do
+            while (length - 1 < temp_paths.Length) do
                 temp_paths <- List.rev (List.tail (List.rev temp_paths))
+            temp_paths <- temp_paths @ [ last_elem ]
             temp_paths
         else
             paths        
