@@ -49,8 +49,6 @@
     <Compile Include="Marshal.fs" />
     <Compile Include="BioCheckZ3.fs" />
     <Compile Include="BioCheckPlusZ3.fs" />
-    <Compile Include="Z_old.fs" />
-    <Compile Include="Z3_old.fs" />
     <Compile Include="Z3rangelist.fs" />
     <Compile Include="stepZ3rangelist.fs" />
     <Compile Include="LTL2TGBA.fs" />
@@ -63,7 +61,6 @@
     <Compile Include="ReadTGBA.fs" />
     <Compile Include="TGBATransEncoding.fs" />
     <Compile Include="AccRelatedTrans.fs" />
-    <Compile Include="testing1.fs" />
     <Compile Include="LTL.fs" />
     <Compile Include="EncodingForFormula.fs" />
     <Compile Include="InitEncodingForSys.fs" />
