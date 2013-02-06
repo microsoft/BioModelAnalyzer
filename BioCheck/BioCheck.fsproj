@@ -12,6 +12,10 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>BioCheck</Name>
     <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -67,6 +71,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="BioCheckAnalyzerCommon">
+      <HintPath>C:\Users\sishtiaq\work\TFS\BioCheck\BioCheckAnalyzerCommon\bin\Debug\BioCheckAnalyzerCommon.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.PowerPack">
       <HintPath>FSharp.PowerPack.dll</HintPath>
     </Reference>
@@ -82,13 +89,6 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BioCheckAnalyzercommon\BioCheckAnalyzerCommon.csproj">
-      <Name>BioCheckAnalyzerCommon</Name>
-      <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
