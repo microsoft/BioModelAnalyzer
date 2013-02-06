@@ -12,44 +12,46 @@ open Expr
 ///////////////////////////////////////////////////////////////////////////////
 
 let gensym =
-    let counter = ref 0 
+    let counter = ref 0
     (fun s -> incr counter; s + ((string)!counter))
 
-// Z.expr_to_z3 should be similar to Expr.eval_expr_int. 
+// Naming convension for Z3 variables
+let get_z3_int_var_at_time (node : QN.node) time = sprintf "%d^%d" node.var time
+
+// Z.expr_to_z3 should be similar to Expr.eval_expr_int.
 let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
     let node_min,node_max = node.range
 
-    let rec tr expr = 
+    let rec tr expr =
         match expr with
         | Var v ->
-            // Use the node's original range 
+            // Use the node's original range
             //let node_min,node_max = node.range
-            let v_min,v_max = 
+            let v_min,v_max =
                 let v_defn = List.find (fun (n:QN.node) -> n.var = v) qn
                 v_defn.range
-            // Don't scale/displace constants. 
-            let scale,displacement = 
-                if (v_min<>v_max) then 
-                    // (z.MkRealNumeral( ((node_max - node_min) / (v_max - v_min)):int ), z.MkRealNumeral( (node_min - v_min):int ))
+            // Don't scale/displace constants.
+            let scale,displacement =
+                if (v_min<>v_max) then
                     let t = z.MkRealNumeral(node_max - node_min)
                     let b = z.MkRealNumeral(v_max - v_min)
                     (z.MkDiv(t,b) , z.MkRealNumeral( (node_min - v_min):int ))
                 else (z.MkRealNumeral 1, z.MkRealNumeral 0)
 
-            let input_var = 
-                let v_t = sprintf "%d^%d" v time
+            let input_var =
+                let v_t = get_z3_int_var_at_time v_defn time
                 z.MkToReal(z.MkConst(z.MkSymbol v_t, z.MkIntSort()))
-            ([], z.MkAdd(z.MkMul(input_var,scale), displacement)) 
+            ([], z.MkAdd(z.MkMul(input_var,scale), displacement))
         | Const c -> ([],z.MkRealNumeral c)
-        | Plus(e1, e2) -> 
+        | Plus(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             (a1@a2, z.MkAdd(z1,z2))
-        | Minus(e1, e2) -> 
+        | Minus(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             (a1@a2, z.MkSub(z1,z2))
-        | Times(e1, e2) -> 
+        | Times(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             (a1@a2, z.MkMul(z1,z2))
@@ -57,42 +59,55 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             (a1@a2, z.MkDiv(z1,z2))
-        | Max(e1, e2) -> 
-            let (a1,z1) = tr e1 
+        | Max(e1, e2) ->
+            let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             let is_gt = z.MkGt(z1, z2)
             (a1@a2, z.MkIte(is_gt, z1, z2))
         | Min(e1, e2) ->
-            let (a1,z1) = tr e1 
+            let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             let is_lt = z.MkLt(z1, z2)
-            (a1@a2, z.MkIte(is_lt, z1, z2))        
-        // x:Real, m,n:Int. If x-1 < m <= x <= n < x+1. Then floor(x)=m and ceil(x)=n. 
-        | Ceil e1 ->        
+            (a1@a2, z.MkIte(is_lt, z1, z2))
+        // x:Real, m,n:Int. If x-1 < m <= x <= n < x+1. Then floor(x)=m and ceil(x)=n.
+(* Nir's code:
+        | Ceil e1 ->
+            let z1 = tr e1
+            let floor = z.MkToReal( z.MkToInt(z1))
+            let is_int = z.MkEq (floor, z1)
+            let floor_plus_one = z.MkAdd(floor, z.MkRealNumeral(1))
+            let ceil_assert = z.MkTrue
+            z.MkIte(is_int,floor,floor_plus_one)
+        | Floor e1 ->
+            let z1 = tr e1
+            let floor_assert = z.MkTrue
+            z.MkToReal (z.MkToInt z1)
+*)
+        | Ceil e1 ->
             let (a1,x) = tr e1
             let x' = z.MkAdd(x, z.MkRealNumeral(1))
-            let n = 
-                let n = gensym "ceil" 
+            let n =
+                let n = gensym "ceil"
                 z.MkToReal(z.MkConst(z.MkSymbol n, z.MkIntSort()))
             let x_leq_n = z.MkLe(x, n)
-            let n_lt_x' = z.MkLt(n, x') 
+            let n_lt_x' = z.MkLt(n, x')
             let ceil_assert = z.MkAnd([|x_leq_n;n_lt_x'|])
             (ceil_assert::a1, n)
         | Floor e1 ->
-            let (a1,x) = tr e1 
+            let (a1,x) = tr e1
             let x' = z.MkSub(x, z.MkRealNumeral(1))
-            let m = 
-                let m = gensym "floor" 
+            let m =
+                let m = gensym "floor"
                 z.MkToReal(z.MkConst(z.MkSymbol m, z.MkIntSort()))
-            let x'_lt_m = z.MkLt(x', m) 
-            let m_le_x = z.MkLe(m, x)            
+            let x'_lt_m = z.MkLt(x', m)
+            let m_le_x = z.MkLe(m, x)
             let floor_assert = z.MkAnd([|x'_lt_m; m_le_x|])
             (floor_assert::a1, m)
         | Ave es ->
             let sum = List.fold
                         (fun ast e1 -> match ast with
                                        | None -> Some(tr e1)
-                                       | Some (a0,z0) -> 
+                                       | Some (a0,z0) ->
                                                 let (a1,z1) = tr e1
                                                 Some(a0@a1, z.MkAdd(z0, z1)))
                         None
@@ -102,39 +117,59 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
               | None -> ([], z.MkRealNumeral 0)
               | Some (a,s) -> (a, z.MkDiv(s, cnt))
 
-    let (extra_asserts,z) = tr expr 
+
+        | Sum es ->
+            let sum = List.fold
+                        (fun ast e1 -> match ast with
+                                       | None -> Some(tr e1)
+                                       | Some (a0,z0) ->
+                                                    let (a1,z1) = tr e1
+                                                    Some(a0@a1, z.MkAdd(z0, z1)))
+                        None
+                        es
+            match sum with
+              | None -> ([],z.MkRealNumeral 0)
+              | Some (a,s) -> (a,s)
+
+    let (extra_asserts,z) = tr expr
     (extra_asserts,z)
 
 ///////////////////////////////////////////////////////////////////////////////
-// unroll_qn 
+// unroll_qn
 ///////////////////////////////////////////////////////////////////////////////
 
-//assert  (v_t+1 = (v_t + 1) /\ T(v_t) > v_t) \/ 
+//assert  (v_t+1 = (v_t + 1) /\ T(v_t) > v_t) \/
 //        (v_t+1 = (v_t)     /\ T(v_t) = v_t) \/
-//        (v_t+1 = (v_t - 1) /\ T(v_t) < v_t) 
+//        (v_t+1 = (v_t - 1) /\ T(v_t) < v_t)
 let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : Context) =
     let current_state_id = sprintf "%d^%d" node.var start_time
     let current_state = z.MkConst(z.MkSymbol current_state_id, z.MkIntSort())
 
-    let next_state_id = sprintf "%d^%d" node.var end_time
+    let next_state_id = get_z3_int_var_at_time node end_time
     let next_state = z.MkConst(z.MkSymbol next_state_id, z.MkIntSort())
- 
-    // SI: float->int conversion. Should use ceil or floor...
+
     let (extra_asserts,z_of_f) = expr_to_z3 qn node node.f start_time z
     let T_applied = z.MkToInt(z_of_f)
-    
+
+    let (lower: int, upper: int) = Map.find node.var bounds
+
     let up = z.MkEq(next_state, z.MkAdd(current_state, z.MkIntNumeral 1))
     let up = z.MkAnd(up, z.MkGt(T_applied, current_state))
+    let up = z.MkAnd(up, z.MkGt(z.MkIntNumeral upper, current_state))
 
     let same = z.MkEq(next_state, current_state)
-    let same = z.MkAnd(same, z.MkEq(T_applied, current_state))
+    let tmpsame = z.MkEq(T_applied, current_state)
+    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkGt(T_applied, current_state), z.MkEq(z.MkIntNumeral upper, current_state)))
+    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkLt(T_applied, current_state), z.MkEq(z.MkIntNumeral lower, current_state)))
+    let same = z.MkAnd(same, tmpsame)
 
     let dn = z.MkEq(next_state, z.MkSub(current_state, z.MkIntNumeral 1))
     let dn = z.MkAnd(dn, z.MkLt(T_applied, current_state))
+    let dn = z.MkAnd(dn, z.MkLt(z.MkIntNumeral lower, current_state))
 
     let cnstr = z.MkOr([|up;same;dn|])
 
-    List.iter 
+    List.iter
         (fun c -> Log.log_debug ("T_" + (string)node.var + "_xtra_assrt: " + z.ToString c))
         extra_asserts
     z.AssertCnstr (z.MkAnd((Array.ofList extra_asserts)))
@@ -144,7 +179,7 @@ let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : C
 
 // assert  lower <= v_t <= upper
 let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context) =
-    let var_name = sprintf "%d^%d" node.var time
+    let var_name = get_z3_int_var_at_time node time
     let v = z.MkConst(z.MkSymbol var_name, z.MkIntSort())
 
     let simplify =  id // z.Simplify
@@ -172,7 +207,7 @@ let unroll_qn qn bounds start_time end_time z =
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// model to fixpoint 
+// model to fixpoint
 ///////////////////////////////////////////////////////////////////////////////
 
 let model_to_fixpoint (model : Model) =
@@ -198,7 +233,7 @@ let find_fixpoint (network : QN.node list) range =
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
 
-    // time "0" is just an arbitrary time here. 
+    // time "0" is just an arbitrary time here.
     unroll_qn network range 0 0 ctx
 
     let model = ref null
@@ -218,7 +253,7 @@ let find_fixpoint (network : QN.node list) range =
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// bifurcation 
+// bifurcation
 ///////////////////////////////////////////////////////////////////////////////
 
 let assert_not_model (model : Model) (z : Context) =
@@ -238,7 +273,7 @@ let find_bifurcation (network : QN.node list) range =
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
 
-    // time "0" is just an arbitrary time here. 
+    // time "0" is just an arbitrary time here.
     unroll_qn network range 0 0 ctx
 
     let model = ref null
@@ -276,8 +311,8 @@ let assert_states_equal (qn : QN.node list) start_time end_time (ctx : Context) 
     let mutable equal_condition = ctx.MkTrue()
 
     for node in qn do
-        let start_name = sprintf "%d^%d" node.var start_time
-        let end_name = sprintf "%d^%d" node.var end_time
+        let start_name = get_z3_int_var_at_time node start_time
+        let end_name = get_z3_int_var_at_time node end_time
         let start_var = ctx.MkConst(start_name, ctx.MkIntSort())
         let end_var = ctx.MkConst(end_name, ctx.MkIntSort())
         let eq = ctx.MkEq(start_var, end_var)
