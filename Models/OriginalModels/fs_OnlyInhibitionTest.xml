@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput>
+  <Variables>
+    <Variable Id="1">
+      <Name>prot1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="2">
+      <Name>prot2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="3">
+      <Name>prot3</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+  </Relationships>
+</AnalysisInput>
