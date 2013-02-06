@@ -74,6 +74,8 @@ let excel_of_expr var_to_row (state_col : int) e  =
         | Floor(e) -> "floor(" + loop  e  + ",1)"
         | Ave(ee) when List.length(ee) = 0 -> "0"
         | Ave(ee) ->  "ceiling(average(" + (String.concat "," (List.map (fun e -> loop  e ) ee)) + "),1)"
+        | Sum(ee) ->  "ceiling(sum(" + (String.concat "," (List.map (fun e -> loop  e ) ee)) + "),1)"
+
     loop e 
 
 /// [setCellText sheet x y txt] sets sheet's col x and row y cell to txt

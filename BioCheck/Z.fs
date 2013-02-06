@@ -27,9 +27,8 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
         | Var v ->
             // Use the node's original range
             //let node_min,node_max = node.range
-            let v_min,v_max =
-                let v_defn = List.find (fun (n:QN.node) -> n.var = v) qn
-                v_defn.range
+            let v_defn = List.find (fun (n:QN.node) -> n.var = v) qn
+            let v_min,v_max = v_defn.range
             // Don't scale/displace constants.
             let scale,displacement =
                 if (v_min<>v_max) then
