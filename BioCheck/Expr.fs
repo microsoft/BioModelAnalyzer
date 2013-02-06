@@ -17,27 +17,31 @@ type expr =
     | Ceil of expr
     | Floor of expr
     | Ave of expr list
+    | Sum of expr list  //QSW
 
-let rec print_expr e = 
-    match e with 
+let rec print_expr e =
+    match e with
     | Var(v) -> printf "var(%d)" v
     | Const(i) -> printf "%d" i
     | Plus(e,f) -> printf "("; print_expr e; printf "+"; print_expr f; printf ")"
     | Minus(e,f) -> printf "("; print_expr e; printf "-"; print_expr f; printf ")"
-    | Times(e,f) -> printf "("; print_expr e; printf "*"; print_expr f; printf ")"; 
-    | Div(e,f) -> printf "("; print_expr e; printf "/"; print_expr f; printf ")"; 
-    | Max(e,f) -> printf "max("; print_expr e; printf ","; print_expr f; printf ")"; 
-    | Min(e,f) -> printf "min("; print_expr e; printf ","; print_expr f; printf ")"; 
+    | Times(e,f) -> printf "("; print_expr e; printf "*"; print_expr f; printf ")";
+    | Div(e,f) -> printf "("; print_expr e; printf "/"; print_expr f; printf ")";
+    | Max(e,f) -> printf "max("; print_expr e; printf ","; print_expr f; printf ")";
+    | Min(e,f) -> printf "min("; print_expr e; printf ","; print_expr f; printf ")";
     | Ceil(e) -> printf "ceil("; print_expr e; printf ")"
     | Floor(e) -> printf "floor("; print_expr e; printf ")"
-    | Ave(ee) -> printf "ave("; 
+    | Ave(ee) -> printf "ave(";
                  List.iter (fun e -> print_expr e; printf ",") ee
                  printf ")"
+    | Sum(ee) -> printf "sum(";
+                 List.iter (fun e -> print_expr e; printf ",") ee
+                 printf ")" //QSW
 
-let rec str_of_expr e = 
-    match e with 
+let rec str_of_expr e =
+    match e with
     | Var(v) -> "var(" + (string)v + ")"
-    | Const(i) -> "const(" + (string)i + ")"
+    | Const(i) -> (string)i
     | Plus(e,f) -> "(" + str_of_expr e + "+" + str_of_expr f + ")"
     | Minus(e,f) -> "(" + str_of_expr e + "-" + str_of_expr f + ")"
     | Times(e,f) -> "(" + str_of_expr e +  "*" + str_of_expr f +   ")"
@@ -47,53 +51,55 @@ let rec str_of_expr e =
     | Ceil(e) -> "ceil(" + str_of_expr e + ")"
     | Floor(e) -> "floor(" + str_of_expr e + ")"
     | Ave(ee) ->  "ave(" + (String.concat "," (List.map (fun e -> str_of_expr e) ee)) + ")"
-
+    | Sum(ee) -> "sum(" + (String.concat "," (List.map (fun e -> str_of_expr e) ee)) + ")" //QSW
 
 let str_of_interval (lo:int) (hi:int) = "[" + (string)lo + "," + (string)hi + "]"
 let str_of_env (env:Map<var,int>) = String.concat "," (Map.fold (fun ss x n -> (string)x+":"+(string)n :: ss) [] env)
 
-/// FV 
-let rec fv e = 
-    match e with 
+/// FV
+let rec fv e =
+    match e with
     | Var(v) -> Set.singleton v
     | Const(_) -> Set.empty
     | Plus(e1,e2)
-    | Minus(e1,e2) 
-    | Times(e1,e2) 
-    | Div(e1,e2) 
-    | Max(e1,e2) 
+    | Minus(e1,e2)
+    | Times(e1,e2)
+    | Div(e1,e2)
+    | Max(e1,e2)
     | Min(e1,e2) -> Set.union (fv e1) (fv e2)
-    | Ceil(e) 
+    | Ceil(e)
     | Floor(e) -> fv e
     | Ave(ee) -> List.fold (fun ff e -> Set.union (fv e) ff) Set.empty ee
+    | Sum(ee) -> List.fold (fun ff e -> Set.union (fv e) ff) Set.empty ee //QSW
+
 
 /// is_a_const
 let is_a_const range e =
-    let rec is_a_const_int e = 
-        match e with 
+    let rec is_a_const_int e =
+        match e with
         | Var _ -> false
         | Const _ -> true
-        | Plus(e1, e2) | Minus(e1, e2) | Times(e1, e2) | Div(e1, e2) | Max(e1, e2) | Min(e1, e2) -> 
+        | Plus(e1, e2) | Minus(e1, e2) | Times(e1, e2) | Div(e1, e2) | Max(e1, e2) | Min(e1, e2) ->
             (is_a_const_int e1) && (is_a_const_int e2)
         | Ceil(e') | Floor(e') -> (is_a_const_int e')
         | Ave(es) -> List.forall (is_a_const_int) es
-    let is_a_const_var (range:Map<var,int*int>) e  =        
+    let is_a_const_var (range:Map<var,int*int>) e  =
         match e with
-        | Var v -> 
+        | Var v ->
             let v_min,v_max = Map.find v range
-            v_min = v_max 
+            v_min = v_max
         | _ -> false
-    is_a_const_var range e || is_a_const_int e 
+    is_a_const_var range e || is_a_const_int e
 
 /// Evaluate an arithmetic expression at [node]
 let eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var, int>) =
-        
-    let node_min, node_max = Map.find node range 
+
+    let node_min, node_max = Map.find node range
 
     let rec eval_expr_int e env =
         match e with
         | Var v ->
-            // Adjust v so that it lies within node's range     
+            // Adjust v so that it lies within node's range
             let v_min,v_max = Map.find v range
             // Special case to deal with constants
             if v_min = v_max then
@@ -103,16 +109,14 @@ let eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var,
                 else if (node_max >= c && c >= node_min) then float(c)
                 else if (c < node_min) then float(node_min)
                 else failwith("bug in scaling constant")
-            else 
+            else
                 let scale = (node_max - node_min) / (v_max - v_min)
                 let displacement = node_min - v_min
                 match Map.tryFind v env with
-                | Some x -> 
-                    //Log.log_debug ("eval_expr var. scale="+(string)scale+" displacement="+(string)displacement+" x="+(string)x)
+                | Some x ->
                     float( (x + displacement) * scale ) //float(x)
-                | None -> 
-                    Log.log_error ("Warning: eval_expr couldn't find "+(string)v+" in env")
-                    float(node_min) // 0.0 
+                | None ->
+                    float(node_min) // 0.0
 
         | Const c -> float(c)
         | Plus(e1, e2) -> (eval_expr_int e1 env) + (eval_expr_int e2 env)
@@ -124,24 +128,27 @@ let eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var,
         | Ceil(e) -> ceil (eval_expr_int e env)
         | Floor(e) -> floor (eval_expr_int e env)
         | Ave([]) -> float(0)
-        | Ave(es) -> 
+        | Ave(es) ->
             let total = List.fold (fun x e -> x + (eval_expr_int e env)) 0.0 es
             let len = (List.length es)
             total / float(len)
+        | Sum(es) ->
+            let total = List.fold (fun x e -> x + (eval_expr_int e env)) 0.0 es
+            total  //QSW
 
-    // SI, Nir: Lucinda's Excel model takes the ceiling of the float computation. 
-    // We need to convert the float to the int. But via which function (ceil, floor, round)? 
-    // floor seems to force a fast stabilization to 0 for Lucinda's model. 
+
+    // SI, Nir: Lucinda's Excel model takes the ceiling of the float computation.
+    // We need to convert the float to the int. But via which function (ceil, floor, round)?
+    // floor seems to force a fast stabilization to 0 for Lucinda's model.
     let convert = id // round, ceil???
     let res = int (convert (eval_expr_int e env))
-    // Keep res in range 
+    // Keep res in range
     let node_lo,node_hi = Map.find node range
     if res < node_lo then node_lo else
         if res > node_hi then node_hi else
-            res 
+            res
 
-/// eval_expr node range f env
-let eval_expr = eval_expr_int
+and eval_expr = eval_expr_int
 
 /// Symbolically partially differentiate an expression with respect to
 /// one of its free variables.  Returns a new expression, which should
@@ -322,6 +329,9 @@ let rec sign_int f =
     | Ave(es) ->
         // Just treat this like a big sum, so add together all the signs.
         List.fold (fun s e -> sign_plus s (sign e)) Zero es
+    | Sum(es) ->
+        // This is the big Sum!
+        List.fold (fun s e -> sign_plus s (sign e)) Zero es //QSW
 and sign = memoize sign_int
 
 
@@ -345,6 +355,8 @@ let rec is_increasing_int f var =
                    else false
         inc1 && inc2
     | Ave(es) -> List.forall (fun e -> is_increasing e var) es
+    | Sum(es) -> List.forall (fun e -> is_increasing e var) es //QSW
+
 and is_decreasing_int f var =
     match f with
     | Const(_) -> true
@@ -366,6 +378,7 @@ and is_decreasing_int f var =
                    else false
         dec1 && dec2
     | Ave(es) -> List.forall (fun e -> is_decreasing e var) es
+    | Sum(es) -> List.forall (fun e -> is_decreasing e var) es //QSW
 and is_increasing = is_increasing_int
 and is_decreasing = is_decreasing_int
 
@@ -381,4 +394,4 @@ let register_tests () =
     Test.register_test false (fun () -> is_increasing f 1)
     Test.register_test true (fun () -> is_decreasing f 1)
     Test.register_test true (fun () -> (sign f) = Unk)
-    
+
