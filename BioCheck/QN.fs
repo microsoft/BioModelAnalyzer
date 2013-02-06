@@ -13,7 +13,7 @@ let mk_var _ =
     num_vars <- num_vars + 1
     n
 
-let mk_var_unsafe i = 
+let mk_var_unsafe i =
     i
 
 /// A node in a QN network.
@@ -26,67 +26,78 @@ type node =
         name : string;
     }
 
-let str_of_node (n:node) = 
-    let ii = String.concat "," (List.map (fun v -> (string)v) n.inputs)                    
-    let (lo,hi) = n.range 
+let str_of_node (n:node) =
+    let ii = String.concat "," (List.map (fun v -> (string)v) n.inputs)
+    let (lo,hi) = n.range
     let f = Expr.str_of_expr n.f
     sprintf "{var=%d; range=[%d,%d]; name=%s; inputs={%s}; f=(%s)}" n.var lo hi n.name ii f
 
-type qn = node list 
-    
-/// 
+type qn = node list
+
+///
 type interval = Map<var, int*int>
 type range = Map<var,int*int>
 
 type env = Map<var,int>
 
-let str_of_range network range = 
-    let names = Map.ofList (List.map (fun n -> n.var,n.name) network) 
-    String.concat ", " (Map.fold (fun st v (lo,hi) -> (sprintf "%s.%d:[%d,%d]" (Map.find v names) v lo hi)::st) [] range)    
+let str_of_range network range =
+    let names = Map.ofList (List.map (fun n -> n.var,n.name) network)
+    String.concat ", " (Map.fold (fun st v (lo,hi) -> (sprintf "%s.%d:[%d,%d]" (Map.find v names) v lo hi)::st) [] range)
 
-let str_of_env env = 
-    let l = Map.toList env 
+let str_of_env env =
+    let l = Map.toList env
     String.concat ", " (List.map (fun (v,i) -> sprintf "(%d,%d)" v i) l)
 
-/// Well-formed QN network 
-/// Raises exn if qn isn't wf. 
-let qn_wf qn = 
+/// Well-formed QN network
+/// Raises exn if qn isn't wf.
+let qn_wf qn =
     // all ids are unique
     let uniq_ids = List.fold
-                        (fun uniq_ids (n:node) -> 
-                            let n_id = n.var 
-                            match Map.tryFind n_id uniq_ids with 
-                            | None -> Map.add n_id n uniq_ids 
+                        (fun uniq_ids (n:node) ->
+                            let n_id = n.var
+                            match Map.tryFind n_id uniq_ids with
+                            | None -> Map.add n_id n uniq_ids
                             | Some _ -> failwith ("Two entries for " + (string)n_id))
-                        Map.empty 
-                        qn 
-    // Target functions only mention valid ids 
-    List.iter 
-        (fun (n:node) -> 
+                        Map.empty
+                        qn
+    // Target functions only mention valid ids
+    List.iter
+        (fun (n:node) ->
             let vv_in_f = Expr.fv n.f
-            let vv_valid = Set.forall (fun v -> Map.containsKey v uniq_ids) vv_in_f 
-            if (not vv_valid ) then 
+            let vv_valid = Set.forall (fun v -> Map.containsKey v uniq_ids) vv_in_f
+            if (not vv_valid ) then
                 let bad_vv = Set.fold (fun st v -> (string)v + st) "" vv_in_f
                 failwith ("A T input in not a variable: " + bad_vv))
-        qn 
-      
+        qn
+
 /// Check that env is complete wrt to qn
-let env_complete_wrt_qn (qn:qn) (env:env) =     
+let env_complete_wrt_qn (qn:qn) (env:env) =
     if (List.length qn = env.Count) then
         // Each var \in qn is also defined in env
         let env_wrt_qn = List.forall (fun (n:node) -> Map.containsKey n.var env) qn
-        // Each var \in env is also defined in qn 
+        // Each var \in env is also defined in qn
         let qn_wrt_env = Map.forall (fun v i -> List.exists (fun n -> n.var = v) qn) env
         // Each var \in env is is correctly bounded
-        let env_bounded = 
-            Map.forall 
-                (fun v i -> 
+        let env_bounded =
+            Map.forall
+                (fun v i ->
                             let n = List.find (fun n -> n.var=v) qn
                             let min,max = n.range
-                            min <= i && i <= max) 
+                            min <= i && i <= max)
                 env
-        env_wrt_qn && qn_wrt_env && env_bounded 
-    else false 
+        env_wrt_qn && qn_wrt_env && env_bounded
+    else false
+
+
+let  list_of_inputs_excluding_node (n : node) (network : node list) =
+    List.concat [ for var in n.inputs do
+                    yield (List.filter (fun (x:node) -> ((x.var = var) && not (x.var = n.var))) network) ]
+
+
+let list_of_inputs_with_node_in_head (n : node) (network : node list) =
+    let list_of_inputs = list_of_inputs_excluding_node n network
+    n :: list_of_inputs
+
 
 
 
