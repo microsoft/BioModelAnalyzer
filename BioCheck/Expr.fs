@@ -83,6 +83,7 @@ let is_a_const range e =
             (is_a_const_int e1) && (is_a_const_int e2)
         | Ceil(e') | Floor(e') -> (is_a_const_int e')
         | Ave(es) -> List.forall (is_a_const_int) es
+        | Sum(es) -> List.forall is_a_const_int es 
     let is_a_const_var (range:Map<var,int*int>) e  =
         match e with
         | Var v ->
@@ -92,7 +93,7 @@ let is_a_const range e =
     is_a_const_var range e || is_a_const_int e
 
 /// Evaluate an arithmetic expression at [node]
-let eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var, int>) =
+let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var, int>) =
 
     let node_min, node_max = Map.find node range
 
@@ -148,7 +149,7 @@ let eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var,
         if res > node_hi then node_hi else
             res
 
-and eval_expr = eval_expr_int
+let eval_expr = eval_expr_int
 
 /// Symbolically partially differentiate an expression with respect to
 /// one of its free variables.  Returns a new expression, which should
