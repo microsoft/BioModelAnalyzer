@@ -1,0 +1,35 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	x:Class="BioCheck.Controls.ZoomControl"
+	d:DesignWidth="406" d:DesignHeight="73">
+
+	<Grid x:Name="LayoutRoot">
+		<Grid Margin="0,0,0,23">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="40"/>
+				<ColumnDefinition Width="0.5*"/>
+				<ColumnDefinition Width="0.5*"/>
+				<ColumnDefinition Width="40"/>
+			</Grid.ColumnDefinitions>
+
+            <Slider x:Name="slider" HorizontalAlignment="Right" 
+                    Value="{Binding Path=ZoomLevel, Mode=TwoWay}"
+                    VerticalAlignment="Top" Maximum="100" 
+                    Style="{StaticResource SlimSliderStyle}" Grid.ColumnSpan="2" Grid.Column="1" SmallChange="1" LargeChange="5" />
+			<Button VerticalAlignment="Top" Style="{StaticResource PathButtonStyle}" Foreground="{StaticResource PathButtonBrush}" d:LayoutOverrides="Width" HorizontalAlignment="Left" Command="{Binding ZoomInCommand}">
+				<Grid Height="35" Width="35" Background="Transparent">
+					<Path x:Name="PlusPath" Data="F1M699.1572,34.625L694.9322,34.625L694.9322,31.405L699.1572,31.405L699.1572,27.205L702.4702,27.205L702.4702,31.405L706.6952,31.405L706.6952,34.625L702.4702,34.625L702.4702,38.826L699.1572,38.826z M709.1672,38.195C709.1652,38.197,709.1632,38.199,709.1632,38.203C708.3112,39.637,707.1222,40.828,705.6852,41.677C705.1022,42.023,704.4852,42.299,703.8332,42.518C703.5832,42.606,703.3312,42.688,703.0712,42.756C702.8492,42.813,702.6262,42.861,702.3992,42.901C701.8512,43,701.2972,43.07,700.7212,43.07C695.2992,43.07,690.8862,38.66,690.8862,33.233C690.8862,27.812,695.2992,23.402,700.7212,23.402C706.1422,23.402,710.5552,27.812,710.5552,33.233C710.5552,33.809,710.4852,34.365,710.3862,34.91C710.3462,35.139,710.2962,35.361,710.2412,35.586C710.1732,35.843,710.0912,36.094,710.0062,36.345C709.7862,36.996,709.5092,37.613,709.1672,38.195 M712.7332,41.771C714.4522,39.358,715.4732,36.418,715.4732,33.233C715.4732,25.104,708.8542,18.484,700.7212,18.484C692.5882,18.484,685.9692,25.104,685.9692,33.233C685.9692,41.371,692.5882,47.989,700.7212,47.989C703.9012,47.989,706.8432,46.969,709.2562,45.247L717.4212,53.412L720.8982,49.938z" Fill="{StaticResource PathButtonBrush}" Stretch="Fill" UseLayoutRounding="False" Width="22" Height="22" VerticalAlignment="Top" Margin="0,1,0,0"/>
+				</Grid>
+			</Button>
+			<Button VerticalAlignment="Top" Style="{StaticResource PathButtonStyle}" Foreground="{StaticResource PathButtonBrush}" Margin="10,1,0,0" Grid.Column="3" d:LayoutOverrides="Width" Command="{Binding ZoomOutCommand}">
+				<Border HorizontalAlignment="Right" Height="34.93" Width="34.93" Background="Transparent" >
+					<Path x:Name="MinusPath" Data="F1M1068.604,31.5L1075.797,31.5L1075.797,34.908L1068.604,34.908z M1080.49,38.192C1080.488,38.1950000000001,1080.486,38.197,1080.486,38.197L1080.486,38.201C1079.638,39.635,1078.448,40.826,1077.009,41.675C1076.426,42.021,1075.809,42.296,1075.16,42.516C1074.909,42.605,1074.654,42.686,1074.396,42.755C1074.173,42.811,1073.949,42.859,1073.724,42.9C1073.177,42.999,1072.62,43.068,1072.047,43.068C1066.624,43.068,1062.213,38.6559999999999,1062.213,33.232C1062.213,27.809,1066.624,23.401,1072.047,23.401C1077.469,23.401,1081.882,27.809,1081.882,33.232C1081.882,33.807,1081.811,34.3630000000001,1081.712,34.9059999999999C1081.671,35.1369999999999,1081.618,35.359,1081.566,35.585C1081.501,35.842,1081.415,36.092,1081.329,36.342C1081.111,36.994,1080.833,37.611,1080.49,38.192 M1084.059,41.77C1085.777,39.357,1086.799,36.4160000000001,1086.799,33.232C1086.799,25.101,1080.18,18.482,1072.047,18.482C1063.913,18.482,1057.294,25.101,1057.294,33.232C1057.294,41.37,1063.913,47.987,1072.047,47.987C1075.229,47.987,1078.169,46.967,1080.581,45.244L1088.746,53.412L1092.224,49.936z" Fill="#FF808184" Stretch="Fill" UseLayoutRounding="False" Width="22" Height="22" VerticalAlignment="Top" Margin="0,1,0,0"/>
+				</Border>
+			</Button>
+		</Grid>
+	</Grid>
+</UserControl>

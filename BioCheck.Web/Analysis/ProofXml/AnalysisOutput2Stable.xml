@@ -1,0 +1,143 @@
+﻿<AnalysisOutput>
+  <Status>Stabilizing</Status>
+  <Tick>
+    <Time>9</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="1" Hi="1" />
+      <Variable Id="9" Lo="1" Hi="1" />
+      <Variable Id="8" Lo="1" Hi="1" />
+      <Variable Id="7" Lo="1" Hi="1" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>8</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="1" Hi="1" />
+      <Variable Id="9" Lo="1" Hi="1" />
+      <Variable Id="8" Lo="1" Hi="1" />
+      <Variable Id="7" Lo="1" Hi="1" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>7</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="1" Hi="1" />
+      <Variable Id="8" Lo="1" Hi="1" />
+      <Variable Id="7" Lo="1" Hi="1" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>6</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="1" Hi="1" />
+      <Variable Id="7" Lo="1" Hi="1" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>5</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="0" Hi="4" />
+      <Variable Id="7" Lo="1" Hi="1" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>4</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="0" Hi="4" />
+      <Variable Id="7" Lo="0" Hi="4" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>3</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="0" Hi="4" />
+      <Variable Id="7" Lo="0" Hi="4" />
+      <Variable Id="6" Lo="2" Hi="2" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>2</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="0" Hi="4" />
+      <Variable Id="7" Lo="0" Hi="4" />
+      <Variable Id="6" Lo="0" Hi="4" />
+      <Variable Id="5" Lo="0" Hi="0" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>1</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="0" Hi="4" />
+      <Variable Id="7" Lo="0" Hi="4" />
+      <Variable Id="6" Lo="0" Hi="4" />
+      <Variable Id="5" Lo="0" Hi="4" />
+      <Variable Id="2" Lo="1" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>0</Time>
+    <Variables>
+      <Variable Id="11" Lo="4" Hi="4" />
+      <Variable Id="10" Lo="0" Hi="4" />
+      <Variable Id="9" Lo="0" Hi="4" />
+      <Variable Id="8" Lo="0" Hi="4" />
+      <Variable Id="7" Lo="0" Hi="4" />
+      <Variable Id="6" Lo="0" Hi="4" />
+      <Variable Id="5" Lo="0" Hi="4" />
+      <Variable Id="2" Lo="0" Hi="1" />
+      <Variable Id="1" Lo="1" Hi="1" />
+    </Variables>
+  </Tick>
+</AnalysisOutput>

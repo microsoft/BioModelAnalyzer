@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:4807/Services/AnalysisService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="AnalysisInputDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="EnableLogging" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ModelName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ZippedXml" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AnalysisInputDTO" nillable="true" type="tns:AnalysisInputDTO" />
+  <xs:complexType name="AnalysisOutputDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Error" nillable="true" type="xs:string" />
+      <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="ErrorMessages" nillable="true" type="q1:ArrayOfstring" />
+      <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Time" type="xs:double" />
+      <xs:element minOccurs="0" name="ZippedLog" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="ZippedXml" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AnalysisOutputDTO" nillable="true" type="tns:AnalysisOutputDTO" />
+  <xs:complexType name="FurtherTestingOutputDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CounterExamples" nillable="true" type="tns:ArrayOfCounterExampleOutput" />
+      <xs:element minOccurs="0" name="Error" nillable="true" type="xs:string" />
+      <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="ErrorMessages" nillable="true" type="q2:ArrayOfstring" />
+      <xs:element minOccurs="0" name="ZippedLog" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="FurtherTestingOutputDTO" nillable="true" type="tns:FurtherTestingOutputDTO" />
+  <xs:complexType name="ArrayOfCounterExampleOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CounterExampleOutput" nillable="true" type="tns:CounterExampleOutput" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCounterExampleOutput" nillable="true" type="tns:ArrayOfCounterExampleOutput" />
+  <xs:complexType name="CounterExampleOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BifurcatingVariables" nillable="true" type="tns:ArrayOfBifurcatingVariableOutput" />
+      <xs:element minOccurs="0" name="CounterExampleType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Error" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OscillatingVariables" nillable="true" type="tns:ArrayOfOscillatingVariableOutput" />
+      <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ZippedXml" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CounterExampleOutput" nillable="true" type="tns:CounterExampleOutput" />
+  <xs:complexType name="ArrayOfBifurcatingVariableOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="BifurcatingVariableOutput" nillable="true" type="tns:BifurcatingVariableOutput" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfBifurcatingVariableOutput" nillable="true" type="tns:ArrayOfBifurcatingVariableOutput" />
+  <xs:complexType name="BifurcatingVariableOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CalculatedBound" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Fix1" type="xs:int" />
+      <xs:element minOccurs="0" name="Fix2" type="xs:int" />
+      <xs:element minOccurs="0" name="Id" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BifurcatingVariableOutput" nillable="true" type="tns:BifurcatingVariableOutput" />
+  <xs:complexType name="ArrayOfOscillatingVariableOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="OscillatingVariableOutput" nillable="true" type="tns:OscillatingVariableOutput" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfOscillatingVariableOutput" nillable="true" type="tns:ArrayOfOscillatingVariableOutput" />
+  <xs:complexType name="OscillatingVariableOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CalculatedBound" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Id" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Oscillation" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OscillatingVariableOutput" nillable="true" type="tns:OscillatingVariableOutput" />
+  <xs:complexType name="SimulationInputDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="EnableLogging" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ModelName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Variables" nillable="true" type="tns:ArrayOfSimVariableDTO" />
+      <xs:element minOccurs="0" name="ZippedXml" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SimulationInputDTO" nillable="true" type="tns:SimulationInputDTO" />
+  <xs:complexType name="ArrayOfSimVariableDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SimVariableDTO" nillable="true" type="tns:SimVariableDTO" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSimVariableDTO" nillable="true" type="tns:ArrayOfSimVariableDTO" />
+  <xs:complexType name="SimVariableDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Id" type="xs:int" />
+      <xs:element minOccurs="0" name="Value" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SimVariableDTO" nillable="true" type="tns:SimVariableDTO" />
+  <xs:complexType name="SimulationOutputDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Error" nillable="true" type="xs:string" />
+      <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="ErrorMessages" nillable="true" type="q3:ArrayOfstring" />
+      <xs:element minOccurs="0" name="Variables" nillable="true" type="tns:ArrayOfSimVariableDTO" />
+      <xs:element minOccurs="0" name="ZippedLog" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SimulationOutputDTO" nillable="true" type="tns:SimulationOutputDTO" />
+  <xs:complexType name="ValidationOutput">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Column" type="xs:int" />
+      <xs:element minOccurs="0" name="Details" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsValid" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Line" type="xs:int" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ValidationOutput" nillable="true" type="tns:ValidationOutput" />
+</xs:schema>

@@ -1,0 +1,331 @@
+﻿<UserControl 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:Controls="clr-namespace:BioCheck.Controls"
+             xmlns:Views="clr-namespace:BioCheck.Views" 
+             xmlns:MvvmFx_Common_Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" 
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+    xmlns:controlsInputToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+    x:Class="BioCheck.Shell"
+	        d:DesignWidth="1440" d:DesignHeight="900" mc:Ignorable="d" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/BioCheck;component/Assets/Brushes.xaml"/>
+                <ResourceDictionary Source="/BioCheck;component/Assets/TextStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <MvvmFx_Common_Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <MvvmFx_Common_Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="GridSizeStates">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.1"/>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="ShowGridSizeBox">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="gridSizeBox">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="gridSizeBox" d:IsOptimized="True"/>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideGridSizeBox"/>
+            </VisualStateGroup>
+            <VisualStateGroup x:Name="ModelLibraryStates">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.2"/>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="HideLibrary"/>
+                <VisualState x:Name="ShowLibrary">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ModelLibrary">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Border Style="{StaticResource TransparentBorderStyle}" >
+
+            <Grid x:Name="LayoutRoot" Background="White">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="175"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+
+                <Controls:ContainerGrid
+                        Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="3"
+            			x:Name="containerGrid"
+                        Height="Auto"
+                        Width="Auto"
+                        Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}" 
+            			DataContext="{Binding ActiveModel}"
+            			ZoomLevel="{Binding ZoomLevel, Mode=TwoWay}" 
+                        PanX="{Binding PanX, Mode=TwoWay}"
+            			PanY="{Binding PanY, Mode=TwoWay}"  
+                        Rows="{Binding Rows}"
+                        Columns="{Binding Columns}"
+                        ContainersSource="{Binding ContainerViewModels}"
+                        RelationshipsSource="{Binding RelationshipViewModels}" 
+                        VariablesSource="{Binding VariableViewModels}" 
+                    >
+
+                    <Controls:ContainerGrid.RelationshipTemplate>
+
+                        <DataTemplate>
+                            <Views:RelationshipView
+						    IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                    />
+                        </DataTemplate>
+
+                    </Controls:ContainerGrid.RelationshipTemplate>
+
+                </Controls:ContainerGrid>
+
+                <Rectangle Fill="White" StrokeThickness="0" Grid.ColumnSpan="3"/>
+
+                <Canvas x:Name="PopupCanvas" />
+
+                <Grid x:Name="ToolbarGrid" Grid.ColumnSpan="3"
+                    	Margin="5,10,5,0" VerticalAlignment="Top" >
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="0.332*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="0.337*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="0.332*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ToggleButton x:Name="LibraryButton" 
+                	            DataContext="{Binding ToolbarViewModel}"                                                                                         
+                				IsChecked="{Binding ShowLibrary, Mode=TwoWay}"
+                                      Style="{StaticResource ToolbarToggleButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" ToolTipService.ToolTip="Model Library" Width="44" Height="44">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Checked">
+                                <ei:GoToStateAction StateName="ShowLibrary"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="Unchecked">
+                                <ei:GoToStateAction StateName="HideLibrary"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <controlsInputToolkit:ContextMenuService.ContextMenu>
+                            <controlsInputToolkit:ContextMenu>
+                                <controlsInputToolkit:MenuItem Header="Delete All" Command="{Binding ResetLibraryCommand}"/>
+                                <!--<controlsInputToolkit:Separator/>
+                                <controlsInputToolkit:MenuItem Header="Debug: GC.Collect" Command="{Binding GCCollectCommand}"/>
+                                <controlsInputToolkit:MenuItem Header="Debug: Log Visual Tree" Command="{Binding LogVisualTreeCommand}"/>-->
+                            </controlsInputToolkit:ContextMenu>
+                        </controlsInputToolkit:ContextMenuService.ContextMenu>
+
+                        <Path Data="M31.125061,3 L9.125061,3 L9.125061,0 L31.125061,0 z M5.25,3.0000305 L0,3.0000305 L0,3.0517578E-05 L5.25,3.0517578E-05 z M31.125061,8.3330231 L9.125061,8.3330231 L9.125061,5.3330231 L31.125061,5.3330231 z M5.25,8.3330231 L0,8.3330231 L0,5.3330231 L5.25,5.3330231 z M31.125061,13.667023 L9.125061,13.667023 L9.125061,10.667023 L31.125061,10.667023 z M5.25,13.667023 L0,13.667023 L0,10.667023 L5.25,10.667023 z M31.125061,19.000015 L9.125061,19.000015 L9.125061,16.000015 L31.125061,16.000015 z M5.25,19.000015 L0,19.000015 L0,16.000015 L5.25,16.000015 z M31.125061,24.334015 L9.125061,24.334015 L9.125061,21.334015 L31.125061,21.334015 z M5.25,24.334015 L0,24.334015 L0,21.334015 L5.25,21.334015 z" Fill="#FF58595B" Height="24.334" Stretch="Fill" Width="31.125" UseLayoutRounding="False"/>
+                    </ToggleButton>
+
+                    <StackPanel x:Name="FileTools" 
+                                Grid.Column="1"
+                	            DataContext="{Binding ToolbarViewModel}"     
+                                 Visibility="{Binding ShowToolbar, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Orientation="Horizontal" HorizontalAlignment="Left">
+
+                        <Button x:Name="SaveButton" 
+                                Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" Command="{Binding SaveCommand}" ToolTipService.ToolTip="Save Model" Width="44" Height="44">
+                            <Path Data="F1M182.1255,150.4204L175.6765,156.8684L169.2285,150.4204L173.0255,150.4204L173.0255,140.4524L178.3275,140.4524L178.3275,150.4204z M165.2395,160.4794L165.2395,129.2414L177.7065,129.2414L177.7065,137.7254L186.6145,137.7254L186.6145,160.4794z M178.7065,129.9084L185.8645,136.7254L178.7065,136.7254z M178.4065,128.2414L164.2395,128.2414L164.2395,161.4794L187.6145,161.4794L187.6145,137.0114z" Fill="#FF58595B" Height="33.238" Stretch="Fill" Width="23.375" UseLayoutRounding="False"/>
+                        </Button>
+
+                        <Button x:Name="ClearButton" Style="{StaticResource ToolbarButtonStyle}" Command="{Binding ClearCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" ToolTipService.ToolTip="Clear grid" Width="44" Height="44">
+                            <Path Data="F1M777.6211,638.6201L773.3791,634.3781L763.0001,644.7571L752.6211,634.3781L748.3791,638.6201L758.7581,648.9991L748.3791,659.3781L752.6211,663.6201L763.0001,653.2411L773.3791,663.6201L777.6211,659.3781L767.2421,648.9991z" Fill="#FFA6A8AB" Height="29.242" Stretch="Fill" Width="29.242" UseLayoutRounding="False"/>
+                        </Button>
+
+                        <RadioButton 
+                				IsChecked="{Binding IsSelectionActive, Mode=TwoWay}"                                
+                                Style="{StaticResource ToolbarRadioButtonStyle}" Margin="5,0,0,0" GroupName="CurrentTool" Height="44" Width="44" ToolTipService.ToolTip="Selection Tool">
+                            <Path Data="F1M121.834,137.8057L132.244,112.0407L106.48,122.4517L112.373,128.3437L103.941,136.7757L107.51,140.3437L115.941,131.9127z" Fill="#FF58595B" Height="20" Stretch="Fill" Width="20" UseLayoutRounding="False" Margin="5"/>
+                        </RadioButton>
+
+                        <ToggleButton x:Name="ResizeButton" Style="{StaticResource ToolbarToggleButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" ToolTipService.ToolTip="Resize Grid">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <ei:GoToStateAction StateName="ShowGridSizeBox"/>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="Unchecked">
+                                    <ei:GoToStateAction StateName="HideGridSizeBox"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <Path Data="M0.50000405,0.50000519 L0.50000405,39.500008 M20,0.5 L20,39.5 M39.5,0.5 L39.5,39.5 M0.5,0.50000048 L39.5,0.50000048 M0.5,20.000002 L39.5,20.000002 M0.5,39.5 L39.5,39.5" Stretch="Fill" Stroke="#FF898989" UseLayoutRounding="False" StrokeDashArray="4 4" Height="30" Width="30"/>
+                        </ToggleButton>
+
+                    </StackPanel>
+
+                    <StackPanel x:Name="ProofTools" 
+                                 Visibility="{Binding ShowToolbar, Converter={StaticResource BoolToVisibilityConverter}}"
+                	            DataContext="{Binding ToolbarViewModel}"                               
+                                Orientation="Horizontal" Grid.Column="5" d:LayoutOverrides="Width">
+
+                        <Button x:Name="RunProofButton" Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding RunProofCommand}" Padding="0" ToolTipService.ToolTip="Run Proof" Width="44" Height="44">
+                            <Canvas Height="0" Width="0" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment">
+                                <Path Data="F1M146.368,212.348L131.868,212.348L131.868,197.848L146.368,197.848z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="-14.5" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M146.368,227.848L131.868,227.848L131.868,213.348L146.368,213.348z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Top="1" Canvas.Left="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M161.868,227.848L147.368,227.848L147.368,213.348L161.868,213.348z" Fill="#FFFFB8B3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="1" UseLayoutRounding="False"/>
+                                <Path Data="F1M161.868,212.348L147.368,212.348L147.368,197.848L161.868,197.848z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                            </Canvas>
+
+                            <controlsInputToolkit:ContextMenuService.ContextMenu>
+                                <controlsInputToolkit:ContextMenu>
+                                    <controlsInputToolkit:MenuItem Header="{Binding ToggleLoggingText}" Command="{Binding ToggleAnalyzerLoggingCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="Show Analysis Log" Command="{Binding ShowAnalyzerLogCommand}"/>
+                                    <controlsInputToolkit:Separator/>
+                                    <controlsInputToolkit:MenuItem Header="Show Model XML" Command="{Binding ShowModelXmlCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="Show Analysis Input" Command="{Binding ShowAnalysisInputCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="Show Analysis Output" Command="{Binding ShowAnalysisOutputCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="Show Error Trace" Command="{Binding ShowErrorTraceCommand}"/>
+                                    <controlsInputToolkit:Separator/>
+                                    <controlsInputToolkit:MenuItem Header="Export Model to XML" Command="{Binding ExportModelXmlCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="Export Analysis Input to XML" Command="{Binding ExportAnalysisInputCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="Export Analysis Output to XML" Command="{Binding ExportAnalysisOutputCommand}"/>
+                                </controlsInputToolkit:ContextMenu>
+                            </controlsInputToolkit:ContextMenuService.ContextMenu>
+
+                        </Button>
+
+                        <Button x:Name="ClearProofButton" Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding ClearProofCommand}" ToolTipService.ToolTip="Clear Proof" Width="44" Height="44" Margin="5,0,0,0">
+                            <Canvas Height="0" Width="0" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment, Width, Height, Margin">
+                                <Path Data="F1M146.368,212.348L131.868,212.348L131.868,197.848L146.368,197.848z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="-14.5" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M146.368,227.848L131.868,227.848L131.868,213.348L146.368,213.348z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Top="1" Canvas.Left="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M161.868,227.848L147.368,227.848L147.368,213.348L161.868,213.348z" Fill="#FFFFB8B3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="1" UseLayoutRounding="False"/>
+                                <Path Data="F1M161.868,212.348L147.368,212.348L147.368,197.848L161.868,197.848z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M162.5034,383.4492L161.7964,382.7422L145.7634,398.7752L129.7314,382.7422L129.0244,383.4492L145.0564,399.4822L129.0244,415.5152L129.7314,416.2222L145.7634,400.1892L161.7964,416.2222L162.5034,415.5152L146.4704,399.4822z" Fill="#FF808184" Stretch="Fill" Height="33" UseLayoutRounding="False" Width="33" Canvas.Left="-15.625" Canvas.Top="-15.875"/>
+                                <Grid x:Name="ClearProofGrid" Height="33.48" Width="33.479"/>
+                            </Canvas>
+                        </Button>
+                        <Button x:Name="RunSimulationButton" Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                Command="{Binding RunSimulationCommand}" Padding="0" ToolTipService.ToolTip="Run Simulation" Width="44" Height="44" Margin="5,0,0,0">
+
+                        	<Canvas>
+                        		<Path Data="M41.8047,227.7051L47.6177,218.8671L54.1297,224.4491L56.4547,215.1461L63.8967,219.3321L66.9197,210.0301" Height="19.008" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="#FFA6A8AB" StrokeThickness="1.333" StrokeMiterLimit="4" StrokeLineJoin="Miter" Width="26.448" UseLayoutRounding="False" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="-9.338" Canvas.Left="-13.34"/>
+                        		<Path Data="M67.9277,231.7354L41.8807,231.7354L41.8807,205.6884" Height="27.907" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="#FF231F20" StrokeThickness="1.86" StrokeMiterLimit="4" StrokeLineJoin="Miter" Width="27.907" UseLayoutRounding="False" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="-14.007" Canvas.Left="-13.34"/>
+
+                        	</Canvas>
+
+                        </Button>
+                    </StackPanel>
+
+                    <Controls:ToolbarControl
+                        x:Name="toolbarControl" 
+                	            DataContext="{Binding ToolbarViewModel}"   
+                                 Visibility="{Binding ShowToolbar, Converter={StaticResource BoolToVisibilityConverter}}"
+                        
+                		VerticalAlignment="Center" Grid.Column="3" d:LayoutOverrides="Width"/>
+
+                    <Controls:ZoomControl 
+                            Grid.Column="7"
+                		    DataContext="{Binding ZoomViewModel}"
+                		    HorizontalAlignment="Right"  Width="300" Margin="0,2,0,-21"/>
+
+                </Grid>
+
+                <Grid 
+                      DataContext="{Binding Path=ActiveModel}"
+                    Visibility="{Binding Converter={StaticResource NullToVisibilityConverter}}"
+                    
+                    Height="Auto" Grid.Column="1" Margin="0,0,-60,-24" Grid.Row="2" VerticalAlignment="Bottom" Width="Auto" HorizontalAlignment="Right" d:LayoutOverrides="Width">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Rectangle Fill="#3FBBBDBF" RadiusX="8" RadiusY="8" StrokeThickness="0" Grid.RowSpan="2"/>
+
+                    <TextBlock Margin="10,10,10,10" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding Name}" FontSize="16" Style="{StaticResource LabelTextStyle}"/>
+                    <!--<TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{Binding Version}" Style="{StaticResource SubLabelTextStyle}" Margin="10,0,0,5"/>-->
+
+                </Grid>
+
+                <Grid 
+                        Grid.Row="2" VerticalAlignment="Bottom"
+				      Visibility="{Binding HasActiveObject, Converter={StaticResource BoolToVisibilityConverter}}" 
+                      HorizontalAlignment="Left" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="20,0,0,20" >
+
+                    <i:Interaction.Behaviors>
+                        <ei:MouseDragElementBehavior ConstrainToParentBounds="True"/>
+                    </i:Interaction.Behaviors>
+
+                    <Grid 
+				         Visibility="{Binding HasActiveVariable, Converter={StaticResource BoolToVisibilityConverter}}" 
+                        >
+
+                        <Controls:VariablePropertyBox 
+                		HorizontalAlignment="Left" 
+                		d:LayoutOverrides="GridBox" VerticalAlignment="Bottom"                 		
+                		DataContext="{Binding Path=EditingVariable}"
+                        CaretPosition="{Binding Path=CaretPosition, Mode=TwoWay}"
+                        Margin="0,0,0,267"
+				    />
+
+                    </Grid >
+
+                    <Grid
+				         Visibility="{Binding HasActiveContainer, Converter={StaticResource BoolToVisibilityConverter}}" 
+                        >
+
+                        <Controls:ContainerPropertyBox 
+                		HorizontalAlignment="Left" 
+                		d:LayoutOverrides="GridBox" VerticalAlignment="Bottom"                 		
+                		DataContext="{Binding Path=EditingContainer}"
+                        Margin="0,0,0,267"
+				    />
+                    </Grid>
+
+                 
+                </Grid>
+
+                <Controls:GridSizeBox 
+                      DataContext="{Binding Path=ActiveModel}"
+                    x:Name="gridSizeBox" Margin="40,-11,0,-19" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="1" d:LayoutOverrides="Height" Opacity="0" Visibility="Collapsed"/>
+
+                <Controls:LibraryControl
+                      DataContext="{Binding Path=Library}"
+                    x:Name="ModelLibrary" Margin="-165,-36,0,0" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed">
+                    <i:Interaction.Behaviors>
+                        <ei:MouseDragElementBehavior ConstrainToParentBounds="True"/>
+                    </i:Interaction.Behaviors>
+                </Controls:LibraryControl>
+
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+</UserControl>

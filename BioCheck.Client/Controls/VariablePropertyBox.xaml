@@ -1,0 +1,594 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit"
+    xmlns:MvvmFx_Common_Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common"
+    x:Class="BioCheck.Controls.VariablePropertyBox"
+    mc:Ignorable="d" FontFamily="Verdana" FontSize="11" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/BioCheck;component/Assets/Buttons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <MvvmFx_Common_Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+            <DataTemplate x:Key="FormulaKeywordItemTemplate">
+                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding Name}">
+                      <!--<i:Interaction.Behaviors>
+                             <Behaviors:DoubleClickBehavior Command="{Binding ElementName=InsertButton, Path=Command}" />
+                      </i:Interaction.Behaviors>-->
+                </TextBlock>
+            </DataTemplate>
+
+            <Style TargetType="ScrollBar" x:Key="MiniScrollBarStyle">
+                <Setter Property="Foreground" Value="#FF313131"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="MinHeight" Value="20"/>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid x:Name="Root" HorizontalAlignment="Right">
+                                <Grid.Resources>
+                                    <ControlTemplate x:Key="RepeatButtonTemplate" TargetType="RepeatButton">
+                                        <Grid x:Name="Root" Background="Transparent">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </Grid>
+                                    </ControlTemplate>
+                                    <ControlTemplate x:Key="HorizontalIncrementTemplate" TargetType="RepeatButton">
+                                        <Grid x:Name="Root">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HoverPath">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Blur">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard/>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Root">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Path Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z " Height="6" Stretch="Uniform" Width="4" Fill="Black"/>
+                                            <Path x:Name="HoverPath" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z " Height="6" Stretch="Uniform" Width="4" UseLayoutRounding="False" Opacity="0" Margin="1,1,0,0" Fill="Black"/>
+                                            <Path x:Name="Blur" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z " Height="6" Stretch="Uniform" Width="4" UseLayoutRounding="False" Opacity="0" Margin="1,1,0,0" Fill="Black">
+                                                <Path.Effect>
+                                                    <BlurEffect/>
+                                                </Path.Effect>
+                                            </Path>
+                                            <Rectangle x:Name="DisabledElement" Fill="{StaticResource WhiteColorBrush}" Opacity="0" RadiusY="2" RadiusX="2"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                    <ControlTemplate x:Key="HorizontalDecrementTemplate" TargetType="RepeatButton">
+                                        <Grid x:Name="Root">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HoverPath">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Blur">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard/>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Root">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Path Data="F1 M 110.692,342.252L 110.692,352.682L 104.594,347.467L 110.692,342.252 Z " Height="6" Stretch="Uniform" Width="4" Fill="#FF7F7F7F"/>
+                                            <Path x:Name="HoverPath" Data="F1 M 110.692,342.252L 110.692,352.682L 104.594,347.467L 110.692,342.252 Z " Height="6" Stretch="Uniform" Width="4" UseLayoutRounding="False" Opacity="0" Margin="0,1,0,0" Fill="Black"/>
+                                            <Path x:Name="Blur" Data="F1 M 110.692,342.252L 110.692,352.682L 104.594,347.467L 110.692,342.252 Z " Height="6" Stretch="Uniform" Width="4" UseLayoutRounding="False" Opacity="0" Margin="0,1,0,0" Fill="Black">
+                                                <Path.Effect>
+                                                    <BlurEffect/>
+                                                </Path.Effect>
+                                            </Path>
+                                        </Grid>
+                                    </ControlTemplate>
+                                    <ControlTemplate x:Key="VerticalIncrementTemplate" TargetType="RepeatButton">
+                                        <Grid x:Name="Root">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HoverPath">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Blur">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard/>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Root">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Path Data="F1 M 531.107,321.943L 541.537,321.943L 536.322,328.042L 531.107,321.943 Z " Height="4" Stretch="Uniform" Width="6">
+                                                <Path.Fill>
+                                                    <SolidColorBrush x:Name="ButtonColor" Color="#FF333333"/>
+                                                </Path.Fill>
+                                            </Path>
+                                            <Path x:Name="HoverPath" Data="F1 M 531.107,321.943L 541.537,321.943L 536.322,328.042L 531.107,321.943 Z " Height="4" Stretch="Uniform" Width="6" UseLayoutRounding="False" Opacity="0" Margin="1,0,0,0" Fill="Black"/>
+                                            <Path x:Name="Blur" Data="F1 M 531.107,321.943L 541.537,321.943L 536.322,328.042L 531.107,321.943 Z " Height="4" Stretch="Uniform" Width="6" UseLayoutRounding="False" Opacity="0" Margin="1,0,0,0" Fill="Black">
+                                                <Path.Effect>
+                                                    <BlurEffect/>
+                                                </Path.Effect>
+                                            </Path>
+                                            <Rectangle x:Name="DisabledElement" Fill="{StaticResource WhiteColorBrush}" Opacity="0" RadiusY="2" RadiusX="2"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                    <ControlTemplate x:Key="VerticalDecrementTemplate" TargetType="RepeatButton">
+                                        <Grid x:Name="Root">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HoverPath">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Blur">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard/>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Root">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.5"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Rectangle x:Name="Background" Fill="White" Opacity="0" RadiusY="2" RadiusX="2" StrokeThickness="1"/>
+                                            <Rectangle x:Name="BackgroundMouseOver" Fill="{StaticResource HighlightBrush}" Opacity="0" RadiusY="2" RadiusX="2" />
+                                            <Rectangle x:Name="BackgroundPressed" Fill="{StaticResource HighlightBrush}" Opacity="0" RadiusY="2" RadiusX="2" />
+                                            <Rectangle x:Name="BackgroundGradient" Fill="#00FFFFFF" Margin="1" Opacity="0" RadiusY="1" RadiusX="1" Stroke="White" StrokeThickness="1"/>
+                                            <Rectangle x:Name="Highlight" IsHitTestVisible="false" Margin="1" Opacity="0" RadiusY="1" RadiusX="1" Stroke="{StaticResource HighlightBrush}" StrokeThickness="1"/>
+                                            <Path Data="F1 M 541.537,173.589L 531.107,173.589L 536.322,167.49L 541.537,173.589 Z " Height="4" Stretch="Uniform" Width="6" Fill="#FF7F7F7F"/>
+                                            <Path x:Name="HoverPath" Data="F1 M 541.537,173.589L 531.107,173.589L 536.322,167.49L 541.537,173.589 Z " Height="4" Stretch="Uniform" Width="6" UseLayoutRounding="False" Opacity="0" Margin="1,0,0,0" Fill="Black"/>
+                                            <Path x:Name="Blur" Data="F1 M 541.537,173.589L 531.107,173.589L 536.322,167.49L 541.537,173.589 Z " Height="4" Stretch="Uniform" Width="6" UseLayoutRounding="False" Opacity="0" Margin="1,0,0,0" Fill="Black">
+                                                <Path.Effect>
+                                                    <BlurEffect/>
+                                                </Path.Effect>
+                                            </Path>
+                                        </Grid>
+                                    </ControlTemplate>
+                                    <ControlTemplate x:Key="VerticalThumbTemplate" TargetType="Thumb">
+                                        <Grid>
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="MouseOverRectangle">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="PressedRectangle">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="ThumbVisual">
+                                                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Grid x:Name="ThumbVisual" Margin="1,0,1,0">
+                                                <Rectangle x:Name="Background" StrokeThickness="1" Fill="{StaticResource ButtonBrush}" RadiusX="3" RadiusY="3" />
+                                                <Rectangle x:Name="MouseOverRectangle" StrokeThickness="1" Opacity="0" Fill="{StaticResource ControlMouseOver}" RadiusX="3" RadiusY="3" />
+                                                <Rectangle x:Name="PressedRectangle" StrokeThickness="1" Opacity="0" Fill="{StaticResource ControlMouseDown}" RadiusX="3" RadiusY="3" />
+                                            </Grid>
+                                        </Grid>
+                                    </ControlTemplate>
+                                    <ControlTemplate x:Key="HorizontalThumbTemplate" TargetType="Thumb">
+                                        <Grid>
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="MouseOverRectangle">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="PressedRectangle">
+                                                                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="ThumbVisual">
+                                                                <SplineDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Grid x:Name="ThumbVisual" Margin="0,1,0,1">
+                                                <Rectangle x:Name="Background" StrokeThickness="1" Fill="{StaticResource ControlGreyBackground}" RadiusX="5" RadiusY="5" />
+                                                <Rectangle x:Name="MouseOverRectangle" StrokeThickness="1" Opacity="0" Fill="{StaticResource ControlMouseOver}" RadiusX="5" RadiusY="5" />
+                                                <Rectangle x:Name="PressedRectangle" StrokeThickness="1" Opacity="0" Fill="{StaticResource ControlMouseDown}" RadiusX="5" RadiusY="5" />
+                                            </Grid>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Grid.Resources>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal"/>
+                                        <VisualState x:Name="MouseOver"/>
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Root">
+                                                    <SplineDoubleKeyFrame KeyTime="0" Value="0.5"/>
+                                                </DoubleAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid x:Name="HorizontalRoot" Height="14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border BorderThickness="0,0,0,1" Grid.RowSpan="1" Margin="0,0,0,-1" Grid.ColumnSpan="5" Visibility="Collapsed" BorderBrush="#FFB9B9B9" />
+                                    <RepeatButton x:Name="HorizontalSmallDecrease" Grid.Column="0" IsTabStop="False" Interval="50" Margin="1" Template="{StaticResource HorizontalDecrementTemplate}" Width="16" Visibility="Collapsed"/>
+                                    <RepeatButton x:Name="HorizontalLargeDecrease" Grid.Column="1" IsTabStop="False" Interval="50" Template="{StaticResource RepeatButtonTemplate}" Width="0"/>
+                                    <Thumb x:Name="HorizontalThumb" Background="{TemplateBinding Background}" Grid.Column="2" MinWidth="18" Template="{StaticResource HorizontalThumbTemplate}" Width="18"/>
+                                    <RepeatButton x:Name="HorizontalLargeIncrease" Grid.Column="3" IsTabStop="False" Interval="50" Template="{StaticResource RepeatButtonTemplate}"/>
+                                    <RepeatButton x:Name="HorizontalSmallIncrease" Grid.Column="4" IsTabStop="False" Interval="50" Margin="1" Template="{StaticResource HorizontalIncrementTemplate}" Width="16" Visibility="Collapsed"/>
+                                </Grid>
+                                <Grid x:Name="VerticalRoot" Visibility="Collapsed" Width="8">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border BorderThickness="0,0,1,0" Margin="0,0,-1,0" Grid.RowSpan="5" Visibility="Collapsed" BorderBrush="#FFB9B9B9" />
+                                    <RepeatButton x:Name="VerticalSmallDecrease" Height="16" IsTabStop="False" Interval="50" Margin="1" Grid.Row="0" Template="{StaticResource VerticalDecrementTemplate}" Visibility="Collapsed"/>
+                                    <RepeatButton x:Name="VerticalLargeDecrease" Height="0" IsTabStop="False" Interval="50" Grid.Row="1" Template="{StaticResource RepeatButtonTemplate}"/>
+                                    <Thumb x:Name="VerticalThumb" Height="18" MinHeight="18" Grid.Row="2" Template="{StaticResource VerticalThumbTemplate}"/>
+                                    <RepeatButton x:Name="VerticalLargeIncrease" IsTabStop="False" Interval="50" Grid.Row="3" Template="{StaticResource RepeatButtonTemplate}"/>
+                                    <RepeatButton x:Name="VerticalSmallIncrease" Height="16" IsTabStop="False" Interval="50" Margin="1" Grid.Row="4" Template="{StaticResource VerticalIncrementTemplate}" Visibility="Collapsed"/>
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="MiniScrollViewerStyle" TargetType="ScrollViewer">
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Top"/>
+                <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollViewer">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2">
+                                <Grid Background="{TemplateBinding Background}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <ScrollContentPresenter x:Name="ScrollContentPresenter" Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                                            />
+
+                                    <ScrollBar x:Name="VerticalScrollBar" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" IsTabStop="False" Grid.Column="1" Grid.Row="0" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Value="{TemplateBinding VerticalOffset}" Orientation="Vertical" ViewportSize="{TemplateBinding ViewportHeight}" 
+								Style="{StaticResource MiniScrollBarStyle}" Background="{x:Null}" Width="8" Margin="0,2,2,2" HorizontalAlignment="Right" />
+
+                                    <ScrollBar x:Name="HorizontalScrollBar" Height="18" Margin="-1,0,-1,-1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" IsTabStop="False" Grid.Column="0" Grid.Row="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Value="{TemplateBinding HorizontalOffset}" Orientation="Horizontal" ViewportSize="{TemplateBinding ViewportWidth}" 
+								Style="{StaticResource MiniScrollBarStyle}" />
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="FormulaListBoxStyle" TargetType="ListBox">
+                <Setter Property="Background" Value="#FFFFFFFF"/>
+                <Setter Property="Foreground" Value="#FF000000"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Top"/>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="TabNavigation" Value="Once"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="BorderBrush">
+                    <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFA3AEB9" Offset="0"/>
+                            <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                            <GradientStop Color="#FF718597" Offset="0.375"/>
+                            <GradientStop Color="#FF617584" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBox">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="ValidationStates">
+                                        <VisualState x:Name="Valid"/>
+                                        <VisualState x:Name="InvalidUnfocused"/>
+                                        <VisualState x:Name="InvalidFocused"/>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0">
+                                    <ScrollViewer x:Name="ScrollViewer" BorderBrush="Transparent" BorderThickness="0" Padding="{TemplateBinding Padding}" TabNavigation="{TemplateBinding TabNavigation}" Style="{StaticResource MiniScrollViewerStyle}" Margin="0">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="SlimListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="TabNavigation" Value="Local"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Grid Background="{TemplateBinding Background}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal"/>
+                                        <VisualState x:Name="MouseOver">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To=".35" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="fillColor"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To=".55" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="contentPresenter"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="SelectionStates">
+                                        <VisualState x:Name="Unselected"/>
+                                        <VisualState x:Name="Selected">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To=".75" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="fillColor2"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="FocusStates">
+                                        <VisualState x:Name="Focused"/>
+                                        <VisualState x:Name="Unfocused"/>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Rectangle x:Name="fillColor" Fill="{StaticResource HighlightBrush}" IsHitTestVisible="False" Opacity="0" RadiusY="1" RadiusX="1"/>
+                                <Rectangle x:Name="fillColor2" Fill="{StaticResource ButtonBrush}" IsHitTestVisible="False" Opacity="0" RadiusY="1" RadiusX="1"/>
+                                <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="2,0,2,0" VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Padding" Value="3,0"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
+    <!--Height="90"
+    Height="276"-->
+
+    <Grid x:Name="grid" 
+          Height="90"
+          Width="336"  VerticalAlignment="Top" Margin="0,0,-340,-260" HorizontalAlignment="Left">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="FormulaStateGroup">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.2"/>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="ShowFormulaState">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="FunctionGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <DoubleAnimation Duration="0" To="276" Storyboard.TargetProperty="(FrameworkElement.Height)" Storyboard.TargetName="grid" d:IsOptimized="True"/>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideFormulaState"/>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Border BorderBrush="#FFBABCBE" BorderThickness="2" CornerRadius="8" d:LayoutOverrides="HorizontalMargin">
+            <Border.Effect>
+                <DropShadowEffect Direction="331" BlurRadius="8" ShadowDepth="3"/>
+            </Border.Effect>
+        </Border>
+        <Border BorderBrush="#FFBBBDBF" BorderThickness="2,5,2,2" CornerRadius="8" Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Rectangle Fill="{StaticResource PopupBorders}" Cursor="Hand" Margin="0,-1,0,0"/>
+                <Path Cursor="Hand" Data="M31.667,7.2360039E-05 C33.876141,-0.013075233 35.667,1.7671272 35.667,3.9762654 L35.667,8.9762659 L35.666985,8.9769392 L35.666985,11.976406 L35.666988,18.976406 L31.666985,18.976406 L27.66699,18.976406 L9.6669884,18.976406 C7.457849,18.976406 5.6669884,17.185545 5.6669884,14.976406 L5.6669884,9.9760742 L5.6617923,9.7705717 C5.5546594,7.6570921 3.8070998,5.9764109 1.6669962,5.9764104 L0,5.9764104 L0,4.1885428 C4.7683716E-07,1.9794044 1.7908611,0.17788482 3.9999998,0.16473651 z" Fill="{StaticResource PopupBorders}" HorizontalAlignment="Right" Height="18.976" Margin="0,-5.976,0,0" Grid.Row="1" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Top" Width="35.667"/>
+                <TextBlock Margin="0,8,42,0" Grid.Row="1" TextWrapping="Wrap" Text="Range" VerticalAlignment="Center" HorizontalAlignment="Right" Width="118"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Name" Width="86" Foreground="Black" VerticalAlignment="Center" Margin="10,8,0,0" Grid.Row="1"/>
+                <TextBox  x:Name="NameTextBox" TabIndex="0" Margin="10,0,0,0" TextWrapping="Wrap" BorderBrush="{StaticResource TextBoxBorderBrush}" 
+									Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+									Grid.Row="2" VerticalAlignment="Top" Height="18" Padding="2,0" Width="152" HorizontalAlignment="Left"/>
+                <Button 
+									TabIndex="3" 
+									Command="{Binding HidePropertiesCommand}"
+									Style="{StaticResource PathButtonStyle}" HorizontalAlignment="Right" Margin="0,-1,4,-9">
+                    <Path Data="M4.6969919,3.9939952 L10.498491,9.7945509 L16.29999,3.9939954 L17.00699,4.7009959 L11.205549,10.501494 L17.00699,16.301996 L16.29999,17.008997 L10.498491,11.208438 L4.696991,17.008997 L3.9899905,16.301996 L9.7914324,10.501494 L3.9899912,4.7009959 z M0.99999994,1.0000002 L0.99999994,20.000008 L20,20.000008 L20,1.0000002 z M0,0 L21,0 L21,21 L0,21 z" Fill="White" Height="21" Stretch="Fill" Width="21" UseLayoutRounding="False"/>
+                </Button>
+                <ToggleButton 
+									Grid.Row="2" 
+									Style="{StaticResource PopupToggleButtonStyle}"
+									Width="25" Height="25" HorizontalAlignment="Right" 
+									VerticalAlignment="Top" 
+									Margin="0,-3,10,0" >
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <ei:GoToStateAction StateName="ShowFormulaState"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="Unchecked">
+                            <ei:GoToStateAction StateName="HideFormulaState"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <Path Data="M4.8709998,6.3319979 C4.0650005,6.3319979 3.4090254,5.675992 3.4090254,4.8709998 C3.4090254,4.0639935 4.0650005,3.410002 4.8709998,3.410002 C5.6769991,3.410002 6.3319979,4.0639935 6.3319979,4.8709998 C6.3319979,5.675992 5.6769991,6.3319979 4.8709998,6.3319979 M8.2000084,5.6020021 L9.7419996,5.6020021 L9.7419996,4.1409893 L8.2000084,4.1409893 C8.1119957,3.7400038 7.9540062,3.3690016 7.7400169,3.0350022 L8.8310204,1.9429922 L7.7980003,0.91000324 L6.7060208,2.0019979 C6.3730135,1.7870017 6.0010042,1.628997 5.6010103,1.5409997 L5.6010103,0 L4.1400127,0 L4.1400127,1.5409997 C3.7400191,1.628997 3.3680098,1.7870017 3.0350022,2.0019979 L1.9430227,0.91000324 L0.91000324,1.9429922 L2.0010061,3.0350022 C1.7880241,3.3690016 1.6290275,3.7400038 1.542022,4.1409893 L5.6843419E-14,4.1409893 L5.6843419E-14,5.6020021 L1.542022,5.6020021 C1.6290275,5.9999971 1.7880241,6.3729982 2.0010061,6.7069974 L0.91000324,7.7989922 L1.9430227,8.8319969 L3.0350022,7.7400017 C3.3680098,7.954998 3.7400191,8.1129875 4.1400127,8.1990013 L4.1400127,9.7419996 L5.6010103,9.7419996 L5.6010103,8.1990013 C6.0010042,8.1129875 6.3730135,7.954998 6.7060208,7.7400017 L7.7980003,8.8319969 L8.8310204,7.7989922 L7.7400169,6.7069974 C7.9540062,6.3729982 8.1119957,5.9999971 8.2000084,5.6020021 M13.274016,9.8030062 C13.274016,10.342009 12.835998,10.777998 12.299011,10.777998 C11.762024,10.777998 11.325013,10.342009 11.325013,9.8030062 C11.325013,9.2660027 11.762024,8.829998 12.299011,8.829998 C12.835998,8.829998 13.274016,9.2660027 13.274016,9.8030062 M15.709011,10.535002 L15.709011,9.0729942 L14.61102,9.0729942 C14.568021,8.9379997 14.514005,8.8090019 14.451016,8.6860008 L15.227016,7.9079995 L14.193998,6.8749938 L13.417021,7.6529946 C13.294005,7.5879922 13.165008,7.5349979 13.029998,7.4919987 L13.029998,6.3929987 L11.569,6.3929987 L11.569,7.4919987 C11.434022,7.5349979 11.305024,7.5879922 11.181001,7.6529946 L10.405001,6.8749938 L9.3720121,7.9079995 L10.148012,8.6860008 C10.084017,8.8090019 10.031008,8.9379997 9.9880085,9.0729942 L8.8890104,9.0729942 L8.8890104,10.535002 L9.9880085,10.535002 C10.031008,10.669996 10.084017,10.796995 10.148012,10.921995 L9.3720121,11.697997 L10.405001,12.731004 L11.181001,11.955002 C11.305024,12.020004 11.434022,12.072998 11.569,12.115997 L11.569,13.212998 L13.029998,13.212998 L13.029998,12.115997 C13.165008,12.072998 13.294005,12.020004 13.417021,11.955002 L14.193998,12.731004 L15.227016,11.697997 L14.451016,10.921995 C14.514005,10.796995 14.568021,10.669996 14.610013,10.535002 z" Fill="#FFA6A8AB" Height="16.5" Stretch="Fill" Width="19.5" UseLayoutRounding="False"/>
+                </ToggleButton>
+                <Grid x:Name="FunctionGrid" Grid.Row="3" Margin="10,0,0,0" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="24"/>
+                        <RowDefinition Height="83"/>
+                        <RowDefinition Height="Auto" MinHeight="24"/>
+                        <RowDefinition Height="48"/>
+                        <RowDefinition Height="20"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Margin="0,0,19,2" TextWrapping="Wrap" Text="Target Function" VerticalAlignment="Center"/>
+                    <ComboBox 
+										x:Name="InputsComboBox" 
+										Tag="Inputs"
+										SelectedItem="{Binding SelectedInput, Mode=TwoWay}"
+										ItemsSource="{Binding Inputs}" Grid.Row="2" Style="{StaticResource WatermarkComboBoxStyle}" HorizontalAlignment="Left" Width="152" Margin="-1,6,0,0" Height="18" BorderBrush="{StaticResource TextBoxBorderBrush}" Padding="0,0,25,0" />
+                    <Grid Margin="71,0,10,0" Grid.Row="1" Background="#FFE6E7E8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" MinHeight="21"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name="InsertButton" Content="insert" HorizontalAlignment="Right" Margin="0,2,4,0" Width="38" Style="{StaticResource InsertButtonStyle}" Command="{Binding InsertFormulaKeywordCommand}" Height="14" FontFamily="Verdana"/>
+                        <TextBlock DataContext="{Binding SelectedFormulaKeyword}" Margin="5,0,44,0" TextWrapping="Wrap" Text="{Binding Syntax, Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock DataContext="{Binding SelectedFormulaKeyword}" TextWrapping="Wrap" Text="{Binding Description}" FontWeight="Normal" Grid.Row="1" Margin="5,0,5,5"/>
+                    </Grid>
+                    <ListBox
+                        x:Name="KeywordsListBox"
+                                        ItemsSource="{Binding FormulaKeywords}"
+                                        SelectedItem="{Binding SelectedFormulaKeyword, Mode=TwoWay}"
+                                        HorizontalAlignment="Left" Width="65" Height="83" Grid.Row="1" Background="#FFE6E7E8" BorderThickness="0" Style="{StaticResource FormulaListBoxStyle}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                        ItemContainerStyle="{StaticResource SlimListBoxItemStyle}" 
+                        ItemTemplate="{StaticResource FormulaKeywordItemTemplate}" Padding="0"/>
+                    <Path x:Name="ValidPath" Data="M421.9858,569.6992L428.3078,576.0212L441.8538,562.4742" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="#FF82BD82" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" Width="23.868" HorizontalAlignment="Right" Grid.Row="3" UseLayoutRounding="False" Margin="0,0,5,0" Visibility="{Binding IsFormulaValid, Converter={StaticResource BoolToVisibilityConverter}}" Height="18" VerticalAlignment="Center"/>
+
+                    <Path x:Name="InvalidPath" 
+                          Data="M2,2 L17,17 M2,17 L17,2" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="#FFF05A28" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" Width="19" HorizontalAlignment="Right" Grid.Row="3" UseLayoutRounding="False" Margin="0,0,6,0" Visibility="{Binding IsFormulaInvalid, Converter={StaticResource BoolToVisibilityConverter}}" Height="19" VerticalAlignment="Center"
+                          ToolTipService.ToolTip="{Binding FormulaValidationDetails}" 
+                          />
+
+                    <TextBlock Margin="0,0,5,0" TextWrapping="NoWrap" 
+                               TextTrimming="WordEllipsis"
+                               Text="{Binding FormulaValidationMessage}" VerticalAlignment="Top" Grid.Row="4" Foreground="#FFEE4036"
+                                  ToolTipService.ToolTip="{Binding FormulaValidationDetails}" 
+                               />
+
+
+                    <TextBox
+                        VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Hidden"
+                             x:Name="FormulaTextBox"
+                        SelectionChanged="FormulaTextBox_SelectionChanged"
+                        TabIndex="4" TextWrapping="Wrap" 
+										Text="{Binding DisplayFormula, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+										BorderBrush="{StaticResource TextBoxBorderBrush}" Grid.Row="3" Margin="0,5,32,0" VerticalContentAlignment="Stretch" Height="42" VerticalAlignment="Top" Style="{StaticResource SquareTextBoxStyle}" />
+
+                    <!--Text="{Binding FormulaValidationMessage}"-->
+                    <!--Text="Expecting: number, '(', 'avg', 'ceil', 'floor', 'max', 'min', 'neg', 'pos' or 'var'"-->
+
+                </Grid>
+
+                <toolkit:NumericUpDown TabIndex="1" Value="{Binding RangeFrom, Mode=TwoWay}" Margin="0,0,110,0" Grid.Row="2" Height="18" VerticalAlignment="Top" Style="{StaticResource SlimNumericUpDownStyle}" BorderBrush="{StaticResource TextBoxBorderBrush}" HorizontalAlignment="Right" Width="50"/>
+                <toolkit:NumericUpDown TabIndex="2"  Value="{Binding RangeTo, Mode=TwoWay}" HorizontalAlignment="Right" Margin="0,0,52,0" Grid.Row="2" Width="50" Height="18" VerticalAlignment="Top" Style="{StaticResource SlimNumericUpDownStyle}" BorderBrush="{StaticResource TextBoxBorderBrush}"/>
+                <Rectangle Fill="#FF26A9E1" HorizontalAlignment="Left" Height="5" Margin="123,15,0,0" Grid.Row="1" VerticalAlignment="Top" Width="5" StrokeThickness="0" d:LayoutOverrides="GridBox" Visibility="Collapsed"/>
+                <Rectangle Fill="#FF8BC43F" HorizontalAlignment="Right" Height="10" Margin="0,75,0,0" VerticalAlignment="Top" Width="10" StrokeThickness="0" Grid.Row="3" d:LayoutOverrides="VerticalAlignment" Visibility="Collapsed"/>
+
+            </Grid>
+        </Border>
+    </Grid>
+
+</UserControl>

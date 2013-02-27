@@ -1,0 +1,43 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+    
+	<ImageBrush x:Key="DeleteBrush" ImageSource="/BioCheck;component/Assets/Images/Delete.png"/>
+	<ImageBrush x:Key="CutBrush" ImageSource="/BioCheck;component/Assets/Images/Cut.png"/>
+	<ImageBrush x:Key="CopyBrush" ImageSource="/BioCheck;component/Assets/Images/Copy.png"/>
+	<ImageBrush x:Key="PasteBrush" ImageSource="/BioCheck;component/Assets/Images/Paste.png"/>
+
+    <!--BASE COLORS-->
+    <Color x:Key="BlackColor">#FF000000</Color>
+    <Color x:Key="WhiteColor">#FFFFFFFF</Color>
+    
+    <SolidColorBrush x:Key="WhiteColorBrush" Color="{StaticResource WhiteColor}" />
+
+    <SolidColorBrush x:Key="PageBorderBrush" Color="#FFB2B2B2" />
+    <Color x:Key="HighlightColor">#FFF1F1F2</Color>
+
+    <SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource HighlightColor}"/>
+    <Color x:Key="PathButtonColor">#FF808184</Color>
+    <SolidColorBrush x:Key="PathButtonBrush" Color="{StaticResource PathButtonColor}"/>
+    <SolidColorBrush x:Key="GridCellStroke" Color="#FFCCCCCC"/>
+    <SolidColorBrush x:Key="PopupBorders" Color="#FFBBBDBF"/>
+    <SolidColorBrush x:Key="PopupControlBorder" Color="#FF808184"/>
+    <Color x:Key="LabelForeground">#FF58595B</Color>
+    <SolidColorBrush x:Key="LabelForegroundBrush" Color="#FF58595B"/>
+    <SolidColorBrush x:Key="ControlGreyBackground" Color="#FFD0D2D3"/>
+    <SolidColorBrush x:Key="ControlMouseOver" Color="#FFE6E7E8"/>
+    <SolidColorBrush x:Key="ControlMouseDown" Color="#FF929497"/>
+    <SolidColorBrush x:Key="DarkHighlightBrush" Color="#FF929497"/>
+    <SolidColorBrush x:Key="TextBoxBorderBrush" Color="#FFC7C7C7"/>
+    <SolidColorBrush x:Key="ButtonBrush" Color="#FF929397"/>
+    <SolidColorBrush x:Key="StableBrush" Color="#FF81BB81"/>
+    <SolidColorBrush x:Key="NotStableBrush" Color="#FFD7706C"/>
+    <SolidColorBrush x:Key="StableBackgroundBrush" Color="#FFD9FFB3"/>
+    <SolidColorBrush x:Key="NotStableBackgroundBrush" Color="#FFFFB8B3"/>
+    <SolidColorBrush x:Key="ConstantBrush" Color="#FFE6E6E6"/>
+    <SolidColorBrush x:Key="AlternateRowBrush" Color="WhiteSmoke"/>
+    <SolidColorBrush x:Key="PopupGridHeaderBackground" Color="#FF787878"/>
+
+
+
+</ResourceDictionary>
