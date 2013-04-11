@@ -62,6 +62,18 @@
     <Compile Include="UIMain.fs" />
     <Compile Include="UnitTests.fs" />
     <Compile Include="ModelToExcel.fs" />
+    <Compile Include="BioCheckZ3.fs" />
+    <Compile Include="BioCheckPlusZ3.fs" />
+    <Compile Include="Z3rangelist.fs" />
+    <Compile Include="stepZ3rangelist.fs" />
+    <Compile Include="Paths.fs" />
+    <Compile Include="LTL.fs" />
+    <Compile Include="EncodingForFormula.fs" />
+    <Compile Include="InitEncodingForSys.fs" />
+    <Compile Include="IncEncodingForSys.fs" />
+    <Compile Include="BMC.fs" />
+    <Compile Include="Rangelist.fs" />
+    <Compile Include="PlusMain.fs" />
     <Compile Include="Main.fs" />
     <None Include="App.config" />
   </ItemGroup>
