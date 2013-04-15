@@ -1,9 +1,9 @@
 ﻿using System;
-using Microsoft.WindowsAzure.StorageClient;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace BioCheck.Web.Log
 {
-    public class ErrorDataModel : TableServiceEntity
+    public class ErrorDataModel : TableEntity
     {
         public ErrorDataModel(string partitionKey, string rowKey)
             : base(partitionKey, rowKey)

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Web;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using Microsoft.WindowsAzure.StorageClient;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table.DataServices;
 
 namespace BioCheck.Web.Log
 {
@@ -18,12 +19,12 @@ namespace BioCheck.Web.Log
         {
             var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
 
-            // Create the tables
-            // In this case, just a single table.  
+            // Create the table if it doesn't exist.
             var tableClient = storageAccount.CreateCloudTableClient();
-            tableClient.CreateTableIfNotExist(ErrorTableName);
+            var cloudTable = tableClient.GetTableReference(ErrorTableName);
+            cloudTable.CreateIfNotExists();
 
-            this.context = tableClient.GetDataServiceContext();
+            this.context = tableClient.GetTableServiceContext();
         }
 
         public IEnumerable<ErrorDataModel> Select()
@@ -31,7 +32,7 @@ namespace BioCheck.Web.Log
             var results = from ldm in context.CreateQuery<ErrorDataModel>(ErrorTableName)
                           select ldm;
 
-            var query = results.AsTableServiceQuery<ErrorDataModel>();
+            var query = results.AsTableServiceQuery(context);
             var queryResults = query.Execute();
 
             return queryResults;

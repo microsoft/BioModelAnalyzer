@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{B7FDAF4A-33B4-481B-A642-D262ECF4B19E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{77E8AB25-6669-4F15-B222-F0B1DC6CA798}"
@@ -32,11 +32,11 @@ Global
 		SccNumberOfProjects = 11
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
-		SccProjectUniqueName0 = BioCheckAnalyzerCommon\\BioCheckAnalyzerCommon.csproj
-		SccProjectTopLevelParentUniqueName0 = BioCheck.sln
-		SccProjectName0 = BioCheckAnalyzerCommon
-		SccLocalPath0 = BioCheckAnalyzerCommon
-		SccLocalPath1 = .
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = BioCheckAnalyzerCommon\\BioCheckAnalyzerCommon.csproj
+		SccProjectTopLevelParentUniqueName1 = BioCheck.sln
+		SccProjectName1 = BioCheckAnalyzerCommon
+		SccLocalPath1 = BioCheckAnalyzerCommon
 		SccProjectUniqueName2 = BioCheckAnalyzer32\\BioCheckAnalyzer32.fsproj
 		SccProjectTopLevelParentUniqueName2 = BioCheck.sln
 		SccProjectName2 = BioCheckAnalyzer32
@@ -198,5 +198,8 @@ Global
 		{0F088352-D63F-48AD-A000-AFD456157B7D} = {77E8AB25-6669-4F15-B222-F0B1DC6CA798}
 		{3B692BE9-C757-41C5-B791-46C92798F839} = {8F6C6014-BB96-4822-83CE-9635BBE44C87}
 		{23262198-F04C-422D-BC34-9E1C3112EC01} = {8F6C6014-BB96-4822-83CE-9635BBE44C87}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35
 	EndGlobalSection
 EndGlobal
