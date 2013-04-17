@@ -86,7 +86,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.PowerPack, Version=4.0.0.1, Culture=neutral, PublicKeyToken=f536804aa0eb945b" />
+    <Reference Include="FSharp.PowerPack">
+      <HintPath>C:\Users\sishtiaq\work\TFS\BioCheck\Libs\dotNET\FSharp.PowerPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Z3">
       <HintPath>..\..\Libs\dotNET\32bit\Microsoft.Z3.dll</HintPath>
     </Reference>
