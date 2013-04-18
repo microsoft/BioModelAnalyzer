@@ -63,8 +63,6 @@
     <Compile Include="GenLemmas.fs" />
     <Compile Include="Stabilize.fs" />
     <Compile Include="Simulate.fs" />
-    <Compile Include="UIMain.fs" />
-    <Compile Include="UnitTests.fs" />
     <Compile Include="ModelToExcel.fs" />
     <Compile Include="BioCheckZ3.fs" />
     <Compile Include="BioCheckPlusZ3.fs" />
@@ -78,6 +76,8 @@
     <Compile Include="BMC.fs" />
     <Compile Include="Rangelist.fs" />
     <Compile Include="PlusMain.fs" />
+    <Compile Include="UIMain.fs" />
+    <Compile Include="UnitTests.fs" />
     <Compile Include="Main.fs" />
     <None Include="App.config" />
   </ItemGroup>

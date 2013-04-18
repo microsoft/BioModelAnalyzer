@@ -1,10 +1,11 @@
-﻿module LTL
+﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
+module LTL
 
-open QN 
+// open QN 
 
 // LTL formula 
 
-type QN = QN.node list
+//type QN = QN.node list
 
 type LTLFormulaType = 
     // Each operator has a list of booleans memorizing its location
@@ -97,7 +98,7 @@ let print_in_order(formula : LTLFormulaType) =
     let string_res = print formula
     printfn "%s" string_res
 
-let string_to_LTL_formula (s:string) (network : QN) = 
+let string_to_LTL_formula (s:string) (network) = 
     let until = "Until"
     let release = "Release"
     let always = "Always"
@@ -303,7 +304,7 @@ let unable_to_parse_formula =
 // This test returns normal formulas in a network that has
 // v1 v2 and v3 as variables
 // Otherwise, all formulas are errors)
-let test_LTL_parser (network : QN) =
+let test_LTL_parser (network) =
     let formula_one_string = "(Until (Not (> v1 5)) (> v2 6))"
     let formula_one = string_to_LTL_formula formula_one_string  network
     let formula_two_string = "(Until (Release (Not (> v1 5)) (Next (>= v2 17))) (And (> v3 6) (<= v2 564)))"

@@ -99,14 +99,47 @@
     <Compile Include="..\BioCheckAnalyzer32\Simulate.fs">
       <Link>Simulate.fs</Link>
     </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\ModelToExcel.fs">
+      <Link>ModelToExcel.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\BioCheckZ3.fs">
+      <Link>BioCheckZ3.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\BioCheckPlusZ3.fs">
+      <Link>BioCheckPlusZ3.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\stepZ3rangelist.fs">
+      <Link>stepZ3rangelist.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Paths.fs">
+      <Link>Paths.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\LTL.fs">
+      <Link>LTL.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\EncodingForFormula.fs">
+      <Link>EncodingForFormula.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\InitEncodingForSys.fs">
+      <Link>InitEncodingForSys.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\IncEncodingForSys.fs">
+      <Link>IncEncodingForSys.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Z3rangelist.fs">
+      <Link>Z3rangelist.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Rangelist.fs">
+      <Link>Rangelist.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\BMC.fs">
+      <Link>BMC.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\UIMain.fs">
       <Link>UIMain.fs</Link>
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\UnitTests.fs">
       <Link>UnitTests.fs</Link>
-    </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\ModelToExcel.fs">
-      <Link>ModelToExcel.fs</Link>
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\Main.fs">
       <Link>Main.fs</Link>

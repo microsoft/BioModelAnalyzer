@@ -9,10 +9,30 @@ module Main
 open System.Xml
 open System.Xml.Linq
 
-// Command-line args
-let model  = ref "" // input model filename 
-let proof_output = ref "" // output filename 
+open LTL
 
+type Engine = EngineCAV | EngineVMCAI | EngineSimulate
+let engine_of_string s = 
+    match s with 
+    | "CAV" | "cav" -> Some EngineCAV
+    | "VMCAI" | "vmcai" -> Some EngineVMCAI 
+    | "Simulate" | "simulate" -> Some EngineSimulate
+    | _ -> None 
+
+// Command-line args
+let engine = ref None 
+let model  = ref "" // input model filename 
+// -- VMCAI
+let proof_output = ref "" // output filename 
+// -- CAV
+let formula = ref "True"
+let number_of_steps = ref -1
+let naive_computation = ref false
+let model_check = ref false
+let modelsdir = ref "C:\\Users\\np183\\tools\\BioCheckPlus\\BioCheck\\xml Models"
+let output_model = ref false
+let output_proof = ref false
+// -- Simulate
 let simul_v0     = ref "" // initial values file (csv file, with idXvalue schema)
 let simul_time   = ref 20 // max time to simulate
 let simul_output = ref "" // output log/excel filename. 
@@ -20,14 +40,24 @@ let simul_output = ref "" // output log/excel filename.
 let run_tests = ref false 
 let logging = ref false 
 
-let args = [ ("-model", ArgType.String (fun i -> model := i), "Input xml model");             
-             //
+let args = [ ("-model", ArgType.String (fun i -> model := i), "Input xml model");            
+             // engine 
+             ("-engine", ArgType.String (fun s -> engine := engine_of_string s), "Engine (cav, vmcai, simulate)");  
+             // VMCAI engine details
              ("-prove",          ArgType.String (fun o -> proof_output := o), "Proof output filename");
-             // 
+             // Simulator
              ("-simulate",       ArgType.String (fun o -> simul_output := o), "Simulation output filename");
              ("-simulate_time",  ArgType.Int (fun t -> simul_time := t), "Simulate for X ticks (default 20)");
              ("-simulate_v0", ArgType.String (fun f -> simul_v0 := f), "Simulation initial values (default 0s)"); 
-             // 
+             // CAV engine details
+             ("-formula", ArgType.String (fun i -> formula := i), "Formula to check");
+             ("-mc", ArgType.Unit (fun _ -> model_check := true), "Model check the formula (vs search for a path satisfying the formula)");
+             ("-outputmodel", ArgType.Unit (fun _ -> output_model := true), "Output the model in case of satisfiability");
+             ("-naive", ArgType.Unit (fun _ -> naive_computation := true), "Compute naive representation of paths");
+             ("-proof", ArgType.Unit (fun _ -> output_proof := true), "Output the ranges of variables over time (does not work with naive)");
+             ("-path", ArgType.Int (fun i -> number_of_steps := i), "Number of steps"); 
+             ("-modelsdir", ArgType.String (fun d -> modelsdir := d), "Models directory"); 
+             // Etc
              ("-tests",  ArgType.Unit (fun _ -> run_tests := true), "Run tests");
              ("-log",    ArgType.Unit (fun _ -> logging := true),  "Enable logging") ]
             |> List.map (fun (n,a,s) -> ArgInfo(n,a,s))
@@ -40,8 +70,9 @@ let analyzer = UIMain.Analyzer2()
 
 if !logging then (analyzer :> IA).LoggingOn(Log.AnalyzerLogService())   
 
-// Do the proof 
-if (!model <> "" && !proof_output <> "") then    
+// Run VMCAI engine
+if (!model <> "" && !engine = Some EngineVMCAI &&
+    !proof_output <> "") then    
     Log.log_debug "Running the proof"
     let model = XDocument.Load(!model) |> Marshal.model_of_xml
     let (sr,cex_o) = Stabilize.stabilization_prover model
@@ -57,8 +88,51 @@ if (!model <> "" && !proof_output <> "") then
         cex_xml.Save(filename + "_cex." + ext)
     | _ -> failwith "bad results from stabilization_prover"
 
-// Do the simulation
-elif (!model <> "" && !simul_output <> "") then 
+// Run CAV engine
+elif (!model <> "" && !engine = Some EngineCAV) then 
+        // Negate the formula if needed
+        let ltl_formula_str = 
+            if (!model_check) then
+                sprintf "(Not %s)" !formula
+            else
+                !formula
+        let length_of_path = !number_of_steps // SI: only used once, just use !num_of_steps in change_list below? 
+
+        let network = Marshal.model_of_xml(XDocument.Load(!modelsdir + "\\" + !model))
+        
+        let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str network 
+
+        LTL.print_in_order ltl_formula
+        if (ltl_formula = LTL.Error) then
+            ignore(LTL.unable_to_parse_formula)
+        else             
+            // Convert the interval based range to a list based range
+            let nuRangel = Rangelist.nuRangel network
+
+            // find out the path with decreasing size, 
+            // and the initial value of steps to be unrolled
+            // Paths is the list of ranges
+            // initK = the length of prefix + the length of loop, which is used as the initial value of K when doing BMC
+            let paths = Paths.output_paths network nuRangel !naive_computation
+
+            if (!output_proof && not !naive_computation) then
+                Paths.print_paths network paths
+
+            // Extend/truncate the list of paths to the required length
+            // If the list of paths is shorter than needed repeat the last element 
+            // If the list of paths is longer than needed remove the prefix of the list
+            let correct_length_paths = Paths.change_list_to_length paths length_of_path
+    
+            // given the # of steps and the path, do BMC   
+            let (res,model) =
+                BMC.BoundedMC ltl_formula network nuRangel correct_length_paths
+
+            BioCheckPlusZ3.check_model model res network
+            BioCheckPlusZ3.print_model model res network !output_model
+
+// Run Simulation engine
+elif (!model <> "" && !engine = Some EngineSimulate &&
+      !simul_output <> "") then 
     Log.log_debug "Running the simulation"
     let qn = Marshal.model_of_xml (XDocument.Load !model)
     let init_values = 
@@ -85,7 +159,6 @@ elif (!run_tests) then
     Test.run_tests ()
 
 // Incorrect flags. 
-if ((!model = "" && !proof_output = "") && 
-    (!model = "" && !simul_output= "") &&
+if ((!model = "" && !engine = None) &&
     !run_tests = false) then  
     Printf.printfn "Please provide an input model, and prove or simulate output."
