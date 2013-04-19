@@ -1,11 +1,6 @@
 ﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
 // Begin <-- Added by Qinsi Wang
 
-//#light
-
-//#I "c:/Program Files (x86)/Microsoft Research/bin"
-//#r @"Microsoft.Z3.dll"
-
 module Z3rangelist
 
 /// Z3 related stuff.

@@ -1,11 +1,4 @@
 ﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
-
-//#light
-
-//#I "c:/Program Files (x86)/Microsoft Research/bin"
-//#r @"Microsoft.Z3.dll"
-
-
 module IncEncodingForSys
 
 open Microsoft.Z3

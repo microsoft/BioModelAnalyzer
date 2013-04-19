@@ -2,12 +2,6 @@
 
 //Begin <-- Added by Qinsi Wang
 
-//#light
-
-//#I "c:/Program Files (x86)/Microsoft Research/bin"
-//#r @"Microsoft.Z3.dll"
-
-
 module stepZ3rangelist
 
 // Z3 related stuff.

@@ -78,7 +78,6 @@
     <Compile Include="PlusMain.fs" />
     <Compile Include="UIMain.fs" />
     <Compile Include="UnitTests.fs" />
-    <Compile Include="Main.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>

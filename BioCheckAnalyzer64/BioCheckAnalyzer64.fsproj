@@ -141,9 +141,6 @@
     <Compile Include="..\BioCheckAnalyzer32\UnitTests.fs">
       <Link>UnitTests.fs</Link>
     </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\Main.fs">
-      <Link>Main.fs</Link>
-    </Compile>
     <None Include="..\BioCheckAnalyzer32\App.config">
       <Link>App.config</Link>
     </None>

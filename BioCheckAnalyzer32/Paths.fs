@@ -1,9 +1,8 @@
 ﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
-//Begin <-- Added by Qinsi Wang
+module Paths
 // This module is used to unroll the system (model) step by step
 // and compute and record possible value range for all variable at each time step
 // until the range does not change any more
-module Paths
 
 let output_paths (network : QN.node list) bounds naive_encoding=
     

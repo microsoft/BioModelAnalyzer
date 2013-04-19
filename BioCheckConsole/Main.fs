@@ -1,15 +1,11 @@
 ﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
 module Main
 
-// Implementation of:
-// Cook, Fisher, Krepska, Piterman.
-// 'Proving stabilization of biological systems',
-// VMCAI 2011.to
-
+// Implementations of:
+// Cook, Fisher, Krepska, Piterman; Proving stabilization of biological systems; VMCAI 2011.
+// Claessen, Fisher, Ishtiaq, Piterman, Wang; Model-Checking Signal Transduction Networks through Decreasing Reachability Sets; CAV 2013.
 open System.Xml
 open System.Xml.Linq
-
-open LTL
 
 type Engine = EngineCAV | EngineVMCAI | EngineSimulate
 let engine_of_string s = 

@@ -1,12 +1,6 @@
 ﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
 module LTL
 
-// open QN 
-
-// LTL formula 
-
-//type QN = QN.node list
-
 type LTLFormulaType = 
     // Each operator has a list of booleans memorizing its location
     // in the parse tree

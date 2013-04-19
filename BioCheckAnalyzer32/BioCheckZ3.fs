@@ -1,11 +1,5 @@
 ﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
 
-//#light
-
-//#I "c:/Program Files (x86)/Microsoft Research/bin"
-//#r @"Microsoft.Z3.dll"
-
-
 (* This file contains functions from BioCheck that manipulate Z3 *)
 
 module BioCheckZ3
@@ -105,16 +99,6 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 
     tr expr 
 
-(*
-// SI: original buggy function. _fix one below has correct update and range code. 
-let assert_target_function_matt (node: QN.node) var_names bounds start_time end_time (z : Context) =
-    let rhs = z.MkToInt(expr_to_z3 node bounds node.f var_names start_time z)
-    let output_var = get_z3_int_var_at_time node end_time
-    let lhs = z.MkConst(z.MkSymbol output_var, z.MkIntSort())
-    let cnstr = z.MkEq(lhs, rhs)
-    Log.log_debug (z.ToString cnstr)
-    z.AssertCnstr cnstr
-*)
 
 let assert_target_function (node: QN.node) qn bounds start_time end_time (z : Context) =
     let current_state_id = get_z3_int_var_at_time node start_time
@@ -164,16 +148,6 @@ let assert_target_function (node: QN.node) qn bounds start_time end_time (z : Co
     Log.log_debug (z.ToString cnstr)
     z.AssertCnstr cnstr
 
-(*
-let allocate_bool_vars (node : QN.node) (list_of_poss_values : int list) (time :int) (z : Context) =
-    //let make_var_name item = (node.name).ToString ^ (String "^") ^ time.ToString ^ (String "^") ^ item.ToString
-    let make_var_name item = get_z3_bool_var_in_val_at_time node time item
-    let allocate_z3_bool_var item = z.MkConst(z.MkSymbol(make_var_name(item)), z.MkBoolSort())
-    let make_bool_var_list list = List.map allocate_z3_bool_var list
-    let list_of_var_names = make_bool_var_list list_of_poss_values
-    list_of_var_names
-
-*)
 
 let assert_bound (node : QN.node) (lower : int , upper : int) (time : int) (z : Context) =
     let var_name = get_z3_int_var_at_time node time
@@ -370,8 +344,6 @@ let find_cycle_steps network bounds length range =
     // ...We want the first iteration of our loop to have k=2...
     let mutable k = 1
     let mutable cycle = None
-
-    //printfn "%A %A" diameter (bigint.Compare(diameter, bigint(k)))
 
     while bigint.Compare(diameter, bigint(k)) > 0 && cycle = None do
         k <- k*2
