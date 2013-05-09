@@ -61,10 +61,10 @@ let args = [ ("-model", ArgType.String (fun i -> model := i), "Input xml model")
 
 ArgParser.Parse(args)
 
-type IA = BioCheckAnalyzerCommon.IAnalyzer2
-let analyzer = UIMain.Analyzer2()
+//type IA = BioCheckAnalyzerCommon.IAnalyzer2
+//let analyzer = UIMain.Analyzer2()
 
-if !logging then (analyzer :> IA).LoggingOn(Log.AnalyzerLogService())   
+if !logging then Log.register_log_service(Log.AnalyzerLogService())   
 
 // Run VMCAI engine
 if (!model <> "" && !engine = Some EngineVMCAI &&
@@ -150,7 +150,7 @@ elif (!model <> "" && !engine = Some EngineSimulate &&
 
 // Run tests.     
 elif (!run_tests) then 
-    UnitTests.register_tests2 (analyzer)
+//    UnitTests.register_tests2 (analyzer)
     Expr.register_tests()
     Test.run_tests ()
 
