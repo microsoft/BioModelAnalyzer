@@ -10,7 +10,8 @@
     <RootNamespace>BioCheckConsole</RootNamespace>
     <AssemblyName>BioCheckConsole</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <Name>BioCheckConsole</Name>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
@@ -48,6 +49,11 @@
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
+      <Name>BioCheckAnalyzerCommon</Name>
+      <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
@@ -61,11 +67,11 @@
       <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
-      <Name>BioCheckAnalyzerCommon</Name>
-      <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.

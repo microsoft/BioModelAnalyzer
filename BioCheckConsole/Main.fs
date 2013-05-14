@@ -19,7 +19,7 @@ let engine_of_string s =
 let engine = ref None 
 let model  = ref "" // input model filename 
 // -- VMCAI
-let proof_output = ref "" // output filename 
+let proof_output = ref "proof_output" // output filename 
 // -- CAV
 let formula = ref "True"
 let number_of_steps = ref -1
@@ -38,6 +38,7 @@ let logging = ref false
 
 let rec parse_args args = 
     match args with 
+    | [] -> ()
     | "-model" :: m :: rest -> model := m; parse_args rest
     | "-engine" :: e :: rest -> engine := engine_of_string e; parse_args rest
     | "-prove" :: o :: rest -> proof_output := o; parse_args rest 
