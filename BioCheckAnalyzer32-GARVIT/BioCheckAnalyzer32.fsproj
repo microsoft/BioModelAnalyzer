@@ -80,6 +80,7 @@
     <Compile Include="UnitTests.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <Compile Include="GGraph.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
