@@ -5,6 +5,8 @@ module QN
 
 // Variables are just referenced by their index.
 type var = int
+type nature = Act | Inh
+
 
 // Return a fresh variable name.
 let mutable num_vars = 0
@@ -24,6 +26,7 @@ type node =
         inputs : var list;  // The variables this node depends on.
         range : int * int;  // [min..max]
         name : string;
+        nature : Map<var, nature> // nature of each input, must have as many elements as inputs
     }
 
 let str_of_node (n:node) =

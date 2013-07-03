@@ -117,7 +117,16 @@ let model_of_xml (xd:XDocument) =
                             Expr.Max(Expr.Const(min),
                                      Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),
                                                 Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
-                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname } )
+                let nature = 
+                    // map describing the nature of inputs : activating/inhibiting
+                    List.fold
+                        (fun map i -> Map.add i QN.Act map)
+                        (List.fold
+                            (fun map o -> Map.add o QN.Inh map)
+                            Map.empty
+                            oo)
+                        ii
+                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; QN.nature= nature } )
             inputs'
 
     // Final result

@@ -16,35 +16,40 @@
 //
 //  Notes:
 //      This file implements the following algorithms over directed graphs
-//      1. Weak Topological Ordering using Tarjan's SCC decomposition
-//      2. SCC Decomposition
-
+//      1. Tarjan's SCC Decomposition
+//      2. Weak Topological Ordering using heirarchical Tarjan's SCC decomposition
 
 module GGraph
 
 open System.Collections.Generic
 
 /// type for a graph
-type Graph<'T when 'T : comparison> = {    
+/// every vertex must have a different label
+type Graph<'label when 'label : comparison> = {    
     numNodes : int;
-    vertices : Map<'T, int>;
+    vertices : Map<int, 'label>;
     edges : Set<int * int>
     }
 
 /// return empty graph of specified type of vertices
-let Empty<'T when 'T : comparison> = { 
+let Empty<'label when 'label : comparison> = { 
     numNodes= 0;
-    vertices= Map.empty<'T, int>; 
+    vertices= Map.empty<int, 'label>; 
     edges= Set.empty<int * int> 
     }
 
 let AddVertex vertex graph =
-    { graph with numNodes = graph.numNodes+1; vertices = Map.add vertex graph.numNodes graph.vertices }
+    { graph with numNodes = graph.numNodes+1; vertices = Map.add graph.numNodes vertex graph.vertices }
+    
 
+let GetVertexId label graph =
+    // get the internal number of a vertex from its label
+    // raises KeyNotFoundException in case the label does not exist
+    Map.findKey (fun _ lbl -> lbl = label) graph.vertices
 
 let AddEdge src tgt graph= 
     let (s,t) =  try 
-                    (graph.vertices.[src], graph.vertices.[tgt]) 
+                    ((GetVertexId src graph), (GetVertexId tgt graph)) 
                   with 
                      | exn -> failwithf "Vertex %A or %A not found while adding edge" src tgt
                   in
@@ -59,7 +64,7 @@ let CreateDotFile (fname:string) graph =
 
     // write vertices
     Map.iter 
-        (fun data idx -> Printf.fprintf dot "%d [shape=box,fontname=\"Consolas\",label=\"%A\"]\n" idx data)
+        (fun idx data -> Printf.fprintf dot "%d [shape=box,fontname=\"Consolas\",label=\"%A\"]\n" idx data)
         graph.vertices
 
     // write edges
@@ -78,15 +83,17 @@ let GetAdjacencyList graph =
     Set.fold (fun map (s,t) -> 
                    Map.add s (t::map.[s]) map
                    )
-        (Map.fold (fun map _ vertex ->
+        (Map.fold (fun map vertex _ ->
                     Map.add vertex [] map)
                 Map.empty
                 graph.vertices)
         graph.edges
 
 
+
+/// Tarjan's SCC Decomposition from Wikipedia
 let GetSCCDecomposition graph =
-    let sccList = new List<List<int>>()
+    let sccList = new List<List<'label>>()
 
 
     let index = ref 0
@@ -112,22 +119,107 @@ let GetSCCDecomposition graph =
                     lowLink.[vertex] <- min lowLink.[vertex] depthIndex.[successor]
             
             if lowLink.[vertex] = depthIndex.[vertex] then
-                let scc = new List<int>()
+                let scc = new List<'label>()
 
                 let mutable loopCondition = true
                 while loopCondition do
                     let w = dfsStack.Pop()
-                    scc.Add(w)
+                    scc.Add(graph.vertices.[w])
                     loopCondition <- not(w=vertex)
 
                 sccList.Add(scc)
         end
 
-
-    for KeyValue(data, idx) in graph.vertices do
+    for KeyValue(idx,_) in graph.vertices do
         if depthIndex.[idx] = -1 then
             strongConnect idx
 
     sccList
 
+type Component<'label> = 
+    | Term of 'label
+    | NonTerm of Component<'label> list
+
+
+/// Weak Topological Order from 
+/// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
+/// this implementation uses a lot of mutable data
+/// to understand refer to the paper 
+let WeakTopologicalOrder graph =
+
+    let index = ref 0
+    let dfsStack = new Stack<int>()
+
+    let depthIndex = Array.create graph.numNodes 0 
+    let succ = GetAdjacencyList graph
+
+
+    let rec FindComponent vertex =
+        let mutable partition = (NonTerm [])
+        for successor in succ.[vertex] do
+            if depthIndex.[successor] = 0 then
+                let (_, rpartition) = (Visit successor partition)
+                partition <- rpartition
+        (match partition with
+                | Term(lbl) -> failwith "partition should have been a list"
+                | NonTerm(lst) -> NonTerm(Term(graph.vertices.[vertex]) :: lst)
+                )
+
+    and Visit vertex partition=
+        dfsStack.Push(vertex)
+        incr index
+        depthIndex.[vertex] <- !index
+        let mutable head = depthIndex.[vertex]
+        let mutable loop = false
+        let mutable min = System.Int32.MaxValue
+        let mutable retPartition = partition
+
+        for successor in succ.[vertex] do
+            if depthIndex.[successor]  = 0 then
+                let (rmin, rretPartition) = (Visit successor retPartition)
+                min <- rmin
+                retPartition <- rretPartition
+            else
+                min <- depthIndex.[successor]
+
+            if min <= head then
+                head <- min
+                loop <- true
+
+        if head = depthIndex.[vertex] then
+            depthIndex.[vertex] <- System.Int32.MaxValue
+            let mutable element = dfsStack.Pop()
+            
+           
+            if loop then
+                while not (element = vertex) do
+                    depthIndex.[element] <- 0
+                    element <- dfsStack.Pop()
+                
+                let mutable p = NonTerm []
+                retPartition <- (match retPartition with
+                                    | Term(lbl) -> failwith "partition should have been a list"
+                                    | NonTerm(lst) -> NonTerm((FindComponent vertex):: lst)
+                                    )
+            else 
+                retPartition <- (match retPartition with
+                                    | Term(lbl) -> failwith "partition should have been a list"
+                                    | NonTerm(lst) -> NonTerm(Term(graph.vertices.[vertex]) :: lst)
+                                    )
+        (head, retPartition)
+
+    let mutable partition = NonTerm []
+    for KeyValue(vertex, label) in graph.vertices do
+        if depthIndex.[vertex] = 0 then
+            let (_, rpartition) = (Visit vertex partition)
+            partition <- rpartition
+    partition
+
     
+
+let testGraph1 = Empty<string> |> AddVertex "Alice" |> AddVertex "Bob" |> AddVertex "Charlie" |> AddEdge "Alice" "Bob" |>
+                    AddEdge "Bob" "Alice" |> AddEdge "Bob" "Charlie"
+let testGraph2 = Empty<int> |> AddVertex 11 |> AddVertex 12 |> AddVertex 13 |> AddVertex 14 |> 
+                    AddVertex 15 |> AddVertex 16 |> AddVertex 17 |> AddVertex 18|> AddEdge 11 12 |> 
+                        AddEdge 12 13 |> AddEdge 13 14 |> AddEdge 14 15 |> AddEdge 15 16 |> AddEdge 16 17 |>
+                            AddEdge 17 18 |> AddEdge 12 18 |> AddEdge 14 17 |> AddEdge 16 15 |> AddEdge 17 13
