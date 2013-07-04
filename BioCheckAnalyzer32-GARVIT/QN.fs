@@ -101,7 +101,8 @@ let list_of_inputs_with_node_in_head (n : node) (network : node list) =
     let list_of_inputs = list_of_inputs_excluding_node n network
     n :: list_of_inputs
 
-
+let get_node_from_var (nv : var) (network : node list) = 
+    List.find (fun n -> n.var = nv) network
 
 
 

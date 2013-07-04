@@ -39,3 +39,13 @@ let memoize3 f =
         else let res = f x y z
              dict.[(x, y, z)] <- res
              res
+
+
+/// merge two maps into one
+/// if duplicate keys are present then the value in map2 survives
+let MergeMaps map1 map2 =
+    Map.fold
+        (fun map k v ->
+            Map.add k v map)
+        map1
+        map2

@@ -2,7 +2,7 @@
 
 module Oracle
 
-let GetNewState (aNode:QN.node) aNodeState (qn: QN.node list) env =
+let GetNewState (aNode : QN.node) aNodeState (qn : QN.node list) env =
     let ranges = Map.ofList [for node in qn -> (node.var, node.range)]
 
     env
@@ -17,7 +17,7 @@ let GetNewState (aNode:QN.node) aNodeState (qn: QN.node list) env =
 let lt x y = x < y
 let gt x y = x > y
 
-let template (aNode: QN.node) aNodeState (qn: QN.node list) (bounds: Map<QN.var, int*int>) nature rel=
+let template (aNode : QN.node) aNodeState (qn : QN.node list) (bounds : Map<QN.var, int*int>) nature rel=
     let newState =
         // create the environment to check whether var increases
         // select the corner point according to 'nature'
@@ -32,14 +32,14 @@ let template (aNode: QN.node) aNodeState (qn: QN.node list) (bounds: Map<QN.var,
     rel newState aNodeState
 
 
-let CanStrictlyIncrease (aNode: QN.node) aNodeState (qn: QN.node list) (bounds: Map<QN.var, int*int>) =
+let CanStrictlyIncrease (aNode : QN.node) aNodeState (qn : QN.node list) (bounds : Map<QN.var, int*int>) =
     template aNode aNodeState qn bounds QN.Act gt
 
-let CanStrictlyDecrease (aNode: QN.node) aNodeState (qn: QN.node list) (bounds: Map<QN.var, int*int>) =
+let CanStrictlyDecrease (aNode : QN.node) aNodeState (qn : QN.node list) (bounds : Map<QN.var, int*int>) =
     template aNode aNodeState qn bounds QN.Inh lt
 
-let AlwaysStrictlyIncreases (aNode: QN.node) aNodeState (qn: QN.node list) (bounds: Map<QN.var, int*int>) =
+let AlwaysStrictlyIncreases (aNode : QN.node) aNodeState (qn : QN.node list) (bounds : Map<QN.var, int*int>) =
     template aNode aNodeState qn bounds QN.Inh gt
 
-let AlwaysStrictlyDecreases (aNode: QN.node) aNodeState (qn: QN.node list) (bounds: Map<QN.var, int*int>) =
+let AlwaysStrictlyDecreases (aNode : QN.node) aNodeState (qn : QN.node list) (bounds : Map<QN.var, int*int>) =
     template aNode aNodeState qn bounds QN.Act lt

@@ -137,10 +137,11 @@ let GetSCCDecomposition graph =
 
     sccList
 
+
+/// Each component is either a terminal or a list of components
 type Component<'label> = 
     | Term of 'label
     | NonTerm of Component<'label> list
-
 
 /// Weak Topological Order from 
 /// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
@@ -155,7 +156,7 @@ let GetWeakTopologicalOrder graph =
     let succ = GetAdjacencyList graph
 
 
-    let rec FindComponent vertex =
+    let rec VisitComponent vertex =
         let mutable partition = (NonTerm [])
         for successor in succ.[vertex] do
             if depthIndex.[successor] = 0 then
@@ -200,7 +201,7 @@ let GetWeakTopologicalOrder graph =
                 let mutable p = NonTerm []
                 retPartition <- (match retPartition with
                                     | Term(lbl) -> failwith "partition should have been a list"
-                                    | NonTerm(lst) -> NonTerm((FindComponent vertex):: lst)
+                                    | NonTerm(lst) -> NonTerm((VisitComponent vertex):: lst)
                                     )
             else 
                 retPartition <- (match retPartition with
@@ -217,20 +218,10 @@ let GetWeakTopologicalOrder graph =
     partition
 
 
-/// merge two maps into one assuming no duplicates
-/// if duplicates present then the value in map2 survives
-let MergeMaps map1 map2 =
-    Map.fold
-        (fun map k v ->
-            Map.add k v map)
-        map1
-        map2
-
-
 
 type Strategy<'label> = {
     next : 'label option;
-    skip : 'label option;
+    exit : 'label option;
     isHead : bool
     }
 
@@ -238,18 +229,25 @@ type Strategy<'label> = {
 /// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
 /// returns a Map<'label, Strategy<'label>
 /// strategy has a next field which denote the next vertex in order
-/// and a skip field which has Some value only for the vertices which are heads
+/// and a exit field which has Some value only for the vertices which are heads
 /// it denotes the next vertex in order after that component (of which it is the head) reaches a fp
+/// isHead is true iff the vertex is the head of some component
+/// exit is non-None only when isHead is true
 
 /// example: 1 [ 2 [ 3 4 ] ] ] 5 would return
-/// 1.next = 2, 1.skip = None
-/// 2.next = 3, 2.skip = 5
-/// 3.next = 4, 3.skip = 2
-/// 5.next = None, 5.skip = None
-let GetRecursiveIterationStrategy graph =
+/// 1.next = 2,    1.exit = None, 1.isHead = false
+/// 2.next = 3,    2.exit = 5,    2.isHead = true
+/// 3.next = 4,    3.exit = 2,    3.isHead = true
+/// 4.next = 3,    4.exit = None, 4.isHead = false 
+/// 5.next = None, 5.exit = None, 5.isHead = false
+let GetRecursiveStrategy graph =
     let wto = GetWeakTopologicalOrder graph
 
-    let rec CreateStrategy (compLst: Component<'label> list) loopBack =
+    /// loopBack is true iff this list of components is closed within another component 
+    /// In other words, loopBack is false only when we start with the outermost list when it is not
+    /// a compnent in itself. For eg. in case of [1 [ 2 3 ] ] loopBack will be true and 
+    /// for 1 [ 2 3 ] loopBack will be false
+    let rec CreateStrategy (compLst : Component<'label> list) (loopBack : bool) =
         let head = 
             match compLst with
                 | Term(lbl) :: rest -> lbl
@@ -257,14 +255,16 @@ let GetRecursiveIterationStrategy graph =
 
         ((List.foldBack 
             (fun subcomp (stgyMap, prev) ->
-                // (stgyMap contains the strategy map constructed so far and prev means the vertex that was handled before this one
+                // stgyMap contains the strategy map constructed so far and prev stores the vertex next in order in the WTO
+                // if this subComp is a terminal, then its next field should point to prev
+                // if this subComp is a non-terminal, then the exit field of head of subComp would be prev
                 match subcomp with
-                    | Term(lbl) -> (Map.add lbl { next= prev; skip= None; isHead = (lbl=head)} stgyMap, Some lbl)
+                    | Term(lbl) -> (Map.add lbl { next= prev; exit= None; isHead = (lbl=head) && loopBack } stgyMap, Some lbl)
                     | NonTerm(lst) ->   let (subStgyMap, subHead) = (CreateStrategy lst true)
-                                        // combine the maps stgyMap and subStgyMap; replace the skip pointer of the
-                                        // head of the subComp to point to prev
-                                        (MergeMaps stgyMap subStgyMap
-                                            |> Map.add subHead { subStgyMap.[subHead] with skip = prev}, 
+                                        // combine the maps stgyMap and subStgyMap
+                                        // replace the exit field of the head of the subComp to point to prev
+                                        (Util.MergeMaps stgyMap subStgyMap
+                                            |> Map.add subHead { subStgyMap.[subHead] with exit = prev}, 
                                           Some subHead)
             )
             compLst
