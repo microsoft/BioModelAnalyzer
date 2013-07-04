@@ -18,6 +18,7 @@
 //      This file implements the following algorithms over directed graphs
 //      1. Tarjan's SCC Decomposition
 //      2. Weak Topological Ordering using heirarchical Tarjan's SCC decomposition
+//      3. Recursive Iteration Strategy based on WTOs
 
 module GGraph
 
@@ -25,14 +26,14 @@ open System.Collections.Generic
 
 /// type for a graph
 /// every vertex must have a different label
-type Graph<'label when 'label : comparison> = {    
+type Graph<'label> = {    
     numNodes : int;
     vertices : Map<int, 'label>;
     edges : Set<int * int>
     }
 
 /// return empty graph of specified type of vertices
-let Empty<'label when 'label : comparison> = { 
+let Empty<'label> = { 
     numNodes= 0;
     vertices= Map.empty<int, 'label>; 
     edges= Set.empty<int * int> 
@@ -145,7 +146,7 @@ type Component<'label> =
 /// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
 /// this implementation uses a lot of mutable data
 /// to understand refer to the paper 
-let WeakTopologicalOrder graph =
+let GetWeakTopologicalOrder graph =
 
     let index = ref 0
     let dfsStack = new Stack<int>()
@@ -215,11 +216,74 @@ let WeakTopologicalOrder graph =
             partition <- rpartition
     partition
 
-    
 
+/// merge two maps into one assuming no duplicates
+/// if duplicates present then the value in map2 survives
+let MergeMaps map1 map2 =
+    Map.fold
+        (fun map k v ->
+            Map.add k v map)
+        map1
+        map2
+
+
+
+type Strategy<'label> = {
+    next : 'label option;
+    skip : 'label option;
+    isHead : bool
+    }
+
+/// create the recursive strategy from a wto as described in 
+/// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
+/// returns a Map<'label, Strategy<'label>
+/// strategy has a next field which denote the next vertex in order
+/// and a skip field which has Some value only for the vertices which are heads
+/// it denotes the next vertex in order after that component (of which it is the head) reaches a fp
+
+/// example: 1 [ 2 [ 3 4 ] ] ] 5 would return
+/// 1.next = 2, 1.skip = None
+/// 2.next = 3, 2.skip = 5
+/// 3.next = 4, 3.skip = 2
+/// 5.next = None, 5.skip = None
+let GetRecursiveIterationStrategy graph =
+    let wto = GetWeakTopologicalOrder graph
+
+    let rec CreateStrategy (compLst: Component<'label> list) loopBack =
+        let head = 
+            match compLst with
+                | Term(lbl) :: rest -> lbl
+                | _ -> failwith "Component must have a head"
+
+        ((List.foldBack 
+            (fun subcomp (stgyMap, prev) ->
+                // (stgyMap contains the strategy map constructed so far and prev means the vertex that was handled before this one
+                match subcomp with
+                    | Term(lbl) -> (Map.add lbl { next= prev; skip= None; isHead = (lbl=head)} stgyMap, Some lbl)
+                    | NonTerm(lst) ->   let (subStgyMap, subHead) = (CreateStrategy lst true)
+                                        // combine the maps stgyMap and subStgyMap; replace the skip pointer of the
+                                        // head of the subComp to point to prev
+                                        (MergeMaps stgyMap subStgyMap
+                                            |> Map.add subHead { subStgyMap.[subHead] with skip = prev}, 
+                                          Some subHead)
+            )
+            compLst
+            (Map.empty, if loopBack then Some head else None)) |> fst,
+            head)
+
+    match wto with
+        | Term(lbl) -> failwith "WTO cannot be a terminal"
+        | NonTerm(hd::tl) -> match hd with
+                                | Term(lbl) ->  let (strategy, head) = CreateStrategy (hd::tl) false
+                                                (strategy, Some head)
+                                | NonTerm(lst) -> let (strategy, head) = CreateStrategy lst true
+                                                  (strategy, Some head)
+        | NonTerm [] -> Map.empty, None
+(*
 let testGraph1 = Empty<string> |> AddVertex "Alice" |> AddVertex "Bob" |> AddVertex "Charlie" |> AddEdge "Alice" "Bob" |>
                     AddEdge "Bob" "Alice" |> AddEdge "Bob" "Charlie"
 let testGraph2 = Empty<int> |> AddVertex 11 |> AddVertex 12 |> AddVertex 13 |> AddVertex 14 |> 
                     AddVertex 15 |> AddVertex 16 |> AddVertex 17 |> AddVertex 18|> AddEdge 11 12 |> 
                         AddEdge 12 13 |> AddEdge 13 14 |> AddEdge 14 15 |> AddEdge 15 16 |> AddEdge 16 17 |>
                             AddEdge 17 18 |> AddEdge 12 18 |> AddEdge 14 17 |> AddEdge 16 15 |> AddEdge 17 13
+*)
