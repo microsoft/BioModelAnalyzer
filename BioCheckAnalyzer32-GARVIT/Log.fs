@@ -55,12 +55,26 @@ type AnalyzerLogService() =
 // Saves given [log] ILogService to internal state. 
 // Then allows us to expose [Log.log] as the global logging function, rather than passing the service handle around.
 let log_service:(ILogService option ref) = ref None
+let default_log_service:(ILogService option ref) = ref None
+let register_default_log_service (log:ILogService)  = 
+    default_log_service := Some log
 let register_log_service (log:ILogService)  = 
     log_service := Some log
 let deregister_log_service () = 
     log_service := None
 
 // Exposed log service calls
+let if_debug() =
+   Option.isSome !log_service
+
+let if_default() =
+   Option.isSome !default_log_service
+
+let log_default s =
+    match !default_log_service with 
+    | Some logs -> logs.LogDebug s 
+    | None -> ()
+
 let log_debug s =
     match !log_service with 
     | Some logs -> logs.LogDebug s 

@@ -56,6 +56,27 @@ let AddEdge src tgt graph=
                   in
         { graph with edges= Set.add (s,t) graph.edges } 
 
+let AddEdgeInternal src tgt graph= 
+    let (s,t) =  match (Map.tryFindKey (fun k v -> k=src) graph.vertices, Map.tryFindKey (fun k v -> k=tgt) graph.vertices) with
+                     | (Some vsrc, Some vtgt) -> (vsrc, vtgt)  
+                     | (_,_) -> failwithf "Vertex %A or %A not found while adding edge" src tgt
+                  in
+        { graph with edges= Set.add (s,t) graph.edges }
+
+let IsEmpty graph = 
+    graph.numNodes = 0
+
+/// assumes graph has at least one vertex
+/// need to generate a default label
+let AddRoot graph = 
+    let root = graph.numNodes
+    let graphWithRootVertex = AddVertex graph.vertices.[0] graph
+    let graphWithRoot = Map.fold
+                            (fun graph idx _ -> AddEdgeInternal root idx graph)
+                            graphWithRootVertex
+                            graph.vertices
+    (graphWithRoot, root)
+
 
 let CreateDotFile (fname:string) graph = 
     // open file
@@ -147,83 +168,111 @@ type Component<'label> =
 /// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
 /// this implementation uses a lot of mutable data
 /// to understand refer to the paper 
-let GetWeakTopologicalOrder graph =
+/// in the returned WTO a root node is added so this function is for internal use only
+let GetWeakTopologicalOrderInternal graph =
+    if IsEmpty graph then 
+        (-1, NonTerm [])
+    else
+        let (graph, root) = AddRoot graph
 
-    let index = ref 0
-    let dfsStack = new Stack<int>()
+        let index = ref 0
+        let dfsStack = new Stack<int>()
 
-    let depthIndex = Array.create graph.numNodes 0 
-    let succ = GetAdjacencyList graph
+        let depthIndex = Array.create graph.numNodes 0 
+        let succ = GetAdjacencyList graph
 
 
-    let rec VisitComponent vertex =
-        let mutable partition = (NonTerm [])
-        for successor in succ.[vertex] do
-            if depthIndex.[successor] = 0 then
-                let (_, rpartition) = (Visit successor partition)
-                partition <- rpartition
-        (match partition with
-                | Term(lbl) -> failwith "partition should have been a list"
-                | NonTerm(lst) -> NonTerm(Term(graph.vertices.[vertex]) :: lst)
-                )
+        let rec VisitComponent vertex =
+            let mutable (partition:Component<int>) = (NonTerm [])
+            for successor in succ.[vertex] do
+                if depthIndex.[successor] = 0 then
+                    let (_, rpartition) = (Visit successor partition)
+                    partition <- rpartition
+            (match partition with
+                    | Term(lblId) -> failwith "partition should have been a list"
+                    | NonTerm(lst) -> NonTerm(Term(vertex) :: lst)
+                    )
 
-    and Visit vertex partition=
-        dfsStack.Push(vertex)
-        incr index
-        depthIndex.[vertex] <- !index
-        let mutable head = depthIndex.[vertex]
-        let mutable loop = false
-        let mutable min = System.Int32.MaxValue
-        let mutable retPartition = partition
+        and Visit vertex partition=
+            dfsStack.Push(vertex)
+            incr index
+            depthIndex.[vertex] <- !index
+            let mutable head = depthIndex.[vertex]
+            let mutable loop = false
+            let mutable min = System.Int32.MaxValue
+            let mutable retPartition = partition
 
-        for successor in succ.[vertex] do
-            if depthIndex.[successor]  = 0 then
-                let (rmin, rretPartition) = (Visit successor retPartition)
-                min <- rmin
-                retPartition <- rretPartition
-            else
-                min <- depthIndex.[successor]
+            for successor in succ.[vertex] do
+                if depthIndex.[successor]  = 0 then
+                    let (rmin, rretPartition) = (Visit successor retPartition)
+                    min <- rmin
+                    retPartition <- rretPartition
+                else
+                    min <- depthIndex.[successor]
 
-            if min <= head then
-                head <- min
-                loop <- true
+                if min <= head then
+                    head <- min
+                    loop <- true
 
-        if head = depthIndex.[vertex] then
-            depthIndex.[vertex] <- System.Int32.MaxValue
-            let mutable element = dfsStack.Pop()
+            if head = depthIndex.[vertex] then
+                depthIndex.[vertex] <- System.Int32.MaxValue
+                let mutable element = dfsStack.Pop()
             
            
-            if loop then
-                while not (element = vertex) do
-                    depthIndex.[element] <- 0
-                    element <- dfsStack.Pop()
+                if loop then
+                    while not (element = vertex) do
+                        depthIndex.[element] <- 0
+                        element <- dfsStack.Pop()
                 
-                let mutable p = NonTerm []
-                retPartition <- (match retPartition with
-                                    | Term(lbl) -> failwith "partition should have been a list"
-                                    | NonTerm(lst) -> NonTerm((VisitComponent vertex):: lst)
-                                    )
-            else 
-                retPartition <- (match retPartition with
-                                    | Term(lbl) -> failwith "partition should have been a list"
-                                    | NonTerm(lst) -> NonTerm(Term(graph.vertices.[vertex]) :: lst)
-                                    )
-        (head, retPartition)
+                    let mutable p = NonTerm []
+                    retPartition <- (match retPartition with
+                                        | Term(lblId) -> failwith "partition should have been a list"
+                                        | NonTerm(lst) -> NonTerm((VisitComponent vertex):: lst)
+                                        )
+                else 
+                    retPartition <- (match retPartition with
+                                        | Term(lblId) -> failwith "partition should have been a list"
+                                        | NonTerm(lst) -> NonTerm(Term(vertex) :: lst)
+                                        )
+            (head, retPartition)
 
-    let mutable partition = NonTerm []
-    for KeyValue(vertex, label) in graph.vertices do
-        if depthIndex.[vertex] = 0 then
-            let (_, rpartition) = (Visit vertex partition)
-            partition <- rpartition
-    partition
+        let mutable (partition:Component<int>) = NonTerm []
+        let (_, rpartition) = (Visit root partition)
+        partition <- rpartition
+        (root, partition)
+
+/// WTO for external use
+let GetWeakTopologicalOrder graph =
+    let rec ReLabel compLst =
+        [for comp in compLst -> match comp with
+                                | Term lblId -> Term graph.vertices.[lblId]
+                                | NonTerm lst -> NonTerm (ReLabel lst)]
+    let (root, wto) = GetWeakTopologicalOrderInternal graph
+    match wto with
+    | NonTerm [] -> []
+    | NonTerm(Term(l)::tl) -> ReLabel tl
+    | _ -> failwith "For non empty graph, WTO returned from WTOInternal must have a root as its first terminal"
 
 
-
+/// String representation of wto
+/// Applying to_string to convert the labels to strings
+let Stringify (wto : Component<'label> list) to_string=
+    let rec ToString compLst =
+        List.map 
+            (fun comp ->
+                 match comp with
+                    | Term lbl -> to_string lbl
+                    | NonTerm lst -> "[ " + (ToString lst) + " ]")
+            compLst
+        |> String.concat ", "
+    ToString wto
+    
 type Strategy<'label> = {
     next : 'label option;
     exit : 'label option;
     isHead : bool
     }
+
 
 /// create the recursive strategy from a wto as described in 
 /// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
@@ -241,16 +290,16 @@ type Strategy<'label> = {
 /// 4.next = 3,    4.exit = None, 4.isHead = false 
 /// 5.next = None, 5.exit = None, 5.isHead = false
 let GetRecursiveStrategy graph =
-    let wto = GetWeakTopologicalOrder graph
+    let (_, wto) = GetWeakTopologicalOrderInternal graph
 
     /// loopBack is true iff this list of components is closed within another component 
     /// In other words, loopBack is false only when we start with the outermost list when it is not
     /// a compnent in itself. For eg. in case of [1 [ 2 3 ] ] loopBack will be true and 
     /// for 1 [ 2 3 ] loopBack will be false
-    let rec CreateStrategy (compLst : Component<'label> list) (loopBack : bool) =
+    let rec CreateStrategy (compLst : Component<int> list) =
         let head = 
             match compLst with
-                | Term(lbl) :: rest -> lbl
+                | Term(lblId) :: rest -> lblId
                 | _ -> failwith "Component must have a head"
 
         ((List.foldBack 
@@ -259,8 +308,8 @@ let GetRecursiveStrategy graph =
                 // if this subComp is a terminal, then its next field should point to prev
                 // if this subComp is a non-terminal, then the exit field of head of subComp would be prev
                 match subcomp with
-                    | Term(lbl) -> (Map.add lbl { next= prev; exit= None; isHead = (lbl=head) && loopBack } stgyMap, Some lbl)
-                    | NonTerm(lst) ->   let (subStgyMap, subHead) = (CreateStrategy lst true)
+                    | Term(lblId) -> (Map.add lblId { next= prev; exit= None; isHead = (lblId=head) } stgyMap, Some lblId)
+                    | NonTerm(lst) ->   let (subStgyMap, subHead) = (CreateStrategy lst)
                                         // combine the maps stgyMap and subStgyMap
                                         // replace the exit field of the head of the subComp to point to prev
                                         (Util.MergeMaps stgyMap subStgyMap
@@ -268,17 +317,37 @@ let GetRecursiveStrategy graph =
                                           Some subHead)
             )
             compLst
-            (Map.empty, if loopBack then Some head else None)) |> fst,
+            (Map.empty<int, Strategy<int>>, Some head)) |> fst,
             head)
 
+    let DerootStrategy ((strategy : Map<int, Strategy<int>>), (root : int)) =
+        let derooted =  
+            Map.fold
+                (fun map vtx sgy ->
+                    if vtx = root then
+                        map
+                    else
+                        let newSgy = 
+                            { next = match sgy.next with
+                                     | None -> None
+                                     | Some v -> if v = root then None else Some graph.vertices.[v]
+                              exit = match sgy.exit with
+                                     | None -> None
+                                     | Some v -> if v = root then None else Some graph.vertices.[v]
+                              isHead = sgy.isHead }
+                        Map.add graph.vertices.[vtx] newSgy map)
+                (Map.empty)
+                strategy
+        (derooted, Some graph.vertices.[Option.get strategy.[root].next])
+
+   
+    
     match wto with
-        | Term(lbl) -> failwith "WTO cannot be a terminal"
-        | NonTerm(hd::tl) -> match hd with
-                                | Term(lbl) ->  let (strategy, head) = CreateStrategy (hd::tl) false
-                                                (strategy, Some head)
-                                | NonTerm(lst) -> let (strategy, head) = CreateStrategy lst true
-                                                  (strategy, Some head)
+        | Term(lblId) -> failwith "WTO cannot be a terminal"
         | NonTerm [] -> Map.empty, None
+        | NonTerm(lst) -> (DerootStrategy (CreateStrategy lst))  
+                             
+
 (*
 let testGraph1 = Empty<string> |> AddVertex "Alice" |> AddVertex "Bob" |> AddVertex "Charlie" |> AddEdge "Alice" "Bob" |>
                     AddEdge "Bob" "Alice" |> AddEdge "Bob" "Charlie"

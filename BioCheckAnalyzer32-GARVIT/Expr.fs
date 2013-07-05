@@ -92,9 +92,13 @@ let is_a_const range e =
         | _ -> false
     is_a_const_var range e || is_a_const_int e
 
+
+let num_exprs_evaled = ref 0
+let GetNumExprsEvaled() = !num_exprs_evaled
 /// Evaluate an arithmetic expression at [node]
 let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var, int>) =
-
+    incr num_exprs_evaled
+    
     let node_min, node_max = Map.find node range
 
     let rec eval_expr_int e env =
@@ -380,8 +384,8 @@ and is_decreasing_int f var =
         dec1 && dec2
     | Ave(es) -> List.forall (fun e -> is_decreasing e var) es
     | Sum(es) -> List.forall (fun e -> is_decreasing e var) es //QSW
-and is_increasing = is_increasing_int
-and is_decreasing = is_decreasing_int
+and is_increasing = memoize is_increasing_int
+and is_decreasing = memoize is_decreasing_int
 
 let register_tests () =
     let f = Var(0)

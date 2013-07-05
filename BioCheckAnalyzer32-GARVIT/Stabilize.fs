@@ -2,7 +2,7 @@
 module Stabilize
 
 let check_stability_lazy network =
-    Log.log_debug ("Starting check_stability_lazy network={" + (String.concat "," (List.map QN.str_of_node network)) + "}" )
+    if Log.if_default() then Log.log_default ("Starting check_stability_lazy network={" + (String.concat "," (List.map QN.str_of_node network)) + "}" )
     let seq_counter = ref 0 
     let bounds_history = ref [] // in rev order 
 
@@ -11,16 +11,18 @@ let check_stability_lazy network =
         (fun (still_working,bounds) -> 
             bounds_history := (!seq_counter,bounds) :: !bounds_history
             if still_working then 
-                Log.log_debug ("Bounds@t" + (string(!seq_counter)) + " {" + (QN.str_of_range network bounds) + "}")
+                if Log.if_debug() then Log.log_debug ("Bounds@t" + (string(!seq_counter)) + " {" + (QN.str_of_range network bounds) + "}")
                 let tmp_history = [ (!seq_counter, bounds) ]
                 incr seq_counter; Result.SRNotStabilizing(tmp_history) 
             else 
+                if Log.if_default() then Log.log_default("Number of updates is "+ (string) !seq_counter)
+                if Log.if_default() then Log.log_default("Number of exprs evaluated is " + (string) (Expr.GetNumExprsEvaled()))
                 let stabilized = Map.forall (fun _ (lower,upper) -> upper = lower) bounds
                 if stabilized then 
-                    Log.log_debug ("Stabilizing: bounds={" + (QN.str_of_range network bounds) + "}")
+                    if Log.if_default() then Log.log_default ("Stabilizing: bounds={" + (QN.str_of_range network bounds) + "}")
                     Result.SRStabilizing(!bounds_history)
                 else 
-                    Log.log_debug ("Not Stabilizing.")
+                    if Log.if_default() then Log.log_default ("Not Stabilizing: bounds={" + (QN.str_of_range network bounds) + "}")
                     Result.SRNotStabilizing(!bounds_history))
 
 let find_cex_bifurcates qn bounds = 
@@ -49,6 +51,6 @@ let stabilization_prover model =
         (result, None) 
     | Result.SRNotStabilizing(bounds_history) -> 
         let (_last_tick,last_bounds) = List.maxBy (fun (t,_b) -> t) bounds_history
-        let cex = Counterexample.find_cex model last_bounds
-        Log.log_debug (cex.ToString())
-        (result, Some(cex))
+        //let cex = Counterexample.find_cex model last_bounds
+        //Log.log_debug (cex.ToString())
+        (result, None(*Some(cex)*)) 

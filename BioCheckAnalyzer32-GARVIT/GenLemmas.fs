@@ -62,9 +62,8 @@ let stabilize_lazy (network : QN.node list) =
             if still_working then
                 if (not (Set.isEmpty frontier)) then
                     // Arbitrarily pick the lowest node in the frontier.
-                    let node = Set.minElement frontier
+                    let node = Set.maxElement frontier
                     let frontier = Set.remove node frontier
-
                     let expr = Map.find node exprs
                     let (lower, upper) = Map.find node bounds
 
@@ -76,7 +75,7 @@ let stabilize_lazy (network : QN.node list) =
                         if new_upper < upper || new_lower > lower then
                             let bounds' = Map.add node (new_lower, new_upper) (Map.remove node bounds)
                             let frontier' = Set.fold (fun fr o -> Set.add o fr) frontier (Map.find node outputs)
-                            Log.log_debug ("Tightened var(" + (string)node + "). Adding it's outputs to frontier")
+                            if Log.if_debug() then Log.log_debug ("Tightened var(" + (string)node + "). Adding it's outputs to frontier")
                             (bounds',frontier')
                         else bounds, frontier
                     Some ((true,bounds),(true,frontier,bounds,outputs))
