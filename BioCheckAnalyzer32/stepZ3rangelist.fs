@@ -224,13 +224,23 @@ let find_paths (network : QN.node list) step rangelist orbounds=
 
 
 
-// SI: 
-let find_paths_samin (qn:QN.node list) step range orig_range =
+// SI: rewritten find_paths to remove redundant code and to be more functional. 
+
+let input_nodes (qn:QN.node list) (node:QN.node) = 
+            List.concat
+                [ for var in node.inputs do
+                    yield (List.filter (fun (x:QN.node) -> ((x.var = var) && not (x.var = node.var))) qn) ]
+
+let model_ok (ctx:Context) model = 
+    let sat = ctx.CheckAndGetModel (model)
+    sat = LBool.True || sat = LBool.Undef
+       
+let reachability (qn:QN.node list) step range orig_range =
+    // Z3 ctx management
     let cfg = new Config()
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
-    
-    ctx.Push()
+    ctx.Push()    
     
     let next_values (node : QN.node) vv =
         match vv with
@@ -241,12 +251,8 @@ let find_paths_samin (qn:QN.node list) step range orig_range =
                         (fun vv' v ->                     
                             let (model : ref<Model>) = ref null
                             ctx.Push()
-                            assert_query (node : QN.node) (v : int) (step+1) ctx
-                            let sat = ctx.CheckAndGetModel (model)
-                            // SI: shouldn't have undef case 
-                            let vv' = 
-                                if (sat = LBool.True || sat = LBool.Undef) then v :: vv'
-                                else vv'
+                            assert_query node v (step+1) ctx 
+                            let vv' = if model_ok ctx model then v :: vv' else vv'
                             ctx.Pop()         
                             if (!model) <> null then (!model).Dispose()
                             vv')
@@ -257,25 +263,16 @@ let find_paths_samin (qn:QN.node list) step range orig_range =
     let bounds' = 
         List.fold 
             (fun bounds' (node:QN.node) -> 
-
                 ctx.Push()
-                
-                let input_nodes =
-                    List.concat
-                        [ for var in node.inputs do
-                            yield (List.filter (fun (x:QN.node) -> ((x.var = var) && not (x.var = node.var))) qn) ]
-                let nodes = node :: input_nodes
-
+                let nodes = node :: (input_nodes qn node)
                 // Assert current range bounds 
                 for n in nodes do
                     let range_n = Map.find n.var range
                     let min_n, max_n = List.min range_n, List.max range_n 
                     BioCheckZ3.assert_bound n (min_n,max_n) step ctx
-
                 // Assert transition constraints
                 let var_to_name = BioCheckZ3.build_var_name_map nodes
                 assert_target_function qn node var_to_name orig_range step (step+1) ctx
-                
                 // Assert next range 
                 let current_values = Map.find node.var range
                 let bounds' = Map.add node.var (next_values node current_values) bounds'
@@ -283,12 +280,11 @@ let find_paths_samin (qn:QN.node list) step range orig_range =
                 bounds' )
             Map.empty
             qn
-            
+    // Z3 ctx management            
     ctx.Pop()
-
     ctx.Dispose()
     cfg.Dispose()
-
+    // result
     bounds'
 
 

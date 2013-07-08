@@ -29,13 +29,13 @@ let output_paths (network : QN.node list) bounds naive_encoding=
     paths
 
 // SI: rewritten output_paths to remove redundant code and to be more functional. 
-let output_paths_samin (qn : QN.node list) bounds naive =
+// decreasing reachability calculates the fixed point of reachability wrt bounds. 
+let decreasing_reachability (qn : QN.node list) bounds naive =
     if naive then
         [bounds]
     else 
-        // Fixpoint of find_paths wrt bounds
         let rec loop step bounds' bounds paths =
-            let bounds'' = stepZ3rangelist.find_paths qn step bounds' bounds
+            let bounds'' = stepZ3rangelist.reachability qn step bounds' bounds
             // If bounds'' is different from each path, then find next bound. 
             if List.forall (fun p -> p <> bounds'') paths then 
                 // SI: should bounds be bounds'?
