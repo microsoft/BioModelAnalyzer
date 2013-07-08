@@ -28,6 +28,22 @@ let output_paths (network : QN.node list) bounds naive_encoding=
                
     paths
 
+// SI: rewritten output_paths to remove redundant code and to be more functional. 
+let output_paths_samin (qn : QN.node list) bounds naive =
+    if naive then
+        [bounds]
+    else 
+        // Fixpoint of find_paths wrt bounds
+        let rec loop step bounds' bounds paths =
+            let bounds'' = stepZ3rangelist.find_paths qn step bounds' bounds
+            // If bounds'' is different from each path, then find next bound. 
+            if List.forall (fun p -> p <> bounds'') paths then 
+                // SI: should bounds be bounds'?
+                loop (step+1) bounds'' bounds (paths @ [bounds'']) 
+            else paths
+        loop 0 bounds bounds [bounds]
+
+
 let print_paths (network : QN.node list) (paths : Map<QN.var, int list> list) =
     let mutable all_vars = "time"
     for node in network do

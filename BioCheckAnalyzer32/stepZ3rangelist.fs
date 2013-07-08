@@ -159,8 +159,8 @@ let find_paths (network : QN.node list) step rangelist orbounds=
                 ctx.Push()
                 assert_query (node : QN.node) (i : int) (step+1) ctx
                 let sat = ctx.CheckAndGetModel (model)
-                        
-            
+
+                // SI: cons the i in all cases but false                         
                 if sat = LBool.True then
                     newPossibleValues <- i :: newPossibleValues
                 elif sat = LBool.Undef then
@@ -204,7 +204,7 @@ let find_paths (network : QN.node list) step rangelist orbounds=
         for n in nodelist do
             let rangeOfN = Map.find n.var rangelist
             let nMin = List.min rangeOfN
-            let nMax = List.max rangeOfN
+            let nMax = List.max rangeOfN    
             BioCheckZ3.assert_bound n (nMin , nMax) step ctx
         // Then, push related transition constraints
         assert_target_function network node varnamenode orbounds step (step+1) ctx
@@ -221,3 +221,79 @@ let find_paths (network : QN.node list) step rangelist orbounds=
 
     nubounds
 //End <-- For each time step, encode the system (model) in SMT format, and push into Z3 to compute possible values of each variables
+
+
+
+// SI: 
+let find_paths_samin (qn:QN.node list) step range orig_range =
+    let cfg = new Config()
+    cfg.SetParamValue("MODEL", "true")
+    let ctx = new Context(cfg)
+    
+    ctx.Push()
+    
+    let next_values (node : QN.node) vv =
+        match vv with
+        | [] -> failwith "values empty" 
+        | [_] -> vv
+        | _ -> 
+            let vv' = List.fold 
+                        (fun vv' v ->                     
+                            let (model : ref<Model>) = ref null
+                            ctx.Push()
+                            assert_query (node : QN.node) (v : int) (step+1) ctx
+                            let sat = ctx.CheckAndGetModel (model)
+                            // SI: shouldn't have undef case 
+                            let vv' = 
+                                if (sat = LBool.True || sat = LBool.Undef) then v :: vv'
+                                else vv'
+                            ctx.Pop()         
+                            if (!model) <> null then (!model).Dispose()
+                            vv')
+                        []
+                        vv
+            List.sort vv'
+
+    let bounds' = 
+        List.fold 
+            (fun bounds' (node:QN.node) -> 
+
+                ctx.Push()
+                
+                let input_nodes =
+                    List.concat
+                        [ for var in node.inputs do
+                            yield (List.filter (fun (x:QN.node) -> ((x.var = var) && not (x.var = node.var))) qn) ]
+                let nodes = node :: input_nodes
+
+                // Assert current range bounds 
+                for n in nodes do
+                    let range_n = Map.find n.var range
+                    let min_n, max_n = List.min range_n, List.max range_n 
+                    BioCheckZ3.assert_bound n (min_n,max_n) step ctx
+
+                // Assert transition constraints
+                let var_to_name = BioCheckZ3.build_var_name_map nodes
+                assert_target_function qn node var_to_name orig_range step (step+1) ctx
+                
+                // Assert next range 
+                let current_values = Map.find node.var range
+                let bounds' = Map.add node.var (next_values node current_values) bounds'
+                ctx.Pop()
+                bounds' )
+            Map.empty
+            qn
+            
+    ctx.Pop()
+
+    ctx.Dispose()
+    cfg.Dispose()
+
+    bounds'
+
+
+
+
+
+
+
