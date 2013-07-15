@@ -169,11 +169,11 @@ let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : C
     let cnstr = z.MkOr([|up;same;dn|])
 
     List.iter
-        (fun c -> Log.log_debug ("T_" + (string)node.var + "_xtra_assrt: " + z.ToString c))
+        (fun c -> if Log.level(2) then Log.log_debug ("T_" + (string)node.var + "_xtra_assrt: " + z.ToString c))
         extra_asserts
     z.AssertCnstr (z.MkAnd((Array.ofList extra_asserts)))
 
-    Log.log_debug ("T_" + (string)node.var + ":" + z.ToString cnstr)
+    if Log.level(2) then Log.log_debug ("T_" + (string)node.var + ":" + z.ToString cnstr)
     z.AssertCnstr cnstr
 
 // assert  lower <= v_t <= upper
@@ -185,12 +185,12 @@ let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context)
     let lower_bound = simplify (z.MkGe(v, z.MkIntNumeral lower))
     let upper_bound = simplify (z.MkLe(v, z.MkIntNumeral upper))
 
-    Log.log_debug ("// " + var_name + "_lower_bound >= " + (string)lower)
-    Log.log_debug (var_name + "_lower_bound:" + z.ToString lower_bound)
+    if Log.level(2) then Log.log_debug ("// " + var_name + "_lower_bound >= " + (string)lower)
+    if Log.level(2) then Log.log_debug (var_name + "_lower_bound:" + z.ToString lower_bound)
     z.AssertCnstr lower_bound
 
-    Log.log_debug ("// " + var_name + "_upper_bound <=" + (string)upper)
-    Log.log_debug (var_name + "_upper_bound:" + z.ToString upper_bound)
+    if Log.level(2) then Log.log_debug ("// " + var_name + "_upper_bound <=" + (string)upper)
+    if Log.level(2) then Log.log_debug (var_name + "_upper_bound:" + z.ToString upper_bound)
     z.AssertCnstr upper_bound
 
 let unroll_qn qn bounds start_time end_time z =
@@ -264,7 +264,7 @@ let assert_not_model (model : Model) (z : Context) =
         let new_val = z.MkNot (z.MkEq(lhs, rhs))
         not_model <- z.MkOr(not_model, new_val)
 
-    Log.log_debug ("not_model: " + z.ToString not_model)
+    if Log.level(2) then Log.log_debug ("not_model: " + z.ToString not_model)
     z.AssertCnstr not_model
 
 let find_bifurcation (network : QN.node list) range =
@@ -324,7 +324,7 @@ let find_cycle (network: QN.node list) bounds length =
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
 
-    Log.log_debug ("Searching for a cycle of length " + (string)length)
+    if Log.level(1) then Log.log_debug ("Searching for a cycle of length " + (string)length)
 
     // Unroll the model k-times
     for time in [0..length] do
@@ -369,7 +369,7 @@ let find_cycle_steps network diameter bounds =
 
     while bigint.Compare(diameter, bigint(k)) > 0 && cycle = None do
         k <- k*2
-        Log.log_debug ( "find_cycle_steps " + (string)k )
+        if Log.level(1) then Log.log_debug ( "find_cycle_steps " + (string)k )
         cycle <- find_cycle network bounds k
 
     cycle

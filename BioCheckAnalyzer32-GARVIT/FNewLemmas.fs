@@ -34,7 +34,7 @@ let tighten_internal node range expr lower upper input_bounds =
         (Seq.fold
             (fun (lower, upper) env ->                                   
                 let new_val = Expr.eval_expr node range expr env
-                if Log.if_debug() then Log.log_debug ("tighten_internal: var:"+(string)node + " f:" + (Expr.str_of_expr expr) + " env:" + (Expr.str_of_env env) + " var':"+(string)new_val)
+                if Log.level(2) then Log.log_debug ("tighten_internal: var:"+(string)node + " f:" + (Expr.str_of_expr expr) + " env:" + (Expr.str_of_env env) + " var':"+(string)new_val)
                 let new_lower = min lower new_val
                 let new_upper = max upper new_val
                 (new_lower, new_upper))

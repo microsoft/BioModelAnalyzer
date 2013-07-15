@@ -82,6 +82,7 @@
     <None Include="packages.config" />
     <Compile Include="GGraph.fs" />
     <Compile Include="Oracle.fs" />
+    <Compile Include="Cut.fs" />
     <Compile Include="Shrink.fs" />
   </ItemGroup>
   <ItemGroup>

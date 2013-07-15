@@ -7,11 +7,11 @@ let find_cex_bifurcation (net : QN.node list) (bounds : Map<QN.var, int*int>) =
     match bifurcation with
     | Some(x,y) -> Some(Result.CExBifurcation(x,y))
     | None -> 
-        Log.log_debug "No bifurcation..."
+        if Log.level(1) then Log.log_debug "No bifurcation..."
         None
 
 let find_cex_cycle (net : QN.node list) (bounds : Map<QN.var, int*int>) =
-    Log.log_debug "CEx(2): check whether the model cycles."
+    if Log.level(1) then Log.log_debug "CEx(2): check whether the model cycles."
     // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
     let diameter =
             Map.fold 
@@ -25,11 +25,11 @@ let find_cex_cycle (net : QN.node list) (bounds : Map<QN.var, int*int>) =
     match cycle with
     | Some(x) -> Some(Result.CExCycle(x))
     | None ->
-        Log.log_debug "No cycle..."
+        if Log.level(1) then Log.log_debug "No cycle..."
         None
 
 let find_cex_fixpoint (net : QN.node list) (bounds : Map<QN.var, int*int>) =
-    Log.log_debug "CEx(3): check whether the model has a fixpoint."
+    if Log.level(1) then Log.log_debug "CEx(3): check whether the model has a fixpoint."
     let fix = Z.find_fixpoint net bounds
 
     match fix with
@@ -45,7 +45,7 @@ let find_cex_fixpoint (net : QN.node list) (bounds : Map<QN.var, int*int>) =
 let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
 
     // Try to find a bifurcation first....
-    Log.log_debug "CEx(1): check whether the model bifurcates."
+    if Log.level(1) then Log.log_debug "CEx(1): check whether the model bifurcates."
     let bifurcation = Z.find_bifurcation net bounds(*was: range*)
 
     match bifurcation with
@@ -54,7 +54,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
         Log.log_debug "No bifurcation..."
 
         // No bifurcation - let's try to find a cycle...
-        Log.log_debug "CEx(2): check whether the model cycles."
+        if Log.level(1) then Log.log_debug "CEx(2): check whether the model cycles."
         // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
         let diameter =
                 Map.fold 
@@ -68,7 +68,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
         match cycle with
         | Some(x) -> Result.CExCycle(x)
         | None ->
-            Log.log_debug "No cycle..."
+            if Log.level(1) then Log.log_debug "No cycle..."
 
             // No cycle either... so if there is a fixpoint, it must be unique
             // and reachable from every other state.
@@ -78,7 +78,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
             match fix with
             | Some(x) -> Result.CExFixpoint(x)
             | None ->
-                Log.log_debug "...and no fixpoint???"
+                if Log.level(1) then Log.log_debug "...and no fixpoint???"
                 Result.CExUnknown
 
 

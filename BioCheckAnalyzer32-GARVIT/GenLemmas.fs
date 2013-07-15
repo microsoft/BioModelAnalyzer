@@ -75,7 +75,7 @@ let stabilize_lazy (network : QN.node list) =
                         if new_upper < upper || new_lower > lower then
                             let bounds' = Map.add node (new_lower, new_upper) (Map.remove node bounds)
                             let frontier' = Set.fold (fun fr o -> Set.add o fr) frontier (Map.find node outputs)
-                            if Log.if_debug() then Log.log_debug ("Tightened var(" + (string)node + "). Adding it's outputs to frontier")
+                            if Log.level(2) then Log.log_debug ("Tightened var(" + (string)node + "). Adding it's outputs to frontier")
                             (bounds',frontier')
                         else bounds, frontier
                     Some ((true,bounds),(true,frontier,bounds,outputs))

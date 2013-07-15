@@ -145,7 +145,7 @@ let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<
     // SI, Nir: Lucinda's Excel model takes the ceiling of the float computation.
     // We need to convert the float to the int. But via which function (ceil, floor, round)?
     // floor seems to force a fast stabilization to 0 for Lucinda's model.
-    let convert = id // round, ceil???
+    let convert = (fun x -> x + 0.5) // round, ceil???
     let res = int (convert (eval_expr_int e env))
     // Keep res in range
     let node_lo,node_hi = Map.find node range

@@ -112,11 +112,9 @@ let model_of_xml (xd:XDocument) =
                         match ii, oo with
                         | [], [] -> Expr.Const(min)
                         | [], _  -> Expr.Minus(Expr.Const(max), Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
-                        | _ , [] -> Expr.Min(Expr.Const(max), Expr.Ave(List.map (fun i -> Expr.Var(i)) ii))
-                        | _ , _  ->
-                            Expr.Max(Expr.Const(min),
-                                     Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),
-                                                Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
+                        | _ , [] -> Expr.Ave(List.map (fun i -> Expr.Var(i)) ii)
+                        | _ , _  -> Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),
+                                                Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
                 let nature = 
                     // map describing the nature of inputs : activating/inhibiting
                     List.fold
@@ -126,7 +124,7 @@ let model_of_xml (xd:XDocument) =
                             Map.empty
                             oo)
                         ii
-                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; QN.nature= nature } )
+                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; QN.nature= nature; QN.defualtF = Option.isNone v.Vf } )
             inputs'
 
     // Final result

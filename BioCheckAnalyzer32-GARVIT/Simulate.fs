@@ -10,7 +10,10 @@ let tick (qn:QN.qn) (env_0:Map<QN.var,int>) =
             (fun env (v:QN.node) -> 
                 // SI: is the range v's range? (Think so.)
                 let s' = Expr.eval_expr v.var range v.f env_0
-                Map.add v.var s' env
+                let s = env_0.[v.var]
+                if s' > s then Map.add v.var (s+1) env
+                elif s' = s then Map.add v.var s env
+                else Map.add v.var (s-1) env
             )
             Map.empty
             qn

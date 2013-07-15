@@ -27,6 +27,7 @@ type node =
         range : int * int;  // [min..max]
         name : string;
         nature : Map<var, nature> // nature of each input, must have as many elements as inputs
+        defualtF : bool
     }
 
 let str_of_node (n:node) =
