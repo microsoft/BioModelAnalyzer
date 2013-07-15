@@ -254,6 +254,22 @@ let GetWeakTopologicalOrder graph =
     | _ -> failwith "For non empty graph, WTO returned from WTOInternal must have a root as its first terminal"
 
 
+let rec GetDepthOfVertexInWTO (vtx : 'label) (wto : Component<'label> list) =
+    let rec GetDepth_h (vtx : 'label) (compLst : Component<'label> list) =
+        List.fold 
+            (fun acc comp ->
+                let compDep =
+                    match comp with
+                    | Term lbl -> if lbl=vtx then Some 0 else None
+                    | NonTerm lst -> let d : int option = (GetDepth_h vtx lst) in 
+                                        if d.IsNone then None else Some(1 + Option.get d)
+                if compDep.IsNone then acc else compDep)
+            None
+            compLst
+    let depth = GetDepth_h vtx wto
+    match depth with
+    | None -> failwithf "Vertex %A not present in wto" vtx
+    | Some d -> d
 /// String representation of wto
 /// Applying to_string to convert the labels to strings
 let Stringify (wto : Component<'label> list) to_string=

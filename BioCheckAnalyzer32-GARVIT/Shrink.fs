@@ -53,35 +53,38 @@ let MutateExpr (qn : QN.node list) (srcNodeVar : QN.var) (dstNodeVar : QN.var) (
             let numInputs = List.length dstNode.inputs
             Expr.Div(Expr.Plus(Expr.Times(dstNode.f, Expr.Const(numInputs)), Expr.Var(srcNodeVar)), Expr.Const(numInputs+1))
 
-let FindStabilizingEdgeScores (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) (qnStrategy : Map<QN.var, GGraph.Strategy<QN.var>>) = 
+let FindStabilizingEdgeScores (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) 
+                (qnStrategy : Map<QN.var, GGraph.Strategy<QN.var>>) (qnWTO : GGraph.Component<QN.var> list) = 
     List.fold
         (fun scores (src, dst, ntr)->
             let mutatedExpr = MutateExpr qn src dst ntr
             let dstNode = QN.get_node_from_var dst qn
-            let newBounds = UpdateVarBounds { dstNode with f=mutatedExpr; inputs = src::dstNode.inputs; nature= Map.add src ntr dstNode.nature } 
-                                    ranges bounds
+            let newBounds = UpdateVarBounds 
+                                { dstNode with f=mutatedExpr; inputs = src::dstNode.inputs; nature= Map.add src ntr dstNode.nature } 
+                                ranges bounds
+            let depthScore = GGraph.GetDepthOfVertexInWTO dst qnWTO
             if NoChangeInBoundsForNode dstNode bounds newBounds then
-                ((src, dst, ntr), 0) :: scores
+                ((src, dst, ntr), (5, depthScore)) :: scores
             else
                 if qnStrategy.[dst].isHead then
                     if dstNode.defualtF then
-                        ((src, dst, ntr), 4) :: scores
+                        ((src, dst, ntr), (1, depthScore)) :: scores
                     else
-                        ((src, dst, ntr), 3) :: scores
+                        ((src, dst, ntr), (2, depthScore)) :: scores
                 else
                     if dstNode.defualtF then
-                        ((src, dst, ntr), 2) :: scores
+                        ((src, dst, ntr), (3, depthScore)) :: scores
                     else
-                        ((src, dst, ntr), 1) :: scores)
+                        ((src, dst, ntr), (4, depthScore)) :: scores)
         []
         [ for src in qn do for dst in qn do for ntr in [QN.Act; QN.Inh] -> (src.var, dst.var, ntr) ]
                     
-let printEdgeScores (scores : List<(QN.var*QN.var*QN.nature)*int>)=
-    let scores = List.sortBy (fun (k, v) -> -v) scores
+let printEdgeScores (scores : List<(QN.var*QN.var*QN.nature)*(int*int)>)=
+    let scores = List.sortBy (fun (k, v) -> v) scores
     let counter = ref 0
-    for ((s, d, n), v) in scores do
-        if not (v = 0) && !counter < 30 then
-            printf "%d -> %A -> %d : %d\n" s n d v
+    for ((s, d, n), (v1, v2)) in scores do
+        if !counter < 30 then
+            printf "%d -> %A -> %d : (%d, %d)\n" s n d v1 v2
             incr counter
 
 
@@ -238,7 +241,7 @@ let AddEdgeInQN (src, dst, ntr) qn =
         {dstNode with f=mutatedExpr; inputs = src::dstNode.inputs; nature= Map.add src ntr dstNode.nature} :: qn
     qn
 
-let rec CallShrinkInternal (qn : QN.node list) bounds frontier =
+let rec CallShrinkInternal (qn : QN.node list) bounds frontier qnGraph reCalc =
     let ranges = Map.ofList [for node in qn -> (node.var, node.range)]
     let inputs = Map.ofList [for node in qn -> (node.var, node.inputs)]
 
@@ -249,7 +252,7 @@ let rec CallShrinkInternal (qn : QN.node list) bounds frontier =
             let curr_outs = outputs.[input]
             outputs <- Map.add input (curr_outs.Add node.var) outputs
 
-    let qnGraph =
+    let qnGraph' =
         List.fold
             (fun graph (node : QN.node) ->
                 List.fold
@@ -263,26 +266,27 @@ let rec CallShrinkInternal (qn : QN.node list) bounds frontier =
                 GGraph.Empty<QN.var>
                 qn)
             qn
-
+    let qnGraph = if reCalc then qnGraph' else qnGraph
     let (qnStrategy, qnStartPoint) = GGraph.GetRecursiveStrategy qnGraph
-    if Log.level(1) then Log.log_debug("WTO:" + GGraph.Stringify (GGraph.GetWeakTopologicalOrder qnGraph) string)
+    let qnWTO = GGraph.GetWeakTopologicalOrder qnGraph
+    if Log.level(1) then Log.log_debug("WTO:" + GGraph.Stringify (qnWTO) string)
     let shrunkBounds = Shrink qn qnStrategy qnStartPoint frontier bounds outputs
     if Map.forall (fun _ (lower,upper) -> upper = lower) shrunkBounds then
         if Log.level(1) then Log.log_debug("Stabilized")
         for node in qn do
             if Log.level(2) then Log.log_debug (QN.str_of_node node)
     else
-        let scores = FindStabilizingEdgeScores qn ranges shrunkBounds qnStrategy
-        let (newEdge, score) = List.maxBy (fun (k, v) -> v) scores
+        let scores = FindStabilizingEdgeScores qn ranges shrunkBounds qnStrategy qnWTO
+        let (newEdge, score) = List.minBy (fun (k, (s, d)) -> (s,d)) scores
         
         let (s, d, n) = newEdge 
         if Log.level(1) then 
-            Log.log_debug(sprintf "%d -> %A -> %d : %d\n" s n d score)
+            Log.log_debug(sprintf "%d -> %A -> %d : (%d, %d)\n" s n d (fst score) (snd score))
             ignore(Console.ReadKey())
 
         let qn = AddEdgeInQN newEdge qn
 
-        CallShrinkInternal qn shrunkBounds (Set.add d Set.empty)
+        CallShrinkInternal qn shrunkBounds (Set.add d Set.empty) qnGraph ((fst score)>=2)
 
 
 let CallShrink (qn : QN.node list) = 
@@ -313,4 +317,5 @@ let CallShrink (qn : QN.node list) =
     
     if Log.level(1) then Log.log_debug("StartBounds={" + (QN.str_of_range qn bounds) + "}")
 
-    CallShrinkInternal qn bounds frontier
+    
+    CallShrinkInternal qn bounds frontier GGraph.Empty<QN.var> true
