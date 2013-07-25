@@ -84,7 +84,7 @@ let printEdgeScores (scores : List<(QN.var*QN.var*QN.nature)*(int*int)>)=
     let counter = ref 0
     for ((s, d, n), (v1, v2)) in scores do
         if !counter < 30 then
-            printf "%d -> %A -> %d : (%d, %d)\n" s n d v1 v2
+            if Log.level(2) then Log.log_debug(sprintf "%d -> %A -> %d : (%d, %d)" s n d v1 v2)
             incr counter
 
 
@@ -113,10 +113,7 @@ let FindUnstableHead (qnStrategy: Map<QN.var, GGraph.Strategy<QN.var>>) qnStartP
 
     unstableHead
 
-let rec Shrink (qn : QN.node list) qnStrategy qnStartPoint startFrontier startBounds outputs=
-
-    let ranges = Map.ofList [for node in qn -> (node.var, node.range)]
-    let inputs = Map.ofList [for node in qn -> (node.var, node.inputs)]
+let rec Shrink (qn : QN.node list) ranges inputs outputs qnStrategy qnStartPoint startFrontier startBounds =
 
     let mutable bounds = startBounds
     
@@ -171,11 +168,12 @@ let rec Shrink (qn : QN.node list) qnStrategy qnStartPoint startFrontier startBo
     if Log.level(1) then Log.log_debug ("Updated variables " + (string) !updateCounter + " times.")
     if Log.level(1) then Log.log_debug ("Evaluated " + (string) (Expr.GetNumExprsEvaled()) + " exprs.")
     if Log.level(1) then Log.log_debug ("bounds={" + (QN.str_of_range qn bounds) + "}")
+    (*
     if Map.forall (fun _ (lower,upper) -> upper = lower) bounds then
         if Log.level(1) then Log.log_debug ("Stabilizing")
 
         
-        (*
+        
         let env0 = (Map.fold (fun map v (lower, _) -> Map.add v lower map) Map.empty bounds)
         let mutable allEnvs = Map.add env0 0 Map.empty
         let mutable env = env0
@@ -192,13 +190,13 @@ let rec Shrink (qn : QN.node list) qnStrategy qnStartPoint startFrontier startBo
                 i <- i+1
         if Log.level(1) then Log.log_debug ("Press any key.. ")
         ignore (Console.ReadKey())
-        *)
+        
     else
         if Log.level(1) then Log.log_debug ("Not-Stabilizing")
         
 
 
-        (*
+        
         if Log.level(1) then Log.log_debug ("Now simulating from arbitrary point to find cycle")
         let env0 = (Map.fold (fun map v (lower, _) -> Map.add v lower map) Map.empty bounds)
         let mutable allEnvs = Map.add env0 0 Map.empty
@@ -214,21 +212,23 @@ let rec Shrink (qn : QN.node list) qnStrategy qnStartPoint startFrontier startBo
              else
                 allEnvs <- Map.add env i allEnvs
                 i <- i+1
+        //if Log.level(1) then Log.log_debug ("Press any key.. ")
+        //ignore (Console.ReadKey())
+        *)
+        (*
+        let (cutNode, cutAt, cutNature) = Cut.FindBestCut qn ranges bounds
+        let cutNodeVar = cutNode.var
+        if Log.level(1) then Log.log_debug (sprintf "CutNode %d, CutPoint %d, CutNature %A" cutNodeVar cutAt cutNature)
+        
         if Log.level(1) then Log.log_debug ("Press any key.. ")
         ignore (Console.ReadKey())
 
-
-        let (cutNodeVar, cutAt) = Cut.ExploreCuts qn ranges bounds
-        if Log.level(1) then Log.log_debug (sprintf "CutNode %d, CutPoint %d" cutNodeVar cutAt)
         
-       // if Log.level(1) then Log.log_debug ("Press any key.. ")
-        //ignore (Console.ReadKey())
-
-
         let newFrontier = (Map.find cutNodeVar outputs)
-        ignore (Shrink qn qnStrategy qnStartPoint newFrontier (Map.add cutNodeVar ((fst bounds.[cutNodeVar]), cutAt) bounds))
-        ignore (Shrink qn qnStrategy qnStartPoint newFrontier (Map.add cutNodeVar (cutAt+1, (snd bounds.[cutNodeVar])) bounds))
+        ignore (Shrink qn ranges inputs outputs qnStrategy qnStartPoint newFrontier (Map.add cutNodeVar ((fst bounds.[cutNodeVar]), cutAt) bounds))
+        ignore (Shrink qn ranges inputs outputs qnStrategy qnStartPoint newFrontier (Map.add cutNodeVar (cutAt+1, (snd bounds.[cutNodeVar])) bounds))
         *)
+        
     bounds
     
 
@@ -270,23 +270,26 @@ let rec CallShrinkInternal (qn : QN.node list) bounds frontier qnGraph reCalc =
     let (qnStrategy, qnStartPoint) = GGraph.GetRecursiveStrategy qnGraph
     let qnWTO = GGraph.GetWeakTopologicalOrder qnGraph
     if Log.level(1) then Log.log_debug("WTO:" + GGraph.Stringify (qnWTO) string)
-    let shrunkBounds = Shrink qn qnStrategy qnStartPoint frontier bounds outputs
+    let shrunkBounds = Shrink qn ranges inputs outputs qnStrategy qnStartPoint frontier bounds
     if Map.forall (fun _ (lower,upper) -> upper = lower) shrunkBounds then
         if Log.level(1) then Log.log_debug("Stabilized")
         for node in qn do
             if Log.level(2) then Log.log_debug (QN.str_of_node node)
     else
         let scores = FindStabilizingEdgeScores qn ranges shrunkBounds qnStrategy qnWTO
+
+        printEdgeScores scores
+
         let (newEdge, score) = List.minBy (fun (k, (s, d)) -> (s,d)) scores
         
         let (s, d, n) = newEdge 
         if Log.level(1) then 
-            Log.log_debug(sprintf "%d -> %A -> %d : (%d, %d)\n" s n d (fst score) (snd score))
+            Log.log_debug(sprintf "%d -> %A -> %d : (%d, %d)" s n d (fst score) (snd score))
             ignore(Console.ReadKey())
 
-        let qn = AddEdgeInQN newEdge qn
+        //let qn = AddEdgeInQN newEdge qn
 
-        CallShrinkInternal qn shrunkBounds (Set.add d Set.empty) qnGraph ((fst score)>=2)
+        //CallShrinkInternal qn shrunkBounds (Set.add d Set.empty) qnGraph ((fst score)>=2)
 
 
 let CallShrink (qn : QN.node list) = 

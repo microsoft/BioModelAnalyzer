@@ -43,14 +43,23 @@ let find_cex_fixpoint qn bounds =
 //    else
 //        Counterexample.find_counterexample network bounds range
 let stabilization_prover model = 
+    let timer = new System.Diagnostics.Stopwatch()
+    timer.Start()
+
+    //printfn "Elapsed time before calling shrink is %i" timer.ElapsedMilliseconds
     let results = check_stability_lazy model
     let results = Seq.toArray results
     let result = Seq.nth ((Seq.length results) - 1) results 
-    match result with 
-    | Result.SRStabilizing(_) -> 
-        (result, None) 
-    | Result.SRNotStabilizing(bounds_history) -> 
-        let (_last_tick,last_bounds) = List.maxBy (fun (t,_b) -> t) bounds_history
-        let cex = Counterexample.find_cex model last_bounds
-        if Log.level(1) then Log.log_debug (cex.ToString())
-        (result, Some(cex)) 
+    //printfn "Elapsed time after calling shrink the first time is %i" timer.ElapsedMilliseconds
+    
+    let retVal =
+        match result with 
+        | Result.SRStabilizing(_) -> 
+            (result, None) 
+        | Result.SRNotStabilizing(bounds_history) -> 
+            let (_last_tick,last_bounds) = List.maxBy (fun (t,_b) -> t) bounds_history
+            let cex = Counterexample.find_cex model last_bounds
+            if Log.level(1) then Log.log_debug (cex.ToString())
+            (result, Some(cex))
+    //printfn "Elapsed time until finish is %i" timer.ElapsedMilliseconds
+    retVal

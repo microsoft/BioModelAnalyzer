@@ -290,6 +290,26 @@ type Strategy<'label> = {
     }
 
 
+
+let GetTrivialStrategy (graph : Graph<'lbl>)= 
+    if graph.numNodes = 0 then Map.empty, None
+    else
+        let firstNode = graph.vertices.[0]
+        let lastNode = graph.vertices.[graph.numNodes-1]
+        let mutable stgyMap = Map.empty
+        
+        stgyMap <- Map.add firstNode 
+                            { next = Some graph.vertices.[1] ; exit = None; isHead = true}
+                            stgyMap
+        for nodeNum in 1 .. graph.numNodes-2 do
+            stgyMap <- Map.add graph.vertices.[nodeNum] 
+                               { next = Some graph.vertices.[nodeNum+1] ; exit = Some graph.vertices.[nodeNum-1]; isHead = true}
+                               stgyMap
+        stgyMap <- Map.add lastNode
+                            { next = Some lastNode ; exit = Some graph.vertices.[graph.numNodes-2]; isHead = true}
+                            stgyMap
+        (stgyMap, Some graph.vertices.[0])
+
 /// create the recursive strategy from a wto as described in 
 /// Efficient chaotic iteration strategies with widenings : Francois Bourdoncle
 /// returns a Map<'label, Strategy<'label>

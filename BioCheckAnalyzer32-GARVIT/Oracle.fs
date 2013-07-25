@@ -2,6 +2,17 @@
 
 module Oracle
 
+let rec all_inputs vars =
+    seq {
+        match vars with
+        | [] -> yield Map.empty
+        | (var, (lower, upper)) :: more_vars ->
+            for value in [lower .. upper] do
+                for env in (all_inputs more_vars) do
+                    yield Map.add var value env
+    }
+
+
 let GetTransferState (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var , int*int>) env =
 
     let tState = 
@@ -31,13 +42,24 @@ let TransferState (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*
     Corner aNode aNodeState bounds nature
     |> GetTransferState aNode aNodeState ranges bounds
 
-    
+let TransferStateAll (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*int>) nature =
+    Map.add aNode.var (aNodeState, aNodeState) bounds
+    |> Map.toList
+    |> all_inputs
 
 let CanStrictlyIncrease (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*int>) =
     TransferState aNode aNodeState ranges bounds QN.Act > aNodeState
 
 let CanStrictlyDecrease (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*int>) =
     TransferState aNode aNodeState ranges bounds QN.Inh < aNodeState
+
+let CanStrictlyIncreaseAll (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*int>) =
+    TransferStateAll aNode aNodeState ranges bounds QN.Act
+    |> Seq.exists (fun env -> (GetTransferState aNode aNodeState ranges bounds (Map.toList env)) > aNodeState)
+
+let CanStrictlyDecreaseAll (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*int>) =
+    TransferStateAll aNode aNodeState ranges bounds QN.Act
+    |> Seq.exists (fun env -> (GetTransferState aNode aNodeState ranges bounds (Map.toList env)) < aNodeState)
 
 let AlwaysStrictlyIncreases (aNode : QN.node) aNodeState ranges (bounds : Map<QN.var, int*int>) =
     TransferState aNode aNodeState ranges bounds QN.Inh > aNodeState
