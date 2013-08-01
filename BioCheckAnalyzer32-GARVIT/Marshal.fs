@@ -11,8 +11,8 @@ open ExprParse
 //
 // XML->QN.Model parser.
 //
-type var = int
-type ui_variable = {  Vid: var; Vname: string; Vfr: int; Vto: int; Vf: Expr.expr option }
+type var = QN.var
+type ui_variable = {  Vid: var; Vname: string; Vfr: int; Vto: int; Vf: Expr.expr option; Vnumber : QN.number; Vtags : (int*QN.cell) list }
 type RelTy = RTActivator | RTInhibitor
 type ui_rel = { Rid: var; Rfr: int; Rto: int; Rrel_ty: RelTy }
 
@@ -21,10 +21,26 @@ exception MarshalInFailed of var * string
 // string->XName.
 let xn s = XName.Get s
 
+let maxNumber = ref 0 // must be updated before mk_number_safe is called
+let mk_number_safe () =
+   incr maxNumber
+   !maxNumber
+
 let model_of_xml (xd:XDocument) =
+    //Get cells
+    let cc = try xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") with _ -> Seq.empty
+    let ccNames = if Seq.isEmpty cc then ["SingleCell"] 
+                  else [for cell in cc do yield try (string)(cell.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(-1, "Bad Cell Name"))]
 
     // Get vars
     let vv = xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable")
+
+    // Get the max of all the variable ids to create safe ids for internal use
+    maxNumber := seq { for v in vv do
+                            let number = try (int) (v.Element(xn "Number").Value) with _ -> 0
+                            yield number}
+                  |> Seq.max
+
     let vars =
         seq { for v in vv do
                 // watch out for null values! {Name,Range,...}
@@ -32,6 +48,31 @@ let model_of_xml (xd:XDocument) =
                 let name = try v.Element(xn "Name").Value with _ -> raise(MarshalInFailed(id,"Bad Name"))
                 let min = try (int) (v.Element(xn "RangeFrom").Value) with _ -> raise(MarshalInFailed(id,"Bad RangeFrom"))
                 let max = try (int) (v.Element(xn "RangeTo").Value) with _ -> raise(MarshalInFailed(id,"Bad RangeTo"))
+
+               
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
+                // if no number given than generate a safe number
+                let number = try (int) (v.Element(xn "Number").Value) with _ -> mk_number_safe()
+                let tt = try v.Element(xn "Tags").Elements(xn "Tag") with _ -> Seq.empty
+                let tags = [for tag in tt do
+                                    let tagId = try (int)(tag.Attribute(xn "Id").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Id"))
+                                    let tagName = try (string)(tag.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Name"))
+                                    // this cell must have been declared in the cell names
+                                    if tagName <> "_" && (not (List.exists (fun v -> v=tagName) ccNames)) then raise(MarshalInFailed(id, "No cell with that name"))
+                                    yield (tagId, tagName)] 
+                // by default each node is related to all cells
+                let defaultTags = [for pos in 1 .. ccNames.Length do
+                                        yield (pos, List.nth ccNames (pos-1))]
+                // if no tags specified then replace with default tags
+                let tags = if Seq.isEmpty tt then defaultTags else tags
+//
+//
+
+
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
                 let t = try Some ((string) (v.Element(xn "Function").Value)) with _ -> None
                 let parse_err f exn  =
@@ -53,7 +94,7 @@ let model_of_xml (xd:XDocument) =
                                 Log.log_error(parse_err t e)
                                 raise(MarshalInFailed(id,exn_msg t))
                         | None -> None
-                yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f } }
+                yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f; Vnumber=number; Vtags=tags } }
 
     let vars_map = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid v map) Map.empty vars
 
@@ -124,7 +165,8 @@ let model_of_xml (xd:XDocument) =
                             Map.empty
                             oo)
                         ii
-                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; QN.nature= nature; QN.defualtF = Option.isNone v.Vf } )
+                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; 
+                    QN.nature= nature; QN.defualtF = Option.isNone v.Vf; QN.number = v.Vnumber; QN.tags = v.Vtags } )
             inputs'
 
     // Final result

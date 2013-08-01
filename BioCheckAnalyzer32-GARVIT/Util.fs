@@ -41,6 +41,13 @@ let memoize3 f =
              res
 
 
+
+//
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
 /// merge two maps into one
 /// if duplicate keys are present then the value in map2 survives
 let MergeMaps map1 map2 =

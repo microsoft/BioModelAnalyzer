@@ -1,4 +1,20 @@
-﻿
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2013  Microsoft Corporation
+//
+//  Module Name:
+//
+//      Oracle.fs
+//
+//  Abstract:
+//
+//      Oracle to get new upper and lower bounds based on the activator/inhibitor information
+//      This will behave badly if a relation is marked to be activating/inhibiting but is not really so
+//
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
 
 module Oracle
 

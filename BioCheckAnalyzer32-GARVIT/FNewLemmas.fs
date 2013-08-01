@@ -83,5 +83,5 @@ let tighten_slow node range expr lower upper inputs bounds =
     let input_bounds = [for input in inputs -> (input, Map.find input bounds)]
     tighten_internal node range expr lower upper input_bounds 
 
-let tighten = tighten_fast
+let tighten = tighten_slow
 

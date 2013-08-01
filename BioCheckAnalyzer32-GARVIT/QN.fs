@@ -6,6 +6,9 @@ module QN
 // Variables are just referenced by their index.
 type var = int
 type nature = Act | Inh
+type number = int
+type pos = int
+type cell = string
 
 
 // Return a fresh variable name.
@@ -26,15 +29,24 @@ type node =
         inputs : var list;  // The variables this node depends on.
         range : int * int;  // [min..max]
         name : string;
-        nature : Map<var, nature> // nature of each input, must have as many elements as inputs
-        defualtF : bool
+
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
+        nature : Map<var, nature>; // nature of each input, must have as many elements as inputs
+        defualtF : bool; //whether the target function is the default one
+        number : number; //the number that is same across the copies of the same protein across cells
+        tags : (pos*cell) list //list of (tag position, tag name) each tag corresponds to a cell in the network
     }
 
 let str_of_node (n:node) =
     let ii = String.concat "," (List.map (fun v -> (string)v) n.inputs)
     let (lo,hi) = n.range
     let f = Expr.str_of_expr n.f
-    sprintf "{var=%d; range=[%d,%d]; name=%s; inputs={%s}; f=(%s)}" n.var lo hi n.name ii f
+    let tgs = String.concat "," (List.map (fun (p,c) -> (string)p+":"+c) n.tags)
+    sprintf "{var=%d; range=[%d,%d]; name=%s; inputs={%s}; f=(%s); number=%d; tags=%s}" n.var lo hi n.name ii f n.number tgs
 
 type qn = node list
 

@@ -1,4 +1,23 @@
-﻿module Cut
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2013  Microsoft Corporation
+//
+//  Module Name:
+//
+//      Cut.fs
+//
+//  Abstract:
+//
+//      Find good cuts across a regions in the interval domain
+//
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
+
+
+module Cut
 
 open Microsoft.Z3
 open System
@@ -68,8 +87,8 @@ let FindCutScores (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) =
 let FindBestCut (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) =
     let scores = Seq.cache (FindCutScores qn ranges bounds)
 
-    // find the first zeroWay cut and return that as the best cut
-    let zeroWayCut = Seq.tryFind (fun ((_,_,cutNature), _) -> cutNature=ZeroWay) scores
+    // find the first non-twoWay cut and return that as the best cut
+    let zeroWayCut = Seq.tryFind (fun ((_,_,cutNature), _) -> cutNature<>TwoWay) scores
     
     match zeroWayCut with
     | Some (cut, _) -> cut

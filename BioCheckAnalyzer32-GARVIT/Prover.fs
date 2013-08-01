@@ -1,4 +1,21 @@
-﻿module Prover
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2013  Microsoft Corporation
+//
+//  Module Name:
+//
+//      Prover.fs
+//
+//  Abstract:
+//
+//      Top level prover module to run the shrink-cut-merge method
+//
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
+module Prover
 
 
 open System
@@ -152,11 +169,11 @@ let ProveStability (qn : QN.node list) =
                         | None -> OneWayResult
                   
     
-    //printfn "Elapsed time before calling shrink is %i" timer.ElapsedMilliseconds
+    printfn "Elapsed time before calling shrink is %i" timer.ElapsedMilliseconds
 
     let initialShrunkBounds = Shrink.Shrink qn ranges inputs outputs qnStrategy qnStartPoint initialFrontier initialBounds
 
-    //printfn "Elapsed time after calling shrink the first time is %i" timer.ElapsedMilliseconds
+    printfn "Elapsed time after calling shrink the first time is %i" timer.ElapsedMilliseconds
 
     let results =
         if Map.forall (fun _ (lower,upper) -> upper = lower) initialShrunkBounds then
@@ -179,5 +196,5 @@ let ProveStability (qn : QN.node list) =
                 (None, bifur)
            
           
-    //printfn "Elapsed time until finish is %i" timer.ElapsedMilliseconds
+    printfn "Elapsed time until finish is %i" timer.ElapsedMilliseconds
     results
