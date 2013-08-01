@@ -40,9 +40,11 @@ let MutateExpr (qn : QN.node list) (srcNodeVar : QN.var) (dstNodeVar : QN.var) (
     let dstNode = QN.get_node_from_var dstNodeVar qn
 
     if srcNodeVar=dstNodeVar || List.exists (fun x -> x = srcNodeVar) dstNode.inputs then
+        // in case src node is same as dst or src is already an input to dst, no change
         dstNode.f
     else
         if dstNode.defualtF then
+            // if dst node is default node, then just add to the pos/neg set acc to nature
             let posInputs = List.filter (fun inp -> dstNode.nature.[inp] = QN.Act) dstNode.inputs
             let negInputs = List.filter (fun inp -> dstNode.nature.[inp] = QN.Inh) dstNode.inputs
 
@@ -60,6 +62,9 @@ let MutateExpr (qn : QN.node list) (srcNodeVar : QN.var) (dstNodeVar : QN.var) (
                                         Expr.Ave(List.map (fun o -> Expr.Var(o)) negInputs))
             newExpr
         else
+            // if not default function node then mutate the expr as follows
+            // if the original expr is f(x_1, .. ,x_m) and you are adding input x_{m+1}
+            // new expr will be (m*f(x_1, .. , x_m) + x_{m+1})/(m+1)
             let numInputs = List.length dstNode.inputs
             Expr.Div(Expr.Plus(Expr.Times(dstNode.f, Expr.Const(numInputs)), Expr.Var(srcNodeVar)), Expr.Const(numInputs+1))
 
@@ -67,6 +72,7 @@ let MutateExpr (qn : QN.node list) (srcNodeVar : QN.var) (dstNodeVar : QN.var) (
 
 
 let AddEdgeInQN (src, dst, ntr) qn = 
+    // add an edge in the qn
     let dstNode = QN.get_node_from_var dst qn
     let mutatedExpr = MutateExpr qn src dst ntr
     let qn = List.filter (fun (node : QN.node) -> not(node.var = dst)) qn
@@ -76,6 +82,9 @@ let AddEdgeInQN (src, dst, ntr) qn =
 
 
 let ComputeEdgeSign (src : QN.node) (dst : QN.node)=
+
+    // given a tagged network, every edge has a signature
+    // the edge (1, {A B C}) -> (2, {C A D E}) will have signature (1, 2, {(1, 2),(3, 1)}); A and C are common tags, (1,2) for A and (3,1) for C 
     let matchingPosPairs =
         List.fold
             (fun mpp ((pos_s, cell_s), (pos_t, cell_t)) ->
@@ -86,6 +95,7 @@ let ComputeEdgeSign (src : QN.node) (dst : QN.node)=
 
 
 let ComputeAllEdgesWithSign qn (sign : EdgeSign) =
+    // find all edges in the qn which have the give signature
     List.filter
         (fun (src, dst) ->
             (ComputeEdgeSign src dst) = sign)
@@ -165,8 +175,8 @@ let CallShrink (qn : QN.node list) ranges inputs outputs qnStrategyPair frontier
     Shrink.Shrink qn ranges inputs outputs qnStrategy qnStartPoint initialFrontier initialBounds
 
 let ComputeShrinkCoeff (bounds : Map<QN.var, int*int>) (shrunkBounds : Map<QN.var, int*int>)=
+    // size of space before shrinking/size of space after shrinking
     let allVars = [for KeyValue(k, v) in bounds -> k]
-
     List.fold
         (fun coeff var ->
             let (lo1, hi1) = bounds.[var]
@@ -178,12 +188,14 @@ let ComputeShrinkCoeff (bounds : Map<QN.var, int*int>) (shrunkBounds : Map<QN.va
 
 
 let NoPosMatch (edgeSign : EdgeSign) =
+    // true is no tags at any positions match
     let (_, _, l) = edgeSign
     l.IsEmpty
 
 
 
 let ApplySuggestion (qn : QN.node list) (edges : (QN.node*QN.node) list) (ntr : QN.nature)=
+    // take the given edge set and add it to the qn
     List.fold
         (fun newQn ((srcNode, dstNode): (QN.node*QN.node)) ->
             AddEdgeInQN (srcNode.var, dstNode.var, ntr) newQn)
@@ -193,9 +205,6 @@ let ApplySuggestion (qn : QN.node list) (edges : (QN.node*QN.node) list) (ntr : 
 let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGraph.Strategy<QN.var>>) qnStartPoint
                  (nodes : QN.node list) bounds (knownScores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
         let scores = knownScores
-
-        // optimization
-        // in case where only one edge is added and to the head, we do not need to recompute the WTO.
 
 
         for dst in nodes do 
@@ -227,6 +236,7 @@ let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGra
                                 outputs
                                 allEdges
 
+                        // recompute wto only if some edge to a non-head is added
                         let modQnStrategy, modQnStartPoint =
                             if List.exists (fun (_, (t : QN.node)) -> not qnStrategy.[t.var].isHead) allEdges then
                                 let qnGraph = GetQnGraph modQn
