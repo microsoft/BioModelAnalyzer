@@ -7,9 +7,10 @@ module Main
 open System.Xml
 open System.Xml.Linq
 
-type Engine = EngineCAV | EngineVMCAI | EngineSimulate
+type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM
 let engine_of_string s = 
     match s with 
+    | "SCM" | "scm" -> Some EngineSCM
     | "CAV" | "cav" -> Some EngineCAV
     | "VMCAI" | "vmcai" -> Some EngineVMCAI 
     | "Simulate" | "simulate" -> Some EngineSimulate
@@ -25,7 +26,7 @@ let formula = ref "True"
 let number_of_steps = ref -1
 let naive_computation = ref false
 let model_check = ref false
-let modelsdir = ref "C:\\Users\\np183\\tools\\BioCheckPlus\\BioCheck\\xml Models"
+let modelsdir = ref "C:\\Users\\t-gajuni\\Documents\\biosynth\\biocheck\\Models\\Garvit\\benchmarks"
 let output_model = ref false
 let output_proof = ref false
 // -- Simulate
@@ -35,6 +36,7 @@ let simul_output = ref "" // output log/excel filename.
 
 let run_tests = ref false 
 let logging = ref false 
+let logging_level = ref 0
 
 let rec parse_args args = 
     match args with 
@@ -54,6 +56,7 @@ let rec parse_args args =
     | "-modelsdir" :: d :: rest -> modelsdir := d; parse_args rest
     | "-tests" :: rest -> run_tests := true; parse_args rest
     | "-log" :: rest -> logging := true; parse_args rest
+    | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
     | _ -> failwith "Bad command line args" 
 
 //type IA = BioCheckAnalyzerCommon.IAnalyzer2
@@ -65,13 +68,34 @@ let main args =
     
     parse_args (List.ofArray args)
 
-    if !logging then Log.register_log_service(Log.AnalyzerLogService())   
+    if !logging then Log.register_log_service (Log.AnalyzerLogService()) 1
+
+    match !logging_level with
+    | 0 -> ()
+    | 1 | 2-> Log.register_log_service (Log.AnalyzerLogService()) !logging_level
+    | _ -> failwith "Bad logging level"
+
+    //Run SCM engine
+    if (!model <> "" && !engine = Some EngineSCM) then    
+        Log.log_debug "Running the proof"
+        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+        if Log.level(1) then Log.log_debug (sprintf "Num of nodes %d" (List.length model))
+        for node in model do
+            if Log.level(1) then Log.log_debug (QN.str_of_node node)
+        let (stablePoint, cex) = Prover.ProveStability model
+        match (stablePoint, cex) with
+        | (Some p, None) -> if Log.level(1) then Log.log_debug(sprintf "Single Stable Point \n %s" (Expr.str_of_env p))
+        | (None, Some (Prover.Bifurcation(p1, p2))) -> if Log.level(1) then Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
+        | (None, Some (Prover.Cycle(p, len))) -> if Log.level(1) then Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
+        | _ -> failwith "Bad results from prover"
+        
 
     // Run VMCAI engine
     if (!model <> "" && !engine = Some EngineVMCAI &&
         !proof_output <> "") then    
         Log.log_debug "Running the proof"
-        let model = XDocument.Load(!model) |> Marshal.model_of_xml
+        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+        if Log.level(1) then Log.log_debug (sprintf "Num of nodes %d" (List.length model))
         let (sr,cex_o) = Stabilize.stabilization_prover model
         match (sr,cex_o) with 
         | (Result.SRStabilizing(_), None) -> 
@@ -83,7 +107,8 @@ let main args =
             let cex_xml = Marshal.xml_of_cex_result cex
             let filename,ext = System.IO.Path.GetFileNameWithoutExtension !proof_output, System.IO.Path.GetExtension !proof_output
             cex_xml.Save(filename + "_cex." + ext)
-        | _ -> failwith "bad results from stabilization_prover"
+        | (Result.SRNotStabilizing(_), None) -> ()
+        | _ -> failwith "Bad result from prover"
 
     // Run CAV engine
     elif (!model <> "" && !engine = Some EngineCAV) then 
