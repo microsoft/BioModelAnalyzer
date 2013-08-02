@@ -272,8 +272,23 @@ let GetMaxScore (scores : Dictionary<'T, SuggestionScore>) =
     List.max [for KeyValue(_, score) in scores -> score]
 
 let SortScores qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
+    if Log.level(1) then Log.log_debug(sprintf "Sorting %d scores" scores.Count)
     seq{ for KeyValue(k, score) in scores -> ((GetSuggestionFromSign qn k), score)}
     |> Seq.sortBy (fun (k, score) -> -score)
+
+
+    // unused
+let ScoresToList qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
+    [for KeyValue(k, score) in scores -> ((GetSuggestionFromSign qn k), score)]
+
+    // unused
+let rec FindMaxFromScoreList lst =
+    match lst with
+    | [] -> failwith "Cannot get max from empty list"
+    | (x,hd)::[] -> (x,hd), []
+    | (x,hd)::tl -> let (y,max), rest = FindMaxFromScoreList tl
+                    if max>=hd then (y, max), (x, hd)::rest
+                    else (x, hd), (y, max)::rest
 
 let Suggest (qn : QN.node list) =
     let ranges = Map.ofList [for node in qn -> (node.var, node.range)]
@@ -369,7 +384,25 @@ let Suggest (qn : QN.node list) =
         if maxScore <= (double) 1.0 then
             NoSuggestion(shrunkBounds)
         else
-            if Log.level(1) then Log.log_debug("Now sorting scores..")
+            if Log.level(1) then Log.log_debug("Now sorting scores.. ")
+           (* if Log.level(1) then Log.log_debug("Converting signs to suggestions.. ")
+            let scoreList = ScoresToList qn scores
+            if Log.level(1) then Log.log_debug("Will start suggesting now.. ")
+            let tmp =
+                let mutable brk = false
+                let mutable restScoreList = scoreList
+                let mutable suggestion = None
+                while not brk do
+                    let ((edges, ntr), score), restList = FindMaxFromScoreList restScoreList
+                    restScoreList <- restList
+                    suggestion <- Some((edges, ntr), score)
+                    if Log.level(1) then Log.log_debug(sprintf "Edges:\n %s \n\n\n Nature: %A Score: %f" (edgelist_to_str edges) ntr score)
+                    if Log.level(1) then Log.log_debug("Accept this and proceed? Y/N")
+                    let inp = Console.ReadLine()
+                    brk <- (inp="Y" || inp="y")
+                suggestion*)
+
+           
             let tmp =
                 Seq.tryFind
                     (fun ((edges, ntr), score) ->
@@ -379,6 +412,7 @@ let Suggest (qn : QN.node list) =
                         inp="Y" || inp="y"
                         )
                     (SortScores qn scores)
+                    
             match tmp with
             | None -> NoSuggestion(shrunkBounds)
             | Some((edges, ntr),_) -> Edges(edges, ntr)
