@@ -253,7 +253,7 @@ let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGra
 
                             
                         let modShrunkBounds = CallShrink modQn (Some ranges) (Some modInputs) (Some modOutputs) 
-                                                (Some (modQnStrategy, modQnStartPoint)) (Some modFrontier) (Some bounds)
+                                                (Some (modQnStrategy, modQnStartPoint)) None None
                         
                         let shrinkCoeff = ComputeShrinkCoeff bounds modShrunkBounds
                         let shrinkPerEdge =  shrinkCoeff// / (float) allEdges.Length
