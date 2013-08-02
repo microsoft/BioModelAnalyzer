@@ -79,7 +79,7 @@ let main args =
     | _ -> failwith "Bad logging level"
 
 
-    //Run SS engine
+    //Run SYN engine
     if (!model <> "" && !engine = Some EngineSYN) then
         Log.log_debug "Running Stability Suggestion Engine"
         let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
