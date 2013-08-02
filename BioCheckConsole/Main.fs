@@ -2,15 +2,17 @@
 module Main
 
 // Implementations of:
+// Garvit Juniwal; Stability Synthesis (SYN)
+// Garvit Juniwal; Shrink-Cut-Merge (SCM)
 // Cook, Fisher, Krepska, Piterman; Proving stabilization of biological systems; VMCAI 2011.
 // Claessen, Fisher, Ishtiaq, Piterman, Wang; Model-Checking Signal Transduction Networks through Decreasing Reachability Sets; CAV 2013.
 open System.Xml
 open System.Xml.Linq
 
-type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSS
+type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN
 let engine_of_string s = 
     match s with 
-    | "SS" | "ss" -> Some EngineSS
+    | "SYN" | "syn" -> Some EngineSYN
     | "SCM" | "scm" -> Some EngineSCM
     | "CAV" | "cav" -> Some EngineCAV
     | "VMCAI" | "vmcai" -> Some EngineVMCAI 
@@ -78,7 +80,7 @@ let main args =
 
 
     //Run SS engine
-    if (!model <> "" && !engine = Some EngineSS) then
+    if (!model <> "" && !engine = Some EngineSYN) then
         Log.log_debug "Running Stability Suggestion Engine"
         let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
         if Log.level(1) then Log.log_debug (sprintf "Num of nodes %d" (List.length model))
