@@ -264,22 +264,21 @@ let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGra
 
 
 
-let GetSuggestionFromSign qn sug =
-    let (sign, ntr) = sug
-    (ComputeAllEdgesWithSign qn sign), ntr
+let GetSuggestionFromSign qn sgn =
+    (ComputeAllEdgesWithSign qn sgn)
 
 let GetMaxScore (scores : Dictionary<'T, SuggestionScore>) =
     List.max [for KeyValue(_, score) in scores -> score]
 
 let SortScores qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
     if Log.level(1) then Log.log_debug(sprintf "Sorting %d scores" scores.Count)
-    seq{ for KeyValue(k, score) in scores -> ((GetSuggestionFromSign qn k), score)}
-    |> Seq.sortBy (fun (k, score) -> -score)
+    seq{ for KeyValue(k, score) in scores -> (k, score)}
+    |> Seq.sortBy (fun (_, score) -> -score)
 
 
     // unused
 let ScoresToList qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
-    [for KeyValue(k, score) in scores -> ((GetSuggestionFromSign qn k), score)]
+    [for KeyValue((sgn, ntr), score) in scores -> (((GetSuggestionFromSign qn sgn), ntr), score)]
 
     // unused
 let rec FindMaxFromScoreList lst =
@@ -405,8 +404,8 @@ let Suggest (qn : QN.node list) =
            
             let tmp =
                 Seq.tryFind
-                    (fun ((edges, ntr), score) ->
-                        if Log.level(1) then Log.log_debug(sprintf "Edges:\n %s \n\n\n Nature: %A Score: %f" (edgelist_to_str edges) ntr score)
+                    (fun ((sign, ntr), score) ->
+                        if Log.level(1) then Log.log_debug(sprintf "Edges:\n %s \n\n\n Nature: %A Score: %f" (edgelist_to_str (GetSuggestionFromSign qn sign)) ntr score)
                         if Log.level(1) then Log.log_debug("Accept this and proceed? Y/N")
                         let inp = Console.ReadLine()
                         inp="Y" || inp="y"
@@ -415,7 +414,7 @@ let Suggest (qn : QN.node list) =
                     
             match tmp with
             | None -> NoSuggestion(shrunkBounds)
-            | Some((edges, ntr),_) -> Edges(edges, ntr)
+            | Some((sign, ntr),_) -> Edges((GetSuggestionFromSign qn sign), ntr)
             
 let rec SuggestLoop (qn : QN.node list) =
     let sug = Suggest qn
