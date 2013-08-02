@@ -229,7 +229,10 @@ let model_to_fixpoint (model : Model) =
 let fixpoint_to_env (fixpoint : Map<string, int>) =
     Map.fold
         (fun newMap name value ->
-            Map.add (get_qn_var_from_z3_var name) value newMap)
+            try 
+                Map.add (get_qn_var_from_z3_var name) value newMap
+            with
+                | exn -> newMap )
         Map.empty
         fixpoint
 
