@@ -256,7 +256,7 @@ let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGra
                                                 (Some (modQnStrategy, modQnStartPoint)) (Some modFrontier) (Some bounds)
                         
                         let shrinkCoeff = ComputeShrinkCoeff bounds modShrunkBounds
-                        let shrinkPerEdge =  shrinkCoeff / (float) allEdges.Length
+                        let shrinkPerEdge =  shrinkCoeff// / (float) allEdges.Length
 
                         if Log.level(2) then Log.log_debug(sprintf "Added score %f for edge sign %A, nature %A" shrinkPerEdge edgeSign ntr)
                         scores.Add((edgeSign, ntr), shrinkPerEdge)
