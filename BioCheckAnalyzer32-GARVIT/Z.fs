@@ -18,9 +18,17 @@ let gensym =
 // Naming convention for Z3 variables
 let get_z3_int_var_at_time (node : QN.node) time = sprintf "%d^%d" node.var time
 
+
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
 let get_qn_var_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]
     ((int parts.[0]) : QN.var)
+//
+
 
 // Z.expr_to_z3 should be similar to Expr.eval_expr_int.
 let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
@@ -225,6 +233,11 @@ let model_to_fixpoint (model : Model) =
 
     fixpoint
 
+//  Contact:
+//
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
+//
+
 
 let fixpoint_to_env (fixpoint : Map<string, int>) =
     Map.fold
@@ -235,7 +248,7 @@ let fixpoint_to_env (fixpoint : Map<string, int>) =
                 | exn -> newMap )
         Map.empty
         fixpoint
-
+//
 
 ///////////////////////////////////////////////////////////////////////////////
 // fixpoint
