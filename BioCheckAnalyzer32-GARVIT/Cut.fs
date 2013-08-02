@@ -8,7 +8,7 @@
 //
 //  Abstract:
 //
-//      Find good cuts across a regions in the interval domain
+//      Find good cuts across a region in the interval domain
 //
 //  Contact:
 //
@@ -88,9 +88,9 @@ let FindBestCut (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) =
     let scores = Seq.cache (FindCutScores qn ranges bounds)
 
     // find the first non-twoWay cut and return that as the best cut
-    let zeroWayCut = Seq.tryFind (fun ((_,_,cutNature), _) -> cutNature<>TwoWay) scores
+    let ntwCut = Seq.tryFind (fun ((_,_,cutNature), _) -> cutNature<>TwoWay) scores
     
-    match zeroWayCut with
+    match ntwCut with
     | Some (cut, _) -> cut
     // if no zeroWay cut found, return the one with the max score
     | None -> scores |> Seq.maxBy (fun (_, score) -> score) |> fst
