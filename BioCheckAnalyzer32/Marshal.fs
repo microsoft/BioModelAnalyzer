@@ -34,24 +34,37 @@ let model_of_xml (xd:XDocument) =
                 let max = try (int) (v.Element(xn "RangeTo").Value) with _ -> raise(MarshalInFailed(id,"Bad RangeTo"))
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
                 let t = try Some ((string) (v.Element(xn "Function").Value)) with _ -> None
+                // fsyacc parser
                 let parse_err f exn  =
                     "Failed to parse " + name + "'s function: " + f + ". " +
                     "Exception: " + (string)exn + ". " +
                     "Will use default function."
                 let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
+                let fsyacc t = 
+                    try
+                        let lexbuf = LexBuffer<_>.FromString(t)
+                        let f = ExprParse.func ExprLex.tokenize lexbuf
+                        //Log.log_debug ("...OK, got a f:" + (Expr.str_of_expr f))
+                        Some f
+                    with e ->
+                        Log.log_error(parse_err t e)
+                        raise(MarshalInFailed(id,exn_msg t))
+                // fparsec parser
+                let parse_error f line col msg = 
+                    "Failed to parse " + name + "'s function: " + f + ". " +
+                    "Exception: " + msg + ". " +
+                    "Will use default function."
+                let fparsec t = 
+                    match ParsecExpr.parse_expr t with
+                    | ParsecExpr.ParseOK(f) -> Some f 
+                    | ParsecExpr.ParseErr(err) -> 
+                        Log.log_error(parse_error t err.line err.col err.msg) 
+                        raise(MarshalInFailed(id,exn_msg t))
+
                 let f =
                         match t with
                         | Some t when t="" -> None
-                        | Some t ->
-                            //Log.log_debug ("Trying to parse t:"+t)
-                            try
-                                let lexbuf = LexBuffer<_>.FromString(t)
-                                let f = ExprParse.func ExprLex.tokenize lexbuf
-                                //Log.log_debug ("...OK, got a f:" + (Expr.str_of_expr f))
-                                Some f
-                            with e ->
-                                Log.log_error(parse_err t e)
-                                raise(MarshalInFailed(id,exn_msg t))
+                        | Some t -> fsyacc t
                         | None -> None
                 yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f } }
 
