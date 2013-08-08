@@ -20,26 +20,27 @@ let engine_of_string s =
     | _ -> None 
 
 // Command-line args
+// -- General
 let engine = ref None 
 let model  = ref "" // input model filename 
-// -- VMCAI
+let run_tests = ref false 
+let logging = ref false 
+let logging_level = ref 0
+
+// -- related to VMCAI engine
 let proof_output = ref "proof_output" // output filename 
-// -- CAV
+// -- related to CAV engine
 let formula = ref "True"
 let number_of_steps = ref -1
 let naive_computation = ref false
 let model_check = ref false
-let modelsdir = ref "C:\\Users\\t-gajuni\\Documents\\biosynth\\biocheck\\Models\\Garvit\\benchmarks"
+let modelsdir = ref ".\\" 
 let output_model = ref false
 let output_proof = ref false
-// -- Simulate
+// -- related to Simulate engine
 let simul_v0     = ref "" // initial values file (csv file, with idXvalue schema)
 let simul_time   = ref 20 // max time to simulate
 let simul_output = ref "" // output log/excel filename. 
-
-let run_tests = ref false 
-let logging = ref false 
-let logging_level = ref 0
 
 let rec parse_args args = 
     match args with 
