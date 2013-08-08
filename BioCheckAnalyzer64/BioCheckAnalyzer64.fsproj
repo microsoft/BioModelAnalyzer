@@ -63,11 +63,8 @@
     <Compile Include="..\BioCheckAnalyzer32\Expr.fs">
       <Link>Expr.fs</Link>
     </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\ExprParse.fs">
-      <Link>Expr.fs</Link>
-    </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\ExprLex.fs">
-      <Link>Expr.fs</Link>
+    <Compile Include="..\BioCheckAnalyzer32\ParsecExpr.fs">
+      <Link>ParsecExpr.fs</Link>
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\Graph.fs">
       <Link>Graph.fs</Link>
@@ -144,26 +141,15 @@
     <None Include="..\BioCheckAnalyzer32\App.config">
       <Link>App.config</Link>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FParsec">
+      <HintPath>..\Libs\dotNET\FParsec.dll</HintPath>
+    </Reference>
+    <Reference Include="FParsecCS">
+      <HintPath>..\Libs\dotNET\FParsecCS.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="FSharp.PowerPack">
-      <HintPath>..\packages\FSPowerPack.Core.Community.3.0.0.0\lib\Net40\FSharp.PowerPack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Linq">
-      <HintPath>..\packages\FSPowerPack.Linq.Community.3.0.0.0\lib\Net40\FSharp.PowerPack.Linq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Metadata">
-      <HintPath>..\packages\FSPowerPack.Metadata.Community.3.0.0.0\lib\Net40\FSharp.PowerPack.Metadata.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Parallel.Seq">
-      <HintPath>..\packages\FSPowerPack.Parallel.Seq.Community.3.0.0.0\lib\Net40\FSharp.PowerPack.Parallel.Seq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
       <HintPath>..\Libs\dotNET\64bit\Microsoft.Z3.dll</HintPath>
