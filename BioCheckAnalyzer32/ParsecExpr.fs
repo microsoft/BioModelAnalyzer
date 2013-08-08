@@ -11,7 +11,7 @@ This is the grammar we want to parse:
 
 
 expr  : NUM                   
-      | 'var' '(' ident ')'
+      | 'var' '(' NUM ')'
       | expr '+' expr | expr '-' expr  | expr '*' expr | expr '/' expr         
       | 'max' '(' expr ',' expr ')' | 'min' '(' expr ',' expr ')'
       | 'ceil' '(' expr ')' | 'floor' '(' expr ')'
@@ -57,7 +57,7 @@ opp.AddOperator(InfixOperator("*", ws, 2, Assoc.Left, fun x y -> Expr.Times(x,y)
 opp.AddOperator(InfixOperator("/", ws, 2, Assoc.Left, fun x y -> Expr.Div(x,y)))
 
 // SI: do we need this?
-let completeExpression = ws >>. expr .>> eof
+// let completeExpression = ws >>. expr .>> eof
 
 
 // The main exported function of this module is [parse_expr]. It returns a 
