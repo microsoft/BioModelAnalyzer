@@ -1,4 +1,5 @@
-﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
+﻿
+(* Copyright (c) Microsoft Corporation. All rights reserved. *)
 module LTL
 
 type LTLFormulaType = 
@@ -21,6 +22,70 @@ type LTLFormulaType =
     | True
     | Error 
 
+let left_formula phi =
+    match phi with 
+    | Until(_,phi0,_)
+    | Release(_,phi0,_)
+    | And(_,phi0,_) 
+    | Or(_,phi0,_) 
+    | Implies(_,phi0,_) 
+    | Not(_,phi0)
+    | Next(_,phi0)
+    | Always(_,phi0)
+    | Eventually(_,phi0) -> Some phi0
+    | PropGt(_) 
+    | PropGtEq(_) 
+    | PropLt(_) 
+    | PropLtEq(_) 
+    | False 
+    | True
+    | Error -> None
+
+let right_formula phi = 
+    match phi with 
+    | Until (_,_,phi1)
+    | Release (_,_,phi1)
+    | And (_,_,phi1) 
+    | Or (_,_,phi1) 
+    | Implies (_,_,phi1) -> Some phi1
+    | Not(_)
+    | Next(_)
+    | Always(_)
+    | Eventually(_) 
+    | PropGt(_) 
+    | PropGtEq(_) 
+    | PropLt(_) 
+    | PropLtEq(_) 
+    | False 
+    | True
+    | Error -> None
+
+let formula_location phi = 
+    match phi with
+    | Until (loc, _, _)
+    | Release (loc, _, _)
+    | Next (loc, _) 
+    | Always (loc, _) 
+    | Eventually (loc, _) 
+    | And (loc, _, _) 
+    | Or (loc, _, _) 
+    | Implies (loc, _, _) 
+    | Not (loc, _) 
+    | PropGt (loc, _, _) 
+    | PropGtEq (loc, _, _) 
+    | PropLt (loc , _, _) 
+    | PropLtEq (loc , _, _) -> Some loc
+    | False | True | Error -> None
+
+let prop_var_range phi = 
+    match phi with
+    | PropGt (_, var , _)
+    | PropGtEq (_, var, _)
+    | PropLt (_, var, _)
+    | PropLtEq (_, var, _) -> Some var
+    | _ -> None
+
+// Printers 
 let print_in_order(formula : LTLFormulaType) =
     let rec print (formula : LTLFormulaType) =
         let name =
@@ -92,6 +157,7 @@ let print_in_order(formula : LTLFormulaType) =
     let string_res = print formula
     printfn "%s" string_res
 
+// parsers
 let string_to_LTL_formula (s:string) (network) = 
     let until = "Until"
     let release = "Release"
