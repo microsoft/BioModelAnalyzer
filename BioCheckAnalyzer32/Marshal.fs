@@ -34,7 +34,8 @@ let model_of_xml (xd:XDocument) =
                 let max = try (int) (v.Element(xn "RangeTo").Value) with _ -> raise(MarshalInFailed(id,"Bad RangeTo"))
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
                 let t = try Some ((string) (v.Element(xn "Function").Value)) with _ -> None
-                // fsyacc parser
+                // SI: we're in the process of replacing fsyacc with fparsec
+                // 1. fsyacc parser
                 let parse_err f exn  =
                     "Failed to parse " + name + "'s function: " + f + ". " +
                     "Exception: " + (string)exn + ". " +
@@ -49,7 +50,7 @@ let model_of_xml (xd:XDocument) =
                     with e ->
                         Log.log_error(parse_err t e)
                         raise(MarshalInFailed(id,exn_msg t))
-                // fparsec parser
+                // 2. fparsec parser
                 let parse_error f line col msg = 
                     "Failed to parse " + name + "'s function: " + f + ". " +
                     "Exception: " + msg + ". " +
@@ -64,7 +65,7 @@ let model_of_xml (xd:XDocument) =
                 let f =
                         match t with
                         | Some t when t="" -> None
-                        | Some t -> fsyacc t
+                        | Some t -> fparsec t
                         | None -> None
                 yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f } }
 
