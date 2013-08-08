@@ -3,10 +3,10 @@ module Marshal
 
 open System.Xml
 open System.Xml.Linq
-open Microsoft.FSharp.Text.Lexing
-//
-open ExprLex
-open ExprParse
+//open Microsoft.FSharp.Text.Lexing
+////
+//open ExprLex
+//open ExprParse
 
 //
 // XML->QN.Model parser. 
@@ -38,20 +38,22 @@ let model_of_xml (xd:XDocument) =
                     "Failed to parse " + name + "'s function: " + f + ". " + 
                     "Exception: " + (string)exn + ". " + 
                     "Will use default function."
+                let parse_error f line col msg = 
+                    "Failed to parse " + name + "'s function: " + f + ". " +
+                    "Exception: " + msg + ". " +
+                    "Will use default function."
                 let exn_msg _ = "Failed to parse " + name + "'s transfer function"
                 let f = 
                         match t with 
                         | Some t when t="" -> None
                         | Some t -> 
                             Log.log_debug ("Trying to parse t:"+t)
-                            try 
-                                let lexbuf = LexBuffer<_>.FromString(t) 
-                                let f = ExprParse.func ExprLex.tokenize lexbuf 
-                                Log.log_debug ("...OK, got a f:" + (Expr.str_of_expr f))
-                                Some f
-                            with e -> 
-                                Log.log_error(parse_err t e)
-                                raise(MarshalInFailed(id,exn_msg ()))
+                            match ParsecExpr.parse_expr t with
+                            | ParsecExpr.ParseOK(f) -> Some f 
+                            | ParsecExpr.ParseErr(err) -> 
+                                Log.log_error(parse_error t err.line err.col err.msg) 
+                                raise(MarshalInFailed(id,exn_msg t))
+
                         | None -> None 
                 yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f } }
 

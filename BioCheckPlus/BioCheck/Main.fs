@@ -8,8 +8,9 @@ open System.Diagnostics
 
 open LTL
 
-// Entry point
-let main _ =
+[<EntryPoint>]
+let main args =
+    let res = ref 0 
 
     let input_file = ref ""
     let formula = ref "True"
@@ -20,26 +21,20 @@ let main _ =
     let output_model = ref false
     let output_proof = ref false
 
-    let args = [ ("-file", ArgType.String (fun i -> input_file := i), "Name of Input File");
-                 // 
-                 ("-formula", ArgType.String (fun i -> formula := i), "Formula to check");
-                 //
-                 ("-mc", ArgType.Unit (fun _ -> model_check := true), "Model check the formula (vs search for a path satisfying the formula)");
-                 //
-                 ("-outputmodel", ArgType.Unit (fun _ -> output_model := true), "Output the model in case of satisfiability");
-                 //
-                 ("-naive", ArgType.Unit (fun _ -> naive_computation := true), "Compute naive representation of paths");
-                 //
-                 ("-proof", ArgType.Unit (fun _ -> output_proof := true), "Output the ranges of variables over time (does not work with naive)");
-                 //
-                 ("-path", ArgType.Int (fun i -> number_of_steps := i), "Number of steps"); 
-                 //
-                 ("-modelsdir", ArgType.String (fun d -> modelsdir := d), "Models directory"); 
-                 
-                 ]
-               |> List.map (fun (n,a,s) -> ArgInfo(n,a,s))
-               |> List.toSeq
-    ArgParser.Parse(args)
+    let rec parse_args args = 
+        match args with 
+        | [] -> ()
+        | "-file" :: m :: rest -> input_file := m; parse_args rest
+        | "-formula" :: f :: rest -> formula := f; parse_args rest
+        | "-mc" :: rest -> model_check := true; parse_args rest
+        | "-outputmodel" :: rest -> output_model := true; parse_args rest
+        | "-naive" :: rest -> naive_computation := true; parse_args rest
+        | "-proof" :: rest -> output_proof := true; parse_args rest
+        | "-path" :: i :: rest -> number_of_steps := (int)i; parse_args rest
+        | "-modelsdir" :: d :: rest -> modelsdir := d; parse_args rest
+        | _ -> failwith "Bad command line args" 
+
+    parse_args (List.ofArray args)
 
     let start_time = System.DateTime.Now
 
@@ -61,6 +56,7 @@ let main _ =
     LTL.print_in_order ltl_formula
     if (ltl_formula = Error) then
         ignore(LTL.unable_to_parse_formula)
+        res := -1
     else             
         // Convert the interval based range to a list based range
         let nuRangel = Rangelist.nuRangel network
@@ -91,5 +87,4 @@ let main _ =
     let duration = end_time.Subtract start_time
     printfn "Time: %A" duration
 
-main ()
-    
+    !res

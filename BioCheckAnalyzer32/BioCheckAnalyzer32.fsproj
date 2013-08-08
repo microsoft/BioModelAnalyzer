@@ -51,8 +51,6 @@
     <Compile Include="Util.fs" />
     <Compile Include="Test.fs" />
     <Compile Include="Expr.fs" />
-    <Compile Include="ExprParse.fs" />
-    <Compile Include="ExprLex.fs" />
     <Compile Include="ParsecExpr.fs" />
     <Compile Include="Graph.fs" />
     <Compile Include="QN.fs" />
@@ -77,11 +75,9 @@
     <Compile Include="IncEncodingForSys.fs" />
     <Compile Include="BMC.fs" />
     <Compile Include="Rangelist.fs" />
-    <Compile Include="PlusMain.fs" />
     <Compile Include="UIMain.fs" />
     <Compile Include="UnitTests.fs" />
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">
@@ -91,18 +87,6 @@
       <HintPath>..\Libs\dotNET\FParsecCS.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="FSharp.PowerPack">
-      <HintPath>..\packages\FSPowerPack.Core.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Linq">
-      <HintPath>..\packages\FSPowerPack.Linq.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Metadata">
-      <HintPath>..\packages\FSPowerPack.Metadata.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.PowerPack.Parallel.Seq">
-      <HintPath>..\packages\FSPowerPack.Parallel.Seq.Community.3.0.0.0\Lib\Net40\FSharp.PowerPack.Parallel.Seq.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
       <HintPath>..\Libs\dotNET\32bit\Microsoft.Z3.dll</HintPath>
