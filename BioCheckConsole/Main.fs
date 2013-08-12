@@ -38,7 +38,7 @@ let modelsdir = ref ".\\"
 let output_model = ref false
 let output_proof = ref false
 // -- related to Simulate engine
-let simul_v0     = ref "" // initial values file (csv file, with idXvalue schema)
+let simul_v0     = ref "" // initial values file (csv file, with idXvalue schema per line)
 let simul_time   = ref 20 // max time to simulate
 let simul_output = ref "" // output log/excel filename. 
 
@@ -178,6 +178,7 @@ let main args =
           !simul_output <> "") then 
         Log.log_debug "Running the simulation"
         let qn = Marshal.model_of_xml (XDocument.Load !model)
+        // Format of init.csv: Each line is a var_id,value pair. So there will be as many lines as there are variables.
         let init_values = 
             if (!simul_v0 <> "" && System.IO.File.Exists !simul_v0) then 
                 let csv = System.IO.File.ReadAllLines !simul_v0 
