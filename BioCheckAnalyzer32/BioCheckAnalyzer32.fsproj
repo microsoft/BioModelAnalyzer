@@ -52,7 +52,6 @@
     <Compile Include="Test.fs" />
     <Compile Include="Expr.fs" />
     <Compile Include="ParsecExpr.fs" />
-    <Compile Include="Graph.fs" />
     <Compile Include="QN.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="Marshal.fs" />
