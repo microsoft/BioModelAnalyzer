@@ -72,12 +72,12 @@ let main args =
     
     parse_args (List.ofArray args)
 
-//    if !logging then Log.register_log_service (Log.AnalyzerLogService()) 1
+    if !logging then Log.register_log_service (Log.AnalyzerLogService()) //1
 
-    match !logging_level with
-    | 0 -> ()
+//    match !logging_level with
+//    | 0 -> ()
 //    | 1 | 2-> Log.register_log_service (Log.AnalyzerLogService()) !logging_level
-    | _ -> failwith "Bad logging level"
+//    | _ -> failwith "Bad logging level"
 
 
 //    //Run SYN engine
