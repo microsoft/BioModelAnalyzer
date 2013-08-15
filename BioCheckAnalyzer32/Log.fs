@@ -1,24 +1,18 @@
-﻿(* Copyright (c) Microsoft Corporation. All rights reserved. *)
-///////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2008  Microsoft Corporation
+//  Copyright (c) 2013  Microsoft Corporation
 //
 //  Module Name:
 //
-//      log.fs
+//      Log.fs
 //
 //  Abstract:
 //
-//      Central mechanism for controlling spew
+//      Logging routines
 //
 //  Contact:
-//
-//      Byron Cook (bycook)
-//
-//  Environment:
-//
-//
-//  Notes:
+//      Byron Cook (bycook@microsoft.com)
+//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
 //
 //
 
@@ -55,7 +49,7 @@ type AnalyzerLogService() =
 // Saves given [log] ILogService to internal state. 
 // Then allows us to expose [Log.log] as the global logging function, rather than passing the service handle around.
 let log_service:(ILogService option ref) = ref None
-let register_log_service (log:ILogService)  = 
+let register_log_service (log:ILogService) = 
     log_service := Some log
 let deregister_log_service () = 
     log_service := None

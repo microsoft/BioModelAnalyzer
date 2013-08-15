@@ -15,8 +15,14 @@ let gensym =
     let counter = ref 0
     (fun s -> incr counter; s + ((string)!counter))
 
-// Naming convension for Z3 variables
+// Naming convention for Z3 variables
 let get_z3_int_var_at_time (node : QN.node) time = sprintf "%d^%d" node.var time
+
+let get_qn_var_from_z3_var (name : string) =
+    let parts = name.Split[|'^'|]
+    ((int parts.[0]) : QN.var)
+//
+
 
 // Z.expr_to_z3 should be similar to Expr.eval_expr_int.
 let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
@@ -130,8 +136,9 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
               | None -> ([],z.MkRealNumeral 0)
               | Some (a,s) -> (a,s)
 
-    let (extra_asserts,z) = tr expr
-    (extra_asserts,z)
+    // SI: Garvit's rounding code (see eval_expr too). 
+    let (extra_asserts, ze) = tr expr
+    (extra_asserts, z.MkAdd(ze, z.MkDiv(z.MkRealNumeral(1), z.MkRealNumeral(2))))
 
 ///////////////////////////////////////////////////////////////////////////////
 // unroll_qn
@@ -221,7 +228,15 @@ let model_to_fixpoint (model : Model) =
 
     fixpoint
 
-
+let fixpoint_to_env (fixpoint : Map<string, int>) =
+    Map.fold
+        (fun newMap name value ->
+            try 
+                Map.add (get_qn_var_from_z3_var name) value newMap
+            with
+                | exn -> newMap )
+        Map.empty
+        fixpoint
 
 ///////////////////////////////////////////////////////////////////////////////
 // fixpoint

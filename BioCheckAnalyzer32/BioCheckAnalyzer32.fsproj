@@ -75,9 +75,16 @@
     <Compile Include="IncEncodingForSys.fs" />
     <Compile Include="BMC.fs" />
     <Compile Include="Rangelist.fs" />
+    <Compile Include="GGraph.fs" />
+    <Compile Include="Oracle.fs" />
+    <Compile Include="Cut.fs" />
+    <Compile Include="Shrink.fs" />
+    <Compile Include="Prover.fs" />
+    <Compile Include="Suggest.fs" />
     <Compile Include="UIMain.fs" />
     <Compile Include="UnitTests.fs" />
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">

@@ -94,7 +94,7 @@ let is_a_const range e =
 
 /// Evaluate an arithmetic expression at [node]
 let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<var, int>) =
-
+    
     let node_min, node_max = Map.find node range
 
     let rec eval_expr_int e env =
@@ -141,7 +141,7 @@ let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<
     // SI, Nir: Lucinda's Excel model takes the ceiling of the float computation.
     // We need to convert the float to the int. But via which function (ceil, floor, round)?
     // floor seems to force a fast stabilization to 0 for Lucinda's model.
-    let convert = id // round, ceil???
+    let convert = (fun x -> x + 0.5) // SI: was id 
     let res = int (convert (eval_expr_int e env))
     // Keep res in range
     let node_lo,node_hi = Map.find node range
@@ -380,8 +380,8 @@ and is_decreasing_int f var =
         dec1 && dec2
     | Ave(es) -> List.forall (fun e -> is_decreasing e var) es
     | Sum(es) -> List.forall (fun e -> is_decreasing e var) es //QSW
-and is_increasing = is_increasing_int
-and is_decreasing = is_decreasing_int
+and is_increasing = memoize is_increasing_int
+and is_decreasing = memoize is_decreasing_int
 
 let register_tests () =
     let f = Var(0)

@@ -5,6 +5,11 @@ module QN
 
 // Variables are just referenced by their index.
 type var = int
+type nature = Act | Inh
+type number = int
+type pos = int
+type cell = string
+
 
 // Return a fresh variable name.
 let mutable num_vars = 0
@@ -19,18 +24,26 @@ let mk_var_unsafe i =
 /// A node in a QN network.
 type node =
     {
+        // Basic graph data
         var : var;          // The variable associated with this node's output.
         f : Expr.expr;      // The target function for this node.
         inputs : var list;  // The variables this node depends on.
         range : int * int;  // [min..max]
         name : string;
+
+        // Further connectivity data (used by Garvit's engine)
+        nature : Map<var, nature>; // nature of each input, must have as many elements as inputs
+        defualtF : bool; //whether the target function is the default one
+        number : number; //the number that is same across the copies of the same protein across cells
+        tags : (pos*cell) list //list of (tag position, tag name) each tag corresponds to a cell in the network
     }
 
 let str_of_node (n:node) =
     let ii = String.concat "," (List.map (fun v -> (string)v) n.inputs)
     let (lo,hi) = n.range
     let f = Expr.str_of_expr n.f
-    sprintf "{var=%d; range=[%d,%d]; name=%s; inputs={%s}; f=(%s)}" n.var lo hi n.name ii f
+    let tgs = String.concat "," (List.map (fun (p,c) -> (string)p+":"+c) n.tags)
+    sprintf "{var=%d; range=[%d,%d]; name=%s; inputs={%s}; f=(%s); number=%d; tags=%s}" n.var lo hi n.name ii f n.number tgs
 
 type qn = node list
 
@@ -98,7 +111,8 @@ let list_of_inputs_with_node_in_head (n : node) (network : node list) =
     let list_of_inputs = list_of_inputs_excluding_node n network
     n :: list_of_inputs
 
-
+let get_node_from_var (nv : var) (network : node list) = 
+    List.find (fun n -> n.var = nv) network
 
 
 

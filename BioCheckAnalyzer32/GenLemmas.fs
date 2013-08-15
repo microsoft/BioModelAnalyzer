@@ -62,9 +62,8 @@ let stabilize_lazy (network : QN.node list) =
             if still_working then
                 if (not (Set.isEmpty frontier)) then
                     // Arbitrarily pick the lowest node in the frontier.
-                    let node = Set.minElement frontier
+                    let node = Set.maxElement frontier // SI: Garvit's max, used to be min. 
                     let frontier = Set.remove node frontier
-
                     let expr = Map.find node exprs
                     let (lower, upper) = Map.find node bounds
 

@@ -84,31 +84,31 @@ let main args =
 //    if (!model <> "" && !engine = Some EngineSYN) then
 //        Log.log_debug "Running Stability Suggestion Engine"
 //        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-//        if Log.level(1) then Log.log_debug (sprintf "Num of nodes %d" (List.length model))
+//        Log.log_debug (sprintf "Num of nodes %d" (List.length model))
 //        for node in model do
-//            if Log.level(1) then Log.log_debug (QN.str_of_node node)
+//            Log.log_debug (QN.str_of_node node)
 //
 //        let sug = Suggest.SuggestLoop model
 //        match sug with
-//        | Suggest.Stable(p) -> if Log.level(1) then Log.log_debug(sprintf "Single Stable Point \n %s" (Expr.str_of_env p))
-//        | Suggest.NoSuggestion(b) -> if Log.level(1) then Log.log_debug(sprintf "No Suggestion Found \n %s" (QN.str_of_range model b))
+//        | Suggest.Stable(p) -> Log.log_debug(sprintf "Single Stable Point \n %s" (Expr.str_of_env p))
+//        | Suggest.NoSuggestion(b) -> Log.log_debug(sprintf "No Suggestion Found \n %s" (QN.str_of_range model b))
 //        | Suggest.Edges(edges, nature) -> 
 //            if Log.level(1) then
 //                Log.log_debug(sprintf "Suggested edges: %s Nature: %A" (Suggest.edgelist_to_str edges) nature)
 //
-//    //Run SCM engine
-//    if (!model <> "" && !engine = Some EngineSCM) then    
-//        Log.log_debug "Running the proof"
-//        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-//        if Log.level(1) then Log.log_debug (sprintf "Num of nodes %d" (List.length model))
-//        for node in model do
-//            if Log.level(1) then Log.log_debug (QN.str_of_node node)
-//        let (stablePoint, cex) = Prover.ProveStability model
-//        match (stablePoint, cex) with
-//        | (Some p, None) -> if Log.level(1) then Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
-//        | (None, Some (Prover.Bifurcation(p1, p2))) -> if Log.level(1) then Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
-//        | (None, Some (Prover.Cycle(p, len))) -> if Log.level(1) then Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
-//        | _ -> failwith "Bad results from prover"
+    //Run SCM engine
+    if (!model <> "" && !engine = Some EngineSCM) then    
+        Log.log_debug "Running the proof"
+        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+        Log.log_debug (sprintf "Num of nodes %d" (List.length model))
+        for node in model do
+            Log.log_debug (QN.str_of_node node)
+        let (stablePoint, cex) = Prover.ProveStability model
+        match (stablePoint, cex) with
+        | (Some p, None) -> Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
+        | (None, Some (Prover.Bifurcation(p1, p2))) -> Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
+        | (None, Some (Prover.Cycle(p, len))) -> Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
+        | _ -> failwith "Bad results from prover"
         
 
     // Run VMCAI engine
@@ -116,7 +116,7 @@ let main args =
         !proof_output <> "") then    
         Log.log_debug "Running the proof"
         let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-//        if Log.level(1) then Log.log_debug (sprintf "Num of nodes %d" (List.length model))
+//        Log.log_debug (sprintf "Num of nodes %d" (List.length model))
         let (sr,cex_o) = Stabilize.stabilization_prover model
         match (sr,cex_o) with 
         | (Result.SRStabilizing(_), None) -> 
