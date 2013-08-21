@@ -87,12 +87,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FParsec">
-      <HintPath>..\..\Libs\dotNET\FParsec.dll</HintPath>
-    </Reference>
-    <Reference Include="FParsecCS">
-      <HintPath>..\..\Libs\dotNET\FParsecCS.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Z3">
       <HintPath>..\..\Libs\dotNET\32bit\Microsoft.Z3.dll</HintPath>
     </Reference>

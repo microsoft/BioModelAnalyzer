@@ -66,9 +66,9 @@ type perr = { line : int; col : int; msg: string }
 type parse_result = ParseOK of Expr.expr | ParseErr of perr
 
 let parse_expr (s:string) = 
-    match FParsec.CharParsers.run expr s with
-    | FParsec.CharParsers.Success(f,_,pos) -> ParseOK(f)
-    | FParsec.CharParsers.Failure(msg,err,_) -> 
+    match CharParsers.run expr s with
+    | CharParsers.Success(f,_,pos) -> ParseOK(f)
+    | CharParsers.Failure(msg,err,_) -> 
         let l,c = (int)err.Position.Line, (int)err.Position.Column
         ParseErr({line= l; col= c; msg= msg})
 

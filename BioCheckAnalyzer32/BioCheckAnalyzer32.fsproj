@@ -85,13 +85,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FParsec">
-      <HintPath>..\Libs\dotNET\FParsec.dll</HintPath>
+    <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
+      <Name>FParsec (FParsec\FParsec)</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="FParsecCS">
-      <HintPath>..\Libs\dotNET\FParsecCS.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
       <HintPath>..\Libs\dotNET\32bit\Microsoft.Z3.dll</HintPath>
@@ -109,7 +115,7 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">
 	</Target>

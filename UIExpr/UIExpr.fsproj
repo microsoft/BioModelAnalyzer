@@ -37,29 +37,35 @@
     <DocumentationFile>bin\Release\UIExpr.XML</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="FParsec">
-      <HintPath>..\Libs\dotNET\FParsec.dll</HintPath>
-    </Reference>
-    <Reference Include="FParsecCS">
-      <HintPath>..\Libs\dotNET\FParsecCS.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Expr.fs" />
-    <Compile Include="ParsecExpr.fs" />
-    <Compile Include="UIExpr.fs" />
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets'))" />
+  <ItemGroup>
+    <Compile Include="Expr.fs" />
+    <Compile Include="ParsecExpr.fs" />
+    <Compile Include="UIExpr.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
+      <Name>FParsec (FParsec\FParsec)</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">
