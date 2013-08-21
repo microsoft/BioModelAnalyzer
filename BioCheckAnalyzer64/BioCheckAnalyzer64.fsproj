@@ -66,9 +66,6 @@
     <Compile Include="..\BioCheckAnalyzer32\ParsecExpr.fs">
       <Link>ParsecExpr.fs</Link>
     </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\Graph.fs">
-      <Link>Graph.fs</Link>
-    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\QN.fs">
       <Link>QN.fs</Link>
     </Compile>
@@ -105,6 +102,9 @@
     <Compile Include="..\BioCheckAnalyzer32\BioCheckPlusZ3.fs">
       <Link>BioCheckPlusZ3.fs</Link>
     </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Z3rangelist.fs">
+      <Link>Z3rangelist.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\stepZ3rangelist.fs">
       <Link>stepZ3rangelist.fs</Link>
     </Compile>
@@ -117,20 +117,38 @@
     <Compile Include="..\BioCheckAnalyzer32\EncodingForFormula.fs">
       <Link>EncodingForFormula.fs</Link>
     </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\EncodingForFormula2.fs">
+      <Link>EncodingForFormula2.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\InitEncodingForSys.fs">
       <Link>InitEncodingForSys.fs</Link>
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\IncEncodingForSys.fs">
       <Link>IncEncodingForSys.fs</Link>
     </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\Z3rangelist.fs">
-      <Link>Z3rangelist.fs</Link>
+    <Compile Include="..\BioCheckAnalyzer32\BMC.fs">
+      <Link>BMC.fs</Link>
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\Rangelist.fs">
       <Link>Rangelist.fs</Link>
     </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\BMC.fs">
-      <Link>BMC.fs</Link>
+    <Compile Include="..\BioCheckAnalyzer32\GGraph.fs">
+      <Link>GGraph.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Oracle.fs">
+      <Link>Oracle.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Cut.fs">
+      <Link>Cut.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Shrink.fs">
+      <Link>Shrink.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Prover.fs">
+      <Link>Prover.fs</Link>
+    </Compile>
+     <Compile Include="..\BioCheckAnalyzer32\Suggest.fs">
+      <Link>Suggest.fs</Link>
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\UIMain.fs">
       <Link>UIMain.fs</Link>

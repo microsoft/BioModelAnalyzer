@@ -83,7 +83,6 @@
     <Compile Include="UIMain.fs" />
     <Compile Include="UnitTests.fs" />
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">
