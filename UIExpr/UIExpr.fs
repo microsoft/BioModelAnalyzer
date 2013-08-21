@@ -26,7 +26,7 @@ let check (s:string) (expected:parse_result) : unit =
         Printf.printf "Parse failed as expected, at line %d, col %d, msg=%s.\n" line col msg
     | _ -> Printf.printf "!!Didn't get what I expected!\n"
 
-let _ = 
+let unit_tests _ = 
     let a_err = ParseErr({line=0; col=0; msg=""})
     check "var(C1.x)" (ParseOK(Ident("C1.x"))) 
     check "var(C1.x.y)" (ParseOK(Ident("C1.x.y"))) // Shouldn't be allowed for now. But is. 
