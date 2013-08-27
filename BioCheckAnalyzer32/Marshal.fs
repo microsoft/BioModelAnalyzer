@@ -24,7 +24,12 @@ let mk_number_safe () =
 
 let model_of_xml (xd:XDocument) =
     //Get cells
-    let cc = try xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") with _ -> Seq.empty
+    //let cc = try xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") with _ -> Seq.empty
+    let cc = 
+        if ((xd.Element(xn "AnalysisInput").Element(xn "Cells") <> null) && (xd.Element(xn "AnalysisInput").Element(xn "Cells").Element(xn "Cell") <> null)) then
+            xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") 
+        else Seq.empty 
+            
     let ccNames = if Seq.isEmpty cc then ["SingleCell"] 
                   else [for cell in cc do yield try (string)(cell.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(-1, "Bad Cell Name"))]
 
@@ -46,11 +51,7 @@ let model_of_xml (xd:XDocument) =
                 let max = try (int) (v.Element(xn "RangeTo").Value) with _ -> raise(MarshalInFailed(id,"Bad RangeTo"))
 
                
-//  Contact:
-//
-//      Garvit Juniwal (garvitjuniwal@eecs.berkeley.edu)
-//
-
+                // Garvit's Shrink-Cut 
                 // if no number given than generate a safe number
                 let number = try (int) (v.Element(xn "Number").Value) with _ -> mk_number_safe()
                 let tt = try v.Element(xn "Tags").Elements(xn "Tag") with _ -> Seq.empty
@@ -65,29 +66,12 @@ let model_of_xml (xd:XDocument) =
                                         yield (pos, List.nth ccNames (pos-1))]
                 // if no tags specified then replace with default tags
                 let tags = if Seq.isEmpty tt then defaultTags else tags
-//
-//
+                // Garvit
 
 
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
                 let t = try Some ((string) (v.Element(xn "Function").Value)) with _ -> None
-                // SI: we're in the process of replacing fsyacc with fparsec
-//                // 1. fsyacc parser
-//                let parse_err f exn  =
-//                    "Failed to parse " + name + "'s function: " + f + ". " +
-//                    "Exception: " + (string)exn + ". " +
-//                    "Will use default function."
                 let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
-//                let fsyacc t = 
-//                    try
-//                        let lexbuf = LexBuffer<_>.FromString(t)
-//                        let f = ExprParse.func ExprLex.tokenize lexbuf
-//                        //Log.log_debug ("...OK, got a f:" + (Expr.str_of_expr f))
-//                        Some f
-//                    with e ->
-//                        Log.log_error(parse_err t e)
-//                        raise(MarshalInFailed(id,exn_msg t))
-                // 2. fparsec parser
                 let parse_error f line col msg = 
                     "Failed to parse " + name + "'s function: " + f + ". " +
                     "Exception: " + msg + ". " +
@@ -98,7 +82,6 @@ let model_of_xml (xd:XDocument) =
                     | ParsecExpr.ParseErr(err) -> 
                         Log.log_error(parse_error t err.line err.col err.msg) 
                         raise(MarshalInFailed(id,exn_msg t))
-
                 let f =
                         match t with
                         | Some t when t="" -> None
