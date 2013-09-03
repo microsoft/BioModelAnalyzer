@@ -36,13 +36,17 @@ let model_of_xml (xd:XDocument) =
     // Get vars
     //let vv = xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable")
     let vv = 
-        if ((xd.Element(xn "AnalysisInput").Element(xn "Variables") <> null)  && (xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable") <> null)) then
+        if ((xd.Element(xn "AnalysisInput").Element(xn "Variables") <> null)  && (xd.Element(xn "AnalysisInput").Element(xn "Variables").Element(xn "Variable") <> null)) then
             xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable")
         else Seq.empty
 
     // Get the max of all the variable ids to create safe ids for internal use
     maxNumber := seq { for v in vv do
-                            let number = try (int) (v.Element(xn "Number").Value) with _ -> 0
+                            let number = 
+                                // try (int) (v.Element(xn "Number").Value) with _ -> 0
+                                if (v.Element(xn "Number") <> null) then
+                                    (int) (v.Element(xn "Number").Value) 
+                                else 0 
                             yield number}
                   |> Seq.max
 
@@ -57,8 +61,16 @@ let model_of_xml (xd:XDocument) =
                
                 // Garvit's Shrink-Cut 
                 // if no number given than generate a safe number
-                let number = try (int) (v.Element(xn "Number").Value) with _ -> mk_number_safe()
-                let tt = try v.Element(xn "Tags").Elements(xn "Tag") with _ -> Seq.empty
+                let number = 
+                    // try (int) (v.Element(xn "Number").Value) with _ -> mk_number_safe()
+                    if (v.Element(xn "Number") <> null) then 
+                        (int)(v.Element(xn "Number").Value) 
+                    else mk_number_safe()
+                let tt = 
+                    // try v.Element(xn "Tags").Elements(xn "Tag") with _ -> Seq.empty
+                    if (v.Element(xn "Tags") <> null && v.Element(xn "Tags").Elements(xn "Tag") <> null) then 
+                        v.Element(xn "Tags").Elements(xn "Tag") 
+                    else Seq.empty
                 let tags = [for tag in tt do
                                     let tagId = try (int)(tag.Attribute(xn "Id").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Id"))
                                     let tagName = try (string)(tag.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Name"))
