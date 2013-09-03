@@ -23,7 +23,7 @@ let mk_number_safe () =
    !maxNumber
 
 let model_of_xml (xd:XDocument) =
-    //Get cells
+    // Get cells
     //let cc = try xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") with _ -> Seq.empty
     let cc = 
         if ((xd.Element(xn "AnalysisInput").Element(xn "Cells") <> null) && (xd.Element(xn "AnalysisInput").Element(xn "Cells").Element(xn "Cell") <> null)) then
@@ -34,7 +34,11 @@ let model_of_xml (xd:XDocument) =
                   else [for cell in cc do yield try (string)(cell.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(-1, "Bad Cell Name"))]
 
     // Get vars
-    let vv = xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable")
+    //let vv = xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable")
+    let vv = 
+        if ((xd.Element(xn "AnalysisInput").Element(xn "Variables") <> null)  && (xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable") <> null)) then
+            xd.Element(xn "AnalysisInput").Element(xn "Variables").Elements(xn "Variable")
+        else Seq.empty
 
     // Get the max of all the variable ids to create safe ids for internal use
     maxNumber := seq { for v in vv do
