@@ -6,5 +6,5 @@ open Model
 [<EntryPoint>]
 let main argv = 
     let model = new Model()
-    model.simulate(100) |> ignore
+    model.simulate(1000) |> ignore
     0 // return an integer exit code

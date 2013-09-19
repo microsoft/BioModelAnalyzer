@@ -44,10 +44,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <ItemGroup>
+    <Compile Include="ModelParameters.fs" />
     <Compile Include="Cell.fs" />
-    <Compile Include="Visualisation.fs" />
+    <Compile Include="ParamFormBase.fs" />
+    <Compile Include="StemCellParamForm.fs" />
+    <Compile Include="NonStemCellParamForm.fs" />
+    <Compile Include="ExternalStateForm.fs" />
+    <Compile Include="MainForm.fs" />
     <Compile Include="Model.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

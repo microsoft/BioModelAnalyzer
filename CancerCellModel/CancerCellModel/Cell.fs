@@ -1,5 +1,6 @@
 ﻿module Cell
 open System
+open ModelParameters
 
 type PathwayLevel = Up | Down | Neutral
 type CellState = Stem | NonStem | NonStemWithMemory | Death
@@ -9,17 +10,23 @@ let seed =
     let seedGen = new Random()
     (fun () -> lock seedGen (fun () -> seedGen.Next()))
 
+let uniform_bool(prob: float) =
+    let randgen = new Random(seed())
+    randgen.NextDouble() < prob
+
 type ExternalState() =
     let mutable egf = true
-    let mutable o2 = float ExternalState.MaxO2
+    let (_, maxo2) = ExternalState.O2Limits
+    let mutable o2 = maxo2
+    let mutable live_cells: int = 1
+    let mutable stem_cells: int = 1
     
-    static member MaxO2 with get() = float 100
-    static member MinO2 with get() = float 0
+    static member O2Limits with get() = (float 0, float 100)
 
     member this.EGF with get() = egf and set(_egf) = egf <- _egf
     member this.O2 with get() = o2 and set(_o2: float) = o2 <- _o2
-    
-    //member this.NextState() = 
+    member this.LiveCells with get() = live_cells and set(n) = live_cells <- n
+    member this.StemCells with get() = stem_cells and set(n) = stem_cells <- n
 
 type Cell (?s, ?gen) =
     let mutable ng2: PathwayLevel = Up
@@ -69,43 +76,6 @@ type Cell (?s, ?gen) =
     
     member this.Generation with get() = generation and set(g) = generation <- g
 
-// model calibration parameters
-type ModelParameters =
-    // the probability of cell division is defined as 1 / (max + exp((mu - x)/s)),
-    // this is logistic probability function, and there is no biological reason to choose it
-    // but its shape and and the fact that it's between 0 and 1 are convenient for our purposes
-    // we'll use s and mu as a calibration parameter (DivisionProbParam), x will mean O2,
-    // and mu - the number of cells in the system
-    static member StemDivisionProbParam = (float 60, float 100, float 0.015) // (mu, s, max)
-    static member NonStemDivisionProbParam = (float 60, float 100, float 1) // (mu, s, max)
-
-    // the probability that EGF is present
-    static member EGFProb: float = 0.8
-
-    // the probability of cell death is defined as c^(-x)
-    // where ^ means "to the power of" and x will mean O2
-    static member DeathProbParam = float 2 // c
-
-    // the probability that a stem cell will divide symmetrically
-    // rather than asymmetrically
-    static member SymRenewProbParam = float 0.01
-
-    // the level of O2 is modeled as the function
-    // f(n, t+dt) = f(n, t) + dt*c1 - dt*c2*n
-    // where dt*c1 - income of O2 in the system
-    // dt*c2*n - consumption of O2 - linear in time and number of cells in the model (n)
-    static member O2Param = (float 1, float 0.01) // (c1, c2)
-    static member logistic_func(mu: float, s: float, max: float)(x: float) =
-        float 1 / (float 1/max + exp((mu-x)/s))
-
-    static member logistic_func_param(x1: float, x2: float, max: float) =
-        let l1 = Math.Log(float 99/max)
-        let l2 = Math.Log(float 1 - max)
-        let s = (x2-x1)/(l1-l2)
-        let mu = s * l1 + x1
-        (mu, s, max)
-
-
 exception InnerError of string
 
 type CellActivity() =
@@ -135,22 +105,32 @@ type CellActivity() =
                      | NonStem -> ModelParameters.NonStemDivisionProbParam
                      | _ -> raise(InnerError(sprintf "A cell in state %s can not divide" cell.StateAsStr))
 
-        // if there is too little oxygen, a cell does not proliferate
-        let prob = ModelParameters.logistic_func(param)(ext.O2)
-        let randgen = Random(seed())
-        randgen.NextDouble() < prob
+        let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(param))(ext.O2)
+        uniform_bool(prob)
 
     // determine whether a stem cell will divide symmetrically
     static member should_divide_sym(cell: Cell) =
-        let randgen = Random(seed())
-        randgen.NextDouble() < ModelParameters.SymRenewProbParam
+        uniform_bool(ModelParameters.SymRenewProb)
 
     // determine if a cell should die depending
     // on the amount of nutrients (currently: O2)
     static member should_die(cell: Cell, ext: ExternalState) = 
-        let prob = Math.Pow(ModelParameters.DeathProbParam, -ext.O2)
+        let prob = float 1 - ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(-ext.O2)
+        uniform_bool(prob)
+
+    // determine if a stem cell should go to a "non-stem with memory" state
+    static member should_goto_nonstem(cell: Cell) =
+        let prob = ModelParameters.StemToNonStemProbParam
         let randgen = Random(seed())
         randgen.NextDouble() < prob
+
+    static member should_returnto_stem(cell: Cell, ext: ExternalState) =
+        let prob = ModelParameters.exp_func(
+                     ModelParameters.exp_func_param(
+                        ModelParameters.NonStemToStemProbParam))
+                        (float -ext.StemCells)
+        uniform_bool(prob)
+
 
     // compute the action in the current state
     static member compute_action(ext: ExternalState) (cell: Cell) = 
@@ -164,7 +144,7 @@ type CellActivity() =
                     cell.Action <- SymSelfRenew
                 else
                     cell.Action <- AsymSelfRenew
-            else
+            else if CellActivity.should_goto_nonstem(cell) then
                 cell.State <- NonStemWithMemory
         
         // determine an action for a non-stem cell
@@ -175,16 +155,17 @@ type CellActivity() =
                 cell.Action <- Die
 
         // determine an action for a non-stem cell which can become stem again
-        else if cell.State = NonStemWithMemory && ext.EGF = true then
-            cell.State <- Stem
+        else if cell.State = NonStemWithMemory then
+            if ext.EGF && CellActivity.should_returnto_stem(cell, ext) then
+                cell.State <- Stem
 
     // recalculate the probabilistic events in the external system: EGF and O2
-    // n is the total number of live cells in the model
-    static member recalculate_ext_state(ext:ExternalState, dt: int, n: int) =
+    static member recalculate_ext_state(ext:ExternalState, dt: int) =
         let randgen = new Random(seed())
         ext.EGF <- randgen.NextDouble() < ModelParameters.EGFProb
         let (c1, c2) = ModelParameters.O2Param
 
-        ext.O2 <- ext.O2 + (float dt)*c1 - (float dt)*c2*(float n)
-        if ext.O2 < ExternalState.MinO2 then ext.O2 <- ExternalState.MinO2
-        else if ext.O2 > ExternalState.MaxO2 then ext.O2 <- ExternalState.MaxO2        
+        let (minO2, maxO2) = ExternalState.O2Limits
+        ext.O2 <- ext.O2 + (float dt)*c1 - (float dt)*c2*(float ext.LiveCells)
+        if ext.O2 < minO2 then ext.O2 <- minO2
+        else if ext.O2 > maxO2 then ext.O2 <- maxO2       
