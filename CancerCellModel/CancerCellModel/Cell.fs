@@ -6,6 +6,8 @@ type PathwayLevel = Up | Down | Neutral
 type CellState = Stem | NonStem | NonStemWithMemory | Death
 type CellAction = AsymSelfRenew | SymSelfRenew | NonStemDivide | Die | NoAction
 
+exception InnerError of string
+
 let seed = 
     let seedGen = new Random()
     (fun () -> lock seedGen (fun () -> seedGen.Next()))
@@ -76,8 +78,6 @@ type Cell (?s, ?gen) =
     
     member this.Generation with get() = generation and set(g) = generation <- g
 
-exception InnerError of string
-
 type CellActivity() =
     // in assymetric cell division a stem cell produces
     // a new stem cell and a new non-stem cell
@@ -115,7 +115,7 @@ type CellActivity() =
     // determine if a cell should die depending
     // on the amount of nutrients (currently: O2)
     static member should_die(cell: Cell, ext: ExternalState) = 
-        let prob = float 1 - ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(-ext.O2)
+        let prob = float 1 - ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(ext.O2)
         uniform_bool(prob)
 
     // determine if a stem cell should go to a "non-stem with memory" state

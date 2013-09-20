@@ -27,6 +27,14 @@ type NonStemCellParamForm() =
     let mu_death_textbox = new TextBox()
     let s_death_textbox = new TextBox()
     let max_death_textbox = new TextBox()
+
+    let apply_division_changes(args: EventArgs) =
+        ModelParameters.NonStemDivisionProbParam <- ParamFormBase.retrieve_logistic_func_param(x1_division_textbox,
+                        x2_division_textbox, max_division_textbox)
+
+    let apply_death_changes(args: EventArgs) =
+        ModelParameters.DeathProbParam <- ParamFormBase.retrieve_logistic_func_param(
+                         x1_death_textbox, x2_death_textbox, max_death_textbox)
     
     // initialise the window
     do
@@ -47,12 +55,13 @@ type NonStemCellParamForm() =
         division_prob_chart.ChartAreas.Add(division_chart_area)
         division_prob_chart.Series.Add(division_prob_series)
 
-        ParamFormBase.create_logistic_func_controls(
+        let control = ParamFormBase.create_logistic_func_controls(
                        division_groupbox, null, division_prob_chart,
                        x1_division_textbox, x2_division_textbox, mu_division_textbox, s_division_textbox, max_division_textbox,
-                       ModelParameters.StemDivisionProbParam, (ExternalState.O2Limits)) |> ignore
+                       ModelParameters.NonStemDivisionProbParam, (ExternalState.O2Limits))
 
-  
+        ParamFormBase.create_apply_button(division_groupbox, control, apply_division_changes) |> ignore
+
         (*-------------- DEATH --------------------------*)
 
         let death_groupbox = new GroupBox()
@@ -66,7 +75,10 @@ type NonStemCellParamForm() =
         death_prob_chart.ChartAreas.Add(death_chart_area)
         death_prob_chart.Series.Add(death_prob_series)
 
-        ParamFormBase.create_logistic_func_controls(
+        let control = ParamFormBase.create_logistic_func_controls(
                         death_groupbox, null, death_prob_chart,
                         x1_death_textbox, x2_death_textbox, mu_death_textbox, s_death_textbox,
-                        max_death_textbox, ModelParameters.DeathProbParam, (ExternalState.O2Limits)) |> ignore
+                        max_death_textbox, ModelParameters.DeathProbParam, (ExternalState.O2Limits), true)
+
+        ParamFormBase.create_apply_button(death_groupbox, control, apply_death_changes) |> ignore
+        base.Controls.AddRange([|division_groupbox; death_groupbox|])

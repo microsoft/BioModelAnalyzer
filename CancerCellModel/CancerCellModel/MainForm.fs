@@ -23,6 +23,7 @@ type CellStatisticsForm ((*cell_stat: CellStatistics, ext_stat: ExtStatistics*))
 
     let stem_prop_dialog = new StemCellParamForm()
     let nonstem_prop_dialog = new NonStemCellParamForm()
+    let extstate_prop_dialog = new ExtStateParamForm()
     let ext_state_dialog = new ExtStatisticsForm()
     let mutable closed = false
 

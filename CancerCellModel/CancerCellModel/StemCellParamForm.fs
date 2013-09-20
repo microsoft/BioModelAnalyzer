@@ -18,6 +18,7 @@ type StemCellParamForm() =
     let mu_textbox = new TextBox()
     let s_textbox = new TextBox()
     let max_division_textbox = new TextBox()
+    let sym_div_textbox = new TextBox()
 
     let nonstem_tostem_prob_chart = new Chart(Dock=DockStyle.Fill)
     let nonstem_tostem_chart_area = new ChartArea()
@@ -25,9 +26,20 @@ type StemCellParamForm() =
     let x3_textbox = new TextBox()
     let n_textbox = new TextBox()
     let max_nonstem_tostem_textbox = new TextBox()
+    let tononstem_withmem_textbox = new TextBox()
 
-    // plot the probability function of cell division
-    
+    let apply_stem_changes(args: EventArgs) =
+        ModelParameters.StemDivisionProbParam <- ParamFormBase.retrieve_logistic_func_param(
+                                                    x1_textbox, x2_textbox, max_division_textbox)
+
+        ModelParameters.SymRenewProb <- ParamFormBase.retrieve_float(sym_div_textbox)
+
+    let apply_nonstem_withmem_changes(args: EventArgs) =
+        ModelParameters.NonStemToStemProbParam <- ParamFormBase.retrieve_exp_func_param(
+                                                    x3_textbox, max_nonstem_tostem_textbox)
+
+        ModelParameters.StemToNonStemProbParam <- ParamFormBase.retrieve_float(tononstem_withmem_textbox)
+   
     // initialise the window
     do
         (*-------------- STEM CELLS--------------------------*)
@@ -52,15 +64,16 @@ type StemCellParamForm() =
                                  (ExternalState.O2Limits))
 
         let sym_div_label  = new Label()
-        sym_div_label.MaximumSize <- Drawing.Size(ParamFormBase.max_label_width, ParamFormBase.max_label_height)
+        sym_div_label.MaximumSize <- ParamFormBase.max_label_size
         sym_div_label.AutoSize <- true
         sym_div_label.Text <- "The probability of symmetric division (%)"
         ParamFormBase.place_control_below(sym_div_label, control)
 
-        let sym_div_textbox = new TextBox()
         sym_div_textbox.Text <- (sprintf "%.1f" (ModelParameters.SymRenewProb* float 100) )
+        ParamFormBase.add_textbox_float_validation(sym_div_textbox, sym_div_label.Text, (float 0, float 100))
         ParamFormBase.place_control_totheright(sym_div_textbox, sym_div_label)
 
+        ParamFormBase.create_apply_button(division_groupbox, sym_div_label, apply_stem_changes) |> ignore
         division_groupbox.Controls.AddRange([|sym_div_label; sym_div_textbox|])
 
 
@@ -74,13 +87,13 @@ type StemCellParamForm() =
                                                             int (float nonstem_withmem_groupbox.Size.Height * 0.9) )
 
         let tononstem_withmem_label = new Label()
-        tononstem_withmem_label.MaximumSize <- Drawing.Size(2*ParamFormBase.max_label_width, ParamFormBase.max_label_height)
+        tononstem_withmem_label.MaximumSize <- ParamFormBase.double_label_size
         tononstem_withmem_label.AutoSize <- true
         tononstem_withmem_label.Text <- "The probability of the transition of a stem cell into the \"non-stem with memory\" state (%)"
         tononstem_withmem_label.Location <- ParamFormBase.initial_location
 
-        let tononstem_withmem_textbox = new TextBox()
         tononstem_withmem_textbox.Text <- (sprintf "%.1f" (ModelParameters.StemToNonStemProbParam * (float 100)))
+        ParamFormBase.add_textbox_float_validation(tononstem_withmem_textbox, tononstem_withmem_label.Text, (float 0, float 100))
         ParamFormBase.place_control_totheright(tononstem_withmem_textbox, tononstem_withmem_label)
 
         nonstem_tostem_prob_chart.Titles.Add("The probability of transition from non-stem (with memory) to stem state") |> ignore
@@ -88,9 +101,11 @@ type StemCellParamForm() =
         nonstem_tostem_prob_chart.Series.Add(nonstem_tostem_prob_series)
 
         let (x3, _) = ModelParameters.NonStemToStemProbParam
-        ParamFormBase.create_exp_func_controls(nonstem_withmem_groupbox, tononstem_withmem_label, nonstem_tostem_prob_chart,
+        let control = ParamFormBase.create_exp_func_controls(nonstem_withmem_groupbox, tononstem_withmem_label, nonstem_tostem_prob_chart,
                                                 x3_textbox, n_textbox, max_nonstem_tostem_textbox,
                                                 ModelParameters.NonStemToStemProbParam, (float 0, float x3))
 
-        nonstem_withmem_groupbox.Controls.AddRange([|tononstem_withmem_label; tononstem_withmem_textbox |])
-        base.Controls.AddRange([|division_groupbox; nonstem_withmem_groupbox|])
+        ParamFormBase.create_apply_button(nonstem_withmem_groupbox, control, apply_nonstem_withmem_changes) |> ignore
+        nonstem_withmem_groupbox.Controls.AddRange([|tononstem_withmem_label; tononstem_withmem_textbox|])
+
+        base.Controls.AddRange([| division_groupbox; nonstem_withmem_groupbox |])
