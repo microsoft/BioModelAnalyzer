@@ -1,0 +1,1 @@
+C:\Windows\System32\inetsrv\appcmd.exe set config -section:applicationPools -applicationPoolDefaults.enable32BitAppOnWin64:true
