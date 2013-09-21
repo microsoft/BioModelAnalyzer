@@ -16,7 +16,7 @@ namespace BioCheck.Web.Log
 
         public UsuageDataSource()
         {
-            var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
+            var storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==");
 
             // Create the table if it doesn't exist.
             var tableClient = storageAccount.CreateCloudTableClient();

@@ -143,6 +143,7 @@
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="about.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -208,6 +209,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="_scripts\jquery-1.7.1.min.js" />
+    <None Include="Properties\PublishProfiles\BMA-VM.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AnalysisInput.cs" />
@@ -255,7 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
-      <Project>{27FCEE47-CED8-4629-9989-7E9A490B090E}</Project>
+      <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
       <Name>BioCheckAnalyzer32</Name>
     </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
@@ -291,7 +293,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>16925</DevelopmentServerPort>
+          <DevelopmentServerPort>42843</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

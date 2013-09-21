@@ -225,6 +225,25 @@ let mk_Variable_range id lo hi =
         let xv = new XElement(xn "Variable", attr)
         xv
 
+let xml_of_smap (r:Map<var,int>) = 
+    let add_a_tick (root:XElement) (time:int) (bounds:Map<QN.var,int*int>) =
+        let tick = new XElement (xn "Tick")
+        root.Add(tick)
+        let t = new XElement(xn "Time", (string)time)
+        tick.Add(t)
+        let variables = new XElement(xn "Variables")
+        tick.Add(variables)
+        let vv = Map.fold (fun vv k (lo,hi) -> (mk_Variable_range k lo hi)::vv) [] bounds
+        variables.Add(vv)
+    
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)        
+
+    root.Add(new XElement(xn "Status", "Stabilizing"))
+    List.iter (fun (t,bounds) -> add_a_tick root t bounds) []
+
+    doc
 
 let xml_of_stability_result (r:Result.stability_result) =
 

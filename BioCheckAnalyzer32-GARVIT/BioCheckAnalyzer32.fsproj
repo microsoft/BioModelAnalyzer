@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{27fcee47-ced8-4629-9989-7e9a490b090e}</ProjectGuid>
+    <ProjectGuid>{ea47d960-2b01-4242-ac60-f5cb7ad1f1eb}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>BioCheck.Analyzer.Server</RootNamespace>
     <AssemblyName>BioCheckAnalyzer32</AssemblyName>

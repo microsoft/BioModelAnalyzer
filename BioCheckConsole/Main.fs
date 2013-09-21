@@ -72,7 +72,7 @@ let main args =
     
     parse_args (List.ofArray args)
 
-    if !logging then Log.register_log_service (Log.AnalyzerLogService()) //1
+    if !logging then Log.register_log_service (Log.AnalyzerLogService()) 1
 
 //    match !logging_level with
 //    | 0 -> ()
@@ -105,7 +105,10 @@ let main args =
             Log.log_debug (QN.str_of_node node)
         let (stablePoint, cex) = Prover.ProveStability model
         match (stablePoint, cex) with
-        | (Some p, None) -> Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
+        | (Some p, None) -> 
+            Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
+            //let stable_res_xml = Marshal.xml_of_smap p
+            //stable_res_xml.Save(!proof_output)
         | (None, Some (Prover.Bifurcation(p1, p2))) -> Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
         | (None, Some (Prover.Cycle(p, len))) -> Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
         | _ -> failwith "Bad results from prover"

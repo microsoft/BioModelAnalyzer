@@ -57,6 +57,9 @@
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="BioCheckAnalyzer32">
+      <HintPath>..\BioCheckAnalyzer32-GARVIT\bin\Debug\BioCheckAnalyzer32.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -64,11 +67,6 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
-      <Name>BioCheckAnalyzer32</Name>
-      <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
