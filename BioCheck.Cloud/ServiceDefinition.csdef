@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="BioCheck.Cloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-03.2.0">
-  <WebRole name="BioCheck.Web" vmsize="Medium">
+  <WebRole name="BioCheck.Web" vmsize="Large">
     <Sites>
       <Site name="Web">
         <Bindings>
@@ -19,8 +19,13 @@
         
     <Startup>
       <Task commandLine="Enable32Bit.cmd" executionContext="elevated" taskType="simple" />
+      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple" />
+      
     </Startup>
    
+    <!--<Startup>
+      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple" />
+    </Startup>-->
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>

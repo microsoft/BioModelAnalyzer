@@ -648,8 +648,19 @@ namespace BioCheck.ViewModel
 
         private void OnAnalysisCompleted(object sender, AnalyzeCompletedEventArgs e)
         {
+
             var time = Math.Round((DateTime.Now - timer).TotalSeconds, 1);
             Debug.WriteLine(string.Format("Analyzer took {0} seconds to run.", time));
+
+            if (e.Error != null)
+            {
+                string details = e.Error.ToString();
+                details = details + Environment.NewLine + e.Error.StackTrace;
+
+                ApplicationViewModel.Instance.Container
+                         .Resolve<IErrorWindowService>()
+                         .Show("The Error property of AnalyzeCompletedEventArgs is not null.", details);
+            }
 
             try
             {
@@ -707,7 +718,7 @@ namespace BioCheck.ViewModel
 
                     // Process the analysis output results
                     AnalysisOutputHandler.Handle(analysisOutput);
-        
+
                     ApplicationViewModel.Instance.Container
                         .Resolve<IBusyIndicatorService>()
                         .Close();

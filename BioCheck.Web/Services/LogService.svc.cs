@@ -54,5 +54,20 @@ namespace BioCheck.Web.Services
 
             dataSource.Insert(errorDM);
         }
+
+        [OperationContract]
+        public void Debug(string message, string details)
+        {
+            var dataSource = new ErrorDataSource();
+
+            var errorDM = new ErrorDataModel()
+            {
+                Date = DateTime.Now,
+                Message = message,
+                Details = details,
+            };
+
+            dataSource.Insert(errorDM);
+        }
     }
 }

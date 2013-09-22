@@ -14,7 +14,7 @@
         /// <summary>
         /// Update the Minor version for live updates to the cloud.
         /// </summary>
-        public const string Minor = "3.04";
+        public const string Minor = "3.07";
 
         public new static string ToString()
         {

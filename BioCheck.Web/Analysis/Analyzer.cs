@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using BioCheck.Web.Analysis.Xml;
 using BioCheck.Web.Helpers;
+using BioCheck.Web.Services;
 using BioCheckAnalyzerCommon;
 
 namespace BioCheck.Web.Analysis
@@ -84,6 +85,8 @@ namespace BioCheck.Web.Analysis
 
             var log = new DefaultLogService();
 
+            var azureLogService = new LogService();
+
             try
             {
                 IAnalyzer2 analyzer = new UIMain.Analyzer2();
@@ -102,6 +105,10 @@ namespace BioCheck.Web.Analysis
                 }
 
                 var outputXml = analyzer.checkStability(inputXml);
+
+                // Log the output XML each time it's run
+                // DEBUG: Sam - to check why the output is returning is null
+                azureLogService.Debug("Analyze Output XML", outputXml.ToString());
 
                 var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
                 log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
@@ -124,6 +131,8 @@ namespace BioCheck.Web.Analysis
             }
             catch (Exception ex)
             {
+                azureLogService.Debug("Analyze Exception", ex.ToString());
+
                 // Return an Unknown if fails
                 var outputData = new AnalysisOutputDTO
                                      {

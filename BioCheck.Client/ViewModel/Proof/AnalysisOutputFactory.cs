@@ -19,6 +19,9 @@ namespace BioCheck.ViewModel.Proof
         /// <returns></returns>
         public static AnalysisOutput Create(AnalysisOutputDTO analysisOutputDto)
         {
+            if(analysisOutputDto.ZippedXml == null)
+                throw new Exception("No analysis output was returned from the Analyser.");
+
             var xml = ZipHelper.Unzip(analysisOutputDto.ZippedXml);
             var xdoc = XDocument.Parse(xml);
 
