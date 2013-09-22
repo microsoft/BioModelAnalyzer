@@ -13,14 +13,14 @@
     </Endpoints>
     <Imports>
       <Import moduleName="Diagnostics" />
-      <Import moduleName="RemoteAccess" />
-      <Import moduleName="RemoteForwarder" />
+      <!--<Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />-->
     </Imports>
-    <!--    
+        
     <Startup>
-      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple" />
+      <Task commandLine="Enable32Bit.cmd" executionContext="elevated" taskType="simple" />
     </Startup>
-   -->
+   
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>
