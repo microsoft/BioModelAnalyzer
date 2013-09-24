@@ -51,8 +51,8 @@
     <Compile Include="NonStemCellParamForm.fs" />
     <Compile Include="ExternalStateForm.fs" />
     <Compile Include="ExternalStateParamForm.fs" />
-    <Compile Include="MainForm.fs" />
     <Compile Include="Model.fs" />
+    <Compile Include="MainForm.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

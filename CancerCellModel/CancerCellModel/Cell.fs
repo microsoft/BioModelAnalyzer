@@ -115,14 +115,13 @@ type CellActivity() =
     // determine if a cell should die depending
     // on the amount of nutrients (currently: O2)
     static member should_die(cell: Cell, ext: ExternalState) = 
-        let prob = float 1 - ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(ext.O2)
+        let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(ext.O2)
         uniform_bool(prob)
 
     // determine if a stem cell should go to a "non-stem with memory" state
     static member should_goto_nonstem(cell: Cell) =
         let prob = ModelParameters.StemToNonStemProbParam
-        let randgen = Random(seed())
-        randgen.NextDouble() < prob
+        uniform_bool(prob)
 
     static member should_returnto_stem(cell: Cell, ext: ExternalState) =
         let prob = ModelParameters.exp_func(
@@ -161,8 +160,7 @@ type CellActivity() =
 
     // recalculate the probabilistic events in the external system: EGF and O2
     static member recalculate_ext_state(ext:ExternalState, dt: int) =
-        let randgen = new Random(seed())
-        ext.EGF <- randgen.NextDouble() < ModelParameters.EGFProb
+        ext.EGF <- uniform_bool(ModelParameters.EGFProb)
         let (c1, c2) = ModelParameters.O2Param
 
         let (minO2, maxO2) = ExternalState.O2Limits

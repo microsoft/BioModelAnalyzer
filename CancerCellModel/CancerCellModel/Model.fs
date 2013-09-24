@@ -2,22 +2,24 @@
 open System.Windows.Forms.DataVisualization.Charting
 open System.Windows.Forms
 open Cell
-open MainForm
+//open MainForm
 open ModelParameters
 open System
+
+type StatType = Live | Dead | Stem | NonStem | NonStemWithMemory
 
 type CellStatistics() = //max_len: int) =
 
     let mutable live_stat: float[] = [||]
     let mutable dead_stat: float[] = [||]
     let mutable stem_stat: float[] = [||]
-    let mutable non_stem_stat: float[] = [||]
+    let mutable nonstem_stat: float[] = [||]
     let mutable nonstem_withmem_stat: float[] = [||]
 
     member this.LiveStat with get() = live_stat
     member this.DeadStat with get() = dead_stat
     member this.StemStat with get() = stem_stat
-    member this.NonStemStat with get() = non_stem_stat
+    member this.NonStemStat with get() = nonstem_stat
     member this.NonStemWithMemStat with get() = nonstem_withmem_stat
 
     member this.add_data(stat: float[] byref, data: int) =
@@ -29,8 +31,15 @@ type CellStatistics() = //max_len: int) =
         this.add_data(&live_stat, live)
         this.add_data(&dead_stat, dead)
         this.add_data(&stem_stat, stem)
-        this.add_data(&non_stem_stat, non_stem)
+        this.add_data(&nonstem_stat, non_stem)
         this.add_data(&nonstem_withmem_stat, nonstem_withmem)
+
+    member this.Clear() =
+        live_stat <- [||]
+        dead_stat <- [||]
+        stem_stat <- [||]
+        nonstem_stat <- [||]
+        nonstem_withmem_stat <- [||]
 
 type ExtStatistics() = //max_len: int) =
  
@@ -45,6 +54,9 @@ type ExtStatistics() = //max_len: int) =
     member this.add_data(o2: float) =
         this.add_data(&o2_stat, o2)
 
+    member this.Clear() =
+        o2_stat <- [||]
+
 type Model() =
 
     let mutable t: int = 0
@@ -58,13 +70,12 @@ type Model() =
     let cell_stat = new CellStatistics()//max_stat_len)
     let ext_stat = new ExtStatistics()//max_stat_len)
 
-    let cell_form = new CellStatisticsForm((*cell_Stat, ext_stat*))
+    let clear() =
+        live_cells <- [|new Cell()|]
+        dead_cells <- [||]
+        ext_state <- new ExternalState()
     
-    let stat_forms = [ cell_form :> Form(*; null*) ]
-                       //ext_state_form :> Form ]
-
     let do_step() = 
-    
         Array.iter (CellActivity.compute_action ext_state) live_cells    
         let old_cells = Array.filter(fun (c:Cell) -> c.Action = NoAction) live_cells
 
@@ -84,42 +95,14 @@ type Model() =
         ext_state.LiveCells <- live_cells.Length
         ext_state.StemCells <- Array.length (Array.filter(fun (c:Cell) -> c.State = CellState.Stem) live_cells)
         CellActivity.recalculate_ext_state(ext_state, dt)
-        t <- t + dt
 
-    let get_statistics() =
+    let collect_statistics() =
         cell_stat.add_data(live_cells.Length, dead_cells.Length,
             (Array.filter(fun (c: Cell) -> c.State = CellState.Stem) live_cells) |> Array.length,
             (Array.filter(fun (c: Cell) -> c.State = CellState.NonStem) live_cells) |> Array.length,
             (Array.filter(fun (c: Cell) -> c.State = CellState.NonStemWithMemory) live_cells) |> Array.length)
 
         ext_stat.add_data(ext_state.O2)
-
-    let draw_statistics() =
-        (*let t0 = ref (t-dt* (max_stat_len-1))
-        if t0.Value < 0 then t0.Value <- 0*)
-        let t_seq = seq {for x in 0 .. dt .. t -> float x}
-        
-        
-        cell_form.AddPoints(cell_stat.LiveStat :> seq<float> |> Seq.zip t_seq, StatType.Live)
-        cell_form.AddPoints(cell_stat.DeadStat :> seq<float> |> Seq.zip t_seq, StatType.Dead)
-        cell_form.AddPoints(cell_stat.StemStat :> seq<float> |> Seq.zip t_seq, StatType.Stem)
-        cell_form.AddPoints(cell_stat.NonStemStat :> seq<float> |> Seq.zip t_seq, StatType.NonStem)
-        cell_form.AddPoints(cell_stat.NonStemStat :> seq<float> |> Seq.zip t_seq, StatType.NonStem)
-
-        cell_form.ExtStateForm.AddPoints(Seq.zip t_seq ext_stat.O2)
-
-    let runAsync(form: Form) =
-     async { 
-        try
-            if form <> null then form.ShowDialog() |> ignore
-            (*else
-                while not cell_form.Closed do
-                    get_statistics()
-                    draw_statistics()
-                    do_step()*)
-        with
-            | ex -> printfn "%s" (ex.Message);
-    }
 
     member this.T with get() = t and set(_t) = t <- _t
     member this.Dt with get() = dt and set(_dt) = dt <- _dt
@@ -128,13 +111,36 @@ type Model() =
     member this.ExtState with get() = ext_state
 
     member this.simulate(n: int) =
+        t <- 0
+        cell_stat.Clear()
+        ext_stat.Clear()
+        clear()
         for i = 0 to n-1 do
-            get_statistics()
-            draw_statistics()
+            collect_statistics()
+            t <- t + dt
             do_step()
 
-        stat_forms 
+(*        stat_forms 
         |> Seq.map runAsync
         |> Async.Parallel 
         |> Async.RunSynchronously
-        |> ignore
+        |> ignore*)
+
+    member this.GetCellStatistics(stat_type: StatType) =
+        let t_seq = seq {for x in 0 .. dt .. t -> float x}
+
+        (match stat_type with
+            | Live -> cell_stat.LiveStat 
+            | Dead -> cell_stat.DeadStat
+            | Stem -> cell_stat.StemStat
+            | NonStem -> cell_stat.NonStemStat
+            | NonStemWithMemory -> cell_stat.NonStemWithMemStat)
+                :> seq<float> |> Seq.zip t_seq
+        (*cell_stat.DeadStat :> seq<float> |> Seq.zip t_seq, StatType.Dead)
+        cell_form.AddPoints(cell_stat.StemStat :> seq<float> |> Seq.zip t_seq, StatType.Stem)
+        cell_form.AddPoints(cell_stat.NonStemStat :> seq<float> |> Seq.zip t_seq, StatType.NonStem)
+        cell_form.AddPoints(cell_stat.NonStemStat :> seq<float> |> Seq.zip t_seq, StatType.NonStem)*)
+
+    member this.GetO2Statistics() =
+        let t_seq = seq {for x in 0 .. dt .. t -> float x}
+        Seq.zip t_seq ext_stat.O2

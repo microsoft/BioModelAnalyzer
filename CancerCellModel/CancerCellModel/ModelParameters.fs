@@ -8,7 +8,7 @@ type ModelParameters() =
     static let mutable stemto_nonstem_prob_param = 0.05
     static let mutable nonstem_tostem_prob_param = (1000, float 1) //(x3, max)
     static let mutable egf_prob: float = 0.8
-    static let mutable death_prob_param = (float 10, float 20, float 1) // (x1, x2, max)
+    static let mutable death_prob_param = (float 20, float 10, float 1) // (x1, x2, max)
     static let mutable sym_renew_prob = float 0.01
     static let mutable o2_param = (float 1, float 0.1) // (c1, c2)
 

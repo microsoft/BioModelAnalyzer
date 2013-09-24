@@ -33,5 +33,6 @@ type ExtStatisticsForm () =
         for t, n in xs do
             series_o2.Points.AddXY(t, n) |> ignore
 
-    member this.Clear() =
-        series_o2.Points.Clear()
+    override this.Refresh() =
+        base.Refresh()
+        chart.Refresh()

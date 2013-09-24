@@ -7,8 +7,8 @@ open System.ComponentModel
 open Cell
 open ModelParameters
 
-type ParamFormBase() =
-    inherit Form (Visible = false, Width = 1200, Height = 850)
+type ParamFormBase(?Width, ?Height) =
+    inherit Form (Visible = false, Width = defaultArg Width 1200, Height = defaultArg Height 850)
 
     static member x_interval with get() = 10
     static member y_interval with get() = 15
@@ -48,7 +48,10 @@ type ParamFormBase() =
             msg := (sprintf "%s must be a real number" name)
         else if !x < xmin || !x > xmax then
             err := true
-            msg := (sprintf "%s can take on a value from %.1f to %.1f" name xmin xmax)
+            if xmax = Double.MaxValue then
+                msg := (sprintf "%s can take on a real value greater or equal to >= %.1f" name xmin)
+            else
+                msg := (sprintf "%s can take on a real value from %.1f to %.1f" name xmin xmax)
         
         if !err then
             args.Cancel <- true
@@ -116,16 +119,15 @@ type ParamFormBase() =
 
     static member refresh_logistic_func_chart(chart: Chart, x1_textbox: TextBox, x2_textbox: TextBox,
                                                 max_textbox: TextBox, mu_textbox: TextBox, s_textbox: TextBox,
-                                                x_limits: float*float, ?inverted) =
+                                                x_limits: float*float) =
         
-        let inv = defaultArg inverted false
         let (x1, x2, max) = ParamFormBase.retrieve_logistic_func_param(x1_textbox, x2_textbox, max_textbox)        
         let (mu, s, _) = ModelParameters.logistic_func_param(x1, x2, max)
         
         let series: Series = chart.Series.Item(0)
         series.Points.Clear()
         let func =  ModelParameters.logistic_func(mu, s, max)
-        ParamFormBase.func_plot(series, (fun (x: float) -> if inv then max - func(x) else func(x)), x_limits)
+        ParamFormBase.func_plot(series, (fun (x: float) -> func(x)), x_limits)
         
         let chart_area = chart.ChartAreas.Item(0)
         chart_area.AxisY.Maximum <- 1.1 * max
@@ -254,7 +256,7 @@ type ParamFormBase() =
                                                 max_textbox, mu_textbox, s_textbox, x_limits))
 
         ParamFormBase.refresh_logistic_func_chart(chart, x1_textbox, x2_textbox,
-            max_textbox, mu_textbox, s_textbox, x_limits, inv)
+            max_textbox, mu_textbox, s_textbox, x_limits)
 
         parent.Controls.AddRange([| panel; x1_label; x1_textbox; x2_label; x2_textbox;
             mu_label; mu_textbox; s_label; s_textbox; max_label; max_textbox; refresh_button |])
