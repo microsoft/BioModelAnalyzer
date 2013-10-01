@@ -46,12 +46,13 @@
   <ItemGroup>
     <Compile Include="ModelParameters.fs" />
     <Compile Include="Cell.fs" />
+    <Compile Include="Model.fs" />
     <Compile Include="ParamFormBase.fs" />
     <Compile Include="StemCellParamForm.fs" />
     <Compile Include="NonStemCellParamForm.fs" />
     <Compile Include="ExternalStateForm.fs" />
     <Compile Include="ExternalStateParamForm.fs" />
-    <Compile Include="Model.fs" />
+    <Compile Include="CellActivityStatForm.fs" />
     <Compile Include="MainForm.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>

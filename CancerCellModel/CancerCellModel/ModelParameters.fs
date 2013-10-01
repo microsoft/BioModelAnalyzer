@@ -9,8 +9,11 @@ type ModelParameters() =
     static let mutable nonstem_tostem_prob_param = (1000, float 1) //(x3, max)
     static let mutable egf_prob: float = 0.8
     static let mutable death_prob_param = (float 20, float 10, float 1) // (x1, x2, max)
+    static let mutable death_wait_interval = (0, 8)
     static let mutable sym_renew_prob = float 0.01
-    static let mutable o2_param = (float 1, float 0.1) // (c1, c2)
+    static let mutable o2_param = (float 1, float 0.2, float 0.1) // (c1, c2)
+    static let mutable stem_interval_between_divisions = (4, 20)
+    static let mutable nonstem_interval_between_divisions = ( 4, 20)
 
     // The probability of cell division is defined as 1 / (max + exp((mu - x)/s)).
     // This function is (a generalised version of) logistic probability function.
@@ -80,10 +83,19 @@ type ModelParameters() =
     static member DeathProbParam with get() = death_prob_param
                                     and set(p) = death_prob_param <- p
 
+    static member DeathWaitInterval with get() = death_wait_interval
+                                     and set(x) = death_wait_interval <- x
+
     // the probability that a stem cell will divide symmetrically
     // rather than asymmetrically
     static member SymRenewProb with get() = sym_renew_prob 
                                 and set(p) = sym_renew_prob <- p
+
+    static member StemIntervalBetweenDivisions with get() = stem_interval_between_divisions
+                                                and set(x) = stem_interval_between_divisions <- x
+
+    static member NonStemIntervalBetweenDivisions with get() = nonstem_interval_between_divisions
+                                                    and set(x) = nonstem_interval_between_divisions <- x
 
     // the level of O2 is modeled as the function
     // f(n, t+dt) = f(n, t) + dt*c1 - dt*c2*n

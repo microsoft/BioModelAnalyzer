@@ -8,7 +8,7 @@ open Cell
 open ModelParameters
 
 type StemCellParamForm() =
-    inherit ParamFormBase ()
+    inherit ParamFormBase (Width=1200, Height = 900)
     
     let division_prob_chart = new Chart(Dock=DockStyle.Fill)
     let division_chart_area = new ChartArea()
@@ -17,8 +17,10 @@ type StemCellParamForm() =
     let x2_textbox = new TextBox()
     let mu_textbox = new TextBox()
     let s_textbox = new TextBox()
-    let max_division_textbox = new TextBox()
+    let max_prob_division_textbox = new TextBox()
     let sym_div_textbox = new TextBox()
+    let min_division_interval_textbox = new TextBox()
+    let max_division_interval_textbox = new TextBox()
 
     let nonstem_tostem_prob_chart = new Chart(Dock=DockStyle.Fill)
     let nonstem_tostem_chart_area = new ChartArea()
@@ -30,9 +32,11 @@ type StemCellParamForm() =
 
     let apply_stem_changes(args: EventArgs) =
         ModelParameters.StemDivisionProbParam <- ParamFormBase.retrieve_logistic_func_param(
-                                                    x1_textbox, x2_textbox, max_division_textbox)
+                                                    x1_textbox, x2_textbox, max_prob_division_textbox)
 
         ModelParameters.SymRenewProb <- ParamFormBase.retrieve_float(sym_div_textbox)
+        ModelParameters.StemIntervalBetweenDivisions <- (ParamFormBase.retrieve_int(min_division_interval_textbox),
+                                                            ParamFormBase.retrieve_int(max_division_interval_textbox))
 
     let apply_nonstem_withmem_changes(args: EventArgs) =
         ModelParameters.NonStemToStemProbParam <- ParamFormBase.retrieve_exp_func_param(
@@ -44,7 +48,7 @@ type StemCellParamForm() =
     do
         (*-------------- STEM CELLS--------------------------*)
         base.Text <- "Stem cells"
-        base.ClientSize <- Drawing.Size(base.Size.Width - ParamFormBase.x_interval, base.Size.Height - ParamFormBase.x_interval )
+        base.ClientSize <- Drawing.Size(base.Size.Width, base.Size.Height)
 
         division_prob_chart.Titles.Add("The probability of cell division") |> ignore
         division_prob_chart.ChartAreas.Add(division_chart_area)
@@ -60,11 +64,11 @@ type StemCellParamForm() =
         let control = ParamFormBase.create_logistic_func_controls(
                                  division_groupbox, null, division_prob_chart,
                                  x1_textbox, x2_textbox, mu_textbox, s_textbox,
-                                 max_division_textbox, ModelParameters.StemDivisionProbParam,
+                                 max_prob_division_textbox, ModelParameters.StemDivisionProbParam,
                                  (ExternalState.O2Limits))
 
         let sym_div_label  = new Label()
-        sym_div_label.MaximumSize <- ParamFormBase.max_label_size
+        sym_div_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (2,3))
         sym_div_label.AutoSize <- true
         sym_div_label.Text <- "The probability of symmetric division (%)"
         ParamFormBase.place_control_below(sym_div_label, control)
@@ -73,11 +77,34 @@ type StemCellParamForm() =
         ParamFormBase.add_textbox_float_validation(sym_div_textbox, sym_div_label.Text, (float 0, float 100))
         ParamFormBase.place_control_totheright(sym_div_textbox, sym_div_label)
 
-        ParamFormBase.create_apply_button(division_groupbox, sym_div_label, apply_stem_changes) |> ignore
-        division_groupbox.Controls.AddRange([|sym_div_label; sym_div_textbox|])
+        let (div_interval_min, div_interval_max) = ModelParameters.StemIntervalBetweenDivisions
+        let min_division_interval_label = new Label()
+        min_division_interval_label.Text <- "The minimum time (in steps) before two consecutive divisions"
+        min_division_interval_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (float 2, 3.5))
+        min_division_interval_label.AutoSize <- true
+        ParamFormBase.place_control_below(min_division_interval_label, sym_div_label)
+
+        min_division_interval_textbox.Text <- (sprintf "%d" div_interval_min)
+        ParamFormBase.add_textbox_int_validation(min_division_interval_textbox, min_division_interval_label.Text, (0, Int32.MaxValue))
+        ParamFormBase.place_control_totheright(min_division_interval_textbox, min_division_interval_label)
+
+        let max_division_interval_label = new Label()
+        max_division_interval_label.Text <- "The maximum time (in steps) before two consecutive divisions"
+        max_division_interval_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (float 2, 3.5))
+        max_division_interval_label.AutoSize <- true
+        ParamFormBase.place_control_totheright(max_division_interval_label, min_division_interval_textbox)
+
+        max_division_interval_textbox.Text <- (sprintf "%d" div_interval_max)
+        ParamFormBase.add_textbox_int_validation(max_division_interval_textbox, max_division_interval_label.Text, (0, Int32.MaxValue))
+        ParamFormBase.place_control_totheright(max_division_interval_textbox, max_division_interval_label)
+
+        ParamFormBase.create_apply_button(division_groupbox, min_division_interval_label, apply_stem_changes) |> ignore
+        division_groupbox.Controls.AddRange([|sym_div_label; sym_div_textbox;
+                                                min_division_interval_label; min_division_interval_textbox;
+                                                max_division_interval_label; max_division_interval_textbox|])
 
 
-        (*-------------- NON-STEM CELLS--------------------------*)
+        (*-------------- NON-STEM WITH MEMORY CELLS--------------------------*)
         let nonstem_withmem_groupbox = new GroupBox()
         nonstem_withmem_groupbox.Text <- "Transitions to non-stem \"with memory\""
         nonstem_withmem_groupbox.Size <- Drawing.Size(base.ClientSize.Width/2 - 2*ParamFormBase.x_interval, base.ClientSize.Height)
@@ -87,7 +114,7 @@ type StemCellParamForm() =
                                                             int (float nonstem_withmem_groupbox.Size.Height * 0.9) )
 
         let tononstem_withmem_label = new Label()
-        tononstem_withmem_label.MaximumSize <- ParamFormBase.double_label_size
+        tononstem_withmem_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (5, 2))
         tononstem_withmem_label.AutoSize <- true
         tononstem_withmem_label.Text <- "The probability of the transition of a stem cell into the \"non-stem with memory\" state (%)"
         tononstem_withmem_label.Location <- ParamFormBase.initial_location
