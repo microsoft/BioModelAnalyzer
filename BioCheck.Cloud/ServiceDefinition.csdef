@@ -15,8 +15,6 @@
       <Import moduleName="Diagnostics" />
       <!--<Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />-->
-      <Import moduleName="RemoteAccess" />
-      <Import moduleName="RemoteForwarder" />
     </Imports>
     <Startup>
       <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple">
