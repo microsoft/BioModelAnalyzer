@@ -185,17 +185,17 @@ width:140px;
 height:50px;
 margin:0 auto 0 50%;
 
-border-radius:10px;
 -moz-border-radius:10px; /* Firefox 3.6 and earlier */
 -webkit-border-radius:10px;
 -ms-border-radius:10px;
 -o-border-radius:10px;
+border-radius:10px;
 
-box-shadow: 5px 5px 10px #C6C6C6;
 -webkit-box-shadow: 5px 5px 10px #C6C6C6;
 -moz-box-shadow: 5px 5px 10px #C6C6C6;
 -ms-box-shadow: 5px 5px 10px #C6C6C6;
 -o-box-shadow: 5px 5px 10px #C6C6C6;
+box-shadow: 5px 5px 10px #C6C6C6;
 
 }
 

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Microsoft.WindowsAzure.Storage.Table.DataServices;
+using System.Data.Services.Common;
 
 namespace BioCheck.Web.Log
 {
+    [DataServiceEntity]
     public class UsuageDataModel : TableServiceEntity
     {
         public UsuageDataModel(string partitionKey, string rowKey)

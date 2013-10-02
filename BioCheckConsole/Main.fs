@@ -72,7 +72,7 @@ let main args =
     
     parse_args (List.ofArray args)
 
-    if !logging then Log.register_log_service (Log.AnalyzerLogService()) 1
+    if !logging then Log.register_log_service (Log.AnalyzerLogService())
 
 //    match !logging_level with
 //    | 0 -> ()

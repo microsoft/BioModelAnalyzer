@@ -26,7 +26,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
@@ -52,14 +52,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
+      <Name>BioCheckAnalyzer64</Name>
+      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Name>BioCheckAnalyzerCommon</Name>
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <Reference Include="BioCheckAnalyzer32">
-      <HintPath>..\BioCheckAnalyzer32-GARVIT\bin\Debug\BioCheckAnalyzer32.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />

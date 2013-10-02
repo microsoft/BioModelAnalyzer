@@ -15,17 +15,19 @@
       <Import moduleName="Diagnostics" />
       <!--<Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />-->
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
     </Imports>
-        
     <Startup>
-      <Task commandLine="Enable32Bit.cmd" executionContext="elevated" taskType="simple" />
-      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple" />
-      
+      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <!-- see http://msdn.microsoft.com/en-us/library/windowsazure/hh974417.aspx -->
+          <Variable name="ComputeEmulatorRunning">
+            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+          </Variable>
+        </Environment>
+      </Task>
     </Startup>
-   
-    <!--<Startup>
-      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple" />
-    </Startup>-->
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>

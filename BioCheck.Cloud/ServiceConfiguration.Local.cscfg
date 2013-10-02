@@ -4,7 +4,8 @@
     <Instances count="2" />
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" />
+      <Setting name="DataConnectionString" value="UseDevelopmentStorage=true" />
+      <!-- <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" /> -->
       <!--<Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="" />

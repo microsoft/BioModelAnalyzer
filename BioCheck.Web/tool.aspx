@@ -72,14 +72,14 @@
         <div id="tool-footer">
             <div id="tool-MSR-logo">
                 <a href="http://research.microsoft.com/en-us/" target="_blank">
-                    <img src="_images/MSR-logo.png"></a>
+                    <img src="_images/MSR-logo.png" alt="Logo" /></a>
             </div>
             <div id="tool-site-wide-nav">
                 <a href="about.html" target="_blank">About</a> - <a href="help.html" target="_blank">
                     Help</a> - <a href="tou.html" target="_blank">Terms of Use</a>
             </div>
             <div id="tool-logo">
-                <img src="_images/logo-crop.png">
+                <img src="_images/logo-crop.png" alt="Logo" />
             </div>
         </div>
     </div>
