@@ -13,21 +13,29 @@
     </Endpoints>
     <Imports>
       <Import moduleName="Diagnostics" />
-      <!--<Import moduleName="RemoteAccess" />
-      <Import moduleName="RemoteForwarder" />-->
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
     </Imports>
     <Startup>
-      <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple">
+      <!-- It appears that this is not required after all: Z3.DLL is linked
+           against VC2010, and that runtime's already included in the Azure
+           VMs, so no need to install this one -->
+      <!-- See http://msdn.microsoft.com/en-us/library/windowsazure/hh974417.aspx
+           for info aboue the environment variable -->
+      <!-- NB: check http://connect.microsoft.com/VisualStudio/feedback/details/783880
+           regarding potential problem with deploying VC2012 redist -->
+      <!-- <Task commandLine="InstallVC.cmd" executionContext="elevated" taskType="simple">
         <Environment>
-          <!-- see http://msdn.microsoft.com/en-us/library/windowsazure/hh974417.aspx -->
           <Variable name="ComputeEmulatorRunning">
             <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
           </Variable>
         </Environment>
-      </Task>
+      </Task> -->
     </Startup>
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>
+    <Certificates>
+    </Certificates>
   </WebRole>
 </ServiceDefinition>

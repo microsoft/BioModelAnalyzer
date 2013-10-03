@@ -266,9 +266,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Analysis\Xml\fs_2var_unstable.log" />
-    <Content Include="Enable32Bit.cmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="InstallVC.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
