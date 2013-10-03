@@ -108,7 +108,7 @@ namespace BioCheck.Web.Analysis
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null
-                azureLogService.Debug("Analyze Output XML", outputXml.ToString());
+                //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
 
                 var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
                 log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
