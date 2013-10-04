@@ -10,9 +10,14 @@
 
 	function toggleInfo(id)
 	{
-		$(id).slideToggle("fast");
+	    $(id).slideToggle("fast");
 	}
 	
+
+	function makeMin()
+	{
+	     b1.innerHTML = (b1.innerHTML == "[+]") ? "[-]" : "[+]";
+	}
 
 </script>
 
@@ -30,9 +35,9 @@
 		<a href="about.html">About</a> - <a href="help.html">Help</a> - <a href="tou.html">Terms of Use</a>
 		
 		<div id="launch-btn">
-		<a href="tool.aspx" target="_blank"><span id="home-launch-btn"></span></a>
+		<a href="tool.aspx" target="_blank"><span id="home-launch-btn"></span><img src="_images/launch-tool-btn.png" width="100px"></a>
 		<br>
-		<img src="_images/launch-tool-btn.png" width="100px">
+		
 
 		</div>
 		
@@ -56,7 +61,7 @@
 		<div id="block">
 			<span class="heading">F.A.Q.</span><br><br>
 			<div class="FAQ_question">
-				<a onclick =(toggleInfo('#q1'))>[+]</a> <span class="bold">How do I open Bio Model Analyzer?</span><br>
+				<a onclick =makeMin();toggleInfo('#q1')><b id='b1'>[+]</b></a> <span class="bold">How do I open Bio Model Analyzer?</span><br>
 				<p style="display:none" id="q1">
 					To get started, click &#8216;Enter Tool&#8217; on the Bio Model Analyzer website. You will enter Bio Model Analyzer&#8217;s blank canvas screen, with the icons aligned at the top of the screen and &#8216;Default Model: Version 1&#8217; displayed in the lower right-hand corner.
 				</p>
@@ -94,7 +99,7 @@
 					2. Using the default target function for a variable that has only inhibitions is not very useful. In such a case, the average of the positive influences is always 0. Then, if any of the negative influences are on, the variable will want to decrease below 0, if that was possible. Hence, it makes more sense to include the target of the maximal possible value minus the average of inhibitions. [image:only inhibition]<br><br>
 					3. Sometimes, the average of positive activations is not appropriate if you desire multiple positive inputs having more of an impact than negative inputs. In such a case, it may make more sense to use the sum of values.<br> [image:sum activation]<br>
 					Notice that this produces a very different behaviour. For example, if there is medium level of inhibition (2) and both the activators are in their maximum value of activity (4), then the target of the variable would be maximal (4). However, this does not change at all when the activators decrease to 3 or when the inhibitor increases to 3. The default target function, by contrast, computes the target of 2 and utilizes better the range of 0-4 by setting a target of 4 only when both activators are at their maximal level and the inhibitor is at the minimum level.<br><br>
-					4. A common target function corresponds to complexation of two substances. In such a case, the level of the result is the minimum of the levels of the two substances. So the target function is min(var(substance1),var(substance2).<br><br>
+					4. A common target function corresponds to complexation of two substances. In such a case, the level of the result is the minimum of the levels of the two substances. So the target function is min(var(substance1),var(substance2)).<br><br>
 					
 				</p>
 			</div>	
@@ -105,7 +110,7 @@
 					You can also customize the target function, within the limits of the language defined in Bio Model Analyzer. The user has available the following operators: addition, subtraction, multiplication, division, maximum, minimum, ceiling, floor, and average. For example:<br><br>
 					1. max(0,floor((var(a)+var(b))/2 &#8211; (var(c)+var(d)+var(e))/3)) : this essentially does the average of the positive and negative influences but adds the floor (lower integer value) to ensure that a target of 2.5 does not lead to instabilisation.<br><br>
 					2. min(2-var(a),1)*var(b) :  this function is calibrated for variables ranging between 0 and 2. It stipulates that if variable a is either 0 or 1 then the target is the value of b but if variable a is 2 then the target is 0. This models a threshold of inhibition by variable a. Where, as long as the level of a is below the maximum, variable b is copied. But once variable a is 2 it inhibits very strongly.<br><br>
-					3. max(0,2-((2-var(a))*max(var(b)-1,0)+1))) : this is one of the most complex target functions we have encountered. It is similar to the previous one except that it includes a more complex condition. Again calibrated for the range 0-2. If variable b is 2 and variable a is not 2 then the target is 0, otherwise the target is the value of variable a. This expresses an inhibition that occurs only when b is at its maximum value and when a is not at its maximum value.<br><br>
+					3. max(0,2-((2-var(a))*max(var(b)-1,0)+1)) : this is one of the most complex target functions we have encountered. It is similar to the previous one except that it includes a more complex condition. Again calibrated for the range 0-2. If variable b is 2 and variable a is not 2 then the target is 0, otherwise the target is the value of variable a. This expresses an inhibition that occurs only when b is at its maximum value and when a is not at its maximum value.<br><br>
 					It is important to include in target functions only variables that have a relationship with the variable. If multiple variables of the same name have a relationship with the same variable, Bio Model Analyzer assumes that they affect it in a symmetric way. E.g., in var(a) + var(a) the association between the different a&#8217;s and the variables they represent is symmetric. In var(a)-var(a) it is not symmetric. Such an a-symmetric function could lead to problems with analysis. Similarly, if a variable has one relationship with one variable named b, then b cannot appear twice in the target function.
 				</p>
 			</div>	
