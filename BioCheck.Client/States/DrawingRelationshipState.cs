@@ -1,13 +1,18 @@
 using System.Windows.Input;
 using BioCheck.ViewModel;
 using BioCheck.ViewModel.Cells;
+using System.Windows;
+using System;
 
 namespace BioCheck.States
 {
     public class DrawingRelationshipState : UIState
     {
+        private const double MinMouseMoveThreshold = 5.0; // pixels
+
         private RelationshipTypes type;
-        private bool mouseHasMoved;
+        private bool mouseHasMoved, mouseHasStartedMoving;
+        private Point startingPosition;
 
         public DrawingRelationshipState()
         {
@@ -23,7 +28,24 @@ namespace BioCheck.States
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            this.mouseHasMoved = true;
+            if (!this.mouseHasMoved)
+            {
+                // Crude min distance threshold. Can't get the mouse position
+                // on button down, so grab position here on the first move
+                // and check threshold on the second
+                if (!this.mouseHasStartedMoving)
+                {
+                    this.startingPosition = e.GetPosition(null);
+                    this.mouseHasStartedMoving = true;
+                }
+                else
+                {
+                    var currentPosition = e.GetPosition(null);
+                    if (Math.Abs(currentPosition.X - this.startingPosition.X) > MinMouseMoveThreshold ||
+                        Math.Abs(currentPosition.Y - this.startingPosition.Y) > MinMouseMoveThreshold)
+                        this.mouseHasMoved = true;
+                }
+            }
 
             this.relationshipService.Draw(e, false, type);
         }
