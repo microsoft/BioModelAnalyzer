@@ -3,8 +3,8 @@
   <Role name="BioCheck.Web">
     <Instances count="2" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=msrbma;AccountKey=RKt3ZsPXv5NRgIhS0/j4vRS3Z8zeeVW70wN731CYIKHzF8nDVXfy1TsYWaCc/5EiJsHnNelgXZRtcB50bibRFA==" />
-      <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=msrbma;AccountKey=RKt3ZsPXv5NRgIhS0/j4vRS3Z8zeeVW70wN731CYIKHzF8nDVXfy1TsYWaCc/5EiJsHnNelgXZRtcB50bibRFA==" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" />
+      <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="msrbma" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEBmp2kBLL5uoSfvyaJefFfAwDQYJKoZIhvcNAQEBBQAEggEAsMXg6eIP2wVNPmomv7oT1L28ODmsuEGOBbpNR2OO0BmevnVD2RH0oDBAIVZHyeZtyXfDkdMMge6got3BvLKFqusWDlh1Nj5J0UeJusjXd52D1mQKz8/dWmurAk3MfGwP4idpsQ2LKX+lBTll0cv5uiTmHfLmdyS62e5It5XVGI19gtZDPI2Ct9WEd6kKzcPqTu3rfULdlq+ueX1MQovl3QO7cH7QT0KqmviBRpAbJBMBHTmjZKJ5J84t/AFQ6UR1D5IQgSnZRNGSIzb2svX51MrvOW92zZJ2mWYQNczKAUFLDVzZbHPKpnZisQqJMRj1eC6x7EpU1N4VVMk9zy3JPzAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECMsmkWH4uPgDgBCRAbnFJUx0foXxiAwpf8qO" />
