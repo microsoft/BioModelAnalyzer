@@ -174,9 +174,6 @@
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
       <HintPath>..\Libs\dotNET\64bit\Microsoft.Z3.dll</HintPath>
