@@ -36,7 +36,25 @@ namespace BioCheck.ViewModel.Proof
                                   where vvm.Id == variableOutput.Id
                                   select vvm).First();
 
-                var varProofVM = new VariableProofViewModel
+                // If default target function is used, no formula is stored in variableVM.Formula, so is not cited in the ProofTable.
+                // Fixed here.
+                if(variableVM.Formula == "")
+                {
+                   var varProofVM = new VariableProofViewModel
+                                     {
+                                         Id = variableOutput.Id,
+                                         Name = variableVM.Name,
+                                         TargetFunction = "avg(pos)-avg(neg)",
+                                         Range =
+                                             variableOutput.IsStable
+                                                 ? variableOutput.Low.ToString()
+                                                 : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)
+                                     };
+                   proofVM.Variables.Add(varProofVM);
+                }
+                else
+                {
+                    var varProofVM = new VariableProofViewModel
                                      {
                                          Id = variableOutput.Id,
                                          Name = variableVM.Name,
@@ -46,7 +64,9 @@ namespace BioCheck.ViewModel.Proof
                                                  ? variableOutput.Low.ToString()
                                                  : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)
                                      };
-                proofVM.Variables.Add(varProofVM);
+                    proofVM.Variables.Add(varProofVM);
+                }
+                
 
                 var pi = new ProgressionInfo();
                 pi.Name = variableVM.Name;
