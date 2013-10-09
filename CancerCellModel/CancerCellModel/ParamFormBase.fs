@@ -34,9 +34,11 @@ type ParamFormBase(?Width, ?Height) =
         c1.Location <- Drawing.Point(c2.Location.X + (if c2.AutoSize && c2.MaximumSize.Width>0 then c2.MaximumSize.Width else c2.Width) +
                                     ParamFormBase.x_interval, c2.Location.Y)
 
-    static member place_control_below(c1: Control, c2: Control) =
+    static member place_control_below(c1: Control, c2: Control, ?extra_space: int) =
+        let dy = defaultArg extra_space 0
         c1.Location <- Drawing.Point(c2.Location.X, c2.Location.Y +
-                                     (if c2.AutoSize && c2.MaximumSize.Height > 0 then c2.MaximumSize.Height else c2.Height) + ParamFormBase.y_interval)
+                                     (if c2.AutoSize && c2.MaximumSize.Height > 0 then c2.MaximumSize.Height else c2.Height) +
+                                     ParamFormBase.y_interval + dy)
 
     static member func_plot(series: Series, func: float -> float, x_limits: float*float) =
         let (xmin, xmax) = x_limits
@@ -47,9 +49,9 @@ type ParamFormBase(?Width, ?Height) =
 
     static member get_chart_yvalue(series: Series, x: float) =
         let point = series.Points.FindByValue(float (round(x)), "X")
-        int (point.YValues.[0])
+        point.YValues.[0]
 
-    static member textbox_float_validate(textbox: TextBox, name: string, range: float*float)
+    static member textbox_float_interval_check(textbox: TextBox, name: string, range: float*float)
                                            (args: CancelEventArgs) =
         
         let x = ref (float 0)
@@ -72,7 +74,7 @@ type ParamFormBase(?Width, ?Height) =
             MessageBox.Show(!msg, "Data validation error", MessageBoxButtons.OK, MessageBoxIcon.Error) |> ignore
             textbox.Select(0, textbox.Text.Length)
 
-    static member textbox_int_validate(textbox: TextBox, name: string, range: int*int)
+    static member textbox_int_interval_check(textbox: TextBox, name: string, range: int*int)
                                            (args: CancelEventArgs) =
         
         let x = ref (int 0)
@@ -95,35 +97,67 @@ type ParamFormBase(?Width, ?Height) =
             MessageBox.Show(!msg, "Data validation error", MessageBoxButtons.OK, MessageBoxIcon.Error) |> ignore
             textbox.Select(0, textbox.Text.Length)
 
+    static member textbox_float_func_check(textbox1: TextBox, textbox2: TextBox, name1: string, name2: string,
+                                            func: float*float->bool, err_msg: string)(args: CancelEventArgs) =
+        let (x1, x2) = (ref (float 0), ref (float 0))
+        let err = ref false
+        let msg = ref ""
+
+        if not (Double.TryParse(textbox1.Text, x1)) then
+            err := true
+            msg := (sprintf "%s must be a real number" name1)
+        else if not (Double.TryParse(textbox2.Text, x2)) then
+            err := true
+            msg := (sprintf "%s must be a real number" name2)
+        else if not (func(!x1, !x2)) then
+            err := true
+            msg := err_msg
+        
+        if !err then
+            args.Cancel <- true
+            MessageBox.Show(!msg, "Data validation error", MessageBoxButtons.OK, MessageBoxIcon.Error) |> ignore
+            textbox1.Select(0, textbox1.Text.Length)
+
     static member add_textbox_float_validation(textbox: TextBox, name: string, range: float*float) =
-        textbox.Validating.Add(fun args -> ParamFormBase.textbox_float_validate(textbox, name, range)(args))
+        textbox.Validating.Add(fun args -> ParamFormBase.textbox_float_interval_check(textbox, name, range)(args))
 
     static member add_textbox_int_validation(textbox: TextBox, name: string, range: int*int) =
-        textbox.Validating.Add(fun args -> ParamFormBase.textbox_int_validate(textbox, name, range)(args))
+        textbox.Validating.Add(fun args -> ParamFormBase.textbox_int_interval_check(textbox, name, range)(args))
 
-    static member retrieve_logistic_func_param(x1_textbox: TextBox, x2_textbox: TextBox, max_textbox: TextBox) =
+    static member add_textbox_float_less_check(textbox1: TextBox, textbox2: TextBox, name1: string, name2: string) =
+        textbox1.Validating.Add(fun args -> ParamFormBase.textbox_float_func_check(textbox1, textbox2, name1, name2,
+                                                                                    (fun (x1: float, x2: float) -> x1 < x2),
+                                                                                    (sprintf "%s should be less than %s" name1 name2))(args))
 
-        let (x1, x2, max) = (ref (float 0), ref (float 0), ref (float 0))
+    static member retrieve_logistic_func_param(x1_textbox: TextBox, x2_textbox: TextBox,
+                                                min_textbox: TextBox, max_textbox: TextBox) =
+
+        let (x1, x2, min, max) = (ref (float 0), ref (float 0), ref (float 0), ref (float 0))
 
         if not (Double.TryParse(x1_textbox.Text, x1)) ||
            not (Double.TryParse(x2_textbox.Text, x2)) ||
+           not (Double.TryParse(min_textbox.Text, min)) ||
            not (Double.TryParse(max_textbox.Text, max))
         then
            raise (InnerError("Unable to parse logistic function parameters"))
         
+        // convert percents to a fraction
+        min := !min / (float 100)
         max := !max / (float 100)
-        (!x1, !x2, !max)
+        (!x1, !x2, !min, !max)
 
-    static member retrieve_exp_func_param(x3_textbox: TextBox, max_textbox: TextBox) =
+    static member retrieve_exp_func_param(x3_textbox: TextBox,
+                                           min_textbox: TextBox, max_textbox: TextBox) =
 
-        let (x3, max) = (ref (int 0), ref (float 0))
+        let (x3, min, max) = (ref (int 0), ref (float 0), ref (float 0))
 
         if not (Int32.TryParse(x3_textbox.Text, x3)) ||
+           not (Double.TryParse(min_textbox.Text, min)) ||
            not (Double.TryParse(max_textbox.Text, max))
         then
             raise (InnerError("Unable to parse exponent function parameters"))
 
-        (!x3, !max)
+        (!x3, !min, !max)
 
     static member retrieve_float(textbox: TextBox) =
         let x = ref (float 0)
@@ -138,15 +172,16 @@ type ParamFormBase(?Width, ?Height) =
         !x
 
     static member refresh_logistic_func_chart(chart: Chart, x1_textbox: TextBox, x2_textbox: TextBox,
-                                                max_textbox: TextBox, mu_textbox: TextBox, s_textbox: TextBox,
-                                                x_limits: float*float) =
+                                                min_textbox: TextBox, max_textbox: TextBox,
+                                                mu_textbox: TextBox, s_textbox: TextBox,
+                                                x_limits: float*float(*, model_params: ModelParameters*)) =
         
-        let (x1, x2, max) = ParamFormBase.retrieve_logistic_func_param(x1_textbox, x2_textbox, max_textbox)        
-        let (mu, s, _) = ModelParameters.logistic_func_param(x1, x2, max)
+        let (x1, x2, min, max) = ParamFormBase.retrieve_logistic_func_param(x1_textbox, x2_textbox, min_textbox, max_textbox)        
+        let (mu, s, _, _) = ModelParameters.logistic_func_param(x1, x2, min, max)
         
         let series: Series = chart.Series.Item(0)
         series.Points.Clear()
-        let func =  ModelParameters.logistic_func(mu, s, max)
+        let func =  ModelParameters.logistic_func(mu, s, min, max)
         ParamFormBase.func_plot(series, (fun (x: float) -> func(x)), x_limits)
         
         let chart_area = chart.ChartAreas.Item(0)
@@ -155,20 +190,21 @@ type ParamFormBase(?Width, ?Height) =
         chart_area.AxisY.Interval <- 0.1 * max
         chart.Refresh()
 
-        mu_textbox.Text <- (sprintf "%.3f" mu)
-        s_textbox.Text <- (sprintf "%.3f" s)
+        mu_textbox.Text <- (sprintf "%.1f" mu)
+        s_textbox.Text <- (sprintf "%.1f" s)
 
-    static member refresh_exp_func_chart(chart: Chart, x3_textbox: TextBox, max_textbox: TextBox,
+    static member refresh_exp_func_chart(chart: Chart, x3_textbox: TextBox,
+                                            min_textbox: TextBox, max_textbox: TextBox,
                                             n_textbox: TextBox) =
 
-        let (x3, max) = ParamFormBase.retrieve_exp_func_param(x3_textbox, max_textbox)
-        let (n, _) = ModelParameters.exp_func_param(x3, max)
+        let (x3, min, max) = ParamFormBase.retrieve_exp_func_param(x3_textbox, min_textbox, max_textbox)
+        let (n, _, _) = ModelParameters.exp_func_param(x3, min, max)
         
         let series = chart.Series.Item(0)
         let chart_area = chart.ChartAreas.Item(0)
 
         series.Points.Clear()
-        ParamFormBase.func_plot(series, (ModelParameters.exp_func(n, max)),
+        ParamFormBase.func_plot(series, (ModelParameters.exp_func(n, min, max)),
             (float 0, 1.5 * (float x3)))
         
         chart_area.AxisY.Maximum <- 1.1 * max
@@ -176,7 +212,7 @@ type ParamFormBase(?Width, ?Height) =
         chart_area.AxisY.Interval <- 0.1 * max
         chart.Refresh()
 
-        n_textbox.Text <- (sprintf "%.3f" n)
+        n_textbox.Text <- (sprintf "%.1f" n)
 
     static member show_summary(chart: Chart, tooltip: ToolTip, get_summary: float->string)(args: MouseEventArgs) =
         if args.Button = MouseButtons.Right then
@@ -187,11 +223,11 @@ type ParamFormBase(?Width, ?Height) =
 
     static member create_logistic_func_controls(parent: Control, prev_control: Control, chart: Chart,
                                                 x1_textbox: TextBox, x2_textbox: TextBox,
-                                                mu_textbox: TextBox, s_textbox: TextBox, max_textbox: TextBox,
-                                                param: float*float*float, x_limits: float*float, ?inverted) =
+                                                mu_textbox: TextBox, s_textbox: TextBox,
+                                                min_textbox: TextBox, max_textbox: TextBox,
+                                                param: float*float*float*float, x_limits: float*float) =
 
-        let inv = defaultArg inverted false
-        chart.Titles.Add("1 / (1/max + exp((mu - x)/s))") |> ignore
+        //chart.Titles.Add("1 / (1/max + exp((mu - x)/s))") |> ignore
         
         let panel = new Panel()
         panel.ClientSize <- ParamFormBase.plot_size
@@ -213,8 +249,8 @@ type ParamFormBase(?Width, ?Height) =
         chart_area.AxisX.Minimum <- xmin
         chart_area.AxisX.IsLabelAutoFit <- true
 
-        let (x1, x2, max) = param
-        let (mu, s, _) = ModelParameters.logistic_func_param(param)
+        let (x1, x2, min, max) = param
+        let (mu, s, _,  _) = ModelParameters.logistic_func_param(param)
         let x1_label = new Label()
         x1_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (2, 2))
         x1_label.AutoSize <- true
@@ -239,11 +275,47 @@ type ParamFormBase(?Width, ?Height) =
         ParamFormBase.add_textbox_float_validation(x2_textbox, x2_label.Text, ExternalState.O2Limits)
         ParamFormBase.place_control_totheright(x2_textbox, x2_label)
 
+        let min_label = new Label()
+        //min_label.Width <- 30
+        min_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (1.7, float 2))
+        min_label.AutoSize <- true
+        min_label.Text <- "The minimum probability (%)"
+        ParamFormBase.place_control_below(min_label, x1_label)
+
+        //let max_textbox = new TextBox()
+        min_textbox.Size <- ParamFormBase.textbox_size
+        min_textbox.Text <- (sprintf "%.1f" (min* float 100))
+        ParamFormBase.add_textbox_float_validation(min_textbox, min_label.Text, (float 0, float 100))
+        ParamFormBase.place_control_totheright(min_textbox, min_label)
+
+        let max_label = new Label()
+        //max_label.Width <- 30
+        max_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (1.7, float 2))
+        max_label.AutoSize <- true
+        max_label.Text <- "The maximum probability (%)"
+        ParamFormBase.place_control_totheright(max_label, min_textbox)
+
+        //let max_textbox = new TextBox()
+        max_textbox.Size <- ParamFormBase.textbox_size
+        max_textbox.Text <- (sprintf "%.1f" (max* float 100))
+        ParamFormBase.add_textbox_float_validation(max_textbox, max_label.Text, (float 0, float 100))
+        ParamFormBase.add_textbox_float_less_check(min_textbox, max_textbox, min_label.Text, max_label.Text)
+        ParamFormBase.place_control_totheright(max_textbox, max_label)
+
+        let refresh_button = new Button()
+        refresh_button.Text <- "Refresh the plot"
+        refresh_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (2, 1))
+        refresh_button.AutoSize <- true
+        ParamFormBase.place_control_totheright(refresh_button, max_textbox)
+        refresh_button.Click.Add(fun args -> ParamFormBase.refresh_logistic_func_chart(
+                                                chart, x1_textbox, x2_textbox,
+                                                min_textbox, max_textbox, mu_textbox, s_textbox, x_limits))
+
         let mu_label = new Label()
         mu_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (0.4, float 2))
         mu_label.AutoSize <- true
         mu_label.Text <- "mu"
-        ParamFormBase.place_control_below(mu_label, x1_label)
+        ParamFormBase.place_control_below(mu_label, min_label)
 
         //let mu_textbox = new TextBox()
         mu_textbox.Size <- ParamFormBase.textbox_size
@@ -263,43 +335,22 @@ type ParamFormBase(?Width, ?Height) =
         ParamFormBase.place_control_totheright(s_textbox, s_label)
         s_textbox.Enabled <- false
 
-        let max_label = new Label()
-        //max_label.Width <- 30
-        max_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (2, 2))
-        max_label.AutoSize <- true
-        max_label.Text <- "The maximum probability (%)"
-        ParamFormBase.place_control_totheright(max_label, s_textbox)
-
-        //let max_textbox = new TextBox()
-        max_textbox.Size <- ParamFormBase.textbox_size
-        max_textbox.Text <- (sprintf "%.1f" (max* float 100))
-        ParamFormBase.add_textbox_float_validation(max_textbox, max_label.Text, (float 0, max* float 100))
-        ParamFormBase.place_control_totheright(max_textbox, max_label)
-
-        let refresh_button = new Button()
-        refresh_button.Text <- "Refresh the plot"
-        refresh_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (2, 1))
-        refresh_button.AutoSize <- true
-        ParamFormBase.place_control_totheright(refresh_button, max_textbox)
-        refresh_button.Click.Add(fun args -> ParamFormBase.refresh_logistic_func_chart(
-                                                chart, x1_textbox, x2_textbox,
-                                                max_textbox, mu_textbox, s_textbox, x_limits))
-
         ParamFormBase.refresh_logistic_func_chart(chart, x1_textbox, x2_textbox,
-            max_textbox, mu_textbox, s_textbox, x_limits)
+            min_textbox, max_textbox, mu_textbox, s_textbox, x_limits)
 
         parent.Controls.AddRange([| panel; x1_label; x1_textbox; x2_label; x2_textbox;
-            mu_label; mu_textbox; s_label; s_textbox; max_label; max_textbox; refresh_button |])
+            (*mu_label; mu_textbox; s_label; s_textbox;*) min_label; min_textbox; max_label; max_textbox; refresh_button |])
 
         let tooltip = new ToolTip()
         chart.MouseClick.Add(ParamFormBase.show_summary(chart, tooltip,
-                                                        (fun (x:float) -> sprintf "X=%.1f Y=%.1f" x (ModelParameters.logistic_func(mu, s, max)(x)))))
+                                                        (fun (x:float) -> sprintf "X=%.1f Y=%.1f" x (ModelParameters.logistic_func(mu, s, min, max)(x)))))
 
-        mu_label
+        min_label
 
     static member create_exp_func_controls(parent: Control, prev_control: Control, chart: Chart, 
-                                            x3_textbox: TextBox, n_textbox: TextBox, max_textbox: TextBox,
-                                            param: int*float, x_limits: float*float) =
+                                            x3_textbox: TextBox, n_textbox: TextBox,
+                                            min_textbox: TextBox, max_textbox: TextBox,
+                                            param: int*float*float, x_limits: float*float) =
 
 
         let panel = new Panel()
@@ -312,9 +363,9 @@ type ParamFormBase(?Width, ?Height) =
         panel.Controls.Add(chart)
 
         let tooltip = new ToolTip()
-        chart.Titles.Add("max * n^(-x)") |> ignore
+        //chart.Titles.Add("max * n^(-x)") |> ignore
 
-        let (x3, max) = param
+        let (x3, min, max) = param
         
         let chart_area = chart.ChartAreas.Item(0)
         let series = chart.Series.Item(0)
@@ -337,7 +388,43 @@ type ParamFormBase(?Width, ?Height) =
         ParamFormBase.add_textbox_int_validation(x3_textbox, x3_label.Text, (0, Int32.MaxValue))
         ParamFormBase.place_control_totheright(x3_textbox, x3_label)
 
-        let (n, _) = ModelParameters.exp_func_param(ModelParameters.NonStemToStemProbParam)
+        let min_label = new Label()
+        //max_label.Width <- 30
+        min_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (1.7, float 2))
+        min_label.AutoSize <- true
+        min_label.Text <- "The minimum probability (%)"
+        ParamFormBase.place_control_below(min_label, x3_label)
+
+        //let max_textbox = new TextBox()
+        min_textbox.Size <- ParamFormBase.textbox_size
+        min_textbox.Text <- (sprintf "%.1f" (min* float 100))
+        ParamFormBase.add_textbox_float_validation(min_textbox, min_label.Text, (float 0, float 100))
+        ParamFormBase.place_control_totheright(min_textbox, min_label)
+
+        let max_label = new Label()
+        //max_label.Width <- 30
+        max_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (1.7, float 2))
+        max_label.AutoSize <- true
+        max_label.Text <- "The maximum probability (%)"
+        ParamFormBase.place_control_totheright(max_label, min_textbox)
+
+        //let max_textbox = new TextBox()
+        max_textbox.Size <- ParamFormBase.textbox_size
+        max_textbox.Text <- (sprintf "%.1f" (max* float 100))
+        ParamFormBase.add_textbox_float_validation(max_textbox, max_label.Text, (float 0, float 100))
+        ParamFormBase.add_textbox_float_less_check(min_textbox, max_textbox, min_label.Text, max_label.Text)
+        ParamFormBase.place_control_totheright(max_textbox, max_label)
+
+        let refresh_button = new Button()
+        refresh_button.Text <- "Refresh the plot"
+        refresh_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (2, 1))
+        refresh_button.AutoSize <- true
+        ParamFormBase.place_control_totheright(refresh_button, max_textbox)
+        refresh_button.Click.Add(fun args -> ParamFormBase.refresh_exp_func_chart(
+                                                chart, x3_textbox,
+                                                min_textbox, max_textbox, n_textbox))
+
+        let (n, _, _) = ModelParameters.exp_func_param(ModelParameters.NonStemToStemProbParam)
         let n_label = new Label()
         n_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (0.4, float 2))
         n_label.Text <- "n"
@@ -349,44 +436,34 @@ type ParamFormBase(?Width, ?Height) =
         ParamFormBase.place_control_totheright(n_textbox, n_label)
         n_textbox.Enabled <- false
 
-        let max_label = new Label()
-        //max_label.Width <- 30
-        max_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (2, 2))
-        max_label.AutoSize <- true
-        max_label.Text <- "The maximum probability (%)"
-        ParamFormBase.place_control_totheright(max_label, n_textbox)
-
-        //let max_textbox = new TextBox()
-        max_textbox.Size <- ParamFormBase.textbox_size
-        max_textbox.Text <- (sprintf "%.1f" (max* float 100))
-        ParamFormBase.add_textbox_float_validation(max_textbox, max_label.Text, (float 0, max * float 100))
-        ParamFormBase.place_control_totheright(max_textbox, max_label)
-
-        let refresh_button = new Button()
-        refresh_button.Text <- "Refresh the plot"
-        refresh_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (2, 1))
-        refresh_button.AutoSize <- true
-        ParamFormBase.place_control_totheright(refresh_button, max_textbox)
-        refresh_button.Click.Add(fun args -> ParamFormBase.refresh_exp_func_chart(
-                                                chart, x3_textbox,
-                                                max_textbox, n_textbox))
-
-        ParamFormBase.refresh_exp_func_chart(chart, x3_textbox, max_textbox, n_textbox) 
+        ParamFormBase.refresh_exp_func_chart(chart, x3_textbox, min_textbox, max_textbox, n_textbox) 
 
         parent.Controls.AddRange([| panel; x3_label; x3_textbox;
-            n_label; n_textbox; max_label; max_textbox; refresh_button|])
+            (*n_label; n_textbox;*) min_label; min_textbox; max_label; max_textbox; refresh_button|])
 
         chart.MouseClick.Add(ParamFormBase.show_summary(chart, tooltip,
-                                                        (fun (x:float) -> sprintf "X=%.1f Y=%.1f" x (ModelParameters.exp_func(n, max)(x)))))
+                                                        (fun (x:float) -> sprintf "X=%.1f Y=%.1f" x (ModelParameters.exp_func(n, min, max)(x)))))
 
-        n_label
+        min_label
 
-    static member create_apply_button(parent: Control, prev_control: Control, func: EventArgs->unit) =
-        let apply_button = new Button()
-        apply_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (2, 1))
-        apply_button.AutoSize <- true
-        apply_button.Text <- "Apply the changes"
-        ParamFormBase.place_control_below(apply_button, prev_control)
-        parent.Controls.Add(apply_button)
-        apply_button.Click.Add(func)
-        apply_button
+    static member create_ok_cancel_buttons(parent: Control, prev_control: Control, ok_func: EventArgs->unit) =
+        let ok_button = new Button()
+        ok_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (1, 1))
+        ok_button.AutoSize <- true
+        ok_button.Text <- "Ok"
+        ParamFormBase.place_control_totheright(ok_button, prev_control)
+        ok_button.Click.Add(fun args -> ok_func(args); parent.Visible <- false)
+
+        let cancel_button = new Button()
+        cancel_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (1, 1))
+        cancel_button.AutoSize <- true
+        cancel_button.Text <- "Cancel"
+        ParamFormBase.place_control_below(cancel_button, ok_button)
+        cancel_button.Click.Add(fun args -> parent.Visible <- false)
+
+        parent.Controls.AddRange([| ok_button; cancel_button |])
+        ok_button
+
+    static member hide_form(form: Form)(args: FormClosingEventArgs) =
+        args.Cancel <- true
+        form.Visible <- false

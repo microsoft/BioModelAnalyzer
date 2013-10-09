@@ -120,7 +120,7 @@ type Model() =
             (Array.filter(fun (c: Cell) -> c.Type = CellType.NonStem) live_cells) |> Array.length,
             (Array.filter(fun (c: Cell) -> c.Type = CellType.NonStemWithMemory) live_cells) |> Array.length)
 
-        ext_stat.AddData(ext_state.O2)
+        ext_stat.AddData((*CellActivity.oxygen_per_cell(ext_state)*)ext_state.O2)
 
     let recalc_extstate() = 
         ext_state.LiveCells <- live_cells.Length

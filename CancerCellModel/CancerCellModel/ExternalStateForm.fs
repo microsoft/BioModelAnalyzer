@@ -20,7 +20,7 @@ type ExtStatisticsForm () as this =
         if args.Button = MouseButtons.Right then
             let x = (chart.ChartAreas.Item(0).AxisX.PixelPositionToValue(float args.X))
             let message = (sprintf "Time: %d\n\
-                                   The amount of oxygen:%d"
+                                   The amount of oxygen:%.1f%%"
                                    (int (round(x))) (this.GetYValue(x)))
 
             summary_tooltip.Show(message, chart, Drawing.Point(args.X + 15, args.Y - 15), 20000)
@@ -38,6 +38,7 @@ type ExtStatisticsForm () as this =
         chart_area.AxisX.Title <- "Time steps"
         chart_area.AxisY.Title <- "Amount of oxygen (%)"
         chart_area.CursorX.IsUserSelectionEnabled <- true
+        chart_area.AxisX.Minimum <- float 0
         chart.Series.Add (series_o2)
         chart.MouseClick.Add(show_summary)
         series_o2.Color <- Drawing.Color.Red

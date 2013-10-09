@@ -35,7 +35,9 @@ type ExternalState() =
     member this.O2 with get() = o2 and set(_o2: float) = o2 <- _o2
     member this.LiveCells with get() = live_cells and set(n) = live_cells <- n
     member this.DividingCells with get() = dividing_cells and set(x) = dividing_cells <- x
+    member this.NonDividingLiveCells with get() = live_cells - dividing_cells
     member this.StemCells with get() = stem_cells and set(n) = stem_cells <- n
+    member this.CellDensity with get() = float live_cells / float ModelParameters.MaxNumOfCells
 
 type Cell (t, ?gen) =
     let mutable ng2: PathwayLevel = Up
@@ -113,6 +115,13 @@ type CellActivity() =
     static member die(cell: Cell) =
         cell.State <- Dead
 
+(*    static member oxygen_per_cell(ext: ExternalState) =
+        let (_, c2, c3, k) = ModelParameters.O2Param
+        //let k = 0.001
+        let o2 = ref (ext.O2/(k*(float ext.NonDividingLiveCells + (c2/c3) * float ext.DividingCells)))
+        if !o2 > float 100 then o2 := float 100
+        !o2*)
+
     // determine if a cell can proliferate depending
     // on the amount of nutrients (currently oxygen: O2)
     static member can_divide(cell: Cell, ext: ExternalState) =
@@ -124,7 +133,10 @@ type CellActivity() =
         if (cell.WaitBeforeDivide > 0) then
             false
         else
-            let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(param))(ext.O2)
+            let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(param))
+                                        ((*CellActivity.oxygen_per_cell(ext)*)ext.O2) *
+                        ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DivisionProbDependOnCellDensity))
+                                        (ext.CellDensity)
             uniform_bool(prob)
 
     // determine whether a stem cell will divide symmetrically
@@ -134,7 +146,13 @@ type CellActivity() =
     // determine if a cell should die depending
     // on the amount of nutrients (currently: O2)
     static member should_die(cell: Cell, ext: ExternalState) = 
-        let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(ext.O2)
+        let prob1 = ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))
+                                     ((*CellActivity.oxygen_per_cell(ext)*)ext.O2)
+
+        let prob2 = ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbDependOnCellDensity))
+                                                                                        (ext.CellDensity)
+
+        let prob = max prob1 prob2
         uniform_bool(prob)
 
     // determine if a stem cell should go to a "non-stem with memory" state
@@ -209,7 +227,7 @@ type CellActivity() =
     // recalculate the probabilistic events in the external system: EGF and O2
     static member recalculate_ext_state(ext:ExternalState, dt: int) =
         ext.EGF <- uniform_bool(ModelParameters.EGFProb)
-        let (c1, c2, c3) = ModelParameters.O2Param
+        let (c1, c2, c3, _) = ModelParameters.O2Param
 
         let (minO2, maxO2) = ExternalState.O2Limits
         ext.O2 <- ext.O2 + (float dt)*(c1 - c2*(float ext.DividingCells) - c3*float (ext.LiveCells - ext.DividingCells))
