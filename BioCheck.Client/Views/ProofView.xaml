@@ -9,16 +9,20 @@
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
     xmlns:Converters="clr-namespace:BioCheck.Converters" xmlns:MvvmFx_Common_Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common"
     xmlns:States="clr-namespace:MvvmFx.Common.ViewModels.States;assembly=MvvmFx.Common"
+    
+    xmlns:local="clr-namespace:BioCheck.Views"
+    
     xmlns:behaviors="clr-namespace:BioCheck.Behaviors" x:Class="BioCheck.Views.ProofView"
     mc:Ignorable="d"
     Width="400" Height="800">
 
     <UserControl.Resources>
-
+        
         <MvvmFx_Common_Converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter"/>
 
         <SampleData:ProofData x:Key="ProofData" d:IsDataSource="True"/>
 
+        <!-- Controls the color scheme as a function of stability -->
         <Converters:BoolToStabilityBrushConverter 
             x:Key="boolToStabilityBrushConverter"
             IsStableBrush="{StaticResource StableBackgroundBrush}"
@@ -244,6 +248,20 @@
             <VisualStateGroup x:Name="ProofStateGroup">
                 <VisualState x:Name="StableState">
                     <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -281,8 +299,23 @@
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
+                
                 <VisualState x:Name="NotStableState">
                     <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGrid">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -313,8 +346,23 @@
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
+                
                 <VisualState x:Name="CounterExamplesState">
                     <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -467,7 +515,7 @@
                         <TextBlock TextWrapping="Wrap" Text="Failed to Stabilise" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource NotStableBrush}" Grid.RowSpan="2"/>
                     </Grid>
 
-                    <sdk:DataGrid x:Name="VariablesGrid" 
+                    <sdk:DataGrid x:Name="VariablesGrid1" 
                                       Grid.Row="1"
 							AutoGenerateColumns="False" 
 							ItemsSource="{Binding Variables}" 
@@ -497,20 +545,59 @@
 
                             <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
 
-                            <sdk:DataGridTemplateColumn  
-									Header="TargetFunction"		
-									IsReadOnly="True"
-									Width="*">
+                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True" Width="*">
                                 <sdk:DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding TargetFunction}" HorizontalAlignment="Center"/>
                                     </DataTemplate>
                                 </sdk:DataGridTemplateColumn.CellTemplate>
+                            </sdk:DataGridTemplateColumn>                            
+                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Fixpoint"/>
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
 
+                    <!-- Verbose but working bugfix. 
+                    Binding the column header value to a string that's a function of state would be more elegant. 
+                    Coming up. -->
+                    
+                    <sdk:DataGrid x:Name="VariablesGrid2" 
+                                      Grid.Row="1"
+							AutoGenerateColumns="False" 
+							ItemsSource="{Binding Variables}" 
+                            SelectedItem="{Binding Path=SelectedProofVariable, Mode=TwoWay}"
+							Style="{StaticResource PopupDataGridStyle}"
+							BorderBrush="{StaticResource PageBorderBrush}" 
+							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+							Foreground="#FF58595B" 
+							BorderThickness="1" 
+							HorizontalScrollBarVisibility="Hidden" 
+							    CanUserReorderColumns="False"
+                            CanUserResizeColumns="False"
+                            CanUserSortColumns="False"
+                                      FontFamily="Verdana" 
+							FontSize="13.333"
+							RowStyle="{StaticResource DataGridRowStyle}" 
+							VerticalScrollBarVisibility="Auto" 
+                            CellStyle="{StaticResource PopupDataGridCellStyle}"
+                            Margin="0,5,0,0"
+                            >
+
+                        <i:Interaction.Behaviors>
+                            <behaviors:ScrollIntoViewBehavior/>
+                        </i:Interaction.Behaviors>
+
+                        <sdk:DataGrid.Columns>
+
+                            <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
+
+                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True" Width="*">
+                                <sdk:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding TargetFunction}" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </sdk:DataGridTemplateColumn.CellTemplate>
                             </sdk:DataGridTemplateColumn>
-
                             <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Range"/>
-
                         </sdk:DataGrid.Columns>
                     </sdk:DataGrid>
 
@@ -574,7 +661,7 @@
                 </Button>-->
 
                     <StackPanel  Margin="10,5,10,0" >
-                        <TextBlock TextWrapping="Wrap" Text="Search for an error trace" VerticalAlignment="Center" Margin="0" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="Seek bifurcations and cycles" VerticalAlignment="Center" Margin="0" Style="{StaticResource PopupTextStyle}"/>
                         <Button 
 						HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,2,0,5" Command="{Binding GetCounterExamplesCommand}" Background="#FFD7706C" Content="Further Testing" Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
                     </StackPanel>
