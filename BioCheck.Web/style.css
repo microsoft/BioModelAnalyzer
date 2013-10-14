@@ -29,12 +29,28 @@ text-decoration:underline;
 cursor: pointer;
 }
 
+/* New class to enable link style change by hover*/
+.hoverEnabled a {
+color:#82BD82;
+text-decoration:none;
+display: block;
+padding: 10px 0px 10px 0px;     /* Top right bottom left */
+white-space:nowrap;             /* No wrapping */
+}
+
+.hoverEnabled a:hover{
+color:white;
+text-decoration:none;
+cursor: pointer;     
+}
+/* New ends */
+
 #btn-block{
 position:relative;
 
 background-color:white;
-padding:10px 10px 10px 10px;
-margin:0 15px 15px 0;
+/*padding:10px 10px 10px 10px;*/        /* No spill-over, unclickable space.  */
+margin:0 15px 15px 0; 
 width:90px;
 text-align:center;
 color:#82BD82;
@@ -57,6 +73,7 @@ box-shadow: 5px 5px 10px #C6C6C6;
 #btn-block:hover{
 background-color:#82BD82;
 color:white;
+text-decoration: none;
 cursor: pointer;
 }
 
