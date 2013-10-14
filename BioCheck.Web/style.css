@@ -35,7 +35,7 @@ color:#82BD82;
 text-decoration:none;
 display: block;
 padding: 10px 0px 10px 0px;     /* Top right bottom left */
-white-space:nowrap;             /* No wrapping */
+white-space:nowrap;             /* No wrapping: hyperlink forced onto one line */
 }
 
 .hoverEnabled a:hover{
@@ -43,7 +43,7 @@ color:white;
 text-decoration:none;
 cursor: pointer;     
 }
-/* New ends */
+/* New class ends */
 
 #btn-block{
 position:relative;
@@ -51,7 +51,7 @@ position:relative;
 background-color:white;
 /*padding:10px 10px 10px 10px;*/        /* No spill-over, unclickable space.  */
 margin:0 15px 15px 0; 
-width:90px;
+width:110px;
 text-align:center;
 color:#82BD82;
 float:left;
@@ -163,12 +163,12 @@ width:150px;
 height:35px;
 line-height:2px;
 z-index:5;
+padding-top:10px;                       /* Prevents 'Enter tool' from being squeezed up against the page top*/
+margin:-30px 0 0 -340px;                /* wrt the page */
 
-margin:-30px 0 0 -340px;
 
-
-border-radius:0px 0px 10px 10px;
--moz-border-radius:0px 0px 10px 10px; /* Firefox 3.6 and earlier */
+border-radius:0px 0px 10px 10px;       /* Top right bottom left: Causes rounded corner */
+-moz-border-radius:0px 0px 10px 10px;  /* Firefox 3.6 and earlier */
 -webkit-border-radius:0px 0px 10px 10px;
 -ms-border-radius:0px 0px 10px 10px;
 -o-border-radius:0px 0px 10px 10px;
