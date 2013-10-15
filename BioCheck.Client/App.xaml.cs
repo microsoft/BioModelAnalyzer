@@ -70,6 +70,7 @@ namespace BioCheck
 
             // Store the user's IP address
             ApplicationViewModel.Instance.User.IPAddress = e.InitParams["IPAddress"];
+            ApplicationViewModel.Instance.InitialModelUrl = e.InitParams["Model"];
 
             // Register UI Services with the Unity container
             var container = ApplicationViewModel.Instance.Container;

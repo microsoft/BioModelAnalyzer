@@ -13,6 +13,10 @@ using MvvmFx.Common.ViewModels.Behaviors.LoadingSaving;
 using MvvmFx.Common.ViewModels.Behaviors.Messaging;
 using MvvmFx.Common.ViewModels.Behaviors.Observable;
 using MvvmFx.Common.ViewModels.Factories;
+using System.Xml.Linq;
+using BioCheck.ViewModel.XML;
+using BioCheck.Services;
+using System.Net;
 
 namespace BioCheck.ViewModel
 {
@@ -40,6 +44,7 @@ namespace BioCheck.ViewModel
         private readonly ApplicationSettings settings;
         private LibraryViewModel library;
         private bool isLoading;
+        internal string InitialModelUrl; // Signals model to load initially
 
         #region Singleton Constructor
 
@@ -138,19 +143,96 @@ namespace BioCheck.ViewModel
             var libraryFactory = this.Container.Resolve<IViewModelFactory<LibraryViewModel>>();
             this.Library = libraryFactory.Create();
 
-            // Get the current (last active) model
-            var currentModelName = this.settings.ActiveModel;
-            var currentModelVM = this.library.Models.FirstOrDefault(mvm => mvm.Name == currentModelName);
-            if (currentModelVM == null)
+            if (!string.IsNullOrWhiteSpace(InitialModelUrl))
             {
-                currentModelVM = this.library.Models[0];
-            }
+                // TODO - lots of dupe with LibraryViewModel
+                var busyService = container.Resolve<IBusyIndicatorService>();
+                busyService.Show("Importing model from the web...");
 
-            this.library.SelectedModel = currentModelVM;
-            this.library.OpenCommand.Execute();
+                try
+                {
+                    var client = new WebClient();
+                    client.OpenReadCompleted += client_OpenReadCompleted;
+                    client.OpenReadAsync(new Uri(InitialModelUrl), busyService);
+                }
+                catch
+                {
+                    busyService.Close();
+
+                    Container.Resolve<IInvalidModelWindowService>()
+                             .ShowImportError("Download error");
+
+                    // Log the error to the Log web service
+                    Log.Error("There was an error importing an invalid model", null);
+
+                    return;
+                }
+            }
+            else
+            {
+                // Get the current (last active) model
+                var currentModelName = this.settings.ActiveModel;
+                var currentModelVM = this.library.Models.FirstOrDefault(mvm => mvm.Name == currentModelName);
+                if (currentModelVM == null)
+                {
+                    currentModelVM = this.library.Models[0];
+                }
+
+                this.library.SelectedModel = currentModelVM;
+                this.library.OpenCommand.Execute();
+            }
 
             // Log the usuage session to the Log web service
             DispatcherHelper.DoubleBeginInvoke(() => this.log.Login());
+        }
+
+        void client_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
+        {
+            var busyService = (IBusyIndicatorService)e.UserState;
+            using (var stream = e.Result)
+            {
+                XDocument xdoc = null;
+                ModelViewModel importedVM;
+
+                try
+                {
+                    xdoc = XDocument.Load(stream);
+                    importedVM = ModelXmlFactory.Create(xdoc);
+                    ModelXmlFactory.Load(xdoc, importedVM);
+                }
+                catch (Exception)
+                {
+                    string details = xdoc.ToString();
+
+                    busyService.Close();
+
+                    Container.Resolve<IInvalidModelWindowService>()
+                             .ShowImportError(details);
+
+                    // Log the error to the Log web service
+                    Log.Error("There was an error importing an invalid model", details);
+
+                    return;
+                }
+
+                //string currentName = file.Name.Replace(file.Extension, "");
+
+                //importedVM.Name = NameFactory.Create(currentName);
+
+                // Set the Created and Modified dates
+                importedVM.CreatedDate = DateTime.Now;
+                importedVM.ModifiedDate = importedVM.CreatedDate;
+
+                // Open it
+                ActiveModel = importedVM;
+
+                this.IsLoading = false;
+
+                // Log the import of the model to the Log web service
+                ApplicationViewModel.Instance.Log.ImportModel();
+
+                busyService.Close();
+            }
         }
 
         /// <summary>
