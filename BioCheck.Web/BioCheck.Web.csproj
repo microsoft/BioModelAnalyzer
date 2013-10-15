@@ -64,10 +64,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Services" />
     <Reference Include="System.Data.Services.Client" />
@@ -142,15 +138,11 @@
     <None Include="Analysis\ProofXml\AnalysisOutput2Stable.xml">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="BioCheckTestPage.aspx" />
-    <Content Include="BioCheckTestPage.html" />
     <Content Include="ClientBin\BioCheck.xap" />
     <Content Include="Services\AnalysisService.svc" />
     <Content Include="Services\LogService.svc" />
     <Content Include="Silverlight.js" />
-    <Content Include="vcredist_x64.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="tool.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -171,12 +163,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="style.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="tool.aspx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="toolplaceholder.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="tou.html">
@@ -244,13 +230,7 @@
     <Compile Include="Analysis\VariableInput.cs" />
     <Compile Include="Analysis\VariableOutput.cs" />
     <Compile Include="Analysis\Xml\XDocumentHelper.cs" />
-    <Compile Include="BioCheckTestPage.aspx.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Helpers\ZipHelper.cs" />
-    <Compile Include="tool.aspx.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Log\ErrorDataModel.cs" />
     <Compile Include="Log\ErrorDataSource.cs" />
     <Compile Include="Log\UsuageDataModel.cs" />
@@ -263,12 +243,13 @@
       <DependentUpon>LogService.svc</DependentUpon>
     </Compile>
     <Compile Include="Services\SilverlightFaultBehavior.cs" />
+    <Compile Include="tool.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>tool.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Analysis\Xml\fs_2var_unstable.log" />
-    <None Include="InstallVC.cmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
