@@ -26,7 +26,6 @@ namespace BioCheck.ViewModel.Proof
         private ProofViewState state;
 
         private string modelName;
-        private bool isStable;
         private double time;
         private int steps;
         private List<VariableProofViewModel> variables;

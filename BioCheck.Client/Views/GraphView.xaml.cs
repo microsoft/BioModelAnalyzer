@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using BioCheck.ViewModel.Proof;
 using BioCheck.ViewModel.Simulation;
-using MvvmFx.Common.ViewModels.States;
 using System.Windows.Controls.DataVisualization.Charting;
-using System.Linq;
 using System.Windows.Data;
 
 namespace BioCheck.Views

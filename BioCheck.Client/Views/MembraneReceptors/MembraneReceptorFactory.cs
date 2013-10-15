@@ -41,7 +41,7 @@ namespace BioCheck.Views.MembraneReceptors
                                           new MembraneReceptorInfo{Left=33.5, Top=54, Angle=-45},
 
                                        });
-                    break;
+                    //break;
                 case ContainerSizeTypes.Two:
                     return new List<MembraneReceptorInfo>(new[]
                                        {
@@ -65,7 +65,7 @@ namespace BioCheck.Views.MembraneReceptors
                                           
                                      
                                        });
-                    break;
+                    //break;
                 case ContainerSizeTypes.Three:
                     return new List<MembraneReceptorInfo>(new[]
                                        {
@@ -78,7 +78,7 @@ namespace BioCheck.Views.MembraneReceptors
                                           new MembraneReceptorInfo{Left=18, Top=578, Angle=-90},
                                           new MembraneReceptorInfo{Left=143, Top=175, Angle=-45},
                                        });
-                    break;
+                    //break;
                 default:
                     throw new ArgumentOutOfRangeException("sizeType");
             }
