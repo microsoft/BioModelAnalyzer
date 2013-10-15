@@ -173,7 +173,6 @@ type ParamFormBase(?Width, ?Height) =
 
     static member refresh_logistic_func_chart(chart: Chart, x1_textbox: TextBox, x2_textbox: TextBox,
                                                 min_textbox: TextBox, max_textbox: TextBox,
-                                                mu_textbox: TextBox, s_textbox: TextBox,
                                                 x_limits: float*float(*, model_params: ModelParameters*)) =
         
         let (x1, x2, min, max) = ParamFormBase.retrieve_logistic_func_param(x1_textbox, x2_textbox, min_textbox, max_textbox)        
@@ -189,9 +188,6 @@ type ParamFormBase(?Width, ?Height) =
         chart_area.AxisY.Minimum <- float 0
         chart_area.AxisY.Interval <- 0.1 * max
         chart.Refresh()
-
-        mu_textbox.Text <- (sprintf "%.1f" mu)
-        s_textbox.Text <- (sprintf "%.1f" s)
 
     static member refresh_exp_func_chart(chart: Chart, x3_textbox: TextBox,
                                             min_textbox: TextBox, max_textbox: TextBox,
@@ -220,6 +216,103 @@ type ParamFormBase(?Width, ?Height) =
             tooltip.Show(get_summary(x), chart, Drawing.Point(args.X + 15, args.Y - 15), 20000)
         else if args.Button =  MouseButtons.Left then
             tooltip.Hide(chart)
+
+
+ (*   static member create_logistic_param_dialog(chart: Chart, param: LogisticFuncParameters) =
+        let form = new Form (Visible = false, Width = 600, Height = 400)
+        //let (x1, x2, min, max) = param
+        //let (mu, s, _,  _) = ModelParameters.logistic_func_param(param)
+        let x1_label = new Label()
+        x1_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (2, 2))
+        x1_label.AutoSize <- true
+        x1_label.Text <- "X coordinate of saturation point 1"
+        x1_label.Location <- ParamFormBase.initial_location
+
+        let x1_textbox = new TextBox()
+        x1_textbox.Size <- ParamFormBase.textbox_size
+        x1_textbox.Text <- (sprintf "%.0f" param.X1)
+        ParamFormBase.add_textbox_float_validation(x1_textbox, x1_label.Text, ExternalState.O2Limits)
+        ParamFormBase.place_control_totheright(x1_textbox, x1_label)
+
+        let x2_label = new Label()
+        x2_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (2, 2))
+        x2_label.AutoSize <- true
+        x2_label.Text <- "X coordinate of saturation point 2"
+        ParamFormBase.place_control_totheright(x2_label, x1_textbox)
+
+        let x2_textbox = new TextBox()
+        x2_textbox.Size <- ParamFormBase.textbox_size
+        x2_textbox.Text <- (sprintf "%.0f" param.X2)
+        ParamFormBase.add_textbox_float_validation(x2_textbox, x2_label.Text, ExternalState.O2Limits)
+        ParamFormBase.place_control_totheright(x2_textbox, x2_label)
+
+        let min_label = new Label()
+        min_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (1.7, float 2))
+        min_label.AutoSize <- true
+        min_label.Text <- "The minimum probability (%)"
+        ParamFormBase.place_control_below(min_label, x1_label)
+
+        let min_textbox = new TextBox()
+        min_textbox.Size <- ParamFormBase.textbox_size
+        min_textbox.Text <- (sprintf "%.1f" (param.Min* 100.))
+        ParamFormBase.add_textbox_float_validation(min_textbox, min_label.Text, (float 0, float 100))
+        ParamFormBase.place_control_totheright(min_textbox, min_label)
+
+        let max_label = new Label()
+        max_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (1.7, float 2))
+        max_label.AutoSize <- true
+        max_label.Text <- "The maximum probability (%)"
+        ParamFormBase.place_control_totheright(max_label, min_textbox)
+
+        let max_textbox = new TextBox()
+        max_textbox.Size <- ParamFormBase.textbox_size
+        max_textbox.Text <- (sprintf "%.1f" (param.Max* 100.))
+        ParamFormBase.add_textbox_float_validation(max_textbox, max_label.Text, (float 0, float 100))
+        ParamFormBase.add_textbox_float_less_check(min_textbox, max_textbox, min_label.Text, max_label.Text)
+        ParamFormBase.place_control_totheright(max_textbox, max_label)
+
+        let ok_button = new Button()
+        ok_button.Text <- "Ok"
+        ok_button.MaximumSize <- ParamFormBase.Scale(ParamFormBase.button_size, (2, 1))
+        ok_button.AutoSize <- true
+        ParamFormBase.place_control_totheright(ok_button, max_textbox)
+        ok_button.Click.Add(fun args -> ParamFormBase.refresh_logistic_func_chart(
+                                                chart, x1_textbox, x2_textbox,
+                                                min_textbox, max_textbox, x_limits))
+
+        let mu_label = new Label()
+        mu_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (0.4, float 2))
+        mu_label.AutoSize <- true
+        mu_label.Text <- "mu"
+        ParamFormBase.place_control_below(mu_label, min_label)
+
+        let mu_textbox = new TextBox()
+        mu_textbox.Size <- ParamFormBase.textbox_size
+        mu_textbox.Text <- (sprintf "%.1f" mu)
+        ParamFormBase.place_control_totheright(mu_textbox, mu_label)
+        mu_textbox.Enabled <- false
+
+        let s_label = new Label()
+        s_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (0.4, float 2))
+        s_label.AutoSize <- true
+        s_label.Text <- "s"
+        ParamFormBase.place_control_totheright(s_label, mu_textbox)
+
+        let s_textbox = new TextBox()
+        s_textbox.Size <- ParamFormBase.textbox_size
+        s_textbox.Text <- (sprintf "%.1f" s)
+        ParamFormBase.place_control_totheright(s_textbox, s_label)
+        s_textbox.Enabled <- false
+
+        parent.Controls.AddRange([| panel; x1_label; x1_textbox; x2_label; x2_textbox;
+            (*mu_label; mu_textbox; s_label; s_textbox;*) min_label; min_textbox; max_label; max_textbox; refresh_button |])
+
+        let tooltip = new ToolTip()
+        chart.MouseClick.Add(ParamFormBase.show_summary(chart, tooltip,
+                                                        (fun (x:float) -> sprintf "X=%.1f Y=%.1f" x (ModelParameters.logistic_func(mu, s, min, max)(x)))))
+
+        min_label*)
+
 
     static member create_logistic_func_controls(parent: Control, prev_control: Control, chart: Chart,
                                                 x1_textbox: TextBox, x2_textbox: TextBox,
@@ -309,7 +402,7 @@ type ParamFormBase(?Width, ?Height) =
         ParamFormBase.place_control_totheright(refresh_button, max_textbox)
         refresh_button.Click.Add(fun args -> ParamFormBase.refresh_logistic_func_chart(
                                                 chart, x1_textbox, x2_textbox,
-                                                min_textbox, max_textbox, mu_textbox, s_textbox, x_limits))
+                                                min_textbox, max_textbox, x_limits))
 
         let mu_label = new Label()
         mu_label.MaximumSize <- ParamFormBase.Scale(ParamFormBase.label_size, (0.4, float 2))
@@ -336,7 +429,7 @@ type ParamFormBase(?Width, ?Height) =
         s_textbox.Enabled <- false
 
         ParamFormBase.refresh_logistic_func_chart(chart, x1_textbox, x2_textbox,
-            min_textbox, max_textbox, mu_textbox, s_textbox, x_limits)
+            min_textbox, max_textbox, x_limits)
 
         parent.Controls.AddRange([| panel; x1_label; x1_textbox; x2_label; x2_textbox;
             (*mu_label; mu_textbox; s_label; s_textbox;*) min_label; min_textbox; max_label; max_textbox; refresh_button |])

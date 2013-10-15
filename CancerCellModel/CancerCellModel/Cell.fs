@@ -39,6 +39,14 @@ type ExternalState() =
     member this.StemCells with get() = stem_cells and set(n) = stem_cells <- n
     member this.CellDensity with get() = float live_cells / float ModelParameters.MaxNumOfCells
 
+type Point (xx: float, yy: float, zz: float) = 
+    member this.x = xx
+    member this.y = yy
+    member this.z = zz
+
+    new() = Point(0., 0., 0.)
+    //override this.ToString() = "Pt(" + string xx + "," + string yy + ")"
+
 type Cell (t, ?gen) =
     let mutable ng2: PathwayLevel = Up
     let mutable cd133: PathwayLevel = Up
@@ -52,6 +60,7 @@ type Cell (t, ?gen) =
     let mutable wait_before_divide = 0
     let mutable wait_before_die = 0
     let mutable steps_after_last_division = 0
+    let mutable position = Point()
 
     let init() =
         match t with
@@ -82,15 +91,10 @@ type Cell (t, ?gen) =
 
     member this.NextState with get() = next_state
                             and set(s) = next_state <- s;
-                                         time_in_state <- 0
 
 
     member this.Action with get() = action and set(a) = action <- a
     member this.TimeInState with get() = time_in_state
-
-(*    member this.ResetState(s) =
-        time_in_state <- 0
-        if (state <> s) then set_state(s)*)
     
     member this.Generation with get() = generation and set(g) = generation <- g
     member this.WaitBeforeDivide with get() = wait_before_divide and set(x) = wait_before_divide <- x
@@ -114,13 +118,6 @@ type CellActivity() =
     // die function so far does nothing
     static member die(cell: Cell) =
         cell.State <- Dead
-
-(*    static member oxygen_per_cell(ext: ExternalState) =
-        let (_, c2, c3, k) = ModelParameters.O2Param
-        //let k = 0.001
-        let o2 = ref (ext.O2/(k*(float ext.NonDividingLiveCells + (c2/c3) * float ext.DividingCells)))
-        if !o2 > float 100 then o2 := float 100
-        !o2*)
 
     // determine if a cell can proliferate depending
     // on the amount of nutrients (currently oxygen: O2)

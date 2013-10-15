@@ -1,6 +1,17 @@
 ﻿module ModelParameters
 open System
 
+type LogisticFuncParameters(xx1: float, xx2: float, mmin: float, mmax: float) =
+    let mutable x1 = xx1
+    let mutable x2 = xx2
+    let mutable min = mmin
+    let mutable max = mmax
+
+    member this.X1 with get() = x1 and set(x) = x1 <- x
+    member this.X2 with get() = x2 and set(x) = x2 <- x
+    member this.Min with get() = min and set(x) = min <- x
+    member this.Max with get() = max and set(x) = max <- x
+
 // model calibration parameters
 type ModelParameters() =
     static let mutable stem_division_prob_param = (float 20, float 100, float 0.001, float 0.015)  // (x1, x2, min, max)
