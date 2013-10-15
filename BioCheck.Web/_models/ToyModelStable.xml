@@ -6,7 +6,7 @@
   <Layout>
     <Columns>6</Columns>
     <Rows>5</Rows>
-    <ZoomLevel>30</ZoomLevel>
+    <ZoomLevel>100</ZoomLevel>
     <PanX>0</PanX>
     <PanY>0</PanY>
   </Layout>
