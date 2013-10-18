@@ -13,11 +13,11 @@ let gaussianMargalisPolar rng mean sd =
         | test when test < 1. -> [a ; b ; c ]
         | _ -> gMP rng 
     let [a ; b; c ] = gMP rng
-    let modifier = -2.0 * log c / c
+    let modifier = (-2.0 * log c / c)**0.5
     [a * sd * modifier + mean; b * sd * modifier + mean]
 
 let rec nGaussianRandomMP rng mean sd (number:int) = 
-    let results = List.reduce (fun acc item -> acc @ item) [ for i in [0..2..number] -> gaussianMargalisPolar rng mean sd ]
+    let results = List.reduce (fun acc item -> acc @ item) [ for i in [1..2..number] -> gaussianMargalisPolar rng mean sd ]
     match (number%2) with
     | 0 -> results
     | 1 -> results.Tail
