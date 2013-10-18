@@ -18,7 +18,7 @@ namespace BioCheck.Web
                 Model = uri.AbsoluteUri;
                 // HACK for local emulator - something to do with port mapping,
                 // but don't understand.
-                Model = Model.Replace(":82/", ":81/");
+                //Model = Model.Replace(":82/", ":81/");
             }
         }
     }
