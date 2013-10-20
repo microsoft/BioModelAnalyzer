@@ -11,15 +11,7 @@ namespace BioCheck.Web
         {
             var req = HttpContext.Current.Request;
             IPAddress = req.ServerVariables["REMOTE_ADDR"];
-            var modelUri = req.QueryString["Model"];
-            if (!string.IsNullOrWhiteSpace(modelUri))
-            {
-                var uri = new Uri(req.Url, modelUri);
-                Model = uri.AbsoluteUri;
-                // HACK for local emulator - something to do with port mapping,
-                // but don't understand.
-                //Model = Model.Replace(":82/", ":81/");
-            }
+            Model = req.QueryString["Model"];
         }
     }
 }

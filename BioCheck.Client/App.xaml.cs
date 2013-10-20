@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Browser;
 using BioCheck.Helpers;
@@ -70,7 +71,12 @@ namespace BioCheck
 
             // Store the user's IP address
             ApplicationViewModel.Instance.User.IPAddress = e.InitParams["IPAddress"];
-            ApplicationViewModel.Instance.InitialModelUrl = e.InitParams["Model"];
+            var modelUrl = e.InitParams["Model"];
+            if (!string.IsNullOrWhiteSpace(modelUrl))
+            {
+                var url = new Uri(System.Windows.Browser.HtmlPage.Document.DocumentUri, modelUrl);
+                ApplicationViewModel.Instance.InitialModelUrl = url.AbsoluteUri;
+            }
 
             // Register UI Services with the Unity container
             var container = ApplicationViewModel.Instance.Container;
