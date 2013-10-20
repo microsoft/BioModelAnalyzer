@@ -652,47 +652,48 @@ namespace BioCheck.ViewModel
             var time = Math.Round((DateTime.Now - timer).TotalSeconds, 1);
             Debug.WriteLine(string.Format("Analyzer took {0} seconds to run.", time));
 
-            if (e.Error != null)
-            {
-                string details = e.Error.ToString();
-                details = details + Environment.NewLine + e.Error.StackTrace;
+            // Error seems to handled below - why's this bit here?
+            //if (e.Error != null)
+            //{
+            //    string details = e.Error.ToString();
+            //    details = details + Environment.NewLine + e.Error.StackTrace;
 
-                ApplicationViewModel.Instance.Container
-                         .Resolve<IErrorWindowService>()
-                         .Show("The Error property of AnalyzeCompletedEventArgs is not null.", details);
-            }
-
-            try
-            {
-                if (this.proofVM != null)
-                    this.proofVM.ResetOutput();
-
-                this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
-            }
-            catch (Exception ex)
-            {
-                ApplicationViewModel.Instance.Container
-                        .Resolve<IBusyIndicatorService>()
-                        .Close();
-
-                var details = ex.ToString();
-                if (ex.InnerException != null)
-                {
-                    details = ex.InnerException.ToString();
-                }
-
-                ApplicationViewModel.Instance.Container
-                      .Resolve<IErrorWindowService>()
-                      .Show("There was an error running the analysis.", details);
-
-                // Log the error to the Log web service
-                ApplicationViewModel.Instance.Log.Error("There was an error running the analysis.", details);
-
-                return;
-            }
+            //    ApplicationViewModel.Instance.Container
+            //             .Resolve<IErrorWindowService>()
+            //             .Show("The Error property of AnalyzeCompletedEventArgs is not null.", details);
+            //}
 
             if (e.Error == null)
             {
+                try
+                {
+                    if (this.proofVM != null)
+                        this.proofVM.ResetOutput();
+
+                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
+                }
+                catch (Exception ex)
+                {
+                    ApplicationViewModel.Instance.Container
+                            .Resolve<IBusyIndicatorService>()
+                            .Close();
+
+                    var details = ex.ToString();
+                    if (ex.InnerException != null)
+                    {
+                        details = ex.InnerException.ToString();
+                    }
+
+                    ApplicationViewModel.Instance.Container
+                          .Resolve<IErrorWindowService>()
+                          .Show("There was an error running the analysis.", details);
+
+                    // Log the error to the Log web service
+                    ApplicationViewModel.Instance.Log.Error("There was an error running the analysis.", details);
+
+                    return;
+                } 
+                
                 if (analysisOutput.Status == StatusTypes.Unknown || analysisOutput.Status == StatusTypes.Error)
                 {
                     // Clear the current proof
