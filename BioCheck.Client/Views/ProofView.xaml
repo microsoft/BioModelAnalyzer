@@ -246,8 +246,91 @@
     <Grid x:Name="grid" d:DataContext="{Binding Source={StaticResource ProofData}}" >
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="ProofStateGroup">
+
+                <!-- StableByExclusion -->
+                <VisualState x:Name="StableByExclusionState">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesPanel">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProofProgressionHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProgressionGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <!-- StableByExclusion ends -->
+                
                 <VisualState x:Name="StableState">
                     <Storyboard>
+                        <!-- StableByExclusion -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <!-- -->
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -299,9 +382,18 @@
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-                
+
                 <VisualState x:Name="NotStableState">
                     <Storyboard>
+                        <!-- StableByExclusion -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <!-- -->
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -349,6 +441,15 @@
                 
                 <VisualState x:Name="CounterExamplesState">
                     <Storyboard>
+                        <!-- StableByExclusion -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <!-- -->
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -437,6 +538,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="0.5*"/>
                     </Grid.RowDefinitions>
+                    
                     <Grid x:Name="StableGrid" d:LayoutOverrides="Height">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -477,6 +579,83 @@
                         <Path x:Name="ValidPath" Data="M421.9858,569.6992L428.3078,576.0212L441.8538,562.4742" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource StableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False" Margin="0" HorizontalAlignment="Left" Width="24" Height="18" VerticalAlignment="Center" Grid.RowSpan="2"/>
                         <TextBlock TextWrapping="Wrap" Text="Stabilizes" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource StableBrush}" Grid.RowSpan="2"/>
                     </Grid>
+                    
+                    <!-- Stable by Exclusion -->
+                    <Grid x:Name="StableGridByExclusion" d:LayoutOverrides="Height">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text=" " Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text=" " Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/>
+
+
+                        <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Analysis" HorizontalAlignment="Left" Width="118" Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Bottom" FontWeight="Bold" Foreground="#FF292929" FontSize="16" Margin="0,0,0,2"/>
+                        
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="No bifurcations or cycles were found in your model." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="Therefore, by exclusion, " />
+                            <TextBlock Text="your model stabilizes" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="," />
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="but the stable state is not found by verification." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="To determine the final stable state, run a simulation." />
+                        </StackPanel>
+                        
+                        
+                        <Path x:Name="ValidPath2" Data="M421.9858,569.6992L428.3078,576.0212L441.8538,562.4742" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource StableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False" Margin="0" HorizontalAlignment="Left" Width="24" Height="18" VerticalAlignment="Center" Grid.RowSpan="2"/>                        
+                        <TextBlock TextWrapping="Wrap" Text="Stabilizes" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource StableBrush}" Grid.RowSpan="2"/>
+                    </Grid>
+                    <!-- -->
+                   
+                    
+                    <!--  Kept for future reference, if additional features requested.
+                    
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="BMA" Style="{StaticResource PopupTextStyle}"/>
+                            <TextBlock x:Name="succeededText" Text="succeeded" Margin="5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock Text="in checking every possible state of the " Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="model in" Style="{StaticResource PopupTextStyle}"/>
+                            <TextBlock x:Name="timeText" Text="{Binding Time}" Margin="5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Text="seconds. After stepping through" Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock x:Name="stepsText" Text="{Binding NumberOfSteps}" Style="{StaticResource PopupStableTextStyle}" Margin="0,0,5,0"/>
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}"><Run Text="separate interactions, the model eventual"/><Run Text="ly"/></TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="reached a single stable state." Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding NumberOfSteps}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="steps" Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/> 
+                    -->
+
+                    <!-- Stable by Exclusion ends-->
+
                     <!-- Visibility="{Binding IsStable, Converter={StaticResource InvertedBoolToVisibilityConverter}, FallbackValue=True}" -->
                     <Grid x:Name="NotStableGrid" VerticalAlignment="Top">
                         <Grid.RowDefinitions>
@@ -597,7 +776,7 @@
                                     </DataTemplate>
                                 </sdk:DataGridTemplateColumn.CellTemplate>
                             </sdk:DataGridTemplateColumn>
-                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Range"/>
+                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Final range"/>
                         </sdk:DataGrid.Columns>
                     </sdk:DataGrid>
 

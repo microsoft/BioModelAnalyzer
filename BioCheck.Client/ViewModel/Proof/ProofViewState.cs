@@ -5,6 +5,8 @@ namespace BioCheck.ViewModel.Proof
         None = 0,
         Stable = 1,
         NotStable = 2,
-        CounterExamples = 3
+        CounterExamples = 3,
+        StableByExclusion = 4
     }
+    // StableByExclusion
 }

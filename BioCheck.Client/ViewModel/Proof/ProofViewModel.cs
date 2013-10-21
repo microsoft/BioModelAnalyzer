@@ -423,7 +423,16 @@ namespace BioCheck.ViewModel.Proof
             if (e.Error == null)
             {
                 this.CounterExampleInfos = ProofViewModelFactory.CreateCounterExamples(this, cexOutput);
-                this.State = ProofViewState.CounterExamples;
+
+                // StableByExclusion
+                if (cexOutput.CounterExamples.Count == 0)
+                {
+                    this.State = ProofViewState.StableByExclusion;
+                }
+                else
+                {
+                    this.State = ProofViewState.CounterExamples;
+                }
 
                 ApplicationViewModel.Instance.Container
                   .Resolve<IBusyIndicatorService>()

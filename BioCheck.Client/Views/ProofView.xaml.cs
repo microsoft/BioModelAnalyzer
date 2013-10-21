@@ -17,6 +17,8 @@ namespace BioCheck.Views
     [TemplateVisualState(Name = VisualStates.StableState, GroupName = VisualStates.ProofStateGroup)]
     [TemplateVisualState(Name = VisualStates.NotStableState, GroupName = VisualStates.ProofStateGroup)]
     [TemplateVisualState(Name = VisualStates.CounterExamplesState, GroupName = VisualStates.ProofStateGroup)]
+    [TemplateVisualState(Name = VisualStates.StableByExclusionState, GroupName = VisualStates.ProofStateGroup)] // StableByExclusion
+
     public partial class ProofView : UserControl
     {
         private struct VisualStates
@@ -25,6 +27,7 @@ namespace BioCheck.Views
             public const string StableState = "StableState";
             public const string NotStableState = "NotStableState";
             public const string CounterExamplesState = "CounterExamplesState";
+            public const string StableByExclusionState = "StableByExclusionState"; // StableByExclusion
         }
 
         private ProofViewModel proofVM;
@@ -123,6 +126,9 @@ namespace BioCheck.Views
                     break;
                 case ProofViewState.CounterExamples:
                     VisualStateManager.GoToState(this, VisualStates.CounterExamplesState, true);
+                    break;
+                case ProofViewState.StableByExclusion:
+                    VisualStateManager.GoToState(this, VisualStates.StableByExclusionState, true);
                     break;
             }
         }

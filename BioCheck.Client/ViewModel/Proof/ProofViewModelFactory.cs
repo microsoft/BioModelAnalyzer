@@ -48,7 +48,7 @@ namespace BioCheck.ViewModel.Proof
                                          Range =
                                              variableOutput.IsStable
                                                  ? variableOutput.Low.ToString()
-                                                 : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)
+                                                 : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)                                         
                                      };
                    proofVM.Variables.Add(varProofVM);
                 }
