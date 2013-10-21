@@ -159,9 +159,19 @@ let model_of_xml (xd:XDocument) =
                     match v.Vf with
                     | Some f -> f
                     | None ->
+                       // Changing default target function to a meaningful target function
                         match ii, oo with
                         | [], [] -> Expr.Const(min)
-                        | [], _  -> Expr.Minus(Expr.Const(max), Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
+                        // If there are no positive influences and there are negative influences 
+                        // 1. It should just be the constant min of range of the varialbe
+                        // 2. The constituent value (with no inhibition) is the maximum. So the target function is max-ave(neg)
+                        // 3. The target function is the general default function ave(pos)-ave(neg), where ave(pos) is replaced with
+                        //    the min of the range of the variable as the list of pos is empty 
+                        | [], _  -> Expr.Const(min) 
+                                    // Expr.Minus(Expr.Const(max), Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
+                                    // Expr.Max(Expr.Const(min), 
+                                    //         Expr.Minus(Expr.Const(min),
+                                    //                    Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
                         | _ , [] -> Expr.Min(Expr.Const(max), Expr.Ave(List.map (fun i -> Expr.Var(i)) ii))
                                     // SI: Garvit's was:  Expr.Ave(List.map (fun i -> Expr.Var(i)) ii)
                         | _ , _  -> 
