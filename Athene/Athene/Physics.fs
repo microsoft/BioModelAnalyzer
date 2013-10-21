@@ -83,10 +83,22 @@ let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aN
     | d when mindist > d -> repelConstant * -1./((mindist/ivec.len)**(-13.)) * (p1.location - p2.location).norm //overlapping
     | _ -> attractConstant * ivec.len * (p1.location - p2.location).norm
 
-//let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
-//    [for j in system -> [for i in system -> match (i.location-j.location).len with
-//                                            | x when x < cutOff -> 1.
-//                                            | _ -> 0. ]] 
+let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
+    let getNeighbours (p:Particle) (system: Particle list) (cutOff: float<um>) =
+        [for i in system do match (i.location-p.location).len with
+                            | x when i=p -> ()
+                            | x when x < cutOff-> yield i
+                            | _ -> () ]
+    [for i in system -> getNeighbours i system cutOff] 
+
+let forceUpdate (system: Particle list) (cutOff: float<um>) = 
+    let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<aNewton>) =
+        match neighbours with
+        | head::tail -> sumForces p tail (hardSphereForce head p 1.<aNewton>)+acc
+        | [] -> acc
+    let nonBonded = nonBondedPairList (system: Particle list) cutOff
+    [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}]
+
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<aNewton>) (dT: float<second>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
