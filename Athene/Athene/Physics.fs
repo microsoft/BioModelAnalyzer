@@ -1,5 +1,6 @@
 ﻿module Physics
 
+open Vector
 (*
 Some back of the envelope calculations to make it all easier
 E.coli has a mass of 0.5 picograms
@@ -53,6 +54,8 @@ type aNewton = pg um second^-2 //F=ma attonewtons because pg * um = 10^-12 kg * 
 //[<Measure>]
 //type FricCon = second // g/s, so to calculate multiply mass by FricConstant
 
+let Kb = 13.806488<um^2 pg second^-2 Kelvin^-1>
+
 type Particle(R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: float<second>, radius: float<um>, density: float<pg um^-3>) = 
     member this.location = R
     member this.velocity = V
@@ -63,14 +66,44 @@ type Particle(R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: fl
     member this.mass = this.volume * this.density
     member this.frictioncoeff = this.mass / Friction
 
-let bdUpdateNoThermal (cluster: Particle, F: Vector.Vector3D<aNewton>, T: float<Kelvin>, dT: float<second>) = 
+let hardSphereForce (p1: Particle) (p2: Particle) (forceConstant: float<aNewton> ) =
+    //the force felt by p2 due to collisions with p1 (relative distances)
+    let ivec = (p1.location - p2.location)
+    let mindist = p1.radius + p2.radius
+    match ivec.len with 
+    | d when mindist <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}
+    | _ -> forceConstant * -1./((mindist/ivec.len)**(-13.)) * (p1.location - p2.location).norm
+
+let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aNewton> ) (attractConstant: float<aNewton um^-1>) (attractCutOff: float<um>) =
+    //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
+    let ivec = (p1.location - p2.location)
+    let mindist = p1.radius + p2.radius
+    match ivec.len with 
+    | d when attractCutOff <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>} //can't see one another
+    | d when mindist > d -> repelConstant * -1./((mindist/ivec.len)**(-13.)) * (p1.location - p2.location).norm //overlapping
+    | _ -> attractConstant * ivec.len * (p1.location - p2.location).norm
+
+//let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
+//    [for j in system -> [for i in system -> match (i.location-j.location).len with
+//                                            | x when x < cutOff -> 1.
+//                                            | _ -> 0. ]] 
+
+let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<aNewton>) (dT: float<second>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
     Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density)
 
-let bdUpdate (cluster: Particle, F: Vector.Vector3D<aNewton>, T: float<Kelvin>, dT: float<second>) = 
+let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<aNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
+    let rNum = PRNG.nGaussianRandomMP rng 1. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
-    let NewV = FrictionDrag * F
-    let NewP = dT * NewV + cluster.location
+    //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
+    let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
+    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
+    let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
+    //let NewV = NewP * (1. / dT)
     Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density)
+
+let bdSystemUpdate system forces atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
+    [for item in List.zip system forces -> atomicIntegrator (fst item) (snd item) T dT rng]
+
