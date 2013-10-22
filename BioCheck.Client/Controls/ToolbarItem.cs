@@ -35,7 +35,8 @@ namespace BioCheck.Controls
 
         void ToolbarItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (!this.IsCheckable)
+            // Treat these as radio buttons - ie, don't allow a second click to uncheck
+            if (!this.IsCheckable || this.IsChecked)
                 return;
 
             this.leftMouseButtonDown = e.GetPosition(this);
