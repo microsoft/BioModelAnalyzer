@@ -10,15 +10,49 @@ let gaussianMargalisPolar rng mean sd =
         let b = rng.NextDouble() * 2.0 - 1.0
         let c = a ** 2. + b ** 2.
         match c with
-        | test when test < 1. -> [a ; b ; c ]
+        | test when test < 1. -> (a , b , c )
         | _ -> gMP rng 
-    let [a ; b; c ] = gMP rng
+    let (a , b, c ) = gMP rng
     let modifier = (-2.0 * log c / c)**0.5
-    [a * sd * modifier + mean; b * sd * modifier + mean]
+    (a * sd * modifier + mean, b * sd * modifier + mean)
+
+let gaussianMargalisPolar' : System.Random -> float -> float -> float = 
+    let next_one = ref None 
+    (fun rng mean sd -> 
+    match !next_one with 
+    | None -> 
+        let (a,b) = gaussianMargalisPolar rng mean sd
+        next_one := Some b
+        a
+    | Some b ->
+        next_one := None
+        b 
+        )
+ 
+//let gaussianMargalisPolar' =
+//    //let next_one = ref None
+//    let mutable next_one = None
+//    fun rng mean sd ->
+//    match next_one with
+//    | None -> 
+//        let (a,b) = gaussianMargalisPolar rng mean sd
+//        next_one <- Some b
+//        a
+//    | Some b ->
+//        next_one <- None
+//        b
+//
+//    (fun rng mean sd ->
+//    let rec gMP (rng: System.Random) =
+//        let a = rng.NextDouble() * 2.0 - 1.0
+//        let b = rng.NextDouble() * 2.0 - 1.0
+//        let c = a ** 2. + b ** 2.
+//        match c with
+//        | test when test < 1. -> [a ; b ; c ]
+//        | _ -> gMP rng 
+//    let [a ; b; c ] = gMP rng
+//    let modifier = (-2.0 * log c / c)**0.5
+//    [a * sd * modifier + mean; b * sd * modifier + mean]
 
 let rec nGaussianRandomMP rng mean sd (number:int) = 
-    let results = List.reduce (fun acc item -> acc @ item) [ for i in [1..2..number] -> gaussianMargalisPolar rng mean sd ]
-    match (number%2) with
-    | 0 -> results
-    | 1 -> results.Tail
-    | _ -> failwith "Bad quantity of random numbers"
+    [for i in [0..(number-1)] -> gaussianMargalisPolar' rng mean sd]
