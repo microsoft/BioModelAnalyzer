@@ -81,7 +81,7 @@
         <Controls:ToolbarItem
         	FixedHeight="50"
         	FixedWidth="50"
-        	ToolTipService.ToolTip="Constant" 
+        	ToolTipService.ToolTip="Extracellular protein" 
                 Margin="5,0,0,0">
             <Controls:ToolbarItem.Command>
                 <Controls:ToolbarCommand CommandType="Constant" />
