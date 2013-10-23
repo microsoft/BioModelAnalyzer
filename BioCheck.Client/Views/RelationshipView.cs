@@ -17,8 +17,8 @@ namespace BioCheck.Views
     public class RelationshipView : LoopingArrowLine,
                                     IDisposable
     {
-        private static Brush DefaultNormalFill = new SolidColorBrush(Colors.Black);
-        private static Brush DefaultCheckedFill = new SolidColorBrush(Colors.Gray);
+        private static Brush DefaultNormalFill = new SolidColorBrush(Colors.Gray);
+        private static Brush DefaultCheckedFill = new SolidColorBrush(Colors.LightGray);
 
         private struct VisualStates
         {
@@ -150,7 +150,7 @@ namespace BioCheck.Views
                 this.Stroke = CheckedFill;
                 this.Fill = CheckedFill;
 
-                this.StrokeThickness = 3;
+                this.StrokeThickness = 5;
             }
             else
             {
@@ -158,7 +158,7 @@ namespace BioCheck.Views
                 this.Stroke = NormalFill;
                 this.Fill = NormalFill;
 
-                this.StrokeThickness = 1;
+                this.StrokeThickness = 3;
 
             }
         }

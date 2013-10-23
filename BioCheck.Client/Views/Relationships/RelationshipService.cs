@@ -41,7 +41,7 @@ namespace BioCheck.Services
         private DataTemplate relationshipTemplate;
         private int arrowId = 0;
 
-        private static Brush arrowBrush;
+        private readonly static Brush arrowBrush;
         private RelationshipView arrowLine;
 
         private IRelationshipTarget fromTarget;
@@ -51,7 +51,8 @@ namespace BioCheck.Services
         static RelationshipService()
         {
             // #FF231F20
-            var arrowColor = Color.FromArgb(255, 35, 31, 32);
+            //var arrowColor = Color.FromArgb(255, 35, 31, 32);
+            var arrowColor = Colors.Gray; // Consistent with NormalFill defined in RelationshipView
             arrowBrush = new SolidColorBrush(arrowColor);
         }
 
@@ -180,7 +181,7 @@ namespace BioCheck.Services
         private void InitArrow(RelationshipTypes type)
         {
             arrowLine.Stroke = arrowBrush;
-            arrowLine.StrokeThickness = 1;
+            arrowLine.StrokeThickness = 3;
 
             arrowLine.ArrowLength = 8;
             arrowLine.ArrowEnds = ArrowEnds.End;
