@@ -90,7 +90,7 @@ let hardSphereForce (p1: Particle) (p2: Particle) (forceConstant: float<aNewton>
     let mindist = p1.radius + p2.radius
     match ivec.len with 
     | d when mindist <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}
-    | _ -> forceConstant * -1./((mindist/ivec.len)**(-13.)-1.) * (p1.location - p2.location).norm
+    | _ -> forceConstant * (-1./(ivec.len/mindist)**(13.)-1.) * (p1.location - p2.location).norm
 
 let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aNewton> ) (attractConstant: float<aNewton um^-1>) (attractCutOff: float<um>) =
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
@@ -98,7 +98,7 @@ let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aN
     let mindist = p1.radius + p2.radius
     match ivec.len with 
     | d when attractCutOff <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>} //can't see one another
-    | d when mindist > d -> repelConstant * -1./((mindist/ivec.len)**(-13.)-1.) * (p1.location - p2.location).norm //overlapping
+    | d when mindist > d -> repelConstant * (-1./(ivec.len/mindist)**(13.)-1.) * (p1.location - p2.location).norm //overlapping
     | _ -> attractConstant * (ivec.len - mindist) * (p1.location - p2.location).norm
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
