@@ -28,7 +28,8 @@
 
         <Controls:ToolbarItem
             FixedHeight="64"
-            FixedWidth="58" >
+            FixedWidth="58" 
+            ToolTipService.ToolTip="Cell">
             <Controls:ToolbarItem.Command>
                 <Controls:ToolbarCommand CommandType="Container" />
             </Controls:ToolbarItem.Command>
@@ -58,6 +59,7 @@
         <Controls:ToolbarItem
                  FixedHeight="36"
                  FixedWidth="42"
+                 ToolTipService.ToolTip="Intracellular protein"
                  IsCheckable="True"
                  IsChecked="{Binding IsVariableActive, Mode=TwoWay}" 
                 Margin="5,0,0,0">
