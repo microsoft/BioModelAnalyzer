@@ -73,7 +73,7 @@ type aNewton = pg um second^-2 //F=ma attonewtons because pg * um = 10^-12 kg * 
 
 let Kb = 13.806488<um^2 pg second^-2 Kelvin^-1>
 
-type Particle(R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: float<second>, radius: float<um>, density: float<pg um^-3>) = 
+type Particle(R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: float<second>, radius: float<um>, density: float<pg um^-3>, freeze: bool) = 
     member this.location = R
     member this.velocity = V
     member this.Friction = Friction
@@ -82,6 +82,7 @@ type Particle(R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: fl
     member this.density = density
     member this.mass = this.volume * this.density
     member this.frictioncoeff = this.mass / Friction
+    member this.freeze = freeze
 
 let hardSphereForce (p1: Particle) (p2: Particle) (forceConstant: float<aNewton> ) =
     //the force felt by p2 due to collisions with p1 (relative distances)
@@ -89,7 +90,7 @@ let hardSphereForce (p1: Particle) (p2: Particle) (forceConstant: float<aNewton>
     let mindist = p1.radius + p2.radius
     match ivec.len with 
     | d when mindist <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}
-    | _ -> forceConstant * -1./((mindist/ivec.len)**(-13.)) * (p1.location - p2.location).norm
+    | _ -> forceConstant * -1./((mindist/ivec.len)**(-13.)-1.) * (p1.location - p2.location).norm
 
 let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aNewton> ) (attractConstant: float<aNewton um^-1>) (attractCutOff: float<um>) =
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
@@ -97,8 +98,8 @@ let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aN
     let mindist = p1.radius + p2.radius
     match ivec.len with 
     | d when attractCutOff <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>} //can't see one another
-    | d when mindist > d -> repelConstant * -1./((mindist/ivec.len)**(-13.)) * (p1.location - p2.location).norm //overlapping
-    | _ -> attractConstant * ivec.len * (p1.location - p2.location).norm
+    | d when mindist > d -> repelConstant * -1./((mindist/ivec.len)**(-13.)-1.) * (p1.location - p2.location).norm //overlapping
+    | _ -> attractConstant * (ivec.len - mindist) * (p1.location - p2.location).norm
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
     let getNeighbours (p:Particle) (system: Particle list) (cutOff: float<um>) =
@@ -111,7 +112,8 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
 let forceUpdate (system: Particle list) (cutOff: float<um>) = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<aNewton>) =
         match neighbours with
-        | head::tail -> sumForces p tail (hardSphereForce head p 10000000.<aNewton>)+acc //Arbitrary 10pN force constant
+        //| head::tail -> sumForces p tail (hardSphereForce head p 1.<aNewton>)+acc //Arbitrary 1aN force constant
+        | head::tail -> sumForces p tail (hardStickySphereForce head p 1.<aNewton> 10000.<aNewton/um> 2.<um>)+acc //Arbitrary 10aN force constant
         | [] -> acc
     let nonBonded = nonBondedPairList (system: Particle list) cutOff
     [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}]
@@ -121,7 +123,7 @@ let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<aNewton>) (d
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
-    Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density)
+    Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
 
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<aNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
@@ -132,8 +134,11 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<aNewton>) (T: float<K
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
-    Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density)
+    Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
 
-let bdSystemUpdate system forces atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
-    [for item in List.zip system forces -> atomicIntegrator (fst item) (snd item) T dT rng]
+let bdSystemUpdate (system: Particle list) forces atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
+    [for (p,f) in List.zip system forces -> 
+        match p.freeze with
+        | false -> atomicIntegrator p f T dT rng
+        | true  -> p ]
 
