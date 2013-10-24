@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceDefinition name="BioCheck.Cloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-03.2.0">
+<ServiceDefinition name="BioCheck.Cloud" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2013-10.2.2">
   <WebRole name="BioCheck.Web" vmsize="Large">
     <Sites>
       <Site name="Web">
@@ -16,12 +16,10 @@
       <!--<Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />-->
     </Imports>
-    <Startup>
-    </Startup>
+    <Startup></Startup>
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>
-    <Certificates>
-    </Certificates>
+    <Certificates></Certificates>
   </WebRole>
 </ServiceDefinition>
