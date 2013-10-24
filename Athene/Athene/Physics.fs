@@ -28,8 +28,7 @@ This seems low so we need a good guess for the friction coefficient...
 
 From Berry et al the flagellar motor causes linear movement of velocity 200 um / s and a force of 15 pN (Theories of Rotary Motors, 2000, Philo Trans R Soc Lond B)
 
-XXXXXXXXXXXXXThis indicates that the friction coefficient is roughly 10^-9 
-Working with the BD integrator, it appears that 0.00002<second> is more accurate for a 0.5 pg sphere experiencing a force of 15 pN
+Working with the BD integrator, it appears that 0.00002<second> is  accurate for a 0.5 pg sphere experiencing a force of 15 pN
 
 This works because
 
@@ -73,7 +72,8 @@ type aNewton = pg um second^-2 //F=ma attonewtons because pg * um = 10^-12 kg * 
 
 let Kb = 13.806488<um^2 pg second^-2 Kelvin^-1>
 
-type Particle(R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: float<second>, radius: float<um>, density: float<pg um^-3>, freeze: bool) = 
+type Particle(Name:string, R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: float<second>, radius: float<um>, density: float<pg um^-3>, freeze: bool) = 
+    member this.name = Name
     member this.location = R
     member this.velocity = V
     member this.Friction = Friction
@@ -123,7 +123,7 @@ let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<aNewton>) (d
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
-    Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
+    Particle(cluster.name, NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
 
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<aNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
@@ -134,7 +134,7 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<aNewton>) (T: float<K
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
-    Particle(NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
+    Particle(cluster.name, NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
 
 let bdSystemUpdate (system: Particle list) forces atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
     [for (p,f) in List.zip system forces -> 
