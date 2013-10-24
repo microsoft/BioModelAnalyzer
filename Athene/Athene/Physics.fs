@@ -113,7 +113,7 @@ let forceUpdate (system: Particle list) (cutOff: float<um>) =
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<aNewton>) =
         match neighbours with
         //| head::tail -> sumForces p tail (hardSphereForce head p 1.<aNewton>)+acc //Arbitrary 1aN force constant
-        | head::tail -> sumForces p tail (hardStickySphereForce head p 1.<aNewton> 10000.<aNewton/um> 2.<um>)+acc //Arbitrary 10aN force constant
+        | head::tail -> sumForces p tail (hardStickySphereForce head p 1.<aNewton> 1000000.<aNewton/um> 2.<um>)+acc //Arbitrary 10aN force constant
         | [] -> acc
     let nonBonded = nonBondedPairList (system: Particle list) cutOff
     [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}]
