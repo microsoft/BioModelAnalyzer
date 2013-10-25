@@ -84,7 +84,7 @@ type Particle(Name:string, R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>
     member this.frictioncoeff = this.mass / Friction
     member this.freeze = freeze
 
-let hardSphereForce (p1: Particle) (p2: Particle) (forceConstant: float<aNewton> ) =
+let hardSphereForce (forceConstant: float<aNewton> ) (p1: Particle) (p2: Particle) =
     //the force felt by p2 due to collisions with p1 (relative distances)
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
@@ -92,7 +92,7 @@ let hardSphereForce (p1: Particle) (p2: Particle) (forceConstant: float<aNewton>
     | d when mindist <= d -> {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}
     | _ -> forceConstant * (-1./(ivec.len/mindist)**(13.)-1.) * (p1.location - p2.location).norm
 
-let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aNewton> ) (attractConstant: float<aNewton um^-1>) (attractCutOff: float<um>) =
+let hardStickySphereForce (repelConstant: float<aNewton> ) (attractConstant: float<aNewton um^-1>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
@@ -103,17 +103,22 @@ let hardStickySphereForce (p1: Particle) (p2: Particle) (repelConstant: float<aN
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
     let getNeighbours (p:Particle) (system: Particle list) (cutOff: float<um>) =
-        [for i in system do match (i.location-p.location).len with
-                            | x when i=p -> ()
-                            | x when x < cutOff-> yield i
-                            | _ -> () ]
+        match p.freeze with
+        | false -> [for i in system do match (i.location-p.location).len with
+                                        | x when i=p -> ()
+                                        | x when x < cutOff-> yield i
+                                        | _ -> () ]
+        | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
     [for i in system -> getNeighbours i system cutOff] 
 
 let forceUpdate (system: Particle list) (cutOff: float<um>) = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<aNewton>) =
         match neighbours with
         //| head::tail -> sumForces p tail (hardSphereForce head p 1.<aNewton>)+acc //Arbitrary 1aN force constant
-        | head::tail -> sumForces p tail (hardStickySphereForce head p 1.<aNewton> 1000000.<aNewton/um> 2.<um>)+acc //Arbitrary 10aN force constant
+        //| head::tail -> sumForces p tail (hardStickySphereForce 1.<aNewton> 1000000.<aNewton/um> 2.<um> head p)+acc //Arbitrary 10aN force constant
+        | head::tail -> match head with
+                            | a when System.String.Equals(a.name,p.name) -> sumForces p tail (hardSphereForce 1.<aNewton> head p)+acc //similar particles are hard spheres
+                            | _ -> sumForces p tail (hardStickySphereForce 1.<aNewton> 1000.<aNewton/um> 2.<um> head p)+acc //dissimiliar particles are hard sticky spheres
         | [] -> acc
     let nonBonded = nonBondedPairList (system: Particle list) cutOff
     [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<aNewton>;y=0.<aNewton>;z=0.<aNewton>}]
