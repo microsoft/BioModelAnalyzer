@@ -3,6 +3,7 @@
 open System.IO
 open Physics
 open Vector
+open System.Xml.Linq
 
 (*
 'Spherical E. coli' particle
@@ -33,6 +34,60 @@ let pdbRead (filename: string) =
     [for line in File.ReadLines(filename) do match line with
                                                             | atom when atom.StartsWith("ATOM") -> yield atomParse line
                                                             | _ -> () ]
+
+let xmlTopRead (filename: string) =
+    let xn s = XName.Get(s)
+    let xd = XDocument.Load(filename)
+    let pTypes = [ for t in xd.Element(xn "Topology").Element(xn "Types").Elements(xn "Particle") do 
+                    let tName = try t.Attribute(xn "Name").Value with _ -> failwith "Cannot read name"
+                    let tDensity = try (float) (t.Element(xn "Density").Value) with _ -> failwith "Cannot read density"
+                    let tFric = try (float) (t.Element(xn "FrictionCoeff").Value) with _ -> failwith "Cannot read friction coefficient"
+                    let tRadius = try (float) (t.Element(xn "Radius").Value) with _ -> failwith "Cannot read radius"
+                    let tFreeze = match (t.Element(xn "Freeze").Value) with
+                                  | "true" -> true
+                                  | "false" -> false
+                                  | _ -> failwith "Cannot read freeze"
+                    yield Particle(tName,{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},tFric*1.<second>, tRadius*1.<um>, tDensity*1.<pg um^-3>, tFreeze) ]
+    let nbTypes = [ for bi in xd.Element(xn "Topology").Element(xn "NonBonded").Elements(xn "Interaction") do
+                    let biName = try bi.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
+                    let biMap =  [ for bj in bi.Elements(xn "jInteraction") do 
+                                    let bjName = try bj.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
+                                    //let bond = try (int) (bj.Element(xn "Type").Value) with _ -> failwith "Missing bond type"
+                                    let bond = match (try (int) (bj.Element(xn "Type").Value) with _ -> failwith "Missing bond type") with
+                                                |0 -> noForce
+                                                |1 -> 
+                                                    let rC = try (float) (bj.Element(xn "RepelConstant").Value) with _ -> failwith "Missing repel constant"
+                                                    hardSphereForce (rC*1.<zNewton>)
+                                                |2 ->
+                                                    let rC = try (float) (bj.Element(xn "RepelConstant").Value) with _ -> failwith "Missing repel constant"
+                                                    let aC = try (float) (bj.Element(xn "AttractConstant").Value) with _ -> failwith "Missing attract constant"
+                                                    let aCO = try (float) (bj.Element(xn "AttractCutoff").Value) with _ -> failwith "Missing attract cutoff"
+                                                    hardStickySphereForce (rC*1.<zNewton>) (aC*1.<zNewton/um>) (aCO*1.<um>)
+                                                |_ -> failwith "Incorrect type of nonbonded interaction"
+                                    yield (bjName,bond) ] 
+                                    |> Map.ofList
+                    yield (biName,biMap)
+                        ]
+                    |> Map.ofList
+                         
+
+                    //let bi = try b.Element(xn "i").Value with _ -> failwith "Incomplete type"
+                    //let bj = try b.Element(xn "j").Value with _ -> failwith "Incomplete type"
+                    //let bType = try (int) (b.Element(xn "Type").Value) with _ -> failwith "Missing bond type"
+//                    let bond = match bType with
+//                                |0 -> noForce
+//                                |1 -> 
+//                                    let rC = try (float) (b.Element(xn "RepelConstant").Value) with _ -> failwith "Missing repel constant"
+//                                    hardSphereForce (rC*1.<zNewton>)
+//                                |2 ->
+//                                    let rC = try (float) (b.Element(xn "RepelConstant").Value) with _ -> failwith "Missing repel constant"
+//                                    let aC = try (float) (b.Element(xn "AttractConstant").Value) with _ -> failwith "Missing attract constant"
+//                                    let aCO = try (float) (b.Element(xn "AttractCutoff").Value) with _ -> failwith "Missing attract cutoff"
+//                                    hardStickySphereForce (rC*1.<zNewton>) (aC*1.<zNewton/um>) (aCO*1.<um>)
+//                                |_ -> failwith "Incorrect type of nonbonded interaction"
+//                    yield (bi,bj,bond) ]
+                    //|> Map.ofList
+    (pTypes,nbTypes)
     
 let topRead (filename: string) =
     //topology files describe the basic forces in the system

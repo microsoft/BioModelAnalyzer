@@ -28,23 +28,25 @@ This seems low so we need a good guess for the friction coefficient...
 
 From Berry et al the flagellar motor causes linear movement of velocity 200 um / s and a force of 15 pN (Theories of Rotary Motors, 2000, Philo Trans R Soc Lond B)
 
-Working with the BD integrator, it appears that 0.00002<second> is  accurate for a 0.5 pg sphere experiencing a force of 15 pN
+Working with the BD integrator, it appears that 5 x 10^-9 <second> is  accurate for a 0.5 pg sphere experiencing a force of 15 pN
 
 This works because
 
-F= 15pN = 15*10^6aN
+F= 15pN = 15*10^9zN
 
 r(t+dt) = F * dT / gamma (+ noise)
 
 gamma = 0.5/X pg second^-1
 
-160 um = 15*10^6 aN * 1 second / gamma
+160 um = 15*10^9 zN * 1 second / gamma
 
-160 um = 15*10^6 pg um second^-2 * 1 second * X second / 0.5 pg
+160 um = 15*10^9 pg um second^-2 * 1 second * X second / 0.5 pg
 
 Clear up the units
 
-160 um = 15*10^6 * X /0.5 um
+160 um = 15*10^9 * X /0.5 um
+
+X = 80 * 10^-9 /15 = 5 * 10^-9 s
 
 It also indicates that femto-pico Newtons may be typical for cellular systems
 *)
@@ -91,6 +93,9 @@ type Particle(Name:string, R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>
     member this.frictioncoeff = this.mass / Friction
     member this.freeze = freeze
 
+let noForce (p1: Particle) (p2: Particle) = 
+    {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} 
+
 let hardSphereForce (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
     //the force felt by p2 due to collisions with p1 (relative distances)
     let ivec = (p1.location - p2.location)
@@ -118,14 +123,15 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
         | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
     [for i in system -> getNeighbours i system cutOff] 
 
-let forceUpdate (system: Particle list) (cutOff: float<um>) = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         //| head::tail -> sumForces p tail (hardSphereForce head p 1.<aNewton>)+acc //Arbitrary 1aN force constant
         //| head::tail -> sumForces p tail (hardStickySphereForce 1.<aNewton> 1000000.<aNewton/um> 2.<um> head p)+acc //Arbitrary 10aN force constant
-        | head::tail -> match head with
-                            | a when System.String.Equals(a.name,p.name) -> sumForces p tail (hardSphereForce 1.<zNewton> head p)+acc //similar particles are hard spheres
-                            | _ -> sumForces p tail (hardStickySphereForce 1.<zNewton> 1000.<zNewton/um> 2.<um> head p)+acc //dissimiliar particles are hard sticky spheres
+//        | head::tail -> match head with
+//                            | a when System.String.Equals(a.name,p.name) -> sumForces p tail (hardSphereForce 1.<zNewton> head p)+acc //similar particles are hard spheres
+//                            | _ -> sumForces p tail (hardStickySphereForce 1.<zNewton> 1000.<zNewton/um> 2.<um> head p)+acc //dissimiliar particles are hard sticky spheres
+        | head::tail -> sumForces p tail (topology.[p.name].[head.name] head p) + acc
         | [] -> acc
     let nonBonded = nonBondedPairList (system: Particle list) cutOff
     [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
