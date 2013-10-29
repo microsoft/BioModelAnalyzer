@@ -16,12 +16,12 @@ let gaussianMargalisPolar rng mean sd =
     let modifier = (-2.0 * log c / c)**0.5
     (a * sd * modifier + mean, b * sd * modifier + mean)
 
-let gaussianMargalisPolar' : System.Random -> float -> float -> float = 
+let gaussianMargalisPolar' : System.Random -> float = 
     let next_one = ref None 
-    (fun rng mean sd -> 
+    (fun rng -> 
     match !next_one with 
     | None -> 
-        let (a,b) = gaussianMargalisPolar rng mean sd
+        let (a,b) = gaussianMargalisPolar rng 0. 1.
         next_one := Some b
         a
     | Some b ->
