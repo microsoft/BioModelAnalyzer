@@ -83,8 +83,9 @@ let xmlTopRead (filename: string) =
 //                        let mTup = (parts,bonds,sm)
 //                        yield (name,mTup)
 //                        ] |> Map.ofList
-    let machName = try xd.Element(xn "Topology").Element(xn "MachineCell").Attribute(xn "Name") with _ -> failwith "Missing a machine cell"
-    (pTypes,nbTypes,machName)
+    let machName = try (string) (xd.Element(xn "Topology").Element(xn "MachineCell").Attribute(xn "Name")) with _ -> failwith "Missing a machine cell"
+    let machI0 = try (string) (xd.Element(xn "Topology").Element(xn "MachineInit").Attribute(xn "State")) with _ -> failwith "Missing a machine cell"
+    (pTypes,nbTypes,(machName,machI0))
     
 let topRead (filename: string) =
     //topology files describe the basic forces in the system
@@ -120,3 +121,6 @@ let topRead (filename: string) =
 //                                                                                                                                | _ -> failwith "Bad NonBonded Topology"
 //                                                                | _ -> () ]
     PTypes
+
+let bmaRead (filename:string) = 
+    Marshal.model_of_xml (XDocument.Load filename)
