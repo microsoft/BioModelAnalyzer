@@ -55,4 +55,4 @@ let gaussianMargalisPolar' : System.Random -> float =
 //    [a * sd * modifier + mean; b * sd * modifier + mean]
 
 let rec nGaussianRandomMP rng mean sd (number:int) = 
-    [for i in [0..(number-1)] -> gaussianMargalisPolar' rng mean sd]
+    [for i in [0..(number-1)] -> mean + sd * (gaussianMargalisPolar' rng)]
