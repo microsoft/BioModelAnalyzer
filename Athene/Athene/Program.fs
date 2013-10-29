@@ -9,20 +9,23 @@ let rec listLinePrint l =
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory (freq: int) rand=
+let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory csvout (freq: int) rand=
     let pUpdate (system: Particle list) (T: float<Kelvin>) (dT: float<second>) rand write =
         match write with
         | true -> trajectory system
         | _ -> ()
-        bdSystemUpdate system (forceUpdate topology 6.<um> system) bdAtomicUpdate T dT rand
+        bdSystemUpdate system (forceUpdate topology 6.<um> system) bdOrientedAtomicUpdate T dT rand
     let aUpdate (machineStates: Map<QN.var,int> list) (qn: QN.node list) write =
+        match write with
+        | true -> csvout machineStates
+        | _ -> ()
         updateMachines qn machineStates
     let write = match (steps%freq) with 
                 | 0 -> true
                 | _ -> false
     match steps with
     | 0 -> ()
-    | _ -> simulate (pUpdate system T dT rand write) (aUpdate machineStates qn write) qn topology (steps-1) T dT trajectory freq rand
+    | _ -> simulate (pUpdate system T dT rand write) (aUpdate machineStates qn write) qn topology (steps-1) T dT trajectory csvout freq rand
 
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
 //    let combine (p1: Particle) (pTypes: Particle list) =
@@ -62,6 +65,7 @@ let xyz = ref ""
 let pdb = ref ""
 let top = ref ""
 let bma = ref ""
+let csv = ref ""
 let freq = ref 1
 let rec parse_args args = 
     match args with 
@@ -74,6 +78,7 @@ let rec parse_args args =
     | "-top"   :: topo :: rest -> top   := topo;      parse_args rest
     | "-report":: repo :: rest -> freq  := int(repo); parse_args rest
     | "-bma"   :: bck  :: rest -> bma   := bck;       parse_args rest
+    | "-csv"   :: bck  :: rest -> csv   := bck;       parse_args rest
     | _ -> failwith "Bad command line args" 
 
 
@@ -103,7 +108,13 @@ let main argv =
                         failwith "No bma input specified"
                     | _ ->
                         !bma
+    let csvout = match !csv with
+                    | "" ->
+                        printfn "No csv output (state machines) specified"
+                        IO.dropStates
+                    | _ ->
+                        IO.csvWriteStates !csv
     let (system, topology,machineStates,qn) = defineSystem cart topfile bmafile rand
-    simulate system machineStates qn topology !steps 298.<Kelvin> (!dT*1.0<second>) trajout !freq rand
+    simulate system machineStates qn topology !steps 298.<Kelvin> (!dT*1.0<second>) trajout csvout !freq rand
     0 // return an integer exit code
     

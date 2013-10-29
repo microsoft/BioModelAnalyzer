@@ -13,6 +13,9 @@ Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/s
 let dropFrame (system: Physics.Particle list) =
     ()
 
+let dropStates (machines: Map<QN.var,int> list) =
+    ()
+
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float)) = 
     Particle(name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, true)
 
@@ -22,6 +25,13 @@ let xyzWriteFrame (filename: string) (system: Physics.Particle list) =
         file.WriteLine("Athene")
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
         ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A" p.name p.location.x p.location.y p.location.z)]
+        file.Close()
+
+let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) = 
+        use file = new StreamWriter(filename, true)
+        //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
+        //ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A" p.name p.location.x p.location.y p.location.z)]
+        file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
         file.Close()
 
 let pdbRead (filename: string) =
