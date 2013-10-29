@@ -8,31 +8,43 @@ let rec listLinePrint l =
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Particle list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory rand=
-    let Update (system: Particle list) (T: float<Kelvin>) (dT: float<second>) rand =
+let rec simulate (system: Particle list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory (freq: int) rand=
+    let Update (system: Particle list) (T: float<Kelvin>) (dT: float<second>) rand write =
         //printfn "%A" system.Length ; printfn "BD";
-        trajectory system
+        match write with
+        | true -> trajectory system
+        | _ -> ()
         //let out = [for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
         bdSystemUpdate system (forceUpdate topology 6.<um> system) bdAtomicUpdate T dT rand
         //bdSystemUpdate system [{x=15000000000.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}] bdAtomicUpdate T dT rand
+    let write = match (steps%freq) with 
+                | 0 -> true
+                | _ -> false
     match steps with
     | 0 -> ()
-    | _ -> simulate (Update system T dT rand) topology (steps-1) T dT trajectory rand
+    | _ -> simulate (Update system T dT rand write) topology (steps-1) T dT trajectory freq rand
 
-let defineSystem (cartFile:string) (topfile:string) =
-    let combine (p1: Particle) (pTypes: Particle list) =
-        let remapped = [for p2 in pTypes do match p1 with
-                                                |p1 when System.String.Equals(p1.name,p2.name) -> yield Particle(p1.name,p1.location,p1.velocity,p2.Friction,p2.radius,p2.density,p2.freeze)
-                                                |_ -> () ]
-        match remapped.Length with
-        | 1 -> List.nth remapped 0
-        | _ -> failwith "Multiple definitions of the same particle type"
+let defineSystem (cartFile:string) (topfile:string) (rng: System.Random) =
+//    let combine (p1: Particle) (pTypes: Particle list) =
+//        let remapped = [for p2 in pTypes do match p1 with
+//                                                |p1 when System.String.Equals(p1.name,p2.name) -> yield Particle(p1.name,p1.location,p1.velocity,p2.Friction,p2.radius,p2.density,p2.freeze)
+//                                                |_ -> () ]
+//        match remapped.Length with
+//        | 1 -> List.nth remapped 0
+//        | _ -> failwith "Multiple definitions of the same particle type"
     //cartFile is (at present) a pdb with the initial cell positions
     //topology specifies the interactions and forcefield parameters
     let positions = IO.pdbRead cartFile
-    let (pTypes, nbTypes) = IO.xmlTopRead topfile
+    let (pTypes, nbTypes, machName) = IO.xmlTopRead topfile
     //combine the information from pTypes (on the cell sizes and density) with the postions
-    ([for cart in positions -> combine cart pTypes ], nbTypes)
+    //([for cart in positions -> combine cart pTypes ], nbTypes)
+    let uCart = [for cart in positions -> 
+                    let (f,r,d,freeze) = pTypes.[cart.name]
+                    match freeze with
+                    | true -> Particle(cart.name,cart.location,cart.velocity,{x=1.;y=0.;z=0.},f,r,d,freeze) //use arbitrary orientation for freeze particles
+                    | _ -> Particle(cart.name,cart.location,cart.velocity,(randomDirectionUnitVector rng),f,r,d,freeze)
+                     ]
+    (uCart, nbTypes)
 
 let seed = ref 1982
 let steps = ref 100
@@ -40,6 +52,7 @@ let dT = ref 1.
 let xyz = ref ""
 let pdb = ref ""
 let top = ref ""
+let freq = ref 1
 let rec parse_args args = 
     match args with 
     | [] -> () 
@@ -49,6 +62,7 @@ let rec parse_args args =
     | "-pdb"   :: f    :: rest -> pdb   := f;         parse_args rest
     | "-xyz"   :: traj :: rest -> xyz   := traj;      parse_args rest
     | "-top"   :: topo :: rest -> top   := topo;      parse_args rest
+    | "-report":: repo :: rest -> freq  := int(repo); parse_args rest
     | _ -> failwith "Bad command line args" 
 
 
@@ -73,7 +87,7 @@ let main argv =
                         failwith "No top input specified"
                     | _ ->
                         !top
-    let (system, topology) = defineSystem cart topfile 
-    simulate system topology !steps 298.<Kelvin> (!dT*1.0<second>) trajout rand
+    let (system, topology) = defineSystem cart topfile rand
+    simulate system topology !steps 298.<Kelvin> (!dT*1.0<second>) trajout !freq rand
     0 // return an integer exit code
     

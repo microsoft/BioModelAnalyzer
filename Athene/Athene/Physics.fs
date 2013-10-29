@@ -81,10 +81,11 @@ Boltzmann constant is
 *)
 let Kb = (1.3806488 * 10.**4. )*1.<um^2 pg second^-2 Kelvin^-1>
 
-type Particle(Name:string, R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>,Friction: float<second>, radius: float<um>, density: float<pg um^-3>, freeze: bool) = 
+type Particle(Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: Vector3D<_>, Friction: float<second>, radius: float<um>, density: float<pg um^-3>, freeze: bool) = 
     member this.name = Name
     member this.location = R
     member this.velocity = V
+    member this.orientation = O
     member this.Friction = Friction
     member this.volume = 4. / 3. * System.Math.PI * radius * radius * radius //Ugly
     member this.radius = radius
@@ -95,6 +96,22 @@ type Particle(Name:string, R:Vector.Vector3D<um>,V:Vector.Vector3D<um second^-1>
 
 let noForce (p1: Particle) (p2: Particle) = 
     {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} 
+
+let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<second>) (cluster: Particle) =
+//    let rNum = PRNG.nGaussianRandomMP rng 0. 1. 6
+//    let FrictionDrag = 0.5/cluster.frictioncoeff //Friction drag halves because we split the particle into two
+//    let tA =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}
+//    let tB =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 3) ; y= (List.nth rNum 4); z= (List.nth rNum 5)}
+    let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
+    let FrictionDrag = 1./cluster.frictioncoeff 
+    let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}
+    (cluster.orientation*cluster.radius+tV).norm
+
+
+let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton um^-1>) (p1: Particle) (p2: Particle) =
+    let ivec  = (p1.location - p2.location)
+    let displacement = ivec.len - optimum
+    forceConstant * displacement * (p1.location - p2.location).norm
 
 let hardSphereForce (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
     //the force felt by p2 due to collisions with p1 (relative distances)
@@ -141,7 +158,7 @@ let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (d
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
-    Particle(cluster.name, NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
+    Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, false)
 
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
@@ -152,7 +169,19 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
-    Particle(cluster.name, NewP,NewV,cluster.Friction, cluster.radius, cluster.density, false)
+    Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, false)
+
+let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
+    let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
+    let FrictionDrag = 1./cluster.frictioncoeff
+    //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
+    let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
+    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
+    let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
+    //let NewV = NewP * (1. / dT)
+    //printfn "Force %A %A %A" F.x F.y F.z
+    let NewO = thermalReorientation T rng dT cluster
+    Particle(cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, false)
 
 let bdSystemUpdate (system: Particle list) forces atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
     [for (p,f) in List.zip system forces -> 
