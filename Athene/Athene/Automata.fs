@@ -14,7 +14,7 @@ let spawnMachines (qn: QN.node list) (number:int) (rng:System.Random) (init0:str
     
     let initState i0 = match i0 with
                         | "zero" -> List.fold (fun m (n:QN.node) -> Map.add n.var 0 m) Map.empty qn
-                        | "random" -> List.fold (fun m (n:QN.node) -> Map.add n.var (rng.Next(0,max)) m) Map.empty qn
+                        | "random" -> List.fold (fun m (n:QN.node) -> Map.add n.var (rng.Next(0,(max+1))) m) Map.empty qn
                         | _ -> failwith "Cannot read the initial state of the machines"
     [for machine in [0..(number-1)] -> initState init0]
 

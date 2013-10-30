@@ -183,7 +183,7 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
     let NewO = thermalReorientation T rng dT cluster
     Particle(cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, false)
 
-let bdSystemUpdate (system: Particle list) forces atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
+let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
     [for (p,f) in List.zip system forces -> 
         match p.freeze with
         | false -> atomicIntegrator p f T dT rng

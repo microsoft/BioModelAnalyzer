@@ -3,18 +3,19 @@
 open Physics
 open Automata
 open Vector
+open Interface
 
 let rec listLinePrint l =
     match l with
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory csvout (freq: int) rand=
-    let pUpdate (system: Particle list) (T: float<Kelvin>) (dT: float<second>) rand write =
+let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) iTop (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory csvout (freq: int) rand=
+    let pUpdate (system: Particle list) (machineForces: Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) rand write =
         match write with
         | true -> trajectory system
         | _ -> ()
-        bdSystemUpdate system (forceUpdate topology 6.<um> system) bdOrientedAtomicUpdate T dT rand
+        bdSystemUpdate system [for (sF,mF) in List.zip (forceUpdate topology 6.<um> system) machineForces -> sF+mF ] bdOrientedAtomicUpdate T dT rand
     let aUpdate (machineStates: Map<QN.var,int> list) (qn: QN.node list) write =
         match write with
         | true -> csvout machineStates
@@ -25,7 +26,9 @@ let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (
                 | _ -> false
     match steps with
     | 0 -> ()
-    | _ -> simulate (pUpdate system T dT rand write) (aUpdate machineStates qn write) qn topology (steps-1) T dT trajectory csvout freq rand
+    | _ -> 
+            let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates iTop
+            simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology iTop (steps-1) T dT trajectory csvout freq rand
 
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
 //    let combine (p1: Particle) (pTypes: Particle list) =
@@ -37,14 +40,14 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
 //        | _ -> failwith "Multiple definitions of the same particle type"
     //cartFile is (at present) a pdb with the initial cell positions
     //topology specifies the interactions and forcefield parameters
-    let rec countCells acc (name: string) (s: Particle list) =
+    let rec countCells acc (name: string) (s: Particle list) = 
         match s with
         | head::tail -> 
                         if System.String.Equals(head.name,name) then countCells (acc+1) name tail
                         else countCells acc name tail
         | [] -> acc
     let positions = IO.pdbRead cartFile
-    let (pTypes, nbTypes, (machName,machI0)) = IO.xmlTopRead topfile
+    let (pTypes, nbTypes, (machName,machI0), interfaceTopology) = IO.xmlTopRead topfile
     //combine the information from pTypes (on the cell sizes and density) with the postions
     //([for cart in positions -> combine cart pTypes ], nbTypes)
     let uCart = [for cart in positions -> 
@@ -56,7 +59,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = spawnMachines qn machineCount rng machI0
-    (uCart, nbTypes, machineStates, qn)
+    (uCart, nbTypes, machineStates, qn, interfaceTopology)
 
 let seed = ref 1982
 let steps = ref 100
@@ -114,7 +117,10 @@ let main argv =
                         IO.dropStates
                     | _ ->
                         IO.csvWriteStates !csv
-    let (system, topology,machineStates,qn) = defineSystem cart topfile bmafile rand
-    simulate system machineStates qn topology !steps 298.<Kelvin> (!dT*1.0<second>) trajout csvout !freq rand
+    let (system, topology,machineStates,qn,iTop) = defineSystem cart topfile bmafile rand
+    printfn "Initial system:"
+    printfn "Particles: %A" system.Length
+    printfn "Machines:  %A" machineStates.Length
+    simulate system machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) trajout csvout !freq rand
     0 // return an integer exit code
     

@@ -25,6 +25,9 @@ type Vector3D< [<Measure>] 'u> = { x: float<'u>; y: float<'u>; z: float<'u> } wi
     member this.norm = 1./this.len * this
     static member (%) (v1 : Vector3D<'u>, v2 : Vector3D<'u>) = acos (v1.norm * v2.norm)
 
+type Cuboid< [<Measure>] 'u> = { origin: Vector3D<'u>; dimensions: Vector3D<'u> } with
+    member this.volume = this.dimensions.x*this.dimensions.y*this.dimensions.z
+
 let randomDirectionUnitVector (rng: System.Random) =
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}.norm

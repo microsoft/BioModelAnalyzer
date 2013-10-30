@@ -81,7 +81,20 @@ let xmlTopRead (filename: string) =
                     yield (biName,biMap)
                         ]
                     |> Map.ofList
-                         
+    
+
+    let regions = [ for r in xd.Element(xn "Topology").Element(xn "Interface").Elements(xn "Region") do 
+                         let oX = try (float) (r.Element(xn "Location").Attribute(xn "X").Value) with _ -> failwith "Missing box origin X"
+                         let oY = try (float) (r.Element(xn "Location").Attribute(xn "Y").Value) with _ -> failwith "Missing box origin Y"
+                         let oZ = try (float) (r.Element(xn "Location").Attribute(xn "Z").Value) with _ -> failwith "Missing box origin Z"
+                         let dX = try (float) (r.Element(xn "Dimensions").Attribute(xn "X").Value) with _ -> failwith "Missing box dim X"
+                         let dY = try (float) (r.Element(xn "Dimensions").Attribute(xn "Y").Value) with _ -> failwith "Missing box dim Y"
+                         let dZ = try (float) (r.Element(xn "Dimensions").Attribute(xn "Z").Value) with _ -> failwith "Missing box dim Z"
+                         let varID = try (int) (r.Element(xn "Var").Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                         let varState = try (int) (r.Element(xn "Var").Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
+                         yield ({origin={x=oX*1.<um>;y=oY*1.<um>;z=oZ*1.<um>};dimensions={x=dX*1.<um>;y=dY*1.<um>;z=dZ*1.<um>}},varID,varState)
+                         ]
+
 //    let machines = [ for tType in xd.Element(xn "Topology").Element(xn "Tissues").Elements(xn "Machines") do
 //                        let name = try tType.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
 //                        let parts = [for p in tType.Elements(xn "Particles") -> p.Element(xn "Name")]
@@ -93,9 +106,11 @@ let xmlTopRead (filename: string) =
 //                        let mTup = (parts,bonds,sm)
 //                        yield (name,mTup)
 //                        ] |> Map.ofList
-    let machName = try (string) (xd.Element(xn "Topology").Element(xn "MachineCell").Attribute(xn "Name")) with _ -> failwith "Missing a machine cell"
-    let machI0 = try (string) (xd.Element(xn "Topology").Element(xn "MachineInit").Attribute(xn "State")) with _ -> failwith "Missing a machine cell"
-    (pTypes,nbTypes,(machName,machI0))
+    let machName = try (xd.Element(xn "Topology").Element(xn "MachineCell").Attribute(xn "Name")).Value with _ -> failwith "Missing a machine cell"
+    let machI0 = try (xd.Element(xn "Topology").Element(xn "MachineInit").Attribute(xn "State")).Value with _ -> failwith "Missing a machine cell"
+    
+    let interfaceTopology = (machName,regions)
+    (pTypes,nbTypes,(machName,machI0),interfaceTopology)
     
 let topRead (filename: string) =
     //topology files describe the basic forces in the system
