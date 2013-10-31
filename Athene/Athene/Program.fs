@@ -10,7 +10,7 @@ let rec listLinePrint l =
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) iTop (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory csvout (freq: int) rand=
+let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (intTop: interfaceTopology) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory csvout (freq: int) rand=
     let pUpdate (system: Particle list) (machineForces: Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) rand write =
         match write with
         | true -> trajectory system
@@ -27,8 +27,8 @@ let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (
     match steps with
     | 0 -> ()
     | _ -> 
-            let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates iTop
-            simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology iTop (steps-1) T dT trajectory csvout freq rand
+            let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
+            simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT trajectory csvout freq rand
 
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
 //    let combine (p1: Particle) (pTypes: Particle list) =

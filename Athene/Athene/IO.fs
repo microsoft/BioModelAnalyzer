@@ -3,6 +3,7 @@
 open System.IO
 open Physics
 open Vector
+open Interface
 open System.Xml.Linq
 
 (*
@@ -24,7 +25,7 @@ let xyzWriteFrame (filename: string) (system: Physics.Particle list) =
         file.WriteLine(sprintf "%A" system.Length)
         file.WriteLine("Athene")
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
-        ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A" p.name p.location.x p.location.y p.location.z)]
+        ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius)]
         file.Close()
 
 let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) = 
@@ -94,23 +95,24 @@ let xmlTopRead (filename: string) =
                          let varState = try (int) (r.Element(xn "Var").Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
                          yield ({origin={x=oX*1.<um>;y=oY*1.<um>;z=oZ*1.<um>};dimensions={x=dX*1.<um>;y=dY*1.<um>;z=dZ*1.<um>}},varID,varState)
                          ]
+    let responses = [ for r in xd.Element(xn "Topology").Element(xn "Interface").Elements(xn "Response") do
+                        let f = match r.Attribute(xn "Function").Value with
+                                | "LinearGrow" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
+                                    linearGrow (rate*1.<um/second>) (max*1.<um>) varID varState
+                                | _ -> failwith "Unknown function"
 
-//    let machines = [ for tType in xd.Element(xn "Topology").Element(xn "Tissues").Elements(xn "Machines") do
-//                        let name = try tType.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
-//                        let parts = [for p in tType.Elements(xn "Particles") -> p.Element(xn "Name")]
-//                        let bonds = [for b in tType.Elements(xn "Bonds") -> b.Element(xn "Name")]
-//                        let sm = match (try (tType.Element(xn "Changeable").Value) with _ -> failwith "Missing bond type") with
-//                                    | "true" -> true
-//                                    | "false" -> false
-//                                    | _ -> failwith "Missing changeable value"
-//                        let mTup = (parts,bonds,sm)
-//                        yield (name,mTup)
-//                        ] |> Map.ofList
+                        yield f
+                        ]
     let machName = try (xd.Element(xn "Topology").Element(xn "MachineCell").Attribute(xn "Name")).Value with _ -> failwith "Missing a machine cell"
     let machI0 = try (xd.Element(xn "Topology").Element(xn "MachineInit").Attribute(xn "State")).Value with _ -> failwith "Missing a machine cell"
     
-    let interfaceTopology = (machName,regions)
-    (pTypes,nbTypes,(machName,machI0),interfaceTopology)
+    //let interfaceTopology = (machName,regions,responses)
+    let intTop = {name=machName;regions=regions;responses=responses}
+    (pTypes,nbTypes,(machName,machI0),intTop)
     
 let topRead (filename: string) =
     //topology files describe the basic forces in the system
