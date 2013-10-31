@@ -4,7 +4,8 @@ open Physics
 open Vector
 open Automata
 
-type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->Particle) list)}
+type particleModification = Death | Life of Particle*Map<QN.var,int> | Divide of (Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
+type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list)}
 
 let probabilisticMotor (min:int) (max:int) (state:int) (rng:System.Random) (force:float<zNewton>) (p:Particle) =
     //pMotor returns a force randomly depending on the state of the variable
@@ -12,13 +13,50 @@ let probabilisticMotor (min:int) (max:int) (state:int) (rng:System.Random) (forc
     | x when x > state -> p.orientation*force
     | _ -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
 
-let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let rlinearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState) with
     | false -> p
     | true ->
             match (p.radius < max) with
             | true -> Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.freeze)
             | false -> p
+
+let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match (m.[varID] = varState) with
+    | false -> Life (p,m)
+    | true ->
+            match (p.radius < max) with
+            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.freeze),m)
+            | false -> Life (p,m)
+
+let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match (m.[varID] = varState) with
+    | false -> Life (p,m)
+    | true ->
+            match (p.radius < max) with
+            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.freeze),m)
+            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,p.freeze),m))
+
+let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    //dt doesn't do anything here- this is an 'instant death' function
+    match (m.[varID] = varState) with
+    | false -> Life (p,m)
+    | true -> Death
+
+let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification) (dT: float<second>) (pm: (Particle*Map<QN.var,int>) list) (acc: (Particle*Map<QN.var,int>) list) =
+    match pm with
+    | head::tail -> 
+                    let (p,m) = head
+                    match (f dT p m) with
+                    | Death -> dev f dT tail acc
+                    | Life(p1,m1) ->  dev f dT tail ((p1,m1)::acc)
+                    | Divide((p1,m1),(p2,m2)) -> dev f dT tail ((p1,m1)::((p2,m2)::acc))
+    | [] -> List.fold (fun acc elem -> elem::acc) [] acc //reverse the list which has been created by cons'ing
+
+let rec devProcess (r : (float<second>->Particle->Map<QN.var,int>->particleModification) list) (dT:float<second>) (pm: (Particle*Map<QN.var,int>) list) = 
+    match r with
+    | head::tail -> devProcess tail dT (dev head dT pm [])
+    | [] -> pm
 
 let divideSystem system machineName =
 //    let rec f (sys: Particle list) (accS: Particle list) (accM: Particle list) (name:string) =
@@ -57,15 +95,23 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
         match r with
         | head::tail -> regionListSwitch tail p (regionSwitch head p m)
         | [] -> m
-    let nMachineStates = [for (p,m) in (List.zip machineSystem machineStates) -> regionListSwitch regions p m]
+
 
     let rec respond (r:  (float<second>->Particle->Map<QN.var,int>->Particle) list) (dT: float<second>) (p: Particle) (m: Map<QN.var,int>) =
         match r with
         | head::tail -> respond tail dT (head dT p m) m
         | [] -> p
 
-    let nmSystem = [for (p,m) in (List.zip machineSystem machineStates) -> respond responses dT p m]
+    //let nmSystem = [for (p,m) in (List.zip machineSystem machineStates) -> respond responses dT p m]
 
+
+
+    //How do you fix the problem of physicsI update first or machineI update first?
+    //Do I need to pass *both* new and old machines?
+    //No, I'm going to update the physics first. The only way this could change things is by dividing across a region- this is not unreasonable
+    let pm = devProcess responses dT (List.zip machineSystem machineStates)
+    let nMachineStates = [for (p,m) in pm -> regionListSwitch regions p m]
+    let nmSystem = [for (p,m) in pm -> p]
     let nSystem = List.foldBack (fun (p: Particle) acc -> p::acc) staticSystem nmSystem
     //let nMachineStates = machineStates
     let machineForces = [for p in system -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]

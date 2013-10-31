@@ -103,6 +103,16 @@ let xmlTopRead (filename: string) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
                                     linearGrow (rate*1.<um/second>) (max*1.<um>) varID varState
+                                | "LinearGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) varID varState                                 
+                                | "Apoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    apoptosis varID varState                                 
                                 | _ -> failwith "Unknown function"
 
                         yield f
