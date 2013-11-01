@@ -8,7 +8,7 @@ open System.Xml.Linq
 
 (*
 'Spherical E. coli' particle
-Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>, false)
+Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.000000005<second>, 0.7<um>, 1.3<pg um^-3>, false)
 *)
 
 let dropFrame (system: Physics.Particle list) =

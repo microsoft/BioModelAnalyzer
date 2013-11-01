@@ -131,5 +131,5 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     let nmSystem = [for (p,m) in pm -> p]
     let nSystem = List.foldBack (fun (p: Particle) acc -> p::acc) staticSystem nmSystem
     //let nMachineStates = machineStates
-    let machineForces = [for p in system -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
+    let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
     (nSystem, nMachineStates, machineForces)
