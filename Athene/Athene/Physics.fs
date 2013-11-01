@@ -115,21 +115,21 @@ let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton um^-1>)
     let displacement = ivec.len - optimum
     forceConstant * displacement * (p1.location - p2.location).norm
 
-let hardSphereForce (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
+let hardSphereForce (forcePower: float) (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
     //the force felt by p2 due to collisions with p1 (relative distances)
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
     | d when mindist <= d -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
-    | _ -> forceConstant * (-1./(ivec.len/mindist)**(13.)-1.) * (p1.location - p2.location).norm
+    | _ -> forceConstant * (-1./(ivec.len/mindist)**(forcePower)-1.) * (p1.location - p2.location).norm
 
-let hardStickySphereForce (repelConstant: float<zNewton> ) (attractConstant: float<zNewton um^-1>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
+let hardStickySphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) (attractConstant: float<zNewton um^-1>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
     | d when attractCutOff <= d -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} //can't see one another
-    | d when mindist > d -> repelConstant * (-1./(ivec.len/mindist)**(13.)-1.) * (p1.location - p2.location).norm //overlapping
+    | d when mindist > d -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
     | _ -> attractConstant * (ivec.len - mindist) * (p1.location - p2.location).norm
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 

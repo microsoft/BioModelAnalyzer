@@ -30,12 +30,13 @@ let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState:
             | false -> Life (p,m)
 
 let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (rng: System.Random) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let rsqrt2 = 1./(2. ** 0.5)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true ->
             match (p.radius < max) with
             | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/2.),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/2.),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
 
 let probabilisticGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (rng: System.Random) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let cbrt2 = 2.**(1./3.)

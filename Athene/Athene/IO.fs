@@ -70,12 +70,14 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                                 |0 -> noForce
                                                 |1 -> 
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
-                                                    hardSphereForce (rC*1.<zNewton>)
+                                                    let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
+                                                    hardSphereForce rP (rC*1.<zNewton>)
                                                 |2 ->
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
+                                                    let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
                                                     let aC = try (float) (bj.Element(xn "AttractCoeff").Value) with _ -> failwith "Missing attract constant"
                                                     let aCO = try (float) (bj.Element(xn "AttractCutOff").Value) with _ -> failwith "Missing attract cutoff"
-                                                    hardStickySphereForce (rC*1.<zNewton>) (aC*1.<zNewton/um>) (aCO*1.<um>)
+                                                    hardStickySphereForce rP (rC*1.<zNewton>) (aC*1.<zNewton/um>) (aCO*1.<um>)
                                                 |_ -> failwith "Incorrect type of nonbonded interaction"
                                     yield (bjName,bond) ] 
                                     |> Map.ofList
