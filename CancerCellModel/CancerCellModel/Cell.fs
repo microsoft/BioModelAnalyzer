@@ -1,58 +1,60 @@
 ﻿module Cell
 open System
 open ModelParameters
+open MyMath
+open Geometry
+open System.Threading
 
 type PathwayLevel = Up | Down | Neutral
 type CellType = Stem | NonStem | NonStemWithMemory
+
 type CellState = Functioning | PreparingToDie | Dead
+let any_state = [|Functioning; PreparingToDie|]
+
 type CellAction = AsymSelfRenewal | SymSelfRenewal | NonStemDivision | Death | NoAction
+let any_action = [|AsymSelfRenewal; SymSelfRenewal; NonStemDivision; NoAction|]
+let sym_divide_action = [|SymSelfRenewal; NonStemDivision|]
+let asym_divide_action = [|AsymSelfRenewal|]
+let divide_action = [|AsymSelfRenewal; SymSelfRenewal; NonStemDivision|]
 
-exception InnerError of string
+type PhysSphere(location: Point, radius: float, density: float) = 
+    let mutable location = location
+    let mutable repulsive_force = Vector()
+    let mutable friction_force = Vector()
+    let mutable net_force = Vector()
+    let mutable velocity = Vector()
+    let mutable radius = radius
+    let mutable density = density
+    //[<DefaultValue>] val mutable private interaction_energy: float
 
-let seed = 
-    let seedGen = new Random()
-    (fun () -> lock seedGen (fun () -> seedGen.Next()))
+    member this.Location with get() = location and set(x) = location <- x
+    member this.RepulsiveForce with get() = repulsive_force and set(x) = repulsive_force <- x
+    member this.FrictionForce with get() = friction_force and set(x) = friction_force <- x
+    member this.NetForce with get() = repulsive_force + friction_force //net_force and set(x) = net_force <- x
+    member this.Velocity with get() = velocity and set(x) = velocity <- x
+    member this.Density with get() = density and set(x) = density <- x
+    member this.R with get() = radius and set(x) = radius <- x
+    member this.Mass with get() = (density * 4./3.*pi*(pow3 radius) / 1000.)
+    //member this.V with get() = this.interaction_energy and set(x) = this.interaction_energy <- x
 
-let uniform_bool(prob: float) =
-    let randgen = new Random(seed())
-    randgen.NextDouble() < prob
+type Cell (cell_type: CellType, generation: int, location: Point, radius: float, density: float) =
+    inherit PhysSphere(location, radius, density)
 
-let uniform_int(xmin, xmax) =
-    let randgen = new Random(seed())
-    randgen.Next(xmin, xmax+1)
-
-type ExternalState() =
-    let mutable egf = true
-    let (_, maxo2) = ExternalState.O2Limits
-    let mutable o2 = maxo2
-    let mutable live_cells: int = 0
-    let mutable dividing_cells: int = 0
-    let mutable stem_cells: int = 0
-    
-    static member O2Limits with get() = (float 0, float 100)
-
-    member this.EGF with get() = egf and set(_egf) = egf <- _egf
-    member this.O2 with get() = o2 and set(_o2: float) = o2 <- _o2
-    member this.LiveCells with get() = live_cells and set(n) = live_cells <- n
-    member this.DividingCells with get() = dividing_cells and set(x) = dividing_cells <- x
-    member this.StemCells with get() = stem_cells and set(n) = stem_cells <- n
-
-type Cell (t, ?gen) =
     let mutable ng2: PathwayLevel = Up
     let mutable cd133: PathwayLevel = Up
 //    let mutable egfr: PathwayLevel = Up
-    let mutable cell_type: CellType = t
+    let mutable cell_type: CellType = cell_type
     let mutable state: CellState = Functioning
     let mutable next_state: CellState = Functioning
     let mutable action: CellAction = NoAction
     let mutable time_in_state = 0
-    let mutable generation = 0
+    let mutable generation = generation
     let mutable wait_before_divide = 0
     let mutable wait_before_die = 0
     let mutable steps_after_last_division = 0
 
     let init() =
-        match t with
+        match cell_type with
         | Stem -> ng2 <- Up; cd133 <- Up
             (*let rand = random_bool()
             egfr <- if rand = 0 then Up else if rand = 1 then Down else Neutral*)
@@ -61,157 +63,127 @@ type Cell (t, ?gen) =
 
     do
         init()
-        generation <- defaultArg gen 0
 
     member this.NG2 with get() = ng2
     member this.CD133 with get() = cd133
 //  member this.EGFR with get() = egfr
     member this.State with get() = state and set(s) = state <- s; time_in_state <- 0
     member this.Type with get() = cell_type and set(t) = cell_type <- t; time_in_state <- 0
-    member this.TypeAsStr() =
-                            match cell_type with
-                            | Stem -> "Stem"
-                            | NonStem -> "Non-stem"
-                            | NonStemWithMemory -> "Non-stem with memory"
 
     static member TypeAsStr(t: CellType) =
-        let cell = new Cell(t)
-        cell.TypeAsStr()
+        match t with
+        | Stem -> "Stem"
+        | NonStem -> "Non-stem"
+        | NonStemWithMemory -> "Non-stem with memory"
+
+    member this.TypeAsStr() =
+        Cell.TypeAsStr(cell_type)
 
     member this.NextState with get() = next_state
                             and set(s) = next_state <- s;
-                                         time_in_state <- 0
 
 
     member this.Action with get() = action and set(a) = action <- a
     member this.TimeInState with get() = time_in_state
-
-(*    member this.ResetState(s) =
-        time_in_state <- 0
-        if (state <> s) then set_state(s)*)
     
     member this.Generation with get() = generation and set(g) = generation <- g
     member this.WaitBeforeDivide with get() = wait_before_divide and set(x) = wait_before_divide <- x
     member this.WaitBeforeDie with get() = wait_before_die and set(x) = wait_before_die <- x
     member this.StepsAfterLastDivision with get() = steps_after_last_division and set(x) = steps_after_last_division <- x
 
-type CellActivity() =
-    // in assymetric cell division a stem cell produces
-    // a new stem cell and a new non-stem cell
-    static member asym_divide(cell: Cell) = 
-             let non_stem_daughter = new Cell(NonStem, cell.Generation + 1)
-             let stem_daughter = new Cell(Stem, cell.Generation + 1)
-             [|non_stem_daughter; stem_daughter|]
+type GridFunction(grid: Grid, f_limits: FloatInterval) =
+    let x = Array.create grid.XLines 0.
+    let y = Array.create grid.YLines 0.
+    let f = Array2D.create grid.XLines grid.YLines 0.
+    let interpolant = ref (new alglib.spline2dinterpolant())
+    let mutex = new Mutex()
 
-    // in syymetric cell division a cell produces two identical daughter cells
-    static member sym_divide(cell: Cell) = 
-        let daughter1 = new Cell(cell.Type, cell.Generation + 1)
-        let daughter2 = new Cell(cell.Type, cell.Generation + 2)
-        [|daughter1; daughter2|]
+    do
+        for i = 0 to grid.XLines - 1 do
+            x.[i] <- grid.Point(i, 0).x
 
-    // die function so far does nothing
-    static member die(cell: Cell) =
-        cell.State <- Dead
+        for j = 0 to grid.YLines - 1 do
+            y.[j] <- grid.Point(0, j).y
 
-    // determine if a cell can proliferate depending
-    // on the amount of nutrients (currently oxygen: O2)
-    static member can_divide(cell: Cell, ext: ExternalState) =
-        let param = match cell.Type with
-                     | Stem -> ModelParameters.StemDivisionProbParam
-                     | NonStem -> ModelParameters.NonStemDivisionProbParam
-                     | _ -> raise(InnerError(sprintf "%s cell can not divide" (cell.TypeAsStr())))
-
-        if (cell.WaitBeforeDivide > 0) then
-            false
+    member this.GetValue(p: Point) =
+        if Math.Abs(p.x) > grid.Width/2. ||
+            Math.Abs(p.y) > grid.Height/2. then
+                raise(InnerError(sprintf "point (%.1f,%.1f) outside of managed grid area" p.x p.y))
         else
-            let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(param))(ext.O2)
-            uniform_bool(prob)
+            mutex.WaitOne() |> ignore
+            let fval = alglib.spline2dcalc(!interpolant, p.x, p.y)
+            mutex.ReleaseMutex()
+            fval
 
-    // determine whether a stem cell will divide symmetrically
-    static member should_divide_sym(cell: Cell) =
-        uniform_bool(ModelParameters.SymRenewProb)
-
-    // determine if a cell should die depending
-    // on the amount of nutrients (currently: O2)
-    static member should_die(cell: Cell, ext: ExternalState) = 
-        let prob = ModelParameters.logistic_func(ModelParameters.logistic_func_param(ModelParameters.DeathProbParam))(ext.O2)
-        uniform_bool(prob)
-
-    // determine if a stem cell should go to a "non-stem with memory" state
-    static member should_goto_nonstem(cell: Cell) =
-        let prob = ModelParameters.StemToNonStemProbParam
-        uniform_bool(prob)
-
-    static member should_returnto_stem(cell: Cell, ext: ExternalState) =
-        let prob = ModelParameters.exp_func(
-                     ModelParameters.exp_func_param(
-                        ModelParameters.NonStemToStemProbParam))
-                        (float -ext.StemCells)
-        uniform_bool(prob)
-
-    static member initialise_new_cells(cell: Cell) =
-        match cell.Type with
-        | Stem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemIntervalBetweenDivisions)
-        | NonStem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemIntervalBetweenDivisions)
-        | _ -> raise (InnerError(sprintf "Error: new cell in state %s" (cell.TypeAsStr())))
-
-
-    static member do_step(cell: Cell) =
-        if (cell.Action = SymSelfRenewal || cell.Action = AsymSelfRenewal) then
-            cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemIntervalBetweenDivisions)
-            cell.StepsAfterLastDivision <- 0
-        else if cell.Action = NonStemDivision then
-            cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemIntervalBetweenDivisions)
-            cell.StepsAfterLastDivision <- 0
+    member this.SetValue(p: Point, value: float) = 
+        if Math.Abs(p.x) > grid.Width/2. ||
+            Math.Abs(p.y) > grid.Height/2. then
+                raise(InnerError(sprintf "point (%.1f,%.1f) outside of managed grid area" p.x p.y))
         else
-            cell.StepsAfterLastDivision <- (cell.StepsAfterLastDivision + 1)
-            if cell.WaitBeforeDivide > 0
-                then cell.WaitBeforeDivide <- (cell.WaitBeforeDivide - 1)
+            let i = int (Math.Ceiling((p.x + grid.Width/2.) / grid.Dx))
+            let j = int (Math.Ceiling((p.y + grid.Height/2.) / grid.Dy))
+            f.[i,j] <- value
 
-        if cell.State = PreparingToDie && cell.WaitBeforeDie > 0 then
-            cell.WaitBeforeDie <- (cell.WaitBeforeDie - 1)
+    member this.ComputeInterpolant() =
+        mutex.WaitOne() |> ignore
+        alglib.spline2dbuildbilinear(x, y, f, grid.XLines, grid.YLines, interpolant)
+        mutex.ReleaseMutex()
 
-    // compute the action in the current state
-    static member compute_action(ext: ExternalState) (cell: Cell) = 
-        // no action is taken by default
-        cell.Action <- NoAction
+    member this.Grid with get() = grid
+    member this.F with get() = f
+    member this.FLimits with get() = f_limits
 
-        if (cell.State = PreparingToDie) then
-            if cell.WaitBeforeDie = 0 then
-                if CellActivity.should_die(cell, ext) then
-                    cell.Action <- Death
-                else cell.State <- Functioning
-        else
-            // determine an action for a stem cell
-            match cell.Type with
-            | Stem ->
-                if ext.EGF && CellActivity.can_divide(cell, ext) then
-                    if CellActivity.should_divide_sym(cell) then
-                        cell.Action <- SymSelfRenewal
-                    else
-                        cell.Action <- AsymSelfRenewal
-                else if CellActivity.should_goto_nonstem(cell) then
-                    cell.Type <- NonStemWithMemory
+type ExternalState() =
+    let mutable egf = true    
+    let mutable live_cells: int = 0
+    let mutable dividing_cells: int = 0
+    let mutable stem_cells: int = 0
+
+    let init_o2() =
+        let grid = ModelParameters.GridParam
+        let f = GridFunction(grid, ExternalState.O2Limits)
+
+        for i = 0 to grid.XLines-1 do
+            for j = 0 to grid.YLines-1 do
+                f.SetValue(grid.Point(i, j), 100.)
         
-            // determine an action for a non-stem cell
-            | NonStem ->
-                if ext.EGF && CellActivity.can_divide(cell, ext) then
-                    cell.Action <- NonStemDivision
-                else if CellActivity.should_die(cell, ext) then
-                    cell.WaitBeforeDie <- uniform_int(ModelParameters.DeathWaitInterval)
-                    cell.State <- PreparingToDie
+        f.ComputeInterpolant()
+        f
 
-            // determine an action for a non-stem cell which can become stem again
-            | NonStemWithMemory ->
-                if ext.EGF && CellActivity.should_returnto_stem(cell, ext) then
-                    cell.Type <- Stem
+    let init_cell_pack_density() =
+        let grid = ModelParameters.GridParam
+        let f = GridFunction(grid, ExternalState.CellPackDensityLimits)
 
-    // recalculate the probabilistic events in the external system: EGF and O2
-    static member recalculate_ext_state(ext:ExternalState, dt: int) =
-        ext.EGF <- uniform_bool(ModelParameters.EGFProb)
-        let (c1, c2, c3) = ModelParameters.O2Param
+        for i = 0 to grid.XLines-1 do
+            for j = 0 to grid.YLines-1 do
+                f.SetValue(grid.Point(i, j), 0.)
+        
+        f.ComputeInterpolant()
+        f
 
-        let (minO2, maxO2) = ExternalState.O2Limits
-        ext.O2 <- ext.O2 + (float dt)*(c1 - c2*(float ext.DividingCells) - c3*float (ext.LiveCells - ext.DividingCells))
-        if ext.O2 < minO2 then ext.O2 <- minO2
-        else if ext.O2 > maxO2 then ext.O2 <- maxO2       
+    let mutable o2 = init_o2()
+    let mutable cell_pack_density = init_cell_pack_density()
+
+    static member O2Limits with get() = FloatInterval(0., 100.)
+    static member CellPackDensityLimits with get() = FloatInterval(0., 1.)
+    member this.EGF with get() = egf and set(x) = egf <- x
+    member this.O2 with get() = o2 //and set(x: GridFunction) = o2 <- x
+    member this.LiveCells with get() = live_cells and set(x) = live_cells <- x
+    member this.DividingCells with get() = dividing_cells and set(x) = dividing_cells <- x
+    member this.NonDividingLiveCells with get() = live_cells - dividing_cells
+
+    member this.StemCells with get() = stem_cells and set(x) = stem_cells <- x
+    member this.CellPackDensity with get() = cell_pack_density
+                                    //and set(x) = cell_pack_density <- x
+    
+    static member GetNeighbours(cell: Cell, cells: Cell[], r: float) =
+        Array.filter(fun (c: Cell) -> c <> cell && Geometry.distance(c.Location, cell.Location) < r) cells
+
+    static member GetCellsInMesh(cells: Cell[], rect: Rectangle, ?state: CellState[], ?action: CellAction[]) =
+        let state = defaultArg state any_state
+        let action = defaultArg action any_action
+
+        Array.filter(fun (c: Cell) -> (not (CirclePart(Circle(c.Location, c.R), rect).IsEmpty())) &&
+                                        //Geometry.distance(c.Location, point) < r &&
+                                        Array.exists (fun (s: CellState) -> s = c.State) state &&
+                                        Array.exists (fun (a: CellAction) -> a = c.Action) action) cells

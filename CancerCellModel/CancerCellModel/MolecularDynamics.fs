@@ -62,7 +62,7 @@ type MolecularDynamics() =
 
     static member repulsive_force_total(cell: Cell, cells: Cell[]) =
         let neighbours = Array.filter(fun (c: Cell) -> c <> cell &&
-                                                        MolecularDynamics.is_neighbour(cell, c)) cells
+                                                        Geometry.distance(cell.Location, c.Location) < cell.R + c.R) cells
 
         let F = ref (Vector())
         for i = 0 to neighbours.Length-1 do

@@ -33,8 +33,8 @@ type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
                 The number of non-stem cells: %d\n\
                 The number of non-stem cells with memory: %d\n\
                 The number of dividing cells: %d\n\
-                The number of dying cells: %d\n\n\
-                The amount of oxygen per cell: %.1f%%"
+                The number of dying cells: %d" //\n\n\
+                //The amount of oxygen per cell: %.1f%%"
                 (int (round(x)))
                 (int (ParamFormBase.get_chart_yvalue(series_live, x)))
                 (int (ParamFormBase.get_chart_yvalue(series_stem, x)))
@@ -42,7 +42,7 @@ type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
                 (int (ParamFormBase.get_chart_yvalue(series_nonstem_withmem, x)))
                 (int (ParamFormBase.get_chart_yvalue(series_dividing, x)))
                 (int (ParamFormBase.get_chart_yvalue(series_dying, x)))
-                (extstate_dialog.GetYValue(x))
+                //(extstate_dialog.GetYValue(x))
 
     do
         base.Controls.Add(chart)

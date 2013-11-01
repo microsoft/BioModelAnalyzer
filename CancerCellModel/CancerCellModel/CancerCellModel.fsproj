@@ -44,29 +44,32 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <ItemGroup>
+    <Compile Include="MyMath.fs" />
     <Compile Include="ModelParameters.fs" />
     <Compile Include="Cell.fs" />
+    <Compile Include="Automata.fs" />
+    <Compile Include="MolecularDynamics.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="ParamFormBase.fs" />
+    <Compile Include="Render.fs" />
     <Compile Include="StemCellParamForm.fs" />
     <Compile Include="NonStemCellParamForm.fs" />
     <Compile Include="ExternalStateForm.fs" />
     <Compile Include="ExternalStateParamForm.fs" />
     <Compile Include="CellActivityStatForm.fs" />
+    <Compile Include="CellNumbersStatForm.fs" />
     <Compile Include="MainForm.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
+    <Reference Include="alglibnet2">
+      <HintPath>..\..\..\..\temp\f#_packages\alglib-3.8.0.csharp\csharp\alglibnet2.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
