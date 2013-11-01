@@ -18,7 +18,7 @@ let rlinearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState
     | false -> p
     | true ->
             match (p.radius < max) with
-            | true -> Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.freeze)
+            | true -> Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze)
             | false -> p
 
 let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -26,16 +26,16 @@ let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState:
     | false -> Life (p,m)
     | true ->
             match (p.radius < max) with
-            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.freeze),m)
+            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
             | false -> Life (p,m)
 
-let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (rng: System.Random) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true ->
             match (p.radius < max) with
-            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.freeze),m)
-            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,p.freeze),m))
+            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
+            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/2.),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
 
 let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt doesn't do anything here- this is an 'instant death' function

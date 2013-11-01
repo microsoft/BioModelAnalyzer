@@ -46,15 +46,15 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
                         if System.String.Equals(head.name,name) then countCells (acc+1) name tail
                         else countCells acc name tail
         | [] -> acc
-    let positions = IO.pdbRead cartFile
-    let (pTypes, nbTypes, (machName,machI0), interfaceTopology) = IO.xmlTopRead topfile
+    let positions = IO.pdbRead cartFile rng
+    let (pTypes, nbTypes, (machName,machI0), interfaceTopology) = IO.xmlTopRead topfile rng
     //combine the information from pTypes (on the cell sizes and density) with the postions
     //([for cart in positions -> combine cart pTypes ], nbTypes)
     let uCart = [for cart in positions -> 
                     let (f,r,d,freeze) = pTypes.[cart.name]
                     match freeze with
-                    | true -> Particle(cart.name,cart.location,cart.velocity,{x=1.;y=0.;z=0.},f,r,d,freeze) //use arbitrary orientation for freeze particles
-                    | _ -> Particle(cart.name,cart.location,cart.velocity,(randomDirectionUnitVector rng),f,r,d,freeze)
+                    | true -> Particle(cart.name,cart.location,cart.velocity,{x=1.;y=0.;z=0.},f,r,d,cart.age,cart.gRand,freeze) //use arbitrary orientation for freeze particles
+                    | _ -> Particle(cart.name,cart.location,cart.velocity,(randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
                      ]
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
