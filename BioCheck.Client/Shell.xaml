@@ -141,15 +141,17 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
 
+                        <!--
                         <controlsInputToolkit:ContextMenuService.ContextMenu>
                             <controlsInputToolkit:ContextMenu>
                                 <controlsInputToolkit:MenuItem Header="Delete All" Command="{Binding ResetLibraryCommand}"/>
-                                <!--<controlsInputToolkit:Separator/>
+                                
+                                <controlsInputToolkit:Separator/>
                                 <controlsInputToolkit:MenuItem Header="Debug: GC.Collect" Command="{Binding GCCollectCommand}"/>
-                                <controlsInputToolkit:MenuItem Header="Debug: Log Visual Tree" Command="{Binding LogVisualTreeCommand}"/>-->
+                                <controlsInputToolkit:MenuItem Header="Debug: Log Visual Tree" Command="{Binding LogVisualTreeCommand}"/>
                             </controlsInputToolkit:ContextMenu>
                         </controlsInputToolkit:ContextMenuService.ContextMenu>
-
+                        -->
                         <Path Data="M31.125061,3 L9.125061,3 L9.125061,0 L31.125061,0 z M5.25,3.0000305 L0,3.0000305 L0,3.0517578E-05 L5.25,3.0517578E-05 z M31.125061,8.3330231 L9.125061,8.3330231 L9.125061,5.3330231 L31.125061,5.3330231 z M5.25,8.3330231 L0,8.3330231 L0,5.3330231 L5.25,5.3330231 z M31.125061,13.667023 L9.125061,13.667023 L9.125061,10.667023 L31.125061,10.667023 z M5.25,13.667023 L0,13.667023 L0,10.667023 L5.25,10.667023 z M31.125061,19.000015 L9.125061,19.000015 L9.125061,16.000015 L31.125061,16.000015 z M5.25,19.000015 L0,19.000015 L0,16.000015 L5.25,16.000015 z M31.125061,24.334015 L9.125061,24.334015 L9.125061,21.334015 L31.125061,21.334015 z M5.25,24.334015 L0,24.334015 L0,21.334015 L5.25,21.334015 z" Fill="#FF58595B" Height="24.334" Stretch="Fill" Width="31.125" UseLayoutRounding="False"/>
                     </ToggleButton>
 
@@ -214,6 +216,8 @@
                                     <controlsInputToolkit:MenuItem Header="Export Model to XML" Command="{Binding ExportModelXmlCommand}"/>
                                     <controlsInputToolkit:MenuItem Header="Export Analysis Input to XML" Command="{Binding ExportAnalysisInputCommand}"/>
                                     <controlsInputToolkit:MenuItem Header="Export Analysis Output to XML" Command="{Binding ExportAnalysisOutputCommand}"/>
+                                    <controlsInputToolkit:Separator/>
+                                    <controlsInputToolkit:MenuItem Header="Query temporal features" Command="{Binding RunTimeCommand}"/>
                                 </controlsInputToolkit:ContextMenu>
                             </controlsInputToolkit:ContextMenuService.ContextMenu>
 
@@ -229,6 +233,20 @@
                                 <Grid x:Name="ClearProofGrid" Height="33.48" Width="33.479"/>
                             </Canvas>
                         </Button>
+                        
+                        <!-- New LTL button 
+                        <Button x:Name="LTLButton" Command="{Binding RunTimeCommand}" Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTipService.ToolTip="Test temporal features" Width="44" Height="44" Margin="5,0,0,0">
+                            <Canvas Height="0" Width="0" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment, Width, Height, Margin">
+                                <Path Data="F1M146.368,212.348L131.868,212.348L131.868,197.848L146.368,197.848z" Fill="LightGoldenrodYellow" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="-14.5" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M146.368,227.848L131.868,227.848L131.868,213.348L146.368,213.348z" Fill="Khaki" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Top="1" Canvas.Left="-14.5" UseLayoutRounding="False"/>
+                                <Path Data="F1M161.868,227.848L147.368,227.848L147.368,213.348L161.868,213.348z" Fill="#FFFFB8B3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="1" UseLayoutRounding="False"/>
+                                <Path Data="F1M161.868,212.348L147.368,212.348L147.368,197.848L161.868,197.848z" Fill="#FFD9FFB3" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                                <Grid x:Name="LTLGrid" Height="33.48" Width="33.479"/>
+                            </Canvas>
+                        </Button>
+                        
+                        New LTL button ends. -->
+                        
                         <Button x:Name="RunSimulationButton" Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" 
                                 Command="{Binding RunSimulationCommand}" Padding="0" ToolTipService.ToolTip="Run Simulation" Width="44" Height="44" Margin="5,0,0,0">
 
