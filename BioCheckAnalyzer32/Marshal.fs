@@ -322,6 +322,24 @@ let xml_of_cex_result (r:Result.cex_result) =
         root.Add(status)
     doc
 
+let xml_of_ltl_result (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)
+    
+    match result with 
+    | true -> 
+        let status = new XElement(xn "Status", "True")
+        root.Add(status)
+    | false -> 
+        let status = new XElement(xn "Status", "False")
+        root.Add(status)
+    
+    let model = new XElement(xn "Model", new XAttribute(xn "Id",model.ToString()))
+    root.Add(model)
+    
+    doc
+
 
 // Result parsers
 let stabilizing_result_of_xml (xd:XDocument) =

@@ -165,7 +165,7 @@ let find_paths (network : QN.node list) step rangelist orbounds=
                     newPossibleValues <- i :: newPossibleValues
                 elif sat = LBool.Undef then
                     if (!model = null) then
-                        printfn "z3 returned unknown"
+                        Log.log_debug "z3 returned unknown"
                         newPossibleValues <- i :: newPossibleValues
                     else
                         // (!model).Eval find_the_conjunction_of_assertions

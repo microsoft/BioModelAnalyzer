@@ -49,7 +49,7 @@ let print_paths (network : QN.node list) (paths : Map<QN.var, int list> list) =
     for node in network do
         all_vars <- all_vars + "," + node.name
 
-    printfn "%s" all_vars
+    Log.log_debug all_vars
 
     let i = ref 0
     for bound in paths do
@@ -66,7 +66,7 @@ let print_paths (network : QN.node list) (paths : Map<QN.var, int list> list) =
 
             line <- line + "]"
 
-        printfn "%s" line
+        Log.log_debug line
 
         incr i
 

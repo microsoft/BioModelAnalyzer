@@ -67,6 +67,26 @@ type Analyzer2() =
         member this.findCExFixpoint(xml_model:XDocument, xml_notstabilizing_result:XDocument ) = 
             find_cex xml_model xml_notstabilizing_result Stabilize.find_cex_fixpoint            
 
+        member this.checkLTL(input_model:XDocument, formula:string, num_of_steps:string, naive:bool) = 
+            try
+                let network = Marshal.model_of_xml input_model
+                let formula = LTL.string_to_LTL_formula formula network
+                let num_of_steps = (int)num_of_steps 
+                if (formula = LTL.Error) then
+                    Marshal.xml_of_error -1 "unable to parse formula"                  
+                else             
+                    let range = Rangelist.nuRangel network
+                    let paths = Paths.output_paths network range naive
+                    let padded_paths = Paths.change_list_to_length paths num_of_steps
+
+                    // SI: right now, we're just dumping res,model back to the UI.
+                    // We should structure the data that res,model,model_checked are.
+                    let (res,model) = BMC.BoundedMC formula network range padded_paths
+                    let model_checked = BioCheckPlusZ3.check_model model res network
+                    Marshal.xml_of_ltl_result res model
+
+            with Marshal.MarshalInFailed(id,msg) -> Marshal.xml_of_error id msg                
+            
         member this.simulate_tick(xml_model:XDocument, env:System.Collections.Generic.Dictionary<int,int>) = 
             let qn = 
                 try Marshal.model_of_xml xml_model

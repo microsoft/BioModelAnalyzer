@@ -89,8 +89,7 @@ let BoundedMC (ltl_formula : LTLFormulaType) network initBound (paths : Map<QN.v
     let sat = ctx.CheckAndGetModel (model)
     let end_time = System.DateTime.Now
     let duration = end_time.Subtract start_time
-    printfn "Satisfiability check time: %A" duration
-
+    Log.log_debug ("Satisfiability check time" + duration.ToString())
 
     // 6. Translate the model back
     let (the_result,the_model) = 

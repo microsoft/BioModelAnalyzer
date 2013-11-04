@@ -250,7 +250,7 @@ let find_bifurcation (network : QN.node list) range =
     if sat = LBool.True then
         assert_not_model !model ctx
     else
-        printfn "No initial fixpoint when looking for bifurcation"
+        Log.log_debug "No initial fixpoint when looking for bifurcation"
 
     let model2 = ref null
     let sat2 = ctx.CheckAndGetModel(model2)
@@ -288,9 +288,9 @@ let find_cycle (network: QN.node list) bounds length range =
     let ctx = new Context(cfg)
     let var_names = build_var_name_map network
 
-    printfn "Finding cycle of length %d" length
+    Log.log_debug ("Finding cycle of length " + (string)length)
 
-    printfn "Diameter of system is %d" length
+    Log.log_debug ("Diameter of system is " + (string)length)
 
     // Unroll the model k-times
     for time in [0..length] do
@@ -334,7 +334,6 @@ let find_cycle_steps network bounds length range =
     let diameter =
         if length = -1 then
             Map.fold (fun total _ (lo: int, hi: int) -> let res = bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo)))
-                                                        //printfn "%A %A %A %A" lo hi total res
                                                         res)
                      bigint.One
                      bounds
@@ -347,7 +346,7 @@ let find_cycle_steps network bounds length range =
 
     while bigint.Compare(diameter, bigint(k)) > 0 && cycle = None do
         k <- k*2
-        printfn "%d" k
+        Log.log_debug ((string)k)
         cycle <- find_cycle network bounds k range
 
     cycle

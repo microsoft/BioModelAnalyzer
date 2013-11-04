@@ -444,15 +444,15 @@ let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network :
     let (loop_close ,map_time_to_map) = model 
     if not (sat) 
     then
-        printfn "Unsatisfiable!"
+        Log.log_debug "Unsatisfiable!"
     elif (output_model) then 
-        printfn "The model is (csv):"
+        Log.log_debug "The model is (csv):"
         // print a line with the names of all the variables
         let mutable all_vars = "time"
         for var in network do
             all_vars <- all_vars + "," + var.name
 
-        printfn "%s" all_vars
+        Log.log_debug all_vars
 
         let i = ref 0
         while (Map.containsKey !i map_time_to_map) do
@@ -472,11 +472,11 @@ let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network :
             if loop_close = !i then
                 line <- line + ",<---"
                 
-            printfn "%s" line 
+            Log.log_debug line 
             
             incr i
     else
-        printfn "Satisfiable!"
+        Log.log_debug "Satisfiable!"
 
 let check_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) = 
     let result_true = ref true
@@ -489,13 +489,13 @@ let check_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network :
             let current_output_value = Map.find node.var current_time
             if not (current_output_value = next_value)
             then
-                printfn "At transition from time %d to time %d the value of %s is wrong!!!!!" previous_step current_step node.name
+                Log.log_debug ("At transition from time " + (string)previous_step + " to time " + (string)current_step + " the value of " + node.name + " is wrong!!!!!")
                 result_true := false
 
     let (loop_close ,map_time_to_map) = model 
     if not (sat) 
     then
-        printfn "Can't check a nonexistent model"
+        Log.log_debug "Can't check a nonexistent model"
         ()
     else
         let i = ref 0
@@ -523,5 +523,5 @@ let check_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network :
     
         if !result_true
         then
-            printfn "Checked the model and it seems fine!"
+            Log.log_debug "Checked the model and it seems fine!"
         ()

@@ -155,7 +155,7 @@ let print_in_order(formula : LTLFormulaType) =
                 name
         result
     let string_res = print formula
-    printfn "%s" string_res
+    Log.log_debug string_res
 
 // parsers
 let string_to_LTL_formula (s:string) (network) = 
@@ -359,7 +359,7 @@ let string_to_LTL_formula (s:string) (network) =
     parse s []
 
 let unable_to_parse_formula =
-    ignore (printfn "Was not able to parse the LTL formula!")
+    ignore (Log.log_debug "Was not able to parse the LTL formula!")
 
 // This test returns normal formulas in a network that has
 // v1 v2 and v3 as variables
