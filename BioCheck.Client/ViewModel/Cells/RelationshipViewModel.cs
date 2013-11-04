@@ -20,6 +20,15 @@ namespace BioCheck.ViewModel.Cells
             this.deleteCommand = new DelegateCommand(OnDeleteExecuted);
         }
 
+        internal RelationshipViewModel Clone()
+        {
+            var clone = new RelationshipViewModel();
+            clone.Id = this.Id;
+            clone.isChecked = this.isChecked;
+            clone.type = this.type;
+            return clone;
+        }
+
         /// <summary>
         /// Gets or sets the value of the <see cref="From"/> property.
         /// </summary>
@@ -119,7 +128,7 @@ namespace BioCheck.ViewModel.Cells
                                                {
                                                    if (result == MessageResult.Yes)
                                                    {
-
+                                                       ApplicationViewModel.Instance.DupActiveModel();
                                                        var modelVM = ApplicationViewModel.Instance.ActiveModel;
                                                        modelVM.RelationshipViewModels.Remove(this);
                                                    }

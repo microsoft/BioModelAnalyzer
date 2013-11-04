@@ -87,6 +87,8 @@ namespace BioCheck.Services
             // TODO - can move this into the bit that calls it
             this.toTarget = to;
 
+            ApplicationViewModel.Instance.DupActiveModel();
+
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
             var relationshipVM = modelVM.NewRelationship(fromTarget.DataContext as VariableViewModel,
                                                              toTarget.DataContext as VariableViewModel,

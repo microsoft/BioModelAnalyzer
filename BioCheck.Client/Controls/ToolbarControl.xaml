@@ -141,6 +141,8 @@
             <Path Data="F1M482.25,50.6797L467.725,36.1527L466.311,37.5667L472.867,44.1237L441.912,75.0757L443.326,76.4907L474.281,45.5377L480.836,52.0937z" Fill="#FF231F20" Height="25" Stretch="Fill" Width="25" UseLayoutRounding="False" Margin="5"/>
         </ToggleButton>
 
+        <Button Style="{StaticResource ToolbarButtonStyle}" Margin="10,0,0,0" Command="{Binding UndoCommand}" ToolTipService.ToolTip="Undo previous operation">Undo</Button>
+        <Button Style="{StaticResource ToolbarButtonStyle}" Margin="5,0,0,0" Command="{Binding RedoCommand}" ToolTipService.ToolTip="Redo operation">Redo</Button>
     </StackPanel>
 
 

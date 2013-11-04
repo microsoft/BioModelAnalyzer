@@ -81,6 +81,8 @@ namespace BioCheck.Controls
             positionX -= 7;
             positionY -= 10;
 
+            ApplicationViewModel.Instance.DupActiveModel();
+
             containerVM.NewMembraneReceptor(positionX, positionY, this.Angle);
         }
 

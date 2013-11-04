@@ -70,9 +70,15 @@ namespace BioCheck
             ApplicationViewModel.Instance.Init();
 
             // Store the user's IP address
-            ApplicationViewModel.Instance.User.IPAddress = e.InitParams["IPAddress"];
-            var modelUrl = e.InitParams["Model"];
-            if (!string.IsNullOrWhiteSpace(modelUrl))
+            // No IP address appears when running the Silverlight project
+            // directly - but in that case we don't actually care about the
+            // IP address anyway.
+            string ipAddress;
+            if (!e.InitParams.TryGetValue("IPAddress", out ipAddress) || string.IsNullOrWhiteSpace(ipAddress))
+                ipAddress = "Unknown:" + Guid.NewGuid();
+            ApplicationViewModel.Instance.User.IPAddress = ipAddress;
+            string modelUrl;
+            if (e.InitParams.TryGetValue("Model", out modelUrl) && !string.IsNullOrWhiteSpace(modelUrl))
             {
                 var url = new Uri(System.Windows.Browser.HtmlPage.Document.DocumentUri, modelUrl);
                 ApplicationViewModel.Instance.InitialModelUrl = url.AbsoluteUri;

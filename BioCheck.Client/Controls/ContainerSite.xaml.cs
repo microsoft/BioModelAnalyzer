@@ -108,6 +108,8 @@ namespace BioCheck.Controls
                 // If it's a container, check there's no constants here
                 if (this.IsEmpty())
                 {
+                    ApplicationViewModel.Instance.DupActiveModel();
+
                     var containerVM =
                         ApplicationViewModel.Instance.ActiveModel.NewContainer(this.PositionX, this.PositionY);
                 }
@@ -117,6 +119,8 @@ namespace BioCheck.Controls
                 // If it's a constant, check there's no container here
                 if (!this.HasContainerOverlapping())
                 {
+                    ApplicationViewModel.Instance.DupActiveModel();
+
                     var containerVM =
                         ApplicationViewModel.Instance.ActiveModel.NewConstant(this.PositionX, this.PositionY,
                                                                               cursorPosition.X, cursorPosition.Y);

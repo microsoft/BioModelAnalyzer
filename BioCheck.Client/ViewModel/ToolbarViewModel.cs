@@ -29,6 +29,7 @@ namespace BioCheck.ViewModel
     /// </summary>
     public class ToolbarViewModel : ObservableViewModel
     {
+        #region Command fields
         private readonly DelegateCommand saveCommand;
         private readonly DelegateCommand clearCommand;
         private readonly DelegateCommand deleteCommand;
@@ -41,9 +42,12 @@ namespace BioCheck.ViewModel
         private readonly DelegateCommand cutCommand;
         private readonly DelegateCommand copyCommand;
         private readonly DelegateCommand pasteCommand;
+        private readonly DelegateCommand undoCommand;
+        private readonly DelegateCommand redoCommand;
         private readonly DelegateCommand logVisualTreeCommand;
         private readonly DelegateCommand gcCollectCommand;
         private readonly DelegateCommand toggleAnalyzerLoggingCommand;
+        #endregion
 
         private bool isSelectionActive;
         private bool isActivatorActive;
@@ -69,6 +73,11 @@ namespace BioCheck.ViewModel
             this.copyCommand = new DelegateCommand(OnCopyExecuted);
             this.pasteCommand = new DelegateCommand(OnPasteExecuted);
             this.cutCommand = new DelegateCommand(OnCutExecuted);
+            // TODO: Seems MVVM FX doesn't process the can execute handler
+            // automatically, and there is no information on how to use this
+            // at all, so ignore that for the time being
+            this.undoCommand = new DelegateCommand(OnUndoExecuted);//, OnCanExecuteUndo);
+            this.redoCommand = new DelegateCommand(OnRedoExecuted);//, OnCanExecuteRedo);
 
             // Debug tools
             this.resetLibraryCommand = new DelegateCommand(OnResetLibraryExecuted);
@@ -325,6 +334,7 @@ namespace BioCheck.ViewModel
                                             {
                                                 ResetStability(false);
 
+                                                ApplicationViewModel.Instance.DupActiveModel();
                                                 var modelVM = ApplicationViewModel.Instance.ActiveModel;
 
                                                 ApplicationViewModel.Instance.ActiveVariable = null;
@@ -400,6 +410,7 @@ namespace BioCheck.ViewModel
                                         {
                                             if (result == MessageResult.Yes)
                                             {
+                                                ApplicationViewModel.Instance.DupActiveModel();
                                                 modelVM.RelationshipViewModels.RemoveAll(relationshipVM => relationshipVM.IsChecked);
 
                                                 foreach (var containerVM in modelVM.ContainerViewModels)
@@ -416,6 +427,36 @@ namespace BioCheck.ViewModel
                                                 ApplicationViewModel.Instance.Container.Resolve<IContextBarService>().Close();
                                             }
                                         });
+        }
+
+        public DelegateCommand UndoCommand
+        {
+            get { return this.undoCommand; }
+        }
+
+        private void OnUndoExecuted()
+        {
+            ApplicationViewModel.Instance.UndoActiveModel();
+        }
+
+        private bool OnCanExecuteUndo()
+        {
+            return ApplicationViewModel.Instance.CanUndoActiveModel;
+        }
+
+        public DelegateCommand RedoCommand
+        {
+            get { return this.redoCommand; }
+        }
+
+        private bool OnCanExecuteRedo()
+        {
+            return ApplicationViewModel.Instance.CanRedoActiveModel;
+        }
+
+        private void OnRedoExecuted()
+        {
+            ApplicationViewModel.Instance.RedoActiveModel();
         }
 
         #region Cut/Copy/Paste
@@ -505,9 +546,9 @@ namespace BioCheck.ViewModel
         private void OnPasteExecuted()
         {
             if (!ApplicationViewModel.Instance.HasActiveModel)
-            {
                 return;
-            }
+
+            ApplicationViewModel.Instance.DupActiveModel();
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
 
             if (ApplicationViewModel.Instance.HasActiveVariable)

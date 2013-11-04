@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using BioCheck.ViewModel.Cells;
@@ -51,6 +52,66 @@ namespace BioCheck.ViewModel.Models
 
             // Map the ZoomLevel property that is registered by the ZoomViewModel
             this.mappedZoomLevel = this.Messenger.ResolveProperty(this, () => ZoomLevel);
+        }
+
+        internal ModelViewModel Clone()
+        {
+            var clone = new ModelViewModel();
+            clone.ZoomLevel = this.ZoomLevel;
+            clone.showStability = this.showStability;
+            clone.name = this.name;
+            clone.displayName = this.displayName;
+            clone.versions = this.versions;
+            clone.createdDate = this.createdDate;
+            clone.modifiedDate = this.modifiedDate;
+            clone.description = this.description;
+            clone.author = this.author;
+            clone.panX = this.panX;
+            clone.panY = this.panY;
+            clone.rows = this.rows;
+            clone.columns = this.columns;
+            clone.isLoaded = this.isLoaded;
+
+            // Mappings from old VMs to new (clone) ones, for subsequent patchup
+            var containers = new Dictionary<ContainerViewModel, ContainerViewModel>();
+            var variables = new Dictionary<VariableViewModel, VariableViewModel>();
+
+            foreach (var c in this.ContainerViewModels)
+            {
+                var cc = c.Clone();
+                clone.ContainerViewModels.Add(cc);
+                containers[c] = cc;
+                foreach (var v in c.VariableViewModels)
+                {
+                    var cv = v.Clone();
+                    cv.ContainerViewModel = cc;
+                    cc.VariableViewModels.Add(cv);
+                    variables[v] = cv;
+                }
+            }
+            foreach (var v in this.VariableViewModels)
+            {
+                var cv = v.Clone();
+                if (v.ContainerViewModel != null) // TODO - is this always null anyway, for these external variables?
+                {
+                    var cc = containers[v.ContainerViewModel];
+                    cv.ContainerViewModel = cc;
+                    cc.VariableViewModels.Add(cv);
+                }
+                clone.VariableViewModels.Add(cv);
+                variables[v] = cv;
+            }
+            foreach (var r in this.RelationshipViewModels)
+            {
+                var cr = r.Clone();
+                if (r.ContainerViewModel != null)
+                    cr.ContainerViewModel = containers[r.ContainerViewModel];
+                cr.From = variables[r.From];
+                cr.To = variables[r.To];
+                clone.RelationshipViewModels.Add(cr);
+            }
+
+            return clone;
         }
 
         /// <summary>
@@ -601,6 +662,8 @@ namespace BioCheck.ViewModel.Models
         /// <returns></returns>
         public void MoveConstant(VariableViewModel constantVM, int containerX, int containerY, double constantX, double constantY)
         {
+            ApplicationViewModel.Instance.DupActiveModel();
+
             // Get the relationships it's involved in
             var relationshipVMs = this.RelationshipViewModels.Where(rvm => rvm.From == constantVM || rvm.To == constantVM)
                 .ToList();
@@ -624,6 +687,8 @@ namespace BioCheck.ViewModel.Models
 
         public void MoveContainer(ContainerViewModel containerVM, int containerX, int containerY)
         {
+            ApplicationViewModel.Instance.DupActiveModel();
+
             // Get the relationships it's involved in
             var relationshipVMs = this.RelationshipViewModels.Where(rvm => rvm.From.ContainerViewModel == containerVM || rvm.To.ContainerViewModel == containerVM)
                 .ToList();
@@ -652,6 +717,8 @@ namespace BioCheck.ViewModel.Models
 
         public void MoveVariable(VariableViewModel variableVM, ContainerViewModel containerVM, int positionX, int positionY)
         {
+            ApplicationViewModel.Instance.DupActiveModel();
+
             // Get the relationships it's involved in
             var relationshipVMs = (from rvm in this.RelationshipViewModels
                                    where rvm.From == variableVM || rvm.To == variableVM

@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using BioCheck.Views;
+using BioCheck.ViewModel;
 
 namespace BioCheck.States
 {
@@ -17,6 +18,8 @@ namespace BioCheck.States
             if (mouseContext.IsOnContainer())
             {
                 e.Handled = true;
+
+                ApplicationViewModel.Instance.DupActiveModel();
 
                 var cursorPositionInContainer = e.GetPosition(mouseContext.ContainerView);
                 var containerVM = mouseContext.ContainerVM;

@@ -48,6 +48,20 @@ namespace BioCheck.ViewModel.Cells
             this.size = ContainerSizeTypes.One;
         }
 
+        internal ContainerViewModel Clone()
+        {
+            var clone = new ContainerViewModel();
+            clone.Id = this.Id;
+            clone.size = this.size;
+            clone.name = this.name;
+            clone.isChecked = this.isChecked;
+            clone.isStable = this.isStable;
+            clone.showStability = this.showStability;
+            clone.positionX = this.positionX;
+            clone.positionY = this.positionY;
+            return clone;
+        }
+
         /// <summary>
         /// Gets or sets the value of the <see cref="Name"/> property.
         /// </summary>
@@ -301,6 +315,8 @@ namespace BioCheck.ViewModel.Cells
                                                {
                                                    if (result == MessageResult.Yes)
                                                    {
+                                                       ApplicationViewModel.Instance.DupActiveModel();
+
                                                        this.VariableViewModels.Clear();
 
                                                        var modelVM = ApplicationViewModel.Instance.ActiveModel;
@@ -376,7 +392,7 @@ namespace BioCheck.ViewModel.Cells
 
             foreach (var variableVM in this.VariableViewModels)
             {
-                var variableVMCopy = containerVMCopy.NewVariable(variableVM.PositionX, variableVM.PositionY);
+                var variableVMCopy = containerVMCopy.NewVariable(variableVM.PositionX, variableVM.PositionY, VariableTypes.Default);
                 variableVMCopy.Id = variableId++;
 
                 CopyPasteManager.Paste(variableVM, variableVMCopy);
@@ -482,6 +498,8 @@ namespace BioCheck.ViewModel.Cells
             // Only allow Default variables to be pasted into containers
             if (variableVMCopy.Type == VariableTypes.Default)
             {
+                ApplicationViewModel.Instance.DupActiveModel();
+
                 var newVariableVM = this.NewVariable(variableVMCopy.PositionX, variableVMCopy.PositionY);
                 newVariableVM.Paste(variableVMCopy);
 

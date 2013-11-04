@@ -390,6 +390,8 @@ namespace BioCheck.Views
             {
                 DragDropExit(dataContext);
 
+                ApplicationViewModel.Instance.DupActiveModel();
+
                 var containerVM = (ContainerViewModel)this.DataContext;
 
                 var positionX = Convert.ToInt32(cursorPosition.X) - VariableView.DefaultFixedWidth / 2;

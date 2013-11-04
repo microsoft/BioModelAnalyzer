@@ -17,6 +17,8 @@ using System.Xml.Linq;
 using BioCheck.ViewModel.XML;
 using BioCheck.Services;
 using System.Net;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace BioCheck.ViewModel
 {
@@ -30,7 +32,8 @@ namespace BioCheck.ViewModel
     public class ApplicationViewModel : ObservableViewModel
     {
         private readonly UnityContainer container;
-        private ModelViewModel activeModel;
+        private List<ModelViewModel> activeModelStack = new List<ModelViewModel>();
+        private int activeModelStackIndex = -1;
         private VariableViewModel activeVariable;
         private ContainerViewModel activeContainer;
 
@@ -50,11 +53,6 @@ namespace BioCheck.ViewModel
 
         private static readonly ApplicationViewModel instance
             = new ApplicationViewModel();
-
-        static ApplicationViewModel()
-        {
-
-        }
 
         /// <summary>
         /// Singleton Constructor 
@@ -346,38 +344,114 @@ namespace BioCheck.ViewModel
         /// </summary>
         public ModelViewModel ActiveModel
         {
-            get { return this.activeModel; }
-            set
+            get { return this.activeModelStackIndex >= 0 ? this.activeModelStack[this.activeModelStackIndex] : null; }
+            set { SetActiveModel(value, true); }
+        }
+
+        internal void DupActiveModel()
+        {
+            Debug.WriteLine(string.Format("Dup at {0} of {1}", this.activeModelStackIndex, this.activeModelStack.Count));
+
+            TruncateActiveModelStack();
+
+            // Place the duplicate *second* on the list, because other code
+            // has references to the current model's internals
+            var orig = this.ActiveModel;
+            Debug.Assert(orig != null);
+            this.activeModelStack[this.activeModelStackIndex] = orig.Clone();
+            this.activeModelStack.Add(orig);
+            ++this.activeModelStackIndex;
+        }
+
+        internal void UndoActiveModel()
+        {
+            //System.Windows.MessageBox.Show(string.Format("Undo request at {0} of {1} ({2})", this.activeModelStackIndex, this.activeModelStack.Count, this.CanUndoActiveModel));
+            Debug.WriteLine(string.Format("Undo request at {0} of {1} ({2})", this.activeModelStackIndex, this.activeModelStack.Count, this.CanUndoActiveModel));
+            if (this.CanUndoActiveModel)
             {
-                if (this.activeModel != value)
-                {
-                    this.activeModel = value;
-                    OnPropertyChanged(() => ActiveModel);
-                    OnPropertyChanged(() => HasActiveModel);
-
-                    if (this.activeModel == null)
-                    {
-                        this.settings.ActiveModel = ApplicationSettings.DefaultModel;
-                        this.toolbarViewModel.IsSelectionActive = true;
-                    }
-                    else
-                    {
-                        this.settings.ActiveModel = this.activeModel.Name;
-                    }
-
-                    this.settings.Save();
-
-                    this.toolbarViewModel.ShowToolbar = this.HasActiveModel;
-                }
+                --this.activeModelStackIndex;
+                UpdateActiveModelState();
             }
         }
+
+        internal void RedoActiveModel()
+        {
+            //System.Windows.MessageBox.Show(string.Format("Redo request at {0} of {1} ({2})", this.activeModelStackIndex, this.activeModelStack.Count, this.CanRedoActiveModel));
+            Debug.WriteLine(string.Format("Redo request at {0} of {1} ({2})", this.activeModelStackIndex, this.activeModelStack.Count, this.CanRedoActiveModel));
+            if (this.CanRedoActiveModel)
+            {
+                ++this.activeModelStackIndex;
+                UpdateActiveModelState();
+            }
+        }
+
+        private void SetActiveModel(ModelViewModel model, bool clearStack)
+        {
+            if (model == this.ActiveModel)
+                return;
+
+            if (clearStack || model == null)
+            {
+                foreach (var m in this.activeModelStack)
+                    m.Dispose();
+                this.activeModelStack.Clear();
+                this.activeModelStackIndex = -1;
+            }
+
+            if (model != null)
+            {
+                TruncateActiveModelStack();
+
+                this.activeModelStack.Add(model);
+                ++this.activeModelStackIndex;
+            }
+
+            UpdateActiveModelState();
+        }
+
+        private void TruncateActiveModelStack()
+        {
+            // If we'd stepped back, get rid of the dead branch
+            for (int i = this.activeModelStack.Count - 1; i > this.activeModelStackIndex; --i)
+            {
+                this.activeModelStack[i].Dispose();
+                this.activeModelStack.RemoveAt(i);
+            }
+            Debug.Assert(this.activeModelStackIndex == this.activeModelStack.Count - 1);
+        }
+
+        private void UpdateActiveModelState()
+        {
+            //System.Windows.MessageBox.Show(string.Format("Model {0} of {1}", this.activeModelStackIndex, this.activeModelStack.Count));
+            Debug.WriteLine(string.Format("Model {0} of {1}", this.activeModelStackIndex, this.activeModelStack.Count));
+
+            OnPropertyChanged(() => ActiveModel);
+            OnPropertyChanged(() => HasActiveModel);
+
+            if (this.ActiveModel == null)
+            {
+                this.settings.ActiveModel = ApplicationSettings.DefaultModel;
+                this.toolbarViewModel.IsSelectionActive = true;
+            }
+            else
+            {
+                this.settings.ActiveModel = this.ActiveModel.Name;
+            }
+
+            this.settings.Save();
+
+            this.toolbarViewModel.ShowToolbar = this.HasActiveModel;
+        }
+
+        public bool CanUndoActiveModel { get { return this.activeModelStackIndex > 0; } }
+        public bool CanRedoActiveModel { get { return this.activeModelStackIndex < this.activeModelStack.Count - 1; } }
 
         /// <summary>
         /// Gets the value of the <see cref="HasActiveModel"/> property.
         /// </summary>
         public bool HasActiveModel
         {
-            get { return this.activeModel != null; }
+            get { return this.ActiveModel != null; }
         }
 
         /// <summary>

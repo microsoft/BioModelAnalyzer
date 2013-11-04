@@ -44,6 +44,25 @@ namespace BioCheck.ViewModel.Cells
             this.pasteCommand = new ActionCommand(arg => OnPasteExecuted(), arg => this.Type != VariableTypes.MembraneReceptor && CopyPasteManager.CanPaste(this));
         }
 
+        internal VariableViewModel Clone()
+        {
+            var clone = new VariableViewModel();
+            clone.Id = this.Id;
+            clone.name = this.name;
+            clone.isChecked = this.isChecked;
+            clone.positionX = this.positionX;
+            clone.positionY = this.positionY;
+            clone.cellX = this.cellX;
+            clone.cellY = this.cellY;
+            clone.type = this.type;
+            clone.rangeFrom = this.rangeFrom;
+            clone.rangeTo = this.rangeTo;
+            clone.formula = this.formula;
+            clone.angle = this.angle;
+
+            return clone;
+        }
+
         /// <summary>
         /// Gets or sets the value of the <see cref="ContainerViewModel"/> property.
         /// </summary>
@@ -353,6 +372,7 @@ namespace BioCheck.ViewModel.Cells
                                                {
                                                    if (result == MessageResult.Yes)
                                                    {
+                                                       ApplicationViewModel.Instance.DupActiveModel();
                                                        if (this.containerViewModel != null)
                                                        {
                                                            this.containerViewModel.VariableViewModels.Remove(this);

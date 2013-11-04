@@ -134,6 +134,8 @@ namespace BioCheck.Controls
             {
                 ContainerViewModel newContainerVM = null;
 
+                ApplicationViewModel.Instance.DupActiveModel();
+
                 if (containerVM.SizeOne)
                 {
                     newContainerVM = ApplicationViewModel.Instance.ActiveModel.NewContainer(containerSite.PositionX, containerSite.PositionY);
@@ -158,6 +160,8 @@ namespace BioCheck.Controls
                 {
                     if (variableVM.Type == VariableTypes.Constant && !containerSite.HasContainerOverlapping())
                     {
+                        ApplicationViewModel.Instance.DupActiveModel();
+
                         var constantVM =
                                 ApplicationViewModel.Instance.ActiveModel.NewConstant(containerSite.PositionX, containerSite.PositionY,
                                                                       variableVM.PositionX, variableVM.PositionY);
