@@ -37,7 +37,7 @@ let str s = skipString s >>. ws
 // Ident parsing, from the FParsec reference manual. 
 let pythonIdentifier =  
    let isAsciiIdStart    = fun c -> isAsciiLetter c || c = '_'
-   let isAsciiIdContinue = fun c -> isAsciiLetter c || isDigit c || c = '_' || c = '.'
+   let isAsciiIdContinue = fun c -> isAsciiLetter c || isDigit c || c = '_' || c = '.' || c = '-'
    identifier (IdentifierOptions(
                     isAsciiIdStart = isAsciiIdStart,
                     isAsciiIdContinue = isAsciiIdContinue,
