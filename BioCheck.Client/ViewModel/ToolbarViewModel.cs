@@ -547,8 +547,8 @@ namespace BioCheck.ViewModel
         {
             if (!ApplicationViewModel.Instance.HasActiveModel)
                 return;
-
-            ApplicationViewModel.Instance.DupActiveModel();
+            
+            ApplicationViewModel.Instance.DupActiveModel(); 
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
 
             if (ApplicationViewModel.Instance.HasActiveVariable)
@@ -894,9 +894,9 @@ namespace BioCheck.ViewModel
             //var timeTaken = Math.Round((DateTime.Now - timer).TotalSeconds, 1); // Use this for display?
 
             // Show a Cancellable Busy Indicator window
-            ApplicationViewModel.Instance.Container
-                    .Resolve<IBusyIndicatorService>()
-                    .Show("Initialising LTL...");
+            //ApplicationViewModel.Instance.Container
+            //        .Resolve<IBusyIndicatorService>()
+            //        .Show("Initialising LTL...");
 
             var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
 

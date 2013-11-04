@@ -477,7 +477,7 @@
                 </TextBlock>
 
                 <!-- Sequence text -->
-                <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="Temporary console in- and output" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" d:LayoutOverrides="GridBox" Margin="15,0,0,0"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="Formula" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" d:LayoutOverrides="GridBox" Margin="15,0,0,0"/>
 
                 <!-- Close window button -->
                 <Button 
@@ -534,7 +534,7 @@
                 </Border>
                 -->
                 <TextBox TextWrapping="Wrap" Text="{Binding LTLInput, Mode=TwoWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Margin="10,0" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." />
-                <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding LTLOutput}" Grid.Row="5" Grid.Column="1" Margin="10,0,10,10" Foreground="#FF7E7E7E" ToolTipService.ToolTip="Proof output will appear here." />
+                <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding LTLOutput}" Grid.Row="5" Grid.Column="1" Margin="10,0,10,10" Foreground="#FF7E7E7E" ToolTipService.ToolTip="Proof output" />
 
                 <!--Style="{StaticResource PopupDataGridStyle}" -->
                 <Grid x:Name="FooterPanel" Grid.Row="6" Grid.ColumnSpan="2">
@@ -560,11 +560,15 @@
                     <!--<CheckBox Content="Naive" FontSize="14" HorizontalAlignment="Left" Margin="15,10,0,0" Foreground="Black" VerticalAlignment="Center" Background="Cornsilk" 
                               IsChecked="True" 
                               Checked="{Binding LTLNaive_true}"
-                              Unchecked="{Binding LTLNaive_false}"/>-->
-                    <CheckBox Content="Naive" FontSize="13" HorizontalAlignment="Left" Margin="15,5,0,0" Foreground="Black" VerticalAlignment="Center" Background="Cornsilk" Command="{Binding LTLNaive, Mode=TwoWay}"/>
-                    <TextBlock Text="Number of steps:" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" Margin="35,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
+                              Unchecked="{Binding LTLNaive_false}"
+                    Command="{Binding LTLNaive, Mode=TwoWay}"
+                    />-->
+                    <TextBlock Text="Number of steps:" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" Margin="15,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
                     <TextBox Background="Cornsilk" BorderBrush="Gray" HorizontalAlignment="Left" Margin="15,5,0,3" Width="50" Text="{Binding LTLPath, Mode=TwoWay}"/>
-                    
+                    <CheckBox Content="Naive" FontSize="13" HorizontalAlignment="Left" Margin="35,5,0,0" Foreground="Black" VerticalAlignment="Center" Background="Cornsilk"
+                              IsChecked="{Binding IsChecked}"
+                              />
+                    <CheckBox Content="Check" FontSize="13" HorizontalAlignment="Left" Margin="35,5,0,0" Foreground="Black" VerticalAlignment="Center" Background="Cornsilk" Command="{Binding LTLCheck, Mode=TwoWay}"/>
                 </StackPanel>
                 
             </Grid>

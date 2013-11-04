@@ -314,6 +314,8 @@
     <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
     <Compile Include="ViewModel\Simulation\SimulationViewModelFactory.cs" />
     <Compile Include="ViewModel\Simulation\VariableSimViewModel.cs" />
+    <Compile Include="ViewModel\Time\TimeOutput.cs" />
+    <Compile Include="ViewModel\Time\TimeOutputFactory.cs" />
     <Compile Include="ViewModel\Time\TimeInputDTOFactory.cs" />
     <Compile Include="ViewModel\Time\TimeViewModelFactory.cs" />
     <Compile Include="ViewModel\Time\TimeViewModel.cs" />

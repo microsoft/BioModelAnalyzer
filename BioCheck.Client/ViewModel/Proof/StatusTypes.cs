@@ -11,5 +11,7 @@
         public const string Fixpoint = "Fixpoint";
         public const string Unknown = "Unknown";
         public const string Error = "Error";
+        public const string True = "True";          // Time edit : LTL status output
+        public const string False = "False";        // Time edit : LTL status output
     }
 }

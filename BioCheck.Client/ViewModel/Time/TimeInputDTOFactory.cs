@@ -26,6 +26,44 @@ namespace BioCheck.ViewModel.Time
 
             data.ModelName = modelVM.Name;
 
+            // Check that fields contain data, and data of the correct type
+            // Formula checker
+            if (timeVM.LTLInput == "" || string.IsNullOrEmpty(timeVM.LTLInput) || timeVM.LTLInput.Length == 0)
+            {
+                timeVM.LTLInput = "True";
+            }
+
+            // Path checker
+            if (timeVM.LTLPath < 1)
+            {
+                timeVM.LTLPath = 100;                   // Is it ever allowed to be < 0?
+            }
+            else if (timeVM.LTLPath == null) 
+            {
+                timeVM.LTLPath = 100;
+            }
+            else
+            {
+                string testInt2String = timeVM.LTLPath.ToString();
+                int testInt;
+                try
+                {
+                    testInt = System.Int32.Parse(testInt2String);
+                }
+                catch (System.FormatException)
+                {
+                    //Could not make an integer
+                    timeVM.LTLPath = 100;
+                }
+                catch (System.OverflowException)
+                {
+                    //The int is too big/small for an int
+                    timeVM.LTLPath = 100;
+                }
+            }
+
+
+
             var xdoc = new XDocument(
                 new XElement("AnalysisInput",
                                 new XAttribute("ModelName", data.ModelName),

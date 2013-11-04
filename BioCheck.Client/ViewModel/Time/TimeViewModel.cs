@@ -19,7 +19,7 @@ namespace BioCheck.ViewModel.Time
 {
     public class TimeViewModel : ObservableViewModel
     {
-        private ProofViewState state;           // Of namespace BioCheck.ViewModel.Proof
+        //private ProofViewState state;           // Of namespace BioCheck.ViewModel.Proof
 
         private readonly DelegateCommand runCommand;
         private readonly DelegateCommand closeCommand;
@@ -32,13 +32,10 @@ namespace BioCheck.ViewModel.Time
         private DateTime timer;
         private string modelName;
         private bool ltlNaive = false;
+        private bool LTLCheck = false;
         private int ltlPath = 100;
-        private string ltlInput;             // Use for the textbox!
-        private string ltlOutput;            // Use for the textbox!   ..or the below.
-
-        //private SimulationInputDTO simInput;
-        //private SimulationOutputDTO simOutput;
-        //private int currentStep;
+        private string ltlInput;             
+        private string ltlOutput;    
 
 
         public TimeViewModel()
@@ -64,12 +61,6 @@ namespace BioCheck.ViewModel.Time
             {
                 return;
             }
-
-            // Just testing bindings:
-            /*
-            LTLOutput = LTLInput;                   // Actual bindings used in the xaml.
-            LTLInput = LTLPath.ToString();
-            */
               
             ApplicationViewModel.Instance.Container
                  .Resolve<IBusyIndicatorService>()
@@ -79,8 +70,6 @@ namespace BioCheck.ViewModel.Time
             
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
             timeInputDto = TimeInputDTOFactory.Create(modelVM, this);
-
-
 
             // Enable/Disable logging
             timeInputDto.EnableLogging = ApplicationViewModel.Instance.ToolbarViewModel.EnableAnalyzerLogging;
@@ -96,11 +85,11 @@ namespace BioCheck.ViewModel.Time
 
             // Invoke the async Analyze method on the service
             timer = DateTime.Now;
-            analyzerClient.AnalyzeAsync(timeInputDto);                // Does this result in an AnalysisService.svc.cs input with a Proof signature?
+            analyzerClient.AnalyzeAsync(timeInputDto);                // Result in an AnalysisService.svc.cs input with a Proof signature.
 
         }
 
-        private AnalysisOutput timeOutput;
+        private TimeOutput timeOutput;
         private void OnTimeCompleted(object sender, AnalyzeCompletedEventArgs e)           // This is an object in Reference.cs!
         {
             
@@ -114,11 +103,25 @@ namespace BioCheck.ViewModel.Time
                 { 
                      
                     // Get the resulting dictionary of variables and their values
-                    this.timeOutput = AnalysisOutputFactory.Create(e.Result);
+                    this.timeOutput = TimeOutputFactory.Create(e.Result);
 
-                    this.LTLOutput = timeOutput.Status;
-                    //SimulationViewModelFactory.UpdateSteps(this);
+                    string finalOutput;
+                    if (timeOutput.Status != "Error")
+                    {
+                        finalOutput = "\nThe formula above is ";
+                        finalOutput += timeOutput.Status;
+                        finalOutput += " for the current model, ";
+                        finalOutput += this.ModelName;
+                        finalOutput += ".\n\nFull LTL proof output:\n";
+                        finalOutput += timeOutput.Model;
+                    } 
+                    else 
+                    {
+                        finalOutput = "\nSomething went wrong. Are you sure that the formula above is correct?";
+                    }
+                    
 
+                    this.LTLOutput = finalOutput;
 
                     // If we've reached the total number of steps, then close the busy dialog
                     ApplicationViewModel.Instance.Container
@@ -127,8 +130,6 @@ namespace BioCheck.ViewModel.Time
 
                     // Log the running of the proof to the Log web service
                     ApplicationViewModel.Instance.Log.RunSimulation();
-
-                     
                 }
                 catch (Exception ex)
                 {
@@ -220,16 +221,51 @@ namespace BioCheck.ViewModel.Time
             }
         }
 
+        //public bool LTLNaive
+        //{
+        //    get { return this.ltlNaive; }
+        //    set
+        //    {
+        //        if (this.ltlNaive != value)
+        //        {
+        //            this.ltlNaive = value;
+        //            OnPropertyChanged(() => LTLNaive);
+        //        }
+        //    }
+        //}
+
         public bool LTLNaive
         {
-            get { return this.ltlNaive; }
+            get
+            {
+                return this.ltlNaive;
+            }
+        }
+
+        public bool LTLNaive_true
+        {
             set
             {
-                if (this.ltlNaive != value)
-                {
-                    this.ltlNaive = value;
-                    OnPropertyChanged(() => LTLNaive);
-                }
+                this.ltlNaive = true;
+            }
+        }
+
+        public bool LTLNaive_false
+        {
+            set
+            {
+                this.ltlNaive = false;
+            }
+        }
+
+        public bool IsChecked
+        {
+            get
+            {
+                return this.ltlNaive;
+            }
+            set {
+                this.ltlNaive = value;
             }
         }
 
