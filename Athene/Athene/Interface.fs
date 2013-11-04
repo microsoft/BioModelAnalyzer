@@ -7,6 +7,11 @@ open Automata
 type particleModification = Death | Life of Particle*Map<QN.var,int> | Divide of (Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
 type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list)}
 
+type chance = Certain | Random of System.Random*float*float
+
+let cbrt2 = 2.**(1./3.)
+let rsqrt2 = 1./(2. ** 0.5)
+
 let probabilisticMotor (min:int) (max:int) (state:int) (rng:System.Random) (force:float<zNewton>) (p:Particle) =
     //pMotor returns a force randomly depending on the state of the variable
     match rng.Next(min,max) with
@@ -30,22 +35,32 @@ let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState:
             | false -> Life (p,m)
 
 let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (rng: System.Random) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let rsqrt2 = 1./(2. ** 0.5)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true ->
             match (p.radius < max) with
             | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/2.),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/2.),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
-
+            | false -> Divide ((Particle(p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+            
 let probabilisticGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (rng: System.Random) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let cbrt2 = 2.**(1./3.)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true ->
             match (p.radius < (max+sd*p.gRand)) with
             | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-            | false -> Divide ((Particle(p.name,p.location+(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*p.radius),p.velocity,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+            | false -> Divide ((Particle(p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+
+//let growDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (cha: chance) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) = 
+//    let eMax = match cha with
+//                | Certain -> max
+//                | Random(rng,mean,sd) -> max+sd*(p.gRand*1.<um>)
+//    match (m.[varID] = varState) with
+//    | false -> Life (p,m)
+//    | true ->
+//            match (p.radius < eMax) with
+//            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
+//            | false -> Divide ((Particle(p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+
 
 let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt doesn't do anything here- this is an 'instant death' function

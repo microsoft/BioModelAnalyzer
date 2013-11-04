@@ -31,3 +31,34 @@ type Cuboid< [<Measure>] 'u> = { origin: Vector3D<'u>; dimensions: Vector3D<'u> 
 let randomDirectionUnitVector (rng: System.Random) =
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}.norm
+
+let smallestElements (v1: Vector3D<_>) (v2: Vector3D<_>) =
+    match v1 with
+    | v when v.x <= v2.x && v.y <= v2.y && v.z <= v2.z -> v                        //<<<
+    | v when v.x <= v2.x && v.y <= v2.y && v.z >  v2.z -> {x=v.x;y=v.y;z=v2.z}     //<<>
+    | v when v.x <= v2.x && v.y >  v2.y && v.z <= v2.z -> {x=v.x;y=v2.y;z=v.z}     //<><
+    | v when v.x >  v2.x && v.y <= v2.y && v.z <= v2.z -> {x=v2.x;y=v.y;z=v.z}     //><<
+    | v when v.x <= v2.x && v.y >  v2.y && v.z >  v2.z -> {x=v.x;y=v2.y;z=v2.z}    //<>>
+    | v when v.x >  v2.x && v.y <= v2.y && v.z >  v2.z -> {x=v2.x;y=v.y;z=v2.z}    //><>
+    | v when v.x >  v2.x && v.y >  v2.y && v.z <= v2.z -> {x=v2.x;y=v2.y;z=v.z}    //>><
+    | v when v.x >  v2.x && v.y >  v2.y && v.z >  v2.z -> v2                       //>>>
+    | _ -> failwith "Unmatched condition"
+
+let largestElements (v1: Vector3D<_>) (v2: Vector3D<_>) =
+    match v1 with
+    | v when v.x <= v2.x && v.y <= v2.y && v.z <= v2.z -> v2                       //<<<
+    | v when v.x <= v2.x && v.y <= v2.y && v.z >  v2.z -> {x=v2.x;y=v2.y;z=v.z}    //<<>
+    | v when v.x <= v2.x && v.y >  v2.y && v.z <= v2.z -> {x=v2.x;y=v.y;z=v2.z}    //<><
+    | v when v.x >  v2.x && v.y <= v2.y && v.z <= v2.z -> {x=v.x;y=v2.y;z=v2.z}    //><<
+    | v when v.x <= v2.x && v.y >  v2.y && v.z >  v2.z -> {x=v2.x;y=v.y;z=v.z}     //<>>
+    | v when v.x >  v2.x && v.y <= v2.y && v.z >  v2.z -> {x=v.x;y=v2.y;z=v.z}     //><>
+    | v when v.x >  v2.x && v.y >  v2.y && v.z <= v2.z -> {x=v.x;y=v.y;z=v2.z}     //>><
+    | v when v.x >  v2.x && v.y >  v2.y && v.z >  v2.z -> v                        //>>>
+    | _ -> failwith "Unmatched condition"
+
+let rec vecMinMax (v: Vector3D<_> list) (acc: Vector3D<_>*Vector3D<_>) =
+    match v with
+    | head:: tail -> 
+                    let (minVec,maxVec) = acc
+                    vecMinMax tail ( (smallestElements minVec head), (largestElements maxVec head) )
+    | [] -> acc

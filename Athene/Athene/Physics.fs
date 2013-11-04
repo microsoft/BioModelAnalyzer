@@ -77,9 +77,9 @@ type zNewton = pg um second^-2 //F=ma zeptonewtons because pg um second^-2 = 10^
 Boltzmann constant is 
 1.38 * 10^-23 m^2  kg second^-2 K^-1
 1.38 * 10^-11 m^2  pg second^-2 K^-1
-1.38 * 10^4   um^2 pg second^-2 K^-1
+1.38 * 10^1   um^2 pg second^-2 K^-1
 *)
-let Kb = (1.3806488 * 10.**4. )*1.<um^2 pg second^-2 Kelvin^-1>
+let Kb = (1.3806488 * 10.**1. )*1.<um^2 pg second^-2 Kelvin^-1>
 
 type Particle(Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: Vector3D<_>, Friction: float<second>, radius: float<um>, density: float<pg um^-3>, age: float<second>, GaussianRandomNumber:float, freeze: bool) = 
     member this.name = Name
@@ -110,27 +110,92 @@ let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<seco
     (cluster.orientation*cluster.radius+tV).norm
 
 
-let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton um^-1>) (p1: Particle) (p2: Particle) =
+let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton>) (p1: Particle) (p2: Particle) =
     let ivec  = (p1.location - p2.location)
     let displacement = ivec.len - optimum
     forceConstant * displacement * (p1.location - p2.location).norm
 
-let hardSphereForce (forcePower: float) (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
-    //the force felt by p2 due to collisions with p1 (relative distances)
+let softSphereForce (repelPower: float) (repelConstant: float<zNewton>) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
+    //Not as hard as a typical hard sphere force (n^-13, where n is less than 1)
+    //Repulsion now scales with a power of the absolute distance overlap
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
-    | d when mindist <= d -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
-    | _ -> forceConstant * (-1./(ivec.len/mindist)**(forcePower)-1.) * (p1.location - p2.location).norm
+    | d when d > (attractCutOff+mindist) -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
+    | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
+    | _ -> repelConstant * ((ivec.len-mindist)*1.<um^-1>)**repelPower * (p1.location - p2.location).norm
 
-let hardStickySphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) (attractConstant: float<zNewton um^-1>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
+//let hardSphereForce (forcePower: float) (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
+//    //the force felt by p2 due to collisions with p1 (relative distances)
+//    let ivec = (p1.location - p2.location)
+//    let mindist = p1.radius + p2.radius
+//    match ivec.len with 
+//    | d when mindist <= d -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
+//    | _ -> forceConstant * (-1./(ivec.len/mindist)**(forcePower)-1.) * (p1.location - p2.location).norm
+
+let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
+    //'Hard' spheres repel based on a (normalised overlap ** -n) Originally meant to be similar to lennard-jones potentials
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
-    | d when attractCutOff <= d -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} //can't see one another
-    | d when mindist > d -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
-    | _ -> attractConstant * (ivec.len - mindist) * (p1.location - p2.location).norm
+    | d when d > (attractCutOff+mindist)-> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} //can't see one another
+    | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
+    | _ -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
+
+let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) = 
+    //Create a grid using the cutoff as a box size
+    let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) =
+        let (minLoc,maxLoc) = vecMinMax ([for p in system->p.location]) ((List.nth system 0).location,(List.nth system 0).location)
+        match system with
+        | head:: tail -> 
+                            let dx = int ((head.location.x-minLoc.x)/cutOff)
+                            let dy = int ((head.location.y-minLoc.y)/cutOff)
+                            let dz = int ((head.location.z-minLoc.z)/cutOff)
+                            let newValue = match acc.ContainsKey (dx,dy,dz) with
+                                            | true  -> head::acc.[(dx,dy,dz)]
+                                            | false -> [head]
+                            
+                            gridFill tail (acc.Add((dx,dy,dz),newValue))
+        | [] -> acc
+
+    let grid = gridFill system Map.empty
+
+    let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
+        let (x,y,z) = box
+        [for i in [0..2] do
+                            for j in [0..2] do
+                                                for k in [0..2] do
+                                                                    match grid.ContainsKey(x-1+i,y-1+j,z-1+k) with
+                                                                    | false -> ()
+                                                                    | true  -> yield grid.[x-1+i,y-1+j,z-1+k] ]
+    let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) =
+         let everythingButThis (p: Particle) (l: Particle list) =
+            [for i in l do
+                            match i=p with
+                            | true -> ()
+                            | false -> yield i ]
+         let rec quickJoin (l1: Particle list) (l2: Particle list) =
+            match l2 with
+            | head::tail -> quickJoin (head::l1) tail
+            | [] -> l1
+         let rec quickJoinLoL (l: Particle list list) acc =
+            match l with
+            | head::tail -> quickJoinLoL tail (quickJoin acc head)
+            | [] -> acc
+         let dx = int ((p.location.x-minLoc.x)/cutOff)
+         let dy = int ((p.location.y-minLoc.y)/cutOff)
+         let dz = int ((p.location.z-minLoc.z)/cutOff)
+         
+         everythingButThis p (quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] )
+
+    let g = [for i in system -> 
+                                let dx = int ((i.location.x-minLoc.x)/cutOff)
+                                let dy = int ((i.location.y-minLoc.y)/cutOff)
+                                let dz = int ((i.location.z-minLoc.z)/cutOff)
+                                grid.[dx,dy,dz] ]
+    [for i in system -> collectGridNeighbours i (gridFill system Map.empty)]
+
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
     let getNeighbours (p:Particle) (system: Particle list) (cutOff: float<um>) =
@@ -179,13 +244,21 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
     //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
     let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
-    let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
+    let dP = dT * FrictionDrag * F + ThermalP
+    //How can you ensure that the timestep is appropriate? This will breakdown for motor cells
+    assert (dP.len < 0.5<um>) //Ensure that motions are small
+    let NewP = cluster.location + dP
     //let NewV = NewP * (1. / dT)
-    //printfn "Force %A %A %A" F.x F.y F.z
+//    printfn "Tock"
+//    printfn "Force %A %A %A" F.x F.y F.z
+//    printfn "FriFo %A %A %A" (FrictionDrag * F).x (FrictionDrag * F).y (FrictionDrag * F).z
+//    printfn "PosUp %A %A %A" (FrictionDrag * F *dT).x (FrictionDrag * F * dT).y (FrictionDrag * F *dT).z
+//    printfn "ThMot %A %A %A" ThermalP.x ThermalP.y ThermalP.z
     let NewO = thermalReorientation T rng dT cluster
     Particle(cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
 let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
+    //printfn "Tick"
     [for (p,f) in List.zip system forces -> 
         match p.freeze with
         | false -> atomicIntegrator p f T dT rng

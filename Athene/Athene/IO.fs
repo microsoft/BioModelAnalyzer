@@ -71,13 +71,26 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                                 |1 -> 
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
-                                                    hardSphereForce rP (rC*1.<zNewton>)
+                                                    hardSphereForce rP (rC*1.<zNewton>) 1. 0.<zNewton> 0.<um>
                                                 |2 ->
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
                                                     let aC = try (float) (bj.Element(xn "AttractCoeff").Value) with _ -> failwith "Missing attract constant"
+                                                    let aP = try (float) (bj.Element(xn "AttractPower").Value) with _ -> failwith "Missing attract power"
                                                     let aCO = try (float) (bj.Element(xn "AttractCutOff").Value) with _ -> failwith "Missing attract cutoff"
-                                                    hardStickySphereForce rP (rC*1.<zNewton>) (aC*1.<zNewton/um>) (aCO*1.<um>)
+                                                    hardSphereForce rP (rC*1.<zNewton>) aP (aC*1.<zNewton>) (aCO*1.<um>)
+                                                |3 -> 
+                                                    let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
+                                                    let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
+                                                    //(repelPower: float) (repelConstant: float<zNewton>) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>)
+                                                    softSphereForce rP (rC*1.<zNewton>) 1. 0.<zNewton> 0.<um>
+                                                |4 ->
+                                                    let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
+                                                    let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
+                                                    let aC = try (float) (bj.Element(xn "AttractCoeff").Value) with _ -> failwith "Missing attract constant"
+                                                    let aP = try (float) (bj.Element(xn "AttractPower").Value) with _ -> failwith "Missing attract power"
+                                                    let aCO = try (float) (bj.Element(xn "AttractCutOff").Value) with _ -> failwith "Missing attract cutoff"
+                                                    softSphereForce rP (rC*1.<zNewton>) aP (aC*1.<zNewton>) (aCO*1.<um>)
                                                 |_ -> failwith "Incorrect type of nonbonded interaction"
                                     yield (bjName,bond) ] 
                                     |> Map.ofList
