@@ -83,66 +83,133 @@ namespace BioCheck.Web.Analysis
             // Convert to Input Xml
             var inputXml = XDocument.Parse(ZipHelper.Unzip(input.ZippedXml));
 
+            // Check if the XML contains the LTL engine           
+            string engineName = inputXml.Descendants("Engine").Elements("Name").First().Value;
+            
             var log = new DefaultLogService();
 
             var azureLogService = new LogService();
 
-            try
+            if (engineName == "VMCAI")
             {
-                IAnalyzer2 analyzer = new UIMain.Analyzer2();
-
-                var analyisStartTime = DateTime.Now;
-
-                // Call the Analyzer and get the Output Xml
-                if (input.EnableLogging)
+                // Standard Proof
+                try
                 {
-                    analyzer.LoggingOn(log);
+                    IAnalyzer2 analyzer = new UIMain.Analyzer2();
+
+                    var analyisStartTime = DateTime.Now;
+
+                    // Call the Analyzer and get the Output Xml
+                    if (input.EnableLogging)
+                    {
+                        analyzer.LoggingOn(log);
+                    }
+                    else
+                    {
+                        analyzer.LoggingOff();
+                        log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                    }
+
+                    var outputXml = analyzer.checkStability(inputXml);
+
+                    // Log the output XML each time it's run
+                    // DEBUG: Sam - to check why the output is returning is null
+                    //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
+
+                    var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
+                    log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
+
+                    // Convert to the Output Data
+                    var outputData = new AnalysisOutputDTO();
+                    outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;
+                    if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
+                    {
+                        var error = outputXml.Descendants("Error").FirstOrDefault();
+                        outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
+                    }
+
+                    outputData.Time = time;
+                    outputData.ErrorMessages = log.ErrorMessages;
+                    outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
+                    outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
+
+                    return outputData;
                 }
-                else
+                catch (Exception ex)
                 {
-                    analyzer.LoggingOff();
-                    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                    azureLogService.Debug("Analyze Exception", ex.ToString());
+
+                    // Return an Unknown if fails
+                    var outputData = new AnalysisOutputDTO
+                                         {
+                                             Status = StatusTypes.Unknown,
+                                             Error = ex.ToString(),
+                                             ErrorMessages = log.ErrorMessages,
+                                             ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                                         };
+                    return outputData;
                 }
-
-                var outputXml = analyzer.checkStability(inputXml);
-
-                // Log the output XML each time it's run
-                // DEBUG: Sam - to check why the output is returning is null
-                //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
-
-                var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
-                log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
-
-                // Convert to the Output Data
-                var outputData = new AnalysisOutputDTO();
-                outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;
-                if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
-                {
-                    var error = outputXml.Descendants("Error").FirstOrDefault();
-                    outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
-                }
-
-                outputData.Time = time;
-                outputData.ErrorMessages = log.ErrorMessages;
-                outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
-                outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
-
-                return outputData;
             }
-            catch (Exception ex)
-            {
-                azureLogService.Debug("Analyze Exception", ex.ToString());
+            else 
+            {   
+                // LTL Proof
+                try
+                {
+                    IAnalyzer2 ltlProof = new UIMain.Analyzer2();                           // <-- Change.                   
 
-                // Return an Unknown if fails
-                var outputData = new AnalysisOutputDTO
-                                     {
-                                         Status = StatusTypes.Unknown,
-                                         Error = ex.ToString(),
-                                         ErrorMessages = log.ErrorMessages,
-                                         ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
-                                     };
-                return outputData;
-            }
+                    var analyisStartTime = DateTime.Now;
+
+                    // Call the Analyzer and get the Output Xml
+                    if (input.EnableLogging)
+                    {
+                        ltlProof.LoggingOn(log);
+                    }
+                    else
+                    {
+                        ltlProof.LoggingOff();
+                        log.LogDebug("Enable Logging from the Run LTL Proof button context menu to see more detailed logging info.");
+                    }
+
+                    var outputXml = ltlProof.checkStability(inputXml);                       // <-- Change.
+
+                    // Log the output XML each time it's run
+                    // DEBUG: Sam - to check why the output is returning is null
+                    //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
+
+                    var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
+                    log.LogDebug(string.Format("The LTL proof took {0} seconds to run.", time));
+
+                    // Convert to the Output Data
+                    var outputData = new AnalysisOutputDTO();
+                    outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;    // <-- Change (unless contained and of use)
+                    if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
+                    {
+                        var error = outputXml.Descendants("Error").FirstOrDefault();
+                        outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error during the LTL analysis";
+                    }
+
+                    outputData.Time = time;
+                    outputData.ErrorMessages = log.ErrorMessages;
+                    outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
+                    outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
+
+                    return outputData;
+                }
+                catch (Exception ex)
+                {
+                    azureLogService.Debug("LTL Exception", ex.ToString());
+
+                    // Return an Unknown if fails
+                    var outputData = new AnalysisOutputDTO
+                    {
+                        Status = StatusTypes.Unknown,
+                        Error = ex.ToString(),
+                        ErrorMessages = log.ErrorMessages,
+                        ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                    };
+                    return outputData;
+                }
+            }   // Normal or LTL Proof
         }
 
         public SimulationOutputDTO Simulate(SimulationInputDTO input)

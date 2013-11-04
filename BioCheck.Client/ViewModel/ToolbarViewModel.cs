@@ -12,6 +12,7 @@ using BioCheck.AnalysisService;
 using BioCheck.Helpers;
 using BioCheck.Services;
 using BioCheck.ViewModel.Simulation;
+using BioCheck.ViewModel.Time;                  //Time edit
 using BioCheck.ViewModel.XML;
 using BioCheck.ViewModel.Models;
 using BioCheck.ViewModel.Proof;
@@ -32,6 +33,7 @@ namespace BioCheck.ViewModel
         private readonly DelegateCommand clearCommand;
         private readonly DelegateCommand deleteCommand;
         private readonly DelegateCommand runProofCommand;
+        private readonly DelegateCommand runTimeCommand;    //Time edit
         private readonly DelegateCommand runSimulationCommand;
         private readonly DelegateCommand clearProofCommand;
         private readonly DelegateCommand cancelProofCommand;
@@ -60,6 +62,7 @@ namespace BioCheck.ViewModel
             this.clearCommand = new DelegateCommand(OnClearExecuted);
             this.deleteCommand = new DelegateCommand(OnDeleteExecuted);
             this.runProofCommand = new DelegateCommand(OnRunProofExecuted);
+            this.runTimeCommand = new DelegateCommand(OnRunTimeExecuted);       // Time edit
             this.runSimulationCommand = new DelegateCommand(OnRunSimulationExecuted);
             this.clearProofCommand = new DelegateCommand(OnClearProofExecuted);
             this.cancelProofCommand = new DelegateCommand(OnCancelProofExecuted);
@@ -540,6 +543,14 @@ namespace BioCheck.ViewModel
             get { return this.runProofCommand; }
         }
 
+        /// <summary>
+        /// Gets the value of the <see cref="RunTimeCommand"/> property.
+        /// </summary>
+        public DelegateCommand RunTimeCommand
+        {
+            get { return this.runTimeCommand; }     // Time edit
+        }
+
         public DelegateCommand RunSimulationCommand
         {
             get { return this.runSimulationCommand; }
@@ -593,6 +604,46 @@ namespace BioCheck.ViewModel
             timer = DateTime.Now;
             analyzerClient.AnalyzeAsync(analysisInputDto);
         }
+
+        // Time edit
+        private void OnRunTimeExecuted()
+        {
+            if (!ApplicationViewModel.Instance.HasActiveModel)
+            {
+                return;
+            }
+
+            // Show a Cancellable Busy Indicator window
+            ApplicationViewModel.Instance.Container
+                    .Resolve<IBusyIndicatorService>()
+                    .Show("Running temporal proof...", CancelProofCommand);
+
+            //var modelVM = ApplicationViewModel.Instance.ActiveModel;
+
+            /*
+            // Create the Analysis Input Data from the active Model ViewModel
+            analysisInputDto = AnalysisInputDTOFactory.Create(modelVM);
+
+            // Enable/Disable logging
+            analysisInputDto.EnableLogging = this.EnableAnalyzerLogging;
+
+            // Create the analyzer client
+            if (analyzerClient == null)
+            {
+                var serviceUri = new Uri("../Services/AnalysisService.svc", UriKind.Relative);
+                var endpoint = new EndpointAddress(serviceUri);
+                analyzerClient = new AnalysisServiceClient("AnalysisServiceCustom", endpoint);
+                analyzerClient.AnalyzeCompleted += OnAnalysisCompleted;
+            }
+
+            // Invoke the async Analyze method on the service
+            timer = DateTime.Now;
+            analyzerClient.AnalyzeAsync(analysisInputDto);
+            */
+            timer = DateTime.Now;
+            OnTimeProofCompleted();
+        }
+
 
         private void OnCancelProofExecuted()
         {
@@ -692,8 +743,8 @@ namespace BioCheck.ViewModel
                     ApplicationViewModel.Instance.Log.Error("There was an error running the analysis.", details);
 
                     return;
-                } 
-                
+                }
+
                 if (analysisOutput.Status == StatusTypes.Unknown || analysisOutput.Status == StatusTypes.Error)
                 {
                     // Clear the current proof
@@ -786,6 +837,38 @@ namespace BioCheck.ViewModel
                .Resolve<IBusyIndicatorService>()
                .Close();
         }
+
+        /// <summary>
+        /// Part of the LTL loop to show the window.
+        /// // Time edit 
+        /// </summary>
+        /// <param name="?"></param>
+        private void OnTimeProofCompleted()
+        {
+            if (!ApplicationViewModel.Instance.HasActiveModel)
+            {
+                return;
+            }
+
+            //var timeTaken = Math.Round((DateTime.Now - timer).TotalSeconds, 1); // Use this for display?
+
+            // Show a Cancellable Busy Indicator window
+            ApplicationViewModel.Instance.Container
+                    .Resolve<IBusyIndicatorService>()
+                    .Show("Initialising LTL...");
+
+            var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
+
+            var timeVM = TimeViewModelFactory.Create(modelVM);              // Sets only the name.
+
+            ApplicationViewModel.Instance.Container
+                    .Resolve<ITimeWindowService>().Show(timeVM);
+
+            ApplicationViewModel.Instance.Container
+               .Resolve<IBusyIndicatorService>()
+               .Close();
+        }
+
 
         /// <summary>
         /// Gets the value of the <see cref="ToggleAnalyzerLoggingCommand"/> property.

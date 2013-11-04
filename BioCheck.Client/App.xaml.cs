@@ -94,6 +94,9 @@ namespace BioCheck
             container.RegisterInstance(typeof(ISimulationWindowService), new SimulationWindowService(mainPage), new ContainerControlledLifetimeManager());
             container.RegisterInstance(typeof(IGraphWindowService), new GraphWindowService(mainPage), new ContainerControlledLifetimeManager());
 
+            // Time edit
+            container.RegisterInstance(typeof(ITimeWindowService), new TimeWindowService(mainPage), new ContainerControlledLifetimeManager());
+
             var busyIndicator = new BioCheck.Controls.BusyIndicator();
             busyIndicator.Content = mainPage;
             busyIndicator.HorizontalContentAlignment = HorizontalAlignment.Stretch;

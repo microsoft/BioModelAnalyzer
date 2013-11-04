@@ -6,20 +6,21 @@ using BioCheck.AnalysisService;
 using BioCheck.Helpers;
 using BioCheck.ViewModel.Factories;
 using BioCheck.ViewModel.Models;
+using BioCheck.ViewModel.Proof;
 
-namespace BioCheck.ViewModel.Proof
+namespace BioCheck.ViewModel.Time
 {
     /// <summary>
     /// Static Factory class for converting a ModelViewModel to AnalysisInput
     /// </summary>
-    public static class AnalysisInputDTOFactory
+    public static class TimeInputDTOFactory
     {
         /// <summary>
         /// Creates the AnalysisInput from the specified model VM.
         /// </summary>
         /// <param name="modelVM">The model VM.</param>
         /// <returns></returns>
-        public static AnalysisInputDTO Create(ModelViewModel modelVM)
+        public static AnalysisInputDTO Create(ModelViewModel modelVM, TimeViewModel timeVM)
         {
             var data = new AnalysisInputDTO();
 
@@ -28,21 +29,24 @@ namespace BioCheck.ViewModel.Proof
             var xdoc = new XDocument(
                 new XElement("AnalysisInput",
                                 new XAttribute("ModelName", data.ModelName),
-                                new XElement("Engine", 
-                                    new XElement ("Name", "VMCAI")),
+                                new XElement("Engine",
+                                    new XElement("Name", "CAV"),
+                                    new XElement("Formula", timeVM.LTLInput),
+                                    new XElement("Number_of_steps", timeVM.LTLPath),
+                                    new XElement("Naive", timeVM.LTLNaive)),
                                 new XElement("Variables",
                                     (from v in
-                                    (from extVvm in modelVM.VariableViewModels select extVvm)
-                                    .Union(
-                                    (from cvm in modelVM.ContainerViewModels
-                                    from intVvm in cvm.VariableViewModels
-                                    select intVvm))
-                                            select new XElement("Variable",
-                                                                new XAttribute("Id", v.Id),
-                                                                new XElement("Name", NameFactory.GetVariableName(v)),
-                                                                new XElement("RangeFrom", v.RangeFrom),
-                                                                new XElement("RangeTo", v.RangeTo),
-                                                                new XElement("Function", FormulaFactory.Create(v))))),
+                                         (from extVvm in modelVM.VariableViewModels select extVvm)
+                                         .Union(
+                                         (from cvm in modelVM.ContainerViewModels
+                                          from intVvm in cvm.VariableViewModels
+                                          select intVvm))
+                                     select new XElement("Variable",
+                                                         new XAttribute("Id", v.Id),
+                                                         new XElement("Name", NameFactory.GetVariableName(v)),
+                                                         new XElement("RangeFrom", v.RangeFrom),
+                                                         new XElement("RangeTo", v.RangeTo),
+                                                         new XElement("Function", FormulaFactory.Create(v))))),
                             new XElement("Relationships",
                                             from r in modelVM.RelationshipViewModels
                                             select new XElement("Relationship",
