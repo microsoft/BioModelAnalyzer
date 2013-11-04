@@ -77,9 +77,10 @@ namespace BioCheck.Web.Analysis
         /// Analyzes the specified input.
         /// </summary>
         /// <param name="input">The input.</param>
-        /// <returns></returns>
+        /// <returns></returns>       
         public AnalysisOutputDTO Analyze(AnalysisInputDTO input)
         {
+            
             // Convert to Input Xml
             var inputXml = XDocument.Parse(ZipHelper.Unzip(input.ZippedXml));
 
@@ -89,7 +90,8 @@ namespace BioCheck.Web.Analysis
             var log = new DefaultLogService();
 
             var azureLogService = new LogService();
-
+            
+            // SI: Refactor if-clauses into separate methods. 
             if (engineName == "VMCAI")
             {
                 // Standard Proof
@@ -155,22 +157,30 @@ namespace BioCheck.Web.Analysis
                 // LTL Proof
                 try
                 {
-                    IAnalyzer2 ltlProof = new UIMain.Analyzer2();                           // <-- Change.                   
+                    string formula = inputXml.Descendants("Engine").Elements("Formula").First().Value;
+                    string num_of_steps = inputXml.Descendants("Engine").Elements("Number_of_steps").First().Value;
+                    bool naive_tmp, naive;                     
+                    if (Boolean.TryParse((inputXml.Descendants("Engine").Elements("Naive").First().Value), out naive_tmp))
+                        naive = naive_tmp;
+                    else 
+                        naive = false; 
+
+                    IAnalyzer2 analyzer = new UIMain.Analyzer2();                          
 
                     var analyisStartTime = DateTime.Now;
 
                     // Call the Analyzer and get the Output Xml
                     if (input.EnableLogging)
                     {
-                        ltlProof.LoggingOn(log);
+                        analyzer.LoggingOn(log);
                     }
                     else
                     {
-                        ltlProof.LoggingOff();
+                        analyzer.LoggingOff();
                         log.LogDebug("Enable Logging from the Run LTL Proof button context menu to see more detailed logging info.");
                     }
 
-                    var outputXml = ltlProof.checkStability(inputXml);                       // <-- Change.
+                    var outputXml = analyzer.checkLTL(inputXml,formula,num_of_steps,naive);  
 
                     // Log the output XML each time it's run
                     // DEBUG: Sam - to check why the output is returning is null
@@ -181,12 +191,12 @@ namespace BioCheck.Web.Analysis
 
                     // Convert to the Output Data
                     var outputData = new AnalysisOutputDTO();
-                    outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;    // <-- Change (unless contained and of use)
-                    if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
-                    {
-                        var error = outputXml.Descendants("Error").FirstOrDefault();
-                        outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error during the LTL analysis";
-                    }
+                    //outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;    // <-- Change (unless contained and of use)
+                    //if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
+                    //{
+                    //    var error = outputXml.Descendants("Error").FirstOrDefault();
+                    //    outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error during the LTL analysis";
+                    //}
 
                     outputData.Time = time;
                     outputData.ErrorMessages = log.ErrorMessages;
