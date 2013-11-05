@@ -35,7 +35,7 @@ namespace BioCheck.ViewModel.Time
         private string modelName;
         private bool ltlProof = false;
         private int ltlPath = 100;
-        private string ltlInput;             
+        private string ltlInput = "True";   
         private string ltlOutput;    
 
 
@@ -74,55 +74,70 @@ namespace BioCheck.ViewModel.Time
             {
                 return;
             }
-            
 
-            // Check the formula for unbalanced N of brackets
-            string currFormula = this.LTLInput;
-            string noWhite = currFormula.Trim();    // Strip whitespace
-
-            int frontBracketCount = 0;
-            int backBracketCount = 0;
-
-            for (int i = 0; i < noWhite.Length; i++)
+            // Counter lack of input
+            if (this.LTLInput == null || this.LTLInput == "")
             {
-                if (noWhite[i] == '(')
-                {
-                    frontBracketCount++;
-                }
-                else if (noWhite[i] == ')')
-                {
-                    backBracketCount++;
-                }
+                this.LTLOutput = "\nYou wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
             }
-
-            if (frontBracketCount == backBracketCount)
+            else
             {
-                ApplicationViewModel.Instance.Container
-                     .Resolve<IBusyIndicatorService>()
-                     .Show("Running temporal proof...", CancelTimeCommand);
+                string currFormula = this.LTLInput;
+                string noWhite = currFormula.Trim();    // Strip whitespace
 
-                var modelVM = ApplicationViewModel.Instance.ActiveModel;
-                timeInputDto = TimeInputDTOFactory.Create(modelVM, this);
-
-                // Enable/Disable logging
-                timeInputDto.EnableLogging = ApplicationViewModel.Instance.ToolbarViewModel.EnableAnalyzerLogging;
-
-                // Create the analyzer client
-                if (analyzerClient == null)
+                if (noWhite == "")
                 {
-                    var serviceUri = new Uri("../Services/AnalysisService.svc", UriKind.Relative);
-                    var endpoint = new EndpointAddress(serviceUri);
-                    analyzerClient = new AnalysisServiceClient("AnalysisServiceCustom", endpoint);
-                    analyzerClient.AnalyzeCompleted += OnTimeCompleted;
+                    this.LTLOutput = "\nYou wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
+                    this.LTLInput = "";                 // Remove any whitespace entered by the user in the formula input.
                 }
+                else 
+                { 
+                    // Check the formula for unbalanced N of brackets
+                    int frontBracketCount = 0;
+                    int backBracketCount = 0;
 
-                // Invoke the async Analyze method on the service
-                timer = DateTime.Now;
-                analyzerClient.AnalyzeAsync(timeInputDto);                // Result in an AnalysisService.svc.cs input with a Proof signature.
-            }
-            else 
-            {
-                this.LTLOutput = "\nYour input formula contains an unbalanced number of brackets.\nPlease correct this and try again.";
+                    for (int i = 0; i < noWhite.Length; i++)
+                    {
+                        if (noWhite[i] == '(')
+                        {
+                            frontBracketCount++;
+                        }
+                        else if (noWhite[i] == ')')
+                        {
+                            backBracketCount++;
+                        }
+                    }
+
+                    if (frontBracketCount == backBracketCount)
+                    {
+                        ApplicationViewModel.Instance.Container
+                             .Resolve<IBusyIndicatorService>()
+                             .Show("Running temporal proof...", CancelTimeCommand);
+
+                        var modelVM = ApplicationViewModel.Instance.ActiveModel;
+                        timeInputDto = TimeInputDTOFactory.Create(modelVM, this);
+
+                        // Enable/Disable logging
+                        timeInputDto.EnableLogging = ApplicationViewModel.Instance.ToolbarViewModel.EnableAnalyzerLogging;
+
+                        // Create the analyzer client
+                        if (analyzerClient == null)
+                        {
+                            var serviceUri = new Uri("../Services/AnalysisService.svc", UriKind.Relative);
+                            var endpoint = new EndpointAddress(serviceUri);
+                            analyzerClient = new AnalysisServiceClient("AnalysisServiceCustom", endpoint);
+                            analyzerClient.AnalyzeCompleted += OnTimeCompleted;
+                        }
+
+                        // Invoke the async Analyze method on the service
+                        timer = DateTime.Now;
+                        analyzerClient.AnalyzeAsync(timeInputDto);                // Result in an AnalysisService.svc.cs input with a Proof signature.
+                    }
+                    else 
+                    {
+                        this.LTLOutput = "\nYour input formula contains an unbalanced number of brackets.\nPlease correct this and try again.";
+                    }
+                }
             }
         }
 
