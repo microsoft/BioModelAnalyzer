@@ -4,7 +4,7 @@ module Paths
 // and compute and record possible value range for all variable at each time step
 // until the range does not change any more
 
-let output_paths (network : QN.node list) bounds naive_encoding =
+let output_paths (network : QN.node list) bounds =
     
     let mutable paths = [bounds]
     
@@ -15,7 +15,7 @@ let output_paths (network : QN.node list) bounds naive_encoding =
     let nubounds = ref bounds
         
     let mutable con = true 
-    while con && not (naive_encoding) do
+    while con do
             
         nubounds := stepZ3rangelist.find_paths network step !nubounds bounds
         con <- List.forall (fun elem -> elem <> !nubounds) paths 

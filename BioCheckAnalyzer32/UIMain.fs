@@ -77,7 +77,7 @@ type Analyzer2() =
                 else             
                     let range = Rangelist.nuRangel network
                     // SI: pass default value of 3rd argument. 
-                    let paths = Paths.output_paths network range false
+                    let paths = Paths.output_paths network range 
                     let padded_paths = Paths.change_list_to_length paths num_of_steps
 
                     // SI: right now, we're just dumping res,model back to the UI.

@@ -32,7 +32,6 @@ let proof_output = ref "proof_output" // output filename
 // -- related to CAV engine
 let formula = ref "True"
 let number_of_steps = ref -1
-let naive_computation = ref false
 let model_check = ref false
 let modelsdir = ref ".\\" 
 let output_model = ref false
@@ -54,7 +53,6 @@ let rec parse_args args =
     | "-formula" :: f :: rest -> formula := f; parse_args rest
     | "-mc" :: rest -> model_check := true; parse_args rest
     | "-outputmodel" :: rest -> output_model := true; parse_args rest
-    | "-naive" :: rest -> naive_computation := true; parse_args rest
     | "-proof" :: rest -> output_proof := true; parse_args rest
     | "-path" :: i :: rest -> number_of_steps := (int)i; parse_args rest
     | "-modelsdir" :: d :: rest -> modelsdir := d; parse_args rest
@@ -159,9 +157,9 @@ let main args =
                 // and the initial value of steps to be unrolled
                 // Paths is the list of ranges
                 // initK = the length of prefix + the length of loop, which is used as the initial value of K when doing BMC
-                let paths = Paths.output_paths network nuRangel !naive_computation
+                let paths = Paths.output_paths network nuRangel
 
-                if (!output_proof && not !naive_computation) then
+                if (!output_proof) then
                     Paths.print_paths network paths
 
                 // Extend/truncate the list of paths to the required length
