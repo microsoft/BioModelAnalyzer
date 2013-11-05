@@ -67,7 +67,7 @@ type Analyzer2() =
         member this.findCExFixpoint(xml_model:XDocument, xml_notstabilizing_result:XDocument ) = 
             find_cex xml_model xml_notstabilizing_result Stabilize.find_cex_fixpoint            
 
-        member this.checkLTL(input_model:XDocument, formula:string, num_of_steps:string, naive:bool) = 
+        member this.checkLTL(input_model:XDocument, formula:string, num_of_steps:string) = 
             try
                 let network = Marshal.model_of_xml input_model
                 let formula = LTL.string_to_LTL_formula formula network
@@ -76,7 +76,8 @@ type Analyzer2() =
                     Marshal.xml_of_error -1 "unable to parse formula"                  
                 else             
                     let range = Rangelist.nuRangel network
-                    let paths = Paths.output_paths network range naive
+                    // SI: pass default value of 3rd argument. 
+                    let paths = Paths.output_paths network range false
                     let padded_paths = Paths.change_list_to_length paths num_of_steps
 
                     // SI: right now, we're just dumping res,model back to the UI.

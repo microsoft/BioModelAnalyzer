@@ -159,11 +159,6 @@ namespace BioCheck.Web.Analysis
                 {
                     string formula = inputXml.Descendants("Engine").Elements("Formula").First().Value;
                     string num_of_steps = inputXml.Descendants("Engine").Elements("Number_of_steps").First().Value;
-                    bool naive_tmp, naive;                     
-                    if (Boolean.TryParse((inputXml.Descendants("Engine").Elements("Naive").First().Value), out naive_tmp))
-                        naive = naive_tmp;
-                    else 
-                        naive = false; 
 
                     IAnalyzer2 analyzer = new UIMain.Analyzer2();                          
 
@@ -180,7 +175,7 @@ namespace BioCheck.Web.Analysis
                         log.LogDebug("Enable Logging from the Run LTL Proof button context menu to see more detailed logging info.");
                     }
 
-                    var outputXml = analyzer.checkLTL(inputXml,formula,num_of_steps,naive);  
+                    var outputXml = analyzer.checkLTL(inputXml,formula,num_of_steps);  
 
                     // Log the output XML each time it's run
                     // DEBUG: Sam - to check why the output is returning is null
