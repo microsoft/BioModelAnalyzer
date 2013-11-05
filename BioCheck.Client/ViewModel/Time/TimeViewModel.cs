@@ -25,14 +25,15 @@ namespace BioCheck.ViewModel.Time
         private readonly DelegateCommand closeCommand;
         private readonly DelegateCommand cancelTimeCommand;
         private readonly DelegateCommand consoleCommand;
+        private readonly DelegateCommand runSimulation;
+        private readonly DelegateCommand runProve;
    
 
         private AnalysisServiceClient analyzerClient;
 
         private DateTime timer;
         private string modelName;
-        private bool ltlNaive = false;
-        private bool LTLCheck = false;
+        private bool ltlProof = false;
         private int ltlPath = 100;
         private string ltlInput;             
         private string ltlOutput;    
@@ -44,11 +45,23 @@ namespace BioCheck.ViewModel.Time
             this.closeCommand = new DelegateCommand(OnCloseExecuted);
             this.cancelTimeCommand = new DelegateCommand(OnCancelTimeExecuted);
             this.consoleCommand = new DelegateCommand(OnConsoleExecuted);
+            this.runSimulation = new DelegateCommand(OnRunSimulationExecuted);
+            this.runProve = new DelegateCommand(OnRunProveExecuted);
         }
                 
         public DelegateCommand RunCommand
         {
             get { return this.runCommand; }
+        }
+
+        public DelegateCommand LTLSimulation
+        {
+            get { return this.runSimulation; }
+        }
+
+        public DelegateCommand LTLProve
+        {
+            get { return this.runProve; }
         }
 
 
@@ -61,32 +74,56 @@ namespace BioCheck.ViewModel.Time
             {
                 return;
             }
-              
-            ApplicationViewModel.Instance.Container
-                 .Resolve<IBusyIndicatorService>()
-                 .Show("Running temporal proof...", CancelTimeCommand);
-
-
             
-            var modelVM = ApplicationViewModel.Instance.ActiveModel;
-            timeInputDto = TimeInputDTOFactory.Create(modelVM, this);
 
-            // Enable/Disable logging
-            timeInputDto.EnableLogging = ApplicationViewModel.Instance.ToolbarViewModel.EnableAnalyzerLogging;
+            // Check the formula for unbalanced N of brackets
+            string currFormula = this.LTLInput;
+            string noWhite = currFormula.Trim();    // Strip whitespace
 
-            // Create the analyzer client
-            if (analyzerClient == null)
+            int frontBracketCount = 0;
+            int backBracketCount = 0;
+
+            for (int i = 0; i < noWhite.Length; i++)
             {
-                var serviceUri = new Uri("../Services/AnalysisService.svc", UriKind.Relative);
-                var endpoint = new EndpointAddress(serviceUri);
-                analyzerClient = new AnalysisServiceClient("AnalysisServiceCustom", endpoint);
-                analyzerClient.AnalyzeCompleted += OnTimeCompleted;
+                if (noWhite[i] == '(')
+                {
+                    frontBracketCount++;
+                }
+                else if (noWhite[i] == ')')
+                {
+                    backBracketCount++;
+                }
             }
 
-            // Invoke the async Analyze method on the service
-            timer = DateTime.Now;
-            analyzerClient.AnalyzeAsync(timeInputDto);                // Result in an AnalysisService.svc.cs input with a Proof signature.
+            if (frontBracketCount == backBracketCount)
+            {
+                ApplicationViewModel.Instance.Container
+                     .Resolve<IBusyIndicatorService>()
+                     .Show("Running temporal proof...", CancelTimeCommand);
 
+                var modelVM = ApplicationViewModel.Instance.ActiveModel;
+                timeInputDto = TimeInputDTOFactory.Create(modelVM, this);
+
+                // Enable/Disable logging
+                timeInputDto.EnableLogging = ApplicationViewModel.Instance.ToolbarViewModel.EnableAnalyzerLogging;
+
+                // Create the analyzer client
+                if (analyzerClient == null)
+                {
+                    var serviceUri = new Uri("../Services/AnalysisService.svc", UriKind.Relative);
+                    var endpoint = new EndpointAddress(serviceUri);
+                    analyzerClient = new AnalysisServiceClient("AnalysisServiceCustom", endpoint);
+                    analyzerClient.AnalyzeCompleted += OnTimeCompleted;
+                }
+
+                // Invoke the async Analyze method on the service
+                timer = DateTime.Now;
+                analyzerClient.AnalyzeAsync(timeInputDto);                // Result in an AnalysisService.svc.cs input with a Proof signature.
+            }
+            else 
+            {
+                this.LTLOutput = "\nYour input formula contains an unbalanced number of brackets.\nPlease correct this and try again.";
+            }
         }
 
         private TimeOutput timeOutput;
@@ -108,19 +145,61 @@ namespace BioCheck.ViewModel.Time
                     string finalOutput;
                     if (timeOutput.Status != "Error")
                     {
-                        finalOutput = "\nThe formula above is ";
-                        finalOutput += timeOutput.Status;
-                        finalOutput += " for the current model, ";
-                        finalOutput += this.ModelName;
-                        finalOutput += ".\n\nFull LTL proof output:\n";
-                        finalOutput += timeOutput.Model;
+                        bool correct = bool.Parse(timeOutput.Status);
+                        if (correct)
+                        {
+                            if (this.ltlProof)
+                            {
+                                //finalOutput = "\nTRUE: All possible simulations of maximum length ";
+                                //finalOutput += this.ltlPath;
+                                //finalOutput += " satisifies the above formula for the current model, ";
+                                //finalOutput += this.ModelName;
+                                //finalOutput += ".";
+
+                                finalOutput = "\nFALSE: In all possible simulations of maximum length ";
+                                finalOutput += this.ltlPath;
+                                finalOutput += " , there are states where the above formula is not satisfied for the current model, ";
+                                finalOutput += this.ModelName;
+                                finalOutput += ".";
+                            }
+                            else { 
+                                finalOutput = "\nTRUE: There is a simulation that satisifies the above formula for the current model, ";
+                                finalOutput += this.ModelName;
+                                finalOutput += ".\n\nThe simulation output:\n";
+                                finalOutput += timeOutput.Model;
+                            }
+                        }
+                        else 
+                        {
+                            if (this.ltlProof)
+                            {
+                                //finalOutput = "\nFALSE: No possible simulation exists of maximum length ";
+                                //finalOutput += this.ltlPath;
+                                //finalOutput += " that satisifies the above formula for the current model, ";
+                                //finalOutput += this.ModelName;
+                                //finalOutput += ".";
+
+                                finalOutput = "\nTRUE: All possible simulations of maximum length ";
+                                finalOutput += this.ltlPath;
+                                finalOutput += " satisifies the above formula for the current model, ";
+                                finalOutput += this.ModelName;
+                                finalOutput += ".";
+                            }
+                            else
+                            {
+                                finalOutput = "\nFALSE: No possible simulation exists of maximum length ";
+                                finalOutput += this.ltlPath;
+                                finalOutput += " that satisifies the above formula for the current model, ";
+                                finalOutput += this.ModelName;
+                                finalOutput += ".";
+                            }
+                        }
                     } 
                     else 
                     {
-                        finalOutput = "\nSomething went wrong. Are you sure that the formula above is correct?";
+                        finalOutput = "\nSomething went wrong. Are you sure that the formula above is correct?\nPlease note that variable names are case-sensitive.";
                     }
                     
-
                     this.LTLOutput = finalOutput;
 
                     // If we've reached the total number of steps, then close the busy dialog
@@ -221,51 +300,16 @@ namespace BioCheck.ViewModel.Time
             }
         }
 
-        //public bool LTLNaive
-        //{
-        //    get { return this.ltlNaive; }
-        //    set
-        //    {
-        //        if (this.ltlNaive != value)
-        //        {
-        //            this.ltlNaive = value;
-        //            OnPropertyChanged(() => LTLNaive);
-        //        }
-        //    }
-        //}
-
-        public bool LTLNaive
+        public bool LTLProof
         {
-            get
-            {
-                return this.ltlNaive;
-            }
-        }
-
-        public bool LTLNaive_true
-        {
+            get { return this.ltlProof; }
             set
             {
-                this.ltlNaive = true;
-            }
-        }
-
-        public bool LTLNaive_false
-        {
-            set
-            {
-                this.ltlNaive = false;
-            }
-        }
-
-        public bool IsChecked
-        {
-            get
-            {
-                return this.ltlNaive;
-            }
-            set {
-                this.ltlNaive = value;
+                //if (this.ltlProof != value)
+                //{
+                this.ltlProof = value;          // Should never be set here. Set by check-distinct methods.
+                //    OnPropertyChanged(() => LTLProof);
+                //}
             }
         }
 
@@ -327,5 +371,14 @@ namespace BioCheck.ViewModel.Time
 
         }
 
+        private void OnRunSimulationExecuted()
+        {
+            this.ltlProof = false;
+        }
+
+        private void OnRunProveExecuted()
+        {
+            this.ltlProof = true;
+        }
     }
 }

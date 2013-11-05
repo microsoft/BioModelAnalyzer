@@ -32,6 +32,31 @@ namespace BioCheck.ViewModel.Time
             {
                 timeVM.LTLInput = "True";
             }
+            
+            string bracketedFormula;
+            string currFormula = timeVM.LTLInput;
+            string noWhite = currFormula.Trim();    // Strip start and end whitespace
+
+            // If not bracket enclosed, bracket-enclose
+            if (!noWhite.StartsWith("(") && !noWhite.EndsWith(")"))
+            {
+                bracketedFormula = "(";
+                bracketedFormula += noWhite;
+                bracketedFormula += ")";
+            }
+            else {
+                bracketedFormula = noWhite;         // Pre-bracketed by user.
+            }
+
+            string finalFormula = bracketedFormula;
+            bool checkTmp = timeVM.LTLProof;
+            if (checkTmp)
+            {
+                finalFormula = "(Not ";
+                finalFormula += bracketedFormula;
+                finalFormula += ")";
+            }
+
 
             // Path checker
             if (timeVM.LTLPath < 1)
@@ -63,15 +88,13 @@ namespace BioCheck.ViewModel.Time
             }
 
 
-
             var xdoc = new XDocument(
                 new XElement("AnalysisInput",
                                 new XAttribute("ModelName", data.ModelName),
                                 new XElement("Engine",
                                     new XElement("Name", "CAV"),
-                                    new XElement("Formula", timeVM.LTLInput),
-                                    new XElement("Number_of_steps", timeVM.LTLPath),
-                                    new XElement("Naive", timeVM.LTLNaive)),
+                                    new XElement("Formula", finalFormula),
+                                    new XElement("Number_of_steps", timeVM.LTLPath)),
                                 new XElement("Variables",
                                     (from v in
                                          (from extVvm in modelVM.VariableViewModels select extVvm)
