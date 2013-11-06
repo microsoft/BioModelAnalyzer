@@ -8,7 +8,8 @@ open System.Xml.Linq
 
 (*
 'Spherical E. coli' particle
-Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.000000005<second>, 0.7<um>, 1.3<pg um^-3>, false)
+Particle('E',{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 1.,  0.7<um>, 1.3<pg um^-3>, false)
+Particle("E",{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 0.7<um>, 1.3<pg um^-3>, 1.<second>, 1., false)
 *)
 
 let dropFrame (system: Physics.Particle list) =
@@ -49,6 +50,7 @@ let pdbRead (filename: string) (rng: System.Random) =
 let xmlTopRead (filename: string) (rng: System.Random) =
     let xn s = XName.Get(s)
     let xd = XDocument.Load(filename)
+    let maxMove = try (float) (xd.Element(xn "System").Element(xn "MaxMove").Attribute(xn "r").Value) with _ -> failwith "Set a maxium move distance"
     let pTypes = [ for t in xd.Element(xn "Topology").Element(xn "Types").Elements(xn "Particle") do 
                     let tName = try t.Attribute(xn "Name").Value with _ -> failwith "Cannot read name"
                     let tDensity = try (float) (t.Element(xn "Density").Value) with _ -> failwith "Cannot read density"
@@ -149,7 +151,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
     
     //let interfaceTopology = (machName,regions,responses)
     let intTop = {name=machName;regions=regions;responses=responses}
-    (pTypes,nbTypes,(machName,machI0),intTop)
+    (pTypes,nbTypes,(machName,machI0),intTop,maxMove)
     
 //let topRead (filename: string) =
 //    topology files describe the basic forces in the system

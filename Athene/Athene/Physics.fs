@@ -145,8 +145,8 @@ let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( 
 
 let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) = 
     //Create a grid using the cutoff as a box size
-    let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) =
-        let (minLoc,maxLoc) = vecMinMax ([for p in system->p.location]) ((List.nth system 0).location,(List.nth system 0).location)
+    let (minLoc,maxLoc) = vecMinMax ([for p in system->p.location]) ((List.nth system 0).location,(List.nth system 0).location)
+    let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
         match system with
         | head:: tail -> 
                             let dx = int ((head.location.x-minLoc.x)/cutOff)
@@ -156,10 +156,10 @@ let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) =
                                             | true  -> head::acc.[(dx,dy,dz)]
                                             | false -> [head]
                             
-                            gridFill tail (acc.Add((dx,dy,dz),newValue))
+                            gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
         | [] -> acc
 
-    let grid = gridFill system Map.empty
+    let grid = gridFill system Map.empty minLoc cutOff
 
     let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
         let (x,y,z) = box
@@ -189,12 +189,12 @@ let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) =
          
          everythingButThis p (quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] )
 
-    let g = [for i in system -> 
-                                let dx = int ((i.location.x-minLoc.x)/cutOff)
-                                let dy = int ((i.location.y-minLoc.y)/cutOff)
-                                let dz = int ((i.location.z-minLoc.z)/cutOff)
-                                grid.[dx,dy,dz] ]
-    [for i in system -> collectGridNeighbours i (gridFill system Map.empty)]
+//    let g = [for i in system -> 
+//                                let dx = int ((i.location.x-minLoc.x)/cutOff)
+//                                let dy = int ((i.location.y-minLoc.y)/cutOff)
+//                                let dz = int ((i.location.z-minLoc.z)/cutOff)
+//                                grid.[dx,dy,dz] ]
+    [for i in system -> collectGridNeighbours i (gridFill system Map.empty minLoc cutOff)]
 
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
@@ -221,13 +221,13 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
 
 
-let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (dT: float<second>) = 
+let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (dT: float<second>) (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
     Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
-let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
+let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>)= 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
     //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
@@ -238,7 +238,7 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     //printfn "Force %A %A %A" F.x F.y F.z
     Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
-let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) = 
+let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
     //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
@@ -246,7 +246,14 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
     let dP = dT * FrictionDrag * F + ThermalP
     //How can you ensure that the timestep is appropriate? This will breakdown for motor cells
-    assert (dP.len < 0.5<um>) //Ensure that motions are small
+    let safety = match (dP.len>maxMove) with
+                    | true  -> 
+                                printfn "Particle %s at %A moves %A, length %A" cluster.name cluster.location dP dP.len
+                                printfn "Thermal %A" ThermalP.len
+                                printfn "Force %A" (dT * FrictionDrag * F).len
+                                failwith "Max move violated. Timestep possibly too large"
+                    | false -> ()
+    //assert (dP.len < 0.5<um>) //Ensure that motions are small
     let NewP = cluster.location + dP
     //let NewV = NewP * (1. / dT)
 //    printfn "Tock"
@@ -257,10 +264,10 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
     let NewO = thermalReorientation T rng dT cluster
     Particle(cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
-let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) =
+let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
     //printfn "Tick"
     [for (p,f) in List.zip system forces -> 
         match p.freeze with
-        | false -> atomicIntegrator p f T dT rng
+        | false -> atomicIntegrator p f T dT rng maxMove
         | true  -> p ]
 

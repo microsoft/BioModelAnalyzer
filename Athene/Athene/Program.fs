@@ -10,12 +10,12 @@ let rec listLinePrint l =
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (intTop: interfaceTopology) (steps: int) (T: float<Kelvin>) (dT: float<second>) trajectory csvout (freq: int) rand=
+let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (intTop: interfaceTopology) (steps: int) (T: float<Kelvin>) (dT: float<second>) (maxMove: float<um>) trajectory csvout (freq: int) rand=
     let pUpdate (system: Particle list) (machineForces: Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) rand write =
         match write with
         | true -> trajectory system
         | _ -> ()
-        bdSystemUpdate system [for (sF,mF) in List.zip (forceUpdate topology 6.<um> system) machineForces -> sF+mF ] bdOrientedAtomicUpdate T dT rand
+        bdSystemUpdate system [for (sF,mF) in List.zip (forceUpdate topology 6.<um> system) machineForces -> sF+mF ] bdOrientedAtomicUpdate T dT rand maxMove
     let aUpdate (machineStates: Map<QN.var,int> list) (qn: QN.node list) write =
         match write with
         | true -> csvout machineStates
@@ -28,7 +28,7 @@ let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (
     | 0 -> ()
     | _ -> 
             let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
-            simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT trajectory csvout freq rand
+            simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT maxMove trajectory csvout freq rand
 
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
 //    let combine (p1: Particle) (pTypes: Particle list) =
@@ -47,7 +47,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
                         else countCells acc name tail
         | [] -> acc
     let positions = IO.pdbRead cartFile rng
-    let (pTypes, nbTypes, (machName,machI0), interfaceTopology) = IO.xmlTopRead topfile rng
+    let (pTypes, nbTypes, (machName,machI0), interfaceTopology, maxMove) = IO.xmlTopRead topfile rng
     //combine the information from pTypes (on the cell sizes and density) with the postions
     //([for cart in positions -> combine cart pTypes ], nbTypes)
     let uCart = [for cart in positions -> 
@@ -59,7 +59,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = spawnMachines qn machineCount rng machI0
-    (uCart, nbTypes, machineStates, qn, interfaceTopology)
+    (uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove)
 
 let seed = ref 1982
 let steps = ref 100
@@ -117,10 +117,10 @@ let main argv =
                         IO.dropStates
                     | _ ->
                         IO.csvWriteStates !csv
-    let (system, topology,machineStates,qn,iTop) = defineSystem cart topfile bmafile rand
+    let (system, topology,machineStates,qn,iTop,maxMove) = defineSystem cart topfile bmafile rand
     printfn "Initial system:"
     printfn "Particles: %A" system.Length
     printfn "Machines:  %A" machineStates.Length
-    simulate system machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) trajout csvout !freq rand
+    simulate system machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) (maxMove*1.<um>) trajout csvout !freq rand
     0 // return an integer exit code
     
