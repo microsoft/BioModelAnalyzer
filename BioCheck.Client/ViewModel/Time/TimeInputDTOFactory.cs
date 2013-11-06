@@ -38,14 +38,25 @@ namespace BioCheck.ViewModel.Time
             string noWhite = currFormula.Trim();    // Strip start and end whitespace
 
             // If not bracket enclosed, bracket-enclose
-            if (!noWhite.StartsWith("(") && !noWhite.EndsWith(")"))
+            if (!noWhite.StartsWith("(") || !noWhite.EndsWith(")"))
             {
                 bracketedFormula = "(";
                 bracketedFormula += noWhite;
                 bracketedFormula += ")";
             }
-            else {
-                bracketedFormula = noWhite;         // Pre-bracketed by user.
+            else if (noWhite.StartsWith("(((") && noWhite.EndsWith(")))"))
+            {
+                bracketedFormula = noWhite.Remove(0, 2);
+                bracketedFormula = bracketedFormula.Remove(bracketedFormula.Length - 2, 2);
+            }
+            else if (noWhite.StartsWith("((") && noWhite.EndsWith("))"))
+            {
+                bracketedFormula = noWhite.Remove(0,1);
+                bracketedFormula = bracketedFormula.Remove(bracketedFormula.Length - 1,1);
+            }
+            else 
+            {
+                bracketedFormula = noWhite;         // Pre-bracketed correctly by user.
             }
 
             string finalFormula = bracketedFormula;
@@ -61,7 +72,7 @@ namespace BioCheck.ViewModel.Time
             // Path checker
             if (timeVM.LTLPath < 1)
             {
-                timeVM.LTLPath = 100;                   // Is it ever allowed to be < 0?
+                timeVM.LTLPath = 100;                   // No simulations with 0 or a negative number of steps are allowed.
             }
             else if (timeVM.LTLPath == null) 
             {

@@ -569,7 +569,7 @@
                     <TextBox Background="Cornsilk" BorderBrush="Gray" HorizontalAlignment="Left" Margin="10,5,0,3" Width="50" Text="{Binding LTLPath, Mode=TwoWay}"/>
                     
                     <RadioButton x:Name="Simulation" VerticalAlignment="Center" Content="Seek satisfied simulation" Margin="30,5,10,0" FontSize="13" IsChecked="True" Cursor="Hand" Command="{Binding LTLSimulation}"/>
-                    <RadioButton x:Name="Proof" Margin="5,5,10,0" VerticalAlignment="Center" Content="Prove" FontSize="13" Command="{Binding LTLProve}"/>
+                    <RadioButton x:Name="Proof" Margin="5,5,10,0" VerticalAlignment="Center" Content="Prove" FontSize="13" Command="{Binding LTLProve}" Cursor="Hand" />
                 </StackPanel>
 
             </Grid>
