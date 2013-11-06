@@ -171,16 +171,20 @@ namespace BioCheck.ViewModel.Time
                                 //finalOutput += this.ModelName;
                                 //finalOutput += ".";
 
-                                finalOutput = "\nFALSE: In all possible simulations of maximum length ";
+                                finalOutput = "\nSimulation found\n\nA simulation, of maximum length ";
                                 finalOutput += this.ltlPath;
-                                finalOutput += " , there are states where the above formula is not satisfied for the current model, ";
+                                finalOutput += " steps, that does not satisfy your formula, was found for the current model, ";
                                 finalOutput += this.ModelName;
                                 finalOutput += ".";
+                                finalOutput += "\n\nThis is an example of a simulation where the formula is not satisfied:\n";
+                                finalOutput += timeOutput.Model;
                             }
-                            else { 
-                                finalOutput = "\nTRUE: There is a simulation that satisifies the above formula for the current model, ";
+                            else {
+                                finalOutput = "\nSimulation found\n\nThere is a simulation, of maximum length ";
+                                finalOutput += this.ltlPath;
+                                finalOutput += " steps, that satisifies the above formula for the current model, ";
                                 finalOutput += this.ModelName;
-                                finalOutput += ".\n\nThe simulation output:\n";
+                                finalOutput += ".\n\nThis is an example of a simulation where the formula is satisfied:\n";
                                 finalOutput += timeOutput.Model;
                             }
                         }
@@ -194,7 +198,7 @@ namespace BioCheck.ViewModel.Time
                                 //finalOutput += this.ModelName;
                                 //finalOutput += ".";
 
-                                finalOutput = "\nTRUE: All possible simulations of maximum length ";
+                                finalOutput = "\nNo simulations found\n\nAll possible simulations of maximum length ";
                                 finalOutput += this.ltlPath;
                                 finalOutput += " satisifies the above formula for the current model, ";
                                 finalOutput += this.ModelName;
@@ -202,9 +206,9 @@ namespace BioCheck.ViewModel.Time
                             }
                             else
                             {
-                                finalOutput = "\nFALSE: No possible simulation exists of maximum length ";
+                                finalOutput = "\nNo simulations found\n\nNo possible simulation of maximum length ";
                                 finalOutput += this.ltlPath;
-                                finalOutput += " that satisifies the above formula for the current model, ";
+                                finalOutput += " steps exist that satisifies the above formula for the current model, ";
                                 finalOutput += this.ModelName;
                                 finalOutput += ".";
                             }
