@@ -61,6 +61,7 @@ namespace BioCheck.Controls
                     .Register(ApplicationViewModel.Instance.ToolbarViewModel.CutCommand, Key.X, ModifierKeys.Control)
                     .Register(ApplicationViewModel.Instance.ToolbarViewModel.CopyCommand, Key.C, ModifierKeys.Control)
                     .Register(ApplicationViewModel.Instance.ToolbarViewModel.PasteCommand, Key.V, ModifierKeys.Control)
+                    .Register(ApplicationViewModel.Instance.ToolbarViewModel.UndoCommand, Key.Z, ModifierKeys.Control)
                     .Register(() =>
                     {
                         ApplicationViewModel.Instance.ToolbarViewModel.IsSelectionActive = true;
