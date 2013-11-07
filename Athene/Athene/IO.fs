@@ -21,12 +21,16 @@ let dropStates (machines: Map<QN.var,int> list) =
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
     Particle(name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
 
-let xyzWriteFrame (filename: string) (system: Physics.Particle list) =
+let xyzWriteFrame (filename: string) (machName: string) (system: Physics.Particle list) =
         use file = new StreamWriter(filename, true)
-        file.WriteLine(sprintf "%A" system.Length)
+        let mSystem = [for p in system do match System.String.Equals(p.name,machName) with 
+                                            | true -> yield p
+                                            | false -> ()
+                                            ]
+        file.WriteLine(sprintf "%A" mSystem.Length)
         file.WriteLine("Athene")
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
-        ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age)]
+        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age)]
         file.Close()
 
 let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) = 
@@ -50,7 +54,7 @@ let pdbRead (filename: string) (rng: System.Random) =
 let xmlTopRead (filename: string) (rng: System.Random) =
     let xn s = XName.Get(s)
     let xd = XDocument.Load(filename)
-    let maxMove = try (float) (xd.Element(xn "System").Element(xn "MaxMove").Attribute(xn "r").Value) with _ -> failwith "Set a maxium move distance"
+    let maxMove = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "MaxMove").Value) with _ -> failwith "Set a maximum move distance"
     let pTypes = [ for t in xd.Element(xn "Topology").Element(xn "Types").Elements(xn "Particle") do 
                     let tName = try t.Attribute(xn "Name").Value with _ -> failwith "Cannot read name"
                     let tDensity = try (float) (t.Element(xn "Density").Value) with _ -> failwith "Cannot read density"

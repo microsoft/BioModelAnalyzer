@@ -59,7 +59,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = spawnMachines qn machineCount rng machI0
-    (uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove)
+    (uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, machName)
 
 let seed = ref 1982
 let steps = ref 100
@@ -70,6 +70,8 @@ let top = ref ""
 let bma = ref ""
 let csv = ref ""
 let freq = ref 1
+let equil = ref 10 //Number of steepest descent steps at start, and cells don't respond. Used to equilibrate a starting system
+let equillength = ref 1.<um> //maximum length of steepest descent used in minimisation
 let rec parse_args args = 
     match args with 
     | [] -> () 
@@ -82,20 +84,20 @@ let rec parse_args args =
     | "-report":: repo :: rest -> freq  := int(repo); parse_args rest
     | "-bma"   :: bck  :: rest -> bma   := bck;       parse_args rest
     | "-csv"   :: bck  :: rest -> csv   := bck;       parse_args rest
+    | "-equili_steps" :: bck :: rest -> equil := (int)bck; parse_args rest
+    | "-equili_len  " :: bck :: rest -> equillength := (float)bck*1.<um>; parse_args rest
     | _ -> failwith "Bad command line args" 
 
+let rec equilibrate (system: Particle list) (topology) (steps: int) (maxlength: float<um>) =
+    match steps with
+    | 0 -> system
+    | _ -> equilibrate (steep system (forceUpdate topology 6.<um> system) maxlength) topology (steps-1) maxlength
 
 [<EntryPoint>]
 let main argv = 
     parse_args (List.ofArray argv)
     let rand = System.Random(!seed)
     //let system = [ Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>, true) ; Particle({x=0.5<um>;y=0.5<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>,false)]
-    let trajout = match !xyz with 
-                    | "" -> 
-                        printfn "No xyz output specified"
-                        IO.dropFrame
-                    | _  -> 
-                        IO.xyzWriteFrame (!xyz)
     let cart = match !pdb with 
                     | "" -> 
                         failwith "No pdb input specified"
@@ -117,10 +119,17 @@ let main argv =
                         IO.dropStates
                     | _ ->
                         IO.csvWriteStates !csv
-    let (system, topology,machineStates,qn,iTop,maxMove) = defineSystem cart topfile bmafile rand
+    let (system, topology,machineStates,qn,iTop,maxMove,machName) = defineSystem cart topfile bmafile rand
+    let trajout = match !xyz with 
+                    | "" -> 
+                        printfn "No xyz output specified"
+                        IO.dropFrame
+                    | _  -> 
+                        IO.xyzWriteFrame (!xyz) machName
     printfn "Initial system:"
     printfn "Particles: %A" system.Length
     printfn "Machines:  %A" machineStates.Length
-    simulate system machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) (maxMove*1.<um>) trajout csvout !freq rand
+    let eSystem = equilibrate system topology !equil !equillength
+    simulate eSystem machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) (maxMove*1.<um>) trajout csvout !freq rand
     0 // return an integer exit code
     

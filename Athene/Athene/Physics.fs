@@ -227,6 +227,7 @@ let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (d
     let NewP = dT * NewV + cluster.location
     Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
+
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>)= 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
@@ -271,3 +272,8 @@ let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atom
         | false -> atomicIntegrator p f T dT rng maxMove
         | true  -> p ]
 
+
+let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
+    let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
+    let modifier = maxlength/maxV.len
+    [for (p,f) in (List.zip system forces) -> Particle(p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, false)]
