@@ -33,7 +33,7 @@ type node =
 
         // Further connectivity data (used by Garvit's engine)
         nature : Map<var, nature>; // nature of each input, must have as many elements as inputs
-        defualtF : bool; //whether the target function is the default one
+        defaultF : bool; //whether the target function is the default one
         number : number; //the number that is same across the copies of the same protein across cells
         tags : (pos*cell) list //list of (tag position, tag name) each tag corresponds to a cell in the network
     }
@@ -102,7 +102,7 @@ let env_complete_wrt_qn (qn:qn) (env:env) =
     else false
 
 
-let  list_of_inputs_excluding_node (n : node) (network : node list) =
+let list_of_inputs_excluding_node (n : node) (network : node list) =
     List.concat [ for var in n.inputs do
                     yield (List.filter (fun (x:node) -> ((x.var = var) && not (x.var = n.var))) network) ]
 

@@ -189,7 +189,7 @@ let model_of_xml (xd:XDocument) =
                             oo)
                         ii
                 { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; 
-                    QN.nature= nature; QN.defualtF = Option.isNone v.Vf; QN.number = v.Vnumber; QN.tags = v.Vtags } )
+                    QN.nature= nature; QN.defaultF = Option.isNone v.Vf; QN.number = v.Vnumber; QN.tags = v.Vtags } )
             inputs'
 
     // Final result

@@ -43,7 +43,7 @@ let MutateExpr (qn : QN.node list) (srcNodeVar : QN.var) (dstNodeVar : QN.var) (
         // in case src node is same as dst or src is already an input to dst, no change
         dstNode.f
     else
-        if dstNode.defualtF then
+        if dstNode.defaultF then
             // if dst node is default node, then just add to the pos/neg set acc to nature
             let posInputs = List.filter (fun inp -> dstNode.nature.[inp] = QN.Act) dstNode.inputs
             let negInputs = List.filter (fun inp -> dstNode.nature.[inp] = QN.Inh) dstNode.inputs
@@ -82,7 +82,6 @@ let AddEdgeInQN (src, dst, ntr) qn =
 
 
 let ComputeEdgeSign (src : QN.node) (dst : QN.node)=
-
     // given a tagged network, every edge has a signature
     // the edge (1, {A B C}) -> (2, {C A D E}) will have signature (1, 2, {(1, 2),(3, 1)}); A and C are common tags, (1,2) for A and (3,1) for C 
     let matchingPosPairs =
@@ -119,33 +118,8 @@ let GetQnGraph (qn : QN.node list) =
             qn
 
 
-let CallShrink (qn : QN.node list) ranges inputs outputs qnStrategyPair frontier bounds = 
-    let ranges = match ranges with 
-                 | None -> Map.ofList [for node in qn -> (node.var, node.range)]
-                 | Some r -> r
-    let inputs = match inputs with 
-                 | None -> Map.ofList [for node in qn -> (node.var, node.inputs)]
-                 | Some ii -> ii
+let CallShrink (qn : QN.node list) ranges inputs outputs (qnStrategy, qnStartPoint) frontier bounds = 
 
-     
-    let outputs =
-        match outputs with
-        | None ->
-            let mutable outputs' = Map.ofList [for node in qn -> (node.var, Set.empty)]
-            for node in qn do
-                for input in node.inputs do
-                    let curr_outs = outputs'.[input]
-                    outputs' <- Map.add input (curr_outs.Add node.var) outputs'
-            outputs'
-        | Some oo -> oo
-
-    let (qnStrategy, qnStartPoint) = 
-        match qnStrategyPair with
-        | None -> let qnGraph = GetQnGraph qn
-                  GGraph.GetRecursiveStrategy qnGraph
-        | Some (x, y) -> (x, y)
-
-    
     let initialFrontier = 
         match frontier with
         | None ->
@@ -157,7 +131,6 @@ let CallShrink (qn : QN.node list) ranges inputs outputs qnStrategyPair frontier
                     []
                     qn)
         | Some f -> f
-
 
     let initialBounds = 
         match bounds with
@@ -172,10 +145,11 @@ let CallShrink (qn : QN.node list) ranges inputs outputs qnStrategyPair frontier
                     []
                     qn)
         | Some b -> b
+    
     Shrink.Shrink qn ranges inputs outputs qnStrategy qnStartPoint initialFrontier initialBounds
 
+/// (Size of space before shrinking) / (size of space after shrinking)
 let ComputeShrinkCoeff (bounds : Map<QN.var, int*int>) (shrunkBounds : Map<QN.var, int*int>)=
-    // size of space before shrinking/size of space after shrinking
     let allVars = [for KeyValue(k, v) in bounds -> k]
     List.fold
         (fun coeff var ->
@@ -186,16 +160,15 @@ let ComputeShrinkCoeff (bounds : Map<QN.var, int*int>) (shrunkBounds : Map<QN.va
         1.0
         allVars
 
-
+/// True if no tags at any positions match
 let NoPosMatch (edgeSign : EdgeSign) =
-    // true is no tags at any positions match
+
     let (_, _, l) = edgeSign
     l.IsEmpty
 
 
-
+/// Add [edges] to the [qn]
 let ApplySuggestion (qn : QN.node list) (edges : (QN.node*QN.node) list) (ntr : QN.nature)=
-    // take the given edge set and add it to the qn
     List.fold
         (fun newQn ((srcNode, dstNode): (QN.node*QN.node)) ->
             AddEdgeInQN (srcNode.var, dstNode.var, ntr) newQn)
@@ -203,9 +176,7 @@ let ApplySuggestion (qn : QN.node list) (edges : (QN.node*QN.node) list) (ntr : 
         edges
 
 let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGraph.Strategy<QN.var>>) qnStartPoint
-                 (nodes : QN.node list) bounds (knownScores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
-        let scores = knownScores
-
+                 (nodes : QN.node list) bounds (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
 
         for dst in nodes do 
             Log.log_debug(sprintf "Scoring edges to the node %s" (QN.str_of_node dst))
@@ -250,10 +221,9 @@ let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGra
                                     Set.add t.var frntr)
                                 Set.empty
                                 allEdges
-
                             
-                        let modShrunkBounds = CallShrink modQn (Some ranges) (Some modInputs) (Some modOutputs) 
-                                                (Some (modQnStrategy, modQnStartPoint)) None None
+                        let modShrunkBounds = CallShrink modQn ( ranges) ( modInputs) (modOutputs) 
+                                                ((modQnStrategy, modQnStartPoint)) None None
                         
                         let shrinkCoeff = ComputeShrinkCoeff bounds modShrunkBounds
                         let shrinkPerEdge =  shrinkCoeff// / (float) allEdges.Length
@@ -263,12 +233,13 @@ let FindSuggestionScores qn ranges inputs outputs (qnStrategy : Map<QN.var, GGra
         scores
 
 
-
 let GetSuggestionFromSign qn sgn =
     (ComputeAllEdgesWithSign qn sgn)
 
+
 let GetMaxScore (scores : Dictionary<'T, SuggestionScore>) =
     List.max [for KeyValue(_, score) in scores -> score]
+
 
 let SortScores qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
     Log.log_debug(sprintf "Sorting %d scores" scores.Count)
@@ -276,23 +247,10 @@ let SortScores qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
     |> Seq.sortBy (fun (_, score) -> -score)
 
 
-    // unused
-let ScoresToList qn (scores : Dictionary<EdgeSign*QN.nature, SuggestionScore>) =
-    [for KeyValue((sgn, ntr), score) in scores -> (((GetSuggestionFromSign qn sgn), ntr), score)]
-
-    // unused
-let rec FindMaxFromScoreList lst =
-    match lst with
-    | [] -> failwith "Cannot get max from empty list"
-    | (x,hd)::[] -> (x,hd), []
-    | (x,hd)::tl -> let (y,max), rest = FindMaxFromScoreList tl
-                    if max>=hd then (y, max), (x, hd)::rest
-                    else (x, hd), (y, max)::rest
-
 let Suggest (qn : QN.node list) =
+    // Calculate ranges, inputs, outputs convenience functions. 
     let ranges = Map.ofList [for node in qn -> (node.var, node.range)]
     let inputs = Map.ofList [for node in qn -> (node.var, node.inputs)]
-
 
     let mutable outputs' = Map.ofList [for node in qn -> (node.var, Set.empty)]
     for node in qn do
@@ -301,31 +259,28 @@ let Suggest (qn : QN.node list) =
             outputs' <- Map.add input (curr_outs.Add node.var) outputs'
     let outputs = outputs'
 
-
-    let qnGraph =
-        List.fold
-            (fun graph (node : QN.node) ->
-                List.fold
-                    (fun graph input ->
-                        GGraph.AddEdge input node.var graph)
-                    graph
-                    node.inputs)
-            (List.fold
-                    (fun graph (node : QN.node) ->
-                    GGraph.AddVertex node.var graph)
-                    GGraph.Empty<QN.var>
-                    qn)
-            qn
-
+    // Calculate Stategy and StartPoint for qn. 
     let (qnStrategy, qnStartPoint) = 
-            GGraph.GetRecursiveStrategy qnGraph
-    
-    
-    let qnWTO = GGraph.GetWeakTopologicalOrder qnGraph
-    Log.log_debug("WTO:" + GGraph.Stringify (qnWTO) string)
+        let qnGraph =
+            List.fold
+                (fun graph (node : QN.node) ->
+                    List.fold
+                        (fun graph input ->
+                            GGraph.AddEdge input node.var graph)
+                        graph
+                        node.inputs)
+                (List.fold
+                        (fun graph (node : QN.node) ->
+                        GGraph.AddVertex node.var graph)
+                        GGraph.Empty<QN.var>
+                        qn)
+                qn
 
+        Log.log_debug("WTO:" + GGraph.Stringify (GGraph.GetWeakTopologicalOrder qnGraph) string)
 
-    let  initialBounds = 
+        GGraph.GetRecursiveStrategy qnGraph        
+
+    let initialBounds = 
         Map.ofList 
             (List.fold 
                 (fun bb (n:QN.node) -> 
@@ -336,7 +291,7 @@ let Suggest (qn : QN.node list) =
                 []
                 qn)
     
-    let  initialFrontier = 
+    let initialFrontier = 
         Set.ofList 
             (List.fold 
                 (fun bb (n:QN.node) -> 
@@ -345,8 +300,7 @@ let Suggest (qn : QN.node list) =
                 []
                 qn)
 
-
-    let shrunkBounds = CallShrink qn (Some ranges) (Some inputs) (Some outputs) (Some (qnStrategy, qnStartPoint)) (Some initialFrontier) (Some initialBounds)
+    let shrunkBounds = CallShrink qn (ranges) (inputs) (outputs) ((qnStrategy, qnStartPoint)) (Some initialFrontier) (Some initialBounds)
 
     Log.log_debug("ShrunkBounds={" + (QN.str_of_range qn shrunkBounds) + "}")
 
@@ -359,17 +313,17 @@ let Suggest (qn : QN.node list) =
                                             let (lower, upper) = shrunkBounds.[node.var]
                                             upper>lower)
                                         qn
-        let defaultFunctionNodes = List.filter (fun (node : QN.node) -> node.defualtF) unstableNodes
+        let defaultFunctionNodes = List.filter (fun (node : QN.node) -> node.defaultF) unstableNodes
         let headNodes = List.filter (fun (node : QN.node) -> qnStrategy.[node.var].isHead) defaultFunctionNodes
         
-        Log.log_debug("Trying to find good score for defualt function nodes which are heads")
+        Log.log_debug("Trying to find good score for default function nodes which are heads")
         let mutable scores = FindSuggestionScores qn ranges inputs outputs qnStrategy qnStartPoint
                                 headNodes shrunkBounds (new Dictionary<EdgeSign*QN.nature, SuggestionScore>())
         let mutable maxScore = GetMaxScore scores
         
 
         if maxScore <= (double) 1.0 then
-            Log.log_debug("Trying to find good score for all defualt function nodes")
+            Log.log_debug("Trying to find good score for all default+unstable function nodes")
             scores <- FindSuggestionScores qn ranges inputs outputs qnStrategy qnStartPoint
                         defaultFunctionNodes shrunkBounds scores
             maxScore <- GetMaxScore scores
@@ -398,10 +352,11 @@ let Suggest (qn : QN.node list) =
             match tmp with
             | None -> NoSuggestion(shrunkBounds)
             | Some((sign, ntr),_) -> Edges((GetSuggestionFromSign qn sign), ntr)
-            
+           
+
+(* Entry point *)            
 let rec SuggestLoop (qn : QN.node list) =
     let sug = Suggest qn
-
     match sug with
     | NoSuggestion(b) -> NoSuggestion(b)
     | Stable(p) -> Stable(p)
