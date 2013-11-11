@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Define this to disable panning
+//#define NO_PANNING
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +18,7 @@ using BioCheck.Views;
 using MvvmFx.Common.Helpers;
 using MvvmFx.Common.Helpers.WeakEventing;
 using Microsoft.Practices.Unity;
+using System.Diagnostics;
 
 namespace BioCheck.Controls
 {
@@ -374,17 +378,19 @@ namespace BioCheck.Controls
             //    }
             //}
 
-            // Temporarily turn off panning for now - til the bugs are fixed.
-
-            //var toolbarVM = ApplicationViewModel.Instance.ToolbarViewModel;
-            //if (!toolbarVM.MouseDownIsHandled)
-            //{
-            //    this.CaptureMouse();
-            //    this.MouseMove += containerGrid_MouseMove;
-            //    this.MouseLeftButtonUp += containerGrid_MouseLeftButtonUp;
-            //    this.mouseStartPosition = e.GetPosition(this);
-            //}
+#if !NO_PANNING
+            var toolbarVM = ApplicationViewModel.Instance.ToolbarViewModel;
+            // TODO - is this MouseDownIsHandled thing necessary or a leftover from earlier hackery?
+            if (!toolbarVM.MouseDownIsHandled && e.OriginalSource is Grid)
+            {
+                ((UIElement)sender).CaptureMouse();
+                this.mouseStartPosition = e.GetPosition(this);
+                this.panning = true;
+            }
+#endif
         }
+
+        private bool panning;
 
         private void ContainerGrid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -392,6 +398,8 @@ namespace BioCheck.Controls
                    .Context.RightMouseUp(e);
 
             // ApplicationViewModel.Instance.ToolbarViewModel.IsSelectionActive = true;
+            this.ReleaseMouseCapture();
+            this.panning = false;
         }
 
         private void ContainerGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -401,6 +409,8 @@ namespace BioCheck.Controls
 
             //   this.contextBarService.Close();
             //  e.Handled = true;
+            this.ReleaseMouseCapture();
+            this.panning = false;
         }
 
         void ContainerGrid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -408,26 +418,33 @@ namespace BioCheck.Controls
             ApplicationViewModel.Instance
                    .Context.LeftMouseUp(e);
 
-            //   this.MouseMove -= containerGrid_MouseMove;
-            // this.MouseLeftButtonUp -= ContainerGrid_MouseLeftButtonUp;
-
-            //   this.ReleaseMouseCapture();
+               this.ReleaseMouseCapture();
+               this.panning = false;
         }
 
-        void containerGrid_MouseMove(object sender, MouseEventArgs e)
+
+        private void ContentPresenter_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            this.panning = false;
+        }
+
+        void ContainerGrid_MouseMove(object sender, MouseEventArgs e)
         {
             ApplicationViewModel.Instance
                  .Context.MouseMove(e);
 
-            //var mouseCurrentPosition = e.GetPosition(this);
+            if (this.panning)
+            {
+                var mouseCurrentPosition = e.GetPosition(this);
 
-            //var deltaX = mouseCurrentPosition.X - mouseStartPosition.X;
-            //var deltaY = mouseCurrentPosition.Y - mouseStartPosition.Y;
+                var deltaX = mouseCurrentPosition.X - mouseStartPosition.X;
+                var deltaY = mouseCurrentPosition.Y - mouseStartPosition.Y;
 
-            //this.PanX -= deltaX;
-            //this.PanY -= deltaY;
+                this.PanX -= deltaX;
+                this.PanY -= deltaY;
 
-            //this.mouseStartPosition = mouseCurrentPosition;
+                this.mouseStartPosition = mouseCurrentPosition;
+            }
         }
 
         private ScrollBar _horizontalScrollBar;
