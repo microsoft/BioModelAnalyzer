@@ -965,6 +965,7 @@ namespace BioCheck.ViewModel
         private void OnExportAnalysisInputExecuted()
         {
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
+            var input = AnalysisInputDTOFactory.Create(modelVM);
 
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "XML files (*.xml)|*.xml";
@@ -975,7 +976,7 @@ namespace BioCheck.ViewModel
             {
                 using (var stream = saveFileDialog.OpenFile())
                 {
-                    var xml = ZipHelper.Unzip(this.analysisInputDto.ZippedXml);
+                    var xml = ZipHelper.Unzip(input.ZippedXml);
                     var xdoc = XDocument.Parse(xml);
 
                     var xmlWriter = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
