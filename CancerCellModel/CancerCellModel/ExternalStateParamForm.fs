@@ -15,14 +15,14 @@ type ExternalStateParamForm() as this =
     let c1_textbox = new TextBox()
     let c2_textbox = new TextBox()
     let c3_textbox = new TextBox()
-    let Nmax_textbox = new TextBox()
+    //let Nmax_textbox = new TextBox()
     let egf_textbox = new TextBox()
 
     let apply_changes(args: EventArgs) =
         ModelParameters.O2Param <- (FormDesigner.retrieve_float(c1_textbox),
             FormDesigner.retrieve_float(c2_textbox), FormDesigner.retrieve_float(c3_textbox))
 
-        ModelParameters.MaxNumOfCells <- FormDesigner.retrieve_int(Nmax_textbox)
+        //ModelParameters.MaxNumOfCells <- FormDesigner.retrieve_int(Nmax_textbox)
 
         ModelParameters.EGFProb <- FormDesigner.retrieve_float(egf_textbox)
 
@@ -90,9 +90,9 @@ type ExternalStateParamForm() as this =
         Nmax_label.Text <- "The maximum number of cells in the model"
         FormDesigner.place_control_below(Nmax_label, o2_percell_func_label)
 
-        Nmax_textbox.Text <- (sprintf "%d" ModelParameters.MaxNumOfCells)
+        (*Nmax_textbox.Text <- (sprintf "%d" ModelParameters.MaxNumOfCells)
         FormDesigner.add_textbox_int_validation(Nmax_textbox, Nmax_label.Text, IntInterval(0, Int32.MaxValue))
-        FormDesigner.place_control_totheright(Nmax_textbox, Nmax_label)        
+        FormDesigner.place_control_totheright(Nmax_textbox, Nmax_label)        *)
 
         nutrient_groupbox.Controls.AddRange([| o2_func_label; c1_label; c1_textbox; c2_label; c2_textbox; c3_label; c3_textbox;
             o2_percell_func_label |])

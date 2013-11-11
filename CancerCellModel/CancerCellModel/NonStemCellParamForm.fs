@@ -47,13 +47,7 @@ type NonStemCellParamForm() as this =
     let min_death_wait_textbox = new TextBox()
     let max_death_wait_textbox = new TextBox()
 
-    let apply_changes(args: EventArgs) =
-        ModelParameters.NonStemDivisionProbParam := ParamFormBase.retrieve_logistic_func_param(x1_division_textbox,
-                        x2_division_textbox, min_division_prob_textbox, max_division_prob_textbox)
-
-        ModelParameters.DeathProbOnO2Param := ParamFormBase.retrieve_logistic_func_param(
-                         x1_death_textbox, x2_death_textbox,
-                         min_death_prob_textbox, max_death_prob_textbox)
+    let apply_changes(args: EventArgs) = ()
     
     // initialise the window
     do
@@ -76,7 +70,8 @@ type NonStemCellParamForm() as this =
 
         let control1 = ParamFormBase.create_logistic_func_controls(
                         division_groupbox, null, division_prob_o2_chart,
-                        ModelParameters.NonStemDivisionProbParam, (ExternalState.O2Limits))
+                        ModelParameters.NonStemDivisionProbO2, (ModelParameters.O2Limits),
+                        FloatInterval(0., 1.), 100.)
 
         let control2 = ParamFormBase.create_int_interval_controls(
                         division_groupbox, control1, "Time (in steps) before two consecutive divisions",
@@ -91,8 +86,8 @@ type NonStemCellParamForm() as this =
 
         ParamFormBase.create_logistic_func_controls(
                         division_groupbox, control2, division_prob_density_chart,
-                        ModelParameters.DivisionProbOnCellDensity,
-                        ExternalState.CellPackDensityLimits) |> ignore
+                        ModelParameters.NonStemDivisionProbDensity,
+                        ModelParameters.CellPackDensityLimits, FloatInterval(0., 1.), 100.) |> ignore
 
         (*-------------- DEATH --------------------------*)
 
@@ -111,7 +106,8 @@ type NonStemCellParamForm() as this =
 
         let control1 = ParamFormBase.create_logistic_func_controls(
                         death_groupbox, null, death_prob_o2_chart,
-                        ModelParameters.DeathProbOnO2Param, (ExternalState.O2Limits))
+                        ModelParameters.NonStemDeathProbO2,
+                        (ModelParameters.O2Limits), FloatInterval(0., 1.), 100.)
 
         let control2 = ParamFormBase.create_int_interval_controls(
                         death_groupbox, control1,
@@ -127,8 +123,8 @@ type NonStemCellParamForm() as this =
 
         ParamFormBase.create_logistic_func_controls(
               death_groupbox, control2, death_prob_density_chart,
-              ModelParameters.DeathProbDependOnCellDensity,
-              (ExternalState.CellPackDensityLimits)) |> ignore
+              ModelParameters.NonStemDeathProbDensity,
+              (ModelParameters.CellPackDensityLimits), FloatInterval(0., 1.), 100.) |> ignore
 
         ParamFormBase.create_ok_cancel_buttons(this, death_groupbox, apply_changes) |> ignore
         base.Controls.AddRange([|division_groupbox; death_groupbox|])

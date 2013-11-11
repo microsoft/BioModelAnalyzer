@@ -58,19 +58,19 @@ type FormDesigner() =
     static member textbox_float_interval_check(textbox: TextBox, name: string, range: FloatInterval)
                                            (args: CancelEventArgs) =
         
-        let x = ref (float 0)
+        let mutable x = ref (0.)
         let err = ref false
         let msg = ref ""
 
         if not (Double.TryParse(textbox.Text, x)) then
             err := true
             msg := (sprintf "%s must be a real number" name)
-        else if !x < range.Min || !x > range.Max then
+        else if !x < (range).Min || !x > (range).Max then
             err := true
-            if range.Max = Double.MaxValue then
-                msg := (sprintf "%s can take on a real value greater or equal to >= %.1f" name range.Min)
+            if (range).Max = Double.MaxValue then
+                msg := (sprintf "%s can take on a real value greater or equal to >= %.1f" name (range).Min)
             else
-                msg := (sprintf "%s can take on a real value from %.1f to %.1f" name range.Min range.Max)
+                msg := (sprintf "%s can take on a real value from %.1f to %.1f" name (range).Min (range).Max)
         
         if !err then
             args.Cancel <- true
@@ -148,9 +148,12 @@ type LogisticFuncParamDialog() as this =
 
     let x1_textbox = new TextBox()
     let x2_textbox = new TextBox()
+    let min_label = new Label()
     let min_textbox = new TextBox()
+    let max_label = new Label()
     let max_textbox = new TextBox()
     let ok_button = new Button()
+    let mutable y_scale = 1.
 
     do
         let x1_label = new Label()
@@ -160,7 +163,7 @@ type LogisticFuncParamDialog() as this =
         x1_label.Location <- FormDesigner.initial_location
 
         x1_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(x1_textbox, x1_label.Text, ExternalState.O2Limits)
+        FormDesigner.add_textbox_float_validation(x1_textbox, x1_label.Text, ModelParameters.O2Limits)
         FormDesigner.place_control_totheright(x1_textbox, x1_label)
 
         let x2_label = new Label()
@@ -170,28 +173,23 @@ type LogisticFuncParamDialog() as this =
         FormDesigner.place_control_totheright(x2_label, x1_textbox)
 
         x2_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(x2_textbox, x2_label.Text, ExternalState.O2Limits)
+        FormDesigner.add_textbox_float_validation(x2_textbox, x2_label.Text, ModelParameters.O2Limits)
         FormDesigner.place_control_totheright(x2_textbox, x2_label)
 
-        let min_label = new Label()
         min_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (1.7, float 2))
         min_label.AutoSize <- true
-        min_label.Text <- "The minimum probability (%)"
+        min_label.Text <- "The minimum function value"
         FormDesigner.place_control_below(min_label, x1_label)
 
         min_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(min_textbox, min_label.Text, FloatInterval(0., 100.))
         FormDesigner.place_control_totheright(min_textbox, min_label)
 
-        let max_label = new Label()
         max_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (1.7, float 2))
         max_label.AutoSize <- true
-        max_label.Text <- "The maximum probability (%)"
+        max_label.Text <- "The maximum function value"
         FormDesigner.place_control_totheright(max_label, min_textbox)
 
         max_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(max_textbox, max_label.Text, FloatInterval(0., 100.))
-        FormDesigner.add_textbox_float_less_check(min_textbox, max_textbox, min_label.Text, max_label.Text)
         FormDesigner.place_control_totheright(max_textbox, max_label)
 
         this.AcceptButton <- ok_button
@@ -204,64 +202,61 @@ type LogisticFuncParamDialog() as this =
         base.Controls.AddRange([| x1_label; x1_textbox; x2_label; x2_textbox;
             min_label; min_textbox; max_label; max_textbox; ok_button |])
 
-    member this.Init(func: LogisticFunc) =
+    member this.Init(func: LogisticFunc, y_interval: FloatInterval, yscale: float) =
+        y_scale <- yscale
         this.DialogResult <- DialogResult.Cancel
         x1_textbox.Text <- (sprintf "%.0f" func.Min.x)
         x2_textbox.Text <- (sprintf "%.0f" func.Max.x)
-        min_textbox.Text <- (sprintf "%.1f" (100.*func.Min.y))
-        max_textbox.Text <- (sprintf "%.1f" (100.*func.Max.y))
+        min_textbox.Text <- (sprintf "%.1f" (y_scale*func.Min.y))
+        max_textbox.Text <- (sprintf "%.1f" (y_scale*func.Max.y))
+        FormDesigner.add_textbox_float_validation(min_textbox, min_label.Text, y_interval)
+        FormDesigner.add_textbox_float_validation(max_textbox, max_label.Text, y_interval)
+        FormDesigner.add_textbox_float_less_check(min_textbox, max_textbox, min_label.Text, max_label.Text)
+
 
     member this.Func with get() =
                                     let x1 = FormDesigner.retrieve_float(x1_textbox)
                                     let x2 = FormDesigner.retrieve_float(x2_textbox)
-                                    let min = FormDesigner.retrieve_float(min_textbox) / 100.
-                                    let max = FormDesigner.retrieve_float(max_textbox) / 100.
+                                    let min = FormDesigner.retrieve_float(min_textbox) / y_scale
+                                    let max = FormDesigner.retrieve_float(max_textbox) / y_scale
                                     LogisticFunc(min = Point(x1, min), max = Point(x2, max))
 
 type ShiftExpFuncParamDialog() as this =
     inherit Form (Visible = false, Width = 600, Height = 400)
 
     let x3_textbox = new TextBox()
+    let min_label = new Label()
     let min_textbox = new TextBox()
+    let max_label = new Label()
     let max_textbox = new TextBox()
     let ok_button = new Button()
+    let mutable y_scale = 1.
 
     do
         let x3_label = new Label()
-        //x3_label.Width <- 400
         x3_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (2, 2))
         x3_label.AutoSize <- true
         x3_label.Text <- "X coordinate of the saturation point"
         x3_label.Location <- FormDesigner.initial_location
 
-        //let x1_textbox = new TextBox()
         x3_textbox.Size <- FormDesigner.textbox_size
         FormDesigner.add_textbox_int_validation(x3_textbox, x3_label.Text, IntInterval(0, Int32.MaxValue))
         FormDesigner.place_control_totheright(x3_textbox, x3_label)
 
-        let min_label = new Label()
-        //max_label.Width <- 30
         min_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (1.7, float 2))
         min_label.AutoSize <- true
-        min_label.Text <- "The minimum probability (%)"
+        min_label.Text <- "The minimum function value"
         FormDesigner.place_control_below(min_label, x3_label)
 
-        //let max_textbox = new TextBox()
         min_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(min_textbox, min_label.Text, FloatInterval(0., 100.))
         FormDesigner.place_control_totheright(min_textbox, min_label)
 
-        let max_label = new Label()
-        //max_label.Width <- 30
         max_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (1.7, float 2))
         max_label.AutoSize <- true
-        max_label.Text <- "The maximum probability (%)"
+        max_label.Text <- "The maximum function value"
         FormDesigner.place_control_totheright(max_label, min_textbox)
 
-        //let max_textbox = new TextBox()
         max_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(max_textbox, max_label.Text, FloatInterval(0., 100.))
-        FormDesigner.add_textbox_float_less_check(min_textbox, max_textbox, min_label.Text, max_label.Text)
         FormDesigner.place_control_totheright(max_textbox, max_label)
 
         this.AcceptButton <- ok_button
@@ -274,24 +269,22 @@ type ShiftExpFuncParamDialog() as this =
         base.Controls.AddRange([| x3_label; x3_textbox;
             min_label; min_textbox; max_label; max_textbox; ok_button |])
 
-    member this.Init(func: ShiftExponentFunc) =
+    member this.Init(func: ShiftExponentFunc, func_interval: FloatInterval, yscale: float) =
+        y_scale <- yscale
         this.DialogResult <- DialogResult.Cancel
-        x3_textbox.Text <- (sprintf "%d" (int func.P2.x))
-        min_textbox.Text <- (sprintf "%.1f" (func.YMin* 100.))
-        max_textbox.Text <- (sprintf "%.1f" (func.P1.y* 100.))
+        x3_textbox.Text <- (sprintf "%.1f" (func.P2.x))
+        min_textbox.Text <- (sprintf "%.1f" (func.YMin* y_scale))
+        max_textbox.Text <- (sprintf "%.1f" (func.P1.y* y_scale))
+        FormDesigner.add_textbox_float_validation(min_textbox, min_label.Text, func_interval)
 
     member this.Func with get() =
                                     let x3 = FormDesigner.retrieve_float(x3_textbox)
-                                    let min = FormDesigner.retrieve_float(min_textbox) / 100.
-                                    let max = FormDesigner.retrieve_float(max_textbox) / 100.
-                                    ShiftExponentFunc(p1 = Point(0., max), p2 = Point(x3, min + (max - min)/100.), ymin = min)
+                                    let min = FormDesigner.retrieve_float(min_textbox) / y_scale
+                                    let max = FormDesigner.retrieve_float(max_textbox) / y_scale
+                                    ShiftExponentFunc(p1 = Point(0., max), p2 = Point(x3, min + (max - min)/y_scale), ymin = min)
 
 type ParamFormBase(?Width, ?Height) =
     inherit Form (Visible = false, Width = defaultArg Width 1200, Height = defaultArg Height 850)
-
-    static let logistic_func_dialog = new LogisticFuncParamDialog()
-    static let shift_exp_func_dialog = new ShiftExpFuncParamDialog()
-    //static member logistic_fun_controls = LogisticFuncControls()
 
     static member func_plot(series: Series, func: float -> float, x_limits: FloatInterval) =
         let x = ref x_limits.Min
@@ -382,7 +375,8 @@ type ParamFormBase(?Width, ?Height) =
 
 
     static member create_logistic_func_controls(parent: Control, prev_control: Control, chart: Chart,
-                                                func: ref<LogisticFunc>, x_limits: FloatInterval) =
+                                                func: ref<LogisticFunc>,
+                                                x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float) =
 
         //chart.Titles.Add("1 / (1/max + exp((mu - x)/s))") |> ignore
         
@@ -409,7 +403,7 @@ type ParamFormBase(?Width, ?Height) =
         change_param_button.MaximumSize <- FormDesigner.Scale(FormDesigner.button_size, (2.5, 1.))
         change_param_button.AutoSize <- true
         change_param_button.Text <- "Change parameters"
-        change_param_button.Click.Add(ParamFormBase.show_logistic_func_dialog(chart, func, x_limits))
+        change_param_button.Click.Add(ParamFormBase.show_logistic_func_dialog(chart, func, x_limits, y_limits, y_scale))
         FormDesigner.place_control_totheright(change_param_button, panel)
 
         ParamFormBase.refresh_logistic_func_chart(chart, !func, x_limits)
@@ -423,7 +417,8 @@ type ParamFormBase(?Width, ?Height) =
         panel
 
     static member create_shiftexp_func_controls(parent: Control, prev_control: Control, chart: Chart, 
-                                                func: ref<ShiftExponentFunc>, x_limits: FloatInterval) =
+                                                func: ref<ShiftExponentFunc>,
+                                                x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float) =
 
 
         let panel = new Panel()
@@ -450,7 +445,7 @@ type ParamFormBase(?Width, ?Height) =
         change_param_button.MaximumSize <- FormDesigner.Scale(FormDesigner.button_size, (2.5, 1.))
         change_param_button.AutoSize <- true
         change_param_button.Text <- "Change parameters"
-        change_param_button.Click.Add(ParamFormBase.show_shiftexp_func_dialog(chart, func, x_limits))
+        change_param_button.Click.Add(ParamFormBase.show_shiftexp_func_dialog(chart, func, x_limits, y_limits, y_scale))
         FormDesigner.place_control_totheright(change_param_button, panel)
 
         ParamFormBase.refresh_shiftexp_func_chart(chart, !func, x_limits) 
@@ -482,17 +477,27 @@ type ParamFormBase(?Width, ?Height) =
         args.Cancel <- true
         form.Visible <- false
 
-    static member show_logistic_func_dialog(chart: Chart, func: ref<LogisticFunc>, x_limits: FloatInterval)(args: EventArgs) =
-        logistic_func_dialog.Init(!func)
+    static member show_logistic_func_dialog(chart: Chart, func: ref<LogisticFunc>,
+                                            x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float)
+                                            (args: EventArgs) =
+
+        let logistic_func_dialog = new LogisticFuncParamDialog()
+        logistic_func_dialog.Init(!func, y_limits, y_scale)
         if logistic_func_dialog.ShowDialog() = DialogResult.OK then
             func := logistic_func_dialog.Func
             ParamFormBase.refresh_logistic_func_chart(chart, !func, x_limits)
+        logistic_func_dialog.Dispose()
 
-    static member show_shiftexp_func_dialog(chart: Chart, func: ref<ShiftExponentFunc>, x_limits: FloatInterval)(args: EventArgs) =
-        shift_exp_func_dialog.Init(!func)
+    static member show_shiftexp_func_dialog(chart: Chart, func: ref<ShiftExponentFunc>,
+                                            x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float)
+                                            (args: EventArgs) =
+
+        let shift_exp_func_dialog = new ShiftExpFuncParamDialog()
+        shift_exp_func_dialog.Init(!func, y_limits, y_scale)
         if shift_exp_func_dialog.ShowDialog() = DialogResult.OK then
             func := shift_exp_func_dialog.Func
             ParamFormBase.refresh_shiftexp_func_chart(chart, !func, x_limits)
+        shift_exp_func_dialog.Dispose()
 
     static member create_int_interval_controls(parent: Control, prev_control: Control, name: string,
                                                 min_textbox: TextBox, max_textbox: TextBox, interval: IntInterval) =
@@ -556,3 +561,17 @@ type ParamFormBase(?Width, ?Height) =
 
         parent.Controls.AddRange([| interval_label; min_label; min_textbox; max_label; max_textbox |])
         min_label
+
+[<AbstractClass>]
+type DrawingForm(Visible: bool, Width: int, Height: int) as this =
+    inherit ParamFormBase(Visible = Visible, Width = Width, Height = Height)
+
+    let width, height = this.ClientSize.Width, this.ClientSize.Height
+    let bitmap = new System.Drawing.Bitmap(width, height)
+    let graphics = System.Drawing.Graphics.FromImage(bitmap)
+
+    abstract member get_summary: Geometry.Point -> String
+    member this.Graphics with get() = graphics
+    member this.Bitmap with get() = bitmap
+    member this.Width with get() = width
+    member this.Height with get() = height

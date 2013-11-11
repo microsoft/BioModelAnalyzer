@@ -54,6 +54,7 @@
     <Compile Include="Render.fs" />
     <Compile Include="StemCellParamForm.fs" />
     <Compile Include="NonStemCellParamForm.fs" />
+    <Compile Include="ForcesParamForm.fs" />
     <Compile Include="ExternalStateForm.fs" />
     <Compile Include="ExternalStateParamForm.fs" />
     <Compile Include="CellActivityStatForm.fs" />
@@ -62,8 +63,8 @@
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="alglibnet2">
-      <HintPath>..\..\..\..\temp\f#_packages\alglib-3.8.0.csharp\csharp\alglibnet2.dll</HintPath>
+    <Reference Include="alglib">
+      <HintPath>..\..\alglib\alglib\bin\Debug\alglib.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

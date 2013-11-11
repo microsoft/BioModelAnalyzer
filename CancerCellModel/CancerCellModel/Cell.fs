@@ -91,90 +91,94 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
     member this.WaitBeforeDie with get() = wait_before_die and set(x) = wait_before_die <- x
     member this.StepsAfterLastDivision with get() = steps_after_last_division and set(x) = steps_after_last_division <- x
 
-type GridFunction(grid: Grid, f_limits: FloatInterval) =
-    let x = Array.create grid.XLines 0.
-    let y = Array.create grid.YLines 0.
-    let f = Array2D.create grid.XLines grid.YLines 0.
-    let interpolant = ref (new alglib.spline2dinterpolant())
-    let mutex = new Mutex()
+    member this.Summary() =
+        sprintf "Location: r=(%.1f, %.1f)\n\
+                Speed: v=(%.1f, %.1f)\n\
+                Repulsive force=(%.1f, %.1f)\n\
+                Friction force=(%.1f, %.1f)\n"
+                location.x location.y
+                base.Velocity.x base.Velocity.y
+                base.RepulsiveForce.x base.RepulsiveForce.y
+                base.FrictionForce.x base.FrictionForce.y
 
-    do
-        for i = 0 to grid.XLines - 1 do
-            x.[i] <- grid.Point(i, 0).x
-
-        for j = 0 to grid.YLines - 1 do
-            y.[j] <- grid.Point(0, j).y
-
-    member this.GetValue(p: Point) =
-        if Math.Abs(p.x) > grid.Width/2. ||
-            Math.Abs(p.y) > grid.Height/2. then
-                raise(InnerError(sprintf "point (%.1f,%.1f) outside of managed grid area" p.x p.y))
-        else
-            mutex.WaitOne() |> ignore
-            let fval = alglib.spline2dcalc(!interpolant, p.x, p.y)
-            mutex.ReleaseMutex()
-            fval
-
-    member this.SetValue(p: Point, value: float) = 
-        if Math.Abs(p.x) > grid.Width/2. ||
-            Math.Abs(p.y) > grid.Height/2. then
-                raise(InnerError(sprintf "point (%.1f,%.1f) outside of managed grid area" p.x p.y))
-        else
-            let i = int (Math.Ceiling((p.x + grid.Width/2.) / grid.Dx))
-            let j = int (Math.Ceiling((p.y + grid.Height/2.) / grid.Dy))
-            f.[i,j] <- value
-
-    member this.ComputeInterpolant() =
-        mutex.WaitOne() |> ignore
-        alglib.spline2dbuildbilinear(x, y, f, grid.XLines, grid.YLines, interpolant)
-        mutex.ReleaseMutex()
-
-    member this.Grid with get() = grid
-    member this.F with get() = f
-    member this.FLimits with get() = f_limits
-
-type ExternalState() =
+type ExternalState() as this =
     let mutable egf = true    
     let mutable live_cells: int = 0
     let mutable dividing_cells: int = 0
     let mutable stem_cells: int = 0
+    let mutable cell_concentration_area = Geometry.Rectangle()
+
+    [<DefaultValue>] val mutable o2: GridFunction1D
+    [<DefaultValue>] val mutable o2_nabla_square: GridFunction1D
+    [<DefaultValue>] val mutable cell_pack_density: GridFunction1D
+    [<DefaultValue>] val mutable cell_pack_density_grad: ref<GridFunctionND>
 
     let init_o2() =
-        let grid = ModelParameters.GridParam
-        let f = GridFunction(grid, ExternalState.O2Limits)
+        let grid = ModelParameters.O2Grid
+        let f = GridFunction1D(grid)
 
-        for i = 0 to grid.XLines-1 do
-            for j = 0 to grid.YLines-1 do
-                f.SetValue(grid.Point(i, j), 100.)
+        for i = 0 to grid.YLines-1 do
+            for j = 0 to grid.XLines-1 do
+                f.SetValue(grid.IndicesToPoint(i, j), 100.)
+        
+        f.ComputeInterpolant()
+        f
+
+    let init_o2_nabla_square() =
+        let grid = ModelParameters.O2Grid
+        let f = GridFunction1D(grid)
+
+        for i = 0 to grid.YLines-1 do
+            for j = 0 to grid.XLines-1 do
+                f.SetValue(grid.IndicesToPoint(i, j), 0.)
         
         f.ComputeInterpolant()
         f
 
     let init_cell_pack_density() =
-        let grid = ModelParameters.GridParam
-        let f = GridFunction(grid, ExternalState.CellPackDensityLimits)
+        let grid = ModelParameters.CellPackDensityGrid
+        let f = GridFunction1D(grid)//, ModelParameters.CellPackDensityLimits)
 
-        for i = 0 to grid.XLines-1 do
-            for j = 0 to grid.YLines-1 do
-                f.SetValue(grid.Point(i, j), 0.)
+        for i = 0 to grid.YLines-1 do
+            for j = 0 to grid.XLines-1 do
+                f.SetValue(grid.IndicesToPoint(i, j), 0.)
         
         f.ComputeInterpolant()
         f
 
-    let mutable o2 = init_o2()
-    let mutable cell_pack_density = init_cell_pack_density()
+    let init_cell_pack_density_grad() =
+        let f = ref (GridFunctionND(grid = Grid(width = 2.*ModelParameters.AverageCellR,
+                                           height = 2.*ModelParameters.AverageCellR,
+                                           dx = 2.*ModelParameters.AverageCellR,
+                                           dy = 2.*ModelParameters.AverageCellR),
+                                    D = 2))
+        f
 
-    static member O2Limits with get() = FloatInterval(0., 100.)
-    static member CellPackDensityLimits with get() = FloatInterval(0., 1.)
+    do
+        this.o2 <- init_o2()
+        this.o2_nabla_square <- init_o2_nabla_square()
+        this.cell_pack_density <- init_cell_pack_density()
+        this.cell_pack_density_grad <- init_cell_pack_density_grad()
+
     member this.EGF with get() = egf and set(x) = egf <- x
-    member this.O2 with get() = o2 //and set(x: GridFunction) = o2 <- x
+    member this.O2 with get() = this.o2
+    member this.O2NablaSquare with get() = this.o2_nabla_square
     member this.LiveCells with get() = live_cells and set(x) = live_cells <- x
     member this.DividingCells with get() = dividing_cells and set(x) = dividing_cells <- x
     member this.NonDividingLiveCells with get() = live_cells - dividing_cells
 
     member this.StemCells with get() = stem_cells and set(x) = stem_cells <- x
-    member this.CellPackDensity with get() = cell_pack_density
-                                    //and set(x) = cell_pack_density <- x
+    member this.CellPackDensity with get() = this.cell_pack_density
+
+    member this.CellPackDensityGrad with get() = this.cell_pack_density_grad
+                                     and set(x) = this.cell_pack_density_grad <- x
+
+    member this.CellConcentrationArea with get() = cell_concentration_area
+                                        and set(x) = cell_concentration_area <- x
+
+    member this.CellPackDensityGradAtPoint(p: Point) =
+        let grad_arr = (!this.cell_pack_density_grad).GetValue(p)
+        Vector(grad_arr.[1], grad_arr.[0])
     
     static member GetNeighbours(cell: Cell, cells: Cell[], r: float) =
         Array.filter(fun (c: Cell) -> c <> cell && Geometry.distance(c.Location, cell.Location) < r) cells
@@ -187,3 +191,39 @@ type ExternalState() =
                                         //Geometry.distance(c.Location, point) < r &&
                                         Array.exists (fun (s: CellState) -> s = c.State) state &&
                                         Array.exists (fun (a: CellAction) -> a = c.Action) action) cells
+
+
+    member this.O2ToStringVerbose(p: Point) =
+        // values in the adjoining grid points from which the value is interpolated - displayed for debugging
+        let o2s = ref (Array.create 9 0.)
+        let o2_nabla2 = ref (Array.create 9 0.)
+        let (i, j) = this.o2_nabla_square.Grid.PointToIndices(p)
+
+        sprintf "Oxygen: o2(r)=%.1f \n\
+                    \t(interpolated from cc=%.1f lb=%.1f lc=%.1f lt=%.1f ct=%.1f rt=%.1f rc=%.1f rb=%.1f cb=%.1f)\n\
+                    \tnabla_square=%.3f\n\
+                    \t(interpolated from cc=%.3f lb=%.3f lc=%.3f lt=%.3f ct=%.3f rt=%.3f rc=%.3f rb=%.3f cb=%.3f)"
+                (this.o2.GetValue(p, o2s))
+                ((!o2s).[0]) ((!o2s).[1]) ((!o2s).[2]) ((!o2s).[3]) ((!o2s).[4]) ((!o2s).[5]) ((!o2s).[6]) ((!o2s).[7]) ((!o2s).[8])
+                (this.o2_nabla_square.GetValue(i, j, o2_nabla2))
+                ((!o2_nabla2).[0]) ((!o2_nabla2).[1]) ((!o2_nabla2).[2]) ((!o2_nabla2).[3])
+                ((!o2_nabla2).[4]) ((!o2_nabla2).[5]) ((!o2_nabla2).[6]) ((!o2_nabla2).[7]) ((!o2_nabla2).[8])
+
+
+    member this.DensityToStringVerbose(p: Point) =
+        let densities = ref (Array.create 9 0.)
+
+        let mutable grad_msg = ""
+
+        // gradient is calculated only for the area where cells are concentrated
+        if cell_concentration_area.IsPointInside(p) then
+            let grad = this.CellPackDensityGradAtPoint(p)
+            grad_msg <- sprintf ", gradient=(%.2f, %.2f)" grad.x grad.y
+
+        sprintf "Cell pack density: density(r)=%.1f \n\
+                    \t(interpolated from cc=%.1f lb=%.1f lc=%.1f lt=%.1f ct=%.1f rt=%.1f rc=%.1f rb=%.1f cb=%.1f\n\
+                    %s)"
+                    (this.cell_pack_density.GetValue(p, densities))
+                    ((!densities).[0]) ((!densities).[1]) ((!densities).[2]) ((!densities).[3])
+                    ((!densities).[4]) ((!densities).[5]) ((!densities).[6]) ((!densities).[7]) ((!densities).[8])
+                    grad_msg

@@ -8,7 +8,7 @@ open ParamFormBase
 open ExternalStateForm
 open Model
 
-type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
+type CellNumbersStatForm() =
     inherit ParamFormBase (Width=1200, Height = 900)
 
     let chart = new Chart(Dock=DockStyle.Fill)
@@ -33,8 +33,7 @@ type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
                 The number of non-stem cells: %d\n\
                 The number of non-stem cells with memory: %d\n\
                 The number of dividing cells: %d\n\
-                The number of dying cells: %d" //\n\n\
-                //The amount of oxygen per cell: %.1f%%"
+                The number of dying cells: %d"
                 (int (round(x)))
                 (int (ParamFormBase.get_chart_yvalue(series_live, x)))
                 (int (ParamFormBase.get_chart_yvalue(series_stem, x)))
@@ -42,23 +41,19 @@ type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
                 (int (ParamFormBase.get_chart_yvalue(series_nonstem_withmem, x)))
                 (int (ParamFormBase.get_chart_yvalue(series_dividing, x)))
                 (int (ParamFormBase.get_chart_yvalue(series_dying, x)))
-                //(extstate_dialog.GetYValue(x))
 
     do
+        // create the main chart (with statistics for different kinds of cells)
         base.Controls.Add(chart)
         let chart_area = new ChartArea()
         chart.Titles.Add("The statistics of the number of different kinds of cells") |> ignore
         chart.ChartAreas.Add (chart_area)
-        //base.Controls.Add (chart)
         chart.Legends.Add(new Legend())
         chart.Location <- Drawing.Point(30, 30)
         chart.MouseClick.Add(ParamFormBase.show_summary(chart, summary_tooltip, get_summary))
-        //chart.MouseMove.Add(fun args -> summary_tooltip.Hide(chart))
-        //chart.Size <- Drawing.Size(int (float panel.ClientSize.Width * 0.8), int (float panel.ClientSize.Height * 0.8))
+
         chart_area.CursorX.IsUserSelectionEnabled <- true
         chart_area.CursorY.IsUserSelectionEnabled <- true
-
-        // create the main chart (with statistics for different kinds of cells)
         chart_area.AxisX.Title <- "Time steps"
         chart_area.AxisY.Title <- "The number of cells"
         chart_area.AxisX.Minimum <- float 0
@@ -85,7 +80,6 @@ type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
         add_points(live, series_live)
         add_points(dividing, series_dividing)
         add_points(dying, series_dying)
-        //add_points(model.GetCellStatistics(TotalDead), series_total_dead)
         add_points(stem, series_stem)
         add_points(nonstem, series_nonstem)
         add_points(nonstem_withmem, series_nonstem_withmem)
@@ -100,6 +94,6 @@ type CellNumbersStatForm(extstate_dialog: ExternalStateForm) =
         series_nonstem.Points.Clear()
         series_nonstem_withmem.Points.Clear()
 
-    override this.Refresh() =
+(*    override this.Refresh() =
         base.Refresh()
-        chart.Refresh()
+        chart.Refresh()*)

@@ -6,6 +6,7 @@ open System.Windows.Forms
 open System.Windows.Media
 open System.Windows.Media.Imaging
 open System.Drawing
+open System.Drawing.Drawing2D
 open ParamFormBase
 open MyMath
 open Geometry
@@ -25,6 +26,16 @@ type Render (graphics: Graphics)=
             Drawing.Point(int(size.Width/2.f) + point.X, int(size.Height/2.f) + point.Y)
         else
             Drawing.Point(point.X - int(size.Width/2.f), point.Y - int(size.Height/2.f))
+
+    member this.DrawGrid(grid: Grid) =
+        let pen = new Pen(Color.LightGray)
+        for i = 0 to grid.YLines-1 do
+            graphics.DrawLine(pen, this.translate_coord(grid.IndicesToPoint(i, 0).ToDrawingPoint()),
+                                   this.translate_coord(grid.IndicesToPoint(i, grid.XLines).ToDrawingPoint()))
+
+        for j = 0 to grid.XLines-1 do
+            graphics.DrawLine(pen, this.translate_coord(grid.IndicesToPoint(0, j).ToDrawingPoint()),
+                                   this.translate_coord(grid.IndicesToPoint(grid.YLines, j).ToDrawingPoint()))
 
 type CellRender (graphics: Graphics)=
     inherit Render(graphics)
@@ -119,12 +130,37 @@ type GridFuncRender(graphics: Graphics) =
         Color.FromArgb(255, comp, comp, comp)
         //color
 
-    member this.PlotFunc(f: GridFunction) =
+    member this.DrawArrow(p: Drawing.Point, dir: Vector, size: Drawing.Size, pen: Pen) =
+        //let pen1 = new Pen(Color.Black)//, float32 3)
+        pen.StartCap <- LineCap.NoAnchor
+        pen.EndCap <- LineCap.ArrowAnchor
+
+        let x1, y1 = p.X, p.Y
+        let x2, y2 = p.X + int (Math.Round(dir.x*(float size.Width))), p.Y + int (Math.Round(dir.y*(float size.Height)))
+        graphics.DrawLine(pen, x1, y1, x2, y2)
+                
+
+    member this.PlotFunc(f: GridFunction1D, f_limits: FloatInterval, ?f_grad: GridFunctionND) =
+        graphics.Clear(Color.White)
         let grid = f.Grid
         let pt_size = 2
 
-        for i = 0 to grid.XLines - 1 do
-            for j = 0 to grid.YLines - 1 do
-                let p = grid.Point(i, j)
-                let pen = new Pen(this.ComputeColor(f.GetValue(p), f.FLimits))
-                graphics.DrawEllipse(pen, Drawing.Rectangle(this.translate_coord(p.ToDrawingPoint()), Drawing.Size(pt_size, pt_size)))
+        for i = 0 to grid.YLines - 1 do
+            for j = 0 to grid.XLines - 1 do
+                let p = grid.IndicesToPoint(i, j)
+                let screen_p = this.translate_coord(p.ToDrawingPoint())
+                let pen = new Pen(this.ComputeColor(f.GetValue(p), f_limits))
+                graphics.DrawEllipse(pen, Drawing.Rectangle(screen_p, Drawing.Size(pt_size, pt_size)))
+                
+        if f_grad <> None then
+            let grad = f_grad.Value
+            let grid2 = grad.Grid
+            for i = 0 to grid2.YLines-1 do
+                for j = 0 to grid2.XLines-1 do
+                    let p_local = grid2.IndicesToPoint(i, j)
+                    let p_global = grad.translate_to_global_coord(p_local)
+                    let screen_p = this.translate_coord(p_global.ToDrawingPoint())
+                    let pen = new Pen(this.ComputeColor(f.GetValue(p_global), f_limits))
+                    this.DrawArrow(screen_p, Vector(grad.GetValue(p_local)), Drawing.Size(int grid.Dx, int grid.Dy), pen)
+
+        //base.DrawGrid(grid)

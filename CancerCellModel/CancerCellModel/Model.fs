@@ -99,7 +99,7 @@ type Model() =
     let mutable dying_cells: Cell[] = [||]
     // we need dividing_cells and dying_cells only for statistics
 
-    let mutable ext_state = new ExternalState()
+    let ext_state = ref (new ExternalState())
     let cell_stat = new CellStatistics()
     let ext_stat = new ExtStatistics()
 
@@ -114,7 +114,7 @@ type Model() =
     let init() =
         live_cells <- [|new Cell(cell_type = CellType.Stem, generation = 0, location = Point(), radius = 10., density = 1.)|]
         dead_cells <- [||]
-        CellActivity.calc_cellpackdensity(ext_state, live_cells)
+        CellActivity.calc_cellpackdensity(!ext_state, live_cells)
     
     let collect_statistics() =
         // collect the statistics
@@ -126,10 +126,10 @@ type Model() =
         //ext_stat.AddData((*CellActivity.oxygen_per_cell(ext_state)*)ext_state.O2)
 
     let recalc_extstate() = 
-        ext_state.LiveCells <- live_cells.Length
-        ext_state.DividingCells <- dividing_cells.Length
-        ext_state.StemCells <- Array.length (Array.filter(fun (c:Cell) -> c.Type = CellType.Stem) live_cells)
-        CellActivity.recalculate_ext_state(ext_state, live_cells, dt)
+        (!ext_state).LiveCells <- live_cells.Length
+        (!ext_state).DividingCells <- dividing_cells.Length
+        (!ext_state).StemCells <- Array.length (Array.filter(fun (c:Cell) -> c.Type = CellType.Stem) live_cells)
+        CellActivity.recalculate_ext_state(!ext_state, live_cells, dt)
 
     let perform_division() =
         let asym_div_cells = Array.filter(fun (c:Cell) -> c.Action = AsymSelfRenewal) live_cells
@@ -141,14 +141,14 @@ type Model() =
         nonstem_cell_activity_stat.AddData(Array.map(fun (c: Cell) -> c.StepsAfterLastDivision) nonstem_div_cells)
                                     
         dividing_cells <- Array.concat([|stem_div_cells; nonstem_div_cells|])
-        let new_cells_sym = (Array.collect CellActivity.sym_divide sym_div_cells)
-        let new_cells_asym = (Array.collect CellActivity.asym_divide asym_div_cells)
+        let new_cells_sym = (Array.collect (CellActivity.sym_divide(!ext_state)) sym_div_cells)
+        let new_cells_asym = (Array.collect (CellActivity.asym_divide(!ext_state)) asym_div_cells)
         let new_cells = Array.concat([|new_cells_sym; new_cells_asym|])
         new_cells
 
     let automata_step() = 
         // compute the action to take
-        Array.iter (CellActivity.compute_action ext_state) live_cells    
+        Array.iter (CellActivity.compute_action !ext_state) live_cells    
 
         // take the action
         // 1. filter the cells which do nothing
@@ -179,7 +179,8 @@ type Model() =
     member this.Dt with get() = dt and set(_dt) = dt <- _dt
     member this.LiveCells with get() = live_cells
     member this.DeadCells with get() = dead_cells
-    member this.ExtState with get() = ext_state
+    member this.ExtState with get() = !ext_state
+    member this.ExtStateRef with get() = ext_state
 
     member this.CellActivityStatistics with get(t: CellType) =
                                             match t with

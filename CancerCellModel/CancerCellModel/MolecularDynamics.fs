@@ -50,11 +50,9 @@ type MolecularDynamics() =
     static member repulsive_force(cell1: Cell, cell2: Cell) =
         let Fdir =  (Vector(cell1.Location) - Vector(cell2.Location)).Normalise()
         
-        let dr = Geometry.distance(cell1.Location, cell2.Location) / 2.
-        let r_sum = (cell1.R + cell2.R) / 2.
-
-        let fmod = if (dr < r_sum) then
-                        ModelParameters.RepulsiveForceParam.Y(dr)
+        let dr = Geometry.distance(cell1.Location, cell2.Location) / (cell1.R+cell2.R)
+        let fmod = if (dr < 1.) then
+                        (!ModelParameters.RepulsiveForceParam).Y(dr)
                     else
                         0.
 
