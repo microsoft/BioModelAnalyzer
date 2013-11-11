@@ -361,6 +361,15 @@ namespace BioCheck.ViewModel
             this.activeModelStack[this.activeModelStackIndex] = orig.Clone();
             this.activeModelStack.Add(orig);
             ++this.activeModelStackIndex;
+            Debug.Assert(this.activeModelStack.Count == this.activeModelStackIndex+1);
+
+            // Limit memory requirements
+            const int maxStackSize = 100;
+            if (this.activeModelStack.Count > maxStackSize)
+            {
+                this.activeModelStack.RemoveAt(0);
+                --this.activeModelStackIndex;
+            }
         }
 
         internal void UndoActiveModel()
