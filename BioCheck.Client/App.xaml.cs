@@ -29,6 +29,10 @@ namespace BioCheck
             //   webContext.Authentication = new FormsAuthentication();
             //  //webContext.Authentication = new WindowsAuthentication();
             // this.ApplicationLifetimeObjects.Add(webContext);
+
+            // Makes debugging easier if the unhandled exception handler is *not* installed
+            if (!Debugger.IsAttached)
+                this.UnhandledException += Application_UnhandledException;
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
