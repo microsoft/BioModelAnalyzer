@@ -80,12 +80,11 @@ type CellActivityStatistics() =
     member this.MaxTimeBetweenDivisions with get() = maxtime_between_divisions
     member this.MinTimeBetweenDivisions with get() = mintime_between_divisions
 
-    member this.AddData(div_data: int[]) =
-        div_data |> Array.iter (fun (interval: int) ->
-                     time_between_divisions_sum <- time_between_divisions_sum + interval;
-                     num_of_summands <- num_of_summands + 1;
-                     if interval < mintime_between_divisions || mintime_between_divisions = 0 then mintime_between_divisions <- interval
-                     if interval > maxtime_between_divisions then maxtime_between_divisions <- interval)
+    member this.AddData(interval: int) =
+        time_between_divisions_sum <- time_between_divisions_sum + interval;
+        num_of_summands <- num_of_summands + 1;
+        if interval < mintime_between_divisions || mintime_between_divisions = 0 then mintime_between_divisions <- interval
+        if interval > maxtime_between_divisions then maxtime_between_divisions <- interval
 
 type Model() =
 
@@ -93,10 +92,17 @@ type Model() =
     let mutable dt: int = 1
     //let mutable max_stat_len: int = 100
 
-    let mutable live_cells: Cell[] = [||]
-    let mutable dead_cells: Cell[] = [||]
-    let mutable dividing_cells: Cell[] = [||]
-    let mutable dying_cells: Cell[] = [||]
+    let all_cells = new ResizeArray<Cell>()
+    let live_cells = new ResizeArray<Cell>()
+    let dead_cells = new ResizeArray<Cell>()
+    let apoptotic_cells = new ResizeArray<Cell>()
+    let necrotic_cells = new ResizeArray<Cell>()
+    let mutable dividing_cells_num = 0
+    let mutable new_stem_cells_num = 0
+    let mutable new_nonstem_cells_num = 0
+    let mutable dying_cells_num = 0
+    let mutable stem_cells_num = 0
+    let mutable nonstem_cells_num = 0
     // we need dividing_cells and dying_cells only for statistics
 
     let ext_state = ref (new ExternalState())
@@ -112,81 +118,117 @@ type Model() =
     let mutable nonstem_cell_activity_stat = new CellActivityStatistics()
 
     let init() =
-        live_cells <- [|new Cell(cell_type = CellType.Stem, generation = 0, location = Point(), radius = 10., density = 1.)|]
-        dead_cells <- [||]
-        CellActivity.calc_cellpackdensity(!ext_state, live_cells)
+        let first_cell = new Cell(cell_type = CellType.Stem, generation = 0, location = Point(), radius = 10., density = 1.)
+        all_cells.Add(first_cell)
+        live_cells.Add(first_cell)
+        stem_cells_num <- stem_cells_num + 1
+        CellActivity.calc_cellpackdensity(!ext_state, all_cells)
     
     let collect_statistics() =
         // collect the statistics
-        cell_stat.AddData(live_cells.Length, dividing_cells.Length, dying_cells.Length, dead_cells.Length,
-            (Array.filter(fun (c: Cell) -> c.Type = CellType.Stem) live_cells) |> Array.length,
-            (Array.filter(fun (c: Cell) -> c.Type = CellType.NonStem) live_cells) |> Array.length,
-            (Array.filter(fun (c: Cell) -> c.Type = CellType.NonStemWithMemory) live_cells) |> Array.length)
+        cell_stat.AddData(live_cells.Count-dividing_cells_num, dividing_cells_num, dying_cells_num, dead_cells.Count,
+            stem_cells_num - new_stem_cells_num, nonstem_cells_num - new_nonstem_cells_num,
+            live_cells.FindAll(fun (c:Cell) -> c.Type = CellType.NonStemWithMemory).Count)
 
         //ext_stat.AddData((*CellActivity.oxygen_per_cell(ext_state)*)ext_state.O2)
 
     let recalc_extstate() = 
-        (!ext_state).LiveCells <- live_cells.Length
-        (!ext_state).DividingCells <- dividing_cells.Length
-        (!ext_state).StemCells <- Array.length (Array.filter(fun (c:Cell) -> c.Type = CellType.Stem) live_cells)
-        CellActivity.recalculate_ext_state(!ext_state, live_cells, dt)
+        (!ext_state).LiveCells <- live_cells.Count
+        (!ext_state).DividingCells <- dividing_cells_num
+        (!ext_state).StemCells <- stem_cells_num
+        CellActivity.recalculate_ext_state(!ext_state, all_cells, dt)
 
     let perform_division() =
-        let asym_div_cells = Array.filter(fun (c:Cell) -> c.Action = AsymSelfRenewal) live_cells
-        let sym_div_cells = Array.filter(fun (c:Cell) -> c.Action = SymSelfRenewal || c.Action = NonStemDivision) live_cells
-        let stem_div_cells = Array.filter(fun (c:Cell) -> c.Action = SymSelfRenewal || c.Action = AsymSelfRenewal) live_cells
-        let nonstem_div_cells = Array.filter(fun (c:Cell) -> c.Action = NonStemDivision) live_cells
+        let stem_sym_div_cells = live_cells.FindAll(fun (c:Cell) -> c.Action = SymSelfRenewal)
+        let stem_asym_div_cells = live_cells.FindAll(fun (c:Cell) -> c.Action = AsymSelfRenewal)
+        let stem_div_cells = new ResizeArray<Cell>(stem_sym_div_cells.Count+stem_asym_div_cells.Count)
+        stem_div_cells.AddRange(stem_sym_div_cells)
+        stem_div_cells.AddRange(stem_asym_div_cells)
 
-        stem_cell_activity_stat.AddData(Array.map(fun (c: Cell) -> c.StepsAfterLastDivision) stem_div_cells)
-        nonstem_cell_activity_stat.AddData(Array.map(fun (c: Cell) -> c.StepsAfterLastDivision) nonstem_div_cells)
-                                    
-        dividing_cells <- Array.concat([|stem_div_cells; nonstem_div_cells|])
-        let new_cells_sym = (Array.collect (CellActivity.sym_divide(!ext_state)) sym_div_cells)
-        let new_cells_asym = (Array.collect (CellActivity.asym_divide(!ext_state)) asym_div_cells)
-        let new_cells = Array.concat([|new_cells_sym; new_cells_asym|])
+        stem_div_cells.ForEach(fun(c: Cell) -> stem_cell_activity_stat.AddData(c.StepsAfterLastDivision))
+        new_stem_cells_num <- stem_sym_div_cells.Count
+        stem_cells_num <- stem_cells_num + new_stem_cells_num
+
+        let nonstem_div_cells = live_cells.FindAll(fun (c:Cell) -> c.Action = NonStemDivision)
+        nonstem_div_cells.ForEach(fun(c: Cell) -> stem_cell_activity_stat.AddData(c.StepsAfterLastDivision))
+        new_nonstem_cells_num <- stem_asym_div_cells.Count + nonstem_div_cells.Count
+        nonstem_cells_num <- nonstem_cells_num + new_nonstem_cells_num
+
+        dividing_cells_num <- stem_div_cells.Count + nonstem_div_cells.Count
+
+        let new_cells = new ResizeArray<Cell>(2*dividing_cells_num)
+        let dividing_cells = new ResizeArray<Cell>(dividing_cells_num)
+        dividing_cells.AddRange(stem_div_cells)
+        dividing_cells.AddRange(nonstem_div_cells)
+
+        for c in dividing_cells do
+            new_cells.AddRange(CellActivity.divide(!ext_state)(c))
+            all_cells.Remove(c) |> ignore
+            live_cells.Remove(c) |> ignore
+
         new_cells
+
+    let perform_death() =
+        let start_apoptosis_cells = live_cells.FindAll(fun (c:Cell) -> c.Action = Apoptosis)
+        for c in start_apoptosis_cells do
+            CellActivity.start_apoptosis(c)
+            live_cells.Remove(c) |> ignore
+            all_cells.Remove(c) |> ignore
+
+        dead_cells.AddRange(start_apoptosis_cells)
+
+        let goto_necrosis_cells = live_cells.FindAll(fun (c:Cell) -> c.Action = Necrosis)
+        for c in goto_necrosis_cells do
+            CellActivity.goto_necrosis(c)
+            live_cells.Remove(c) |> ignore
+
+        dead_cells.AddRange(goto_necrosis_cells)
+
+        dying_cells_num <- goto_necrosis_cells.Count + start_apoptosis_cells.Count
 
     let automata_step() = 
         // compute the action to take
-        Array.iter (CellActivity.compute_action !ext_state) live_cells    
+        live_cells.ForEach(Action<Cell>(CellActivity.compute_action !ext_state))
 
         // take the action
-        // 1. filter the cells which do nothing
-        let old_cells = Array.filter(fun (c:Cell) -> c.Action = NoAction) live_cells
-        dying_cells <- Array.filter(fun (c:Cell) -> c.Action = Death) live_cells
-
-        // 2. perform division
+        // 1. perform division
         let new_cells = perform_division()
+        // 2. perform death
+        perform_death()
         collect_statistics()
 
-        // update old cells and initialise the new ones
-        live_cells <- Array.concat([old_cells; new_cells])
-        old_cells |> Array.iter(fun (c: Cell) -> CellActivity.do_step(c))
-        new_cells |> Array.iter(fun (c: Cell) -> CellActivity.initialise_new_cell(c))
-
-        // 3. perform death
-        Array.iter CellActivity.die dying_cells
-        dead_cells <- Array.concat([dead_cells; dying_cells])
+        // update cells
+        live_cells.ForEach(fun (c: Cell) -> CellActivity.do_step(c))
+        new_cells.ForEach(fun (c: Cell) -> CellActivity.initialise_new_cell(c))
+        // we don't want to execute the time step for new cells
+        // and add these cells only after that
+        live_cells.AddRange(new_cells) 
+        all_cells.AddRange(new_cells)
 
         // recalculate the external state
         recalc_extstate()
 
     let recalculate_pos(dt: float) =
-        Array.iter (MolecularDynamics.compute_forces live_cells) live_cells
-        Array.iter (MolecularDynamics.move dt) live_cells
+        // TOFIX: we should store the cells in previous positions
+        // then recalculate positions with old info
+        // then update positions
+        for c in all_cells do
+            MolecularDynamics.compute_forces(all_cells)(c)
+            MolecularDynamics.move(dt)(c)
 
     member this.T with get() = t and set(_t) = t <- _t
     member this.Dt with get() = dt and set(_dt) = dt <- _dt
     member this.LiveCells with get() = live_cells
+    member this.AllCells with get() = all_cells
     member this.DeadCells with get() = dead_cells
     member this.ExtState with get() = !ext_state
     member this.ExtStateRef with get() = ext_state
 
-    member this.CellActivityStatistics with get(t: CellType) =
-                                            match t with
-                                            | CellType.Stem -> stem_cell_activity_stat
-                                            | CellType.NonStem -> nonstem_cell_activity_stat
-                                            | _ -> raise (InnerError(sprintf "division statistics not supported for %s state" (Cell.TypeAsStr(t))));
+    member this.CellActivityStatistics(t: CellType) =
+        match t with
+        | CellType.Stem -> stem_cell_activity_stat
+        | CellType.NonStem -> nonstem_cell_activity_stat
+        | _ -> raise (InnerError(sprintf "division statistics not supported for %s state" (Cell.TypeAsStr(t))));
 
     member this.init_simulation() =
         t <- 0
@@ -213,7 +255,3 @@ type Model() =
             | NonStem -> cell_stat.NonStemStat
             | NonStemWithMemory -> cell_stat.NonStemWithMemStat)
                 :> seq<float> |> Seq.zip t_seq
-
-    (*member this.GetO2Statistics() =
-        let t_seq = seq {for x in 0 .. dt .. t -> float x}
-        Seq.zip t_seq ext_stat.O2*)

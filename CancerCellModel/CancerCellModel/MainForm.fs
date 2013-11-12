@@ -112,8 +112,8 @@ type MainForm () as this =
         Async.Start(this.run(), cancellation_token.Token)
 
     member this.render_cells() = 
-        render.RenderCells(model.LiveCells)
-        render.DrawGrid(model.ExtState.o2.Grid)
+        render.RenderCells(model.AllCells)
+        //render.DrawGrid(model.ExtState.O2.Grid)
 
         let graphics = this.CreateGraphics()
         graphics.Clip <- new Drawing.Region(Drawing.Rectangle(0, 0, base.Width, base.Height))
@@ -123,21 +123,21 @@ type MainForm () as this =
         this.render_cells()
 
     override this.get_summary(point: Geometry.Point) =
-        let cells = Array.filter(fun (cell: Cell) -> Geometry.distance(point, cell.Location) < cell.R) model.LiveCells
+        let cells = model.AllCells.FindAll(fun (cell: Cell) -> Geometry.distance(point, cell.Location) < cell.R)
         
         let mutable i = -1
-        if cells.Length = 1 then
+        if cells.Count = 1 then
             i <- 0
-        else if cells.Length > 1 then
+        else if cells.Count > 1 then
             let dist = ref (Geometry.distance(cells.[0].Location, point))
-            for j in 1 .. cells.Length-1 do
+            for j in 1 .. cells.Count-1 do
                 let dist' = Geometry.distance(cells.[j].Location, point)
                 if dist' < !dist then
                     dist := dist'
                     i <- j
 
         let mutable msg = ""
-        let grid = model.ExtState.o2.Grid
+        let grid = model.ExtState.O2.Grid
         let (i_grid, j_grid) = grid.PointToIndices(point)
 
         if i >= 0 then

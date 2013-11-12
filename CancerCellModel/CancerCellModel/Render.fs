@@ -53,7 +53,8 @@ type CellRender (graphics: Graphics)=
                     | NonStem -> Color.Blue
                     | NonStemWithMemory -> Color.GreenYellow)
 
-        if cell.State = PreparingToDie then color <- Color.Black
+        if cell.State = PreparingToNecrosis then color <- Color.DarkGray
+        else if cell.State = NecroticDeath then color <- Color.Black
 
         let mutable a, r, g, b = this.color_to_argb(color)
         let mutable da = 0u
@@ -61,12 +62,11 @@ type CellRender (graphics: Graphics)=
         (*match cell.State with
             | Functioning -> ()
             | PreparingToDie -> da := 30u
-            | Dead -> raise (InnerError(sprintf "Error: trying to display a dead cell"))*)
+            | Dead -> raise (InnerError(sprintf "Error: trying to display a dead cell"))
 
         match cell.Action with
-            | AsymSelfRenewal| SymSelfRenewal | NonStemDivision -> da <- uint32(-30)
-            | Death -> da <- 60u
-            | NoAction -> ()
+            | AsymSelfRenewal| SymSelfRenewal | NonStemDivision -> da <- uint32(-50)
+            | Necrosis | Apoptosis | NoAction -> ()*)
 
         a <- 125u + da
         if a < 10u then a <- 10u
@@ -111,9 +111,9 @@ type CellRender (graphics: Graphics)=
                             List.map genDrawing [(*1 .. cell.Generation*)] :> seq<_>;
                             ]*)
 
-    member this.RenderCells(cells: Cell[]) =
+    member this.RenderCells(cells: ResizeArray<Cell>) =
         graphics.Clear(Color.White)
-        Array.iter(this.render_cell) cells
+        cells.ForEach(Action<Cell>(this.render_cell))
 
 
 /////////////////// plot a function fun (x, y) -> z ///////////////
@@ -148,9 +148,13 @@ type GridFuncRender(graphics: Graphics) =
         for i = 0 to grid.YLines - 1 do
             for j = 0 to grid.XLines - 1 do
                 let p = grid.IndicesToPoint(i, j)
-                let screen_p = this.translate_coord(p.ToDrawingPoint())
-                let pen = new Pen(this.ComputeColor(f.GetValue(p), f_limits))
-                graphics.DrawEllipse(pen, Drawing.Rectangle(screen_p, Drawing.Size(pt_size, pt_size)))
+                let fval = f.GetValue(p)
+                // speed up drawing - do not draw points with max value
+                // because they are indistiguishable from the background
+                if Math.Abs(fval - f_limits.Max) > float_error then
+                    let screen_p = this.translate_coord(p.ToDrawingPoint())
+                    let pen = new Pen(this.ComputeColor(fval, f_limits))
+                    graphics.DrawEllipse(pen, Drawing.Rectangle(screen_p, Drawing.Size(pt_size, pt_size)))
                 
         if f_grad <> None then
             let grad = f_grad.Value

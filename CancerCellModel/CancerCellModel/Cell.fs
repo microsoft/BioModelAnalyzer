@@ -8,11 +8,11 @@ open System.Threading
 type PathwayLevel = Up | Down | Neutral
 type CellType = Stem | NonStem | NonStemWithMemory
 
-type CellState = Functioning | PreparingToDie | Dead
-let any_state = [|Functioning; PreparingToDie|]
+type CellState = Functioning | PreparingToNecrosis | ApoptoticDeath | NecroticDeath
+let any_live_state = [|Functioning; PreparingToNecrosis|]
 
-type CellAction = AsymSelfRenewal | SymSelfRenewal | NonStemDivision | Death | NoAction
-let any_action = [|AsymSelfRenewal; SymSelfRenewal; NonStemDivision; NoAction|]
+type CellAction = AsymSelfRenewal | SymSelfRenewal | NonStemDivision | Necrosis | Apoptosis | NoAction
+let any_nondeath_action = [|AsymSelfRenewal; SymSelfRenewal; NonStemDivision; NoAction|]
 let sym_divide_action = [|SymSelfRenewal; NonStemDivision|]
 let asym_divide_action = [|AsymSelfRenewal|]
 let divide_action = [|AsymSelfRenewal; SymSelfRenewal; NonStemDivision|]
@@ -40,6 +40,8 @@ type PhysSphere(location: Point, radius: float, density: float) =
 type Cell (cell_type: CellType, generation: int, location: Point, radius: float, density: float) =
     inherit PhysSphere(location, radius, density)
 
+    static let mutable counter = 0
+    let mutable unique_number = 0
     let mutable ng2: PathwayLevel = Up
     let mutable cd133: PathwayLevel = Up
 //    let mutable egfr: PathwayLevel = Up
@@ -50,8 +52,9 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
     let mutable time_in_state = 0
     let mutable generation = generation
     let mutable wait_before_divide = 0
-    let mutable wait_before_die = 0
+    let mutable wait_before_necrosis = 0
     let mutable steps_after_last_division = 0
+    let mutable age = 0
 
     let init() =
         match cell_type with
@@ -60,6 +63,9 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
             egfr <- if rand = 0 then Up else if rand = 1 then Down else Neutral*)
         | NonStem -> ng2 <- Down; cd133 <- Down
         | NonStemWithMemory -> ng2 <- Down; cd133 <- Up
+
+        unique_number <- counter
+        counter <- counter + 1
 
     do
         init()
@@ -79,6 +85,13 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
     member this.TypeAsStr() =
         Cell.TypeAsStr(cell_type)
 
+    static member StateAsStr(s: CellState) =
+        match s with
+        | Functioning -> "Functioning"
+        | PreparingToNecrosis -> "PreparingToNecrosis"
+        | ApoptoticDeath -> "Apoptotic Death"
+        | NecroticDeathStem -> "Necrotic Death"
+
     member this.NextState with get() = next_state
                             and set(s) = next_state <- s;
 
@@ -88,18 +101,22 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
     
     member this.Generation with get() = generation and set(g) = generation <- g
     member this.WaitBeforeDivide with get() = wait_before_divide and set(x) = wait_before_divide <- x
-    member this.WaitBeforeDie with get() = wait_before_die and set(x) = wait_before_die <- x
+    member this.WaitBeforeNecrosis with get() = wait_before_necrosis and set(x) = wait_before_necrosis <- x
     member this.StepsAfterLastDivision with get() = steps_after_last_division and set(x) = steps_after_last_division <- x
+    member this.Age with get() = age and set(x) = age <- x
 
     member this.Summary() =
-        sprintf "Location: r=(%.1f, %.1f)\n\
+        sprintf "State: %s, Age: %d, Generation: %d\n\
+                Location: r=(%.1f, %.1f)\n\
                 Speed: v=(%.1f, %.1f)\n\
                 Repulsive force=(%.1f, %.1f)\n\
-                Friction force=(%.1f, %.1f)\n"
+                Friction force=(%.1f, %.1f)"
+                (Cell.StateAsStr(state)) age generation
                 location.x location.y
                 base.Velocity.x base.Velocity.y
                 base.RepulsiveForce.x base.RepulsiveForce.y
                 base.FrictionForce.x base.FrictionForce.y
+
 
 type ExternalState() as this =
     let mutable egf = true    
@@ -108,10 +125,10 @@ type ExternalState() as this =
     let mutable stem_cells: int = 0
     let mutable cell_concentration_area = Geometry.Rectangle()
 
-    [<DefaultValue>] val mutable o2: GridFunction1D
-    [<DefaultValue>] val mutable o2_nabla_square: GridFunction1D
-    [<DefaultValue>] val mutable cell_pack_density: GridFunction1D
-    [<DefaultValue>] val mutable cell_pack_density_grad: ref<GridFunctionND>
+    [<DefaultValue>] val mutable private o2: GridFunction1D
+    [<DefaultValue>] val mutable private o2_nabla_square: GridFunction1D
+    [<DefaultValue>] val mutable private cell_pack_density: GridFunction1D
+    [<DefaultValue>] val mutable private cell_pack_density_grad: ref<GridFunctionVector>
 
     let init_o2() =
         let grid = ModelParameters.O2Grid
@@ -137,7 +154,7 @@ type ExternalState() as this =
 
     let init_cell_pack_density() =
         let grid = ModelParameters.CellPackDensityGrid
-        let f = GridFunction1D(grid)//, ModelParameters.CellPackDensityLimits)
+        let f = GridFunction1D(grid)
 
         for i = 0 to grid.YLines-1 do
             for j = 0 to grid.XLines-1 do
@@ -147,11 +164,10 @@ type ExternalState() as this =
         f
 
     let init_cell_pack_density_grad() =
-        let f = ref (GridFunctionND(grid = Grid(width = 2.*ModelParameters.AverageCellR,
+        let f = ref (GridFunctionVector(grid = Grid(width = 2.*ModelParameters.AverageCellR,
                                            height = 2.*ModelParameters.AverageCellR,
                                            dx = 2.*ModelParameters.AverageCellR,
-                                           dy = 2.*ModelParameters.AverageCellR),
-                                    D = 2))
+                                           dy = 2.*ModelParameters.AverageCellR)))
         f
 
     do
@@ -176,22 +192,13 @@ type ExternalState() as this =
     member this.CellConcentrationArea with get() = cell_concentration_area
                                         and set(x) = cell_concentration_area <- x
 
-    member this.CellPackDensityGradAtPoint(p: Point) =
-        let grad_arr = (!this.cell_pack_density_grad).GetValue(p)
-        Vector(grad_arr.[1], grad_arr.[0])
-    
     static member GetNeighbours(cell: Cell, cells: Cell[], r: float) =
         Array.filter(fun (c: Cell) -> c <> cell && Geometry.distance(c.Location, cell.Location) < r) cells
 
-    static member GetCellsInMesh(cells: Cell[], rect: Rectangle, ?state: CellState[], ?action: CellAction[]) =
-        let state = defaultArg state any_state
-        let action = defaultArg action any_action
-
-        Array.filter(fun (c: Cell) -> (not (CirclePart(Circle(c.Location, c.R), rect).IsEmpty())) &&
-                                        //Geometry.distance(c.Location, point) < r &&
-                                        Array.exists (fun (s: CellState) -> s = c.State) state &&
-                                        Array.exists (fun (a: CellAction) -> a = c.Action) action) cells
-
+    static member GetCellsInMesh(all_cells: ResizeArray<Cell>, rect: Rectangle) =
+        all_cells.FindAll(fun (c: Cell) -> let circle = Circle(c.Location, c.R)
+                                           (not (CirclePart.IntersectionTriviallyEmpty(circle, rect) ||
+                                                 CirclePart(circle, rect).IsEmpty()))) 
 
     member this.O2ToStringVerbose(p: Point) =
         // values in the adjoining grid points from which the value is interpolated - displayed for debugging
@@ -217,7 +224,7 @@ type ExternalState() as this =
 
         // gradient is calculated only for the area where cells are concentrated
         if cell_concentration_area.IsPointInside(p) then
-            let grad = this.CellPackDensityGradAtPoint(p)
+            let grad = (!this.CellPackDensityGrad).GetValue(p)
             grad_msg <- sprintf ", gradient=(%.2f, %.2f)" grad.x grad.y
 
         sprintf "Cell pack density: density(r)=%.1f \n\

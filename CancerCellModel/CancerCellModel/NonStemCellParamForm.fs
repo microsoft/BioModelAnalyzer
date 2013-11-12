@@ -30,13 +30,13 @@ type NonStemCellParamForm() as this =
     let max_division_interval_textbox = new TextBox()
 
 
-    let death_prob_o2_chart = new Chart(Dock=DockStyle.Fill)
-    let death_prob_o2_chart_area = new ChartArea()
-    let death_prob_o2_series = new Series(ChartType = SeriesChartType.Line)
+    let necrosis_prob_o2_chart = new Chart(Dock=DockStyle.Fill)
+    let necrosis_prob_o2_chart_area = new ChartArea()
+    let necrosis_prob_o2_series = new Series(ChartType = SeriesChartType.Line)
 
-    let death_prob_density_chart = new Chart(Dock=DockStyle.Fill)
-    let death_prob_density_chart_area = new ChartArea()
-    let death_prob_density_series = new Series(ChartType = SeriesChartType.Line)
+    let apoptosis_prob_age_chart = new Chart(Dock=DockStyle.Fill)
+    let apoptosis_prob_age_chart_area = new ChartArea()
+    let apoptosis_prob_age_series = new Series(ChartType = SeriesChartType.Line)
 
     let x1_death_textbox = new TextBox()
     let x2_death_textbox = new TextBox()
@@ -98,33 +98,33 @@ type NonStemCellParamForm() as this =
         death_groupbox.ClientSize <- Drawing.Size(int (float death_groupbox.Size.Width * 0.9),
                                                         int (float death_groupbox.Size.Height*0.9))
 
-        death_prob_o2_chart.Titles.Add("The probability of non-stem cell death") |> ignore
-        death_prob_o2_chart.ChartAreas.Add(death_prob_o2_chart_area)
-        death_prob_o2_chart.Series.Add(death_prob_o2_series)
-        death_prob_o2_chart_area.AxisX.Title <- "The concentration of oxygen (%)"
-        death_prob_o2_chart_area.AxisY.Title <- "Probability"
+        necrosis_prob_o2_chart.Titles.Add("The probability of necrosis for a non-stem cell") |> ignore
+        necrosis_prob_o2_chart.ChartAreas.Add(necrosis_prob_o2_chart_area)
+        necrosis_prob_o2_chart.Series.Add(necrosis_prob_o2_series)
+        necrosis_prob_o2_chart_area.AxisX.Title <- "The concentration of oxygen (%)"
+        necrosis_prob_o2_chart_area.AxisY.Title <- "Probability"
 
         let control1 = ParamFormBase.create_logistic_func_controls(
-                        death_groupbox, null, death_prob_o2_chart,
-                        ModelParameters.NonStemDeathProbO2,
+                        death_groupbox, null, necrosis_prob_o2_chart,
+                        ModelParameters.NonStemNecrosisProbO2,
                         (ModelParameters.O2Limits), FloatInterval(0., 1.), 100.)
 
         let control2 = ParamFormBase.create_int_interval_controls(
                         death_groupbox, control1,
                         "Waiting time (in steps) before the death program can be activated",
                         min_death_wait_textbox, max_death_wait_textbox,
-                        ModelParameters.DeathWaitInterval)
+                        ModelParameters.NecrosisWaitInterval)
 
-        death_prob_density_chart.Titles.Add("The probability of non-stem cell death") |> ignore
-        death_prob_density_chart.ChartAreas.Add(death_prob_density_chart_area)
-        death_prob_density_chart.Series.Add(death_prob_density_series)
-        death_prob_density_chart_area.AxisX.Title <- "Cell density"
-        death_prob_density_chart_area.AxisY.Title <- "Probability"
+        apoptosis_prob_age_chart.Titles.Add("The probability of apoptosis for a non-stem cell") |> ignore
+        apoptosis_prob_age_chart.ChartAreas.Add(apoptosis_prob_age_chart_area)
+        apoptosis_prob_age_chart.Series.Add(apoptosis_prob_age_series)
+        apoptosis_prob_age_chart_area.AxisX.Title <- "Cell age (time steps)"
+        apoptosis_prob_age_chart_area.AxisY.Title <- "Probability"
 
         ParamFormBase.create_logistic_func_controls(
-              death_groupbox, control2, death_prob_density_chart,
-              ModelParameters.NonStemDeathProbDensity,
-              (ModelParameters.CellPackDensityLimits), FloatInterval(0., 1.), 100.) |> ignore
+              death_groupbox, control2, apoptosis_prob_age_chart,
+              ModelParameters.NonStemApoptosisProbAge, FloatInterval(0., (!ModelParameters.NonStemApoptosisProbAge).Max.x*1.1),
+              FloatInterval(0., 1.), 100.) |> ignore
 
         ParamFormBase.create_ok_cancel_buttons(this, death_groupbox, apply_changes) |> ignore
         base.Controls.AddRange([|division_groupbox; death_groupbox|])

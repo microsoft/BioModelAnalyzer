@@ -58,16 +58,16 @@ type MolecularDynamics() =
 
         fmod * Fdir
 
-    static member repulsive_force_total(cell: Cell, cells: Cell[]) =
-        let neighbours = Array.filter(fun (c: Cell) -> c <> cell &&
-                                                        Geometry.distance(cell.Location, c.Location) < cell.R + c.R) cells
+    static member repulsive_force_total(cell: Cell, cells: ResizeArray<Cell>) =
+        let neighbours = cells.FindAll(fun (c: Cell) -> c <> cell &&
+                                                        Geometry.distance(cell.Location, c.Location) < cell.R + c.R) 
 
         let F = ref (Vector())
-        for i = 0 to neighbours.Length-1 do
+        for i = 0 to neighbours.Count-1 do
             F := !F + MolecularDynamics.repulsive_force(cell, neighbours.[i])
         !F
 
-    static member compute_forces(cells: Cell[])(cell: Cell) =
+    static member compute_forces(cells: ResizeArray<Cell>)(cell: Cell) =
         // interaction force
         // compute the interaction energy at the current location
         (*let V = MolecularDynamics.interaction_energy_total(cell, cells)

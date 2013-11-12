@@ -142,9 +142,9 @@ module Geometry =
             let dx = p.x-center.x
             let dy = p.y-center.y
             dx*dx + dy*dy < r*r
-
+    
     type CirclePart(circle: Circle, rect: Rectangle) =
-        
+  
         let circle_intersects_vline(x: float) =
             let yc = circle.Center.y
             let xc = circle.Center.x
@@ -178,6 +178,10 @@ module Geometry =
             // the intersection is empty if
             // there are no intersection points and the whole mesh is outside the circle
             points.Length = 0 && (not (circle.IsPointInside(Point(rect.Left, rect.Top)) || rect.IsPointInside(circle.Center)))
+
+        static member IntersectionTriviallyEmpty(c: Circle, rect: Rectangle) =
+            rect.Left > c.Center.x+c.R || rect.Right < c.Center.x-c.R ||
+                rect.Top > c.Center.y+c.R || rect.Bottom < c.Center.y-c.R
 
 open Geometry
 
@@ -367,15 +371,15 @@ type Derivative private(k: int, p: int)  =
     // or   fk(xi) = (Sum(m=l to r, m<>0)(a[m]*(f[i+m] - f[i]))) * k!/dx^k
     let compute_derivative(f: float[,], dimension: int, delta: float[], indices: int[]) =
         let mutable l = 0
-        let mutable a = Array.create matr_size 0.
+        let mutable a = ref null
         
         let func_size = f.GetLength(dimension)
         let deriv_index = indices.[dimension]
         let i, j = indices.[0], indices.[1]
 
-        if deriv_index < matr_size/2 then l <- l_l; a <- !a_l
-        else if deriv_index > func_size-1-(matr_size-matr_size/2) then l <- l_r; a <- !a_r
-        else l <- l_c; a <- !a_c
+        if deriv_index < matr_size/2 then l <- l_l; a <- a_l
+        else if deriv_index > func_size-1-(matr_size-matr_size/2) then l <- l_r; a <- a_r
+        else l <- l_c; a <- a_c
 
         let mutable sum = 0.
         for jj = 0 to matr_size-1 do
@@ -384,7 +388,7 @@ type Derivative private(k: int, p: int)  =
                 if dimension = 0 then f.[i+(l+m), j] // ddf/ddx
                 else f.[i, j+(l+m)]                  // ddf/ddy
 
-            sum <- sum + a.[jj]*(fstep - f.[i, j])
+            sum <- sum + (!a).[jj]*(fstep - f.[i, j])
 
         sum <- sum * float (fact(k)) / Math.Pow(delta.[dimension], float k)
         sum
@@ -412,8 +416,6 @@ type Derivative private(k: int, p: int)  =
         if i < 0 || i >= f.GetLength(0) ||
             j < 0 || j >= f.GetLength(1) then
                 raise(InnerError("i or j is outside the size of f"))
-
-        let gradient_arr = Array2D.create (f.GetLength(0)) (f.GetLength(1)) (Geometry.Vector())
 
         let df_dx = compute_derivative(f, 1, delta, [|i; j|])
         let df_dy = compute_derivative(f, 0, delta, [|i; j|])
@@ -629,3 +631,20 @@ type GridFunctionND (grid: Grid, D: int, ?origin: Geometry.Point) =
         base.Mutex.WaitOne() |> ignore
         alglib.spline2dbuildbilinearv(base.X, base.X.Length, base.Y, base.Y.Length, f, D, base.Interpolant)
         base.Mutex.ReleaseMutex()
+
+type GridFunctionVector(grid: Grid, ?origin: Geometry.Point) =
+    inherit GridFunctionND(grid, 2, if origin = None then Point() else origin.Value)
+
+    member this.GetValue(pglobal: Point, ?vals: ref<float[]>) =
+        let arr = base.GetValue(pglobal, if vals = None then ref null else vals.Value)
+ 
+        let mutable v = Vector()
+        if (arr.Length <> 2) then
+            raise(InnerError("the array with coordinates of gradient contains number of elements other than 2"))
+        else
+            v <- Vector(arr.[1], arr.[0])
+
+        v
+
+    member this.SetValue(pglobal: Point, v: Vector) =
+        base.SetValue(pglobal, [|v.y; v.x|])

@@ -7,7 +7,7 @@ open MyMath
 open Geometry
 
 type CellActivity() =
-    static member private calc_cellpackdensity_gradient(ext: ExternalState, cells: Cell[]) =
+    static member private calc_cellpackdensity_gradient(ext: ExternalState, cells: ResizeArray<Cell>) =
         let xmin, xmax, ymin, ymax = ref 0., ref 0., ref 0., ref 0.
         
         let get_grid_rect = fun (c: Cell) -> 
@@ -16,8 +16,8 @@ type CellActivity() =
                                 if !ymin > c.Location.y then ymin := c.Location.y;
                                 if !ymax < c.Location.y then ymax := c.Location.y;
 
+        cells.ForEach(Action<Cell>(get_grid_rect))
         // calculate the area of cell concentration
-        Array.iter(get_grid_rect) cells
         let border = 4.*ModelParameters.AverageCellR
         let rect = Geometry.Rectangle(left = !xmin-border, top = !ymin-border, right = !xmax+border, bottom = !ymax+border)
         ext.CellConcentrationArea <- rect
@@ -26,8 +26,8 @@ type CellActivity() =
         //let k = 2.
         //let size =(*2.*k**)ModelParameters.AverageCellR
         let gradient_func = ext.CellPackDensityGrad
-        gradient_func := GridFunctionND(Grid(rect.Width,rect.Height, ModelParameters.AverageCellR, ModelParameters.AverageCellR),
-                                        2, rect.Center)
+        gradient_func := GridFunctionVector(Grid(rect.Width,rect.Height, ModelParameters.AverageCellR, ModelParameters.AverageCellR),
+                                        rect.Center)
         let derivative = Derivative.Derivative_1_2
         let grid_local = (!gradient_func).Grid
 
@@ -49,14 +49,8 @@ type CellActivity() =
         (!gradient_func).ComputeInterpolant()
 
     static member private daughter_locations(cell: Cell, r1: float, r2: float, ext: ExternalState) =
-        let gradient_arr = (!ext.CellPackDensityGrad).GetValue(cell.Location)
-
-        let mutable gradient = Vector()
-        if (gradient_arr.Length <> 2) then
-            raise(InnerError("the array with coordinates of gradient contains number of elements other than 2"))
-        else
-            gradient <- Vector(gradient_arr.[1], gradient_arr.[0])
-
+        let loc = cell.Location
+        let gradient = (!ext.CellPackDensityGrad).GetValue(loc)
         let mutable v1, v2 = Vector(), Vector()
 
         // choose a diagonal of cell division, which goes through the cell center
@@ -73,27 +67,24 @@ type CellActivity() =
 
         v1.ToPoint(), v2.ToPoint()
 
-
-    // in assymetric cell division a stem cell produces
+    // in symmetric cell division a cell produces two identical daughter cells
+    // in asymmetric cell division a stem cell produces
     // a new stem cell and a new non-stem cell
-    static member asym_divide(ext: ExternalState)(cell: Cell) = 
+    static member divide(ext: ExternalState)(cell: Cell) = 
         let r1, r2 = cell.R, cell.R
         let loc1, loc2 = CellActivity.daughter_locations(cell, r1, r2, ext)
-        let non_stem_daughter = new Cell(NonStem, cell.Generation + 1, loc1, r1, cell.Density)
-        let stem_daughter = new Cell(Stem, cell.Generation + 1, loc2, r2, cell.Density)
+        let type1 = cell.Type
+        let type2 = if cell.Action = AsymSelfRenewal then NonStem else cell.Type
+        let non_stem_daughter = new Cell(type1, cell.Generation + 1, loc1, r1, cell.Density)
+        let stem_daughter = new Cell(type2, cell.Generation + 1, loc2, r2, cell.Density)
         [|non_stem_daughter; stem_daughter|]
 
-    // in syymetric cell division a cell produces two identical daughter cells
-    static member sym_divide(ext: ExternalState)(cell: Cell) = 
-        let r1, r2 = cell.R, cell.R
-        let loc1, loc2 = CellActivity.daughter_locations(cell, r1, r2, ext)
-        let daughter1 = new Cell(cell.Type, cell.Generation + 1, loc1, r1, cell.Density)
-        let daughter2 = new Cell(cell.Type, cell.Generation + 1, loc2, r2, cell.Density)
-        [|daughter1; daughter2|]
-
     // die function so far does nothing
-    static member die(cell: Cell) =
-        cell.State <- Dead
+    static member goto_necrosis(cell: Cell) =
+        cell.State <- NecroticDeath
+
+    static member start_apoptosis(cell: Cell) = 
+        cell.State <- ApoptoticDeath
 
     // determine if a cell can proliferate depending
     // on the amount of nutrients (currently oxygen: O2)
@@ -125,18 +116,25 @@ type CellActivity() =
 
     // determine if a cell should die depending
     // on the amount of nutrients (currently: O2)
-    static member private should_die(cell: Cell, ext: ExternalState) = 
+    static member private should_goto_necrosis(cell: Cell, ext: ExternalState) = 
         if cell.Type <> NonStem then raise(InnerError(sprintf "%s cell can not die" (cell.TypeAsStr())))
 
-        let prob_oxygen = (!ModelParameters.NonStemDeathProbO2).Y(ext.O2.GetValue(cell.Location))
-        let prob_density = (!ModelParameters.NonStemDeathProbDensity).Y(ext.CellPackDensity.GetValue(cell.Location))
+        let prob_oxygen = (!ModelParameters.NonStemNecrosisProbO2).Y(ext.O2.GetValue(cell.Location))
+        //let prob_density = (!ModelParameters.NonStemNecrosisProbDensity).Y(ext.CellPackDensity.GetValue(cell.Location))
         // we calculate the probability of death based on several parameters independently
         // i.e. based on the amount of oxygen and based on cell density
         //
         // we then take the maximum of these probabilities, which means that
         // if at least one critical event occurs (i.e. the oxygen is too small or there are too many cells)
         // then the cell decides to die
-        let prob = max prob_oxygen prob_density
+        let prob = prob_oxygen //max prob_oxygen prob_density
+        let decision = uniform_bool(prob)
+        decision
+
+    static member private should_start_apoptosis(cell: Cell) =
+        if cell.Type <> NonStem then raise(InnerError(sprintf "%s cell can not die" (cell.TypeAsStr())))
+
+        let prob = (!ModelParameters.NonStemApoptosisProbAge).Y(float cell.Age)
         let decision = uniform_bool(prob)
         decision
 
@@ -168,8 +166,10 @@ type CellActivity() =
             if cell.WaitBeforeDivide > 0
                 then cell.WaitBeforeDivide <- (cell.WaitBeforeDivide - 1)
 
-        if cell.State = PreparingToDie && cell.WaitBeforeDie > 0 then
-            cell.WaitBeforeDie <- (cell.WaitBeforeDie - 1)
+        if cell.State = PreparingToNecrosis && cell.WaitBeforeNecrosis > 0 then
+            cell.WaitBeforeNecrosis <- (cell.WaitBeforeNecrosis - 1)
+        
+        cell.Age <- cell.Age + 1
 
     // compute the action in the current state
     static member compute_action(ext: ExternalState) (cell: Cell) = 
@@ -177,10 +177,11 @@ type CellActivity() =
             // no action is taken by default
             cell.Action <- NoAction
 
-            if (cell.State = PreparingToDie) then
-                if cell.WaitBeforeDie = 0 then
-                    if CellActivity.should_die(cell, ext) then
-                        cell.Action <- Death
+            if (cell.State = NecroticDeath) then ()
+            else if (cell.State = PreparingToNecrosis) then
+                if cell.WaitBeforeNecrosis = 0 then
+                    if CellActivity.should_goto_necrosis(cell, ext) then
+                        cell.Action <- Necrosis
                     else cell.State <- Functioning
             else
                 // determine an action for a stem cell
@@ -198,9 +199,11 @@ type CellActivity() =
                 | NonStem ->
                     if ext.EGF && CellActivity.can_divide(cell, ext) then
                         cell.Action <- NonStemDivision
-                    else if CellActivity.should_die(cell, ext) then
-                        cell.WaitBeforeDie <- uniform_int(ModelParameters.DeathWaitInterval)
-                        cell.State <- PreparingToDie
+                    else if CellActivity.should_start_apoptosis(cell) then
+                        cell.Action <- Apoptosis
+                    else if CellActivity.should_goto_necrosis(cell, ext) then
+                        cell.WaitBeforeNecrosis <- uniform_int(ModelParameters.NecrosisWaitInterval)
+                        cell.State <- PreparingToNecrosis
 
                 // determine an action for a non-stem cell which can become stem again
                 | NonStemWithMemory ->
@@ -210,7 +213,7 @@ type CellActivity() =
             | :? InnerError as error ->
                 raise (InnerError(sprintf "%s\nCell summary:\n%s" (error.ToString()) (cell.Summary())))
 
-    static member calc_cellpackdensity(ext: ExternalState, cells: Cell[]) =
+    static member calc_cellpackdensity(ext: ExternalState, cells: ResizeArray<Cell>) =
 //        let k = 8.
 //        let d = k*ModelParameters.AverageCellR
         let grid = ext.CellPackDensity.Grid
@@ -222,13 +225,13 @@ type CellActivity() =
                 let neighbours = ExternalState.GetCellsInMesh(cells, rect)
                 let r = ModelParameters.AverageCellR
                 let k = grid.Dx / (2.*r) //(grid.Dx*grid.Dy) / (pi*r*r)
-                let density = (float neighbours.Length) * k
+                let density = (float neighbours.Count) * k
                 ext.CellPackDensity.SetValue(p, density)
         ext.CellPackDensity.ComputeInterpolant()
         
         CellActivity.calc_cellpackdensity_gradient(ext, cells)
 
-    static member private calc_o2(ext: ExternalState, cells: Cell[], dt: int) =
+    static member private calc_o2(ext: ExternalState, cells: ResizeArray<Cell>, dt: int) =
         let (supply_rate, c2, c3) = ModelParameters.O2Param
         let o2_limits = ModelParameters.O2Limits
         let grid = ext.O2.Grid
@@ -239,11 +242,14 @@ type CellActivity() =
 
                 let p = grid.IndicesToPoint(i, j)
                 let rect = grid.CenteredRect(i, j)
-                let live_cells = ExternalState.GetCellsInMesh(cells, rect).Length
-                let dividing_cells = ExternalState.GetCellsInMesh(cells, rect, any_state, divide_action).Length
-                let non_dividing_cells = live_cells - dividing_cells
+                let found_cells = ExternalState.GetCellsInMesh(cells, rect)
+                let live_cells = found_cells.FindAll(fun (c: Cell) -> (Array.exists(fun (s: CellState) -> s = c.State) any_live_state))
+                let dividing_cells = live_cells.FindAll(fun (c: Cell) -> (Array.exists(fun (a: CellAction) -> a = c.Action) divide_action))
+                            
+                let numof_dividing_cells = dividing_cells.Count
+                let numof_nondividing_cells = live_cells.Count - numof_dividing_cells
 
-                let consumption_rate = c2*(float dividing_cells) + c3*(float non_dividing_cells)
+                let consumption_rate = c2*(float numof_dividing_cells) + c3*(float numof_nondividing_cells)
                 let mutable new_value = ext.O2.GetValue(i, j) +
                                         (float dt)*(ModelParameters.DiffusionCoeff * ext.O2NablaSquare.GetValue(p) +
                                                     supply_rate - consumption_rate)
@@ -255,7 +261,7 @@ type CellActivity() =
         ext.O2.ComputeInterpolant()
 
     // recalculate the probabilistic events in the external system: EGF and O2
-    static member recalculate_ext_state(ext:ExternalState, cells: Cell[], dt: int) =
+    static member recalculate_ext_state(ext:ExternalState, cells: ResizeArray<Cell>, dt: int) =
         ext.EGF <- uniform_bool(ModelParameters.EGFProb)
         CellActivity.calc_cellpackdensity(ext, cells)
         CellActivity.calc_o2(ext, cells, dt)
