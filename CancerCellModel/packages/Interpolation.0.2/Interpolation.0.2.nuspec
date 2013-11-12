@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Interpolation</id>
+    <version>0.2</version>
+    <title>F# Hermite Interpolation</title>
+    <authors>Andrew Gaspar</authors>
+    <owners>Andrew Gaspar</owners>
+    <projectUrl>https://github.com/AndrewGaspar/Interpolation</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An F# module for interpolation sets of data into functions that are fairly accurate over a certain range. Uses the Hermite interpolation method.</description>
+    <releaseNotes>Generate a derivative of a hermite function.</releaseNotes>
+    <copyright>Copyright 2013 Andrew Gaspar</copyright>
+    <tags>Numerical Analysis Interpolation Hermite F# Functional</tags>
+    <references>
+      <reference file="Interpolation.dll" />
+    </references>
+  </metadata>
+</package>
