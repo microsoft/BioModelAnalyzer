@@ -76,10 +76,16 @@ type zNewton = pg um second^-2 //F=ma zeptonewtons because pg um second^-2 = 10^
 (*
 Boltzmann constant is 
 1.38 * 10^-23 m^2  kg second^-2 K^-1
-1.38 * 10^-11 m^2  pg second^-2 K^-1
-1.38 * 10^1   um^2 pg second^-2 K^-1
+
+1 kg = 10 ^ 15 pg 
+
+1.38 * 10^-8 m^2  pg second^-2 K^-1
+
+1 m ^ 2 = 10^12 um^2
+
+1.38 * 10^4   um^2 pg second^-2 K^-1
 *)
-let Kb = (1.3806488 * 10.**1. )*1.<um^2 pg second^-2 Kelvin^-1>
+let Kb = (1.3806488 * 10.**4. )*1.<um^2 pg second^-2 Kelvin^-1>
 
 type Particle(Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: Vector3D<_>, Friction: float<second>, radius: float<um>, density: float<pg um^-3>, age: float<second>, GaussianRandomNumber:float, freeze: bool) = 
     member this.name = Name
@@ -276,4 +282,6 @@ let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atom
 let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
     let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
     let modifier = maxlength/maxV.len
-    [for (p,f) in (List.zip system forces) -> Particle(p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, false)]
+    [for (p,f) in (List.zip system forces) -> match p.freeze with 
+                                                | false -> Particle(p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)
+                                                | true -> p ]

@@ -10,7 +10,7 @@ let rec listLinePrint l =
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (intTop: interfaceTopology) (steps: int) (T: float<Kelvin>) (dT: float<second>) (maxMove: float<um>) trajectory csvout (freq: int) rand=
+let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (intTop: interfaceTopology) (steps: int) (T: float<Kelvin>) (dT: float<second>) (maxMove: float<um>) trajectory csvout (freq: int) mg pg ig rand =
     let pUpdate (system: Particle list) (machineForces: Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) rand write =
         match write with
         | true -> trajectory system
@@ -27,19 +27,21 @@ let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (
     match steps with
     | 0 -> ()
     | _ -> 
-            let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
-            simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT maxMove trajectory csvout freq rand
-
+            match (steps%mg,steps%pg,steps%ig) with 
+            | (0,0,0) ->  let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
+                          simulate (pUpdate nSystem machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (x,0,0) when x > 0 -> let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
+                                    simulate (pUpdate nSystem machineForces T dT rand write) nMachineStates qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (0,x,0) when x > 0 -> let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
+                                    simulate nSystem (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (0,0,x) when x > 0 -> simulate (pUpdate system [for p in system-> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}] T dT rand write) (aUpdate machineStates qn write) qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (x,y,0) when x > 0 && y > 0 ->    let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
+                                                simulate nSystem nMachineStates qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (x,0,y) when x > 0 && y > 0 ->    simulate (pUpdate system [for p in system-> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}] T dT rand write) machineStates qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (0,x,y) when x > 0 && y > 0 ->    simulate system (aUpdate machineStates qn write) qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+            | (_,_,_) -> simulate system machineStates qn topology intTop (steps-1) T dT maxMove trajectory csvout freq mg pg ig rand
+                       
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
-//    let combine (p1: Particle) (pTypes: Particle list) =
-//        let remapped = [for p2 in pTypes do match p1 with
-//                                                |p1 when System.String.Equals(p1.name,p2.name) -> yield Particle(p1.name,p1.location,p1.velocity,p2.Friction,p2.radius,p2.density,p2.freeze)
-//                                                |_ -> () ]
-//        match remapped.Length with
-//        | 1 -> List.nth remapped 0
-//        | _ -> failwith "Multiple definitions of the same particle type"
-    //cartFile is (at present) a pdb with the initial cell positions
-    //topology specifies the interactions and forcefield parameters
     let rec countCells acc (name: string) (s: Particle list) = 
         match s with
         | head::tail -> 
@@ -48,14 +50,13 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
         | [] -> acc
     let positions = IO.pdbRead cartFile rng
     let (pTypes, nbTypes, (machName,machI0), interfaceTopology, maxMove) = IO.xmlTopRead topfile rng
-    //combine the information from pTypes (on the cell sizes and density) with the postions
-    //([for cart in positions -> combine cart pTypes ], nbTypes)
     let uCart = [for cart in positions -> 
                     let (f,r,d,freeze) = pTypes.[cart.name]
                     match freeze with
                     | true -> Particle(cart.name,cart.location,cart.velocity,{x=1.;y=0.;z=0.},f,r,d,cart.age,cart.gRand,freeze) //use arbitrary orientation for freeze particles
                     | _ -> Particle(cart.name,cart.location,cart.velocity,(randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
                      ]
+    //let staticGrid = gridNonBondedPairList (List.filter (fun (p: Particle) -> p.freeze) uCart) 6.<um>
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = spawnMachines qn machineCount rng machI0
@@ -70,8 +71,11 @@ let top = ref ""
 let bma = ref ""
 let csv = ref ""
 let freq = ref 1
+let mg = ref 1 //Machine time granularity- update every mg timesteps
+let pg = ref 1 //Physical time granularity- update every pg timesteps
+let ig = ref 1 //Interface time granularity- update every ig timesteps
 let equil = ref 10 //Number of steepest descent steps at start, and cells don't respond. Used to equilibrate a starting system
-let equillength = ref 1.<um> //maximum length of steepest descent used in minimisation
+let equillength = ref 0.1<um> //maximum length of steepest descent used in minimisation
 let rec parse_args args = 
     match args with 
     | [] -> () 
@@ -86,6 +90,9 @@ let rec parse_args args =
     | "-csv"   :: bck  :: rest -> csv   := bck;       parse_args rest
     | "-equili_steps" :: bck :: rest -> equil := (int)bck; parse_args rest
     | "-equili_len  " :: bck :: rest -> equillength := (float)bck*1.<um>; parse_args rest
+    | "-mg"    :: tmp :: rest -> mg     := (int)tmp;  parse_args rest
+    | "-pg"    :: tmp :: rest -> pg     := (int)tmp;  parse_args rest
+    | "-ig"    :: tmp :: rest -> ig     := (int)tmp;  parse_args rest
     | _ -> failwith "Bad command line args" 
 
 let rec equilibrate (system: Particle list) (topology) (steps: int) (maxlength: float<um>) =
@@ -129,7 +136,10 @@ let main argv =
     printfn "Initial system:"
     printfn "Particles: %A" system.Length
     printfn "Machines:  %A" machineStates.Length
+    printfn "Performing %A step steepest descent EM (max length %Aum)" !equil !equillength
     let eSystem = equilibrate system topology !equil !equillength
-    simulate eSystem machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) (maxMove*1.<um>) trajout csvout !freq rand
+    printfn "Completed EM. Running %A seconds of simulation (%A steps)" (!dT*((float) !steps)) !steps
+    printfn "Reporting every %A seconds (total frames = %A)" (!dT*((float) !freq)) ((!steps)/(!freq))
+    simulate eSystem machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) (maxMove*1.<um>) trajout csvout !freq !mg !pg !ig rand
     0 // return an integer exit code
     
