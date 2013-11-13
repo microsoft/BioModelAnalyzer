@@ -239,6 +239,8 @@ namespace BioCheck.ViewModel.Models
         {
             DoLoad(this.selectedModel);
             ApplicationViewModel.Instance.ActiveModel = this.selectedModel;
+            // HACK!
+            ((Shell)((BioCheck.Controls.BusyIndicator)System.Windows.Application.Current.RootVisual).Content).containerGrid.ZoomToFit();
         }
 
         /// <summary>

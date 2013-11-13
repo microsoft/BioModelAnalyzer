@@ -33,8 +33,10 @@
 									</Grid.RowDefinitions>
 
 									<ScrollContentPresenter x:Name="ScrollContentPresenter" Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" ContentTemplate="{TemplateBinding ContentTemplate}" 
-								MouseWheel="ScrollContentPresenter_MouseWheel" 
+								MouseWheel="ContainerGrid_MouseWheel" 
 								MouseMove="ContainerGrid_MouseMove"
+                                MouseEnter="ContainerGrid_MouseEnter"
+                                MouseLeave="ContainerGrid_MouseLeave"
 								MouseLeftButtonDown="ContainerGrid_MouseLeftButtonDown"
 								MouseRightButtonUp="ContainerGrid_MouseRightButtonUp"
 								MouseLeftButtonUp="ContainerGrid_MouseLeftButtonUp"

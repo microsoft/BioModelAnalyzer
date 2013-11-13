@@ -291,7 +291,46 @@ namespace BioCheck.Controls
             this.contextBarService.Close();
 
             double level = this.ZoomLevel;
+            double scale = LevelToScale(level);
 
+            // Quick debug test
+            //var roundtrip = ScaleToLevel(scale);
+            //Debug.WriteLine(string.Format("From {0} to {1} back to {2}", level, scale, roundtrip));
+
+            scaleTransform.ScaleX = scale;
+            scaleTransform.ScaleY = scale;
+
+            var x = (Scroller.HorizontalOffset + this.currentPointerFraction.X * Scroller.ViewportWidth) / Scroller.ExtentWidth;
+            var y = (Scroller.VerticalOffset + this.currentPointerFraction.Y * Scroller.ViewportHeight) / Scroller.ExtentHeight;
+
+            zoomTransformer.ApplyLayoutTransform();
+            this.UpdateLayout();
+
+            double newHorizontal, newVertical;
+            // TODO - will it ever be the case that NoPoint holds?
+            if (this.currentPointerFraction != NoPoint)
+            {
+                // Keep current pointer location constant
+                newHorizontal = x * Scroller.ExtentWidth - this.currentPointerFraction.X * Scroller.ViewportWidth;
+                newVertical = y * Scroller.ExtentHeight - this.currentPointerFraction.Y * Scroller.ViewportHeight;
+            }
+            else
+            {
+                // Restore centre location
+                newHorizontal = _relScrollX * Scroller.ExtentWidth - 0.5 * Scroller.ViewportWidth;
+                newVertical = _relScrollY * Scroller.ExtentHeight - 0.5 * Scroller.ViewportHeight;
+            }
+
+            if (newHorizontal < 0) newHorizontal = 0;
+            Scroller.ScrollToHorizontalOffset(newHorizontal);
+
+            if (newVertical < 0) newVertical = 0;
+            Scroller.ScrollToVerticalOffset(newVertical);
+        }
+
+        // TODO - work out why these zoom formulae were chosen (and the comments in the code seem to be misleading!)
+        private static double LevelToScale(double level)
+        {
             double scale = 1.0;
 
             if (level < 50)
@@ -323,28 +362,56 @@ namespace BioCheck.Controls
                 scale = 1 - percent;
             }
 
-            scaleTransform.ScaleX = scale;
-            scaleTransform.ScaleY = scale;
-
-            zoomTransformer.ApplyLayoutTransform();
-            this.UpdateLayout();
-
-            var newHorizontal = _relScrollX * Scroller.ExtentWidth - 0.5 * Scroller.ViewportWidth;
-            if (newHorizontal < 0)
-            {
-                newHorizontal = 0;
-            }
-            Scroller.ScrollToHorizontalOffset(newHorizontal);
-
-            var newVertical = _relScrollY * Scroller.ExtentHeight - 0.5 * Scroller.ViewportHeight;
-            if (newVertical < 0)
-            {
-                newVertical = 0;
-            }
-
-            Scroller.ScrollToVerticalOffset(newVertical);
+            return scale;
         }
 
+        private static double ScaleToLevel(double scale)
+        {
+            double level = 50.0;
+
+            if (scale > 1.0)
+            {
+                var percent = 2.0 - scale;
+                level = percent * 50.0;
+            }
+            else if (scale < 1.0)
+            {
+                var percent = 1.0 - scale;
+                var delta = percent * 100.0;
+                level = delta + 50.0;
+            }
+            // else level level as 50
+
+            return level;
+        }
+
+        internal void ZoomToFit()
+        {
+            double totalWidth = this.LayoutRoot.Width, totalHeight = this.LayoutRoot.Height;
+            double cellWidth = totalWidth / this.Columns, cellHeight = totalHeight / this.Rows;
+            double displayWidth = Scroller.ActualWidth * 0.75, displayHeight = Scroller.ActualHeight * 0.75; // HACK - bit of margin
+            int minX = int.MaxValue, minY = int.MaxValue, maxX = int.MinValue, maxY = int.MinValue;
+            // Find occupied rectangle
+            foreach (var c in this.containerCanvas.Children.OfType<ContainerSite>())
+                if (c.DataContext != null || c.VariableCanvas.Children.FirstOrDefault() != null)
+                {
+                    if (c.PositionX < minX) minX = c.PositionX;
+                    if (c.PositionX > maxX) maxX = c.PositionX;
+                    if (c.PositionY < minY) minY = c.PositionY;
+                    if (c.PositionY > maxY) maxY = c.PositionY;
+                }
+            if (minX == int.MaxValue) minX = 0;
+            if (maxX == int.MinValue) maxX = this.Columns - 1;
+            if (minY == int.MaxValue) minY = 0;
+            if (maxY == int.MinValue) maxY = this.Rows - 1;
+            int w = maxX - minX + 1, h = maxY - minY + 1;
+            double xScale = displayWidth / (w * cellWidth), yScale = displayHeight / (h * cellHeight);
+            double scale = Math.Min(xScale, yScale);
+            double level = ScaleToLevel(scale);
+            this.ZoomLevel = level;
+            this.PanX = minX * cellWidth * scale;
+            this.PanY = minY * cellHeight * scale;
+        }
         #endregion
 
         #region Panning
@@ -385,9 +452,21 @@ namespace BioCheck.Controls
             {
                 ((UIElement)sender).CaptureMouse();
                 this.mouseStartPosition = e.GetPosition(this);
-                this.panning = true;
+                EnablePanning();
             }
 #endif
+        }
+
+        private void EnablePanning()
+        {
+            this.panning = true;
+            this.Cursor = Cursors.Hand;
+        }
+
+        private void DisablePanning()
+        {
+            this.panning = false;
+            this.Cursor = null;
         }
 
         private bool panning;
@@ -399,7 +478,7 @@ namespace BioCheck.Controls
 
             // ApplicationViewModel.Instance.ToolbarViewModel.IsSelectionActive = true;
             this.ReleaseMouseCapture();
-            this.panning = false;
+            DisablePanning();
         }
 
         private void ContainerGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -410,7 +489,7 @@ namespace BioCheck.Controls
             //   this.contextBarService.Close();
             //  e.Handled = true;
             this.ReleaseMouseCapture();
-            this.panning = false;
+            DisablePanning();
         }
 
         void ContainerGrid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -419,13 +498,13 @@ namespace BioCheck.Controls
                    .Context.LeftMouseUp(e);
 
                this.ReleaseMouseCapture();
-               this.panning = false;
+               DisablePanning();
         }
-
 
         private void ContentPresenter_LostMouseCapture(object sender, MouseEventArgs e)
         {
-            this.panning = false;
+            DisablePanning();
+            this.currentPointerFraction = NoPoint;
         }
 
         void ContainerGrid_MouseMove(object sender, MouseEventArgs e)
@@ -433,10 +512,13 @@ namespace BioCheck.Controls
             ApplicationViewModel.Instance
                  .Context.MouseMove(e);
 
+            var s = (ScrollContentPresenter)sender;
+            var p = e.GetPosition(s);
+            this.currentPointerFraction = new Point(p.X / s.ActualWidth, p.Y / s.ActualHeight);
+
             if (this.panning)
             {
                 var mouseCurrentPosition = e.GetPosition(this);
-
                 var deltaX = mouseCurrentPosition.X - mouseStartPosition.X;
                 var deltaY = mouseCurrentPosition.Y - mouseStartPosition.Y;
 
@@ -447,10 +529,24 @@ namespace BioCheck.Controls
             }
         }
 
+        private void ContainerGrid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            var s = (ScrollContentPresenter)sender;
+            var p = e.GetPosition(s);
+            this.currentPointerFraction = new Point(p.X / s.ActualWidth, p.Y / s.ActualHeight);
+        }
+
+        private void ContainerGrid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            this.currentPointerFraction = NoPoint;
+        }
+
         private ScrollBar _horizontalScrollBar;
         private ScrollBar _verticalScrollBar;
         private double _relScrollX;
         private double _relScrollY;
+        private Point currentPointerFraction;
+        private static readonly Point NoPoint = new Point(-1, -1);
 
         private void HorizontalScrollBar_Loaded(object sender, RoutedEventArgs e)
         {
@@ -508,7 +604,7 @@ namespace BioCheck.Controls
             isChangingPan = false;
         }
 
-        private void ScrollContentPresenter_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private void ContainerGrid_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             e.Handled = true;
 

@@ -223,6 +223,8 @@ namespace BioCheck.ViewModel
 
                 // Open it
                 ActiveModel = importedVM;
+                // HACK!
+                ((Shell)((BioCheck.Controls.BusyIndicator)System.Windows.Application.Current.RootVisual).Content).containerGrid.ZoomToFit();
 
                 this.IsLoading = false;
 
