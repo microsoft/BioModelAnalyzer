@@ -350,6 +350,13 @@ namespace BioCheck.ViewModel
             set { SetActiveModel(value, true); }
         }
 
+        internal void SaveActiveModel()
+        {
+            var vm = this.ActiveModel;
+            if (vm != null)
+                Container.Resolve<IViewModelSaver<ModelViewModel>>().Save(vm);
+        }
+
         internal void DupActiveModel()
         {
             Debug.WriteLine(string.Format("Dup at {0} of {1}", this.activeModelStackIndex, this.activeModelStack.Count));
@@ -363,7 +370,7 @@ namespace BioCheck.ViewModel
             this.activeModelStack[this.activeModelStackIndex] = orig.Clone();
             this.activeModelStack.Add(orig);
             ++this.activeModelStackIndex;
-            Debug.Assert(this.activeModelStack.Count == this.activeModelStackIndex+1);
+            Debug.Assert(this.activeModelStack.Count == this.activeModelStackIndex + 1);
 
             // Limit memory requirements
             const int maxStackSize = 100;
@@ -373,6 +380,8 @@ namespace BioCheck.ViewModel
                 --this.activeModelStackIndex;
             }
         }
+
+        // TODO - should I save on undo/redo too?
 
         internal void UndoActiveModel()
         {

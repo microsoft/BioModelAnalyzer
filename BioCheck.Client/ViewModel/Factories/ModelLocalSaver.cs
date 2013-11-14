@@ -14,10 +14,6 @@ namespace BioCheck.ViewModel.Factories
     {
         protected override void OnSave(ModelViewModel modelVM)
         {
-            ApplicationViewModel.Instance.Container
-                    .Resolve<IBusyIndicatorService>()
-                    .Show("Saving model..."); 
-
             // Convert the ModelViewModel to an XDocument
             var xdoc = ModelXmlSaver.SaveToXml(modelVM);
 
@@ -25,10 +21,6 @@ namespace BioCheck.ViewModel.Factories
 
             // Save to isolated storage
             IsolatedStorageHelper.SaveXDocument(fileName, xdoc);
-
-            ApplicationViewModel.Instance.Container
-              .Resolve<IBusyIndicatorService>()
-              .Close(); 
         }
     }
 }

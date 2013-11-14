@@ -398,6 +398,8 @@ namespace BioCheck.Views
                 var positionY = Convert.ToInt32(cursorPosition.Y) - VariableView.DefaultFixedHeight / 2;
 
                 var variableVM = containerVM.NewVariable(positionX, positionY);
+
+                ApplicationViewModel.Instance.SaveActiveModel();
             }
         }
 

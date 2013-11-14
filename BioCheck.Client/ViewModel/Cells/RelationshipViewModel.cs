@@ -119,20 +119,11 @@ namespace BioCheck.ViewModel.Cells
 
         private void OnDeleteExecuted()
         {
-            // Prompt the user and delete the relationship if they confirm
-            ApplicationViewModel.Instance.Container
-                .Resolve<BioCheck.Services.IMessageWindowService>()
-                .Show(
-                    "Are you sure you want to clear the current relationship?",
-                    MessageType.YesCancel, result =>
-                                               {
-                                                   if (result == MessageResult.Yes)
-                                                   {
-                                                       ApplicationViewModel.Instance.DupActiveModel();
-                                                       var modelVM = ApplicationViewModel.Instance.ActiveModel;
-                                                       modelVM.RelationshipViewModels.Remove(this);
-                                                   }
-                                               });
+            ApplicationViewModel.Instance.DupActiveModel();
+            var modelVM = ApplicationViewModel.Instance.ActiveModel;
+            modelVM.RelationshipViewModels.Remove(this);
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         #region IDisposable Members

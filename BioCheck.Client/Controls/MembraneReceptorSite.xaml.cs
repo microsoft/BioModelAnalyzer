@@ -84,6 +84,8 @@ namespace BioCheck.Controls
             ApplicationViewModel.Instance.DupActiveModel();
 
             containerVM.NewMembraneReceptor(positionX, positionY, this.Angle);
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         public MembranceReceptorView AddMembraneReceptor(object dataContext)

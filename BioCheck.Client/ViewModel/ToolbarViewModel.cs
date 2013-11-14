@@ -299,6 +299,9 @@ namespace BioCheck.ViewModel
                 return;
             }
 
+            var busy = ApplicationViewModel.Instance.Container.Resolve<IBusyIndicatorService>();
+            busy.Show("Saving model...");
+
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
             modelVM.ModifiedDate = DateTime.Now;
 
@@ -308,6 +311,8 @@ namespace BioCheck.ViewModel
 
             // Log the saving of the model to the Log web service
             ApplicationViewModel.Instance.Log.SaveModel();
+
+            busy.Close(); 
         }
 
         /// <summary>
@@ -342,6 +347,8 @@ namespace BioCheck.ViewModel
                                                 ApplicationViewModel.Instance.Container.Resolve<IProofWindowService>().Close();
 
                                                 modelVM.Reset();
+                                                // Saving probably unnecessary here
+                                                //ApplicationViewModel.Instance.SaveActiveModel();
                                             }
                                         });
         }
@@ -378,55 +385,24 @@ namespace BioCheck.ViewModel
             if (checkedObjects == 0)
                 return;
 
+            ApplicationViewModel.Instance.DupActiveModel();
+            modelVM.RelationshipViewModels.RemoveAll(relationshipVM => relationshipVM.IsChecked);
 
-            // Prompt the user and delete the checked objects if they confirm
+            foreach (var containerVM in modelVM.ContainerViewModels)
+            {
+                containerVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
+            }
 
-            string message =
-                "Are you sure you want to delete the selected objects?" + Environment.NewLine + Environment.NewLine;
+            modelVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
+            modelVM.ContainerViewModels.RemoveAll(containerVM => containerVM.IsChecked);
 
-            if (checkedContainers == 1)
-                message += "There is 1 selected container." + Environment.NewLine;
-            else if (checkedContainers > 0)
-                message += string.Format("There are {0} selected containers.", checkedContainers) + Environment.NewLine;
+            // Reset the active variable and container and close the context menu
+            ApplicationViewModel.Instance.ActiveVariable = null;
+            ApplicationViewModel.Instance.ActiveContainer = null;
+            ApplicationViewModel.Instance.Container.Resolve<IContextBarService>().Close();
 
-            if (checkedVariables == 1)
-                message += "There is 1 selected variable." + Environment.NewLine;
-            else if (checkedVariables > 0)
-                message += string.Format("There are {0} selected variables.", checkedVariables) + Environment.NewLine;
-
-            if (checkedConstants == 1)
-                message += "There is 1 selected constant." + Environment.NewLine;
-            else if (checkedConstants > 0)
-                message += string.Format("There are {0} selected constants.", checkedConstants) + Environment.NewLine;
-
-            if (checkedRelationships == 1)
-                message += "There is 1 selected relationship." + Environment.NewLine;
-            else if (checkedRelationships > 0)
-                message += string.Format("There are {0} selected relationships.", checkedRelationships);
-
-            ApplicationViewModel.Instance.Container
-                                        .Resolve<IMessageWindowService>()
-                                        .Show(message, MessageType.YesCancel, result =>
-                                        {
-                                            if (result == MessageResult.Yes)
-                                            {
-                                                ApplicationViewModel.Instance.DupActiveModel();
-                                                modelVM.RelationshipViewModels.RemoveAll(relationshipVM => relationshipVM.IsChecked);
-
-                                                foreach (var containerVM in modelVM.ContainerViewModels)
-                                                {
-                                                    containerVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
-                                                }
-
-                                                modelVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
-                                                modelVM.ContainerViewModels.RemoveAll(containerVM => containerVM.IsChecked);
-
-                                                // Reset the active variable and container and close the context menu
-                                                ApplicationViewModel.Instance.ActiveVariable = null;
-                                                ApplicationViewModel.Instance.ActiveContainer = null;
-                                                ApplicationViewModel.Instance.Container.Resolve<IContextBarService>().Close();
-                                            }
-                                        });
+            // Saving probably unnecessary here
+            //ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         public DelegateCommand UndoCommand
@@ -570,6 +546,8 @@ namespace BioCheck.ViewModel
                     .Show("Please select only one cell to paste.");
                 }
             }
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         #endregion

@@ -306,27 +306,18 @@ namespace BioCheck.ViewModel.Cells
 
         private void OnDeleteExecuted()
         {
-            // Prompt the user and delete the container if they confirm
-            ApplicationViewModel.Instance.Container
-                .Resolve<BioCheck.Services.IMessageWindowService>()
-                .Show(
-                    "Are you sure you want to delete the current container?",
-                    MessageType.YesCancel, result =>
-                                               {
-                                                   if (result == MessageResult.Yes)
-                                                   {
-                                                       ApplicationViewModel.Instance.DupActiveModel();
+            ApplicationViewModel.Instance.DupActiveModel();
 
-                                                       this.VariableViewModels.Clear();
+            this.VariableViewModels.Clear();
 
-                                                       var modelVM = ApplicationViewModel.Instance.ActiveModel;
-                                                       modelVM.RelationshipViewModels.RemoveAll(
-                                                           rvm => rvm.From.ContainerViewModel == this);
-                                                       modelVM.RelationshipViewModels.RemoveAll(
-                                                           rvm => rvm.To.ContainerViewModel == this);
-                                                       modelVM.ContainerViewModels.Remove(this);
-                                                   }
-                                               });
+            var modelVM = ApplicationViewModel.Instance.ActiveModel;
+            modelVM.RelationshipViewModels.RemoveAll(
+                rvm => rvm.From.ContainerViewModel == this);
+            modelVM.RelationshipViewModels.RemoveAll(
+                rvm => rvm.To.ContainerViewModel == this);
+            modelVM.ContainerViewModels.Remove(this);
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         /// <summary>
@@ -506,6 +497,8 @@ namespace BioCheck.ViewModel.Cells
                 // Offset the positions slightly 
                 newVariableVM.PositionX += 10;
                 newVariableVM.PositionY += 10;
+
+                ApplicationViewModel.Instance.SaveActiveModel();
             }
         }
 

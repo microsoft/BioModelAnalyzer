@@ -169,6 +169,8 @@ namespace BioCheck.Controls
                     }
                 }
             }
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
     }
 }

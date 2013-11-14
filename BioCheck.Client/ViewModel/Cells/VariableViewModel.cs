@@ -363,27 +363,17 @@ namespace BioCheck.ViewModel.Cells
 
         private void OnDeleteExecuted()
         {
-            // Prompt the user and delete the variable if they confirm
-            ApplicationViewModel.Instance.Container
-                .Resolve<BioCheck.Services.IMessageWindowService>()
-                .Show(
-                    "Are you sure you want to clear the current variable?",
-                    MessageType.YesCancel, result =>
-                                               {
-                                                   if (result == MessageResult.Yes)
-                                                   {
-                                                       ApplicationViewModel.Instance.DupActiveModel();
-                                                       if (this.containerViewModel != null)
-                                                       {
-                                                           this.containerViewModel.VariableViewModels.Remove(this);
-                                                       }
-                                                       else
-                                                       {
-                                                           var modelVM = ApplicationViewModel.Instance.ActiveModel;
-                                                           modelVM.VariableViewModels.Remove(this);
-                                                       }
-                                                   }
-                                               });
+            ApplicationViewModel.Instance.DupActiveModel();
+            if (this.containerViewModel != null)
+            {
+                this.containerViewModel.VariableViewModels.Remove(this);
+            }
+            else
+            {
+                var modelVM = ApplicationViewModel.Instance.ActiveModel;
+                modelVM.VariableViewModels.Remove(this);
+            }
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         /// <summary>

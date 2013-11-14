@@ -93,6 +93,8 @@ namespace BioCheck.Services
             var relationshipVM = modelVM.NewRelationship(fromTarget.DataContext as VariableViewModel,
                                                              toTarget.DataContext as VariableViewModel,
                                                              type);
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         public void CancelDrawing()

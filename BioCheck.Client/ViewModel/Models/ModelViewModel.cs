@@ -683,6 +683,8 @@ namespace BioCheck.ViewModel.Models
 
             // Re-draw the relationships
             relationshipVMs.ForEach(rvm => this.RelationshipViewModels.Add(rvm));
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         public void MoveContainer(ContainerViewModel containerVM, int containerX, int containerY)
@@ -713,6 +715,8 @@ namespace BioCheck.ViewModel.Models
             // Re-draw the relationships
             relationshipVMs.ForEach(rvm => this.RelationshipViewModels.Add(rvm));
             // TODO DispatcherHelper.QuadBeginInvoke(() => relationshipVMs.ForEach(rvm => this.RelationshipViewModels.Add(rvm)));
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         public void MoveVariable(VariableViewModel variableVM, ContainerViewModel containerVM, int positionX, int positionY)
@@ -747,6 +751,8 @@ namespace BioCheck.ViewModel.Models
                                             rvm.ContainerViewModel = rvm.From.ContainerViewModel;
                                             this.RelationshipViewModels.Add(rvm);
                                         });
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         /// <summary>

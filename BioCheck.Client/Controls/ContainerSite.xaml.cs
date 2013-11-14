@@ -126,6 +126,8 @@ namespace BioCheck.Controls
                                                                               cursorPosition.X, cursorPosition.Y);
                 }
             }
+
+            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         #endregion
