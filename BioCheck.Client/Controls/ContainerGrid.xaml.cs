@@ -400,17 +400,21 @@ namespace BioCheck.Controls
                     if (c.PositionY < minY) minY = c.PositionY;
                     if (c.PositionY > maxY) maxY = c.PositionY;
                 }
-            if (minX == int.MaxValue) minX = 0;
-            if (maxX == int.MinValue) maxX = this.Columns - 1;
-            if (minY == int.MaxValue) minY = 0;
-            if (maxY == int.MinValue) maxY = this.Rows - 1;
+            // If nothing present, take the central 3x2 cells
+            if (minX == int.MaxValue)
+            {
+                int cw = Math.Min(3, this.Columns), ch = Math.Min(2, this.Rows);
+                minX = (this.Columns - cw) / 2; maxX = minX + cw - 1;
+                minY = (this.Rows - ch) / 2; maxY = minY + ch - 1;
+            }
             int w = maxX - minX + 1, h = maxY - minY + 1;
             double xScale = displayWidth / (w * cellWidth), yScale = displayHeight / (h * cellHeight);
             double scale = Math.Min(xScale, yScale);
+            double xMargin = (displayWidth - w * cellWidth * scale) / 2, yMargin = (displayHeight - h * cellHeight * scale) / 2;
             double level = ScaleToLevel(scale);
             this.ZoomLevel = level;
-            this.PanX = minX * cellWidth * scale;
-            this.PanY = minY * cellHeight * scale;
+            this.PanX = minX * cellWidth * scale;// - xMargin;
+            this.PanY = minY * cellHeight * scale;// - yMargin;
         }
         #endregion
 
