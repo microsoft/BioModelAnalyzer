@@ -87,8 +87,13 @@ Boltzmann constant is
 *)
 let Kb = (1.3806488 * 10.**4. )*1.<um^2 pg second^-2 Kelvin^-1>
 
-type Particle(Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: Vector3D<_>, Friction: float<second>, radius: float<um>, density: float<pg um^-3>, age: float<second>, GaussianRandomNumber:float, freeze: bool) = 
+let gensym =
+    let x = ref 0
+    (fun () -> incr x; !x)
+
+type Particle(id:int, Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: Vector3D<_>, Friction: float<second>, radius: float<um>, density: float<pg um^-3>, age: float<second>, GaussianRandomNumber:float, freeze: bool) = 
     member this.name = Name
+    member this.id = id
     member this.location = R
     member this.velocity = V
     member this.orientation = O
@@ -149,10 +154,7 @@ let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( 
     | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
     | _ -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
 
-let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) = 
-    //Create a grid using the cutoff as a box size
-    let (minLoc,maxLoc) = vecMinMax ([for p in system->p.location]) ((List.nth system 0).location,(List.nth system 0).location)
-    let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
+let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
         match system with
         | head:: tail -> 
                             let dx = int ((head.location.x-minLoc.x)/cutOff)
@@ -165,9 +167,7 @@ let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) =
                             gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
         | [] -> acc
 
-    let grid = gridFill system Map.empty minLoc cutOff
-
-    let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
+let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
         let (x,y,z) = box
         [for i in [0..2] do
                             for j in [0..2] do
@@ -175,10 +175,11 @@ let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) =
                                                                     match grid.ContainsKey(x-1+i,y-1+j,z-1+k) with
                                                                     | false -> ()
                                                                     | true  -> yield grid.[x-1+i,y-1+j,z-1+k] ]
-    let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) =
+
+let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
          let everythingButThis (p: Particle) (l: Particle list) =
             [for i in l do
-                            match i=p with
+                            match i.id=p.id with
                             | true -> ()
                             | false -> yield i ]
          let rec quickJoin (l1: Particle list) (l2: Particle list) =
@@ -195,6 +196,12 @@ let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) =
          
          everythingButThis p (quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] )
 
+let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) minLoc = 
+    //Create a grid using the cutoff as a box size
+    //let (minLoc,maxLoc) = vecMinMax ([for p in system->p.location]) ((List.nth system 0).location,(List.nth system 0).location
+
+    let grid = gridFill system Map.empty minLoc cutOff
+
 //    let g = [for i in system -> 
 //                                let dx = int ((i.location.x-minLoc.x)/cutOff)
 //                                let dy = int ((i.location.y-minLoc.y)/cutOff)
@@ -202,6 +209,18 @@ let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) =
 //                                grid.[dx,dy,dz] ]
     [for i in system -> collectGridNeighbours i (gridFill system Map.empty minLoc cutOff)]
 
+let rec updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
+    match mobileSystem with
+    | head :: tail -> 
+                            let dx = int ((head.location.x-sOrigin.x)/cutOff)
+                            let dy = int ((head.location.y-sOrigin.y)/cutOff)
+                            let dz = int ((head.location.z-sOrigin.z)/cutOff)
+                            let newValue = match accGrid.ContainsKey (dx,dy,dz) with
+                                            | true  -> head::accGrid.[(dx,dy,dz)]
+                                            | false -> [head]
+                            updateGrid (accGrid.Add((dx,dy,dz),newValue)) sOrigin tail cutOff
+
+    | [] -> accGrid
 
 let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
     let getNeighbours (p:Particle) (system: Particle list) (cutOff: float<um>) =
@@ -213,17 +232,17 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
         | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
     [for i in system -> getNeighbours i system cutOff] 
 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
-        //| head::tail -> sumForces p tail (hardSphereForce head p 1.<aNewton>)+acc //Arbitrary 1aN force constant
-        //| head::tail -> sumForces p tail (hardStickySphereForce 1.<aNewton> 1000000.<aNewton/um> 2.<um> head p)+acc //Arbitrary 10aN force constant
-//        | head::tail -> match head with
-//                            | a when System.String.Equals(a.name,p.name) -> sumForces p tail (hardSphereForce 1.<zNewton> head p)+acc //similar particles are hard spheres
-//                            | _ -> sumForces p tail (hardStickySphereForce 1.<zNewton> 1000.<zNewton/um> 2.<um> head p)+acc //dissimiliar particles are hard sticky spheres
         | head::tail -> sumForces p tail (topology.[p.name].[head.name] head p) + acc
         | [] -> acc
-    let nonBonded = nonBondedPairList (system: Particle list) cutOff
+    //add all the mobile particles to the staticGrid
+    let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
+    let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
+    let nonBonded = [for p in system do match p.freeze with 
+                                            | true -> yield []
+                                            | false -> yield collectGridNeighbours p nonBondedGrid sOrigin cutOff]
     [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
 
 
@@ -231,7 +250,7 @@ let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (d
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
-    Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
 
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>)= 
@@ -243,7 +262,7 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
-    Particle(cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
 let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
@@ -269,7 +288,7 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
 //    printfn "PosUp %A %A %A" (FrictionDrag * F *dT).x (FrictionDrag * F * dT).y (FrictionDrag * F *dT).z
 //    printfn "ThMot %A %A %A" ThermalP.x ThermalP.y ThermalP.z
     let NewO = thermalReorientation T rng dT cluster
-    Particle(cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
 let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
     //printfn "Tick"
@@ -282,6 +301,9 @@ let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atom
 let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
     let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
     let modifier = maxlength/maxV.len
-    [for (p,f) in (List.zip system forces) -> match p.freeze with 
-                                                | false -> Particle(p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)
-                                                | true -> p ]
+    match (modifier=infinity*1.0<um/zNewton>) with
+    | true ->  system
+    | false -> 
+            [for (p,f) in (List.zip system forces) -> match p.freeze with 
+                                                        | false -> Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)
+                                                        | true -> p ]

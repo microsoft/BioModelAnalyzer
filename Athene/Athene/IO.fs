@@ -19,7 +19,7 @@ let dropStates (machines: Map<QN.var,int> list) =
     ()
 
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
-    Particle(name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
+    Particle(gensym(),name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
 
 let xyzWriteFrame (filename: string) (machName: string) (system: Physics.Particle list) =
         use file = new StreamWriter(filename, true)
@@ -55,6 +55,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
     let xn s = XName.Get(s)
     let xd = XDocument.Load(filename)
     let maxMove = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "MaxMove").Value) with _ -> failwith "Set a maximum move distance"
+    let sOrigin = {x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
     let pTypes = [ for t in xd.Element(xn "Topology").Element(xn "Types").Elements(xn "Particle") do 
                     let tName = try t.Attribute(xn "Name").Value with _ -> failwith "Cannot read name"
                     let tDensity = try (float) (t.Element(xn "Density").Value) with _ -> failwith "Cannot read density"
@@ -155,7 +156,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
     
     //let interfaceTopology = (machName,regions,responses)
     let intTop = {name=machName;regions=regions;responses=responses}
-    (pTypes,nbTypes,(machName,machI0),intTop,maxMove)
+    (pTypes,nbTypes,(machName,machI0),intTop,(sOrigin,maxMove))
     
 //let topRead (filename: string) =
 //    topology files describe the basic forces in the system
