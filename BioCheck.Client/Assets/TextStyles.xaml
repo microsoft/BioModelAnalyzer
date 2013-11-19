@@ -30,11 +30,12 @@
         <Setter Property="Height" Value="Auto"/>
     </Style>
     
+    <!-- Temporary fix for David. Fontsize was 9 -->
     <Style x:Key="VariableLabelTextStyle" TargetType="TextBlock">
     	<Setter Property="HorizontalAlignment" Value="Center"/>
     	<Setter Property="VerticalAlignment" Value="Center"/>
     	<Setter Property="FontFamily" Value="Arial"/>
-    	<Setter Property="FontSize" Value="9"/>
+    	<Setter Property="FontSize" Value="12"/>
     	<Setter Property="Foreground" Value="#FF231F20"/>
         <Setter Property="Margin" Value="1,0,1,0"/>
     </Style>
