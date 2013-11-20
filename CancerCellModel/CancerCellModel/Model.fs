@@ -30,12 +30,19 @@ type Model() =
     let mutable dt: int = 1
     //let mutable max_stat_len: int = 100
 
+    // SI: Explain invariant about disjointness of _cells. 
+    //   live n dead = empty
+    //   allcells = live U dead
+    //   apop n necrotic = empty
+    //   apop U necrotic = dead
+    // all live_cells have state "live" 
+    // ...
     let all_cells = new ResizeArray<Cell>()
     let live_cells = new ResizeArray<Cell>()
     let dead_cells = new ResizeArray<Cell>()
     let apoptotic_cells = new ResizeArray<Cell>()
     let necrotic_cells = new ResizeArray<Cell>()
-
+    
     // we need below numbers for statistics
     let mutable live_cells_num_prev = 0
     let mutable dividing_cells_num = 0

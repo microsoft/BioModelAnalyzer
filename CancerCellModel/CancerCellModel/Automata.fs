@@ -7,6 +7,7 @@ open MathFunctions
 open Geometry
 open NumericComputations
 
+// SI: rename type to Automata
 type CellActivity() =
     static let o2_vals = new ResizeArray<float>(ModelParameters.O2Grid.YLines*ModelParameters.O2Grid.XLines)
     static let o2_nabla_square_vals = new ResizeArray<float>(ModelParameters.O2Grid.YLines*ModelParameters.O2Grid.XLines)
@@ -193,7 +194,7 @@ type CellActivity() =
         | NonStem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemIntervalBetweenDivisions)
         | _ -> raise (InnerError(sprintf "Error: new cell in state %s" (cell.TypeAsStr())))
 
-
+    // SI: add comments 
     static member do_step(cell: Cell) =
         if (cell.Action = SymSelfRenewal || cell.Action = AsymSelfRenewal) then
             cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemIntervalBetweenDivisions)
@@ -285,6 +286,7 @@ type CellActivity() =
         // the semaphore is needed because the function values are updated in this thread
         // and read in another one (which renders the ExternalStateForm)
         ext.O2.GetAllValues(o2_vals)
+        //let 02_vals' = ext.o2.GetAllValues' () // SI: don't pass buff, but return it. 
         ext.O2NablaSquare.GetAllValues(o2_nabla_square_vals)
 
         // here we bypass the semaphore for ext.O2NablaSquare.F but this function's values

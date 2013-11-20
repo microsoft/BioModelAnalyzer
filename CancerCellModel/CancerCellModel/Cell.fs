@@ -80,6 +80,7 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
     member this.State with get() = state and set(s) = state <- s
     member this.Type with get() = cell_type and set(t) = cell_type <- t
 
+    // SI: override toString for t
     static member TypeAsStr(t: CellType) =
         match t with
         | Stem -> "Stem"
@@ -115,7 +116,7 @@ type Cell (cell_type: CellType, generation: int, location: Point, radius: float,
                 (this.TypeAsStr()) (Cell.StateAsStr(state)) age generation
                 (base.Summary())
 
-
+// SI: move to Model, as it seems it's one ExternalState per Model
 type ExternalState() as this =
     let mutable egf = true              // indicates whether EGF is Up (true) or Down (false)
     let mutable live_cells: int = 0     // the numbr of live cells in the model
@@ -124,6 +125,7 @@ type ExternalState() as this =
     let mutable cell_concentration_area = Geometry.Rectangle()  // the smallest rectangle embraсing
                                                                 // the locations of all the cells in the model
 
+    // SI: use option type, rather than DefaultValue                                                                    
     [<DefaultValue>] val mutable private o2: GridFunction1D                 // a function which stores the concentration 
                                                                             // of o2 in the vertices of the grid
 
