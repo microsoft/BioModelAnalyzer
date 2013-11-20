@@ -4,9 +4,7 @@ open System
 open System.Windows.Forms
 open System.Windows.Forms.DataVisualization.Charting
 open ParamFormBase
-open Cell
 open ModelParameters
-open MyMath
 open Geometry
 
 type StemCellParamForm() as this =
@@ -125,7 +123,7 @@ type StemCellParamForm() as this =
         let control = ParamFormBase.create_shiftexp_func_controls(nonstem_withmem_groupbox,
                                                 tononstem_withmem_label, nonstem_tostem_prob_chart,
                                                 ModelParameters.NonStemToStemProb,
-                                                FloatInterval(0., x3), FloatInterval(0., 1.), 100.)
+                                                FloatInterval(0., x3), FloatInterval(0., 1.), 100., true)
         
         ParamFormBase.create_ok_cancel_buttons(this, nonstem_withmem_groupbox, apply_changes) |> ignore
         nonstem_withmem_groupbox.Controls.AddRange([|tononstem_withmem_label; tononstem_withmem_textbox|])

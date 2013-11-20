@@ -2,11 +2,7 @@
 
 open System
 open System.Windows.Forms
-open System.Windows.Forms.DataVisualization.Charting
-open Cell
 open Model
-open ModelParameters
-open StemCellParamForm
 open ParamFormBase
 
 type CellActivityStatForm () =

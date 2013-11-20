@@ -4,25 +4,8 @@ open System
 open System.Windows.Forms
 open System.Windows.Forms.DataVisualization.Charting
 open System.ComponentModel
-open Cell
-open MyMath
+open MathFunctions
 open Geometry
-open ModelParameters
-
-type StatSequence = seq<float*float>
-
-type LogisticFuncControls() = 
-    let x1_textbox = new TextBox()
-    let x2_textbox = new TextBox()
-    let min_textbox = new TextBox()
-    let max_textbox = new TextBox()
-    let ok_button = new Button()
-
-    member this.X1TextBox with get() = x1_textbox
-    member this.X2TextBox with get() = x2_textbox
-    member this.MinTextBox with get() = min_textbox
-    member this.MaxTextBox with get() = max_textbox
-    member this.OkButton with get() = ok_button
 
 type FormDesigner() =
     static member x_interval with get() = 10
@@ -31,10 +14,6 @@ type FormDesigner() =
     static member label_size with get() = Drawing.Size(50, 15)
     static member button_size with get() = Drawing.Size(60, 20)
     static member textbox_size with get() = Drawing.Size(50, 10)
-    //static member max_label_size with get() = Drawing.Size(100, 40)
-    //static member double_label_size with get() = Drawing.Size(2*ParamFormBase.max_label_size.Width, ParamFormBase.max_label_size.Height)
-    //static member double_button_size with get() = Drawing.Size(120,50)
-    //static member textbox_width with get() = 50
     static member plot_size with get() = Drawing.Size(350, 350)
 
     static member Scale(size: Drawing.Size, (sx: float, sy: float)) =
@@ -143,7 +122,7 @@ type FormDesigner() =
         then raise (InnerError("Unable to parse float"))
         !x
 
-type LogisticFuncParamDialog() as this =
+type LogisticFuncParamDialog(x_limits: FloatInterval) as this =
     inherit Form (Visible = false, Width = 600, Height = 400)
 
     let x1_textbox = new TextBox()
@@ -163,7 +142,7 @@ type LogisticFuncParamDialog() as this =
         x1_label.Location <- FormDesigner.initial_location
 
         x1_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(x1_textbox, x1_label.Text, ModelParameters.O2Limits)
+        FormDesigner.add_textbox_float_validation(x1_textbox, x1_label.Text, x_limits)
         FormDesigner.place_control_totheright(x1_textbox, x1_label)
 
         let x2_label = new Label()
@@ -173,7 +152,7 @@ type LogisticFuncParamDialog() as this =
         FormDesigner.place_control_totheright(x2_label, x1_textbox)
 
         x2_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_float_validation(x2_textbox, x2_label.Text, ModelParameters.O2Limits)
+        FormDesigner.add_textbox_float_validation(x2_textbox, x2_label.Text, x_limits)
         FormDesigner.place_control_totheright(x2_textbox, x2_label)
 
         min_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (1.7, float 2))
@@ -221,7 +200,7 @@ type LogisticFuncParamDialog() as this =
                                     let max = FormDesigner.retrieve_float(max_textbox) / y_scale
                                     LogisticFunc(min = Point(x1, min), max = Point(x2, max))
 
-type ShiftExpFuncParamDialog() as this =
+type ShiftExpFuncParamDialog(x_limits: FloatInterval, is_var_integer: bool) as this =
     inherit Form (Visible = false, Width = 600, Height = 400)
 
     let x3_textbox = new TextBox()
@@ -240,7 +219,12 @@ type ShiftExpFuncParamDialog() as this =
         x3_label.Location <- FormDesigner.initial_location
 
         x3_textbox.Size <- FormDesigner.textbox_size
-        FormDesigner.add_textbox_int_validation(x3_textbox, x3_label.Text, IntInterval(0, Int32.MaxValue))
+        if is_var_integer then
+            FormDesigner.add_textbox_int_validation(x3_textbox, x3_label.Text,
+                    IntInterval(int (Math.Round(x_limits.Min)), int (Math.Round(x_limits.Max))))
+        else
+            FormDesigner.add_textbox_float_validation(x3_textbox, x3_label.Text, x_limits)
+
         FormDesigner.place_control_totheright(x3_textbox, x3_label)
 
         min_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (1.7, float 2))
@@ -331,8 +315,6 @@ type ParamFormBase(?Width, ?Height) =
     static member refresh_logistic_func_chart(chart: Chart, func: LogisticFunc,
                                                 x_limits: FloatInterval) =
         
-        //let func = ParamFormBase.retrieve_logistic_func_param(x1_textbox, x2_textbox, min_textbox, max_textbox)        
-        
         let series: Series = chart.Series.Item(0)
         series.Points.Clear()
         ParamFormBase.func_plot(series, (fun (x: float) -> func.Y(x)), x_limits)
@@ -365,21 +347,18 @@ type ParamFormBase(?Width, ?Height) =
             tooltip.Hide(chart)
 
     static member show_summary2(form: Form, tooltip: ToolTip, get_summary: Drawing.Point->string, pause: ref<bool>)(args: MouseEventArgs) =
-        //if !pause then
-            if args.Button = MouseButtons.Left then
-                tooltip.Show(get_summary(args.Location), form,
-                                    Drawing.Point(args.X + 15, args.Y - 15), 20000)
+        if args.Button = MouseButtons.Left then
+            tooltip.Show(get_summary(args.Location), form,
+                                Drawing.Point(args.X + 15, args.Y - 15), 20000)
 
-            else if args.Button =  MouseButtons.Right then
-                tooltip.Hide(form)
+        else if args.Button =  MouseButtons.Right then
+            tooltip.Hide(form)
 
 
     static member create_logistic_func_controls(parent: Control, prev_control: Control, chart: Chart,
                                                 func: ref<LogisticFunc>,
                                                 x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float) =
 
-        //chart.Titles.Add("1 / (1/max + exp((mu - x)/s))") |> ignore
-        
         let panel = new Panel()
         panel.ClientSize <- FormDesigner.plot_size
         
@@ -392,9 +371,6 @@ type ParamFormBase(?Width, ?Height) =
         let chart_area = chart.ChartAreas.Item(0)
         let series = chart.Series.Item(0)
 
-        //let division_prob_chart = new Chart(Dock=DockStyle.Fill)
-        //let chart_area = new ChartArea()
-        //chart_area.AxisX.Interval <- float 10
         chart_area.AxisX.Maximum <- x_limits.Max
         chart_area.AxisX.Minimum <- x_limits.Min
         chart_area.AxisX.IsLabelAutoFit <- true
@@ -418,7 +394,8 @@ type ParamFormBase(?Width, ?Height) =
 
     static member create_shiftexp_func_controls(parent: Control, prev_control: Control, chart: Chart, 
                                                 func: ref<ShiftExponentFunc>,
-                                                x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float) =
+                                                x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float,
+                                                is_var_integer: bool) =
 
 
         let panel = new Panel()
@@ -429,9 +406,7 @@ type ParamFormBase(?Width, ?Height) =
             else panel.Location <- FormDesigner.initial_location
         
         panel.Controls.Add(chart)
-
         let tooltip = new ToolTip()
-        //chart.Titles.Add("max * n^(-x)") |> ignore
         
         let chart_area = chart.ChartAreas.Item(0)
         let series = chart.Series.Item(0)
@@ -445,7 +420,7 @@ type ParamFormBase(?Width, ?Height) =
         change_param_button.MaximumSize <- FormDesigner.Scale(FormDesigner.button_size, (2.5, 1.))
         change_param_button.AutoSize <- true
         change_param_button.Text <- "Change parameters"
-        change_param_button.Click.Add(ParamFormBase.show_shiftexp_func_dialog(chart, func, x_limits, y_limits, y_scale))
+        change_param_button.Click.Add(ParamFormBase.show_shiftexp_func_dialog(chart, func, x_limits, y_limits, y_scale, is_var_integer))
         FormDesigner.place_control_totheright(change_param_button, panel)
 
         ParamFormBase.refresh_shiftexp_func_chart(chart, !func, x_limits) 
@@ -481,7 +456,7 @@ type ParamFormBase(?Width, ?Height) =
                                             x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float)
                                             (args: EventArgs) =
 
-        let logistic_func_dialog = new LogisticFuncParamDialog()
+        let logistic_func_dialog = new LogisticFuncParamDialog(x_limits)
         logistic_func_dialog.Init(!func, y_limits, y_scale)
         if logistic_func_dialog.ShowDialog() = DialogResult.OK then
             func := logistic_func_dialog.Func
@@ -489,10 +464,10 @@ type ParamFormBase(?Width, ?Height) =
         logistic_func_dialog.Dispose()
 
     static member show_shiftexp_func_dialog(chart: Chart, func: ref<ShiftExponentFunc>,
-                                            x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float)
-                                            (args: EventArgs) =
+                                            x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float,
+                                            is_var_integer: bool)(args: EventArgs) =
 
-        let shift_exp_func_dialog = new ShiftExpFuncParamDialog()
+        let shift_exp_func_dialog = new ShiftExpFuncParamDialog(x_limits, is_var_integer)
         shift_exp_func_dialog.Init(!func, y_limits, y_scale)
         if shift_exp_func_dialog.ShowDialog() = DialogResult.OK then
             func := shift_exp_func_dialog.Func

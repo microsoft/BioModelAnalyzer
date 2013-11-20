@@ -3,10 +3,7 @@
 open System
 open System.Windows.Forms
 open System.Windows.Forms.DataVisualization.Charting
-open Cell
 open ParamFormBase
-open ExternalStateForm
-open Model
 
 type CellNumbersStatForm() =
     inherit ParamFormBase (Width=1200, Height = 900)
@@ -21,10 +18,8 @@ type CellNumbersStatForm() =
     let series_nonstem_withmem = new Series(ChartType = SeriesChartType.Line, name="Non-stem cells \"with memory\"")
     let summary_tooltip = new ToolTip()
 
-    let add_points(xs:seq<float*float>, series: Series) =
-        series.Points.Clear()
-        for t, n in xs do
-            series.Points.AddXY(t, n) |> ignore
+    let add_point(t:int, n:int, series: Series) =
+        series.Points.AddXY(float t, float n) |> ignore
 
     let get_summary(x: float) =
         sprintf "Time: %d\n\
@@ -74,15 +69,14 @@ type CellNumbersStatForm() =
         series_nonstem.Color <- Drawing.Color.LightGreen
         series_nonstem_withmem.Color <- Drawing.Color.DarkTurquoise
 
-    member this.AddPoints(live: StatSequence, dividing: StatSequence,
-                            dying: StatSequence, stem: StatSequence,
-                            nonstem: StatSequence, nonstem_withmem: StatSequence) =
-        add_points(live, series_live)
-        add_points(dividing, series_dividing)
-        add_points(dying, series_dying)
-        add_points(stem, series_stem)
-        add_points(nonstem, series_nonstem)
-        add_points(nonstem_withmem, series_nonstem_withmem)
+    member this.AddPoints(live: int, dividing: int, dying: int,
+                          stem: int, nonstem: int, nonstem_withmem: int, t: int) =
+        add_point(t, live, series_live)
+        add_point(t, dividing, series_dividing)
+        add_point(t, dying, series_dying)
+        add_point(t, stem, series_stem)
+        add_point(t, nonstem, series_nonstem)
+        add_point(t, nonstem_withmem, series_nonstem_withmem)
         chart.Refresh()
 
     member this.Clear() =
@@ -93,7 +87,3 @@ type CellNumbersStatForm() =
         series_stem.Points.Clear()
         series_nonstem.Points.Clear()
         series_nonstem_withmem.Points.Clear()
-
-(*    override this.Refresh() =
-        base.Refresh()
-        chart.Refresh()*)

@@ -15,7 +15,7 @@ open ModelParameters
 open Model
 open ParamFormBase
 open Render
-open MyMath
+open Geometry
 
 type ControlDelegate = delegate of unit -> unit
 
@@ -28,7 +28,7 @@ type MainForm () as this =
     let extstate_prop_dialog = new ExternalStateParamForm()
     let activity_stat_dialog = new CellActivityStatForm()
     let cellnumbers_stat_dialog = new CellNumbersStatForm()
-    let model = new Model()
+    let mutable model = new Model()
     let o2_dialog = new O2Form(model.ExtStateRef)
     let cell_density_dialog = new DensityForm(model.ExtStateRef)
     let status_bar = new StatusBar()
@@ -39,8 +39,8 @@ type MainForm () as this =
     let pause = ref false
     let mutable run_step = false
     let cell_tooltip = new ToolTip()
-
     let render = new CellRender(base.Graphics)
+    static let mutable file_num = 0
 
     let disable_close(form: ParamFormBase) =
         form.FormClosing.Add(ParamFormBase.hide_form form)
@@ -63,6 +63,8 @@ type MainForm () as this =
         rerun_model.Click.Add(fun args ->
             cancellation_token.Cancel()
             cancellation_token <- new CancellationTokenSource()
+            model.Clear()
+            cellnumbers_stat_dialog.Clear()
             Async.Start(this.run(), cancellation_token.Token))
 
         simulation.MenuItems.AddRange([|rerun_model|])
@@ -85,10 +87,10 @@ type MainForm () as this =
         cell_activity.Click.Add(fun args -> activity_stat_dialog.Visible <- true)
         let o2 = new MenuItem("The concentration of O2")
         o2.Click.Add(fun args -> o2_dialog.Visible <- true)
-        let cell_density = new MenuItem("Cell density")
-        cell_density.Click.Add(fun args -> cell_density_dialog.Visible <- true)
+        (*let cell_density = new MenuItem("Cell density")
+        cell_density.Click.Add(fun args -> cell_density_dialog.Visible <- true)*)
 
-        stat.MenuItems.AddRange([|cell_number; cell_activity; o2; cell_density|])
+        stat.MenuItems.AddRange([|cell_number; cell_activity; o2 |]) //; cell_density|])
         base.Menu.MenuItems.AddRange([|simulation; model_param; stat|]) |> ignore
         
         base.Controls.Add(status_bar)
@@ -106,18 +108,25 @@ type MainForm () as this =
             cellnumbers_stat_dialog :> ParamFormBase;
             extstate_prop_dialog :> ParamFormBase;
             o2_dialog :> ParamFormBase;
-            cell_density_dialog :> ParamFormBase;
+            //cell_density_dialog :> ParamFormBase;
             activity_stat_dialog :> ParamFormBase |]
 
         Async.Start(this.run(), cancellation_token.Token)
 
     member this.render_cells() = 
+        // draw the image on a bitmap
+        // then copy the bitmap to the form (which is faster) - to avoid blinking
         render.RenderCells(model.AllCells)
         //render.DrawGrid(model.ExtState.O2.Grid)
 
+        // copy the bitmap to the form
         let graphics = this.CreateGraphics()
         graphics.Clip <- new Drawing.Region(Drawing.Rectangle(0, 0, base.Width, base.Height))
         graphics.DrawImage(base.Bitmap, Drawing.Point(0, 0))
+
+        // save the bitmap to a file
+        base.Bitmap.Save((sprintf "%s%04d.png" output_file file_num), Drawing.Imaging.ImageFormat.Png)
+        file_num <- file_num + 1
 
     override this.OnPaint(args: PaintEventArgs) =
         this.render_cells()
@@ -143,7 +152,7 @@ type MainForm () as this =
         if i >= 0 then
             msg <- String.Concat( [| cells.[i].Summary(); "\n" |] )
 
-        String.Concat( [| (sprintf "i=%d, j=%d\n" i_grid j_grid); msg; (model.ExtState.O2ToStringVerbose(point)); "\n"; (model.ExtState.DensityToStringVerbose(point)) |] )
+        String.Concat( [| (sprintf "i=%d, j=%d\n" i_grid j_grid); msg; (model.ExtState.O2Summary(point)); "\n"; (model.ExtState.CellPackingDensitySummary(point)) |] )
 
     member this.UpdateMainWindow() =
         let mutable msg = (sprintf "Simulating the model: Step %d" step)
@@ -154,10 +163,11 @@ type MainForm () as this =
         cellnumbers_stat_dialog.AddPoints(model.GetCellStatistics(Live),
             model.GetCellStatistics(Dividing), model.GetCellStatistics(Dying),
             model.GetCellStatistics(Stem), model.GetCellStatistics(NonStem),
-            model.GetCellStatistics(NonStemWithMemory))
+            model.GetCellStatistics(NonStemWithMemory), step)
 
         o2_dialog.AddPoints(model.ExtState.O2, ModelParameters.O2Limits)
-        cell_density_dialog.AddPoints(model.ExtState.CellPackDensity, ModelParameters.CellPackDensityLimits)
+        cell_density_dialog.AddPoints(model.ExtState.CellPackingDensity,
+            ModelParameters.CellPackDensityLimits)//, model.ExtState.CellPackingDensityGradient)
 
         activity_stat_dialog.StemDivisionStatistics <- model.CellActivityStatistics(CellType.Stem)
         activity_stat_dialog.NonStemDivisionStatistics <- model.CellActivityStatistics(CellType.NonStem)
@@ -170,7 +180,7 @@ type MainForm () as this =
             let is_closing = ref false
             let start_time = ref (DateTime.Now)
             let delay = 100 // delay in milliseconds between executing model steps
-            while (not !is_closing) && step < 4000 do
+            while (not !is_closing) && step < max_steps do
                 start_time := DateTime.Now
                 if not !pause || run_step then
                     if (dstep = 1 || (step+1) % dstep <> 0) then

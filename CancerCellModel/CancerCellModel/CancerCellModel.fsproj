@@ -44,7 +44,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <ItemGroup>
-    <Compile Include="MyMath.fs" />
+    <Compile Include="Geometry.fs" />
+    <Compile Include="MathFunctions.fs" />
+    <Compile Include="NumericComputations.fs" />
     <Compile Include="ModelParameters.fs" />
     <Compile Include="Cell.fs" />
     <Compile Include="Automata.fs" />

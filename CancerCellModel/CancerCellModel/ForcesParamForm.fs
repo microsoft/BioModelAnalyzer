@@ -2,7 +2,7 @@
 
 open ParamFormBase
 open ModelParameters
-open MyMath
+open Geometry
 open System
 open System.Windows.Forms
 open System.Windows.Forms.DataVisualization.Charting
@@ -29,19 +29,12 @@ type ForcesParamForm() as this =
         repulsive_force_chart_area.AxisX.Title <- "Cell displacement"
         repulsive_force_chart_area.AxisY.Title <- "Repulsive force"
 
-(*        let repulsive_force_groupbox = new GroupBox()
-        repulsive_force_groupbox.Text <- "Repulsive force"
-        repulsive_force_groupbox.Size <- Drawing.Size(base.ClientSize.Width/2 - 2* FormDesigner.x_interval, base.ClientSize.Height)
-        repulsive_force_groupbox.Location <- Drawing.Point(FormDesigner.x_interval, FormDesigner.y_interval)
-        repulsive_force_groupbox.ClientSize <- Drawing.Size(int (float division_groupbox.Size.Width * 0.9),
-                                                        int (float division_groupbox.Size.Height*0.9))*)
-
         let control = ParamFormBase.create_shiftexp_func_controls(
-                                 this, null, repulsive_force_chart, ModelParameters.RepulsiveForceParam,
-                                 FloatInterval(0., 1.),  ModelParameters.DisplacementInterval, 1.)
+                                 this, null, repulsive_force_chart, ModelParameters.RepulsiveForce,
+                                 FloatInterval(0., 1.),  ModelParameters.DisplacementInterval, 1., false)
 
         ParamFormBase.refresh_shiftexp_func_chart(repulsive_force_chart,
-            !ModelParameters.RepulsiveForceParam, ModelParameters.DisplacementInterval)
+            !ModelParameters.RepulsiveForce, ModelParameters.DisplacementInterval)
 
         let friction_force_label  = new Label()
         friction_force_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (2,3))

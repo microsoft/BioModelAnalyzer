@@ -4,9 +4,7 @@ open System
 open System.Windows.Forms
 open System.Windows.Forms.DataVisualization.Charting
 open ParamFormBase
-open Cell
 open ModelParameters
-open MyMath
 open Geometry
 
 type NonStemCellParamForm() as this =
