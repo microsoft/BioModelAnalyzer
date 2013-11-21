@@ -1,5 +1,5 @@
-﻿// Learn more about F# at http://fsharp.net
-// See the 'F# Tutorial' project for more help.
+﻿
+// SI: instead of open-ing, call Physics.pUpdate explicitly. 
 open Physics
 open Automata
 open Vector
@@ -49,6 +49,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
                         else countCells acc name tail
         | [] -> acc
     let positions = IO.pdbRead cartFile rng
+    // SI: consider defining a record type rather than tuple. 
     let (pTypes, nbTypes, (machName,machI0), interfaceTopology, (sOrigin,maxMove)) = IO.xmlTopRead topfile rng
     let uCart = [for cart in positions -> 
                     let (f,r,d,freeze) = pTypes.[cart.name]

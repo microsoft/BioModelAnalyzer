@@ -107,6 +107,14 @@ type Particle(id:int, Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: V
     member this.age = age
     member this.gRand = GaussianRandomNumber
 
+(*
+SI: implement Particle as a record. then can write update more concisely.
+type part = { id:int; Name:string; loc:int } 
+
+let p = { id=0; Name="s"; loc=32 } 
+let p' = { p with loc = p.loc + 1 } 
+*)
+
 let noForce (p1: Particle) (p2: Particle) = 
     {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} 
 
@@ -236,6 +244,8 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | head::tail -> sumForces p tail (topology.[p.name].[head.name] head p) + acc
+// SI:: use more specific names than head, tail.
+//      | top_particlar:: other_particles -> ... 
         | [] -> acc
     //add all the mobile particles to the staticGrid
     let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
@@ -249,6 +259,8 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (dT: float<second>) (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
+    // SI: use V' style rather than NewV
+    // let V' = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
     Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
@@ -301,9 +313,20 @@ let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atom
 let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
     let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
     let modifier = maxlength/maxV.len
+    (*
     match (modifier=infinity*1.0<um/zNewton>) with
     | true ->  system
     | false -> 
             [for (p,f) in (List.zip system forces) -> match p.freeze with 
                                                         | false -> Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)
                                                         | true -> p ]
+                                                        *)
+    if (modifier=infinity*1.0<um/zNewton>) then system
+    else 
+      [for (p,f) in (List.zip system forces) -> 
+        if p.freeze then p 
+        else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
+
+
+
+

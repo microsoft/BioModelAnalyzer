@@ -1,4 +1,7 @@
-﻿module IO
+﻿(* SI: give brief description of what module does. 
+    Module IO: Read and Write xml files.... *)
+
+module IO
 
 open System.IO
 open Physics
@@ -74,6 +77,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let bjName = try bj.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
                                     //let bond = try (int) (bj.Element(xn "Type").Value) with _ -> failwith "Missing bond type"
                                     let bond = match (try (int) (bj.Element(xn "Type").Value) with _ -> failwith "Missing bond type") with
+                                        // SI: consider storing descriptive text here, rather than 0-4.     
                                                 |0 -> noForce
                                                 |1 -> 
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"

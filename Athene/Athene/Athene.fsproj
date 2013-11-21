@@ -40,6 +40,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BioCheckAnalyzer64">
+      <HintPath>C:\Users\sishtiaq\work\tfs\BMA\BioCheckAnalyzer64\bin64\Debug\BioCheckAnalyzer64.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
@@ -59,13 +62,6 @@
     <Compile Include="IO.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\BioCheck\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-      <Name>BioCheckAnalyzer64</Name>
-      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

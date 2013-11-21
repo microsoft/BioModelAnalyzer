@@ -74,6 +74,8 @@ let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m:
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true -> Death
+    // SI: consider switching to just if-then for these small expressions
+    // if (m.[varID] = varState) then Death else Life (p,m)
 
 let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probability: float) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt doesn't do anything here- this is an 'instant death' function
@@ -82,6 +84,11 @@ let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probabili
     | true -> match (rng.NextDouble() < probability) with
                 | true -> Death
                 | false -> Life (p,m)
+// SI: consider consolidating nested matches like this:                     
+//    match (m.[varID] = varState), (rng.NextDouble() < probability) with
+//    | false, _     -> Life (p,m)
+//    | true , true  -> Death
+//    | true , false -> Life (p,m)
 
 let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification) (dT: float<second>) (pm: (Particle*Map<QN.var,int>) list) (acc: (Particle*Map<QN.var,int>) list) =
     match pm with
