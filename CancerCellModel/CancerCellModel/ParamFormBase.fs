@@ -122,6 +122,9 @@ type FormDesigner() =
         then raise (InnerError("Unable to parse float"))
         !x
 
+    static member retrieve_int_interval(min_textbox: TextBox, max_textbox: TextBox) =
+        IntInterval(FormDesigner.retrieve_int(min_textbox), FormDesigner.retrieve_int(max_textbox))
+
 type LogisticFuncParamDialog(x_limits: FloatInterval) as this =
     inherit Form (Visible = false, Width = 600, Height = 400)
 
@@ -346,7 +349,7 @@ type ParamFormBase(?Width, ?Height) =
         else if args.Button =  MouseButtons.Left then
             tooltip.Hide(chart)
 
-    static member show_summary2(form: Form, tooltip: ToolTip, get_summary: Drawing.Point->string, pause: ref<bool>)(args: MouseEventArgs) =
+    static member show_summary2(form: Form, tooltip: ToolTip, get_summary: Drawing.Point->string)(args: MouseEventArgs) =
         if args.Button = MouseButtons.Left then
             tooltip.Show(get_summary(args.Location), form,
                                 Drawing.Point(args.X + 15, args.Y - 15), 20000)
@@ -475,7 +478,8 @@ type ParamFormBase(?Width, ?Height) =
         shift_exp_func_dialog.Dispose()
 
     static member create_int_interval_controls(parent: Control, prev_control: Control, name: string,
-                                                min_textbox: TextBox, max_textbox: TextBox, interval: IntInterval) =
+                                                min_textbox: TextBox, max_textbox: TextBox,
+                                                interval: IntInterval, limits: IntInterval) =
         let interval_label = new Label()
         interval_label.Text <- name
         interval_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (10., 1.))
@@ -489,7 +493,7 @@ type ParamFormBase(?Width, ?Height) =
         FormDesigner.place_control_below(min_label, interval_label)
 
         min_textbox.Text <- (sprintf "%d" interval.Min)
-        FormDesigner.add_textbox_int_validation(min_textbox, min_label.Text, interval)
+        FormDesigner.add_textbox_int_validation(min_textbox, min_label.Text, limits)
         FormDesigner.place_control_totheright(min_textbox, min_label)
 
         let max_label = new Label()
@@ -499,7 +503,7 @@ type ParamFormBase(?Width, ?Height) =
         FormDesigner.place_control_totheright(max_label, min_textbox)
 
         max_textbox.Text <- (sprintf "%d" interval.Max)
-        FormDesigner.add_textbox_int_validation(max_textbox, max_label.Text, interval)
+        FormDesigner.add_textbox_int_validation(max_textbox, max_label.Text, limits)
         FormDesigner.place_control_totheright(max_textbox, max_label)
 
         parent.Controls.AddRange([| interval_label; min_label; min_textbox; max_label; max_textbox |])
@@ -507,7 +511,7 @@ type ParamFormBase(?Width, ?Height) =
 
     static member create_float_interval_controls(parent: Control, prev_control: Control, name: string,
                                                     min_textbox: TextBox, max_textbox: TextBox,
-                                                    interval: FloatInterval) =
+                                                    interval: FloatInterval, limits: FloatInterval) =
         let interval_label = new Label()
         interval_label.Text <- name
         interval_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (10., 1.))
@@ -521,7 +525,7 @@ type ParamFormBase(?Width, ?Height) =
         FormDesigner.place_control_below(min_label, interval_label)
 
         min_textbox.Text <- (sprintf "%.1f" interval.Min)
-        FormDesigner.add_textbox_float_validation(min_textbox, min_label.Text, interval)
+        FormDesigner.add_textbox_float_validation(min_textbox, min_label.Text, limits)
         FormDesigner.place_control_totheright(min_textbox, min_label)
 
         let max_label = new Label()
@@ -531,7 +535,7 @@ type ParamFormBase(?Width, ?Height) =
         FormDesigner.place_control_totheright(max_label, min_textbox)
 
         max_textbox.Text <- (sprintf "%.1f" interval.Max)
-        FormDesigner.add_textbox_float_validation(max_textbox, max_label.Text, interval)
+        FormDesigner.add_textbox_float_validation(max_textbox, max_label.Text, limits)
         FormDesigner.place_control_totheright(max_textbox, max_label)
 
         parent.Controls.AddRange([| interval_label; min_label; min_textbox; max_label; max_textbox |])

@@ -18,34 +18,32 @@ type NonStemCellParamForm() as this =
     let division_prob_density_chart_area = new ChartArea()
     let division_prob_density_series = new Series(ChartType = SeriesChartType.Line)
 
-    let x1_division_textbox = new TextBox()
-    let x2_division_textbox = new TextBox()
-    let mu_division_textbox = new TextBox()
-    let s_division_textbox = new TextBox()
-    let min_division_prob_textbox = new TextBox()
-    let max_division_prob_textbox = new TextBox()
     let min_division_interval_textbox = new TextBox()
     let max_division_interval_textbox = new TextBox()
-
 
     let necrosis_prob_o2_chart = new Chart(Dock=DockStyle.Fill)
     let necrosis_prob_o2_chart_area = new ChartArea()
     let necrosis_prob_o2_series = new Series(ChartType = SeriesChartType.Line)
 
+    let min_necrosis_wait_textbox = new TextBox()
+    let max_necrosis_wait_textbox = new TextBox()
+
+    let min_necrosis_desintegrate_textbox = new TextBox()
+    let max_necrosis_desintegrate_textbox = new TextBox()
+
     let apoptosis_prob_age_chart = new Chart(Dock=DockStyle.Fill)
     let apoptosis_prob_age_chart_area = new ChartArea()
     let apoptosis_prob_age_series = new Series(ChartType = SeriesChartType.Line)
 
-    let x1_death_textbox = new TextBox()
-    let x2_death_textbox = new TextBox()
-    let mu_death_textbox = new TextBox()
-    let s_death_textbox = new TextBox()
-    let min_death_prob_textbox = new TextBox()
-    let max_death_prob_textbox = new TextBox()
-    let min_death_wait_textbox = new TextBox()
-    let max_death_wait_textbox = new TextBox()
+    let apply_changes(args: EventArgs) =
+        ModelParameters.NonStemWaitBeforeDivisionInterval <-
+            FormDesigner.retrieve_int_interval(min_division_interval_textbox, max_division_interval_textbox)
+        
+        ModelParameters.NecrosisWaitInterval <-
+            FormDesigner.retrieve_int_interval(min_necrosis_wait_textbox, max_necrosis_wait_textbox)
 
-    let apply_changes(args: EventArgs) = ()
+        ModelParameters.NecrosisDesintegrationInterval <-
+            FormDesigner.retrieve_int_interval(min_necrosis_desintegrate_textbox, max_necrosis_desintegrate_textbox)
     
     // initialise the window
     do
@@ -68,13 +66,13 @@ type NonStemCellParamForm() as this =
 
         let control1 = ParamFormBase.create_logistic_func_controls(
                         division_groupbox, null, division_prob_o2_chart,
-                        ModelParameters.NonStemDivisionProbO2, (ModelParameters.O2Limits),
+                        ModelParameters.NonStemDivisionProbabilityO2, (ModelParameters.O2Limits),
                         FloatInterval(0., 1.), 100.)
 
         let control2 = ParamFormBase.create_int_interval_controls(
                         division_groupbox, control1, "Time (in steps) before two consecutive divisions",
                         min_division_interval_textbox, max_division_interval_textbox,
-                        ModelParameters.NonStemIntervalBetweenDivisions)
+                        ModelParameters.NonStemWaitBeforeDivisionInterval, IntInterval(0, Int32.MaxValue))
 
         division_prob_density_chart.Titles.Add("The probability of non-stem cell division") |> ignore
         division_prob_density_chart.ChartAreas.Add(division_prob_density_chart_area)
@@ -84,8 +82,8 @@ type NonStemCellParamForm() as this =
 
         ParamFormBase.create_logistic_func_controls(
                         division_groupbox, control2, division_prob_density_chart,
-                        ModelParameters.NonStemDivisionProbDensity,
-                        ModelParameters.CellPackDensityLimits, FloatInterval(0., 1.), 100.) |> ignore
+                        ModelParameters.NonStemDivisionProbabilityDensity,
+                        ModelParameters.CellPackingDensityLimits, FloatInterval(0., 1.), 100.) |> ignore
 
         (*-------------- DEATH --------------------------*)
 
@@ -104,14 +102,20 @@ type NonStemCellParamForm() as this =
 
         let control1 = ParamFormBase.create_logistic_func_controls(
                         death_groupbox, null, necrosis_prob_o2_chart,
-                        ModelParameters.NonStemNecrosisProbO2,
+                        ModelParameters.NonStemNecrosisProbabilityO2,
                         (ModelParameters.O2Limits), FloatInterval(0., 1.), 100.)
 
         let control2 = ParamFormBase.create_int_interval_controls(
                         death_groupbox, control1,
-                        "Waiting time (in steps) before the death program can be activated",
-                        min_death_wait_textbox, max_death_wait_textbox,
-                        ModelParameters.NecrosisWaitInterval)
+                        "Waiting time (in steps) before a cell can undergo necrosis",
+                        min_necrosis_wait_textbox, max_necrosis_wait_textbox,
+                        ModelParameters.NecrosisWaitInterval, IntInterval(0, Int32.MaxValue))
+
+        let control3 = ParamFormBase.create_int_interval_controls(
+                        death_groupbox, control2,
+                        "Time (in steps) before a necrotic cell desintegrates",
+                        min_necrosis_desintegrate_textbox, max_necrosis_desintegrate_textbox,
+                        ModelParameters.NecrosisDesintegrationInterval, IntInterval(0, Int32.MaxValue))
 
         apoptosis_prob_age_chart.Titles.Add("The probability of apoptosis for a non-stem cell") |> ignore
         apoptosis_prob_age_chart.ChartAreas.Add(apoptosis_prob_age_chart_area)
@@ -120,8 +124,9 @@ type NonStemCellParamForm() as this =
         apoptosis_prob_age_chart_area.AxisY.Title <- "Probability"
 
         ParamFormBase.create_logistic_func_controls(
-              death_groupbox, control2, apoptosis_prob_age_chart,
-              ModelParameters.NonStemApoptosisProbAge, FloatInterval(0., (!ModelParameters.NonStemApoptosisProbAge).Max.x*1.1),
+              death_groupbox, control3, apoptosis_prob_age_chart,
+              ModelParameters.NonStemApoptosisProbabilityAge,
+              FloatInterval(0., (!ModelParameters.NonStemApoptosisProbabilityAge).Max.x*1.1),
               FloatInterval(0., 1.), 100.) |> ignore
 
         ParamFormBase.create_ok_cancel_buttons(this, death_groupbox, apply_changes) |> ignore

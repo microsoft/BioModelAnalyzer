@@ -5,7 +5,7 @@ open System
 open System.Drawing
 open System.Drawing.Drawing2D
 open Geometry
-open NumericComputations
+open NumericalComputations
 open ModelParameters
 
 type Render (graphics: Graphics)=
@@ -46,24 +46,6 @@ type CellRender (graphics: Graphics)=
 
         if cell.State = PreNecrosisState then color <- Color.Brown
         else if cell.State = NecrosisState then color <- Color.Black
-
-        (*let mutable a, r, g, b = this.color_to_argb(color)
-        let mutable da = 0u
-
-        (*match cell.State with
-            | Functioning -> ()
-            | PreparingToDie -> da := 30u
-            | Dead -> raise (InnerError(sprintf "Error: trying to display a dead cell"))
-
-        match cell.Action with
-            | AsymSelfRenewal| SymSelfRenewal | NonStemDivision -> da <- uint32(-50)
-            | GotoNecrosis | StartApoptosis | NoAction -> ()*)
-
-        a <- 125u + da
-        if a < 10u then a <- 10u
-        else if a > 255u then a <- 255u
-
-        color <- Color.FromArgb(int(a), int(r), int(g), int(b))*)
         color <- Color.FromArgb(125, color)
         color
 
@@ -90,7 +72,6 @@ type CellRender (graphics: Graphics)=
 /////////////////// plot a function fun (x, y) -> z ///////////////
 type GridFuncRender(graphics: Graphics) =
     inherit Render(graphics)
-    let fvals = new ResizeArray<float>(ModelParameters.O2Grid.YLines*ModelParameters.O2Grid.XLines)
 
     member this.ComputeColor(f: float, f_limits: FloatInterval) =
         let f_norm = (f - f_limits.Min) / (f_limits.Max - f_limits.Min)
@@ -109,7 +90,7 @@ type GridFuncRender(graphics: Graphics) =
             graphics.DrawLine(pen, x1, y1, x2, y2)
                 
 
-    member this.PlotFunc(f: GridFunction1D, f_limits: FloatInterval, ?f_grad: GridFunctionVector) =
+    member this.PlotFunc(f: GridFunction1D, f_limits: FloatInterval) =
         graphics.Clear(Color.White)
         let grid = f.Grid
         let pt_size = 2
@@ -118,32 +99,18 @@ type GridFuncRender(graphics: Graphics) =
         let mutable rect = Drawing.Rectangle()
         rect.Size <- Drawing.Size(pt_size, pt_size)
 
-        f.GetAllValues(fvals)
+        let fvals = f.GetAllValues()
 
         for i = 0 to grid.YLines - 1 do
             for j = 0 to grid.XLines - 1 do
-                let offset=i*grid.XLines+j
-                let fval = fvals.[offset] //f.GetValue(i, j)
+                let fval = fvals.[i, j]
                 // speed up drawing - do not draw points with max value
                 // because they are indistiguishable from the background
                 if Math.Abs(f_limits.Max-fval) > threshold then
                     pen.Color <- this.ComputeColor(fval, f_limits)
                     rect.Location <- this.translate_coord(grid.IndicesToPoint(i, j).ToDrawingPoint())
                     graphics.DrawRectangle(pen, rect)
-               
-(*        let scale = 1.1 * (max grid.Dx grid.Dy)
-        if f_grad <> None then
-            let grad = f_grad.Value
-            let grid2 = grad.Grid
-            for i = 0 to grid2.YLines-1 do
-                for j = 0 to grid2.XLines-1 do
-                    let p_local = grid2.IndicesToPoint(i, j)
-                    let p_global = grad.translate_to_global_coord(p_local)
-                    let screen_p = this.translate_coord(p_global.ToDrawingPoint())
-                    let pen = new Pen(this.ComputeColor(f.GetValue(i, j), f_limits))
-                    this.DrawArrow(screen_p, grad.GetValue(i, j), scale, pen)
 
-        //base.DrawGrid(grid)*)
 
     member this.DrawGrid2DRegion(region: Geometry.Grid2DRegion, grid: Grid) =
         let mutable color = Color.LightBlue

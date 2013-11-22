@@ -39,12 +39,12 @@ type ForcesParamForm() as this =
         let friction_force_label  = new Label()
         friction_force_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (2,3))
         friction_force_label.AutoSize <- true
-        friction_force_label.Text <- "Friction coefficient"
+        friction_force_label.Text <- "Viscosity coefficient"
         FormDesigner.place_control_below(friction_force_label, control, 2*FormDesigner.y_interval)
 
-        friction_force_textbox.Text <- (sprintf "%.1f" ModelParameters.FrictionCoeff)
+        friction_force_textbox.Text <- (sprintf "%.1f" ModelParameters.ViscosityCoeff)
         FormDesigner.add_textbox_float_validation(friction_force_textbox, friction_force_label.Text,
-            FloatInterval(0., ModelParameters.MaxFrictionCoeff))
+            FloatInterval(0., Double.MaxValue))
 
         FormDesigner.place_control_totheright(friction_force_textbox, friction_force_label)
 

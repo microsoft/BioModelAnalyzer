@@ -5,14 +5,141 @@ open Cell
 open ModelParameters
 open MathFunctions
 open Geometry
-open NumericComputations
+open NumericalComputations
 
-// SI: rename type to Automata
-type CellActivity() =
-    static let o2_vals = new ResizeArray<float>(ModelParameters.O2Grid.YLines*ModelParameters.O2Grid.XLines)
-    static let o2_nabla_square_vals = new ResizeArray<float>(ModelParameters.O2Grid.YLines*ModelParameters.O2Grid.XLines)
 
-    // get the smallest rectangle embracing the locations of the cells
+// a single object of type GlobalState is created in the program
+// GlobalState type contains
+//   - the values of the concentration of o2, its second derivative
+//       and of cell density respectively
+//   - the number of different type of cells in the model
+//   - the border of the tumor represented with a convex polygon
+type GlobalState() =
+
+    let mutable egf = true              // indicates whether EGF is Up (true) or Down (false)
+    let mutable o2 = GridFunction1D(ModelParameters.O2Grid)     // a grid function which stores the concentration of o2
+
+    let mutable o2_nabla_squared = GridFunction1D(ModelParameters.O2Grid)    // a grid function which stores nabla squared
+                                                                            // (the sum of second derivatives for each coordinate)
+                                                                            // of the concentration of o2
+
+    let mutable cell_packing_density =
+        GridFunction1D(ModelParameters.CellPackingDensityGrid)  // a grid function which stores the
+                                                                // cell packing density
+
+    let mutable peripheral = new Grid2DRegion ()                // a convex polygon embracing
+                                                                // the locations of all cells in the model
+
+    let mutable live_cells_num = 0      // the number of cells in state Functioning or PreNecrosis
+    let mutable dividing_cells_num = 0  // the number of the cells taking action
+                                        //      StemAsymmetricDivision, StemSymmetricDivision or NonStemDivision 
+    let mutable dying_cells_num = 0     // the number of the cells taking action GotoNecrosis or StartApoptosis
+
+    
+    let mutable stem_cells_num = 0      // the number of stem cells
+    let mutable nonstem_cells_num = 0   // the number of non-stem cells
+    let mutable nonstem_withmemory_cells_num = 0    // the number of "non-stem with memory" cells
+
+
+    do
+        let grid = o2.Grid
+
+        // initialise the functions of the concentration of 02 and its nabla squared
+        for i = 0 to o2.Grid.YLines-1 do
+            for j = 0 to o2.Grid.XLines-1 do
+                o2.SetValue(grid.IndicesToPoint(i, j), 100.)
+                o2_nabla_squared.SetValue(grid.IndicesToPoint(i, j), 0.)
+        
+        o2.ComputeInterpolant()
+        o2_nabla_squared.ComputeInterpolant()
+
+        let grid = ModelParameters.CellPackingDensityGrid
+
+        // initialise the function of the cell packing density
+        for i = 0 to grid.YLines-1 do
+            for j = 0 to grid.XLines-1 do
+                cell_packing_density.SetValue(grid.IndicesToPoint(i, j), 0.)
+        
+        cell_packing_density.ComputeInterpolant()
+
+    member this.EGF with get() = egf and set(x) = egf <- x
+    member this.O2 with get() = o2
+    member this.O2NablaSquared with get() = o2_nabla_squared
+    member this.Peripheral with get() = peripheral and set(x) = peripheral <- x
+    member this.CellPackingDensity with get() = cell_packing_density
+
+    (*static member GetNeighbours(cell: Cell, cells: Cell[], r: float) =
+        Array.filter(fun (c: Cell) -> c <> cell && Geometry.distance(c.Location, cell.Location) < r) cells*)
+
+    // determine if some part of the cell is inside the rectangle
+    static member IsCellInMesh(rect: Rectangle)(c: Cell) =
+        let circle = Geometry.Circle(c.Location, c.R)
+        CirclePart.IntersectionNotTriviallyEmpty(circle, rect) &&
+                CirclePart(circle, rect).NonEmpty()
+
+    // count the number of the cells for which the predicate func yields true
+    static member CountCells(cells: ResizeArray<Cell>, func: Cell->bool) =
+        let mutable count = 0
+        for c in cells do
+            if func(c) then
+                count <- count + 1
+
+        count        
+
+    // get verbose information about the concentration of o2 in point p
+    // returns a string
+    member this.O2Summary(p: Point) =
+        // values in the adjoining grid points from which the value is interpolated - displayed for debugging
+        let o2s = Array.create 9 0.
+        let o2_nabla2 = Array.create 9 0.
+        let (i, j) = o2_nabla_squared.Grid.PointToIndices(p)
+
+        sprintf "Oxygen: o2(r)=%.1f \n\
+                    \t(interpolated from cc=%.1f lb=%.1f lc=%.1f lt=%.1f ct=%.1f rt=%.1f rc=%.1f rb=%.1f cb=%.1f)\n\
+                    \tnabla_square=%.3f\n\
+                    \t(interpolated from cc=%.3f lb=%.3f lc=%.3f lt=%.3f ct=%.3f rt=%.3f rc=%.3f rb=%.3f cb=%.3f)"
+                (o2.GetValue(p, o2s))
+                (o2s.[0]) (o2s.[1]) (o2s.[2]) (o2s.[3]) (o2s.[4]) (o2s.[5]) (o2s.[6]) (o2s.[7]) (o2s.[8])
+                (o2_nabla_squared.GetValue(i, j, o2_nabla2))
+                (o2_nabla2.[0]) (o2_nabla2.[1]) (o2_nabla2.[2]) (o2_nabla2.[3])
+                (o2_nabla2.[4]) (o2_nabla2.[5]) (o2_nabla2.[6]) (o2_nabla2.[7]) (o2_nabla2.[8])
+
+
+    // get verbose information about the cell packing density in point p
+    // returns a string
+    member this.CellPackingDensitySummary(p: Point) =
+        let densities = Array.create 9 0.
+
+        sprintf "Cell pack density: density(r)=%.1f \n\
+                    \t(interpolated from cc=%.1f lb=%.1f lc=%.1f lt=%.1f ct=%.1f rt=%.1f rc=%.1f rb=%.1f cb=%.1f)"
+                    (cell_packing_density.GetValue(p, densities))
+                    (densities.[0]) (densities.[1]) (densities.[2]) (densities.[3])
+                    (densities.[4]) (densities.[5]) (densities.[6]) (densities.[7]) (densities.[8])
+
+    member this.NumofLiveCells with get() = live_cells_num and set(x) = live_cells_num <- x
+    member this.NumofDividingCells with get() = dividing_cells_num and set(x) = dividing_cells_num <- x
+    member this.NumofDyingCells with get() = dying_cells_num and set(x) = dying_cells_num <- x
+    member this.NumofStemCells with get() = stem_cells_num and set(x) = stem_cells_num <- x
+    member this.NumofNonstemCells with get() = nonstem_cells_num and set(x) = nonstem_cells_num <- x
+    member this.NumofNonstemWithmemoryCells with get() = nonstem_withmemory_cells_num
+                                             and set(x) = nonstem_withmemory_cells_num <- x
+
+    // Clear() should be called before re-running the simulation
+    member this.Clear() = 
+        live_cells_num <- 0
+        dividing_cells_num <- 0
+        dying_cells_num <- 0
+        stem_cells_num <- 0
+        nonstem_cells_num <- 0
+        nonstem_withmemory_cells_num <- 0
+
+        peripheral.Clear()
+
+
+// A probabilistic discrete-time automata encoding the life cycle of a cell
+type Automata() =
+
+    // return the smallest rectangle embracing the locations of the cells
     // extra is the amount of space added on each side
     static member get_border(cells: ResizeArray<Cell>, extra: float) =
         let xmin, xmax, ymin, ymax = ref 0., ref 0., ref 0., ref 0.
@@ -26,12 +153,16 @@ type CellActivity() =
         cells.ForEach(Action<Cell>(update_border))
         Geometry.Rectangle(!xmin-extra, !ymin-extra, !xmax+extra, !ymax+extra)
 
-    static member compute_peripheral(ext: ExternalState, cells: ResizeArray<Cell>) =
-        let border = CellActivity.get_border(cells, 3.*ModelParameters.AverageCellR)
-        let grid = ext.O2.Grid
+    
+    // return the smallest convex polygon embracing the locations of the cells
+    static member compute_peripheral(glb: GlobalState, cells: ResizeArray<Cell>) =
+        
+        // get a rude approximation of the tumour border by a rectangle 
+        let border = Automata.get_border(cells, 3.*ModelParameters.AverageCellRadius)
+        let grid = glb.O2.Grid
         let imin, jmin = grid.PointToIndices(Geometry.Point(border.Left, border.Top))
         let imax, jmax = grid.PointToIndices(Geometry.Point(border.Right, border.Bottom))
-        ext.Peripheral.Clear()
+        glb.Peripheral.Clear()
 
         let xmin, xmax = ref 0., ref 0.
         let find_cells_horiz = fun(y: float, dy: float)(c: Cell) ->
@@ -39,6 +170,7 @@ type CellActivity() =
                 if c.Location.x-c.R < !xmin then xmin := c.Location.x-c.R
                 if c.Location.x+c.R > !xmax then xmax := c.Location.x+c.R
 
+        // refine the border to a convex polygon
         for i = imin to imax do
             let y = grid.IndicesToPoint(i, 0).y
             xmin := border.Right
@@ -50,118 +182,84 @@ type CellActivity() =
             then
                 let (_, jmin) = grid.PointToIndices(Geometry.Point(!xmin, y))            
                 let (_, jmax) = grid.PointToIndices(Geometry.Point(!xmax, y))
-                ext.Peripheral.AddSegment(i, IntInterval(jmin, jmax))
+                glb.Peripheral.AddSegment(i, IntInterval(jmin, jmax))
 
-    static member private calc_cellpackdensity_gradient(ext: ExternalState, cells: ResizeArray<Cell>) =
-        // calculate the area of cell concentration
-        let border = CellActivity.get_border(cells, 4.*ModelParameters.AverageCellR)
-        ext.CellConcentrationArea <- border
-
-        let grid_global = ext.CellPackingDensity.Grid        
-        //let k = 2.
-        //let size =(*2.*k**)ModelParameters.AverageCellR
-        let gradient_func = ext.CellPackingDensityGradient
-        (!gradient_func).Resize(Geometry.Size(border.Width,border.Height), border.Center)
-        // := GridFunctionVector(Grid(border.Width,border.Height, ModelParameters.AverageCellR, ModelParameters.AverageCellR), border.Center)
-        let derivative = Derivative.Derivative_1_2
-        let grid_local = (!gradient_func).Grid
-
-        // mesh vertices surrounding the point p
-        for i_local = 0 to grid_local.YLines-1 do
-            for j_local = 0 to grid_local.XLines-1 do
-                let point_local = grid_local.IndicesToPoint(i_local, j_local)
-                // translate the coordinates of point p from grid2 to grid1
-                let point_global =  (!gradient_func).translate_to_global_coord(point_local)
-                let (i_global, j_global) = grid_global.PointToIndices(point_global)
-
-                let gradient = derivative.Gradient(ext.CellPackingDensity.F, ext.CellPackingDensity.Delta, i_global, j_global)
-                (!gradient_func).SetValue(point_global, gradient)
-
-        // compute the (interpolation of) the gradient in the point p
-        (!gradient_func).ComputeInterpolant()
-
-
-    static member private daughter_locations(cell: Cell, r1: float, r2: float, ext: ExternalState) =
+    // return the locations of offsprings of a cell
+    // located on a random diagonal of division
+    static member private daughter_locations(cell: Cell, r1: float, r2: float, glb: GlobalState) =
         let loc = cell.Location
-        //let gradient = (!ext.CellPackingDensityGradient).GetValue(loc)
         let mutable v1, v2 = Vector(), Vector()
 
-        // choose a diagonal of cell division, which goes through the cell center
-        //if gradient.IsNull() then
-        // choose a random diagonal
+        // choose a random diagonal of cell division, which goes through the cell center
         let angle = uniform_float(FloatInterval(0., 2.*Math.PI))
         v1 <- Vector(cell.Location) + Vector.FromAngleAndRadius(angle, r1)
         v2 <- Vector(cell.Location) + Vector.FromAngleAndRadius(angle+Math.PI, r2)
-        (* // the approach below does not work because the gradient is calculated badly
-           // the reason is that the numeric approach used to calculate the derivative
-           // requires that the density function and the derivative are smooth
-           // which is not the case because the density is calculated with low precision for performance reasons
-        else
-            // place the diagonal of cell division
-            // so that it's perpendicular to the gradient of cell density
-            // because the gradient shows the direction of the largest growth of density
-            let dir = gradient.Perpendicular().Normalise()
-            v1 <- Vector(cell.Location) + dir*r1
-            v2 <- Vector(cell.Location) - dir*r2
-        *)
-
         v1.ToPoint(), v2.ToPoint()
 
     // in symmetric cell division a cell produces two identical daughter cells
     // in asymmetric cell division a stem cell produces
-    // a new stem cell and a new non-stem cell
-    static member divide(ext: ExternalState)(cell: Cell) = 
+    //      a new stem cell and a new non-stem cell
+    static member divide(glb: GlobalState)(cell: Cell) = 
         let r1, r2 = cell.R, cell.R
-        let loc1, loc2 = CellActivity.daughter_locations(cell, r1, r2, ext)
+        let loc1, loc2 = Automata.daughter_locations(cell, r1, r2, glb)
         let type1 = cell.Type
-        let type2 = if cell.Action = AsymSelfRenewal then NonStem else cell.Type
+        let type2 = if cell.Action = StemAsymmetricDivision then NonStem else cell.Type
         let non_stem_daughter = new Cell(type1, cell.Generation + 1, loc1, r1, cell.Density)
         let stem_daughter = new Cell(type2, cell.Generation + 1, loc2, r2, cell.Density)
         [|non_stem_daughter; stem_daughter|]
 
-    // die function so far does nothing
+    // perform the necrosis action
     static member goto_necrosis(cell: Cell) =
         cell.State <- NecrosisState
         cell.WaitBeforeDesintegration <- uniform_int(ModelParameters.NecrosisDesintegrationInterval)
 
+    // perform the apoptosis action
     static member start_apoptosis(cell: Cell) = 
         cell.State <- ApoptosisState
 
-    // determine if a cell can proliferate depending
-    // on the amount of nutrients (currently oxygen: O2)
-    static member private can_divide(cell: Cell, ext: ExternalState) =
+    // returns true if the cell can proliferate, which depends on 
+    //   - the amount of nutrients (currently oxygen)
+    //   - and cell packing density
+    static member private can_divide(cell: Cell, glb: GlobalState) =
+
+        // a cell must wait after division before it can again proliferate 
         if (cell.WaitBeforeDivide > 0) then
             false
         else
             let mutable prob_o2, prob_density = 0., 0.
             let loc = cell.Location
-            let o2, density = ext.O2.GetValue(loc), ext.CellPackingDensity.GetValue(loc)
+            let o2, density = glb.O2.GetValue(loc), glb.CellPackingDensity.GetValue(loc)
 
             match cell.Type with
             | Stem ->
-                prob_o2 <- (!ModelParameters.StemDivisionProbO2).Y(o2);
-                prob_density <- (!ModelParameters.StemDivisionProbDensity).Y(density)
+                prob_o2 <- (!ModelParameters.StemDivisionProbabilityO2).Y(o2);
+                prob_density <- (!ModelParameters.StemDivisionProbabilityDensity).Y(density)
 
             | NonStem ->
-                prob_o2 <- (!ModelParameters.NonStemDivisionProbO2).Y(o2);
-                prob_density <- (!ModelParameters.NonStemDivisionProbDensity).Y(density)
+                prob_o2 <- (!ModelParameters.NonStemDivisionProbabilityO2).Y(o2);
+                prob_density <- (!ModelParameters.NonStemDivisionProbabilityDensity).Y(density)
 
-            | _ -> raise(InnerError(sprintf "%s cell can not divide" (cell.TypeAsStr())))
+            | _ -> raise(InnerError(sprintf "%s cell can not divide" (cell.Type.ToString())))
 
+            // the probability of cell division is calculated
+            // as the product of two functions (both range between 0 and 1)
+                // one of each takes as its argument the concentration of oxygen
+                // another one - the cell packing density
             let prob = prob_o2 * prob_density
             uniform_bool(prob)
 
-    // determine whether a stem cell will divide symmetrically
+    // returns true if the stem cell should divide symmetrically
+    // and false if it should divide asymmetrically
     static member private should_divide_sym(cell: Cell) =
-        uniform_bool(ModelParameters.SymRenewProb)
+        uniform_bool(ModelParameters.StemSymmetricDivisionProbability)
 
-    // determine if a cell should die depending
-    // on the amount of nutrients (currently: O2)
-    static member private should_goto_necrosis(cell: Cell, ext: ExternalState) = 
-        if cell.Type <> NonStem then raise(InnerError(sprintf "%s cell can not die" (cell.TypeAsStr())))
+    // returns true if a cell should undergo necrosis 
+    // which depends on the amount of nutrients (currently: oxygen)
+    static member private should_goto_necrosis(cell: Cell, glb: GlobalState) = 
+        if cell.Type <> NonStem then raise(InnerError(sprintf "%s cell can not die" (cell.Type.ToString())))
 
-        let prob_oxygen = (!ModelParameters.NonStemNecrosisProbO2).Y(ext.O2.GetValue(cell.Location))
-        //let prob_density = (!ModelParameters.NonStemNecrosisProbDensity).Y(ext.CellPackingDensity.GetValue(cell.Location))
+        let prob_oxygen = (!ModelParameters.NonStemNecrosisProbabilityO2).Y(glb.O2.GetValue(cell.Location))
+        //let prob_density = (!ModelParameters.NonStemNecrosisProbDensity).Y(glb.CellPackingDensity.GetValue(cell.Location))
         // we calculate the probability of death based on several parameters independently
         // i.e. based on the amount of oxygen and based on cell density
         //
@@ -172,48 +270,34 @@ type CellActivity() =
         let decision = uniform_bool(prob)
         decision
 
+    // returns true if the cell should start the apoptosis
     static member private should_start_apoptosis(cell: Cell) =
-        if cell.Type <> NonStem then raise(InnerError(sprintf "%s cell can not die" (cell.TypeAsStr())))
+        if cell.Type <> NonStem then raise(InnerError(sprintf "%s cell can not die" (cell.Type.ToString())))
 
-        let prob = (!ModelParameters.NonStemApoptosisProbAge).Y(float cell.Age)
+        let prob = (!ModelParameters.NonStemApoptosisProbabilityAge).Y(float cell.Age)
         let decision = uniform_bool(prob)
         decision
 
-    // determine if a stem cell should go to a "non-stem with memory" state
+    // returns true if a stem cell should go to a "non-stem with memory" state
     static member private should_goto_nonstem(cell: Cell) =
-        let prob = ModelParameters.StemToNonStemProb
+        let prob = ModelParameters.StemToNonStemProbability
         uniform_bool(prob)
 
-    static member private should_returnto_stem(cell: Cell, ext: ExternalState) =
-        let prob = (!ModelParameters.NonStemToStemProb).Y(float -ext.StemCells)
+    // returns true if "a non-stem with memory" cell should return to the stem state
+    static member private should_returnto_stem(cell: Cell, glb: GlobalState) =
+        let prob = (!ModelParameters.NonStemToStemProbability).Y(float glb.NumofStemCells)
         uniform_bool(prob)
 
+    // initialise_new_cell() must be called for each new cell
     static member initialise_new_cell(cell: Cell) =
         match cell.Type with
-        | Stem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemIntervalBetweenDivisions)
-        | NonStem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemIntervalBetweenDivisions)
-        | _ -> raise (InnerError(sprintf "Error: new cell in state %s" (cell.TypeAsStr())))
+        | Stem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemWaitBeforeDivisionInterval)
+        | NonStem -> cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemWaitBeforeDivisionInterval)
+        | _ -> raise (InnerError(sprintf "Error: new cell in state %s" (cell.Type.ToString())))
 
-    // SI: add comments 
-    static member do_step(cell: Cell) =
-        if (cell.Action = SymSelfRenewal || cell.Action = AsymSelfRenewal) then
-            cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemIntervalBetweenDivisions)
-            cell.StepsAfterLastDivision <- 0
-        else if cell.Action = NonStemDivision then
-            cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemIntervalBetweenDivisions)
-            cell.StepsAfterLastDivision <- 0
-        else
-            cell.StepsAfterLastDivision <- (cell.StepsAfterLastDivision + 1)
-            if cell.WaitBeforeDivide > 0
-                then cell.WaitBeforeDivide <- (cell.WaitBeforeDivide - 1)
 
-        if cell.State = PreNecrosisState && cell.WaitBeforeNecrosis > 0 then
-            cell.WaitBeforeNecrosis <- (cell.WaitBeforeNecrosis - 1)
-        
-        cell.Age <- cell.Age + 1
-
-    // compute the action in the current state
-    static member compute_action(ext: ExternalState) (cell: Cell) = 
+    // compute the action for a cell to take in the current step
+    static member compute_action(glb: GlobalState) (cell: Cell) = 
         try
             // no action is taken by default
             cell.Action <- NoAction
@@ -225,111 +309,130 @@ type CellActivity() =
 
             else if (cell.State = PreNecrosisState) then
                 if cell.WaitBeforeNecrosis = 0 then
-                    if CellActivity.should_goto_necrosis(cell, ext) then
+                    if Automata.should_goto_necrosis(cell, glb) then
                         cell.Action <- GotoNecrosis
-                    else cell.State <- Functioning
+                    else cell.State <- FunctioningState
             else
                 // determine an action for a stem cell
                 match cell.Type with
                 | Stem ->
-                    if ext.EGF && CellActivity.can_divide(cell, ext) then
-                        if CellActivity.should_divide_sym(cell) then
-                            cell.Action <- SymSelfRenewal
+                    if glb.EGF && Automata.can_divide(cell, glb) then
+                        if Automata.should_divide_sym(cell) then
+                            cell.Action <- StemSymmetricDivision
                         else
-                            cell.Action <- AsymSelfRenewal
-                    else if CellActivity.should_goto_nonstem(cell) then
+                            cell.Action <- StemAsymmetricDivision
+                    else if Automata.should_goto_nonstem(cell) then
                         cell.Type <- NonStemWithMemory
         
                 // determine an action for a non-stem cell
                 | NonStem ->
-                    if ext.EGF && CellActivity.can_divide(cell, ext) then
+                    if glb.EGF && Automata.can_divide(cell, glb) then
                         cell.Action <- NonStemDivision
-                    else if CellActivity.should_start_apoptosis(cell) then
+                    else if Automata.should_start_apoptosis(cell) then
                         cell.Action <- StartApoptosis
-                    else if CellActivity.should_goto_necrosis(cell, ext) then
+                    else if Automata.should_goto_necrosis(cell, glb) then
                         cell.WaitBeforeNecrosis <- uniform_int(ModelParameters.NecrosisWaitInterval)
                         cell.State <- PreNecrosisState
 
                 // determine an action for a non-stem cell which can become stem again
                 | NonStemWithMemory ->
-                    if ext.EGF && CellActivity.should_returnto_stem(cell, ext) then
+                    if glb.EGF && Automata.should_returnto_stem(cell, glb) then
                         cell.Type <- Stem
         with
             | :? InnerError as error ->
-                raise (InnerError(sprintf "%s\nCell summary:\n%s" (error.ToString()) (cell.Summary())))
+                raise (InnerError(sprintf "%s\nCell summary:\n%s" (error.ToString()) (cell.ToString())))
 
-    static member calc_cellpackdensity(ext: ExternalState, cells: ResizeArray<Cell>) =
-//        let k = 8.
-//        let d = k*ModelParameters.AverageCellR
-        let grid = ext.CellPackingDensity.Grid
+    // do_step() must be called in every step of the simulation
+    // updates the time-related fields of the cell (waiting intervals, age etc)
+    static member do_step(cell: Cell) =
+        if (cell.Action = StemSymmetricDivision || cell.Action = StemAsymmetricDivision) then
+            cell.WaitBeforeDivide <- uniform_int(ModelParameters.StemWaitBeforeDivisionInterval)
+            cell.StepsAfterLastDivision <- 0
+        else if cell.Action = NonStemDivision then
+            cell.WaitBeforeDivide <- uniform_int(ModelParameters.NonStemWaitBeforeDivisionInterval)
+            cell.StepsAfterLastDivision <- 0
+        else
+            cell.StepsAfterLastDivision <- (cell.StepsAfterLastDivision + 1)
+            if cell.WaitBeforeDivide > 0
+                then cell.WaitBeforeDivide <- (cell.WaitBeforeDivide - 1)
+
+        if cell.State = PreNecrosisState && cell.WaitBeforeNecrosis > 0 then
+            cell.WaitBeforeNecrosis <- (cell.WaitBeforeNecrosis - 1)
+        
+        cell.Age <- cell.Age + 1
+
+    // calculate the cell packing density in the whole model
+    static member calc_cellpackdensity(glb: GlobalState, cells: ResizeArray<Cell>) =
+        let grid = glb.CellPackingDensity.Grid
 
         for i = 0 to grid.YLines-1 do
             for j = 0 to grid.XLines-1 do
                 let p = grid.IndicesToPoint(i, j)
-                let rect = Rectangle(left = p.x-grid.Dx/2., right = p.x+grid.Dx/2., top = p.y-grid.Dy/2., bottom = p.y+grid.Dy/2.)
-                let neighbours = ExternalState.CountCells(cells, ExternalState.IsCellInMesh(rect))
-                let r = ModelParameters.AverageCellR
-                let k = grid.Dx / (2.*r) //(grid.Dx*grid.Dy) / (pi*r*r)
-                let density = (float neighbours) * k
-                ext.CellPackingDensity.SetValue(p, density)
-        ext.CellPackingDensity.ComputeInterpolant()
-        
-        //CellActivity.calc_cellpackdensity_gradient(ext, cells)
+                let rect = grid.CenteredRect(i, j)
+                // count the cells in the rectangle
+                // centered in the grid vertex (i, j) and with size of a grid mesh 
+                let cells_in_rect = GlobalState.CountCells(cells, GlobalState.IsCellInMesh(rect))
+                // the number of the cells is weighted by the coefficient k
+                // which equals to the ratio of the size of a grid mesh to the cell size
+                let k = grid.Dx / (2.*ModelParameters.AverageCellRadius)
+                let density = (float cells_in_rect) * k
+                glb.CellPackingDensity.SetValue(p, density)
 
-    static member private calc_o2(ext: ExternalState, cells: ResizeArray<Cell>, dt: int) =
+        glb.CellPackingDensity.ComputeInterpolant()
+
+        
+    // calculate the concentration of oxygen in the whole model
+    static member private calc_o2(glb: GlobalState, cells: ResizeArray<Cell>, dt: int) =
         let (c1, c2, c3) = ModelParameters.O2Param
         let o2_limits = ModelParameters.O2Limits
-        let grid = ext.O2.Grid
+        let grid = glb.O2.Grid
         
-        // we get these values all at once because they are protected by a semaphore
+        // get these values all at once because they are protected by a semaphore
         // and it's too costly to get them one by one
         // the semaphore is needed because the function values are updated in this thread
         // and read in another one (which renders the ExternalStateForm)
-        ext.O2.GetAllValues(o2_vals)
-        //let 02_vals' = ext.o2.GetAllValues' () // SI: don't pass buff, but return it. 
-        ext.O2NablaSquare.GetAllValues(o2_nabla_square_vals)
+        let o2_vals = glb.O2.GetAllValues()
+        let o2_nabla_squared_vals = glb.O2NablaSquared.GetAllValues()
 
-        // here we bypass the semaphore for ext.O2NablaSquare.F but this function's values
+        // here we bypass the semaphore for glb.O2NablaSquare.F but this function's values
         // are read and written in this thread only
-        Derivative.Derivative_2_1.NablaSquare(ext.O2NablaSquare.F, ext.O2.F, ext.O2.Delta)
-        CellActivity.compute_peripheral(ext, cells)
+        Derivative.Derivative_2_1.NablaSquared(glb.O2NablaSquared.F, glb.O2.F, glb.O2.Delta)
+
+        Automata.compute_peripheral(glb, cells)
+        let find_live_cells = fun (c: Cell) -> Array.Exists(live_states, fun (s: CellState) -> s = c.State)
+        let find_dividing_cells = fun (c: Cell) -> Array.Exists(divide_action, fun (a: CellAction) -> a = c.Action)
 
         for i=0 to grid.YLines-1 do
             for j=0 to grid.XLines-1 do
                 let p = grid.IndicesToPoint(i, j)
                 let rect = grid.CenteredRect(i, j)
-                let found_cells = cells.FindAll(Predicate<Cell>(ExternalState.IsCellInMesh(rect)))
-                //let live_cells = found_cells.FindAll(fun (c: Cell) -> (Array.exists(fun (s: CellState) -> s = c.State) any_live_state))
-                //let dividing_cells = live_cells.FindAll(fun (c: Cell) -> (Array.exists(fun (a: CellAction) -> a = c.Action) divide_action))
+                // get all the cells in the rectangle
+                // centered in the grid vertex (i, j) and with size of a grid mesh 
+                let cells_in_rect = cells.FindAll(Predicate<Cell>(GlobalState.IsCellInMesh(rect)))
 
-                let live_cells_fun = fun (c: Cell) -> (Array.exists(fun (s: CellState) -> s = c.State) any_live_state)
-                let numof_live_cells = ExternalState.CountCells(found_cells, live_cells_fun)
-
-                let dividing_cells_fun = fun (c: Cell) -> (Array.exists(fun (a: CellAction) -> a = c.Action) divide_action)
-                let numof_dividing_cells = ExternalState.CountCells(found_cells, dividing_cells_fun)
-                            
-                //let numof_dividing_cells = dividing_cells.Count
-                let numof_nondividing_cells = (*live_cells.Count*) numof_live_cells - numof_dividing_cells
+                // compute the number of dividing and non-dividing cells 
+                let numof_live_cells = GlobalState.CountCells(cells_in_rect, find_live_cells)
+                let numof_dividing_cells = GlobalState.CountCells(cells_in_rect, find_dividing_cells)
+                let numof_nondividing_cells = numof_live_cells - numof_dividing_cells
 
                 // if the point is inside the tumor, there is no oxygen supply to it
                 // (other than diffusion from the neighbouring points)
-                let supply_rate = if ext.Peripheral.IsPointStrictlyInside(i, j) then 0. else c1
+                let supply_rate = if glb.Peripheral.IsPointStrictlyInside(i, j) then 0. else c1
                 let consumption_rate = c2*(float numof_dividing_cells) + c3*(float numof_nondividing_cells)
 
-                let offset = i*grid.XLines+j
-                let mutable new_value = o2_vals.[offset] +
-                                        (float dt)*(ModelParameters.DiffusionCoeff * o2_nabla_square_vals.[offset] +
+                let mutable new_value = o2_vals.[i, j] +
+                                        (float dt)*(ModelParameters.OxygenDiffusionCoeff * o2_nabla_squared_vals.[i, j] +
                                                     supply_rate - consumption_rate)
 
                 if new_value < o2_limits.Min then new_value <- o2_limits.Min
                 else if new_value > o2_limits.Max then new_value <- o2_limits.Max    
-                o2_vals.[offset] <- new_value
+                o2_vals.[i, j] <- new_value
 
-        ext.O2.SetValues(o2_vals)
-        ext.O2.ComputeInterpolant()
+        glb.O2.SetValues(o2_vals)
+        glb.O2.ComputeInterpolant()
 
-    // recalculate the probabilistic events in the external system: EGF and O2
-    static member recalculate_ext_state(ext:ExternalState, cells: ResizeArray<Cell>, dt: int) =
-        ext.EGF <- uniform_bool(ModelParameters.EGFProb)
-        CellActivity.calc_cellpackdensity(ext, cells)
-        CellActivity.calc_o2(ext, cells, dt)
+    // recalculate the global state of the model
+    static member recalc_global_state(glb:GlobalState, cells: ResizeArray<Cell>, dt: int) =
+        glb.EGF <- uniform_bool(ModelParameters.EGFProb)
+        Automata.calc_cellpackdensity(glb, cells)
+        Automata.calc_o2(glb, cells, dt)

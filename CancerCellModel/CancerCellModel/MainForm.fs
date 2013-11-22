@@ -6,10 +6,10 @@ open System.Threading
 open StemCellParamForm
 open NonStemCellParamForm
 open ForcesParamForm
-open ExternalStateParamForm
-open ExternalStateForm
-open CellActivityStatForm
-open CellNumbersStatForm
+open GlobalStateParamForm
+open GlobalStateForm
+open CellDivisionStatisticsForm
+open CellNumberStatisticsForm
 open Cell
 open ModelParameters
 open Model
@@ -19,37 +19,62 @@ open Geometry
 
 type ControlDelegate = delegate of unit -> unit
 
+// the main window in the program
+// starts the simulation of the model in a separate thread
 type MainForm () as this =
-    inherit DrawingForm (Visible = false, Width = ModelParameters.GridSize.Width, Height = ModelParameters.GridSize.Height)
 
-    let stem_prop_dialog = new StemCellParamForm()
-    let nonstem_prop_dialog = new NonStemCellParamForm()
-    let forces_prop_dialog = new ForcesParamForm()
-    let extstate_prop_dialog = new ExternalStateParamForm()
-    let activity_stat_dialog = new CellActivityStatForm()
-    let cellnumbers_stat_dialog = new CellNumbersStatForm()
-    let mutable model = new Model()
-    let o2_dialog = new O2Form(model.ExtStateRef)
-    let cell_density_dialog = new DensityForm(model.ExtStateRef)
-    let status_bar = new StatusBar()
-    let mainwindow_delegate = new ControlDelegate(this.UpdateMainWindow)
-    let dialogs_delegate = new ControlDelegate(this.PlotStat)
-    let mutable step = 0
-    let mutable cancellation_token = new CancellationTokenSource()
-    let pause = ref false
-    let mutable run_step = false
-    let cell_tooltip = new ToolTip()
-    let render = new CellRender(base.Graphics)
-    static let mutable file_num = 0
+    inherit DrawingForm (Visible = false, Width = ModelParameters.WindowSize.Width, Height = ModelParameters.WindowSize.Height)
+
+    let mutable model = new Model()     // the model of the biological system (contains all the logic)
+    let mutable step = 0                // the current step
+    let mutable pause = false           // set to true when the simulation is stopped
+    let mutable run_step = false        // set to true when exatly one step of the simulation should be run       
+    let mutable restart_simulation = 0  // set to true when a new run of simulation should be started
+    
+    let render = new CellRender(base.Graphics)  // used to render the cells on the form
+    static let mutable file_num = 0             // the number of the file to which the current screenshot will be saved
+
+    let mutable cancellation_token = new CancellationTokenSource()  // used to stop all the simulation thread when the main window is closed
+    
+    // the dialogs which can be opened from the main window
+    let stem_prop_dialog = new StemCellParamForm()          // the parameters of stem cells
+    let nonstem_prop_dialog = new NonStemCellParamForm()    // the parameters of non-stem cells
+    let forces_prop_dialog = new ForcesParamForm()          // the parameters of forces acting on the cells
+    let glbstate_prop_dialog = new GlobalStateParamForm()   // the parameters of the global state
+
+    let division_statistics_dialog = new CellDivisionStatisticsForm(model.StemCellDivisionStatistics,   
+                                                        model.NonstemCellDivisionStatistics) // the statistics of cell division
+
+    let cellnumbers_stat_dialog = new CellNumberStatisticsForm()  // the statistics of the number of different types of cells in the model
+    
+    let o2_dialog = new O2Form(model.GlobalState, model.GlobalState.O2, ModelParameters.O2Limits) // the plot of the function of the concentration of oxygen
+    
+    let cell_tooltip = new ToolTip() // a pop-up tooltip, shows the summary of the system in a given point
+    let status_bar = new StatusBar() // shows the state and the number of step of the simulation 
+    let mainwindow_delegate = new ControlDelegate(this.UpdateMainWindow)    // a delegate used to update the main window from the simulation thread
+    let dialogs_delegate = new ControlDelegate(this.PlotStatistics)         // a delegate used to update the dialogs from the simulation thread
+    let mutable save_screenshots = false    // set to true if screenshots of the simulation of the model shold be saved
 
     let disable_close(form: ParamFormBase) =
         form.FormClosing.Add(ParamFormBase.hide_form form)
 
+    // KeyPressEvent handler
     let key_press(args: KeyPressEventArgs) =
+        // stop/continue the simulation of the model
         if args.KeyChar = 'p' then
-            pause := not !pause
+            pause <- not pause
+            this.UpdateMainWindow()
+        // run exactly one step of the simulation
         else if args.KeyChar = 's' then
             run_step <- true
+
+    // turn on/off saving screenshots of the model simulation
+    let change_saving_screenshots(save_screenshots_menuitem: MenuItem) =
+        save_screenshots_menuitem.Checked <- not save_screenshots_menuitem.Checked
+        save_screenshots <- save_screenshots_menuitem.Checked
+        if save_screenshots then
+            let files = IO.Directory.GetFiles(IO.Directory.GetCurrentDirectory(), sprintf "%s*" output_file)
+            for file in files do IO.File.Delete(file)
 
     do
         base.ClientSize <- FormDesigner.Scale(base.Size, (0.95, 0.95))
@@ -57,65 +82,70 @@ type MainForm () as this =
         // create the main menu
         base.Menu <- new MainMenu()
 
-        let simulation = new MenuItem("Simulation")
-        let rerun_model = new MenuItem("Rerun the simulation")
+        let simulation_menuitem = new MenuItem("Simulation")
+        let rerun_model_menuitem = new MenuItem("Rerun the simulation")
+        let save_screenshots_menuitem = new MenuItem("Save the screenshots")
         
-        rerun_model.Click.Add(fun args ->
-            cancellation_token.Cancel()
-            cancellation_token <- new CancellationTokenSource()
-            model.Clear()
-            cellnumbers_stat_dialog.Clear()
-            Async.Start(this.run(), cancellation_token.Token))
+        rerun_model_menuitem.Click.Add(fun args ->
+            Interlocked.Exchange(&restart_simulation, 1) |> ignore)
 
-        simulation.MenuItems.AddRange([|rerun_model|])
+        save_screenshots_menuitem.Click.Add(fun args -> change_saving_screenshots(save_screenshots_menuitem))
 
-        let model_param = new MenuItem("Model parameters")
-        let stem_cell_param = new MenuItem("Stem cells")
-        stem_cell_param.Click.Add(fun args -> stem_prop_dialog.Visible <- true)
-        let nonstem_cell_param = new MenuItem("Non-stem cells")
-        nonstem_cell_param.Click.Add(fun args -> nonstem_prop_dialog.Visible <- true)
-        let ext_state_param = new MenuItem("The external state")
-        ext_state_param.Click.Add(fun args -> extstate_prop_dialog.Visible <- true)
-        let forces_param = new MenuItem("Forces")
-        forces_param.Click.Add(fun args -> forces_prop_dialog.Visible <- true)
-        model_param.MenuItems.AddRange([|stem_cell_param; nonstem_cell_param; forces_param; ext_state_param|]) |> ignore
+        simulation_menuitem.MenuItems.AddRange([|rerun_model_menuitem; save_screenshots_menuitem|])
 
-        let stat = new MenuItem("Statistics")
-        let cell_number = new MenuItem("Cell number")
-        cell_number.Click.Add(fun args -> cellnumbers_stat_dialog.Visible <- true)
-        let cell_activity = new MenuItem("Cell activity")
-        cell_activity.Click.Add(fun args -> activity_stat_dialog.Visible <- true)
-        let o2 = new MenuItem("The concentration of O2")
-        o2.Click.Add(fun args -> o2_dialog.Visible <- true)
-        (*let cell_density = new MenuItem("Cell density")
-        cell_density.Click.Add(fun args -> cell_density_dialog.Visible <- true)*)
+        let model_param_menuitem = new MenuItem("Model parameters")
+        let stem_cell_param_menuitem = new MenuItem("Stem cells")
+        stem_cell_param_menuitem.Click.Add(fun args -> stem_prop_dialog.Visible <- true)
+        let nonstem_cell_param_menuitem = new MenuItem("Non-stem cells")
+        nonstem_cell_param_menuitem.Click.Add(fun args -> nonstem_prop_dialog.Visible <- true)
+        let global_state_param_menuitem = new MenuItem("The global state")
+        global_state_param_menuitem.Click.Add(fun args -> glbstate_prop_dialog.Visible <- true)
+        let forces_param_menuitem = new MenuItem("Forces")
+        forces_param_menuitem.Click.Add(fun args -> forces_prop_dialog.Visible <- true)
+        model_param_menuitem.MenuItems.AddRange([|stem_cell_param_menuitem; nonstem_cell_param_menuitem;
+                                                    forces_param_menuitem; global_state_param_menuitem|]) |> ignore
 
-        stat.MenuItems.AddRange([|cell_number; cell_activity; o2 |]) //; cell_density|])
-        base.Menu.MenuItems.AddRange([|simulation; model_param; stat|]) |> ignore
+        let stat_menuitem = new MenuItem("Statistics")
+        let cell_number_menuitem = new MenuItem("Statistics of the number of cells")
+        cell_number_menuitem.Click.Add(fun args -> cellnumbers_stat_dialog.Visible <- true)
+        let division_stat_menuitem = new MenuItem("Cell division statistics")
+        division_stat_menuitem.Click.Add(fun args -> division_statistics_dialog.Visible <- true)
+        let o2_menuitem = new MenuItem("The concentration of O2")
+        o2_menuitem.Click.Add(fun args -> o2_dialog.Visible <- true)
+
+        stat_menuitem.MenuItems.AddRange([|cell_number_menuitem; division_stat_menuitem; o2_menuitem |])
+        base.Menu.MenuItems.AddRange([|simulation_menuitem; model_param_menuitem; stat_menuitem|]) |> ignore
         
         base.Controls.Add(status_bar)
+
+        // show/hide the summary on mouse click
         this.KeyPress.Add(fun args -> key_press(args))
         let get_summary_curried = fun (p: Drawing.Point) -> this.get_summary(Geometry.Point(render.translate_coord(p, false)))
-        this.MouseClick.Add(ParamFormBase.show_summary2(this, cell_tooltip, get_summary_curried, pause))
+        this.MouseClick.Add(ParamFormBase.show_summary2(this, cell_tooltip, get_summary_curried))
+
         base.Graphics.Clip <- new Drawing.Region(Drawing.Rectangle(0, 0, base.Width, base.Height))
         render.Size <- base.Graphics.ClipBounds
         base.FormBorderStyle <- FormBorderStyle.FixedSingle
 
+        // hide the dialogs instead of closing them
         Array.iter disable_close [|cellnumbers_stat_dialog :> ParamFormBase;
             stem_prop_dialog :> ParamFormBase;
             nonstem_prop_dialog :> ParamFormBase;
             forces_prop_dialog :> ParamFormBase;
             cellnumbers_stat_dialog :> ParamFormBase;
-            extstate_prop_dialog :> ParamFormBase;
+            glbstate_prop_dialog :> ParamFormBase;
             o2_dialog :> ParamFormBase;
-            //cell_density_dialog :> ParamFormBase;
-            activity_stat_dialog :> ParamFormBase |]
+            division_statistics_dialog :> ParamFormBase |]
 
-        Async.Start(this.run(), cancellation_token.Token)
+        // start the simulation of the model
+        Async.Start(this.run_simulation(), cancellation_token.Token)
 
+
+   // render the cells on the form:
+   // 1. draw the image on a bitmap
+   // 2. copy the bitmap to the form (which is faster) - to avoid blinking
     member this.render_cells() = 
         // draw the image on a bitmap
-        // then copy the bitmap to the form (which is faster) - to avoid blinking
         render.RenderCells(model.AllCells)
         //render.DrawGrid(model.ExtState.O2.Grid)
 
@@ -125,78 +155,99 @@ type MainForm () as this =
         graphics.DrawImage(base.Bitmap, Drawing.Point(0, 0))
 
         // save the bitmap to a file
-        base.Bitmap.Save((sprintf "%s%04d.png" output_file file_num), Drawing.Imaging.ImageFormat.Png)
-        file_num <- file_num + 1
+        if save_screenshots then
+            base.Bitmap.Save((sprintf "%s%04d.png" output_file file_num), Drawing.Imaging.ImageFormat.Png)
+            file_num <- file_num + 1
 
     override this.OnPaint(args: PaintEventArgs) =
         this.render_cells()
 
-    override this.get_summary(point: Geometry.Point) =
-        let cells = model.AllCells.FindAll(fun (cell: Cell) -> Geometry.distance(point, cell.Location) < cell.R)
+    // returns a verbose summary of the system in the point p
+    override this.get_summary(p: Geometry.Point) =
+        // get all the cells located at the point p
+        let cells = model.AllCells.FindAll(fun (cell: Cell) -> Geometry.distance(p, cell.Location) < cell.R)
         
+        // then get the cell the center of which is closest the the point p
         let mutable i = -1
         if cells.Count = 1 then
             i <- 0
         else if cells.Count > 1 then
-            let dist = ref (Geometry.distance(cells.[0].Location, point))
+            let dist = ref (Geometry.distance(cells.[0].Location, p))
             for j in 1 .. cells.Count-1 do
-                let dist' = Geometry.distance(cells.[j].Location, point)
+                let dist' = Geometry.distance(cells.[j].Location, p)
                 if dist' < !dist then
                     dist := dist'
                     i <- j
 
+        // get the summary
         let mutable msg = ""
-        let grid = model.ExtState.O2.Grid
-        let (i_grid, j_grid) = grid.PointToIndices(point)
+        let grid = model.GlobalState.O2.Grid
+        let (i_grid, j_grid) = grid.PointToIndices(p)
 
         if i >= 0 then
-            msg <- String.Concat( [| cells.[i].Summary(); "\n" |] )
+            msg <- String.Concat( [| cells.[i].ToString(); "\n" |] )
 
-        String.Concat( [| (sprintf "i=%d, j=%d\n" i_grid j_grid); msg; (model.ExtState.O2Summary(point)); "\n"; (model.ExtState.CellPackingDensitySummary(point)) |] )
+        String.Concat( [| (sprintf "i=%d, j=%d\n" i_grid j_grid); msg;
+                          (model.GlobalState.O2Summary(p)); "\n";
+                          (model.GlobalState.CellPackingDensitySummary(p)) |] )
 
     member this.UpdateMainWindow() =
         let mutable msg = (sprintf "Simulating the model: Step %d" step)
-        if !pause then msg <- String.Concat(msg, " (pause)")
+        if pause then msg <- String.Concat(msg, " (pause)")
         status_bar.Text <- msg
 
-    member this.PlotStat() =
-        cellnumbers_stat_dialog.AddPoints(model.GetCellStatistics(Live),
-            model.GetCellStatistics(Dividing), model.GetCellStatistics(Dying),
-            model.GetCellStatistics(Stem), model.GetCellStatistics(NonStem),
-            model.GetCellStatistics(NonStemWithMemory), step)
+    // add the statistics of the current step to all the dialogs
+    member this.PlotStatistics() =
+        let glb = model.GlobalState
 
-        o2_dialog.AddPoints(model.ExtState.O2, ModelParameters.O2Limits)
-        cell_density_dialog.AddPoints(model.ExtState.CellPackingDensity,
-            ModelParameters.CellPackDensityLimits)//, model.ExtState.CellPackingDensityGradient)
+        cellnumbers_stat_dialog.AddPoints(glb.NumofLiveCells,
+            glb.NumofDividingCells, glb.NumofDyingCells,
+            glb.NumofStemCells, glb.NumofNonstemCells,
+            glb.NumofNonstemWithmemoryCells, step)
 
-        activity_stat_dialog.StemDivisionStatistics <- model.CellActivityStatistics(CellType.Stem)
-        activity_stat_dialog.NonStemDivisionStatistics <- model.CellActivityStatistics(CellType.NonStem)
+        o2_dialog.Refresh()
+        division_statistics_dialog.Refresh()
 
-    member this.run() = 
+    // run the simulation of the model in a loop
+    member this.run_simulation() = 
         async{
-            model.init_simulation()
-            let dstep = 1
+            let dstep = 1               // the number of steps to be simulated in every loop iteration
+            let is_closing = ref false  // set to true if the main window is closed
+            let start_time = ref (DateTime.Now) // the start time of the current time step
+            let delay = 100             // the delay in milliseconds before executing the next model step
+
+            model.init()
             step <- 0
-            let is_closing = ref false
-            let start_time = ref (DateTime.Now)
-            let delay = 100 // delay in milliseconds between executing model steps
+
+            // the main loop
             while (not !is_closing) && step < max_steps do
+                
                 start_time := DateTime.Now
-                if not !pause || run_step then
-                    if (dstep = 1 || (step+1) % dstep <> 0) then
-                        model.simulate(dstep) |> ignore
+
+                // run the simulation for dstep number of steps
+                if not pause || run_step then
+                    model.simulate(dstep) |> ignore
+                    step <- step + dstep
+                    if run_step then run_step <- false
 
                     status_bar.Invoke(mainwindow_delegate) |> ignore
                     status_bar.Invoke(dialogs_delegate) |> ignore
                     this.render_cells()
-                    step <- step + dstep
-                    if run_step then run_step <- false
 
-                let wait_time = delay - (DateTime.Now - !start_time).Milliseconds
-                if wait_time > 0 then
-                    do! Async.Sleep(wait_time)
+                // make a delay before executing the next step
+                let wait_before_next_step = delay - (DateTime.Now - !start_time).Milliseconds
+                if wait_before_next_step > 0 then
+                    do! Async.Sleep(wait_before_next_step)
 
+                // determine if the simulation should terminate
                 let! token = Async.CancellationToken
                 if token.IsCancellationRequested then
                     is_closing := true
+
+                // determine if the simulation should be restarted
+                if Interlocked.CompareExchange(&restart_simulation, 0, 1) = 1 then
+                    model.Clear()
+                    model.init()
+                    cellnumbers_stat_dialog.Clear()
+                    step <- 0
         }

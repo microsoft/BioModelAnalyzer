@@ -5,6 +5,14 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CancerCellModel", "CancerCe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "alglib", "..\alglib\alglib\alglib.csproj", "{9566F57D-5119-43C8-B792-2F575D291E25}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{6F39A599-0D4E-46F1-971F-AFBE2EC92951}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Report", "Report", "{B7FC4D5E-96FD-40A6-BBFA-D6656ECE2CDC}"
+	ProjectSection(SolutionItems) = preProject
+		CancerCellModel\CancerModelProject_Report.docx = CancerCellModel\CancerModelProject_Report.docx
+		CancerCellModel\video.mp4 = CancerCellModel\video.mp4
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 3
@@ -12,9 +20,11 @@ Global
 		SccTeamFoundationServer = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = CancerCellModel\\CancerCellModel.fsproj
+		SccProjectTopLevelParentUniqueName1 = CancerCellModel.sln
 		SccProjectName1 = CancerCellModel
 		SccLocalPath1 = CancerCellModel
 		SccProjectUniqueName2 = ..\\alglib\\alglib\\alglib.csproj
+		SccProjectTopLevelParentUniqueName2 = CancerCellModel.sln
 		SccProjectName2 = ../alglib/alglib
 		SccLocalPath2 = ..\\alglib\\alglib
 	EndGlobalSection
@@ -34,5 +44,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9566F57D-5119-43C8-B792-2F575D291E25} = {6F39A599-0D4E-46F1-971F-AFBE2EC92951}
+		{6673B7FF-025B-4D73-BA19-62640913FE28} = {6F39A599-0D4E-46F1-971F-AFBE2EC92951}
+		{B7FC4D5E-96FD-40A6-BBFA-D6656ECE2CDC} = {6F39A599-0D4E-46F1-971F-AFBE2EC92951}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

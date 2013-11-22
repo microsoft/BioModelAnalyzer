@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Geometry.fs" />
     <Compile Include="MathFunctions.fs" />
-    <Compile Include="NumericComputations.fs" />
+    <Compile Include="NumericalComputations.fs" />
     <Compile Include="ModelParameters.fs" />
     <Compile Include="Cell.fs" />
     <Compile Include="Automata.fs" />
@@ -57,10 +57,10 @@
     <Compile Include="StemCellParamForm.fs" />
     <Compile Include="NonStemCellParamForm.fs" />
     <Compile Include="ForcesParamForm.fs" />
-    <Compile Include="ExternalStateForm.fs" />
-    <Compile Include="ExternalStateParamForm.fs" />
-    <Compile Include="CellActivityStatForm.fs" />
-    <Compile Include="CellNumbersStatForm.fs" />
+    <Compile Include="GlobalStateForm.fs" />
+    <Compile Include="GlobalStateParamForm.fs" />
+    <Compile Include="CellDivisionStatisticsForm.fs" />
+    <Compile Include="CellNumberStatisticsForm.fs" />
     <Compile Include="MainForm.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
@@ -73,6 +73,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />

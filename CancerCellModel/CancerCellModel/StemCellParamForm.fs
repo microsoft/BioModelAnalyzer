@@ -18,8 +18,6 @@ type StemCellParamForm() as this =
     let division_prob_density_chart_area = new ChartArea()
     let division_prob_density_series = new Series(ChartType = SeriesChartType.Line)
 
-    let min_prob_division_textbox = new TextBox()
-    let max_prob_division_textbox = new TextBox()
     let sym_div_textbox = new TextBox()
     let min_division_interval_textbox = new TextBox()
     let max_division_interval_textbox = new TextBox()
@@ -27,17 +25,18 @@ type StemCellParamForm() as this =
     let nonstem_tostem_prob_chart = new Chart(Dock=DockStyle.Fill)
     let nonstem_tostem_chart_area = new ChartArea()
     let nonstem_tostem_prob_series = new Series(ChartType = SeriesChartType.Line)
+
     let min_nonstem_tostem_textbox = new TextBox()
     let max_nonstem_tostem_textbox = new TextBox()
     let tononstem_withmem_textbox = new TextBox()
 
     let apply_changes(args: EventArgs) =
-        ModelParameters.SymRenewProb <- FormDesigner.retrieve_float(sym_div_textbox) / 100.
+        ModelParameters.StemSymmetricDivisionProbability <- FormDesigner.retrieve_float(sym_div_textbox) / 100.
 
-        ModelParameters.StemIntervalBetweenDivisions <- IntInterval(FormDesigner.retrieve_int(min_division_interval_textbox),
-                                                            FormDesigner.retrieve_int(max_division_interval_textbox))
+        ModelParameters.StemWaitBeforeDivisionInterval <- FormDesigner.retrieve_int_interval(min_division_interval_textbox,
+                                                                                             max_division_interval_textbox)
 
-        ModelParameters.StemToNonStemProb <- FormDesigner.retrieve_float(tononstem_withmem_textbox)
+        ModelParameters.StemToNonStemProbability <- FormDesigner.retrieve_float(tononstem_withmem_textbox)
 
     // initialise the window
     do
@@ -60,7 +59,7 @@ type StemCellParamForm() as this =
 
         let control1 = ParamFormBase.create_logistic_func_controls(
                                  division_groupbox, null, division_prob_o2_chart,
-                                 ModelParameters.StemDivisionProbO2,
+                                 (ModelParameters.StemDivisionProbabilityO2),
                                  (ModelParameters.O2Limits), FloatInterval(0., 1.), 100.)
 
 
@@ -72,8 +71,8 @@ type StemCellParamForm() as this =
 
         let control2 = ParamFormBase.create_logistic_func_controls(
                                  division_groupbox, control1, division_prob_density_chart,
-                                 ModelParameters.StemDivisionProbDensity,
-                                 (ModelParameters.CellPackDensityLimits), FloatInterval(0., 1.), 100.)
+                                 ModelParameters.StemDivisionProbabilityDensity,
+                                 (ModelParameters.CellPackingDensityLimits), FloatInterval(0., 1.), 100.)
 
         let sym_div_label  = new Label()
         sym_div_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (2,3))
@@ -81,7 +80,7 @@ type StemCellParamForm() as this =
         sym_div_label.Text <- "The probability of symmetric division (%)"
         FormDesigner.place_control_below(sym_div_label, control2, 2*FormDesigner.y_interval)
 
-        sym_div_textbox.Text <- (sprintf "%.1f" (ModelParameters.SymRenewProb* float 100) )
+        sym_div_textbox.Text <- (sprintf "%.1f" (ModelParameters.StemSymmetricDivisionProbability* float 100) )
         FormDesigner.add_textbox_float_validation(sym_div_textbox, sym_div_label.Text, FloatInterval(0., 100.))
         FormDesigner.place_control_totheright(sym_div_textbox, sym_div_label)
 
@@ -89,7 +88,7 @@ type StemCellParamForm() as this =
                     division_groupbox, sym_div_label,
                     "Time (in steps) before two consecutive divisions",
                     min_division_interval_textbox, max_division_interval_textbox,
-                    ModelParameters.StemIntervalBetweenDivisions) |> ignore
+                    ModelParameters.StemWaitBeforeDivisionInterval, IntInterval(0, Int32.MaxValue)) |> ignore
 
         division_groupbox.Controls.AddRange([| sym_div_label; sym_div_textbox |])
 
@@ -109,7 +108,7 @@ type StemCellParamForm() as this =
         tononstem_withmem_label.Text <- "The probability of transition to the \"non-stem with memory\" state (%)"
         tononstem_withmem_label.Location <- FormDesigner.initial_location
 
-        tononstem_withmem_textbox.Text <- (sprintf "%.1f" (ModelParameters.StemToNonStemProb * (float 100)))
+        tononstem_withmem_textbox.Text <- (sprintf "%.1f" (ModelParameters.StemToNonStemProbability * (float 100)))
         FormDesigner.add_textbox_float_validation(tononstem_withmem_textbox, tononstem_withmem_label.Text, FloatInterval(0., 100.))
         FormDesigner.place_control_totheright(tononstem_withmem_textbox, tononstem_withmem_label)
 
@@ -119,10 +118,10 @@ type StemCellParamForm() as this =
         nonstem_tostem_chart_area.AxisX.Title <- "The number of stem cells"
         nonstem_tostem_chart_area.AxisY.Title <- "The probability"
 
-        let x3 = (!ModelParameters.NonStemToStemProb).P2.x
+        let x3 = (!ModelParameters.NonStemToStemProbability).P2.x
         let control = ParamFormBase.create_shiftexp_func_controls(nonstem_withmem_groupbox,
                                                 tononstem_withmem_label, nonstem_tostem_prob_chart,
-                                                ModelParameters.NonStemToStemProb,
+                                                ModelParameters.NonStemToStemProbability,
                                                 FloatInterval(0., x3), FloatInterval(0., 1.), 100., true)
         
         ParamFormBase.create_ok_cancel_buttons(this, nonstem_withmem_groupbox, apply_changes) |> ignore

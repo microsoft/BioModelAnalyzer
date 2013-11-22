@@ -38,7 +38,7 @@ type MolecularDynamics() =
 
     static member compute_forces(cells: ResizeArray<Cell>)(cell: Cell) =
         cell.RepulsiveForce <- MolecularDynamics.repulsive_force_total(cell, cells)
-        cell.FrictionForce <- -cell.Velocity * ModelParameters.FrictionCoeff
+        cell.FrictionForce <- -cell.Velocity * ModelParameters.ViscosityCoeff
 
 
 (*
@@ -88,7 +88,7 @@ type MolecularDynamics() =
             0.
 
     static member interaction_energy_total(cell: Cell, cells: Cell[]) =
-        let neighbours = ExternalState.GetNeighbours(cell, cells, 1.8*cell.R)
+        let neighbours = GlobalState.GetNeighbours(cell, cells, 1.8*cell.R)
 
         let V = ref 0.
         for i = 0 to neighbours.Length-1 do
