@@ -188,8 +188,12 @@
 							<Path Data="M0.50000405,0.50000519 L0.50000405,39.500008 M20,0.5 L20,39.5 M39.5,0.5 L39.5,39.5 M0.5,0.50000048 L39.5,0.50000048 M0.5,20.000002 L39.5,20.000002 M0.5,39.5 L39.5,39.5" Stretch="Fill" Stroke="#FF898989" UseLayoutRounding="False" StrokeDashArray="4 4" Height="30" Width="30"/>
 						</ToggleButton>
 
-						<Button Style="{StaticResource ToolbarButtonStyle}" Margin="10,0,0,0" Command="{Binding UndoCommand}" ToolTipService.ToolTip="Undo previous operation">Undo</Button>
-						<Button Style="{StaticResource ToolbarButtonStyle}" Margin="5,0,0,0" Command="{Binding RedoCommand}" ToolTipService.ToolTip="Redo operation">Redo</Button>
+						<Button Style="{StaticResource ToolbarButtonStyle}" Margin="10,0,0,0" Command="{Binding UndoCommand}" ToolTipService.ToolTip="Undo previous operation">
+                            <Path Width="28" Height="25" Stretch="Fill" Fill="#FF58595B" Data="F1 M 33.804,7.29865C 27.472,-0.619995 13.952,-2.16803 5.264,5.26263L 0.00133276,0L 0,17.224L 17.2267,17.224L 11.9773,11.976C 15.92,7.07867 24.5693,5.79199 30.408,10.6946C 36.588,15.3533 38.0773,25.968 32.1053,32.86C 39.2147,27.3146 40.7107,15.0787 33.804,7.29865 Z "/>
+                        </Button>
+                        <Button Style="{StaticResource ToolbarButtonStyle}" Margin="5,0,0,0" Command="{Binding RedoCommand}" ToolTipService.ToolTip="Redo operation">
+                            <Path Width="28" Height="25" Stretch="Fill" Fill="#FF58595B" Data="F1 M 4.40666,7.29865C 10.7387,-0.619995 24.2587,-2.16803 32.9467,5.26263L 38.2093,0L 38.2107,17.224L 20.984,17.224L 26.2333,11.976C 22.2907,7.07867 13.6413,5.79199 7.80266,10.6946C 1.62266,15.3533 0.133331,25.968 6.10533,32.86C -1.004,27.3146 -2.5,15.0787 4.40666,7.29865 Z "/>
+                        </Button>
 					</StackPanel>
 
 					<StackPanel x:Name="ProofTools" 
