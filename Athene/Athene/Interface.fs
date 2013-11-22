@@ -124,7 +124,10 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     let name = intTop.name
     let regions = intTop.regions
     let responses = intTop.responses
-    let (staticSystem,machineSystem) = divideSystem system name
+    //let (staticSystem,machineSystem) = divideSystem system name
+    //let machineSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
+    //let staticSystem  = (List.filter (fun (p:Particle) -> p.freeze) system)
+    let (machineSystem,staticSystem) = List.partition (fun (p:Particle) -> not p.freeze) system
     (*
     Regions in the interface set a variable state of a machine based on the machines physical location. 
     If the machine is within a box, the variable is set to something unusual
@@ -159,7 +162,10 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     let pm = devProcess responses dT (List.zip machineSystem machineStates)
     let nMachineStates = [for (p,m) in pm -> regionListSwitch regions p m]
     let nmSystem = [for (p,m) in pm -> p]
-    let nSystem = List.foldBack (fun (p: Particle) acc -> p::acc) staticSystem nmSystem
+    //let nSystem = List.foldBack (fun (p: Particle) acc -> p::acc) staticSystem nmSystem
+    let nSystem = nmSystem @ staticSystem
     //let nMachineStates = machineStates
-    let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
+    //let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
+    let machineForces = List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem
+    //let machineForces = seq { for p in nSystem do yield {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} }
     (nSystem, nMachineStates, machineForces)

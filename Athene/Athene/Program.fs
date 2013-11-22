@@ -15,7 +15,9 @@ let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (
         match write with
         | true -> trajectory system
         | _ -> ()
-        bdSystemUpdate system [for (sF,mF) in List.zip (forceUpdate topology 6.<um> system staticGrid sOrigin) machineForces -> sF+mF ] bdOrientedAtomicUpdate T dT rand maxMove
+        let F = forceUpdate topology 6.<um> system staticGrid sOrigin machineForces
+        //bdSystemUpdate system [for (sF,mF) in List.zip F machineForces -> sF+mF ] bdOrientedAtomicUpdate T dT rand maxMove
+        bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
     let aUpdate (machineStates: Map<QN.var,int> list) (qn: QN.node list) write =
         match write with
         | true -> csvout machineStates
@@ -29,7 +31,9 @@ let rec simulate (system: Particle list) (machineStates: Map<QN.var,int> list) (
     | _ -> 
             match (steps%mg,steps%pg,steps%ig) with 
             | (0,0,0) ->  let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
-                          simulate (pUpdate nSystem staticGrid machineForces T dT rand write) (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
+                          let p = pUpdate nSystem staticGrid machineForces T dT rand write
+                          let a = aUpdate nMachineStates qn write
+                          simulate p a qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
             | (x,0,0) when x > 0 -> let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
                                     simulate (pUpdate nSystem staticGrid machineForces T dT rand write) nMachineStates qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
             | (0,x,0) when x > 0 -> let (nSystem, nMachineStates, machineForces) = interfaceUpdate system machineStates dT intTop
@@ -99,7 +103,7 @@ let rec parse_args args =
 let rec equilibrate (system: Particle list) (topology) (steps: int) (maxlength: float<um>) (staticGrid:Map<int*int*int,Particle list>) (sOrigin:Vector3D<um>) =
     match steps with
     | 0 -> system
-    | _ -> equilibrate (steep system (forceUpdate topology 6.<um> system staticGrid sOrigin ) maxlength) topology (steps-1) maxlength staticGrid sOrigin
+    | _ -> equilibrate (steep system (forceUpdate topology 6.<um> system staticGrid sOrigin (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) system) ) maxlength) topology (steps-1) maxlength staticGrid sOrigin
 
 [<EntryPoint>]
 let main argv = 

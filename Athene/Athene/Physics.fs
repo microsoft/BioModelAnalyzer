@@ -240,7 +240,7 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
         | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
     [for i in system -> getNeighbours i system cutOff] 
 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin (externalF: Vector3D<zNewton> list) = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | head::tail -> sumForces p tail (topology.[p.name].[head.name] head p) + acc
@@ -250,11 +250,12 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     //add all the mobile particles to the staticGrid
     let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
     let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
-    let nonBonded = [for p in system do match p.freeze with 
-                                            | true -> yield []
-                                            | false -> yield collectGridNeighbours p nonBondedGrid sOrigin cutOff]
-    [for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
-
+//    let nonBonded = [for p in system do match p.freeze with 
+//                                            | true -> yield []
+//                                            | false -> yield collectGridNeighbours p nonBondedGrid sOrigin cutOff]
+    let nonBonded = List.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff)) system
+    //[for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
+    List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (dT: float<second>) (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
@@ -304,11 +305,11 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
 
 let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
     //printfn "Tick"
-    [for (p,f) in List.zip system forces -> 
-        match p.freeze with
-        | false -> atomicIntegrator p f T dT rng maxMove
-        | true  -> p ]
-
+//    [for (p,f) in List.zip system forces -> 
+//        match p.freeze with
+//        | false -> atomicIntegrator p f T dT rng maxMove
+//        | true  -> p ]
+    List.map2 (fun (p:Particle) (f:Vector3D<zNewton>) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
 
 let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
     let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
