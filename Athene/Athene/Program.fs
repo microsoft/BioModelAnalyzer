@@ -142,8 +142,9 @@ let main argv =
     printfn "Particles: %A" system.Length
     printfn "Machines:  %A" machineStates.Length
     //printfn "Static grid: %A" staticGrid
+    let (mSystem,sSystem) = List.partition (fun (p:Particle) -> not p.freeze) system
     printfn "Performing %A step steepest descent EM (max length %Aum)" !equil !equillength
-    let eSystem = equilibrate system topology !equil !equillength staticGrid sOrigin
+    let eSystem = equilibrate mSystem topology !equil !equillength staticGrid sOrigin
     printfn "Completed EM. Running %A seconds of simulation (%A steps)" (!dT*((float) !steps)) !steps
     printfn "Reporting every %A seconds (total frames = %A)" (!dT*((float) !freq)) ((!steps)/(!freq))
     simulate eSystem machineStates qn topology iTop !steps 298.<Kelvin> (!dT*1.0<second>) (maxMove*1.<um>) staticGrid sOrigin trajout csvout !freq !mg !pg !ig rand
