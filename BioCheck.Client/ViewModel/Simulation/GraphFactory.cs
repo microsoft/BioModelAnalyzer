@@ -26,7 +26,7 @@ namespace BioCheck.ViewModel.Simulation
             {
                 var line = new LineData();
 
-                line.Name = variable.Name;
+                line.Name = variable.Name + " " + variable.CellName;
                 line.LineColour = variable.GraphColor;
 
                 int index = 0;

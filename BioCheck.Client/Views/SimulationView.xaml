@@ -421,8 +421,8 @@
         <Border BorderBrush="#FFBBBDBF" BorderThickness="2,5,2,2" CornerRadius="8" Background="White">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.3*" MaxWidth="300"/>
-                	<ColumnDefinition Width="0.694*"/>
+                    <ColumnDefinition Width="0.4*" MaxWidth="400"/>
+                	<ColumnDefinition Width="0.6*"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
@@ -489,7 +489,7 @@
                 	RowStyle="{StaticResource NonSelectableDataGridRowStyle}" 
                 	VerticalScrollBarVisibility="Auto" 
                 	CellStyle="{StaticResource PopupDataGridCellStyle}"
-                	Margin="10,0,10,10" HorizontalAlignment="Left" MaxWidth="300"
+                	Margin="10,0,10,10" HorizontalAlignment="Left" MaxWidth="400"
                             Grid.Row="3" RowHeight="24"
                             >
 
@@ -512,13 +512,18 @@
                 			</sdk:DataGridTemplateColumn.CellTemplate>
 
                 		</sdk:DataGridTemplateColumn>
-
+                        
+                        <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell" Width="*"/>
                 		<sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name" Width="*"/>
-
+                        
                 		<sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Range" HeaderStyle="{StaticResource SlimColumnHeaderStyle}" CellStyle="{StaticResource CenteredDataGridCellStyle}" Width="60"  />
 
                 	</sdk:DataGrid.Columns>
                 </sdk:DataGrid>
+                
+                <!--
+                <sdk:GridSplitter x:Name="gridSplitter" Background="LightGray" Grid.Column="0" Grid.Row="3" Grid.RowSpan="1"/>
+                -->
                 
                 <sdk:DataGrid 
                 	x:Name="ProgressionGrid" 

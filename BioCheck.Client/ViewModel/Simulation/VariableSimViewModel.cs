@@ -9,6 +9,7 @@ namespace BioCheck.ViewModel.Simulation
     public class VariableSimViewModel : ViewModelBase
     {
         private string name;
+        private string cellname;
         private string range;
         private int rangeFrom;
         private int rangeTo;
@@ -80,6 +81,19 @@ namespace BioCheck.ViewModel.Simulation
                 {
                     this.name = value;
                     OnPropertyChanged(() => Name);
+                }
+            }
+        }
+
+        public string CellName
+        {
+            get { return this.cellname; }
+            set
+            {
+                if (this.cellname != value)
+                {
+                    this.cellname = value;
+                    OnPropertyChanged(() => CellName);
                 }
             }
         }

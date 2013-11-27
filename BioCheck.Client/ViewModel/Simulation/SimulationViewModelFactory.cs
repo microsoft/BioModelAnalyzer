@@ -12,10 +12,11 @@ namespace BioCheck.ViewModel.Simulation
     {
         public static SimulationViewModel Create(ModelViewModel modelVM)
         {
-            var simulationVM = new SimulationViewModel();
+            var simulationVM = new SimulationViewModel();     
 
             simulationVM.ModelName = modelVM.Name;
             simulationVM.NumberOfSteps = 20;
+            int NCells = modelVM.ContainerViewModels.Count();
 
             var allVariables = (from v in
                                     (from extVvm in modelVM.VariableViewModels select extVvm)
@@ -25,22 +26,43 @@ namespace BioCheck.ViewModel.Simulation
                                          select intVvm))
                                 select v).ToList();
 
+            
             // Create the list of Variables
-            foreach (var variableVM in allVariables)
-            {
-                var varSimVM = new VariableSimViewModel
-                                     {
-                                         Id = variableVM.Id,
-                                         Name = variableVM.Name,
-                                         RangeFrom = variableVM.RangeFrom,
-                                         RangeTo = variableVM.RangeTo,
-                                         Range = string.Format("{0} - {1}", variableVM.RangeFrom, variableVM.RangeTo),
-                                     };
 
-                varSimVM.RandomiseValue();
+                foreach (var variableVM in allVariables)
+                {
+                    var varSimVM = new VariableSimViewModel
+                    {
+                        Id = variableVM.Id,
+                        Name = variableVM.Name,
+                        RangeFrom = variableVM.RangeFrom,
+                        RangeTo = variableVM.RangeTo,
+                        Range = string.Format("{0} - {1}", variableVM.RangeFrom, variableVM.RangeTo),
+                    }; 
 
-                simulationVM.Variables.Add(varSimVM);
-            }
+
+                    if (NCells > 0)
+                    {                        
+                        if (variableVM.ContainerViewModel != null)
+                        {
+                            varSimVM.CellName = variableVM.ContainerViewModel.Name;
+                        }
+                        else
+                        {
+                            // Could be either extracellular or no name provided
+                            varSimVM.CellName = "";                                 
+                        }
+                    }
+                    else 
+                    {
+                        // No cells present in the model
+                        varSimVM.CellName = "Extracellular";                         
+                    }
+                    
+                    varSimVM.RandomiseValue();
+                    simulationVM.Variables.Add(varSimVM);
+                }
+            
 
             // Create the steps
             //    var stepValues = new List<List<int>>();
