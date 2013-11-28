@@ -10,6 +10,8 @@ namespace BioCheck.ViewModel.Proof
         }
         public int Id { get; set; }
 
+        public string CellName { get; set; }
+
         public string Name { get; set; }
 
         public List<ProgressionStepInfo> Steps { get; set; }

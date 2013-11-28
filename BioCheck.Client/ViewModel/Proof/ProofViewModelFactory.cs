@@ -29,49 +29,59 @@ namespace BioCheck.ViewModel.Proof
                                 select v).ToList();
 
             var lastTick = output.Ticks.Last();
+            int NCells = modelVM.ContainerViewModels.Count();
+
             foreach (var variableOutput in lastTick.Variables)
             {
                 // Find the container and variable
                 var variableVM = (from vvm in allVariables
                                   where vvm.Id == variableOutput.Id
                                   select vvm).First();
+                                                      
 
-                // If default target function is used, no formula is stored in variableVM.Formula, so is not cited in the ProofTable.
-                // Fixed here.
-                if(variableVM.Formula == "")
+                var pi = new ProgressionInfo();                
+                pi.Id = variableOutput.Id;
+
+                var varProofVM = new VariableProofViewModel
+                                    {
+                                        Id = variableOutput.Id,
+                                        Name = variableVM.Name,                                         
+                                        Range =
+                                            variableOutput.IsStable
+                                                ? variableOutput.Low.ToString()
+                                                : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)                                         
+                                    };
+                // Cell name editor dependent on whether cells exist, and if names were provided
+                if (NCells > 0)
                 {
-                   var varProofVM = new VariableProofViewModel
-                                     {
-                                         Id = variableOutput.Id,
-                                         Name = variableVM.Name,
-                                         TargetFunction = "avg(pos)-avg(neg)",
-                                         Range =
-                                             variableOutput.IsStable
-                                                 ? variableOutput.Low.ToString()
-                                                 : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)                                         
-                                     };
-                   proofVM.Variables.Add(varProofVM);
+                    if (variableVM.ContainerViewModel != null)
+                    {
+                        varProofVM.CellName = pi.CellName = variableVM.ContainerViewModel.Name;                        
+                        pi.Name = variableVM.ContainerViewModel.Name + " " + variableVM.Name;           // 2-in-1 for easy display
+                    }
+                    else
+                    {
+                        varProofVM.CellName = pi.CellName = "";
+                        pi.Name = " " + variableVM.Name;            
+                        // A space for consistency with intracellular variables in cells that lack name
+                    }
                 }
                 else
                 {
-                    var varProofVM = new VariableProofViewModel
-                                     {
-                                         Id = variableOutput.Id,
-                                         Name = variableVM.Name,
-                                         TargetFunction = variableVM.Formula,
-                                         Range =
-                                             variableOutput.IsStable
-                                                 ? variableOutput.Low.ToString()
-                                                 : string.Format("{0} - {1}", variableOutput.Low, variableOutput.High)
-                                     };
-                    proofVM.Variables.Add(varProofVM);
+                    varProofVM.CellName = pi.CellName = "Extracellular";
+                    pi.Name = variableVM.Name;
                 }
-                
-
-                var pi = new ProgressionInfo();
-                pi.Name = variableVM.Name;
-                pi.Id = variableOutput.Id;
-
+                   
+                // Formula editor dependent on whether a formula was provided
+                if (variableVM.Formula == "")
+                {
+                    varProofVM.TargetFunction = "avg(pos)-avg(neg)";
+                }
+                else
+                {
+                    varProofVM.TargetFunction = variableVM.Formula;
+                }
+                proofVM.Variables.Add(varProofVM);
                 proofVM.ProgressionInfos.Add(pi);
             }
 
@@ -105,25 +115,27 @@ namespace BioCheck.ViewModel.Proof
         {
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
             var cexs = new List<CounterExampleInfo>();
+            //int NCells = modelVM.ContainerViewModels.Count();
 
             int number = 1;
 
             foreach (var cex in output.CounterExamples)
-            {
+            {                
                 if(cex.Status ==  StatusTypes.Bifurcation)
                 {
                     var bcex = new BifurcationCounterExample();
                     bcex.Number = number;
                     bcex.VariableInfos = (from bv in cex.BifurcatingVariables
-                                          let pv = proofVM.Variables.First(pv => pv.Id == bv.Id)
+                                          let pv = proofVM.Variables.First(pv => pv.Id == bv.Id)                                          
                                           select new BifurcatingVariableInfo
                                                      {
+                                                         CellName = pv.CellName,
                                                          Name =  pv.Name,
                                                          CalculatedBound = pv.Range,
                                                          Fix1 = bv.Fix1,
                                                          Fix2 = bv.Fix2,
                                                      }).ToList();
-                    cexs.Add(bcex);
+                    cexs.Add(bcex);                         
                 }
                 else if(cex.Status ==  StatusTypes.Cycle)
                 {
@@ -133,6 +145,7 @@ namespace BioCheck.ViewModel.Proof
                                           let pv = proofVM.Variables.First(pv => pv.Id == ov.Id)
                                           select new OscillatingVariableInfo
                                           {
+                                              CellName = pv.CellName,
                                               Name = pv.Name,
                                               CalculatedBound = pv.Range,
                                               Oscillation = ov.Oscillation,

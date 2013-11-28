@@ -5,8 +5,25 @@ namespace BioCheck.ViewModel.Proof
     public class VariableProofViewModel : ViewModelBase
     {
         private string targetFunction;
+        private string cellname;
         private string name;
         private string range;
+
+        /// <summary>
+        /// Gets or sets the value of the <see cref="CellName"/> property.
+        /// </summary>
+        public string CellName
+        {
+            get { return this.cellname; }
+            set
+            {
+                if (this.cellname != value)
+                {
+                    this.cellname = value;
+                    OnPropertyChanged(() => CellName);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the value of the <see cref="Name"/> property.

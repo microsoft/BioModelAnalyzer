@@ -18,7 +18,7 @@ namespace BioCheck.ViewModel.Cells
                                       ICopyable,
                                       IDisposable
     {
-        private string name;
+        private string name = "";               // A non-null cell name simplifies name queries in ViewModelFactories.
         private readonly ViewModelCollection<VariableViewModel> variableViewModels;
         private bool isChecked;
         private bool isStable;
