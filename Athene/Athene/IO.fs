@@ -43,6 +43,13 @@ let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) =
         file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
         file.Close()
 
+let dumpSystem (filename: string) (particles: Physics.Particle list) (machines: Map<QN.var,int> list) = 
+        use file = new StreamWriter(filename, false)
+        file.WriteLine(machines.Length)
+        file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
+        file.WriteLine(String.concat "," (seq { for p in particles -> p.ToString }) )
+        file.Close()
+
 let pdbRead (filename: string) (rng: System.Random) =
     let atomParse (line: string) = 
         let name =    (line.Substring (11,5)).Trim()

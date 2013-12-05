@@ -106,6 +106,7 @@ type Particle(id:int, Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: V
     member this.freeze = freeze
     member this.age = age
     member this.gRand = GaussianRandomNumber
+    member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.velocity.x*1.<second um^-1>) (this.velocity.y*1.<second um^-1>) (this.velocity.z*1.<second um^-1>) (this.orientation.x) (this.orientation.y) (this.orientation.z) (this.Friction*1.<second^-1>) (this.radius*1.<um^-1>) (this.density*1.<um^3/pg>) (this.age*1.<second^-1>) (this.gRand) this.freeze
 
 (*
 SI: implement Particle as a record. then can write update more concisely.

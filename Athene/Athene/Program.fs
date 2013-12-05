@@ -21,6 +21,7 @@ let rec simulate (system: Physics.Particle list) (machineStates: Map<QN.var,int>
     let write = match (steps%freq) with 
                 | 0 -> true
                 | _ -> false
+    let dump = if (steps%freq*100=0) then (IO.dumpSystem "Checkpoint.txt" system machineStates) else ()
     match steps with
     | 0 -> ()
     | _ -> 
