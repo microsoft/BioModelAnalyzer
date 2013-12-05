@@ -77,13 +77,23 @@ let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m:
     // SI: consider switching to just if-then for these small expressions
     // if (m.[varID] = varState) then Death else Life (p,m)
 
-let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probability: float) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    //dt doesn't do anything here- this is an 'instant death' function
+let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    //dt appropriately scales the probability with time
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < probability) with
+    | true -> match (rng.NextDouble() < probability*dt) with
                 | true -> Death
                 | false -> Life (p,m)
+
+let randomRecipricalSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (probability: float<um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    //cells have a higher chance of dying based on their size- smaller cells are more likely to die
+    match (m.[varID] = varState) with
+    | false -> Life (p,m)
+    | true -> match (rng.NextDouble() < dt*probability/p.radius) with
+                | true -> Death
+                | false -> Life (p,m)
+
+
 // SI: consider consolidating nested matches like this:                     
 //    match (m.[varID] = varState), (rng.NextDouble() < probability) with
 //    | false, _     -> Life (p,m)

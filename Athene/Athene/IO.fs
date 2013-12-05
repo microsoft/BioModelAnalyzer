@@ -150,7 +150,12 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
-                                    randomApoptosis varID varState rng probability                  
+                                    randomApoptosis varID varState rng (probability*1.<Physics.second^-1>)
+                                | "RecipSizeRandomApoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                    randomRecipricalSizeApoptosis varID varState rng (probability*1.<Physics.second^-1 Physics.um>)                    
                                 | _ -> failwith "Unknown function"
 
                         yield f

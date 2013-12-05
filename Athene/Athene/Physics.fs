@@ -255,7 +255,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
 //                                            | false -> yield collectGridNeighbours p nonBondedGrid sOrigin cutOff]
     let nonBonded = List.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff)) system
     //[for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
-    List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF
+    List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF  
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (dT: float<second>) (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
