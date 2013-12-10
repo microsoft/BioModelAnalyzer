@@ -6,41 +6,37 @@ let rec listLinePrint l =
     | [] -> ()
 
 let rec simulate (system: Physics.Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Physics.Particle->Physics.Particle->Vector.Vector3D<Physics.zNewton>>>) (intTop: Interface.interfaceTopology) (steps: int) (T: float<Physics.Kelvin>) (dT: float<Physics.second>) (maxMove: float<Physics.um>) staticGrid sOrigin trajectory csvout (freq: int) mg pg ig rand =
-    let pUpdate (system: Physics.Particle list) staticGrid (machineForces: Vector.Vector3D<Physics.zNewton> list) (T: float<Physics.Kelvin>) (dT: float<Physics.second>) rand write =
-        match write with
-        | true -> trajectory system
-        | _ -> ()
+    let pUpdate (system: Physics.Particle list) staticGrid (machineForces: Vector.Vector3D<Physics.zNewton> list) (T: float<Physics.Kelvin>) (dT: float<Physics.second>) rand  =
         let F = Physics.forceUpdate topology 6.<Physics.um> system staticGrid sOrigin machineForces
-        //bdSystemUpdate system [for (sF,mF) in List.zip F machineForces -> sF+mF ] bdOrientedAtomicUpdate T dT rand maxMove
         Physics.bdSystemUpdate system F Physics.bdOrientedAtomicUpdate T dT rand maxMove
-    let aUpdate (machineStates: Map<QN.var,int> list) (qn: QN.node list) write =
-        match write with
-        | true -> csvout machineStates
-        | _ -> ()
-        Automata.updateMachines qn machineStates
     let write = match (steps%freq) with 
-                | 0 -> true
-                | _ -> false
-    let dump = if (steps%freq*100=0) then (IO.dumpSystem "Checkpoint.txt" system machineStates) else ()
-    match steps with
-    | 0 -> ()
-    | _ -> 
-            match (steps%mg,steps%pg,steps%ig) with 
-            | (0,0,0) ->  let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
-                          let p = pUpdate nSystem staticGrid machineForces T dT rand write
-                          let a = aUpdate nMachineStates qn write
-                          simulate p a qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (x,0,0) when x > 0 -> let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
-                                    simulate (pUpdate nSystem staticGrid machineForces T dT rand write) nMachineStates qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (0,x,0) when x > 0 -> let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
-                                    simulate nSystem (aUpdate nMachineStates qn write) qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (0,0,x) when x > 0 -> simulate (pUpdate system staticGrid [for p in system-> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}] T dT rand write) (aUpdate machineStates qn write) qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (x,y,0) when x > 0 && y > 0 ->    let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
-                                                simulate nSystem nMachineStates qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (x,0,y) when x > 0 && y > 0 ->    simulate (pUpdate system staticGrid [for p in system-> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}] T dT rand write) machineStates qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (0,x,y) when x > 0 && y > 0 ->    simulate system (aUpdate machineStates qn write) qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-            | (_,_,_) -> simulate system machineStates qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand
-                       
+                    | 0 ->  trajectory system
+                            csvout machineStates
+                            ignore (if (steps%freq*100=0) then (IO.dumpSystem "Checkpoint.txt" system machineStates) else ())
+                            ()
+                    | _ ->  ()
+    let (a,p) = match (steps%mg>0,steps%pg>0,steps%ig>0) with 
+                        | (false,false,false) ->    let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
+                                                    let p = pUpdate nSystem staticGrid machineForces T dT rand 
+                                                    let a = Automata.updateMachines qn machineStates
+                                                    (a,p)
+                        | (true,false,false)  ->    let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
+                                                    let p = pUpdate nSystem staticGrid machineForces T dT rand 
+                                                    (nMachineStates,p)
+                        | (false,true,false)  ->    let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
+                                                    let a = Automata.updateMachines qn machineStates
+                                                    (a,nSystem)
+                        | (false,false,true)  ->    let p = pUpdate system staticGrid (List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system) T dT rand 
+                                                    let a = Automata.updateMachines qn machineStates
+                                                    (a,p)
+                        | (true,true,false)   ->    let (nSystem, nMachineStates, machineForces) = Interface.interfaceUpdate system machineStates dT intTop
+                                                    (nMachineStates,nSystem)
+                        | (true,false,true)   ->    let p = pUpdate system staticGrid (List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system) T dT rand 
+                                                    (machineStates,p)
+                        | (false,true,true)   ->    let a = Automata.updateMachines qn machineStates
+                                                    (a,system)
+                        | (true,true,true)    ->    (machineStates,system)
+    if steps > 0 then simulate p a qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin trajectory csvout freq mg pg ig rand else ()       
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
     let rec countCells acc (name: string) (s: Physics.Particle list) = 
         match s with
