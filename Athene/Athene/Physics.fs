@@ -286,30 +286,20 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
     let dP = dT * FrictionDrag * F + ThermalP
     //How can you ensure that the timestep is appropriate? This will breakdown for motor cells
-    let safety = match (dP.len>maxMove) with
-                    | true  -> 
-                                printfn "Particle %s at %A moves %A, length %A" cluster.name cluster.location dP dP.len
-                                printfn "Thermal %A" ThermalP.len
-                                printfn "Force %A" (dT * FrictionDrag * F).len
-                                failwith "Max move violated. Timestep possibly too large"
-                    | false -> ()
-    //assert (dP.len < 0.5<um>) //Ensure that motions are small
+//    let safety = match (dP.len>maxMove) with
+//                    | true  -> 
+//                                printfn "Particle %s at %A moves %A, length %A" cluster.name cluster.location dP dP.len
+//                                printfn "Thermal %A" ThermalP.len
+//                                printfn "Force %A" (dT * FrictionDrag * F).len
+//                                failwith "Max move violated. Timestep possibly too large"
+//                    | false -> ()
+//    //assert (dP.len < 0.5<um>) //Ensure that motions are small
     let NewP = cluster.location + dP
-    //let NewV = NewP * (1. / dT)
-//    printfn "Tock"
-//    printfn "Force %A %A %A" F.x F.y F.z
-//    printfn "FriFo %A %A %A" (FrictionDrag * F).x (FrictionDrag * F).y (FrictionDrag * F).z
-//    printfn "PosUp %A %A %A" (FrictionDrag * F *dT).x (FrictionDrag * F * dT).y (FrictionDrag * F *dT).z
-//    printfn "ThMot %A %A %A" ThermalP.x ThermalP.y ThermalP.z
+
     let NewO = thermalReorientation T rng dT cluster
     Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
 let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
-    //printfn "Tick"
-//    [for (p,f) in List.zip system forces -> 
-//        match p.freeze with
-//        | false -> atomicIntegrator p f T dT rng maxMove
-//        | true  -> p ]
     List.map2 (fun (p:Particle) (f:Vector3D<zNewton>) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
 
 let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
@@ -330,5 +320,18 @@ let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: f
         else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
 
 
-
-
+let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand = 
+    let F = forceUpdate topology nbCutOff system staticGrid sOrigin machineForces
+    //From the update, calculate if the maximum move is broken
+    let system' = bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
+    let maxdP   = List.map2 (fun (s: Particle) (s': Particle) -> (s'.location - s.location).len) system system'
+                    |> List.max
+    //system'
+    match ((maxdP < maxMove),(steps=1),(vdt_depth>0)) with
+    | (true,true,_)  -> system'
+    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand
+    | (false,_,true) -> //Maximum move is broken, but we have some variable dT depth left. Halve the timestep, double the steps, reduce the depth by 1 and repeat
+                        //printf "Dropping down... NewDepth = %A " (vdt_depth-1) 
+                        integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand
+    | (false,_,false) -> //Maximum move is broken, and we have run out of variable dT depth. Fail and exit
+                        failwith "Max move violated and run out of variable timestep depth. Reduce the timestep or increase the depth of the variability"
