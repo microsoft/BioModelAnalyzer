@@ -241,24 +241,55 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
         | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
     [for i in system -> getNeighbours i system cutOff] 
 
+type forceEnv = { force: Vector.Vector3D<zNewton>; confluence:int; absForceMag:float<zNewton>; pressure:float<zNewton um^-2> }
+// SI:: use more specific names than head, tail.
+//      | top_particlar:: other_particles -> ... 
 let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin (externalF: Vector3D<zNewton> list) = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
-        | head::tail -> sumForces p tail (topology.[p.name].[head.name] head p) + acc
-// SI:: use more specific names than head, tail.
-//      | top_particlar:: other_particles -> ... 
+        | first_p::other_p -> sumForces p other_p (topology.[p.name].[first_p.name] first_p p) + acc
+        | [] -> acc
+    let sphereIntersectionArea (p:Particle) (first_p:Particle) = 
+        let d = (first_p.location - p.location).len
+        let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.radius - first_p.radius) * (-d - p.radius + first_p.radius) * (-d + p.radius + first_p.radius) * (d + p.radius + first_p.radius)  
+        2.*System.Math.PI* intersectionRadiusSq
+    let rec populateForceEnvironment (p: Particle) (neighbours: Particle list) (acc: forceEnv) =
+        match neighbours with
+        | first_p::other_p ->   let f = topology.[p.name].[first_p.name] first_p p
+                                let d = (first_p.location - p.location).len
+                                //let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.radius - first_p.radius) * (-d - p.radius + first_p.radius) * (-d + p.radius + first_p.radius) * (d + p.radius + first_p.radius)  
+                                //(p.radius*p.radius  - (1./(4.*d*d)) * (d*d - first_p.radius*first_p.radius + p.radius*p.radius)* (d*d - first_p.radius*first_p.radius + p.radius*p.radius))
+                                //let intersectionArea = 2.*System.Math.PI* intersectionRadiusSq
+                                populateForceEnvironment p other_p {acc with 
+                                                                        force = acc.force + f; 
+                                                                        confluence = acc.confluence+1 ; 
+                                                                        absForceMag = acc.absForceMag + abs(f.len);
+                                                                        //eqn for an intersection of two spheres radius = 1/2d * sqrt(4*d**2.*p1.radius - (d**2. - p2.radius**2. + p1.radius**2.)**2.)
+                                                                        //therefore area =  2 * pi * (p1.radius - 1/4d**2.* (d**2. - p2.radius**2. + p1.radius**2.)**2.)
+                                                                        pressure = if (d > (p.radius + first_p.radius)) then acc.pressure else acc.pressure + abs(f.len)/(sphereIntersectionArea p first_p)
+                                                                        }
+//                                acc.force <- acc.force + f
+//                                acc.confluence <- acc.confluence + 1
+//                                acc.absForceMag <- acc.absForceMag + abs(f.len)
+//                                acc.pressure <- if ((p.location - first_p.location).len > (p.radius + first_p.radius)) then acc.pressure else acc.pressure + abs(f.len)/intersectionArea
+//                                populateForceEnvironment p other_p acc
         | [] -> acc
     //add all the mobile particles to the staticGrid
     let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
     let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
-//    let nonBonded = [for p in system do match p.freeze with 
-//                                            | true -> yield []
-//                                            | false -> yield collectGridNeighbours p nonBondedGrid sOrigin cutOff]
     let nonBonded = List.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff)) system
-    //[for item in (List.zip system nonBonded) -> sumForces (fst item) (snd item) {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}]
-    List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF  
+    (*
+    This is expensive and only does one thing. We want to have it do a few other cheap things on the way.
+    The first version sums the vectors on a particle
+    I want it to calculate 4 related things
+    The sum of the vector forces on a particle; the number of forces on a particle (confluence); the sum of the absolute scalar forces on a particle; the sum of the pressures
+    My first approach will be to use a record accumulator
+    *) 
+    let forceDescriptors = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure=0.<zNewton um^-2>  }) externalF
+    //List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF  
+    List.map3 (fun x y z ->  populateForceEnvironment x y z) system nonBonded forceDescriptors  
 
-let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) (dT: float<second>) (maxMove: float<um>) = 
+let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F
     // SI: use V' style rather than NewV
@@ -278,13 +309,13 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     //printfn "Force %A %A %A" F.x F.y F.z
     Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
-let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
+let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
     //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
-    let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
+    let NewV = FrictionDrag * F.force //+ T * FrictionDrag * Kb
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
-    let dP = dT * FrictionDrag * F + ThermalP
+    let dP = dT * FrictionDrag * F.force + ThermalP
     //How can you ensure that the timestep is appropriate? This will breakdown for motor cells
 //    let safety = match (dP.len>maxMove) with
 //                    | true  -> 
@@ -299,10 +330,11 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T:
     let NewO = thermalReorientation T rng dT cluster
     Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
 
-let bdSystemUpdate (system: Particle list) (forces: Vector3D<zNewton> list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
-    List.map2 (fun (p:Particle) (f:Vector3D<zNewton>) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
+let bdSystemUpdate (system: Particle list) (forces: forceEnv list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
+    List.map2 (fun (p:Particle) (f:forceEnv) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
 
-let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: float<um>) = 
+let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um>) = 
+    let forces = List.map (fun x->x.force) forceEnv
     let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
     let modifier = maxlength/maxV.len
     (*
@@ -322,6 +354,7 @@ let steep (system: Particle list) (forces: Vector3D<zNewton> list) (maxlength: f
 
 let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand = 
     let F = forceUpdate topology nbCutOff system staticGrid sOrigin machineForces
+    //let F = List.map (fun x -> x.force) Fenv
     //From the update, calculate if the maximum move is broken
     let system' = bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
     let maxdP   = List.map2 (fun (s: Particle) (s': Particle) -> (s'.location - s.location).len) system system'
@@ -329,9 +362,10 @@ let rec integrate (system: Particle list) topology staticGrid sOrigin (machineFo
     //system'
     match ((maxdP < maxMove),(steps=1),(vdt_depth>0)) with
     | (true,true,_)  -> system'
-    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand
+    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand //in a single call we shouldn't exceed maxmove, even if done in parts
     | (false,_,true) -> //Maximum move is broken, but we have some variable dT depth left. Halve the timestep, double the steps, reduce the depth by 1 and repeat
                         //printf "Dropping down... NewDepth = %A " (vdt_depth-1) 
                         integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand
     | (false,_,false) -> //Maximum move is broken, and we have run out of variable dT depth. Fail and exit
+                        printf "Max: %A Limit: %A Depth: %A" maxdP maxMove vdt_depth
                         failwith "Max move violated and run out of variable timestep depth. Reduce the timestep or increase the depth of the variability"

@@ -47,7 +47,7 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (var
                         let newR = (p.radius/(cbrt2))
                         let overlap = 2.*newR-p.radius
                         let posMod = newR - overlap/2.
-                        Divide ((Particle(p.id,p.name,p.location+(p.orientation*(posMod)),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(posMod)),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+                        Divide ((Particle(p.id,p.name,p.location+(p.orientation*(posMod)),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(posMod)),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
             
 let probabilisticGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (rng: System.Random) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState) with
@@ -55,7 +55,7 @@ let probabilisticGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float
     | true ->
             match (p.radius < (max+sd*p.gRand)) with
             | true -> Life (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-            | false -> Divide ((Particle(p.id,p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+            | false -> Divide ((Particle(p.id,p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
 
 //let growDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (cha: chance) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) = 
 //    let eMax = match cha with
@@ -85,14 +85,24 @@ let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probabili
                 | true -> Death
                 | false -> Life (p,m)
 
-let randomRecipricalSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (probability: float<um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    //cells have a higher chance of dying based on their size- smaller cells are more likely to die
+let randomSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    //cells have a higher chance of dying based on their size- the power determines the precise relationship
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < dt*probability/p.radius) with
+    | true -> match (rng.NextDouble() < dt*probability/((1.<um^-1>*p.radius)**sizePower)) with
                 | true -> Death
                 | false -> Life (p,m)
 
+let randomAgeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    //cells have a higher chance of dying based on their age- the power determines the precise relationship
+    //(age is the time taken since the last division)
+    match (m.[varID] = varState) with
+    | false -> Life (p,m)
+    | true -> match (rng.NextDouble() < dt*probability/((1.<second^-1>*p.age)**sizePower)) with
+                | true -> Death
+                | false -> Life (p,m)
+
+let randomDensityApoptosis = 0
 
 // SI: consider consolidating nested matches like this:                     
 //    match (m.[varID] = varState), (rng.NextDouble() < probability) with
