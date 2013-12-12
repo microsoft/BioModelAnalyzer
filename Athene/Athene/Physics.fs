@@ -91,21 +91,21 @@ let gensym =
     let x = ref 0
     (fun () -> incr x; !x)
 
-type Particle(id:int, Name:string, R:Vector3D<um>,V:Vector3D<um second^-1>, O: Vector3D<_>, Friction: float<second>, radius: float<um>, density: float<pg um^-3>, age: float<second>, GaussianRandomNumber:float, freeze: bool) = 
-    member this.name = Name
-    member this.id = id
-    member this.location = R
-    member this.velocity = V
-    member this.orientation = O
-    member this.Friction = Friction
-    member this.volume = 4. / 3. * System.Math.PI * radius * radius * radius //Ugly
-    member this.radius = radius
-    member this.density = density
+type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; gRand:float; freeze: bool} with
+    //member this.name = Name
+    //member this.id = id
+    //member this.location = R
+    //member this.velocity = V
+    //member this.orientation = O
+    //member this.Friction = Friction
+    member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
+    //member this.radius = radius
+    //member this.density = density
     member this.mass = this.volume * this.density
-    member this.frictioncoeff = this.mass / Friction
-    member this.freeze = freeze
-    member this.age = age
-    member this.gRand = GaussianRandomNumber
+    member this.frictioncoeff = this.mass / this.Friction
+    //member this.freeze = freeze
+    //member this.age = age
+    //member this.gRand = GaussianRandomNumber
     member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.velocity.x*1.<second um^-1>) (this.velocity.y*1.<second um^-1>) (this.velocity.z*1.<second um^-1>) (this.orientation.x) (this.orientation.y) (this.orientation.z) (this.Friction*1.<second^-1>) (this.radius*1.<um^-1>) (this.density*1.<um^3/pg>) (this.age*1.<second^-1>) (this.gRand) this.freeze
 
 (*
@@ -295,7 +295,8 @@ let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T 
     // SI: use V' style rather than NewV
     // let V' = FrictionDrag * F
     let NewP = dT * NewV + cluster.location
-    Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    //Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    { cluster with location = NewP; velocity=NewV; age=cluster.age+dT }
 
 
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>)= 
@@ -307,7 +308,8 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
-    Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    //Particle(cluster.id,cluster.name, NewP,NewV,cluster.orientation,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    { cluster with location = NewP; velocity=NewV; age=cluster.age+dT }
 
 let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
@@ -328,7 +330,8 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) 
     let NewP = cluster.location + dP
 
     let NewO = thermalReorientation T rng dT cluster
-    Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    //Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
+    { cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT }
 
 let bdSystemUpdate (system: Particle list) (forces: forceEnv list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
     List.map2 (fun (p:Particle) (f:forceEnv) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
@@ -349,8 +352,8 @@ let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um
     else 
       [for (p,f) in (List.zip system forces) -> 
         if p.freeze then p 
-        else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
-
+        //else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
+        else {p with location = p.location+(f*modifier)} ]
 
 let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand = 
     let F = forceUpdate topology nbCutOff system staticGrid sOrigin machineForces
