@@ -91,7 +91,7 @@ let gensym =
     let x = ref 0
     (fun () -> incr x; !x)
 
-type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; gRand:float; freeze: bool} with
+type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: Lazy<float<zNewton um^-2>>; forceMag: Lazy<float<zNewton>>; confluence: Lazy<int>; gRand:float; freeze: bool} with
     //member this.name = Name
     //member this.id = id
     //member this.location = R
@@ -108,6 +108,20 @@ type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<
     //member this.gRand = GaussianRandomNumber
     member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.velocity.x*1.<second um^-1>) (this.velocity.y*1.<second um^-1>) (this.velocity.z*1.<second um^-1>) (this.orientation.x) (this.orientation.y) (this.orientation.z) (this.Friction*1.<second^-1>) (this.radius*1.<um^-1>) (this.density*1.<um^3/pg>) (this.age*1.<second^-1>) (this.gRand) this.freeze
 
+let defaultParticle = { id=0;
+                        name="X";
+                        location={x=0.<um>;y=0.<um>;z=0.<um>};
+                        velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
+                        orientation={x=1.;y=0.;z=0.};
+                        Friction=1.<second>;
+                        radius=0.<um>;
+                        density=1.<pg/um^3>;
+                        age=0.<second>;
+                        pressure= Lazy(fun () -> 0.<zNewton um^-2>);
+                        forceMag= Lazy(fun () -> 0.<zNewton>);
+                        confluence= Lazy(fun () -> 0);
+                        gRand=0.;
+                        freeze=true}
 (*
 SI: implement Particle as a record. then can write update more concisely.
 type part = { id:int; Name:string; loc:int } 
@@ -241,7 +255,7 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
         | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
     [for i in system -> getNeighbours i system cutOff] 
 
-type forceEnv = { force: Vector.Vector3D<zNewton>; confluence:int; absForceMag:float<zNewton>; pressure:float<zNewton um^-2> }
+type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: Lazy<int>; absForceMag: Lazy<float<zNewton>>; pressure: Lazy<float<zNewton um^-2>> }
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
 let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin (externalF: Vector3D<zNewton> list) = 
@@ -257,16 +271,17 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
         match neighbours with
         | first_p::other_p ->   let f = topology.[p.name].[first_p.name] first_p p
                                 let d = (first_p.location - p.location).len
+                                let fMag = f.len
                                 //let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.radius - first_p.radius) * (-d - p.radius + first_p.radius) * (-d + p.radius + first_p.radius) * (d + p.radius + first_p.radius)  
                                 //(p.radius*p.radius  - (1./(4.*d*d)) * (d*d - first_p.radius*first_p.radius + p.radius*p.radius)* (d*d - first_p.radius*first_p.radius + p.radius*p.radius))
                                 //let intersectionArea = 2.*System.Math.PI* intersectionRadiusSq
                                 populateForceEnvironment p other_p {acc with 
                                                                         force = acc.force + f; 
-                                                                        confluence = acc.confluence+1 ; 
-                                                                        absForceMag = acc.absForceMag + abs(f.len);
+                                                                        confluence = if (fMag>0.<zNewton> && not first_p.freeze) then lazy (acc.confluence.Value+1) else acc.confluence ; 
+                                                                        absForceMag = lazy (acc.absForceMag.Value + fMag);
                                                                         //eqn for an intersection of two spheres radius = 1/2d * sqrt(4*d**2.*p1.radius - (d**2. - p2.radius**2. + p1.radius**2.)**2.)
                                                                         //therefore area =  2 * pi * (p1.radius - 1/4d**2.* (d**2. - p2.radius**2. + p1.radius**2.)**2.)
-                                                                        pressure = if (d > (p.radius + first_p.radius)) then acc.pressure else acc.pressure + abs(f.len)/(sphereIntersectionArea p first_p)
+                                                                        pressure = if (d > (p.radius + first_p.radius)) then acc.pressure else lazy (acc.pressure.Value + fMag/(sphereIntersectionArea p first_p))
                                                                         }
 //                                acc.force <- acc.force + f
 //                                acc.confluence <- acc.confluence + 1
@@ -285,7 +300,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     The sum of the vector forces on a particle; the number of forces on a particle (confluence); the sum of the absolute scalar forces on a particle; the sum of the pressures
     My first approach will be to use a record accumulator
     *) 
-    let forceDescriptors = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure=0.<zNewton um^-2>  }) externalF
+    let forceDescriptors = List.map (fun x -> { force = x ; confluence=Lazy.Create(fun ()->0) ; absForceMag = Lazy.Create(fun ()->0.<zNewton>); pressure= Lazy.Create(fun ()-> 0.<zNewton um^-2>)  }) externalF
     //List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF  
     List.map3 (fun x y z ->  populateForceEnvironment x y z) system nonBonded forceDescriptors  
 
@@ -331,7 +346,7 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) 
 
     let NewO = thermalReorientation T rng dT cluster
     //Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
-    { cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT }
+    { cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT ; pressure=F.pressure; forceMag=F.absForceMag ; confluence=F.confluence}
 
 let bdSystemUpdate (system: Particle list) (forces: forceEnv list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
     List.map2 (fun (p:Particle) (f:forceEnv) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces

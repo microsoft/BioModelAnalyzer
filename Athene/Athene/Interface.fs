@@ -89,24 +89,40 @@ let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probabili
                 | true -> Death
                 | false -> Life (p,m)
 
-let randomSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (ref:float<um>) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on their size- the power determines the precise relationship
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < dt*probability/((1.<um^-1>*p.radius)**sizePower)) with
+    | true -> match (rng.NextDouble() < dt*probability*((1.<um^-1>*(p.radius-ref))**sizePower)) with
                 | true -> Death
                 | false -> Life (p,m)
 
-let randomAgeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomAgeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (ref:float<second>) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on their age- the power determines the precise relationship
     //(age is the time taken since the last division)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < dt*probability/((1.<second^-1>*p.age)**sizePower)) with
+    | true -> match (rng.NextDouble() < dt*probability*((1.<second^-1>*(p.age-ref))**sizePower)) with
                 | true -> Death
                 | false -> Life (p,m)
 
-let randomDensityApoptosis = 0
+let randomConfluenceApoptosis (varID: int) (varState: int) (rng: System.Random) (power:float) (ref:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability*((1.*((float)p.confluence.Value-ref))**power))) with
+    | (false,_) -> Life (p,m)
+    | (true,false) -> Life (p,m)
+    | (true,true) -> Death
+
+let randomPressureApoptosis (varID: int) (varState: int) (rng: System.Random) (power:float) (ref:float<zNewton um^-2>) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability*((1.<um^2/zNewton>*(p.pressure.Value-ref))**power))) with
+    | (false,_) -> Life (p,m)
+    | (true,false) -> Life (p,m)
+    | (true,true) -> Death
+
+let randomForceApoptosis (varID: int) (varState: int) (rng: System.Random) (power:float) (ref:float<zNewton>) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability*((1.<1/zNewton>*(p.forceMag.Value-ref))**power))) with
+    | (false,_) -> Life (p,m)
+    | (true,false) -> Life (p,m)
+    | (true,true) -> Death
 
 // SI: consider consolidating nested matches like this:                     
 //    match (m.[varID] = varState), (rng.NextDouble() < probability) with

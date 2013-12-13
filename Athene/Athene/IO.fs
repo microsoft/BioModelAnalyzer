@@ -23,18 +23,19 @@ let dropStates (machines: Map<QN.var,int> list) =
 
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
     //Particle(gensym(),name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
-    {id=gensym();name=name;location={x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)};velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};orientation={x=1.;y=0.;z=0.};Friction= 1.<second>;radius=1.<um>;density=1.<pg um^-3>;age=0.<second>;gRand=(PRNG.gaussianMargalisPolar' rng);freeze=true} 
+    {Physics.defaultParticle with id=gensym();name=name;location={x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)};velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};orientation={x=1.;y=0.;z=0.};Friction= 1.<second>;radius=1.<um>;density=1.<pg um^-3>;age=0.<second>;gRand=(PRNG.gaussianMargalisPolar' rng);freeze=true} 
     
 let xyzWriteFrame (filename: string) (machName: string) (system: Physics.Particle list) =
         use file = new StreamWriter(filename, true)
-        let mSystem = [for p in system do match System.String.Equals(p.name,machName) with 
-                                            | true -> yield p
-                                            | false -> ()
-                                            ]
+//        let mSystem = [for p in system do match System.String.Equals(p.name,machName) with 
+//                                            | true -> yield p
+//                                            | false -> ()
+//                                            ]
+        let mSystem = List.filter (fun (p:Physics.Particle) -> p.name=machName) system
         file.WriteLine(sprintf "%A" mSystem.Length)
         file.WriteLine("Athene")
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
-        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age)]
+        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure.Value/1000000000.) p.confluence.Value (p.forceMag.Value/1000000000.))]
         file.Close()
 
 let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) = 
@@ -164,7 +165,36 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    randomSizeApoptosis varID varState rng power (probability*1.<Physics.second^-1>)                    
+                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
+                                    randomSizeApoptosis varID varState rng power (ref*1.<um>) (probability*1.<Physics.second^-1>)                    
+                                | "AgeRandomApoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
+                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
+                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
+                                    randomAgeApoptosis varID varState rng power (ref*1.<second>) (probability*1.<Physics.second^-1>)                    
+                                | "ConfluenceRandomApoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
+                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
+                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
+                                    randomConfluenceApoptosis varID varState rng power (ref*1.) (probability*1.<Physics.second^-1>)                    
+                                | "ForceRandomApoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
+                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
+                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
+                                    randomForceApoptosis varID varState rng power (ref*1.<zNewton>) (probability*1.<Physics.second^-1>)                    
+                                | "PressureRandomApoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
+                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
+                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
+                                    randomPressureApoptosis varID varState rng power (ref*1.<zNewton um^-2>) (probability*1.<Physics.second^-1>)                    
                                 | _ -> failwith "Unknown function"
 
                         yield f
