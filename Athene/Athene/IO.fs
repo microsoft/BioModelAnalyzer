@@ -35,7 +35,7 @@ let xyzWriteFrame (filename: string) (machName: string) (system: Physics.Particl
         file.WriteLine(sprintf "%A" mSystem.Length)
         file.WriteLine("Athene")
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
-        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure.Value/1000000000.) p.confluence.Value (p.forceMag.Value/1000000000.))]
+        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure/1000000000.) p.confluence (p.forceMag/1000000000.))]
         file.Close()
 
 let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) = 
@@ -151,6 +151,8 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     probabilisticGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng                                
+                                | "CertainDeath" ->
+                                    certainDeath
                                 | "Apoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -165,36 +167,41 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
-                                    randomSizeApoptosis varID varState rng power (ref*1.<um>) (probability*1.<Physics.second^-1>)                    
+                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
+                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
+                                    randomSizeApoptosis varID varState rng power (refC*1.<um>) refM (probability*1.<Physics.second^-1>)                    
                                 | "AgeRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
-                                    randomAgeApoptosis varID varState rng power (ref*1.<second>) (probability*1.<Physics.second^-1>)                    
+                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
+                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
+                                    randomAgeApoptosis varID varState rng power (refC*1.<second>) refM (probability*1.<Physics.second^-1>)                    
                                 | "ConfluenceRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
-                                    randomConfluenceApoptosis varID varState rng power (ref*1.) (probability*1.<Physics.second^-1>)                    
+                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
+                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
+                                    randomConfluenceApoptosis varID varState rng power (refC*1.) refM (probability*1.<Physics.second^-1>)                    
                                 | "ForceRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
-                                    randomForceApoptosis varID varState rng power (ref*1.<zNewton>) (probability*1.<Physics.second^-1>)                    
+                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
+                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
+                                    randomForceApoptosis varID varState rng power (refC*1.<zNewton>) refM (probability*1.<Physics.second^-1>)                    
                                 | "PressureRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let ref =  try (float) (r.Attribute(xn "Ref").Value) with _ -> failwith "Missing reference size"
-                                    randomPressureApoptosis varID varState rng power (ref*1.<zNewton um^-2>) (probability*1.<Physics.second^-1>)                    
+                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
+                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
+                                    randomPressureApoptosis varID varState rng power (refC*1.<zNewton um^-2>) refM (probability*1.<Physics.second^-1>)                    
                                 | _ -> failwith "Unknown function"
 
                         yield f
