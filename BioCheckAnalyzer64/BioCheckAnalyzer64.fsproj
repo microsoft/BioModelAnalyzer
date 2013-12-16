@@ -114,6 +114,9 @@
     <Compile Include="..\BioCheckAnalyzer32\LTL.fs">
       <Link>LTL.fs</Link>
     </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\LTLParser.fs">
+      <Link>LTLParser.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\EncodingForFormula.fs">
       <Link>EncodingForFormula.fs</Link>
     </Compile>
