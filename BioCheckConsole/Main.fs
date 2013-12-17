@@ -2,6 +2,7 @@
 module Main
 
 // Implementations of:
+// Hall; Pathfinding (PATH)
 // Garvit Juniwal; Stability Synthesis (SYN)
 // Garvit Juniwal; Shrink-Cut-Merge (SCM)
 // Cook, Fisher, Krepska, Piterman; Proving stabilization of biological systems; VMCAI 2011.
@@ -9,9 +10,10 @@ module Main
 open System.Xml
 open System.Xml.Linq
 
-type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN
+type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN | EnginePath
 let engine_of_string s = 
     match s with 
+    | "PATH" | "path" -> Some EnginePath
     | "SYN" | "syn" -> Some EngineSYN
     | "SCM" | "scm" -> Some EngineSCM
     | "CAV" | "cav" -> Some EngineCAV
@@ -40,11 +42,18 @@ let output_proof = ref false
 let simul_v0     = ref "" // initial values file (csv file, with idXvalue schema per line)
 let simul_time   = ref 20 // max time to simulate
 let simul_output = ref "" // output log/excel filename. 
+// -- related to PATH engine
+let model' = ref "" // input model filename for destination qn
+let state  = ref "" // input csv describing starting state
+let state' = ref "" // input csv describing destination state 
 
 let rec parse_args args = 
     match args with 
     | [] -> ()
     | "-model" :: m :: rest -> model := m; parse_args rest
+    | "-model2" :: m :: rest -> model' := m; parse_args rest
+    | "-state" :: s :: rest -> state := s; parse_args rest
+    | "-state2" :: s :: rest -> state' := s; parse_args rest
     | "-engine" :: e :: rest -> engine := engine_of_string e; parse_args rest
     | "-prove" :: o :: rest -> proof_output := o; parse_args rest 
     | "-simulate" :: o :: rest -> simul_output := o; parse_args rest 
@@ -72,8 +81,20 @@ let main args =
 
     if !logging then Log.register_log_service (Log.AnalyzerLogService())
 
+    //Run PATH engine
+    if (!model <> "" && !model' <> "" && !state <> "" && !state' <> "" && !engine = Some EnginePath) then
+        Log.log_debug "Running path search"
+        let qnX = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+        let qnY = XDocument.Load(!modelsdir + "\\" + !model') |> Marshal.model_of_xml
+        let X   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines !state)
+        let Y   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines !state')
+        match (PathFinder.routes qnX qnY X Y) with
+        | PathFinder.Failure(a,b) -> Log.log_debug (sprintf "Found a way to escape one of the attractors. %A leads to %A" a b)
+        | PathFinder.Success L    -> Log.log_debug (sprintf "There are no escape routes between the attractors. %d states explored" L.safe.Length)
+
+
     //Run SYN engine
-    if (!model <> "" && !engine = Some EngineSYN) then
+    if (!model <> ""  && !engine = Some EngineSYN) then
         Log.log_debug "Running Stability Suggestion Engine"
         let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
         let sug = Suggest.SuggestLoop model
