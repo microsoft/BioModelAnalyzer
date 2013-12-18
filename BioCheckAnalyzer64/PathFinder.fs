@@ -11,6 +11,11 @@ Outputs:    Either: states which fail to lead to one of the attractors
 
 The user should be aware if both states are stable this is unnecessary; this is only valuable when a
 machine can move from an environment of stability to one of instability
+
+Implementation notes:
+
+The safe set lacks one of the fixed points in this implementation, so gives slightly different results
+fowards and backwards. This can be altered by adding Y to the safe list
 *)
 
 type locationLog = { forward: Map<QN.var,int> list ; backward: Map<QN.var,int> list ; safe: Map<QN.var,int> list }
@@ -19,12 +24,7 @@ type result = Success of locationLog | Failure of (Map<QN.var,int>)*(Map<QN.var,
 let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.var,int>) =
     let rec simulateToFix (qn: QN.node list) (state:Map<QN.var,int>) (acc:Map<QN.var,int> list) = 
         let state' = Simulate.tick qn state
-        if (state'=state) then acc else simulateToFix qn state' (state'::acc)
-    let reachDestination qn ini destination =
-        match (simulateToFix qn ini [ini;]) with
-        | fixpoint::trajectory when fixpoint=destination -> true
-        | fixpoint::trajectory -> false //system escaped attractor
-        | [] -> failwith "Empty simulation trajectory"
+        if (state'=state) then state'::acc else simulateToFix qn state' (state'::acc)
     let rec escapeAttractor (qn: QN.node list) (destination:Map<QN.var,int>) (acc:locationLog) (forward:bool) = 
         match (forward,acc.forward,acc.backward) with
         | (true,state::other_states,_)  -> match (simulateToFix qn state [state;]) with
@@ -34,7 +34,8 @@ let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.
                                                 let bkwd = (Set.ofList trajectory) + (Set.ofList acc.backward) - (Set.ofList acc.safe)
                                                             |> Set.toList
                                                 Log.log_debug (sprintf "Successfully found the destination: %A states to go" other_states.Length)
-                                                escapeAttractor qn destination {acc with forward=other_states; backward=bkwd} true
+                                                let safe' = (Set.ofList (state::acc.safe) |> Set.toList)
+                                                escapeAttractor qn destination {acc with forward=other_states; backward=bkwd; safe = safe'} true
                                            | fixpoint::trajectory -> Failure (state,fixpoint)
                                            | [] -> failwith "Empty simulation trajectory"
         | (true,[],_)                   -> Log.log_debug (sprintf "No more states. %d new states found" acc.backward.Length); Success acc
@@ -45,7 +46,8 @@ let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.
                                                 let frwd = (Set.ofList trajectory) + (Set.ofList acc.forward) - (Set.ofList acc.safe)
                                                             |> Set.toList
                                                 Log.log_debug (sprintf "Successfully found the destination: %A states to go" other_states.Length)
-                                                escapeAttractor qn destination {acc with backward=other_states; forward=frwd; safe = state::acc.safe } false
+                                                let safe' = (Set.ofList (state::acc.safe) |> Set.toList)
+                                                escapeAttractor qn destination {acc with backward=other_states; forward=frwd; safe = safe' } false
                                            | fixpoint::trajectory -> Failure (state,fixpoint)
                                            | [] -> failwith "Empty simulation trajectory"
         | (false,_,[])                  -> Log.log_debug (sprintf "No more states. %d new states found" acc.forward.Length); Success acc

@@ -89,8 +89,9 @@ let main args =
         let X   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines !state)
         let Y   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines !state')
         match (PathFinder.routes qnX qnY X Y) with
-        | PathFinder.Failure(a,b) -> Log.log_debug (sprintf "Found a way to escape one of the attractors. %A leads to %A" a b)
-        | PathFinder.Success L    -> Log.log_debug (sprintf "There are no escape routes between the attractors. %d states explored" L.safe.Length)
+        | PathFinder.Failure(a,b) ->    Log.log_debug (sprintf "Found a way to escape one of the attractors. %A leads to %A" a b)
+        | PathFinder.Success L    ->    Log.log_debug (sprintf "There are no escape routes between the attractors. %d states explored" L.safe.Length)
+                                        printf "%s" (String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) L.safe))
 
 
     //Run SYN engine
