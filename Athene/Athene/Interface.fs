@@ -96,7 +96,7 @@ let randomSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizeP
     //cells have a higher chance of dying based on their size- the power determines the precise relationship
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < dt*probability+refM*((1.<um^-1>*(p.radius+refC))**sizePower)) with
+    | true -> match (rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((1.<um^-1>*(p.radius-refC))**sizePower)) with
                 | true -> Death
                 | false -> Life (p,m)
 
@@ -105,24 +105,24 @@ let randomAgeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePo
     //(age is the time taken since the last division)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < dt*probability+refM*((1.<second^-1>*(p.age+refC))**sizePower)) with
+    | true -> match (rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((1.<second^-1>*(p.age-refC))**sizePower)) with
                 | true -> Death
                 | false -> Life (p,m)
 
 let randomConfluenceApoptosis (varID: int) (varState: int) (rng: System.Random) (power:float) (refC:float) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability+refM*((1.*((float)p.confluence-refM))**power))) with
+    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((1.*((float)p.confluence-refC))**power))) with
     | (false,_) -> Life (p,m)
     | (true,false) -> Life (p,m)
     | (true,true) -> Death
 
 let randomPressureApoptosis (varID: int) (varState: int) (rng: System.Random) (power:float) (refC:float<zNewton um^-2>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability+refM*((1.<um^2/zNewton>*(p.pressure+refC))**power))) with
+    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((1.<um^2/zNewton>*(p.pressure-refC))**power))) with
     | (false,_) -> Life (p,m)
     | (true,false) -> Life (p,m)
     | (true,true) -> Death
 
 let randomForceApoptosis (varID: int) (varState: int) (rng: System.Random) (power:float) (refC:float<zNewton>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability+refM*((1.<1/zNewton>*(p.forceMag+refC))**power))) with
+    match ((m.[varID] = varState),(rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((1.<1/zNewton>*(p.forceMag-refC))**power))) with
     | (false,_) -> Life (p,m)
     | (true,false) -> Life (p,m)
     | (true,true) -> Death

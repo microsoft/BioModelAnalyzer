@@ -19,4 +19,5 @@ let spawnMachines (qn: QN.node list) (number:int) (rng:System.Random) (init0:str
     [for machine in [0..(number-1)] -> initState init0]
 
 let updateMachines (qn: QN.node list) (machines: Map<QN.var,int> list) =
-    [for automata in machines -> Simulate.tick qn automata]
+    //[for automata in machines -> Simulate.tick qn automata]
+    List.map (fun (automata: Map<QN.var,int>) -> Simulate.tick qn automata) machines

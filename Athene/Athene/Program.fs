@@ -101,11 +101,7 @@ let rec equilibrate (system: Physics.Particle list) (topology) (steps: int) (max
     | 0 -> system
     | _ -> equilibrate (Physics.steep system (Physics.forceUpdate topology 6.<Physics.um> system staticGrid sOrigin (List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system) )  maxlength) topology (steps-1) maxlength staticGrid sOrigin
 
-[<EntryPoint>]
-let main argv = 
-    parse_args (List.ofArray argv)
-    let rand = System.Random(!seed)
-    //let system = [ Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>, true) ; Particle({x=0.5<um>;y=0.5<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>,false)]
+let standardOptions pdb bma top rand = 
     let cart = match !pdb with 
                     | "" -> 
                         failwith "No pdb input specified"
@@ -121,19 +117,44 @@ let main argv =
                         failwith "No bma input specified"
                     | _ ->
                         !bma
-    let csvout = match !csv with
-                    | "" ->
-                        printfn "No csv output (state machines) specified"
-                        IO.dropStates
-                    | _ ->
-                        IO.csvWriteStates !csv
-    let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = defineSystem cart topfile bmafile rand
+    defineSystem cart topfile bmafile rand
+
+let restart = 0
+
+[<EntryPoint>]
+let main argv = 
+    parse_args (List.ofArray argv)
+    let rand = System.Random(!seed)
+    //let system = [ Particle({x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>, true) ; Particle({x=0.5<um>;y=0.5<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, 0.00002<second>, 0.7<um>, 1.3<pg um^-3>,false)]
+//    let cart = match !pdb with 
+//                    | "" -> 
+//                        failwith "No pdb input specified"
+//                    | _ ->
+//                        !pdb
+//    let topfile = match !top with
+//                    | "" ->
+//                        failwith "No top input specified"
+//                    | _ ->
+//                        !top
+//    let bmafile = match !bma with
+//                    | "" ->
+//                        failwith "No bma input specified"
+//                    | _ ->
+//                        !bma
+    //if checkpoint_restart = "" then (let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand) else restart
+    let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand
     let trajout = match !xyz with 
                     | "" -> 
                         printfn "No xyz output specified"
                         IO.dropFrame
                     | _  -> 
                         IO.xyzWriteFrame (!xyz) machName
+    let csvout = match !csv with
+                    | "" ->
+                        printfn "No csv output (state machines) specified"
+                        IO.dropStates
+                    | _ ->
+                        IO.csvWriteStates !csv
     printfn "Initial system:"
     printfn "Particles: %A" system.Length
     printfn "Machines:  %A" machineStates.Length
