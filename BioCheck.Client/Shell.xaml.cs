@@ -53,5 +53,34 @@ namespace BioCheck
          {
              
          }
+
+         /// <summary>
+         /// Silverlight has a limited local storage quota which can only be
+         /// extended as a direct result of a user action. There is no easy and
+         /// way to determine when we've run out of storage to trigger a
+         /// request for more, nor even an obvious means of determining when
+         /// we're close. Instead, this routine should be called periodically
+         /// <b>from a button handler</b> and, if we're getting tight, ask the
+         /// user for more space. Note that the explicit user interaction is
+         /// required here because quota extension must be triggered by some
+         /// user action.
+         /// </summary>
+         public static void CheckLocalStoreQuota()
+         {
+             int bytesToAllowFor = 128 * 1024, bytesToRequest = 1024 * 1024;
+             using (var storage = System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication())
+             {
+                 if (storage.AvailableFreeSpace < bytesToAllowFor)
+                 {
+                     bool r = storage.IncreaseQuotaTo(storage.Quota + bytesToRequest);
+                     MessageBox.Show(r ? "Quota increased" : "Increase failed");
+                 }
+             }
+         }
+
+         private void ButtonClick_CheckMemory(object sender, RoutedEventArgs e)
+         {
+             CheckLocalStoreQuota();
+         }
     }
 }

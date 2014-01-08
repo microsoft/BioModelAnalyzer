@@ -128,7 +128,7 @@
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 
-					<ToggleButton x:Name="LibraryButton" 
+					<ToggleButton x:Name="LibraryButton" Click="ButtonClick_CheckMemory"
 								DataContext="{Binding ToolbarViewModel}"                                                                                         
 								IsChecked="{Binding ShowLibrary, Mode=TwoWay}"
 									  Style="{StaticResource ToolbarToggleButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" ToolTipService.ToolTip="Model Library" Width="44" Height="44">
@@ -161,7 +161,7 @@
 								 Visibility="{Binding ShowToolbar, Converter={StaticResource BoolToVisibilityConverter}}"
 								Orientation="Horizontal" HorizontalAlignment="Left">
 
-						<Button x:Name="SaveButton" 
+						<Button x:Name="SaveButton" Click="ButtonClick_CheckMemory"
 								Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0" Command="{Binding SaveCommand}" ToolTipService.ToolTip="Save Model" Width="44" Height="44">
 							<Path Data="F1M182.1255,150.4204L175.6765,156.8684L169.2285,150.4204L173.0255,150.4204L173.0255,140.4524L178.3275,140.4524L178.3275,150.4204z M165.2395,160.4794L165.2395,129.2414L177.7065,129.2414L177.7065,137.7254L186.6145,137.7254L186.6145,160.4794z M178.7065,129.9084L185.8645,136.7254L178.7065,136.7254z M178.4065,128.2414L164.2395,128.2414L164.2395,161.4794L187.6145,161.4794L187.6145,137.0114z" Fill="#FF58595B" Height="33.238" Stretch="Fill" Width="23.375" UseLayoutRounding="False"/>
 						</Button>
@@ -170,7 +170,7 @@
 							<Path Data="F1M777.6211,638.6201L773.3791,634.3781L763.0001,644.7571L752.6211,634.3781L748.3791,638.6201L758.7581,648.9991L748.3791,659.3781L752.6211,663.6201L763.0001,653.2411L773.3791,663.6201L777.6211,659.3781L767.2421,648.9991z" Fill="#FFA6A8AB" Height="29.242" Stretch="Fill" Width="29.242" UseLayoutRounding="False"/>
 						</Button>
 
-						<RadioButton 
+						<RadioButton Click="ButtonClick_CheckMemory"
 								IsChecked="{Binding IsSelectionActive, Mode=TwoWay}"                                
 								Style="{StaticResource ToolbarRadioButtonStyle}" Margin="5,0,0,0" GroupName="CurrentTool" Height="44" Width="44" ToolTipService.ToolTip="Selection Tool">
 							<Path Data="F1M121.834,137.8057L132.244,112.0407L106.48,122.4517L112.373,128.3437L103.941,136.7757L107.51,140.3437L115.941,131.9127z" Fill="#FF58595B" Height="20" Stretch="Fill" Width="20" UseLayoutRounding="False" Margin="5"/>
@@ -189,11 +189,11 @@
 						</ToggleButton>
 
 						<Button Style="{StaticResource ToolbarButtonStyle}" Margin="10,0,0,0" Command="{Binding UndoCommand}" ToolTipService.ToolTip="Undo previous operation">
-                            <Path Width="28" Height="25" Stretch="Fill" Fill="#FF58595B" Data="F1 M 33.804,7.29865C 27.472,-0.619995 13.952,-2.16803 5.264,5.26263L 0.00133276,0L 0,17.224L 17.2267,17.224L 11.9773,11.976C 15.92,7.07867 24.5693,5.79199 30.408,10.6946C 36.588,15.3533 38.0773,25.968 32.1053,32.86C 39.2147,27.3146 40.7107,15.0787 33.804,7.29865 Z "/>
-                        </Button>
-                        <Button Style="{StaticResource ToolbarButtonStyle}" Margin="5,0,0,0" Command="{Binding RedoCommand}" ToolTipService.ToolTip="Redo operation">
-                            <Path Width="28" Height="25" Stretch="Fill" Fill="#FF58595B" Data="F1 M 4.40666,7.29865C 10.7387,-0.619995 24.2587,-2.16803 32.9467,5.26263L 38.2093,0L 38.2107,17.224L 20.984,17.224L 26.2333,11.976C 22.2907,7.07867 13.6413,5.79199 7.80266,10.6946C 1.62266,15.3533 0.133331,25.968 6.10533,32.86C -1.004,27.3146 -2.5,15.0787 4.40666,7.29865 Z "/>
-                        </Button>
+							<Path Width="28" Height="25" Stretch="Fill" Fill="#FF58595B" Data="F1 M 33.804,7.29865C 27.472,-0.619995 13.952,-2.16803 5.264,5.26263L 0.00133276,0L 0,17.224L 17.2267,17.224L 11.9773,11.976C 15.92,7.07867 24.5693,5.79199 30.408,10.6946C 36.588,15.3533 38.0773,25.968 32.1053,32.86C 39.2147,27.3146 40.7107,15.0787 33.804,7.29865 Z "/>
+						</Button>
+						<Button Style="{StaticResource ToolbarButtonStyle}" Margin="5,0,0,0" Command="{Binding RedoCommand}" ToolTipService.ToolTip="Redo operation">
+							<Path Width="28" Height="25" Stretch="Fill" Fill="#FF58595B" Data="F1 M 4.40666,7.29865C 10.7387,-0.619995 24.2587,-2.16803 32.9467,5.26263L 38.2093,0L 38.2107,17.224L 20.984,17.224L 26.2333,11.976C 22.2907,7.07867 13.6413,5.79199 7.80266,10.6946C 1.62266,15.3533 0.133331,25.968 6.10533,32.86C -1.004,27.3146 -2.5,15.0787 4.40666,7.29865 Z "/>
+						</Button>
 					</StackPanel>
 
 					<StackPanel x:Name="ProofTools" 
