@@ -309,7 +309,17 @@ namespace BioCheck.ViewModel.Models
             // TODO - this assumes it's offline/local
             using (var storage = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                storage.CopyFile(sourceFileName, destinationFileName);
+                try
+                {
+                    storage.CopyFile(sourceFileName, destinationFileName);
+                }
+                catch
+                {
+                    ApplicationViewModel.Instance.Container
+                            .Resolve<IErrorWindowService>()
+                            .Show("Local storage copy failed, model has not been duplicated.");
+                    return;
+                }
             }
 
             // Create the new model
