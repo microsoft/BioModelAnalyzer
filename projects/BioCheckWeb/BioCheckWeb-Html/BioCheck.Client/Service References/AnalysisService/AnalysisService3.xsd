@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:4807/Services/AnalysisService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" />
+  <xs:element name="Analyze">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="input" nillable="true" type="q1:AnalysisInputDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AnalyzeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="AnalyzeResult" nillable="true" type="q2:AnalysisOutputDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindCounterExamples">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="input" nillable="true" type="q3:AnalysisInputDTO" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="output" nillable="true" type="q4:AnalysisOutputDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindCounterExamplesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="FindCounterExamplesResult" nillable="true" type="q5:FurtherTestingOutputDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Simulate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="input" nillable="true" type="q6:SimulationInputDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SimulateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="SimulateResult" nillable="true" type="q7:SimulationOutputDTO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Validate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="formmula" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ValidateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/BioCheck.Web.Analysis" minOccurs="0" name="ValidateResult" nillable="true" type="q8:ValidationOutput" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

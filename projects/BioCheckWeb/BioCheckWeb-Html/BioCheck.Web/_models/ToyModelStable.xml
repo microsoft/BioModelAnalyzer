@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="1" Name="ToyModelStable" BioCheckVersion="2">
+  <Description>This is the default model.</Description>
+  <CreatedDate>2012-01-22T15:39:18.877216+00:00</CreatedDate>
+  <ModifiedDate>2012-01-24T23:36:33.216185+00:00</ModifiedDate>
+  <Layout>
+    <Columns>6</Columns>
+    <Rows>5</Rows>
+    <ZoomLevel>100</ZoomLevel>
+    <PanX>0</PanX>
+    <PanY>0</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1">
+      <PositionX>2</PositionX>
+      <PositionY>0</PositionY>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="1" Name="a">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>159</PositionX>
+      <PositionY>34</PositionY>
+    </Variable>
+    <Variable Id="2" Name="b">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>84</PositionX>
+      <PositionY>234</PositionY>
+    </Variable>
+    <Variable Id="3" Name="c">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>234</PositionX>
+      <PositionY>209</PositionY>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+  </Relationships>
+</Model>

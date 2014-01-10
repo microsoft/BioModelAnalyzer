@@ -1,0 +1,82 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Controls="clr-namespace:BioCheck.Controls" xmlns:Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common" xmlns:controlsInputToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit" xmlns:BioCheck_Views="clr-namespace:BioCheck.Views" mc:Ignorable="d"
+	x:Class="BioCheck.Controls.ContainerSite"
+	d:DesignWidth="360" d:DesignHeight="400" Width="Auto" Height="Auto">
+    
+	<Grid x:Name="LayoutRoot" Background="Transparent">
+		<VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DropTargetStates">
+				<VisualStateGroup.Transitions>
+					<VisualTransition GeneratedDuration="0:0:0.1"/>
+				</VisualStateGroup.Transitions>
+                <VisualState x:Name="NotDropTarget"/>
+                <VisualState x:Name="IsDropTarget">
+                	<Storyboard>
+                		<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="DropTargetRectangle">
+                			<DiscreteObjectKeyFrame KeyTime="0">
+                				<DiscreteObjectKeyFrame.Value>
+                					<Visibility>Visible</Visibility>
+                				</DiscreteObjectKeyFrame.Value>
+                			</DiscreteObjectKeyFrame>
+                		</ObjectAnimationUsingKeyFrames>
+                	</Storyboard>
+                </VisualState>
+                <VisualState x:Name="InvalidDropTarget">
+                	<Storyboard>
+                		<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="InvalidDropTargetRectangle">
+                			<DiscreteObjectKeyFrame KeyTime="0">
+                				<DiscreteObjectKeyFrame.Value>
+                					<Visibility>Visible</Visibility>
+                				</DiscreteObjectKeyFrame.Value>
+                			</DiscreteObjectKeyFrame>
+                		</ObjectAnimationUsingKeyFrames>
+                	</Storyboard>
+                </VisualState>
+			</VisualStateGroup>
+            <VisualStateGroup x:Name="StableStates">
+            	<VisualStateGroup.Transitions>
+            		<VisualTransition GeneratedDuration="0:0:0.1"/>
+            	</VisualStateGroup.Transitions>
+            	<VisualState x:Name="ClearStability"/>
+            	<VisualState x:Name="IsStableState">
+            		<Storyboard>
+            			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableRectangle">
+            				<DiscreteObjectKeyFrame KeyTime="0">
+            					<DiscreteObjectKeyFrame.Value>
+            						<Visibility>Visible</Visibility>
+            					</DiscreteObjectKeyFrame.Value>
+            				</DiscreteObjectKeyFrame>
+            			</ObjectAnimationUsingKeyFrames>
+            		</Storyboard>
+            	</VisualState>
+            	<VisualState x:Name="NotStableState">
+            		<Storyboard>
+            			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="UnstableRectangle">
+            				<DiscreteObjectKeyFrame KeyTime="0">
+            					<DiscreteObjectKeyFrame.Value>
+            						<Visibility>Visible</Visibility>
+            					</DiscreteObjectKeyFrame.Value>
+            				</DiscreteObjectKeyFrame>
+            			</ObjectAnimationUsingKeyFrames>
+            		</Storyboard>
+            	</VisualState>
+            </VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+
+        <Path x:Name="LeftPath" Data="M25.833334,4 L26.5,85.833336" Stretch="Fill" Stroke="{StaticResource GridCellStroke}" StrokeThickness="1" UseLayoutRounding="True" Width="1" HorizontalAlignment="Left" StrokeDashArray="8 8"/>
+        <Path x:Name="TopPath" Data="M36.666668,7.9999995 L349.37881,7.9999995" Height="1" Stretch="Fill" Stroke="{StaticResource GridCellStroke}" StrokeThickness="1" UseLayoutRounding="True" VerticalAlignment="Top" Margin="0,0,4,0" d:LayoutOverrides="VerticalAlignment, Width" StrokeDashArray="20 20"/>
+        <Path x:Name="BottomPath" Data="M36.666668,7.9999995 L349.37881,7.9999995" Height="1" Stretch="Fill" Stroke="{StaticResource GridCellStroke}" StrokeThickness="1" UseLayoutRounding="True" VerticalAlignment="Bottom" Margin="0,0,4,0" StrokeDashArray="20 20" d:LayoutOverrides="Width"/>
+        <Path x:Name="RightPath" Data="M25.833334,4 L26.5,85.833336" Stretch="Fill" Stroke="{StaticResource GridCellStroke}" StrokeThickness="1" UseLayoutRounding="True" Width="1" HorizontalAlignment="Right" StrokeDashArray="8 8"/>
+        <Rectangle x:Name="StableRectangle" Margin="1" StrokeThickness="0" Fill="#FFE9FFCC" Visibility="Collapsed"/>
+        <Rectangle x:Name="UnstableRectangle" Margin="1" StrokeThickness="0" Fill="#FFFFDDDB" Visibility="Collapsed"/>
+        
+        <Rectangle x:Name="DropTargetRectangle" StrokeDashArray="20 20" Fill="{StaticResource HighlightBrush}" StrokeThickness="0" Visibility="Collapsed"/>
+
+        <Canvas x:Name="VariableCanvas" />
+        <Rectangle x:Name="InvalidDropTargetRectangle" StrokeDashArray="20 20" StrokeThickness="0" Fill="#99FF867E" Visibility="Collapsed"/>
+
+    </Grid>
+</UserControl>

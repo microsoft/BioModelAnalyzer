@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput>
+  <Variables>
+    <Variable Id="1">
+      <Name>Konstant</Name>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>1 + 2 </Function>
+    </Variable>
+  </Variables>
+  <Relationships />
+</AnalysisInput>

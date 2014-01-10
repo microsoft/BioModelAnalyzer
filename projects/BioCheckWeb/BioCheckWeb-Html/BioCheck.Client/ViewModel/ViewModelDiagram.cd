@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="BioCheck.ViewModel.ApplicationViewModel">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>BAAD0iQAQoAIAAAACkAACgAAQBjCBAAI4AACAwAAARI=</HashCode>
+      <FileName>ViewModel\ApplicationViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Library" />
+      <Property Name="ActiveModel" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="BioCheck.ViewModel.Models.ModelViewModel">
+    <Position X="3.75" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="RelationshipViewModels" Type="BioCheck.ViewModel.Cells.RelationshipViewModel" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.75" Y="5.934" />
+        <Point X="6.125" Y="5.934" />
+        <Point X="6.125" Y="8.556" />
+        <Point X="7.25" Y="8.556" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>IAAAUCMAA3ShBGAMoAhAKIcICxgEQoOECgAABAtACQA=</HashCode>
+      <FileName>ViewModel\Models\ModelViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="ContainerViewModels" />
+      <Property Name="VariableViewModels" />
+      <Property Name="RelationshipViewModels" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BioCheck.ViewModel.Cells.ContainerViewModel">
+    <Position X="7.25" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Protected" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>kIIAZJAQBGBRgSVgAMAEKERIAgUMQAAACAQAkACAAQE=</HashCode>
+      <FileName>ViewModel\Cells\ContainerViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="VariableViewModels" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BioCheck.ViewModel.Cells.RelationshipViewModel">
+    <Position X="7.25" Y="8" Width="2" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Protected" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AgIAIAIAACAAAAEAAAAAAAgAAAAZAAAAEQAAAACAAQA=</HashCode>
+      <FileName>ViewModel\Cells\RelationshipViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BioCheck.ViewModel.Cells.VariableViewModel">
+    <Position X="11.5" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Protected" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>kAoAdZAAAHHBAAFgAAAAJAREAgAdRAACOUAAFgDAAQA=</HashCode>
+      <FileName>ViewModel\Cells\VariableViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BioCheck.ViewModel.Models.LibraryViewModel">
+    <Position X="1.25" Y="6.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAEoQIABKYCCEIAAAAQEBIAEDQACACEAkAAADIAQA=</HashCode>
+      <FileName>ViewModel\Models\LibraryViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Models" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

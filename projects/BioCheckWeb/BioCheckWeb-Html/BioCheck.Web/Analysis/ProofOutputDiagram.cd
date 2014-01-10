@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BioCheck.Web.Analysis.ProofOutput">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABCAAECAAAAQAEAAAAAAAAAAAAAAAAAAQAQAAAAQA=</HashCode>
+      <FileName>Analysis\ProofOutput.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Progressions" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.FurtherTestingOutput">
+    <Position X="1.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABACAAACAAAAQAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Analysis\ProofOutput.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="CounterExamples" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.ProgressionStepOutput">
+    <Position X="1" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAQAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Analysis\ProofOutput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.ProgressionOutput">
+    <Position X="4" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Analysis\ProofOutput.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Steps" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.CounterExampleOutput">
+    <Position X="4.25" Y="5.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACCAAAAAABEEAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Analysis\ProofOutput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.VariableOutputV2">
+    <Position X="10" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAEAgAAAAAAAAgAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Analysis\AnalysisOutput.cs</FileName>
+      <NewMemberFileName>Analysis\VariableOutput.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="BioCheck.Web.Analysis.CounterExampleTypes">
+    <Position X="12.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAA=</HashCode>
+      <FileName>Analysis\ProofOutput.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

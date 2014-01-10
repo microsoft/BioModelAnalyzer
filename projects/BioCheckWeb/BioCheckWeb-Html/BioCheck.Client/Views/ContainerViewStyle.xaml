@@ -1,0 +1,231 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:BioCheck_Controls="clr-namespace:BioCheck.Controls" 
+    xmlns:MvvmFx_Common_Helpers="clr-namespace:MvvmFx.Common.Helpers;assembly=MvvmFx.Common" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:BioCheck_Views="clr-namespace:BioCheck.Views" xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+                    xmlns:MembraneReceptors="clr-namespace:BioCheck.Views.MembraneReceptors"
+                    xmlns:MvvmFx_Common_Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common"
+                    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/BioCheck;component/Assets/Brushes.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <MvvmFx_Common_Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+    <Style TargetType="BioCheck_Views:ContainerView">
+        <Setter Property="VariablesSource" Value="{Binding VariableViewModels}" />
+        <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=TwoWay}" />
+        <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+        <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+        <Setter Property="Width" Value="{Binding Width}"/>
+        <Setter Property="Height" Value="{Binding Height}"/>
+        <Setter Property="Size" Value="{Binding Size}"/>
+        <Setter Property="VariableTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <BioCheck_Views:VariableView
+						Canvas.Left="{Binding PositionX}"
+						Canvas.Top="{Binding PositionY}"
+						IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                        />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="BioCheck_Views:ContainerView">
+                    <Grid x:Name="LayoutRoot" d:DesignWidth="290" d:DesignHeight="330" Width="Auto" Height="Auto" Margin="20">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="DropTargetStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0:0:0.1"/>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="NotDropTarget"/>
+                                <VisualState x:Name="IsDropTarget">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="DropTargetVisual">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Visible</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="MembraneDropTarget"/>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckedStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0:0:0.1"/>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CheckedOuterPath">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Visible</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Path Data="F1M488.6582,645.9385C403.6912,645.9385,334.5692,562.0425,334.5692,458.9205C334.5692,355.8045,403.6912,271.9155,488.6582,271.9155C573.6192,271.9155,642.7452,355.8045,642.7452,458.9205C642.7452,562.0425,573.6192,645.9385,488.6582,645.9385" Fill="White" Stretch="Fill" Margin="22.244,2.8,3,2.5" UseLayoutRounding="False"/>
+                        <Path x:Name="DropTargetVisual" Data="F1M488.6582,645.9385C403.6912,645.9385,334.5692,562.0425,334.5692,458.9205C334.5692,355.8045,403.6912,271.9155,488.6582,271.9155C573.6192,271.9155,642.7452,355.8045,642.7452,458.9205C642.7452,562.0425,573.6192,645.9385,488.6582,645.9385" Fill="{StaticResource HighlightBrush}" Stretch="Fill" Margin="22.244,2.8,3,2.5" UseLayoutRounding="False" Visibility="Collapsed"/>
+
+                        <Path x:Name="OuterPath" Data="F1M488.6582,645.9385C403.6912,645.9385,334.5692,562.0425,334.5692,458.9205C334.5692,355.8045,403.6912,271.9155,488.6582,271.9155C573.6192,271.9155,642.7452,355.8045,642.7452,458.9205C642.7452,562.0425,573.6192,645.9385,488.6582,645.9385 M488.6582,268.4025C474.2472,268.4025,460.1342,270.7275,446.6092,275.2215C366.2582,294.8905,306.4682,369.6685,306.4682,458.9205C306.4682,548.1835,366.2572,622.9645,446.6072,642.6335C460.1342,647.1285,474.2472,649.4515,488.6582,649.4515C530.8182,649.4515,570.4322,629.5895,600.2082,593.5245C629.9032,557.5555,646.2572,509.7535,646.2572,458.9205C646.2572,353.8695,575.5572,268.4025,488.6582,268.4025" Fill="#FFFAAF40" Stretch="Fill" Cursor="Hand"/>
+                        <Path x:Name="CheckedOuterPath" Data="F1M488.6582,645.9385C403.6912,645.9385,334.5692,562.0425,334.5692,458.9205C334.5692,355.8045,403.6912,271.9155,488.6582,271.9155C573.6192,271.9155,642.7452,355.8045,642.7452,458.9205C642.7452,562.0425,573.6192,645.9385,488.6582,645.9385 M488.6582,268.4025C474.2472,268.4025,460.1342,270.7275,446.6092,275.2215C366.2582,294.8905,306.4682,369.6685,306.4682,458.9205C306.4682,548.1835,366.2572,622.9645,446.6072,642.6335C460.1342,647.1285,474.2472,649.4515,488.6582,649.4515C530.8182,649.4515,570.4322,629.5895,600.2082,593.5245C629.9032,557.5555,646.2572,509.7535,646.2572,458.9205C646.2572,353.8695,575.5572,268.4025,488.6582,268.4025" Fill="#FFCC7F0E" Stretch="Fill" UseLayoutRounding="False" Cursor="Hand" IsHitTestVisible="False" Visibility="Collapsed"/>
+
+                        <Grid 
+                            Visibility="{Binding HasName, Converter={StaticResource BoolToVisibilityConverter}}"
+                    
+                             Height="Auto" Margin="-10,-10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="Auto" HorizontalAlignment="Left" d:LayoutOverrides="Width">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Rectangle Fill="#3FBBBDBF" RadiusX="6" RadiusY="6" StrokeThickness="0" />
+
+                            <TextBlock Margin="8,8,8,8" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding Name}" FontSize="10" Style="{StaticResource VariableLabelTextStyle}"/>
+                        </Grid>
+                        
+                        <Canvas x:Name="ArrowCanvas" />
+
+                        <Canvas x:Name="VariableCanvas" 
+                                Canvas.ZIndex="100" >
+                            <Canvas.Clip>
+                                <EllipseGeometry Center="138,168" RadiusX="138" RadiusY="168" />
+                            </Canvas.Clip>
+                        </Canvas>
+
+                        <Canvas x:Name="MembraneReceptorCanvas" Margin="-20">
+
+                            <BioCheck_Controls:MembraneReceptorSite Angle="0" x:Name="MembraneReceptorSite1" Margin="0" Width="50" Height="50" Canvas.Left="163" Canvas.Top="-10">
+
+                            </BioCheck_Controls:MembraneReceptorSite>
+
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite2" Angle="45" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="275.167" Canvas.Top="47.667" UseLayoutRounding="False" d:LayoutRounding="Auto">
+                             
+                          
+                            </BioCheck_Controls:MembraneReceptorSite>
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite4" Angle="90" Width="50" RenderTransformOrigin="0.5,0.5" Height="50" Canvas.Left="315.833" Canvas.Top="167.667" UseLayoutRounding="False" d:LayoutRounding="Auto">
+                                      
+                            </BioCheck_Controls:MembraneReceptorSite>
+
+                            
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite6" Angle="135" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="265.167" Canvas.Top="308.333" UseLayoutRounding="False" d:LayoutRounding="Auto">
+
+                            </BioCheck_Controls:MembraneReceptorSite>
+
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite8" Angle="180" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="169" Canvas.Top="354">
+
+                            </BioCheck_Controls:MembraneReceptorSite>
+
+
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite7" Angle="-135" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="33.167" Canvas.Top="292.333" UseLayoutRounding="False" d:LayoutRounding="Auto">
+                             
+                            </BioCheck_Controls:MembraneReceptorSite>
+
+
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite5" Angle="-90" Width="50" RenderTransformOrigin="0.5,0.5" UseLayoutRounding="False" d:LayoutRounding="Auto" Height="50" Canvas.Top="167.666" Canvas.Left="-8">
+
+                            </BioCheck_Controls:MembraneReceptorSite>
+
+                            <BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite3" Angle="-45" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="33.5" Canvas.Top="54.333" UseLayoutRounding="False" d:LayoutRounding="Auto">
+
+                            </BioCheck_Controls:MembraneReceptorSite>
+                        </Canvas>
+
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ContainerViewDragStyle" TargetType="BioCheck_Views:ContainerView">
+    	<Setter Property="VariablesSource" Value="{Binding VariableViewModels}" />
+   
+    	<Setter Property="VariableTemplate">
+    		<Setter.Value>
+    			<DataTemplate>
+    				<BioCheck_Views:VariableView
+    					Canvas.Left="{Binding PositionX}"
+    					Canvas.Top="{Binding PositionY}"
+    					IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                        />
+    			</DataTemplate>
+    		</Setter.Value>
+    	</Setter>
+    	<Setter Property="Template">
+    		<Setter.Value>
+    			<ControlTemplate TargetType="BioCheck_Views:ContainerView">
+    				<Grid x:Name="LayoutRoot" d:DesignWidth="290" d:DesignHeight="330" Width="Auto" Height="Auto">
+
+    					<VisualStateManager.VisualStateGroups>
+    						<VisualStateGroup x:Name="DropTargetStates">
+    							<VisualStateGroup.Transitions>
+    								<VisualTransition GeneratedDuration="0:0:0.1"/>
+    							</VisualStateGroup.Transitions>
+    							<VisualState x:Name="NotDropTarget"/>
+    							<VisualState x:Name="IsDropTarget"/>
+    							<VisualState x:Name="MembraneDropTarget"/>
+    						</VisualStateGroup>
+    						<VisualStateGroup x:Name="CheckedStates">
+    							<VisualStateGroup.Transitions>
+    								<VisualTransition GeneratedDuration="0:0:0.1"/>
+    							</VisualStateGroup.Transitions>
+    							<VisualState x:Name="Checked"/>
+    							<VisualState x:Name="Unchecked"/>
+    						</VisualStateGroup>
+    					</VisualStateManager.VisualStateGroups>
+
+    					<Path Data="F1M488.6582,645.9385C403.6912,645.9385,334.5692,562.0425,334.5692,458.9205C334.5692,355.8045,403.6912,271.9155,488.6582,271.9155C573.6192,271.9155,642.7452,355.8045,642.7452,458.9205C642.7452,562.0425,573.6192,645.9385,488.6582,645.9385" Fill="White" Stretch="Fill" Margin="14.2,0.8,2,1.5" UseLayoutRounding="False"/>
+
+    					<Path x:Name="OuterPath" Data="F1M488.6582,645.9385C403.6912,645.9385,334.5692,562.0425,334.5692,458.9205C334.5692,355.8045,403.6912,271.9155,488.6582,271.9155C573.6192,271.9155,642.7452,355.8045,642.7452,458.9205C642.7452,562.0425,573.6192,645.9385,488.6582,645.9385 M488.6582,268.4025C474.2472,268.4025,460.1342,270.7275,446.6092,275.2215C366.2582,294.8905,306.4682,369.6685,306.4682,458.9205C306.4682,548.1835,366.2572,622.9645,446.6072,642.6335C460.1342,647.1285,474.2472,649.4515,488.6582,649.4515C530.8182,649.4515,570.4322,629.5895,600.2082,593.5245C629.9032,557.5555,646.2572,509.7535,646.2572,458.9205C646.2572,353.8695,575.5572,268.4025,488.6582,268.4025" Fill="#FFFAAF40" Stretch="Fill" Cursor="Hand"/>
+
+    					<Canvas x:Name="ArrowCanvas" />
+
+    					<Canvas x:Name="VariableCanvas" 
+    						Canvas.ZIndex="100" >
+    						<Canvas.Clip>
+    							<EllipseGeometry Center="138,168" RadiusX="138" RadiusY="168" />
+    						</Canvas.Clip>
+    					</Canvas>
+
+    					<Canvas x:Name="MembraneReceptorCanvas" Margin="-20">
+
+    						<BioCheck_Controls:MembraneReceptorSite Angle="0" x:Name="MembraneReceptorSite1" Margin="0" Width="50" Height="50" Canvas.Left="163" Canvas.Top="-10"/>
+
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite2" Angle="45" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="275.167" Canvas.Top="47.667" UseLayoutRounding="False" d:LayoutRounding="Auto"/>
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite4" Angle="90" Width="50" RenderTransformOrigin="0.5,0.5" Height="50" Canvas.Left="315.833" Canvas.Top="167.667" UseLayoutRounding="False" d:LayoutRounding="Auto"/>
+
+                            
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite6" Angle="135" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="265.167" Canvas.Top="308.333" UseLayoutRounding="False" d:LayoutRounding="Auto"/>
+
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite8" Angle="180" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="169" Canvas.Top="354"/>
+
+
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite7" Angle="-135" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="33.167" Canvas.Top="292.333" UseLayoutRounding="False" d:LayoutRounding="Auto"/>
+
+
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite5" Angle="-90" Width="50" RenderTransformOrigin="0.5,0.5" UseLayoutRounding="False" d:LayoutRounding="Auto" Height="50" Canvas.Top="167.666" Canvas.Left="-8"/>
+
+    						<BioCheck_Controls:MembraneReceptorSite x:Name="MembraneReceptorSite3" Angle="-45" Width="50" Height="50" RenderTransformOrigin="0.5,0.5" Canvas.Left="33.5" Canvas.Top="54.333" UseLayoutRounding="False" d:LayoutRounding="Auto"/>
+    					</Canvas>
+
+
+    				</Grid>
+    			</ControlTemplate>
+    		</Setter.Value>
+    	</Setter>
+    	<Setter Property="Width" Value="180"/>
+    	<Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+</ResourceDictionary>

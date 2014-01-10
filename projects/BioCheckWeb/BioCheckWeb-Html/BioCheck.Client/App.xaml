@@ -1,0 +1,37 @@
+﻿<Application
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:app="clr-namespace:BioCheck"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"   
+  x:Class="BioCheck.App"
+  Startup="Application_Startup">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <app:ApplicationResources x:Key="ApplicationResources" />
+                    <app:NotOperatorValueConverter x:Key="NotOperatorValueConverter" />
+                </ResourceDictionary>
+                
+                <ResourceDictionary Source="Assets/Brushes.xaml"/>
+                <ResourceDictionary Source="Assets/CustomStyles.xaml"/>
+                <ResourceDictionary Source="Assets/Styles.xaml"/>
+                <ResourceDictionary Source="Assets/Buttons.xaml"/>
+                <ResourceDictionary Source="Assets/TextStyles.xaml"/>
+
+                <ResourceDictionary Source="Views/ContainerViewStyle.xaml"/>
+                <!--<ResourceDictionary Source="Views/ContainerViewRingStyle.xaml"/>-->
+                <ResourceDictionary Source="Views/MembraneReceptorViewStyle.xaml"/>
+                <ResourceDictionary Source="Views/VariableViewStyle.xaml"/>
+                <ResourceDictionary Source="Views/GridStyles.xaml"/>
+                <ResourceDictionary Source="Controls/ChildWindowStyle.xaml"/>
+                <ResourceDictionary Source="Controls/ToolbarItemStyle.xaml"/>
+                <ResourceDictionary Source="Controls/ContextBarStyle.xaml"/>
+          
+            </ResourceDictionary.MergedDictionaries>
+            
+        </ResourceDictionary>                
+    </Application.Resources>
+
+</Application>

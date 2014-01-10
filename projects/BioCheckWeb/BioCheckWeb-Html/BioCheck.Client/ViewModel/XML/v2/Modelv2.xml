@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="0" Name="Model" BioCheckVersion="2">
+  <Description>This is the default model.</Description>
+  <CreatedDate>2011-10-29T17:56:33.173+01:00</CreatedDate>
+  <ModifiedDate>2011-10-29T17:56:33.173+01:00</ModifiedDate>
+  <Layout>
+    <Columns>0</Columns>
+    <Rows>0</Rows>
+    <ZoomLevel>25</ZoomLevel>
+    <PanX>-300</PanX>
+    <PanY>-330</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1">
+      <PositionX>1</PositionX>
+      <PositionY>1</PositionY>
+    </Container>
+    <Container Id="2">
+      <PositionX>2</PositionX>
+      <PositionY>1</PositionY>
+    </Container>
+    <Container Id="3">
+      <PositionX>1</PositionX>
+      <PositionY>0</PositionY>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="1" Name="Var1" >
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula />
+      <PositionX>159</PositionX>
+      <PositionY>134</PositionY>
+    </Variable>
+    <Variable>
+      <ContainerId>1</ContainerId>
+      <Formula />
+      <Id>2</Id>
+      <Name>Mem1</Name>
+      <PositionX>156</PositionX>
+      <PositionY>-20</PositionY>
+      <RangeFrom>0</RangeFrom>>
+      <RangeTo>2</RangeTo>
+      <Type>MembraneReceptor</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula>Max(Mem2)</Formula>
+      <Id>3</Id>
+      <Name>Var2</Name>
+      <PositionX>159</PositionX>
+      <PositionY>134</PositionY>
+      <RangeFrom>0</RangeFrom>>
+      <RangeTo>2</RangeTo>
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Id>4</Id>
+      <Name>Mem2</Name>
+      <PositionX>156</PositionX>
+      <PositionY>-20</PositionY>
+      <RangeFrom>2</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Type>MembraneReceptor</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>3</ContainerId>
+      <Formula>max(Con)</Formula>
+      <Id>5</Id>
+      <Name>Con</Name>
+      <PositionX>159</PositionX>
+      <PositionY>179</PositionY>
+      <RangeFrom>1</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Type>Constant</Type>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>2</ContainerId>
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>3</ContainerId>
+      <FromVariableId>5</FromVariableId>
+      <Id>2</Id>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>3</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <Id>3</Id>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</Model>

@@ -1,0 +1,580 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:SampleData="clr-namespace:Expression.Blend.SampleData.ProofData"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:Converters="clr-namespace:BioCheck.Converters" 
+    xmlns:MvvmFx_Common_Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common"
+    xmlns:behaviors="clr-namespace:BioCheck.Behaviors" 
+    xmlns:System="clr-namespace:System;assembly=mscorlib" 
+    x:Class="BioCheck.Views.TimeView"
+    mc:Ignorable="d"
+    Width="1000" Height="800">
+
+    <!-- Time edit -->
+
+    <UserControl.Resources>
+
+        <MvvmFx_Common_Converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter"/>
+
+        <SampleData:ProofData x:Key="ProofData" d:IsDataSource="True"/>
+
+        <SolidColorBrush x:Key="ChangedStepBrush" Color="#FFFFFBB5"/>
+        <SolidColorBrush x:Key="CycledStepBrush" Color="#FFb8b8dc"/>
+        <SolidColorBrush x:Key="IsModifiedBrush" Color="Red"/>
+        <SolidColorBrush x:Key="NotModifiedBrush" Color="#FF58595B"/>
+
+        <Converters:BoolToBrushConverter 
+            x:Key="BoolToStepBrushConverter"
+            TrueBrush="{StaticResource ChangedStepBrush}" />
+
+        <Converters:BoolToBrushConverter 
+            x:Key="BoolToCycleBrushConverter"
+            TrueBrush="{StaticResource CycledStepBrush}" />
+
+        <Converters:BoolToBrushConverter 
+            x:Key="BoolToModifiedBrushConverter"
+            TrueBrush="{StaticResource IsModifiedBrush}" 
+            FalseBrush="{StaticResource NotModifiedBrush}" 
+            />
+
+        <DataTemplate x:Key="ProgressionInfoColumnTemplate">
+            <Grid>
+                <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{Binding HasChanged, Converter={StaticResource BoolToStepBrushConverter}}" />
+                <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{Binding HasCycled, Converter={StaticResource BoolToCycleBrushConverter}}" Opacity="0.3" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding Value}" 
+                           Foreground="{Binding IsModified, Converter={StaticResource BoolToModifiedBrushConverter}}" 
+                           HorizontalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="VariablesDataGridColumnHeaderStyle" TargetType="sdk:DataGridColumnHeader">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="SeparatorBrush" Value="#FFC9CACA"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="sdk:DataGridColumnHeader">
+                        <Grid x:Name="Root" Background="{StaticResource PopupGridHeaderBackground}" Margin="0,0,1,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="SortStates">
+                                    <VisualState x:Name="Unsorted"/>
+                                    <VisualState x:Name="SortAscending">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1.0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SortIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="SortDescending">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1.0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SortIcon"/>
+                                            <DoubleAnimation Duration="0" To="-.9" Storyboard.TargetProperty="(RenderTransform).ScaleY" Storyboard.TargetName="SortIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                                <Path x:Name="SortIcon" Grid.Column="1" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z " Fill="#FF444444" HorizontalAlignment="Left" Margin="4,0,0,0" Opacity="0" RenderTransformOrigin=".5,.5" Stretch="Uniform" VerticalAlignment="Center" Width="8">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform ScaleY=".9" ScaleX=".9"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+        <Style x:Key="RunCounterExampleButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF1F3B53"/>
+            <Setter Property="Foreground" Value="#FF000000"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFA3AEB9" Offset="0"/>
+                        <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                        <GradientStop Color="#FF718597" Offset="0.375"/>
+                        <GradientStop Color="#FF617584" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                    <VisualState x:Name="Disabled"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused"/>
+                                    <VisualState x:Name="Unfocused"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="Background" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3"/>
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PlainCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Background" Value="#FF448DCA"/>
+            <Setter Property="Foreground" Value="#FF000000"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Padding" Value="4,1,0,0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFA3AEB9" Offset="0"/>
+                        <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                        <GradientStop Color="#FF718597" Offset="0.375"/>
+                        <GradientStop Color="#FF617584" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="16"/>
+
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="0.55" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="DisabledVisualElement"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="CheckIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked"/>
+                                    <VisualState x:Name="Indeterminate">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="IndeterminateIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused"/>
+                                    <VisualState x:Name="Unfocused"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ValidationStates">
+                                    <VisualState x:Name="Valid"/>
+                                    <VisualState x:Name="InvalidUnfocused"/>
+                                    <VisualState x:Name="InvalidFocused"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <Path x:Name="CheckIcon" Data="M102.03442,598.79645 L105.22962,597.78918 L106.78825,600.42358 C106.78825,600.42358 108.51028,595.74304 110.21724,593.60419 C112.00967,591.35822 114.89314,591.42316 114.89314,591.42316 C114.89314,591.42316 112.67844,593.42645 111.93174,594.44464 C110.7449,596.06293 107.15683,604.13837 107.15683,604.13837 z" Fill="#FF333333" FlowDirection="LeftToRight" Height="12" Margin="1,1,0,1.5" Opacity="0" Stretch="Fill" Width="12.5"/>
+                                <Rectangle x:Name="IndeterminateIcon" Fill="#FF333333" Height="2" Opacity="0" Width="6"/>
+                                <Rectangle x:Name="DisabledVisualElement" Fill="#FFFFFFFF" Height="14" Opacity="0" RadiusY="1" RadiusX="1" Width="14"/>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style x:Key="GraphToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="#FF1F3B53"/>
+            <Setter Property="Foreground" Value="#FF000000"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFA3AEB9" Offset="0"/>
+                        <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                        <GradientStop Color="#FF718597" Offset="0.375"/>
+                        <GradientStop Color="#FF617584" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                    <VisualState x:Name="Disabled"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="CheckIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused"/>
+                                    <VisualState x:Name="Unfocused"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Rectangle VerticalAlignment="Stretch" 
+							Fill="{Binding GraphColor}" 
+                							 HorizontalAlignment="Left" Width="12" Height="Auto"/>
+                            <Path x:Name="CheckIcon" Data="M102.03442,598.79645 L105.22962,597.78918 L106.78825,600.42358 C106.78825,600.42358 108.51028,595.74304 110.21724,593.60419 C112.00967,591.35822 114.89314,591.42316 114.89314,591.42316 C114.89314,591.42316 112.67844,593.42645 111.93174,594.44464 C110.7449,596.06293 107.15683,604.13837 107.15683,604.13837 z" Fill="#FF333333" FlowDirection="LeftToRight" Grid.Column="1" Height="14" Margin="1,1,0,1.5" Stretch="Fill" Width="14.5" Opacity="0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SlimColumnHeaderStyle" TargetType="sdk:DataGridColumnHeader">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="SeparatorBrush" Value="#FFC9CACA"/>
+            <Setter Property="Padding" Value="0,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="sdk:DataGridColumnHeader">
+                        <Grid x:Name="Root" Background="{StaticResource PopupGridHeaderBackground}" Margin="0,0,1,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="SortStates">
+                                    <VisualState x:Name="Unsorted"/>
+                                    <VisualState x:Name="SortAscending"/>
+                                    <VisualState x:Name="SortDescending"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+        <Style x:Key="CenteredDataGridCellStyle" TargetType="sdk:DataGridCell">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="sdk:DataGridCell">
+                        <Grid x:Name="Root" Background="{TemplateBinding Background}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CurrentStates">
+                                    <VisualState x:Name="Regular"/>
+                                    <VisualState x:Name="Current">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisual"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ValidationStates">
+                                    <VisualState x:Name="Valid"/>
+                                    <VisualState x:Name="Invalid">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="InvalidVisualElement"/>
+                                            <ColorAnimation Duration="0" To="#FFFFFFFF" Storyboard.TargetProperty="(Fill).Color" Storyboard.TargetName="FocusVisual"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Rectangle x:Name="FocusVisual" Fill="#66FFFFFF" HorizontalAlignment="Stretch" IsHitTestVisible="false" Opacity="0" Stroke="#FF6DBDD1" StrokeThickness="1" VerticalAlignment="Stretch"/>
+                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Rectangle x:Name="InvalidVisualElement" HorizontalAlignment="Stretch" IsHitTestVisible="False" Opacity="0" Stroke="#FFDC000C" StrokeThickness="1" VerticalAlignment="Stretch"/>
+                            <Rectangle x:Name="RightGridLine" Grid.Column="1" VerticalAlignment="Stretch" Width="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NonSelectableDataGridRowStyle" TargetType="sdk:DataGridRow">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="sdk:DataGridRow">
+                        <sdk:DataGridFrozenGrid x:Name="Root">
+                            <sdk:DataGridFrozenGrid.Resources>
+                                <Storyboard x:Key="DetailsVisibleTransition">
+                                    <DoubleAnimation Duration="00:00:0.1" Storyboard.TargetProperty="ContentHeight" Storyboard.TargetName="DetailsPresenter"/>
+                                </Storyboard>
+                            </sdk:DataGridFrozenGrid.Resources>
+                            <sdk:DataGridFrozenGrid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </sdk:DataGridFrozenGrid.ColumnDefinitions>
+                            <sdk:DataGridFrozenGrid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </sdk:DataGridFrozenGrid.RowDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="NormalAlternatingRow">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="BackgroundRectangle"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="NormalSelected"/>
+                                    <VisualState x:Name="MouseOverSelected"/>
+                                    <VisualState x:Name="UnfocusedSelected"/>
+                                    <VisualState x:Name="MouseOverEditing"/>
+                                    <VisualState x:Name="UnfocusedEditing"/>
+                                    <VisualState x:Name="NormalEditing"/>
+                                    <VisualState x:Name="MouseOverUnfocusedEditing"/>
+                                    <VisualState x:Name="MouseOverUnfocusedSelected"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ValidationStates">
+                                    <VisualState x:Name="Valid"/>
+                                    <VisualState x:Name="Invalid">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetProperty="Visibility" Storyboard.TargetName="BackgroundRectangle">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="InvalidVisualElement"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Fill="#FFBADDE9" Opacity="0" Grid.RowSpan="2"/>
+                            <Rectangle x:Name="InvalidVisualElement" Grid.ColumnSpan="2" Fill="#FFF7D8DB" Opacity="0" Grid.RowSpan="2"/>
+                            <sdk:DataGridRowHeader x:Name="RowHeader" sdk:DataGridFrozenGrid.IsFrozen="True" Grid.RowSpan="3"/>
+                            <sdk:DataGridCellsPresenter x:Name="CellsPresenter" Grid.Column="1" sdk:DataGridFrozenGrid.IsFrozen="True"/>
+                            <sdk:DataGridDetailsPresenter x:Name="DetailsPresenter" Grid.Column="1" Grid.Row="1"/>
+                            <Rectangle x:Name="BottomGridLine" Grid.Column="1" HorizontalAlignment="Stretch" Height="1" Grid.Row="2"/>
+                        </sdk:DataGridFrozenGrid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid x:Name="grid" d:DataContext="{Binding Source={StaticResource ProofData}}" >
+
+        <!-- Surrounding border -->
+        <Border BorderBrush="#FFBABCBE" BorderThickness="2" CornerRadius="8" d:LayoutOverrides="HorizontalMargin">
+            <Border.Effect>
+                <DropShadowEffect Direction="331" BlurRadius="8" ShadowDepth="3"/>
+            </Border.Effect>
+        </Border>
+
+        <!-- Surrounding inner space in white -->
+        <Border BorderBrush="#FFBBBDBF" BorderThickness="2,5,2,2" CornerRadius="8" Background="White">
+
+            <!-- Major grid -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*" MaxWidth="300"/>
+                    <ColumnDefinition Width="0.694*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="*" MinHeight="30"/>
+
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="*" MinHeight="35"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="55"/>
+
+                    <!-- Original:
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" MinHeight="30"/>
+                    <RowDefinition/>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    -->
+
+                </Grid.RowDefinitions>
+
+                <!-- Top gray horizontal border -->
+                <Rectangle Fill="{StaticResource PopupBorders}" Cursor="Hand" Margin="0,-1,0,0" Grid.ColumnSpan="2"/>
+
+                <!-- Close window button -->
+                <Path Cursor="Hand" Data="M31.667,7.2360039E-05 C33.876141,-0.013075233 35.667,1.7671272 35.667,3.9762654 L35.667,8.9762659 L35.666985,8.9769392 L35.666985,11.976406 L35.666988,18.976406 L31.666985,18.976406 L27.66699,18.976406 L9.6669884,18.976406 C7.457849,18.976406 5.6669884,17.185545 5.6669884,14.976406 L5.6669884,9.9760742 L5.6617923,9.7705717 C5.5546594,7.6570921 3.8070998,5.9764109 1.6669962,5.9764104 L0,5.9764104 L0,4.1885428 C4.7683716E-07,1.9794044 1.7908611,0.17788482 3.9999998,0.16473651 z" Fill="{StaticResource PopupBorders}" HorizontalAlignment="Right" Height="18.976" Margin="0,-5.976,0,0" Grid.Row="1" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Top" Width="35.667" Grid.Column="1"/>
+
+                <!-- Model name -->
+                <TextBlock TextWrapping="NoWrap" TextTrimming="WordEllipsis" Text="{Binding ModelName}" VerticalAlignment="Center" Margin="10,10,0,0" Style="{StaticResource TitleTextStyle}" FontSize="21.333" d:LayoutOverrides="Width" Grid.Row="1" Grid.ColumnSpan="2"/>
+
+                <!-- Right-hand corner Test button -->
+                <Button VerticalAlignment="Center" Margin="0,10,40,0" 
+                        Command="{Binding RunCommand}" 
+                        Background="#FF82BD82" 
+                        Content="TEST" 
+                        Cursor="Hand" 
+                        Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333" HorizontalAlignment="Right" d:LayoutOverrides="HorizontalAlignment" Grid.Row="1" Grid.Column="1"/>
+
+                <!-- Superstate text -->
+                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="Superstates" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
+                </TextBlock>
+
+                <!-- Sequence text -->
+                <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="Formula" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" d:LayoutOverrides="GridBox" Margin="15,0,0,0"/>
+
+                <!-- Close window button -->
+                <Button 
+					TabIndex="3" 
+					Command="{Binding CloseCommand}"
+					Style="{StaticResource PathButtonStyle}" HorizontalAlignment="Right" Margin="0,-1,4,-9" Grid.Column="1">
+                    <Path Data="M4.6969919,3.9939952 L10.498491,9.7945509 L16.29999,3.9939954 L17.00699,4.7009959 L11.205549,10.501494 L17.00699,16.301996 L16.29999,17.008997 L10.498491,11.208438 L4.696991,17.008997 L3.9899905,16.301996 L9.7914324,10.501494 L3.9899912,4.7009959 z M0.99999994,1.0000002 L0.99999994,20.000008 L20,20.000008 L20,1.0000002 z M0,0 L21,0 L21,21 L0,21 z" Fill="White" Height="21" Stretch="Fill" Width="21" UseLayoutRounding="False"/>
+                </Button>
+
+                <Border x:Name="SuperStateArea" BorderBrush="#FFBABCBE" BorderThickness="1" Margin="10,0,10,0" MaxWidth="300" Grid.Row="3" CornerRadius="8" ></Border>
+
+
+                <StackPanel Margin="20,10,38,0" Orientation="Horizontal" VerticalAlignment="Top" Grid.Column="0" Grid.Row="3">
+
+                    <!--    TODO: Implement clickable superstate (links to Rules) and superstate add
+                    
+                    <Button VerticalAlignment="Center" Margin="10,00,0,0" Command="{Binding Plus10StepsCommand}" Background="{StaticResource PopupGridHeaderBackground}" 
+                            Content=" A "
+                            Cursor="Hand"
+                            Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="20"/>
+                    <Button VerticalAlignment="Center" Margin="10,0,0,0"
+                            Command="{Binding Minus10StepsCommand}" Background="{StaticResource PopupGridHeaderBackground}"
+                            Content="Add" 
+                            Cursor="Hand"
+                            Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="LightGray" Padding="10,3" FontSize="20"/>
+                       -->
+                </StackPanel>
+
+                <TextBlock TextWrapping="Wrap" Text="Rules" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" Margin="15,5,0,0" Grid.Row="4" Foreground="Black" Grid.Column="0">
+                </TextBlock>
+
+
+                <Border 
+                	x:Name="SuperstateDragGrid" 
+                	
+                	BorderBrush="{StaticResource PageBorderBrush}" 
+                	BorderThickness="1" 
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    Grid.Row="5" Grid.Column="0"
+                    Margin="10,0,10,10"
+                            >
+                </Border>
+                <!--Style="{StaticResource PopupDataGridStyle}"-->
+                <!--
+                <Border 
+                	x:Name="SequenceGrid" 
+                	
+                	BorderBrush="{StaticResource PageBorderBrush}" 
+
+                	BorderThickness="1" 
+ Margin="0,0,10,10" 
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    Grid.Row="3" Grid.Column="1" Grid.RowSpan="3"
+                            >
+                    
+                </Border>
+                -->
+                <TextBox TextWrapping="Wrap" Text="{Binding LTLInput, Mode=TwoWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Margin="10,0" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." />
+                <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding LTLOutput}" Grid.Row="4" Grid.Column="1" Margin="10,34.75,23,10" Foreground="#FF7E7E7E" ToolTipService.ToolTip="Proof output" Grid.RowSpan="2" />
+
+                <!--Style="{StaticResource PopupDataGridStyle}" -->
+                <Grid x:Name="FooterPanel" Grid.Row="6" Grid.ColumnSpan="2">
+                    <Rectangle RadiusX="8" RadiusY="8" Margin="0" Fill="#FFE6E6E6"/>
+                    <Rectangle Fill="#FFE6E6E6" Margin="0" Height="10" VerticalAlignment="Top"/>
+
+                    <StackPanel  Margin="10,5,10,0" />
+
+                    <Button x:Name="ShowGraphButton" Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                    	Command="{Binding ConsoleCommand}" Padding="0" ToolTipService.ToolTip="Show console" Width="44" Height="44" Margin="10,5,5,5" Background="White">
+
+                        <Canvas>
+                            <Path Data="F1M146.368,212.348L131.868,212.348L131.868,197.848L146.368,197.848z" Fill="Black" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="-14.5" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                            <Path Data="F1M146.368,227.848L131.868,227.848L131.868,213.348L146.368,213.348z" Fill="Black" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Top="1" Canvas.Left="-14.5" UseLayoutRounding="False"/>
+                            <Path Data="F1M161.868,227.848L147.368,227.848L147.368,213.348L161.868,213.348z" Fill="Black" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="1" UseLayoutRounding="False"/>
+                            <Path Data="F1M161.868,212.348L147.368,212.348L147.368,197.848L161.868,197.848z" Fill="Black" Height="14.5" Stretch="Fill" Width="14.5" Canvas.Left="1" Canvas.Top="-14.5" UseLayoutRounding="False"/>
+                        </Canvas>
+
+                    </Button>
+
+                </Grid>
+                <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!--<CheckBox Content="Naive" FontSize="14" HorizontalAlignment="Left" Margin="15,10,0,0" Foreground="Black" VerticalAlignment="Center" Background="Cornsilk" 
+                              IsChecked="True" 
+                              Checked="{Binding LTLNaive_true}"
+                              Unchecked="{Binding LTLNaive_false}"
+                    Command="{Binding LTLNaive, Mode=TwoWay}"
+                    />-->
+                    <TextBlock Text="Number of steps:" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" Margin="15,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
+                    <TextBox Background="Cornsilk" BorderBrush="Gray" HorizontalAlignment="Left" Margin="10,5,0,3" Width="50" Text="{Binding LTLPath, Mode=TwoWay}"/>
+                    <TextBlock Text="Seek simulation that" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" Margin="30,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="Simulation" VerticalAlignment="Center" Content="satisifies" Margin="10,5,0,0" FontSize="13" IsChecked="True" Cursor="Hand" Command="{Binding LTLSimulation}"/>
+                    <RadioButton x:Name="Proof" Margin="5,5,10,0" VerticalAlignment="Center" Content="unsatisifies" FontSize="13" Command="{Binding LTLProve}" Cursor="Hand" />
+                </StackPanel>
+
+            </Grid>
+        </Border>
+    </Grid>
+
+
+</UserControl>

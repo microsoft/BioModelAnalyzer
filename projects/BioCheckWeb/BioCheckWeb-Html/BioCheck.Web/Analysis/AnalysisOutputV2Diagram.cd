@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BioCheck.Web.Analysis.AnalysisOutputV2">
+    <Position X="1" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAECAAAAQAAAAAAAAAAAAAACAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Analysis\AnalysisOutput.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Ticks" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.AnalysisTick">
+    <Position X="3.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAQA=</HashCode>
+      <FileName>Analysis\AnalysisOutput.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Variables" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BioCheck.Web.Analysis.VariableOutputV2">
+    <Position X="5.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAEAgAAAAAAAAgAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Analysis\AnalysisOutput.cs</FileName>
+      <NewMemberFileName>Analysis\VariableOutput.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
