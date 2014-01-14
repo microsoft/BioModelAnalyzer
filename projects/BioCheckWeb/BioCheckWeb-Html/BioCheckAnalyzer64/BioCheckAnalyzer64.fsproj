@@ -175,6 +175,9 @@
     <None Include="z3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="..\BioCheckAnalyzer32\PathFinder.fs">
+      <Link>PathFinder.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
