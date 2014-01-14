@@ -26,29 +26,29 @@
 		<div id="tools-top">
 		<div id="tool">
 			<div id="tools">
-				<div id="drawingTools">
-					<input type="radio" id="toolPointer" name="drawingTool" onclick="drawingToolClick(this)" />
-					<label for="toolPointer"><img src="_images/activate.png" title="Pointer" /></label>
-					<input type="radio" id="toolContainer" name="drawingTool" onclick="drawingToolClick(this)" data-type="Container" />
-					<label for="toolContainer"><img src="_images/container.png" title="Container" data-type="Container" /></label>
-					<input type="radio" id="toolVariable" name="drawingTool" onclick="drawingToolClick(this)" data-type="Variable" />
-					<label for="toolVariable"><img src="_images/variable.png" title="Container" data-type="Variable" /></label>
-					<input type="radio" id="toolConstant" name="drawingTool" onclick="drawingToolClick(this)" data-type="Constant" />
-					<label for="toolConstant"><img src="_images/constant.png" title="Container" data-type="Constant" /></label>
-					<input type="radio" id="toolReceptor" name="drawingTool" onclick="drawingToolClick(this)" data-type="Receptor" />
-					<label for="toolReceptor"><img src="_images/receptor.png" title="Container" data-type="Receptor" /></label>
-					<input type="radio" id="toolActivate" name="drawingTool" onclick="drawingToolClick(this)" data-type="Activate" />
-					<label for="toolActivate"><img src="_images/activate.png" title="Container" data-type="Activate" /></label>
-					<input type="radio" id="toolInhibit" name="drawingTool" onclick="drawingToolClick(this)" data-type="Inhibit" />
-					<label for="toolInhibit"><img src="_images/inhibit.png" title="Container" data-type="Inhibit" /></label>
+				<div id="drawing-tools">
+					<input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
+					<label for="button-pointer"><img src="_images/pointer.png" title="Pointer" /></label>
+					<input type="radio" id="button-container" name="drawing-button" data-type="Container" />
+					<label for="button-container"><img src="_images/container.png" title="Container" data-type="Container" class="draggable-button" /></label>
+					<input type="radio" id="button-variable" name="drawing-button" data-type="Variable" />
+					<label for="button-variable"><img src="_images/variable.png" title="Variable" data-type="Variable" class="draggable-button" /></label>
+					<input type="radio" id="button-constant" name="drawing-button" data-type="Constant" />
+					<label for="button-constant"><img src="_images/constant.png" title="Constant" data-type="Constant" class="draggable-button" /></label>
+					<input type="radio" id="button-receptor" name="drawing-button" data-type="Receptor" />
+					<label for="button-receptor"><img src="_images/receptor.png" title="Receptor" data-type="Receptor" class="draggable-button" /></label>
+					<input type="radio" id="button-activate" name="drawing-button" data-type="Activate" />
+					<label for="button-activate"><img src="_images/activate.png" title="Activate" data-type="Activate" /></label>
+					<input type="radio" id="button-inhibit" name="drawing-button" data-type="Inhibit" />
+					<label for="button-inhibit"><img src="_images/inhibit.png" title="Inhibit" data-type="Inhibit" /></label>
 				</div>
 			</div>
 
-			<div id="designSurface">
+			<div id="design-surface">
 				<svg id="svgroot" version="1.1"
 					 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-					 viewBox="0 0 1000 1000" preserveAspectRatio="xMidyMid meet">
-					 <!-- onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()"> -->
+					 viewBox="0 0 1000 1000" preserveAspectRatio="xMidyMid meet"
+					 onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()">
 					<!-- <rect id="svgRect" fill="none" stroke="green" x="0" y="0" width="100%" height="100%" stroke-width="10px" />
 					<rect fill="orange" stroke="black" width="150" height="150" x="50" y="25" /> -->
 				</svg>

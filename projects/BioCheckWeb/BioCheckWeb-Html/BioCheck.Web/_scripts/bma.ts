@@ -8,11 +8,41 @@ var model: Model;
 window.onload = () => {
     svg = <any>document.getElementById("svgroot");
 
-    $("#drawingTools").buttonset();
+    $("#drawing-tools").buttonset();
+    $("#drawing-tools input").click(drawingToolClick);
+    $("img.draggable-button").each(function (i) {
+        $(this).draggable({
+            helper: null,
+            cursor: "url(" + (<HTMLImageElement>this).src.replace(".png", ".cur") + "), pointer",
+            delay: 300
+        })
+    });
+
+    $("#design-surface").droppable({ drop: doDrop });
 };
 
-window.onresize = () => {
-};
+function drawingToolClick(e) {
+    alert("Clicked " + e.target.id);
+}
+
+function startDrag() {
+}
+
+function doDrag() {
+}
+
+function drawItemOrStopDrag() {
+}
+
+function doDrop(e, ui) {
+    alert("Dropped " + $(ui.draggable).attr("data-type"));
+}
+
+// The objects on display are represented as a "group" (SVG "g") with class
+// "object" and which contains two sub elements: a group representing the
+// graphical layout of the object and a text element giving its name. The
+// first group will be a list of paths, the first of which is normally
+// invisible but which can be lit up to indicate hover, selection, etc.
 
 function createSvgElement(type: string, x: number, y: number, scale: number = 1.0) {
     var elem = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", type);
@@ -117,7 +147,7 @@ function addContainer(x: number, y: number) {
     var elem = createTopGroupAndAdd([graphic, text], x, y);
     container.element = elem;
 
-    // model.children.add(container);
+    model.children.push(container);
     return container;
 }
 
@@ -145,9 +175,6 @@ function addConstant(x: number, y: number) {
     //model.children.add
     return constant;
 }
-
-// TODO - tag top <g> with some class to identify whole element; tag sub group (or individual paths) as resizable component. Similar for recolourable.
-// TODO - styles and <use>
 
 enum ItemType { Invalid, Container, Variable, Constant, Receptor, Activate, Inhibit, Model }
 
@@ -181,9 +208,9 @@ class Container extends Item {
     children: Variable[];
 }
 
-class Link extends Item {
-    constructor(type: ItemType) {
-        super(type);
+class Link /*extends Item*/ {
+    constructor(public type: ItemType) {
+        /*super(type);*/
     }
     source: Variable;
     target: Variable;
@@ -198,7 +225,15 @@ class Model {
     children: Item[];
 }
 
+function getMaxId(node, v: number) {
+    if (node.id) v = Math.max(v, node.id);
+    if (node.children)
+        for (var i = 0; i < node.children.length; ++i)
+            v = getMaxId(node.children[i], v);
+    return v;
+}
+
 function getNextId() {
-    return 1;
+    return getMaxId(model, 0) + 1;
 }
 

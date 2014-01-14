@@ -101,6 +101,7 @@
     <Content Include="_images\container.png" />
     <Content Include="_images\inhibit.cur" />
     <Content Include="_images\inhibit.png" />
+    <Content Include="_images\pointer.png" />
     <Content Include="_images\receptor.cur" />
     <Content Include="_images\receptor.png" />
     <Content Include="_images\variable.cur" />
