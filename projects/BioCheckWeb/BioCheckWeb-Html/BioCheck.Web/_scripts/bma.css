@@ -1,0 +1,56 @@
+﻿html, body {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+#tool-container, #tool {
+	display: table;
+}
+
+#tool-container {
+	height: 100%;
+	width: 100%;
+}
+
+#tool {
+	height: calc(100% - 6px);
+	width: calc(100% - 10px);
+	margin: 5px;
+}
+
+#tools, #designSurface, #tools-top, #tool-footer {
+	display: table-row;
+	width: 100%;
+}
+
+#tools {
+	height: 60px;
+}
+
+#drawingTools {
+	margin-top: 8px;
+}
+
+#drawingTools img {
+	/*width: 38px;*/
+	height: 30px;
+}
+
+#drawingTools label {
+	width: 44px;
+	height: 44px;
+}
+
+#drawingTools .ui-button {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	border-radius: 7px;
+}
+
+#drawingTools .ui-button-text {
+	padding-left: 0;
+	padding-right: 0;
+}

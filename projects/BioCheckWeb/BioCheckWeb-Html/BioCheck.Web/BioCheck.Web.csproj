@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -28,6 +29,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UpgradeBackupLocation />
+    <TypeScriptToolsVersion>0.9</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +93,19 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="_images\activate.cur" />
+    <Content Include="_images\activate.png" />
+    <Content Include="_images\constant.cur" />
+    <Content Include="_images\constant.png" />
+    <Content Include="_images\container.cur" />
+    <Content Include="_images\container.png" />
+    <Content Include="_images\inhibit.cur" />
+    <Content Include="_images\inhibit.png" />
+    <Content Include="_images\receptor.cur" />
+    <Content Include="_images\receptor.png" />
+    <Content Include="_images\variable.cur" />
+    <Content Include="_images\variable.png" />
+    <Content Include="_scripts\bma.css" />
     <None Include="Analysis\AnalysisOutputV2Diagram.cd" />
     <None Include="Analysis\ProofOutputDiagram.cd" />
     <None Include="Analysis\Xml\AnalysisInput.xml">
@@ -138,6 +153,7 @@
     <None Include="Analysis\ProofXml\AnalysisOutput2Stable.xml">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="bma.aspx" />
     <Content Include="ClientBin\BioCheck.xap" />
     <Content Include="Services\AnalysisService.svc" />
     <Content Include="Services\LogService.svc" />
@@ -210,7 +226,6 @@
     <Content Include="_models\VPCwildtype_v1.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="_scripts\jquery-1.7.1.min.js" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AnalysisInput.cs" />
@@ -230,6 +245,13 @@
     <Compile Include="Analysis\VariableInput.cs" />
     <Compile Include="Analysis\VariableOutput.cs" />
     <Compile Include="Analysis\Xml\XDocumentHelper.cs" />
+    <Compile Include="bma.aspx.cs">
+      <DependentUpon>bma.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="bma.aspx.designer.cs">
+      <DependentUpon>bma.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ZipHelper.cs" />
     <Compile Include="Log\ErrorDataModel.cs" />
     <Compile Include="Log\ErrorDataSource.cs" />
@@ -276,11 +298,17 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="_scripts\bma.ts" />
+    <TypeScriptCompile Include="_scripts\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="_scripts\jqueryui\jqueryui.d.ts" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <ProjectExtensions>
