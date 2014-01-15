@@ -30,8 +30,13 @@
 	height: 60px;
 }
 
-#drawing-tools {
+#drawing-tools, #zoom-tools {
+	display: inline-block;
 	margin-top: 8px;
+}
+
+#zoom-slider {
+	width: 200px;
 }
 
 #drawing-tools img {
@@ -45,8 +50,8 @@
 }
 
 #drawing-tools .ui-button {
-	margin-left: 0.5em;
-	margin-right: 0.5em;
+	margin-left: 0.2em;
+	margin-right: 0.2em;
 	border-radius: 7px;
 }
 

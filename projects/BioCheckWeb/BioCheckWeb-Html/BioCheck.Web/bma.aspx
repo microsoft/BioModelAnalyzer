@@ -42,15 +42,19 @@
 					<input type="radio" id="button-inhibit" name="drawing-button" data-type="Inhibit" />
 					<label for="button-inhibit"><img src="_images/inhibit.png" title="Inhibit" data-type="Inhibit" /></label>
 				</div>
+
+				<div id="zoom-tools">
+					<div id="zoom-slider"></div>
+				</div>
 			</div>
 
 			<div id="design-surface">
-				<svg id="svgroot" version="1.1"
-					 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-					 viewBox="0 0 1000 1000" preserveAspectRatio="xMidyMid meet"
+				<svg id="svgroot" version="1.1" xmlns="http://www.w3.org/2000/svg"
+					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet"
 					 onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()">
-					<!-- <rect id="svgRect" fill="none" stroke="green" x="0" y="0" width="100%" height="100%" stroke-width="10px" />
-					<rect fill="orange" stroke="black" width="150" height="150" x="50" y="25" /> -->
+					<!-- <rect id="svg-rect" fill="none" stroke="none" x="0" y="0" width="100%" height="100%" /> -->
+					<rect fill="orange" stroke="black" width="150" height="150" x="50" y="25" />
+					<circle fill="red" r="100" cx="1000" cy="500" />
 				</svg>
 			</div>
 		</div>

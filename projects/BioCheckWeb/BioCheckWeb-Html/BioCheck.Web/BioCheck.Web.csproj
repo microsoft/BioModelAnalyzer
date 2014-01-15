@@ -93,18 +93,18 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="_images\activate.cur" />
+    <Content Include="_images\Activate.cur" />
     <Content Include="_images\activate.png" />
-    <Content Include="_images\constant.cur" />
+    <Content Include="_images\Constant.cur" />
     <Content Include="_images\constant.png" />
-    <Content Include="_images\container.cur" />
+    <Content Include="_images\Container.cur" />
     <Content Include="_images\container.png" />
-    <Content Include="_images\inhibit.cur" />
+    <Content Include="_images\Inhibit.cur" />
     <Content Include="_images\inhibit.png" />
     <Content Include="_images\pointer.png" />
-    <Content Include="_images\receptor.cur" />
+    <Content Include="_images\Receptor.cur" />
     <Content Include="_images\receptor.png" />
-    <Content Include="_images\variable.cur" />
+    <Content Include="_images\Variable.cur" />
     <Content Include="_images\variable.png" />
     <Content Include="_scripts\bma.css" />
     <None Include="Analysis\AnalysisOutputV2Diagram.cd" />
