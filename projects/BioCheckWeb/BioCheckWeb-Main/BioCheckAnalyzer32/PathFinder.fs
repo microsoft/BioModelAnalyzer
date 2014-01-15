@@ -5,7 +5,7 @@ Finds all the possible states between two attractors which exist under different
 and confirms that none of the states can lead to alternative attractors
 
 Inputs:     two qns representing the alternative environments (which are switched between)
-            two attractor states (each associated with a specific QN
+            two attractor states (each associated with a specific QN)
 Outputs:    Either: states which fail to lead to one of the attractors
             Or:     a guarantee that no other attractors are accessible
 
@@ -25,6 +25,7 @@ let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.
     let rec simulateToFix (qn: QN.node list) (state:Map<QN.var,int>) (acc:Map<QN.var,int> list) = 
         let state' = Simulate.tick qn state
         if (state'=state) then state'::acc else simulateToFix qn state' (state'::acc)
+    // SI: call function "canEscapeAttractor"? 
     let rec escapeAttractor (qn: QN.node list) (destination:Map<QN.var,int>) (acc:locationLog) (forward:bool) = 
         match (forward,acc.forward,acc.backward) with
         | (true,state::other_states,_)  -> match (simulateToFix qn state [state;]) with
@@ -59,6 +60,9 @@ let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.
     let rec search (qnX: QN.node list) (X:Map<QN.var,int>) (qnY:QN.node list) (Y:Map<QN.var,int>) (L:locationLog) = 
         //Executions which should lead to Y are considered forward
         //Executions which should lead to X are considered backward
+        // SI: consider changing match to more idiomatic F#
+    //        match (L.forward, L.backward) with 
+    //        | ([], []) -> 
         match (L.forward=[],L.backward=[]) with 
         | (true,true)   -> Success L //Nothing left to do; return L with all the visited states
         | (false,false) -> failwith "Both lists have something to search for..."
@@ -67,6 +71,7 @@ let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.
                             match (escapeAttractor qnY Y L true) with
                             | Success L'  -> 
                                 //Log.log_debug (sprintf "%A" L')
+                                assert( L'.forward = [] )
                                 if (L' <> L) then search qnX X qnY Y L' else failwith "The LocationLog hasn't been changed by the search"
                             | Failure(a,b) -> Failure(a,b)
         | (true,false)  -> //backward list searches
@@ -74,6 +79,7 @@ let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.
                             match (escapeAttractor qnX X L false) with
                             | Success L'  -> 
                                 //Log.log_debug (sprintf "%A" L')
+                                assert( L'.backward =  [] )
                                 if (L' <> L) then search qnX X qnY Y L' else failwith "The LocationLog hasn't been changed by the search"
                             | Failure(a,b) -> Failure(a,b)
     search qnX X qnY Y {forward=[X;];backward=[];safe=[]}
