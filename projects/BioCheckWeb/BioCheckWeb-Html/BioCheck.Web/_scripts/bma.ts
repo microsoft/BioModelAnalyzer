@@ -24,9 +24,10 @@ window.onload = () => {
     $("#zoom-slider").slider({
         min: -2,
         max: 3,
-        value: SvgViewBoxManager.scale,
+        value: SvgViewBoxManager.zoomLevel,
         step: 0.1,
-        slide: zoomChange
+        // TODO - define slider args type - see http://stackoverflow.com/questions/17999653/jquery-ui-widgets-in-typescript
+        slide: function (e: JQueryEventObject, ui /*: JQueryUI.SliderUIParams */) { SvgViewBoxManager.zoomLevel = ui.value; }
     });
 
     document.body.onmousewheel = doWheel;
@@ -44,16 +45,24 @@ function drawingToolClick(e: JQueryEventObject) {
 
 function doWheel(e: MouseWheelEvent) {
     var x = e.clientX, y = e.clientY;
-    // TODO - translate to SVG coords
+    var p = screenToSvg(x, y);
     // TODO - check for keyboard modifiers and scroll if ctrl/shift
     var zoom = $("#zoom-slider");
     // TypeScript of slider API doesn't include single arg fn, hence <any> cast
     zoom.slider("value", (<any>zoom).slider("value") + (e.wheelDelta > 0 ? 0.1 : -0.1));
     // Indirecting via the slider control automatically applies range limits
-    SvgViewBoxManager.scaleAroundPoint((<any>zoom).slider("value"), x, y);
+    SvgViewBoxManager.scaleAroundPoint((<any>zoom).slider("value"), p.x, p.y);
 }
 
 function startDrag() {
+    //var sx = window.event.x, sy = window.event.y;
+    //var pt = screenToSvg(sx, sy);
+    //var circ = createSvgElement("circle", pt.x, pt.y);
+    //circ.setAttribute("fill", "red");
+    //circ.setAttribute("r", "2px");
+    //svg.appendChild(circ);
+    //return;
+
     dragging = true;
     var e = window.event;
     lastX = e.x; lastY = e.y;
@@ -63,11 +72,12 @@ function doDrag() {
     if (dragging) {
         var e = window.event;
         var origin = SvgViewBoxManager.origin;
-        var scale = SvgViewBoxManager.scale; // Need to take into account screen to SVG mapping
         var x = e.x, y = e.y;
-        var dx = (x - lastX) * scale, dy = (y - lastY) * scale;
+        var p0 = screenToSvg(lastX, lastY);
         lastX = x; lastY = y;
-        origin.x += dx; origin.y += dy;
+        var p = screenToSvg(x, y);
+        var dx = p.x - p0.x, dy = p.y - p0.y;
+        origin.x -= dx; origin.y -= dy;
         SvgViewBoxManager.origin = origin;
     }
 }
@@ -77,22 +87,21 @@ function drawItemOrStopDrag(e) {
 }
 
 function doDrop(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
-    alert("Dropped " + $(ui.draggable).attr("data-type"));
+    //alert("Dropped " + $(ui.draggable).attr("data-type"));
     document.body.style.cursor = bodyCursor;
+
+    //var sx = e.pageX, sy = e.pageY;
+    //var pt = screenToSvg(sx, sy);
+    //var circ = createSvgElement("circle", pt.x, pt.y);
+    //circ.setAttribute("fill", "red");
+    //circ.setAttribute("r", "2px");
+    //svg.appendChild(circ);
 }
 
 var dragging: boolean;
 var lastX: number, lastY: number;
 
 var bodyCursor: string = "auto";
-
-// TODO - define slider args type - see http://stackoverflow.com/questions/17999653/jquery-ui-widgets-in-typescript
-function zoomChange(e: JQueryEventObject, ui /*: JQueryUI.SliderUIParams */) {
-    SvgViewBoxManager.scale = ui.value;
-    //$("#svgroot").attr("viewBox", "" + ui.value * 5 + " 0 500 500");
-    //vbW = vbH = ui.value * 10; // Need to move left/top too, to keep centre centred
-    //updateVb();
-}
 
 function getCursorUrl(elem: HTMLElement) {
     var type = elem.getAttribute("data-type");
@@ -106,25 +115,59 @@ interface Point {
 
 // Assumes (and requires) that horizontal and vertical scales are the same
 class SvgViewBoxManager {
-    static get scale() {
-        return Math.log(1000 / svg.viewBox.baseVal.width);
+    static get zoomLevel() {
+        return Math.log(2000 / svg.viewBox.baseVal.width);
     }
 
-    static set scale(v: number) {
-        v = Math.exp(v);
+    static set zoomLevel(v: number) {
+        SvgViewBoxManager.scaleAroundPoint(v);
+    }
+
+    // TODO: use overloading rather than optional arguments because want x & y
+    // to be present or absent together
+    static scaleAroundPoint(zoomLevel: number, xc?: number, yc?: number) {
+        // The equation used here is that
+        //    (xc - xo) * s = constant
+        // where xc is the offset to the zoom centre (normalised by scale),
+        //       xo is the viewbox offset, and s the scale.
+        // Thus, to move from scale s1 to s2 keeping xc fixed, we have:
+        //    xo2 = xc - (xc - xo1) * s1 / s2
+        // (and, obviously, the same for y)
+
         var box = svg.viewBox.baseVal;
-        var w = 1000 / v, h = 500 / v;
-        // TODO - if mousewheel, use fractional pointer offset instead of 0.5
-        var dx = (w - box.width) * 0.5, dy = (h - box.height) * 0.5;
-        SvgViewBoxManager.setViewBox(box.x - dx, box.y - dy, w, h);
+        var xo1 = box.x, yo1 = box.y;
+        var s1 = 2000 / box.width;
+        var s2 = Math.exp(zoomLevel);
+        // In the absence of a pointer location, zoom centre is window centre
+        if (typeof xc === "undefined") {
+            xc = box.width / 2 + box.x;
+            yc = box.height / 2 + box.y;
+        }
+
+        var xo2 = xc - (xc - xo1) * s1 / s2;
+        var yo2 = yc - (yc - yo1) * s1 / s2;
+
+        SvgViewBoxManager.setViewBox(xo2, yo2, 2000 / s2, 1000 / s2);
     }
 
-    static scaleAroundPoint(v: number, x: number, y: number) {
-        // TODO!
-        SvgViewBoxManager.scale = v;
+    static scaleAroundPointOLD(zoomLevel: number, x: number, y: number) {
+        var scale = Math.exp(zoomLevel);
+        var w = 1000 / scale, h = 500 / scale; // 1000 here matches the 1000 in scale() above
+
+        var box = svg.viewBox.baseVal;
+        var oldScale = 1000 / box.width;
+
+        var xOff = (x - box.x) * oldScale / scale, yOff = (y - box.y) * oldScale / scale;
+
+        //var xf = box.x / 2000, yf = box.y / 1000;
+        //var xoff = xf * scale, yoff = yf * scale;
+        var dx = xOff - x, dy = yOff - y;
+        //var dx = (w - box.width) * x / 2000, dy = (h - box.height) * y / 1000; // Actual viewbox size here
+        ////var dx = (w - box.width) * x / svg.viewBox.baseVal.width, dy = (h - box.height) * y / svg.viewBox.baseVal.height;
+        SvgViewBoxManager.setViewBox(box.x + dx, box.y + dy, w, h);
     }
 
-    static get origin() {
+    static get origin(): Point {
         var box = svg.viewBox.baseVal;
         return { x: box.x, y: box.y };
     }
@@ -344,7 +387,7 @@ function getNextId() {
     return getMaxId(model, 0) + 1;
 }
 
-function screenToSvg(x:number, y:number) {
+function screenToSvg(x: number, y: number) {
     var screenPt = svg.createSVGPoint();
     screenPt.x = x;
     screenPt.y = y;
