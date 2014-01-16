@@ -6,9 +6,15 @@ var svg: SVGSVGElement;
 var model: Model;
 
 window.onload = () => {
+    var svgjq = $("#svgroot");
     // Indirection via <any> to stop compiler complaining :-|
-    svg = <any>document.getElementById("svgroot");
+    svg = <any>svgjq[0];
+    //svg = <any>document.getElementById("svgroot");
+    svgjq.mousedown(startDrag);
+    svgjq.mousemove(doDrag);
+    svgjq.mouseup(drawItemOrStopDrag);
 
+    // onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()
     $("#drawing-tools").buttonset();
     $("#drawing-tools input").click(drawingToolClick);
     $("img.draggable-button").each(function (i) {
@@ -31,11 +37,16 @@ window.onload = () => {
     });
 
     document.body.onmousewheel = doWheel;
+
+    model = new Model();
 };
 
 function drawingToolClick(e: JQueryEventObject) {
     var target = <HTMLElement>e.target;
-    alert("Clicked " + target.id);
+    drawingItem = ItemType[$(target).attr("data-type")];
+    dragging = false;
+    dragObject = null;
+
     // Draggable causes the cursor to be set on the body, so override that
     // here. Note that the default behaviour of jQueryUI's drop seems to be to
     // return the cursor to "auto" hence caching cursor here to reapply
@@ -54,7 +65,7 @@ function doWheel(e: MouseWheelEvent) {
     SvgViewBoxManager.scaleAroundPoint((<any>zoom).slider("value"), p.x, p.y);
 }
 
-function startDrag() {
+function startDrag(e: JQueryMouseEventObject) {
     //var sx = window.event.x, sy = window.event.y;
     //var pt = screenToSvg(sx, sy);
     //var circ = createSvgElement("circle", pt.x, pt.y);
@@ -63,32 +74,79 @@ function startDrag() {
     //svg.appendChild(circ);
     //return;
 
-    dragging = true;
-    var e = window.event;
-    lastX = e.x; lastY = e.y;
+    if (e.button != 0) return;
+
+    var src = (<any>e).originalEvent.srcElement;
+    if (src && (src.tagName == "path" || src.tagName == "g")) {
+        var node = src;
+        while (node && node.getAttribute("class") != "object")
+            node = <Element>node.parentNode;
+        dragObject = <SVGGElement>node;
+    }
+    else
+        dragObject = null;
+
+    dragging = !dragObject;
+    lastX = e.clientX; lastY = e.clientY;
 }
 
-function doDrag() {
+function doDrag(e: JQueryMouseEventObject) {
+    var origin = SvgViewBoxManager.origin;
+    var x = e.clientX, y = e.clientY;
+    var p0 = screenToSvg(lastX, lastY);
+    lastX = x; lastY = y;
+    var p = screenToSvg(x, y);
+    var dx = p.x - p0.x, dy = p.y - p0.y;
+
     if (dragging) {
-        var e = window.event;
-        var origin = SvgViewBoxManager.origin;
-        var x = e.x, y = e.y;
-        var p0 = screenToSvg(lastX, lastY);
-        lastX = x; lastY = y;
-        var p = screenToSvg(x, y);
-        var dx = p.x - p0.x, dy = p.y - p0.y;
         origin.x -= dx; origin.y -= dy;
         SvgViewBoxManager.origin = origin;
+    } else if (dragObject) {
+        translateSvgElementBy(dragObject, dx, dy);
     }
 }
 
-function drawItemOrStopDrag(e) {
+function drawItemOrStopDrag(e: JQueryMouseEventObject) {
+    if (drawingItem && !dragObject) {
+        var pt = screenToSvg(e.clientX, e.clientY);
+        switch (drawingItem) {
+            case ItemType.Container:
+                var container = addContainer(pt.x, pt.y);
+                break;
+            //case ItemType.Variable:
+            //    var variable = addVariable(pt.x, pt.y);
+            //    break;
+            case ItemType.Constant:
+                var constant = addConstant(pt.x, pt.y);
+                break;
+        }
+    }
+
     dragging = false;
+    dragObject = null;
 }
 
 function doDrop(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
     //alert("Dropped " + $(ui.draggable).attr("data-type"));
     document.body.style.cursor = bodyCursor;
+
+    var sx = e.clientX, sy = e.clientY;
+    var pt = screenToSvg(sx, sy);
+
+    var hits = hitTest(sx, sy);
+    //alert(hits.length);
+    //alert(e.target.nodeName + "  " + hits.length);
+    var s = "";
+    for (var i = 0; i < hits.length; ++i)
+        s += i + " " + (<SVGElement>hits[i].parentNode).getAttribute("class") + "\n";
+    if (s != "")
+        alert(s);
+    var circ = createSvgElement("circle", pt.x, pt.y);
+    circ.setAttribute("fill", "red");
+    circ.setAttribute("r", "2px");
+    svg.appendChild(circ);
+
+    //addConstant(pt.x, pt.y);
 
     //var sx = e.pageX, sy = e.pageY;
     //var pt = screenToSvg(sx, sy);
@@ -100,12 +158,22 @@ function doDrop(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
 
 var dragging: boolean;
 var lastX: number, lastY: number;
+var dragObject: SVGGElement;
+var drawingItem: ItemType;
 
 var bodyCursor: string = "auto";
 
 function getCursorUrl(elem: HTMLElement) {
     var type = elem.getAttribute("data-type");
     return type ? "url(_images/" + type + ".cur), pointer" : "auto";
+}
+
+function hitTest(x: number, y: number) {
+    var o = $("#design-surface").offset();
+    var r = svg.createSVGRect();
+    r.width = r.height = 1;
+    r.x = x - o.left; r.y = y - o.top;
+    return svg.getIntersectionList(r, null);
 }
 
 interface Point {
@@ -322,7 +390,7 @@ function addConstant(x: number, y: number) {
     constant.element = createTopGroupAndAdd([graphic, text], x, y);
     //constant.element.setAttribute("data-object", constant);
 
-    //model.children.add
+    model.children.push(constant);
     return constant;
 }
 

@@ -50,11 +50,11 @@
 
 			<div id="design-surface">
 				<svg id="svgroot" version="1.1" xmlns="http://www.w3.org/2000/svg"
-					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet"
-					 onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()">
-					<!-- <rect id="svg-rect" fill="none" stroke="none" x="0" y="0" width="100%" height="100%" /> -->
+					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet">
+					 <!-- onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()"> -->
+					<!-- <rect id="svg-rect" fill="none" stroke="green" x="0" y="0" width="100%" height="100%" />
 					<rect fill="orange" stroke="black" width="150" height="150" x="50" y="25" />
-					<circle fill="red" r="100" cx="1000" cy="500" />
+					<circle fill="red" r="100" cx="1000" cy="500" /> -->
 				</svg>
 			</div>
 		</div>
