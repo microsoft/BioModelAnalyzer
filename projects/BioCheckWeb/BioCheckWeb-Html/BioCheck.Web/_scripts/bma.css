@@ -30,32 +30,37 @@
 	height: 60px;
 }
 
-#drawing-tools, #zoom-tools {
+#general-tools, #drawing-tools, #prover-tools, #zoom-tools {
 	display: inline-block;
 	margin-top: 8px;
+	margin-right: 1em;
 }
 
 #zoom-slider {
 	width: 200px;
 }
 
-#drawing-tools img {
+#tools img {
 	/*width: 38px;*/
 	height: 30px;
 }
 
-#drawing-tools label {
-	width: 44px;
-	height: 44px;
+#tools label, #tools button {
 }
 
-#drawing-tools .ui-button {
+#tools .ui-button {
+	width: 44px;
+	height: 44px;
 	margin-left: 0.2em;
 	margin-right: 0.2em;
 	border-radius: 7px;
 }
 
-#drawing-tools .ui-button-text {
+#tools .ui-button-text {
 	padding-left: 0;
 	padding-right: 0;
+}
+
+#zoom-slider, #button-zoomtofit {
+	display: inline-block;
 }

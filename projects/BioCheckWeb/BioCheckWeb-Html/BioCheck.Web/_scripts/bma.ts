@@ -14,8 +14,10 @@ window.onload = () => {
     svgjq.mousemove(doDrag);
     svgjq.mouseup(drawItemOrStopDrag);
 
-    // onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()
+    $("#general-tools").buttonset();
     $("#drawing-tools").buttonset();
+    $("#prover-tools").buttonset();
+
     $("#drawing-tools input").click(drawingToolClick);
     $("img.draggable-button").each(function (i) {
         $(this).draggable({
@@ -25,7 +27,7 @@ window.onload = () => {
         })
     });
 
-    $("#design-surface").droppable({ drop: doDrop });
+    $("#design-surface").droppable({ drop: doDropFromDrawingTool });
 
     $("#zoom-slider").slider({
         min: -2,
@@ -35,6 +37,7 @@ window.onload = () => {
         // TODO - define slider args type - see http://stackoverflow.com/questions/17999653/jquery-ui-widgets-in-typescript
         slide: function (e: JQueryEventObject, ui /*: JQueryUI.SliderUIParams */) { SvgViewBoxManager.zoomLevel = ui.value; }
     });
+    $("#button-zoomtofit").button().click(SvgViewBoxManager.zoomToFit);
 
     document.body.onmousewheel = doWheel;
 
@@ -44,7 +47,7 @@ window.onload = () => {
 function drawingToolClick(e: JQueryEventObject) {
     var target = <HTMLElement>e.target;
     drawingItem = ItemType[$(target).attr("data-type")];
-    dragging = false;
+    panning = false;
     dragObject = null;
 
     // Draggable causes the cursor to be set on the body, so override that
@@ -86,11 +89,15 @@ function startDrag(e: JQueryMouseEventObject) {
     else
         dragObject = null;
 
-    dragging = !dragObject;
+    panning = !dragObject;
     lastX = e.clientX; lastY = e.clientY;
 }
 
-function doDrag(e: JQueryMouseEventObject) {
+function doDrag(e /*: JQueryMouseEventObject*/) {
+    // e.button isn't set while mouse-moving, but e.buttons is - though it
+    // doesn't appear in the JQueryMouseEventObject definition??
+    if (e.buttons != 1) return;
+
     var origin = SvgViewBoxManager.origin;
     var x = e.clientX, y = e.clientY;
     var p0 = screenToSvg(lastX, lastY);
@@ -98,11 +105,15 @@ function doDrag(e: JQueryMouseEventObject) {
     var p = screenToSvg(x, y);
     var dx = p.x - p0.x, dy = p.y - p0.y;
 
-    if (dragging) {
+    if (panning) {
+        // Panning the design surface, obviously
         origin.x -= dx; origin.y -= dy;
         SvgViewBoxManager.origin = origin;
     } else if (dragObject) {
+        // Dragging an object
         translateSvgElementBy(dragObject, dx, dy);
+    } else {
+        // Participating in drag from toolbar
     }
 }
 
@@ -122,11 +133,11 @@ function drawItemOrStopDrag(e: JQueryMouseEventObject) {
         }
     }
 
-    dragging = false;
+    panning = false;
     dragObject = null;
 }
 
-function doDrop(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
+function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
     //alert("Dropped " + $(ui.draggable).attr("data-type"));
     document.body.style.cursor = bodyCursor;
 
@@ -156,7 +167,7 @@ function doDrop(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
     //svg.appendChild(circ);
 }
 
-var dragging: boolean;
+var panning: boolean;
 var lastX: number, lastY: number;
 var dragObject: SVGGElement;
 var drawingItem: ItemType;
@@ -184,7 +195,7 @@ interface Point {
 // Assumes (and requires) that horizontal and vertical scales are the same
 class SvgViewBoxManager {
     static get zoomLevel() {
-        return Math.log(2000 / svg.viewBox.baseVal.width);
+        return SvgViewBoxManager.scaleToZoomLevel(2000 / svg.viewBox.baseVal.width);
     }
 
     static set zoomLevel(v: number) {
@@ -205,7 +216,7 @@ class SvgViewBoxManager {
         var box = svg.viewBox.baseVal;
         var xo1 = box.x, yo1 = box.y;
         var s1 = 2000 / box.width;
-        var s2 = Math.exp(zoomLevel);
+        var s2 = SvgViewBoxManager.zoomLevelToScale(zoomLevel);
         // In the absence of a pointer location, zoom centre is window centre
         if (typeof xc === "undefined") {
             xc = box.width / 2 + box.x;
@@ -216,23 +227,6 @@ class SvgViewBoxManager {
         var yo2 = yc - (yc - yo1) * s1 / s2;
 
         SvgViewBoxManager.setViewBox(xo2, yo2, 2000 / s2, 1000 / s2);
-    }
-
-    static scaleAroundPointOLD(zoomLevel: number, x: number, y: number) {
-        var scale = Math.exp(zoomLevel);
-        var w = 1000 / scale, h = 500 / scale; // 1000 here matches the 1000 in scale() above
-
-        var box = svg.viewBox.baseVal;
-        var oldScale = 1000 / box.width;
-
-        var xOff = (x - box.x) * oldScale / scale, yOff = (y - box.y) * oldScale / scale;
-
-        //var xf = box.x / 2000, yf = box.y / 1000;
-        //var xoff = xf * scale, yoff = yf * scale;
-        var dx = xOff - x, dy = yOff - y;
-        //var dx = (w - box.width) * x / 2000, dy = (h - box.height) * y / 1000; // Actual viewbox size here
-        ////var dx = (w - box.width) * x / svg.viewBox.baseVal.width, dy = (h - box.height) * y / svg.viewBox.baseVal.height;
-        SvgViewBoxManager.setViewBox(box.x + dx, box.y + dy, w, h);
     }
 
     static get origin(): Point {
@@ -248,6 +242,67 @@ class SvgViewBoxManager {
     static moveBy(dx: number, dy: number) {
         var box = svg.viewBox.baseVal;
         SvgViewBoxManager.setViewBox(box.x + dx, box.y + dy, box.width, box.height);
+    }
+
+    static zoomToFit() {
+        var left = Number.MAX_VALUE, right = Number.MIN_VALUE, top = Number.MAX_VALUE, bottom = Number.MIN_VALUE;
+        if (!model.children.length) {
+            left = 0;
+            right = 2000;
+            top = 0;
+            bottom = 1000;
+        } else {
+            // TODO - maybe this should be in the SVG section
+            for (var i = 0; i < model.children.length; ++i) {
+                var elem = model.children[i].element;
+                var box = getTrueBBox(elem);
+                if (box.x < left) left = box.x;
+                if (box.y < top) top = box.y;
+                if (box.x + box.width > right) right = box.x + box.width;
+                if (box.y + box.height > bottom) bottom = box.y + box.height;
+                //var rect = <SVGRectElement>createSvgElement("rect", 0, 0);
+                //rect.x.baseVal.value = box.x;
+                //rect.y.baseVal.value = box.y;
+                //rect.width.baseVal.value = box.width;
+                //rect.height.baseVal.value = box.height;
+                //rect = <SVGRectElement>createSvgElement("rect", 0, 0);
+                //rect.x.baseVal.value = left;
+                //rect.y.baseVal.value = top;
+                //rect.width.baseVal.value = right-left;
+                //rect.height.baseVal.value = bottom - top;
+                //rect.setAttribute("stroke", "red");
+            }
+        }
+        var width = right - left, height = bottom - top;
+        // Add a bit of a margin
+        left -= 20; width += 40;
+        top -= 20; height += 40;
+
+        // Need to keep a consistent zoom level
+        var sx = 2000 / width, sy = 1000 / height;
+        var s = sx < sy ? sx : sy;
+
+        // Limit to range available via the UI, and keep the UI in step
+        // TODO - too much coupling
+        var zoom = $("#zoom-slider");
+        zoom.slider("value", SvgViewBoxManager.scaleToZoomLevel(s));
+
+        // Reading back from the slider control automatically applies limits
+        s = SvgViewBoxManager.zoomLevelToScale((<any>zoom).slider("value"));
+
+        // Adjust offsets to centre the display
+        var displayWidth = 2000 / s, displayHeight = 1000 / s;
+        left += 0.5 * (width - displayWidth);
+        top += 0.5 * (height - displayHeight);
+        SvgViewBoxManager.setViewBox(left, top, displayWidth, displayHeight);
+    }
+
+    private static zoomLevelToScale(v: number) {
+        return Math.exp(v);
+    }
+
+    private static scaleToZoomLevel(v: number) {
+        return Math.log(v);
     }
 
     private static setViewBox(x: number, y: number, w: number, h: number) {
@@ -284,7 +339,7 @@ function createSvgPath(data: string, color: string, x: number = 0, y: number = 0
 
 function createSvgText(text: string, x: number, y: number) {
     var elem = <SVGTextElement>createSvgElement("text", x, y);
-    // set colour, size & font
+    // TODO set colour, size & font
     elem.textContent = text;
     return elem;
 }
@@ -296,16 +351,16 @@ function createSvgGroup(children: SVGElement[], x: number, y: number, scale: num
     return elem;
 }
 
-// Requires that first element be a path, and that path be the outermost, since it's cloned to make a highlight outline
+// Requires that first element be a strokeless path, and that path be the
+// outermost, since its stroke is manipulated to make a highlight outline
 function createHighlightableSvgGroup(children: SVGElement[], x: number, y: number, scale: number = 1.0) {
-    var highlightPath = <SVGPathElement>children[0].cloneNode(true);
+    var highlightPath = <SVGPathElement>children[0];
     highlightPath.setAttribute("stroke-width", (3 / scale) + "px");
     highlightPath.setAttribute("stroke", "transparent");
-    highlightPath.setAttribute("fill", "transparent");
-    children.unshift(highlightPath);
     var group = createSvgGroup(children, x, y, scale);
     group.setAttribute("onmouseover", "this.childNodes[0].setAttribute('stroke', 'gray')");
     group.setAttribute("onmouseout", "this.childNodes[0].setAttribute('stroke', 'transparent')");
+    // Allow the invisible stroke to still participate in hit testing
     group.setAttribute("pointer-events", "all");
     group.setAttribute("class", "shape");
     return group;
@@ -351,7 +406,27 @@ function translateSvgElementBy(elem: SVGGElement, dx: number, dy: number) {
         }
     }
     // Getting here means no translation was present
-    //applyNewTranslation(elem, dx, dy);
+    //applyNewTranslation(elem, dx, dy); ???
+}
+
+// getBBox doesn't take transformations into account; this function looks at
+// the currently applied translation (note, doesn't walk any further up the
+// tree, nor does it take scale into account so only useful for top level
+// objects)
+function getTrueBBox(elem: SVGGElement) {
+    var box = elem.getBBox();
+    var x = box.x, y = box.y;
+    // TODO - matrix manipulation instead
+    var transformList = elem.transform.baseVal;
+    for (var i = 0; i < transformList.numberOfItems; ++i) {
+        var transform = transformList.getItem(i);
+        if (transform.type == SVGTransform.SVG_TRANSFORM_TRANSLATE) {
+            x += transform.matrix.e;
+            y += transform.matrix.f;
+            break;
+        }
+    }
+    return { x: x, y: y, width: box.width, height: box.height };
 }
 
 function addContainer(x: number, y: number) {

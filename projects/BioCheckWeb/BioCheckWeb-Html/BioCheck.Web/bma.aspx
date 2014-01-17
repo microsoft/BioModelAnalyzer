@@ -26,6 +26,11 @@
 		<div id="tools-top">
 		<div id="tool">
 			<div id="tools">
+				<div id="general-tools">
+					<button id="button-undo"><img src="_images/undo.png" title="Undo" /></button>
+					<button id="button-redo"><img src="_images/redo.png" title="Redo" /></button>
+				</div>
+
 				<div id="drawing-tools">
 					<input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
 					<label for="button-pointer"><img src="_images/pointer.png" title="Pointer" /></label>
@@ -43,16 +48,21 @@
 					<label for="button-inhibit"><img src="_images/inhibit.png" title="Inhibit" data-type="Inhibit" /></label>
 				</div>
 
+				<div id="prover-tools">
+					<button id="button-run">Run</button>
+					<button id="button-simulate">Sim</button>
+				</div>
+
 				<div id="zoom-tools">
 					<div id="zoom-slider"></div>
+					<button id="button-zoomtofit">X</button>
 				</div>
 			</div>
 
 			<div id="design-surface">
 				<svg id="svgroot" version="1.1" xmlns="http://www.w3.org/2000/svg"
 					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet">
-					 <!-- onmousedown="startDrag()" onmousemove="doDrag()" onmouseup="drawItemOrStopDrag()"> -->
-					<!-- <rect id="svg-rect" fill="none" stroke="green" x="0" y="0" width="100%" height="100%" />
+					<!-- <rect fill="none" stroke="green" x="0" y="0" width="100%" height="100%" />
 					<rect fill="orange" stroke="black" width="150" height="150" x="50" y="25" />
 					<circle fill="red" r="100" cx="1000" cy="500" /> -->
 				</svg>
