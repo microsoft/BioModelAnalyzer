@@ -104,6 +104,8 @@
     <Content Include="_images\pointer.png" />
     <Content Include="_images\Receptor.cur" />
     <Content Include="_images\receptor.png" />
+    <Content Include="_images\redo.png" />
+    <Content Include="_images\undo.png" />
     <Content Include="_images\Variable.cur" />
     <Content Include="_images\variable.png" />
     <Content Include="_scripts\bma.css" />
