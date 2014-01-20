@@ -81,7 +81,7 @@ function startDrag(e: JQueryMouseEventObject) {
 
     if (e.button != 0) return;
 
-    var src = (<any>e).originalEvent.srcElement;
+    var src = (<any>e).originalEvent.srcElement || (<any>e).originalEvent.originalTarget;
     if (src && (src.tagName == "path" || src.tagName == "g")) {
         var node = src;
         while (node && node.getAttribute("class") != "object")
@@ -96,9 +96,9 @@ function startDrag(e: JQueryMouseEventObject) {
 }
 
 function doDrag(e /*: JQueryMouseEventObject*/) {
-    // e.button isn't set while mouse-moving, but e.buttons is, but only in IE
-    // so rely on explicit flags set on mouse down operations rather than
-    // asking for the state here
+    // e.button isn't set while mouse-moving, but e.buttons is, but only in
+    // IE is seems (!?) so rely on explicit flags set on mouse down operations
+    // rather than asking for the state here
     //if (e.buttons != 1) return;
     if (!panning && !dragObject && !dragFromButton) return;
 
@@ -115,9 +115,11 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
         SvgViewBoxManager.origin = origin;
     } else {
         // Determine if drop on background or on cell, etc
-        var hits = hitTest(x, y);
-        if (hits.length > 0)
-            console.log("Over " + hits.length);
+        //var hits = hitTest(x, y);
+        //if (hits.length > 0)
+        //    console.log("Over " + hits.length);
+        var hit = getEventItemAndPart(e.originalEvent);
+        console.log(hit && hit.type);
         if (dragObject) {
             // Dragging an object
             translateSvgElementBy(dragObject, dx, dy);
@@ -148,9 +150,11 @@ function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEvent
     var pt = screenToSvg(sx, sy);
 
     // Determine if drop on background or on cell, etc
-    var hits = hitTest(sx, sy);
+    //var hits = hitTest(sx, sy);
     //alert(hits.length);
     //alert(e.target.nodeName + "  " + hits.length);
+    var hit = getEventItemAndPart(e.originalEvent);
+    console.log(hit && hit.type);
     //var s = "";
     //for (var i = 0; i < hits.length; ++i)
     //    s += i + " " + (<SVGElement>hits[i].parentNode).getAttribute("class") + "\n";
@@ -179,12 +183,35 @@ function getCursorUrl(elem: HTMLElement) {
     return type ? "url(_images/" + type + ".cur), pointer" : "auto";
 }
 
-function hitTest(x: number, y: number) {
-    var o = $("#design-surface").offset();
-    var r = svg.createSVGRect();
-    r.width = r.height = 1;
-    r.x = x - o.left; r.y = y - o.top;
-    return svg.getIntersectionList(r, null);
+// getIntersectionList not available in FireFox, so can't use this mechanism
+//function hitTest(x: number, y: number) {
+//    var o = $("#design-surface").offset();
+//    var r = svg.createSVGRect();
+//    r.width = r.height = 1;
+//    r.x = x - o.left; r.y = y - o.top;
+//    return svg.getIntersectionList(r, null);
+//}
+
+function getEventItemAndPart(e) {
+    var src = e.srcElement || e.originalTarget;
+    if (!src || (src.tagName != "path" && src.tagName != "g")) return null;
+
+    var node = src;
+    var nodeClass = node.getAttribute("class");
+    var itemClass = nodeClass;
+    while (nodeClass != "object") {
+        node = <Element>node.parentNode;
+        if (!node)
+            break;
+        if (!itemClass)
+            itemClass = nodeClass;
+        nodeClass = node.getAttribute("class");
+    }
+
+    if (node)
+        return { item: <SVGGElement>node, type: itemClass };
+    else
+        return null;
 }
 
 interface Point {
@@ -436,7 +463,9 @@ function addContainer(x: number, y: number) {
     var container = new Container();
 
     var outerPath = createSvgPath("M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z", "#FAAF42");
+    outerPath.setAttribute("class", "cell-outer");
     var innerPath = createSvgPath("M3.6,45.5C-16.6,45.5-33,25.1-33,0.1c0-25,16.4-45.3,36.6-45.3c20.2,0,36.6,20.3,36.6,45.3C40.2,25.1,23.8,45.5,3.6,45.5z", "#FFF");
+    innerPath.setAttribute("class", "cell-inner");
     var graphic = createHighlightableSvgGroup([outerPath, innerPath], 0, 0, 2.5);
     graphic.setAttribute("class", "shape");
     var text = createSvgText(container.name, -100, -125); // offset...
