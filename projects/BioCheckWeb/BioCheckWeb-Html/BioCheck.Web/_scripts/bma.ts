@@ -120,17 +120,7 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
 function drawItemOrStopDrag(e: JQueryMouseEventObject) {
     if (drawingItem && !dragObject) {
         var pt = screenToSvg(e.clientX, e.clientY);
-        switch (drawingItem) {
-            case ItemType.Container:
-                var container = addContainer(pt.x, pt.y);
-                break;
-            //case ItemType.Variable:
-            //    var variable = addVariable(pt.x, pt.y);
-            //    break;
-            case ItemType.Constant:
-                var constant = addConstant(pt.x, pt.y);
-                break;
-        }
+        addItem(drawingItem, pt);
     }
 
     panning = false;
@@ -139,32 +129,31 @@ function drawItemOrStopDrag(e: JQueryMouseEventObject) {
 
 function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
     //alert("Dropped " + $(ui.draggable).attr("data-type"));
+    var type = ItemType[$(ui.draggable).attr("data-type")];
+
     document.body.style.cursor = bodyCursor;
 
     var sx = e.clientX, sy = e.clientY;
     var pt = screenToSvg(sx, sy);
 
+    // Determine if drop on background or on cell, etc
     var hits = hitTest(sx, sy);
     //alert(hits.length);
     //alert(e.target.nodeName + "  " + hits.length);
-    var s = "";
-    for (var i = 0; i < hits.length; ++i)
-        s += i + " " + (<SVGElement>hits[i].parentNode).getAttribute("class") + "\n";
-    if (s != "")
-        alert(s);
-    var circ = createSvgElement("circle", pt.x, pt.y);
-    circ.setAttribute("fill", "red");
-    circ.setAttribute("r", "2px");
-    svg.appendChild(circ);
+    //var s = "";
+    //for (var i = 0; i < hits.length; ++i)
+    //    s += i + " " + (<SVGElement>hits[i].parentNode).getAttribute("class") + "\n";
+    //if (s != "")
+    //    alert(s);
 
-    //addConstant(pt.x, pt.y);
-
-    //var sx = e.pageX, sy = e.pageY;
-    //var pt = screenToSvg(sx, sy);
+    // Small spot to check drop location calculation
     //var circ = createSvgElement("circle", pt.x, pt.y);
     //circ.setAttribute("fill", "red");
     //circ.setAttribute("r", "2px");
     //svg.appendChild(circ);
+
+    addItem(type, pt);
+    //addConstant(pt.x, pt.y);
 }
 
 var panning: boolean;
@@ -260,17 +249,6 @@ class SvgViewBoxManager {
                 if (box.y < top) top = box.y;
                 if (box.x + box.width > right) right = box.x + box.width;
                 if (box.y + box.height > bottom) bottom = box.y + box.height;
-                //var rect = <SVGRectElement>createSvgElement("rect", 0, 0);
-                //rect.x.baseVal.value = box.x;
-                //rect.y.baseVal.value = box.y;
-                //rect.width.baseVal.value = box.width;
-                //rect.height.baseVal.value = box.height;
-                //rect = <SVGRectElement>createSvgElement("rect", 0, 0);
-                //rect.x.baseVal.value = left;
-                //rect.y.baseVal.value = top;
-                //rect.width.baseVal.value = right-left;
-                //rect.height.baseVal.value = bottom - top;
-                //rect.setAttribute("stroke", "red");
             }
         }
         var width = right - left, height = bottom - top;
@@ -278,7 +256,7 @@ class SvgViewBoxManager {
         left -= 20; width += 40;
         top -= 20; height += 40;
 
-        // Need to keep a consistent zoom level
+        // Need to keep a consistent zoom level across both axes
         var sx = 2000 / width, sy = 1000 / height;
         var s = sx < sy ? sx : sy;
 
@@ -429,6 +407,20 @@ function getTrueBBox(elem: SVGGElement) {
     return { x: x, y: y, width: box.width, height: box.height };
 }
 
+function addItem(type: ItemType, pt: Point): Item {
+    switch (type) {
+        case ItemType.Container:
+            return addContainer(pt.x, pt.y);
+        case ItemType.Variable:
+            return addVariable(pt.x, pt.y);
+        case ItemType.Constant:
+            return addConstant(pt.x, pt.y);
+        case ItemType.Receptor:
+            return addReceptor(pt.x, pt.y);
+    }
+    return null;
+}
+
 function addContainer(x: number, y: number) {
     var container = new Container();
 
@@ -444,15 +436,17 @@ function addContainer(x: number, y: number) {
     return container;
 }
 
-function addVariable(container: Container, x: number, y: number) {
+function addVariable(x: number, y: number) {
+    // LOCATE CONTAINER
     var variable = new Variable(ItemType.Variable);
-    var path = createSvgPath("M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z", "#EF4137", 0, 0, 0.24);
+    var path = createSvgPath("M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z", "#EF4137");
     var graphic = createHighlightableSvgGroup([path], 0, 0, 0.36);
     graphic.setAttribute("class", "shape");
     var text = createSvgText(variable.name, 0, 50); // offset...
     variable.element = createTopGroupAndAdd([graphic, text], x, y);
 
-    container.children.push(variable);
+    //container.children.push(variable);
+    model.children.push(variable);
     return variable;
 }
 
@@ -467,6 +461,19 @@ function addConstant(x: number, y: number) {
 
     model.children.push(constant);
     return constant;
+}
+
+function addReceptor(x: number, y: number) {
+    // LOCATE CONTAINER
+    var receptor = new Variable(ItemType.Constant);
+    var path = createSvgPath("M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z", "#3BB34A");
+    var graphic = createHighlightableSvgGroup([path], 0, 0, 1);
+    graphic.setAttribute("class", "shape");
+    receptor.element = createTopGroupAndAdd([graphic], x, y);
+
+    //container.children.push(receptor);
+    model.children.push(receptor);
+    return receptor;
 }
 
 enum ItemType { Invalid, Container, Variable, Constant, Receptor, Activate, Inhibit, Model }
