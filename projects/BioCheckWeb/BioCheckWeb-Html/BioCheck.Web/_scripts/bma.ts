@@ -23,7 +23,8 @@ window.onload = () => {
         $(this).draggable({
             helper: null,
             cursor: getCursorUrl(this),
-            delay: 300
+            delay: 300,
+            start: function () { dragFromButton = true; }
         })
     });
 
@@ -49,6 +50,7 @@ function drawingToolClick(e: JQueryEventObject) {
     drawingItem = ItemType[$(target).attr("data-type")];
     panning = false;
     dragObject = null;
+    dragFromButton = false;
 
     // Draggable causes the cursor to be set on the body, so override that
     // here. Note that the default behaviour of jQueryUI's drop seems to be to
@@ -94,9 +96,11 @@ function startDrag(e: JQueryMouseEventObject) {
 }
 
 function doDrag(e /*: JQueryMouseEventObject*/) {
-    // e.button isn't set while mouse-moving, but e.buttons is - though it
-    // doesn't appear in the JQueryMouseEventObject definition??
-    if (e.buttons != 1) return;
+    // e.button isn't set while mouse-moving, but e.buttons is, but only in IE
+    // so rely on explicit flags set on mouse down operations rather than
+    // asking for the state here
+    //if (e.buttons != 1) return;
+    if (!panning && !dragObject && !dragFromButton) return;
 
     var origin = SvgViewBoxManager.origin;
     var x = e.clientX, y = e.clientY;
@@ -109,11 +113,17 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
         // Panning the design surface, obviously
         origin.x -= dx; origin.y -= dy;
         SvgViewBoxManager.origin = origin;
-    } else if (dragObject) {
-        // Dragging an object
-        translateSvgElementBy(dragObject, dx, dy);
     } else {
-        // Participating in drag from toolbar
+        // Determine if drop on background or on cell, etc
+        var hits = hitTest(x, y);
+        if (hits.length > 0)
+            console.log("Over " + hits.length);
+        if (dragObject) {
+            // Dragging an object
+            translateSvgElementBy(dragObject, dx, dy);
+        } else /* if dragFromToolbar */ {
+            // Participating in drag from toolbar
+        }
     }
 }
 
@@ -125,6 +135,7 @@ function drawItemOrStopDrag(e: JQueryMouseEventObject) {
 
     panning = false;
     dragObject = null;
+    dragFromButton = false;
 }
 
 function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
@@ -153,13 +164,13 @@ function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEvent
     //svg.appendChild(circ);
 
     addItem(type, pt);
-    //addConstant(pt.x, pt.y);
 }
 
 var panning: boolean;
 var lastX: number, lastY: number;
 var dragObject: SVGGElement;
 var drawingItem: ItemType;
+var dragFromButton: boolean;
 
 var bodyCursor: string = "auto";
 
