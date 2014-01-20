@@ -118,7 +118,7 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
         //var hits = hitTest(x, y);
         //if (hits.length > 0)
         //    console.log("Over " + hits.length);
-        var hit = getEventItemAndPart(e.originalEvent);
+        var hit = getEventElementAndPart(e.originalEvent);
         console.log(hit && hit.type);
         if (dragObject) {
             // Dragging an object
@@ -129,10 +129,12 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     }
 }
 
-function drawItemOrStopDrag(e: JQueryMouseEventObject) {
-    if (drawingItem && !dragObject) {
+// TODO - min drag distance
+
+function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
+    if (drawingItem /*&& !dragObject*/) {
         var pt = screenToSvg(e.clientX, e.clientY);
-        addItem(drawingItem, pt);
+        addItem(drawingItem, pt, getEventElementAndPart(e.originalEvent));
     }
 
     panning = false;
@@ -140,7 +142,7 @@ function drawItemOrStopDrag(e: JQueryMouseEventObject) {
     dragFromButton = false;
 }
 
-function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEventUIParam) {
+function doDropFromDrawingTool(e /*: JQueryEventObject*/, ui: JQueryUI.DroppableEventUIParam) {
     //alert("Dropped " + $(ui.draggable).attr("data-type"));
     var type = ItemType[$(ui.draggable).attr("data-type")];
 
@@ -153,7 +155,7 @@ function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEvent
     //var hits = hitTest(sx, sy);
     //alert(hits.length);
     //alert(e.target.nodeName + "  " + hits.length);
-    var hit = getEventItemAndPart(e.originalEvent);
+    var hit = getEventElementAndPart(e.originalEvent.originalEvent);
     console.log(hit && hit.type);
     //var s = "";
     //for (var i = 0; i < hits.length; ++i)
@@ -167,7 +169,7 @@ function doDropFromDrawingTool(e: JQueryEventObject, ui: JQueryUI.DroppableEvent
     //circ.setAttribute("r", "2px");
     //svg.appendChild(circ);
 
-    addItem(type, pt);
+    addItem(type, pt, hit);
 }
 
 var panning: boolean;
@@ -192,7 +194,7 @@ function getCursorUrl(elem: HTMLElement) {
 //    return svg.getIntersectionList(r, null);
 //}
 
-function getEventItemAndPart(e) {
+function getEventElementAndPart(e) : ElementAndPart {
     var src = e.srcElement || e.originalTarget;
     if (!src || (src.tagName != "path" && src.tagName != "g")) return null;
 
@@ -209,9 +211,14 @@ function getEventItemAndPart(e) {
     }
 
     if (node)
-        return { item: <SVGGElement>node, type: itemClass };
+        return { elem: <SVGGElement>node, type: itemClass };
     else
         return null;
+}
+
+interface ElementAndPart {
+    elem: SVGGElement;
+    type: string;
 }
 
 interface Point {
@@ -445,16 +452,24 @@ function getTrueBBox(elem: SVGGElement) {
     return { x: x, y: y, width: box.width, height: box.height };
 }
 
-function addItem(type: ItemType, pt: Point): Item {
+function addItem(type: ItemType, pt: Point, elemAndPart: ElementAndPart): Item {
     switch (type) {
         case ItemType.Container:
-            return addContainer(pt.x, pt.y);
+            if (elemAndPart == null)
+                return addContainer(pt.x, pt.y);
+            break;
         case ItemType.Variable:
-            return addVariable(pt.x, pt.y);
+            if (elemAndPart && elemAndPart.type == "cell-inner")
+                return addVariable(pt.x, pt.y);
+            break;
         case ItemType.Constant:
-            return addConstant(pt.x, pt.y);
+            if (elemAndPart == null)
+                return addConstant(pt.x, pt.y);
+            break;
         case ItemType.Receptor:
-            return addReceptor(pt.x, pt.y);
+            if (elemAndPart && elemAndPart.type == "cell-outer")
+                return addReceptor(pt.x, pt.y);
+            break;
     }
     return null;
 }
