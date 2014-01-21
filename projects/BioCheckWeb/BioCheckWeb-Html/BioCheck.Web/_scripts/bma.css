@@ -1,4 +1,12 @@
-﻿html, body {
+﻿/******************************************************************************
+
+  Copyright 2014 Microsoft Corporation.  All Rights Reserved.
+
+  Core BMA styles
+
+******************************************************************************/
+
+html, body {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
@@ -67,4 +75,8 @@
 
 #svgroot {
 	height: 100%;
+}
+
+.svg-highlight {
+	stroke: gray;
 }
