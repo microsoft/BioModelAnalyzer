@@ -52,7 +52,7 @@
                 <param name="source" value="ClientBin/BioCheck.xap" />
                 <param name="onError" value="onSilverlightError" />
                 <param name="background" value="white" />
-                <param name="minRuntimeVersion" value="5.0.61118.0" />
+                <param name="minRuntimeVersion" value="5.1.20913.0" />
                 <param name="autoUpgrade" value="true" />
                 <param name="enableRedrawRegions" value="false" />
                 <param name="enableFrameRateCounter" value="false" />
@@ -61,7 +61,7 @@
                
                  <param name="initParams" value="IPAddress=<%=IPAddress%>,Model=<%=Model%>"/>
                
-                <a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=4.0.60310.0" style="text-decoration: none">
+                <a href="http://go.microsoft.com/fwlink/?LinkID=149156" style="text-decoration: none">
                     <img src="http://go.microsoft.com/fwlink/?LinkId=161376" alt="Get Microsoft Silverlight"
                         style="border-style: none" />
                 </a>
