@@ -89,17 +89,27 @@ function startDrag(e: JQueryMouseEventObject) {
     if (e.button != 0) return;
 
     var src = (<any>e).originalEvent.srcElement || (<any>e).originalEvent.originalTarget;
+    var elem = null;
     if (src && (src.tagName == "path" || src.tagName == "g")) {
         var node = src;
         while (node && node.getAttribute("class") != "object")
             node = <Element>node.parentNode;
-        dragObject = <SVGGElement>node;
+        elem = node;
     }
-    else
-        dragObject = null;
 
-    panning = !dragObject;
-    lastX = e.clientX; lastY = e.clientY;
+    // Mouse down for drawing lines *doesn't* trigger a drag
+    if (elem && (drawingItem == ItemType.Activate || drawingItem == ItemType.Inhibit)) {
+        var item = <Item>elem.item;
+        if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
+            var pt = getTranslation(elem);
+            drawingLineSource = <Variable>item;
+            drawingLine = addLink(pt.x, pt.y, drawingItem);
+        }
+    } else {
+        dragObject = elem;
+        panning = !dragObject;
+        lastX = e.clientX; lastY = e.clientY;
+    }
 }
 
 function doDrag(e /*: JQueryMouseEventObject*/) {
@@ -107,38 +117,81 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     // IE is seems (!?) so rely on explicit flags set on mouse down operations
     // rather than asking for the state here
     //if (e.buttons != 1) return;
-    if (!panning && !dragObject && !dragFromButton) return;
+    if (!panning && !dragObject && !dragFromButton && !drawingLine) return;
 
-    var origin = SvgViewBoxManager.origin;
     var x = e.clientX, y = e.clientY;
+    var p = screenToSvg(x, y);
+
+    if (drawingLine) {
+        var line = <SVGLineElement>drawingLine.element.firstChild.firstChild;
+        line.x2.baseVal.value = p.x;
+        line.y2.baseVal.value = p.y;
+        return;
+    }
+
     var p0 = screenToSvg(lastX, lastY);
     lastX = x; lastY = y;
-    var p = screenToSvg(x, y);
     var dx = p.x - p0.x, dy = p.y - p0.y;
 
     if (panning) {
         // Panning the design surface, obviously
+        var origin = SvgViewBoxManager.origin;
         origin.x -= dx; origin.y -= dy;
         SvgViewBoxManager.origin = origin;
     } else {
         // Determine if drop on background or on cell, etc
-        //var hits = hitTest(x, y);
-        //if (hits.length > 0)
-        //    console.log("Over " + hits.length);
         var hit = getEventElementAndPart(e.originalEvent);
         console.log(hit && hit.type);
         if (dragObject) {
             // Dragging an object
-            translateSvgElementBy(dragObject, dx, dy);
+            translateBy(dragObject, dx, dy);
             // TODO - encapsulate movement, including recursion
-            var item = <Item>((<any>dragObject).item);
+            /*var item = <Item>((<any>dragObject).item);
             if (item.type == ItemType.Container) {
                 var children = (<Container>item).children;
                 for (var i = 0; i < children.length; ++i)
                     translateSvgElementBy(children[i].element, dx, dy);
-            }
-        } else /* if dragFromToolbar */ {
+            } else if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
+                var v = <Variable>item;
+                var pt = getTranslation(dragObject);
+                for (var i = 0; i < v.fromLinks.length; ++i) {
+                    var line = <SVGLineElement>v.fromLinks[i].element.firstChild.firstChild;
+                    line.x1.baseVal.value = pt.x;
+                    line.y1.baseVal.value = pt.y;
+                }
+                for (var i = 0; i < v.toLinks.length; ++i) {
+                    var line = <SVGLineElement>v.toLinks[i].element.firstChild.firstChild;
+                    line.x2.baseVal.value = pt.x;
+                    line.y2.baseVal.value = pt.y;
+                }
+            }*/
+        } else /* must be dragFromToolbar */ {
             // Participating in drag from toolbar
+        }
+    }
+}
+
+// TODO - tidy up
+
+function translateBy(elem: SVGGElement, dx: number, dy: number) {
+    translateSvgElementBy(elem, dx, dy);
+    var item = <Item>((<any>elem).item);
+    if (item.type == ItemType.Container) {
+        var children = (<Container>item).children;
+        for (var i = 0; i < children.length; ++i)
+            translateBy(children[i].element, dx, dy);
+    } else if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
+        var v = <Variable>item;
+        var pt = getTranslation(elem);
+        for (var i = 0; i < v.fromLinks.length; ++i) {
+            var line = <SVGLineElement>v.fromLinks[i].element.firstChild.firstChild;
+            line.x1.baseVal.value = pt.x;
+            line.y1.baseVal.value = pt.y;
+        }
+        for (var i = 0; i < v.toLinks.length; ++i) {
+            var line = <SVGLineElement>v.toLinks[i].element.firstChild.firstChild;
+            line.x2.baseVal.value = pt.x;
+            line.y2.baseVal.value = pt.y;
         }
     }
 }
@@ -146,18 +199,38 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
 // TODO - min drag distance
 
 function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
-    if (drawingItem /*&& !dragObject*/) {
+    if (drawingLine) {
+        // If over a suitable item, persist line, otherwise throw it away
+        var deleteIt = true;
+        var hit = getEventElementAndPart(e.originalEvent);
+        if (hit) {
+            var item = <Item>hit.elem.item;
+            if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
+                // TODO - check if link already present
+                var target = <Variable>item;
+                drawingLine.source = drawingLineSource;
+                drawingLine.target = target;
+                drawingLineSource.fromLinks.push(drawingLine);
+                target.toLinks.push(drawingLine);
+                deleteIt = false;
+            }
+        }
+        if (deleteIt)
+            svg.removeChild(drawingLine.element);
+    } else if (drawingItem /*&& !dragObject*/) {
         var pt = screenToSvg(e.clientX, e.clientY);
         addItem(drawingItem, pt, getEventElementAndPart(e.originalEvent));
     }
 
+    // Reset *everything* to clear any draggy operation
     panning = false;
     dragObject = null;
     dragFromButton = false;
+    drawingLine = null;
+    drawingLineSource = null;
 }
 
 function doDropFromDrawingTool(e /*: JQueryEventObject*/, ui: JQueryUI.DroppableEventUIParam) {
-    //alert("Dropped " + $(ui.draggable).attr("data-type"));
     var type = ItemType[$(ui.draggable).attr("data-type")];
 
     document.body.style.cursor = bodyCursor;
@@ -166,16 +239,8 @@ function doDropFromDrawingTool(e /*: JQueryEventObject*/, ui: JQueryUI.Droppable
     var pt = screenToSvg(sx, sy);
 
     // Determine if drop on background or on cell, etc
-    //var hits = hitTest(sx, sy);
-    //alert(hits.length);
-    //alert(e.target.nodeName + "  " + hits.length);
     var hit = getEventElementAndPart(e.originalEvent.originalEvent);
     console.log(hit && hit.type);
-    //var s = "";
-    //for (var i = 0; i < hits.length; ++i)
-    //    s += i + " " + (<SVGElement>hits[i].parentNode).getAttribute("class") + "\n";
-    //if (s != "")
-    //    alert(s);
 
     // Small spot to check drop location calculation
     //var circ = createSvgElement("circle", pt.x, pt.y);
@@ -191,6 +256,8 @@ var lastX: number, lastY: number;
 var dragObject: SVGGElement;
 var drawingItem: ItemType;
 var dragFromButton: boolean;
+var drawingLineSource: Variable;
+var drawingLine: Link;
 
 var bodyCursor: string = "auto";
 
@@ -367,6 +434,14 @@ function createSvgElement(type: string, x: number, y: number, scale: number = 1.
     return elem;
 }
 
+// Debug hackery
+function drawSpot(x: number, y: number, radius: number = 2, fill: string = "red") {
+    var circ = createSvgElement("circle", x, y);
+    circ.setAttribute("fill", fill);
+    circ.setAttribute("r", radius + "px");
+    svg.appendChild(circ);
+}
+
 function createSvgPath(data: string, color: string, x: number = 0, y: number = 0, scale: number = 1.0) {
     var elem = <SVGPathElement>createSvgElement("path", x, y, scale);
     elem.setAttribute("d", data);
@@ -446,24 +521,25 @@ function translateSvgElementBy(elem: SVGGElement, dx: number, dy: number) {
     //applyNewTranslation(elem, dx, dy); ???
 }
 
+function getTranslation(elem: SVGGElement): Point {
+    // TODO - matrix manipulation instead
+    var transformList = elem.transform.baseVal;
+    for (var i = 0; i < transformList.numberOfItems; ++i) {
+        var transform = transformList.getItem(i);
+        if (transform.type == SVGTransform.SVG_TRANSFORM_TRANSLATE)
+            return { x: transform.matrix.e, y: transform.matrix.f };
+    }
+    return { x: 0, y: 0 };
+}
+
 // getBBox doesn't take transformations into account; this function looks at
 // the currently applied translation (note, doesn't walk any further up the
 // tree, nor does it take scale into account so only useful for top level
 // objects)
 function getTrueBBox(elem: SVGGElement) {
     var box = elem.getBBox();
-    var x = box.x, y = box.y;
-    // TODO - matrix manipulation instead
-    var transformList = elem.transform.baseVal;
-    for (var i = 0; i < transformList.numberOfItems; ++i) {
-        var transform = transformList.getItem(i);
-        if (transform.type == SVGTransform.SVG_TRANSFORM_TRANSLATE) {
-            x += transform.matrix.e;
-            y += transform.matrix.f;
-            break;
-        }
-    }
-    return { x: x, y: y, width: box.width, height: box.height };
+    var tr = getTranslation(elem);
+    return { x: box.x + tr.x, y: box.y + tr.y, width: box.width, height: box.height };
 }
 
 // SVG class seems to be treated as a "normal" string attribute in all but the
@@ -544,7 +620,6 @@ function addVariable(x: number, y: number, container: Container) {
 
     variable.parent = container;
     container.children.push(variable);
-    //model.children.push(variable);
     return variable;
 }
 
@@ -573,8 +648,31 @@ function addReceptor(x: number, y: number, container: Container) {
 
     container.children.push(receptor);
     receptor.parent = container;
-    //model.children.push(receptor);
     return receptor;
+}
+
+function addLink(x: number, y: number, type: ItemType) {
+    var link = new Link(type);
+    var line = <SVGLineElement>createSvgElement("line", 0, 0);
+    line.x1.baseVal.value = line.x2.baseVal.value = x;
+    line.y1.baseVal.value = line.y2.baseVal.value = y;
+    line.setAttribute("stroke-width", "3px");
+    line.setAttribute("stroke", "black");
+    // TODO - use classes instead
+    // Ack - serious problem with IE - marker-ended lines don't draw properly
+    // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
+    //if(type==ItemType.Activate)
+    //    line.setAttribute("marker-end", "url('#link-activate')");
+    //else // TODO - verify inhibit
+    //    line.setAttribute("marker-end", "url('#iink-inhibit')");
+    // TODO - highlight
+    var graphic = createSvgGroup([line], 0, 0, 1);
+    svgAddClass(graphic, "shape");
+    var elem = createTopGroupAndAdd([graphic], 0, 0);
+    link.element = elem;
+    (<any>elem).item = link;
+
+    return link;
 }
 
 enum ItemType { Invalid, Container, Variable, Constant, Receptor, Activate, Inhibit, Model }
@@ -616,6 +714,7 @@ class Link /*extends Item*/ {
     }
     source: Variable;
     target: Variable;
+    element: SVGGElement;
 }
 
 class Model {
