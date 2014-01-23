@@ -10,8 +10,8 @@
 
 	function toggleInfo(id)
 	{
-	    $(id).slideToggle("fast");
-    }
+		$(id).slideToggle("fast");
+	}
 	
 	function makeMin1() { b1.innerHTML = (b1.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin2() { b2.innerHTML = (b2.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
@@ -26,6 +26,7 @@
 	function makeMin11() { b11.innerHTML = (b11.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin12() { b12.innerHTML = (b12.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin13() { b13.innerHTML = (b13.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
+	function makeMin14() { b14.innerHTML = (b14.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 
 </script>
 
@@ -176,25 +177,31 @@
 				</p>
 			</div>
 			
+			<div class="FAQ_question">
+				<a onclick=makeMin14();(toggleInfo('#q14'))><span id='b14'>[+]</span></a> <span class="bold">BioModelAnalyzer fails to export files with Safari on Macs; how do I make this work?</span><br />
+				<p style="display:none" id="q14">
+					Safari on Mac OS places Silverlight applications within a strict sandbox, which limits access to the filing system. To &quot;trust&quot; Silverlight on the BMA website, follow the instructions <a href="http://blogs.msdn.com/b/webapps/archive/2013/11/14/silverlight-safari-plugin-sandbox-prevents-your-silverlight-enabled-website-from-working.aspx">here</a>.
+				</p>
+			</div>
 			
 		</div>
 	
 	</div>
 
 	<div id="col-side">
-        <div class="hoverEnabled">
+		<div class="hoverEnabled">
 	
-		    <div id="btn-block" >
-		    <a href="mailto:bma@microsoft.com"><span id="btn"></span>Report a bug</a>
-		    </div>
+			<div id="btn-block" >
+			<a href="mailto:bma@microsoft.com"><span id="btn"></span>Report a bug</a>
+			</div>
 		</div>
 
-        <div class="hoverEnabled">
-	        <div id="btn-block" >
-	        <a href="mailto:bma@microsoft.com"><span id="btn"></span>Feedback</a>
+		<div class="hoverEnabled">
+			<div id="btn-block" >
+			<a href="mailto:bma@microsoft.com"><span id="btn"></span>Feedback</a>
 	
-	        </div>
-        </div>
+			</div>
+		</div>
 		
 		<div id="block" style="clear:both">
 			<span class="heading">Example Library and References</span><br><br>
