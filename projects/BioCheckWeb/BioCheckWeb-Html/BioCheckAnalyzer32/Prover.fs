@@ -30,6 +30,7 @@ type CEX =
 /// should never return (_,0)
 /// should always terminate because the network is finite
 let SimulateForCycle qn point =
+    Log.log_debug "SimulateForCycle { "
     let mutable allEnvs = Map.add point 0 Map.empty
     let mutable env = point
     let mutable i = 0
@@ -47,6 +48,8 @@ let SimulateForCycle qn point =
             stop <- true
         else
             allEnvs <- Map.add env i allEnvs
+
+    Log.log_debug "SimulateForCycle } "
     cycleData
 
 let ProveStability (qn : QN.node list) =
@@ -161,9 +164,10 @@ let ProveStability (qn : QN.node list) =
                             (FNewLemmas.all_inputs [for node in qn -> if node.var = cutNode.var then (node.var, (cutAt, cutAt+1)) else (node.var, bounds.[node.var])])
                             |> Seq.map (fun point -> (SimulateForCycle qn point))
                             |> Seq.tryFind (fun cycleData -> match cycleData with 
-                                                                | (_, 0) -> failwith "Bad lenght of cycle returned"
+                                                                | (_, 0) -> failwith "Bad length of cycle returned"
                                                                 | (_, 1) -> false
                                                                 | _ -> true)
+                        Log.log_debug "Got cycle result"
                         match cycle with
                         | Some c -> (None, Some (Cycle(c)))
                         | None -> OneWayResult
