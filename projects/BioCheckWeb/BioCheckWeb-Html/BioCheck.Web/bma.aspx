@@ -1,5 +1,13 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="bma.aspx.cs" Inherits="BioCheck.Web.bma" %>
 
+<!-- --------------------------------------------------------------------------
+
+  Copyright 2014 Microsoft Corporation.  All Rights Reserved.
+
+  Core BMA web UI
+
+-------------------------------------------------------------------------- -->
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -62,9 +70,18 @@
 			<div id="design-surface">
 				<svg id="svgroot" version="1.1" xmlns="http://www.w3.org/2000/svg"
 					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet">
+					<defs>
+						<marker id="link-activate" refX="5" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto" pointer-events="none">
+							<path d="M0 0 L5 5 0 10" fill="transparent" />
+						</marker>
+						<marker id="link-inhibit" refX="0" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto" pointer-events="none">
+							<path d="M0 0 L0 10" fill="transparent" />
+						</marker>
+					</defs>
 					<!-- <rect fill="none" stroke="green" x="0" y="0" width="100%" height="100%" />
 					<rect fill="orange" stroke="black" width="150" height="150" x="50" y="25" />
 					<circle fill="red" r="100" cx="1000" cy="500" /> -->
+					<!-- <line style="stroke: blue; stroke-width: 2;" marker-end="url('#link-activate')" marker-start="url('#link-inhibit')" x1="20" y1="20" x2="300" y2="100" /> -->
 				</svg>
 			</div>
 		</div>

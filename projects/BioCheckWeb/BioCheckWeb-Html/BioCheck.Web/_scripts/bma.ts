@@ -126,6 +126,9 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
         var line = <SVGLineElement>drawingLine.element.firstChild.firstChild;
         line.x2.baseVal.value = p.x;
         line.y2.baseVal.value = p.y;
+        var parent = line.parentNode;
+        parent.removeChild(line);
+        parent.appendChild(line);
         return;
     }
 
@@ -145,26 +148,6 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
         if (dragObject) {
             // Dragging an object
             translateBy(dragObject, dx, dy);
-            // TODO - encapsulate movement, including recursion
-            /*var item = <Item>((<any>dragObject).item);
-            if (item.type == ItemType.Container) {
-                var children = (<Container>item).children;
-                for (var i = 0; i < children.length; ++i)
-                    translateSvgElementBy(children[i].element, dx, dy);
-            } else if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
-                var v = <Variable>item;
-                var pt = getTranslation(dragObject);
-                for (var i = 0; i < v.fromLinks.length; ++i) {
-                    var line = <SVGLineElement>v.fromLinks[i].element.firstChild.firstChild;
-                    line.x1.baseVal.value = pt.x;
-                    line.y1.baseVal.value = pt.y;
-                }
-                for (var i = 0; i < v.toLinks.length; ++i) {
-                    var line = <SVGLineElement>v.toLinks[i].element.firstChild.firstChild;
-                    line.x2.baseVal.value = pt.x;
-                    line.y2.baseVal.value = pt.y;
-                }
-            }*/
         } else /* must be dragFromToolbar */ {
             // Participating in drag from toolbar
         }
@@ -172,7 +155,6 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
 }
 
 // TODO - tidy up
-
 function translateBy(elem: SVGGElement, dx: number, dy: number) {
     translateSvgElementBy(elem, dx, dy);
     var item = <Item>((<any>elem).item);
@@ -187,11 +169,17 @@ function translateBy(elem: SVGGElement, dx: number, dy: number) {
             var line = <SVGLineElement>v.fromLinks[i].element.firstChild.firstChild;
             line.x1.baseVal.value = pt.x;
             line.y1.baseVal.value = pt.y;
+            var parent = line.parentNode;
+            parent.removeChild(line);
+            parent.appendChild(line);
         }
         for (var i = 0; i < v.toLinks.length; ++i) {
             var line = <SVGLineElement>v.toLinks[i].element.firstChild.firstChild;
             line.x2.baseVal.value = pt.x;
             line.y2.baseVal.value = pt.y;
+            var parent = line.parentNode;
+            parent.removeChild(line);
+            parent.appendChild(line);
         }
     }
 }
@@ -206,7 +194,7 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
         if (hit) {
             var item = <Item>hit.elem.item;
             if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
-                // TODO - check if link already present
+                // TODO - check if link already present and handle self-links
                 var target = <Variable>item;
                 drawingLine.source = drawingLineSource;
                 drawingLine.target = target;
@@ -240,7 +228,6 @@ function doDropFromDrawingTool(e /*: JQueryEventObject*/, ui: JQueryUI.Droppable
 
     // Determine if drop on background or on cell, etc
     var hit = getEventElementAndPart(e.originalEvent.originalEvent);
-    console.log(hit && hit.type);
 
     // Small spot to check drop location calculation
     //var circ = createSvgElement("circle", pt.x, pt.y);
@@ -661,10 +648,9 @@ function addLink(x: number, y: number, type: ItemType) {
     // TODO - use classes instead
     // Ack - serious problem with IE - marker-ended lines don't draw properly
     // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
-    //if(type==ItemType.Activate)
-    //    line.setAttribute("marker-end", "url('#link-activate')");
-    //else // TODO - verify inhibit
-    //    line.setAttribute("marker-end", "url('#iink-inhibit')");
+    // http://connect.microsoft.com/IE/feedback/details/781964/svg-marker-is-not-updated-when-the-svg-element-is-moved-using-the-dom
+    // http://stackoverflow.com/questions/17654578/svg-marker-does-not-work-in-ie9-10 suggests remove and re-add as solution
+    line.setAttribute("marker-end", type == ItemType.Activate ? "url('#link-activate')" : "url('#link-inhibit')");
     // TODO - highlight
     var graphic = createSvgGroup([line], 0, 0, 1);
     svgAddClass(graphic, "shape");
