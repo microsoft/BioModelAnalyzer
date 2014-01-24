@@ -278,8 +278,11 @@ function getEventElementAndPart(e) : ElementAndPart {
         nodeClass = node.getAttribute("class");
     }
 
-    if (node)
+    if (node) {
+        // TODO - better split job, currently fingers crossed that the class of interest is at the start! Maybe use something other than class?
+        itemClass = itemClass.split(" ")[0];
         return { elem: node, type: itemClass };
+    }
     else
         return null;
 }

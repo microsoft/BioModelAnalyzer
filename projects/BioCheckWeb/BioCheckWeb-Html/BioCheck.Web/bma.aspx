@@ -72,10 +72,10 @@
 					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet">
 					<defs>
 						<marker id="link-activate" refX="5" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto" pointer-events="none">
-							<path d="M0 0 L5 5 0 10" fill="transparent" />
+							<path d="M0 0 L5 5 0 10" fill="none" stroke="black" />
 						</marker>
 						<marker id="link-inhibit" refX="0" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto" pointer-events="none">
-							<path d="M0 0 L0 10" fill="transparent" />
+							<path d="M0 0 L0 10" fill="none" stroke="black" />
 						</marker>
 					</defs>
 					<!-- <rect fill="none" stroke="green" x="0" y="0" width="100%" height="100%" />
