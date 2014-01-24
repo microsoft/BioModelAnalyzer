@@ -4,6 +4,10 @@ open Physics
 open Vector
 open Automata
 
+//open Microsoft.FSharp.Quotations
+//open Microsoft.FSharp.Quotations.Typed
+//open Microsoft.FSharp.Quotations.Raw
+
 type particleModification = Death | Life of Particle*Map<QN.var,int> | Divide of (Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
 type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list)}
 
@@ -80,6 +84,35 @@ let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m:
     | true -> Death
     // SI: consider switching to just if-then for these small expressions
     // if (m.[varID] = varState) then Death else Life (p,m)
+
+let shrinkingApoptosis (varID: int) (varState: int) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match (m.[varID] = varState, p.radius <= minSize) with
+    | (false,_)    -> Life (p,m)
+    | (true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,true)  -> Death
+
+let shrinkingRandomApoptosis (varID: int) (varState: int) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    match (m.[varID] = varState, rng.NextDouble() < probability*dt, p.radius <= minSize) with
+    | (false,_,_)       -> Life (p,m)
+    | (true,false,_)    -> Life (p,m)
+    | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,true,true)  -> Death
+
+type biasType = Radius | Pressure | Age | Confluence | Force
+
+let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:biasType) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let biasMetric = match bias with
+                        | Radius     -> float p.radius
+                        | Age        -> float p.age
+                        | Pressure   -> float p.pressure
+                        | Force      -> float p.forceMag
+                        | Confluence -> float p.confluence
+                        | _          -> failwith "Unknown bias type" 
+    match (m.[varID] = varState, rng.NextDouble() < probability*dt*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
+    | (false,_,_)       -> Life (p,m)
+    | (true,false,_)    -> Life (p,m)
+    | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,true,true)  -> Death
 
 let certainDeath (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     Death
