@@ -137,20 +137,104 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
-                                    linearGrow (rate*1.<um/second>) (max*1.<um>) varID varState
+                                    limitedLinearGrow (rate*1.<um/second>) (RadiusLimit (max*1.<um>)) varID varState
+                                | "PressureLinearGrow" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
+                                    limitedLinearGrow (rate*1.<um/second>) (PressureLimit (max*1.<zNewton/um^2>)) varID varState
+                                | "AgeLinearGrow" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
+                                    limitedLinearGrow (rate*1.<um/second>) (AgeLimit (max*1.<second>)) varID varState
+                                | "ForceLinearGrow" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
+                                    limitedLinearGrow (rate*1.<um/second>) (ForceLimit (max*1.<zNewton>)) varID varState
+                                | "ConfluenceLinearGrow" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (int) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
+                                    limitedLinearGrow (rate*1.<um/second>) (ConfluenceLimit (max)) varID varState
                                 | "LinearGrowDivide" ->
                                     let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
                                     let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) varID varState rng                                
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState rng None false                              
+                                | "PressureLimitedLinearGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing pressure limit"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState rng (Some (PressureLimit (limit * 1.<zNewton/um^2>))) false                            
+                                | "AgeLimitedLinearGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing age limit"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState rng (Some (AgeLimit (limit * 1.<second>))) false                            
+                                | "ConfluenceLimitedLinearGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (int) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing confluence limit"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState rng (Some (ConfluenceLimit (limit))) false                            
+                                | "ForceLimitedLinearGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing force limit"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState rng (Some (ForceLimit (limit * 1.<zNewton>))) false   
                                  | "ProbabilisticGrowDivide" ->
                                     let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
                                     let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
                                     let sd = try (float) (r.Attribute(xn "SD").Value)  with _ -> failwith "Missing standard deviation of cell size"
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    probabilisticGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng                                
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng None true                            
+                                | "PressureLimitedProbabilisticGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing pressure limit"
+                                    let sd = try (float) (r.Attribute(xn "SD").Value)  with _ -> failwith "Missing standard deviation of cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng (Some (PressureLimit (limit * 1.<zNewton/um^2>))) true                            
+                                | "AgeLimitedProbabilisticGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing age limit"
+                                    let sd = try (float) (r.Attribute(xn "SD").Value)  with _ -> failwith "Missing standard deviation of cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng (Some (AgeLimit (limit * 1.<second>))) true                            
+                                | "ConfluenceLimitedProbabilisticGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (int) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing confluence limit"
+                                    let sd = try (float) (r.Attribute(xn "SD").Value)  with _ -> failwith "Missing standard deviation of cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng (Some (ConfluenceLimit (limit))) true                            
+                                | "ForceLimitedProbabilisticGrowDivide" ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing force limit"
+                                    let sd = try (float) (r.Attribute(xn "SD").Value)  with _ -> failwith "Missing standard deviation of cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    linearGrowDivide (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState rng (Some (ForceLimit (limit * 1.<zNewton>))) true                            
                                 | "CertainDeath" ->
                                     certainDeath
                                 | "Apoptosis" ->
@@ -169,7 +253,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    randomSizeApoptosis varID varState rng power (refC*1.<um>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState Radius rng power (refC*1.<um>) refM (probability*1.<Physics.second^-1>)                    
                                 | "AgeRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -177,7 +261,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    randomAgeApoptosis varID varState rng power (refC*1.<second>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState Age rng power (refC*1.<second>) refM (probability*1.<Physics.second^-1>)                    
                                 | "ConfluenceRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -185,7 +269,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    randomConfluenceApoptosis varID varState rng power (refC*1.) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState Confluence rng power (refC*1.) refM (probability*1.<Physics.second^-1>)                    
                                 | "ForceRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -193,7 +277,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    randomForceApoptosis varID varState rng power (refC*1.<zNewton>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState Force rng power (refC*1.<zNewton>) refM (probability*1.<Physics.second^-1>)                    
                                 | "PressureRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -201,7 +285,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    randomPressureApoptosis varID varState rng power (refC*1.<zNewton um^-2>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState Pressure rng power (refC*1.<zNewton um^-2>) refM (probability*1.<Physics.second^-1>)                    
                                 | "RandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
