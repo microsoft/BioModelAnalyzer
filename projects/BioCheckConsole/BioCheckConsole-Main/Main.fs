@@ -211,7 +211,7 @@ let main args =
     // Run tests.     
     elif (!run_tests) then 
     //    UnitTests.register_tests2 (analyzer)
-        Expr.register_tests()
+    //    Expr.register_tests()
         Test.run_tests ()
 
     // Incorrect flags. 

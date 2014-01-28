@@ -383,16 +383,4 @@ and is_decreasing_int f var =
 and is_increasing = memoize is_increasing_int
 and is_decreasing = memoize is_decreasing_int
 
-let register_tests () =
-    let f = Var(0)
-    Test.register_test true (fun () -> is_increasing f 0)
-    Test.register_test false (fun () -> is_decreasing f 0)
-    Test.register_test true (fun () -> (sign f) = Pos)
-
-    let f = Minus(Var(0), Var(1))
-    Test.register_test true (fun () -> is_increasing f 0)
-    Test.register_test false (fun () -> is_decreasing f 0)
-    Test.register_test false (fun () -> is_increasing f 1)
-    Test.register_test true (fun () -> is_decreasing f 1)
-    Test.register_test true (fun () -> (sign f) = Unk)
 
