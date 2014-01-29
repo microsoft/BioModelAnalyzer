@@ -20,6 +20,21 @@ let tick (qn:QN.qn) (env_0:Map<QN.var,int>) =
 
     env'
 
+///Returns the next state of a *single* variable 
+let individualVariableTick (qn:QN.qn) (env_0:Map<QN.var,int>) (node:QN.var) = 
+    let rec singleUpdate (qn:QN.qn) env_0 node range = 
+        match qn with
+        | topNode::remainder when topNode.var = node ->
+                                                        let s' = Expr.eval_expr topNode.var range  topNode.f env_0
+                                                        let s = env_0.[topNode.var]
+                                                        if s' > s then s+1
+                                                        elif s' = s then s
+                                                        else s-1
+        | topNode::remainder -> singleUpdate remainder env_0 node range
+        | [] -> failwith "Node not in qn"
+    let range = Map.ofList [for v in qn -> (v.var, v.range)]
+    singleUpdate qn env_0 node range
+
 let simulate (qn:QN.qn) (initial_values:Map<QN.var,int>) =
     tick qn initial_values
 
