@@ -25,6 +25,12 @@
 //        that is re-used, or a loop.
 //
 
+(*
+SI: further work:
+    - add capability to TimeOut
+
+
+*)
 #light
 
 module Test
