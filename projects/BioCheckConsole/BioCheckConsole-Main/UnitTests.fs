@@ -4,9 +4,15 @@ module UnitTests
 open System.Xml
 open System.Xml.Linq
 
-type IA = BioCheckAnalyzerCommon.IAnalyzer2
+(*
+SI: further work:
+    - Extend to CAV/LTL and Garvit engines.
+    - Extend to simulation. 
 
-let register_tests2 (analyzer:UIMain.Analyzer2) =
+
+*)
+
+let register_tests () =
     
     let load_run_check (fname:string) ocheck_stabilizes ocheck_cex = 
         XDocument.Load(fname)
