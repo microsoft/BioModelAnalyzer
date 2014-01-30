@@ -83,6 +83,7 @@ let rec expr_to_real (qn : QN.node list) (node : QN.node) expr var_values =
             if (tr e1) < (tr e2) then (tr e1)
             else (tr e2) 
         | Ceil e1 -> ceil(tr e1)
+        | Abs e1 -> abs(tr e1)
         | Floor e1 -> floor (tr e1)
         | Ave exprs ->
             let sum = List.fold (fun cur_sum e1 -> cur_sum + (tr e1)) 0.0 exprs
