@@ -45,9 +45,10 @@ let max_expr  = (str "max" >>. str "(" >>. expr) .>>. (str "," >>. expr .>> str 
 let min_expr  = (str "min" >>. str "(" >>. expr) .>>. (str "," >>. expr .>> str ")") |>> (fun e -> Expr.Min(e))
 let ceil_expr  = str "ceil" >>. str "(" >>. expr .>> str ")" |>> Expr.Ceil
 let floor_expr = str "floor" >>. str "(" >>. expr .>> str ")" |>> Expr.Floor
+let abs_expr = str "abs" >>. str "(" >>. expr .>> str ")" |>> Expr.Abs
 let avg_expr = str "avg" >>. str "(" >>. (sepBy expr (ch ',')) .>> str ")" |>> Expr.Ave
 
-opp.TermParser <- choice [number; ident; max_expr; min_expr; ceil_expr; floor_expr; avg_expr; between (ch '(') (ch ')') expr] 
+opp.TermParser <- choice [number; ident; max_expr; min_expr; ceil_expr; abs_expr; floor_expr; avg_expr; between (ch '(') (ch ')') expr] 
 
 // Operators. 
 type Assoc = Associativity

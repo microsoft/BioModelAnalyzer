@@ -18,6 +18,7 @@ type expr =
     | Floor of expr
     | Ave of expr list
     | Sum of expr list  //QSW
+    | Abs of expr
 
 let rec print_expr e =
     match e with
@@ -30,6 +31,7 @@ let rec print_expr e =
     | Max(e,f) -> printf "max("; print_expr e; printf ","; print_expr f; printf ")";
     | Min(e,f) -> printf "min("; print_expr e; printf ","; print_expr f; printf ")";
     | Ceil(e) -> printf "ceil("; print_expr e; printf ")"
+    | Abs(e) -> printf "abs("; print_expr e; printf ")"
     | Floor(e) -> printf "floor("; print_expr e; printf ")"
     | Ave(ee) -> printf "ave(";
                  List.iter (fun e -> print_expr e; printf ",") ee
@@ -49,6 +51,7 @@ let rec str_of_expr e =
     | Max(e,f) -> "max(" + str_of_expr e + "," + str_of_expr f + ")"
     | Min(e,f) -> "min(" + str_of_expr e +  "," + str_of_expr f + ")"
     | Ceil(e) -> "ceil(" + str_of_expr e + ")"
+    | Abs(e) -> "abs(" + str_of_expr e + ")"
     | Floor(e) -> "floor(" + str_of_expr e + ")"
     | Ave(ee) ->  "ave(" + (String.concat "," (List.map (fun e -> str_of_expr e) ee)) + ")"
     | Sum(ee) -> "sum(" + (String.concat "," (List.map (fun e -> str_of_expr e) ee)) + ")" //QSW
@@ -68,6 +71,7 @@ let rec fv e =
     | Max(e1,e2)
     | Min(e1,e2) -> Set.union (fv e1) (fv e2)
     | Ceil(e)
+    | Abs(e)
     | Floor(e) -> fv e
     | Ave(ee) -> List.fold (fun ff e -> Set.union (fv e) ff) Set.empty ee
     | Sum(ee) -> List.fold (fun ff e -> Set.union (fv e) ff) Set.empty ee //QSW
@@ -81,7 +85,7 @@ let is_a_const range e =
         | Const _ -> true
         | Plus(e1, e2) | Minus(e1, e2) | Times(e1, e2) | Div(e1, e2) | Max(e1, e2) | Min(e1, e2) ->
             (is_a_const_int e1) && (is_a_const_int e2)
-        | Ceil(e') | Floor(e') -> (is_a_const_int e')
+        | Ceil(e') | Floor(e') | Abs(e') -> (is_a_const_int e')
         | Ave(es) -> List.forall (is_a_const_int) es
         | Sum(es) -> List.forall is_a_const_int es 
     let is_a_const_var (range:Map<var,int*int>) e  =
@@ -128,6 +132,7 @@ let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<
         | Min(e1, e2) -> min (eval_expr_int e1 env) (eval_expr_int e2 env)
         | Ceil(e) -> ceil (eval_expr_int e env)
         | Floor(e) -> floor (eval_expr_int e env)
+        | Abs(e) -> abs (eval_expr_int e env)
         | Ave([]) -> float(0)
         | Ave(es) ->
             let total = List.fold (fun x e -> x + (eval_expr_int e env)) 0.0 es
@@ -314,6 +319,8 @@ let rec sign_int f =
     | Const(c) when c = 0 -> Zero
     | Const(c) -> Unk       // Just to keep the compiler happy... :-/
     | Var(_) -> Pos
+    | Abs(e) when  ((sign e) = Zero) -> Zero
+    | Abs(_) -> Pos
     | Plus(e1, e2) ->
         sign_plus (sign e1) (sign e2)
     | Minus(e1, e2) ->
@@ -340,6 +347,8 @@ let rec is_increasing_int f var =
     match f with
     | Const(_)
     | Var(_) -> true
+    | Abs(e) -> if (sign e) = Pos then (is_increasing e var)
+                else (is_decreasing e var)
     | Plus(e1, e2)
     | Min(e1, e2)
     | Max(e1, e2) -> (is_increasing e1 var) && (is_increasing e2 var)
@@ -363,6 +372,8 @@ and is_decreasing_int f var =
     | Const(_) -> true
     | Var(v) when v = var -> false
     | Var(_) -> true
+    | Abs(e) -> if (sign e) = Pos then (is_decreasing e var)
+                else (is_increasing e var)
     | Plus(e1, e2)
     | Min(e1, e2)
     | Max(e1, e2) -> (is_decreasing e1 var) && (is_decreasing e2 var)
