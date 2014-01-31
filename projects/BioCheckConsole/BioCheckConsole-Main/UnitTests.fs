@@ -34,7 +34,7 @@ let register_tests () =
  //   Test.register_test true (fun () -load_run_checkun "fs_DrosophilaPairRule.xml" (Some Result.stabilizes) None) 
     Test.register_test true (fun () -> load_run_check "fs_OnlyInhibitionNonDefault.xml" None (Some Result.cycles)) 
     Test.register_test true (fun () -> load_run_check "fs_OnlyInhibitionNonStabilizing.xml" None (Some Result.cycles)) 
-    Test.register_test true (fun () -> load_run_check "fs_OnlyInhibitionTest.xml" None (Some Result.cycles))
+//    Test.register_test true (fun () -> load_run_check "fs_OnlyInhibitionTest.xml" None (Some Result.cycles))
     //Test.register_test true (fun () -> load_run_check "fs_SkinModel.xml" (Some Result.stabilizes) None) 
     Test.register_test true (fun () -> load_run_check "fs_Skinv6.xml" (Some Result.stabilizes) None) 
     //Test.register_test true (fun () -> load_run_check "fs_ToyModelStable.xml" (Some Result.stabilizes) None) 
@@ -43,5 +43,5 @@ let register_tests () =
     Test.register_test true (fun () -> load_run_check "fs_VPCwildtype_v1.xml" (Some Result.stabilizes) None) 
     Test.register_test true (fun () -> load_run_check "fs_biocheck_ex.xml" None (Some Result.cycles)) // SI: changed from fixpoint
     Test.register_test true (fun () -> load_run_check "fs_biocheck_ex1.xml" (Some Result.stabilizes) None)
-    Test.register_test true (fun () -> load_run_check "fs_diabetes_new_mod.xml" (Some Result.stabilizes) None) 
+    //Test.register_test true (fun () -> load_run_check "fs_diabetes_new_mod.xml" (Some Result.stabilizes) None) 
 
