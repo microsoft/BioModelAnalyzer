@@ -28,17 +28,13 @@
 (*
 SI: further work:
     - add capability to TimeOut
-
+    - Use Async to run tests? http://msdn.microsoft.com/en-us/library/dd233250.aspx
+      Z3 doesn't work with Async? Or, have to rewrite to launch separate exe for each test. 
 
 *)
-#light
 
 module Test
 
-//open Microsoft.FSharp.Core.Operators.Checked
-
-let expensive_tests = ref false
-let catch_exceptions = ref true
 
 
 // Set of all unit tests across BioCheck
@@ -72,7 +68,6 @@ let run_tests () =
         let start_time = System.DateTime.Now
 
         let b = begin
-            if !catch_exceptions then
                 try let b = test()
                     if b<>expected_result then
                           Printf.printf "Regression: %s,%d\n" file line
@@ -88,8 +83,6 @@ let run_tests () =
                     failed := (info,false,expected_result) :: !failed;
 
                     false
-            else
-                test()
         end
         Printf.printf "%A\n" (System.DateTime.Now.Subtract start_time)
 
@@ -116,19 +109,10 @@ let inline register_test expected_result test =
     let n = m.Name
     let k = cf.GetFileLineNumber()
     let fn = cf.GetFileName()
-    //tests := (s,f,(fn,n,k)) :: !tests
     tests := !tests @ [(expected_result,test,(fn,n,k))]
 
 
-let inline register_expensive_test expected_result test =
-    if (!expensive_tests) then
-        let sf = new System.Diagnostics.StackFrame(true)
-        let st = new System.Diagnostics.StackTrace(sf)
-        let cf = st.GetFrame(0)
-        let m = cf.GetMethod()
-        let n = m.Name
-        let k = cf.GetFileLineNumber()
-        let fn = cf.GetFileName()
-        tests := (expected_result,test,(fn + "(expensive)",n,k)) :: !tests
+
+
 
 
