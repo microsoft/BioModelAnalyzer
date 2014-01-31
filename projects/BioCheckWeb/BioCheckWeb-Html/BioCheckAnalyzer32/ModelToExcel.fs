@@ -71,6 +71,7 @@ let excel_of_expr var_to_row (state_col : int) e  =
         | Max(e,f) -> "max(" + loop  e  + "," + loop  f  + ")"
         | Min(e,f) -> "min(" + loop  e  +  "," + loop  f  + ")"
         | Ceil(e) -> "ceiling(" + loop  e  + ",1)"
+        | Abs(e) -> "abs(" + loop e + ")"
         | Floor(e) -> "floor(" + loop  e  + ",1)"
         | Ave(ee) when List.length(ee) = 0 -> "0"
         | Ave(ee) ->  "ceiling(average(" + (String.concat "," (List.map (fun e -> loop  e ) ee)) + "),1)"

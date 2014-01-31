@@ -39,7 +39,7 @@ let SimulateForCycle qn point =
     let mutable cycleData = (point, 0) /// this never be the return value, it will change when the loop terminates
     
     while not stop do
-        Log.log_debug (sprintf "Step: %d, Env %s" i (Expr.str_of_env env))
+        ///Log.log_debug (sprintf "Step: %d, Env %s" i (Expr.str_of_env env))
         env <- (Simulate.tick qn env)
         i <- i+1
         if allEnvs.ContainsKey env then /// found cycle
@@ -51,6 +51,22 @@ let SimulateForCycle qn point =
 
     Log.log_debug "SimulateForCycle } "
     cycleData
+
+/// BH
+/// checks to see if a simulation can cross the frontier
+/// if it doesn't go either cutAt -> cutAt+1 or cutAt+1 -> cutAt
+/// then we shouldn't bother running a complete simulation
+/// Returns true for traces which cross frontier, false otherwise
+
+let doesSimulationCrossFrontier (qn:QN.node list) (state:Map<QN.var,int>) (cutNode:QN.var) (cutAt:int) = 
+    let s = state.[cutNode]
+    let s' = Simulate.individualVariableTick qn state cutNode
+    let ds = s' - s
+    match (s,s') with
+    | (a,b) when a = cutAt && b = cutAt+1-> true
+    | (b,a) when a = cutAt && b = cutAt+1 -> true
+    | _ ->  Log.log_debug "Skipping non-frontier state";
+            false
 
 let ProveStability (qn : QN.node list) =
 
@@ -162,6 +178,8 @@ let ProveStability (qn : QN.node list) =
                         Log.log_debug("Trying to find cycles across two way cut..")
                         let cycle =
                             (FNewLemmas.all_inputs [for node in qn -> if node.var = cutNode.var then (node.var, (cutAt, cutAt+1)) else (node.var, bounds.[node.var])])
+                            /// BH: filter out all the states which don't cross the frontier
+                            |> Seq.filter (fun state -> doesSimulationCrossFrontier qn state cutNode.var cutAt)
                             |> Seq.map (fun point -> (SimulateForCycle qn point))
                             |> Seq.tryFind (fun cycleData -> match cycleData with 
                                                                 | (_, 0) -> failwith "Bad length of cycle returned"

@@ -67,9 +67,6 @@
     <Compile Include="..\BioCheckAnalyzer32\Util.fs">
       <Link>Util.fs</Link>
     </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\Test.fs">
-      <Link>Test.fs</Link>
-    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\Expr.fs">
       <Link>Expr.fs</Link>
     </Compile>
@@ -165,9 +162,6 @@
     </Compile>
     <Compile Include="..\BioCheckAnalyzer32\UIMain.fs">
       <Link>UIMain.fs</Link>
-    </Compile>
-    <Compile Include="..\BioCheckAnalyzer32\UnitTests.fs">
-      <Link>UnitTests.fs</Link>
     </Compile>
     <None Include="..\BioCheckAnalyzer32\App.config">
       <Link>App.config</Link>

@@ -71,6 +71,13 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let z1 = tr e1 
             let floor_assert = z.MkTrue
             z.MkToReal (z.MkToInt z1)
+        | Abs e1 ->
+            let z1 = tr e1
+            let zero = z.MkRealNumeral(0)
+            let z2 = z.MkSub(zero,z1)
+            let is_gt_zero = z.MkGt(z1,zero)
+            z.MkIte(is_gt_zero,z1,z2)
+            //BH
         | Ave es ->
             let sum = List.fold
                         (fun ast e1 -> match ast with
