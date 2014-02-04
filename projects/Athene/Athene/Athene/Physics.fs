@@ -85,6 +85,25 @@ Boltzmann constant is
 
 1.38 * 10^4   um^2 pg second^-2 K^-1
 *)
+
+//[<Measure>]
+//type Metre
+//
+//[<Measure>]
+//type kg
+//
+//let metreToum d:float<'a> = 
+//    d * 1000000.<um/Metre>
+//
+//let kgTopg m:float<'a> = 
+//    m * 1000000000000000.<pg/kg>
+//
+//let wikiKb = 1.38 * (10.**(-23.))*1.<Metre^2  kg second^-2 Kelvin^-1>
+//
+//let tkb = kgTopg wikiKb
+//            |> metreToum
+//            |> metreToum
+
 let Kb = (1.3806488 * 10.**4. )*1.<um^2 pg second^-2 Kelvin^-1>
 
 let gensym =
@@ -379,8 +398,11 @@ let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um
         //else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
         else {p with location = p.location+(f*modifier)} ]
 
-let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand = 
-    let F = forceUpdate topology nbCutOff system staticGrid sOrigin machineForces
+let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand (F: forceEnv list option) = 
+    //Use previously caclulated forces from failed integration step if available
+    let F = match F with
+            | Some(F) -> F
+            | None -> forceUpdate topology nbCutOff system staticGrid sOrigin machineForces
     //let F = List.map (fun x -> x.force) Fenv
     //From the update, calculate if the maximum move is broken
     let system' = bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
@@ -389,10 +411,11 @@ let rec integrate (system: Particle list) topology staticGrid sOrigin (machineFo
     //system'
     match ((maxdP < maxMove),(steps=1),(vdt_depth>0)) with
     | (true,true,_)  -> system'
-    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand //in a single call we shouldn't exceed maxmove, even if done in parts
+    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand None //in a single call we shouldn't exceed maxmove, even if done in parts
     | (false,_,true) -> //Maximum move is broken, but we have some variable dT depth left. Halve the timestep, double the steps, reduce the depth by 1 and repeat
+                        //Avoid costly recalculation of the forces by supplying the forces calculated in the preceeding, too far step
                         //printf "Dropping down... NewDepth = %A " (vdt_depth-1) 
-                        integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand
+                        integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand (Some F)
     | (false,_,false) -> //Maximum move is broken, and we have run out of variable dT depth. Fail and exit
                         printf "Max: %A Limit: %A Depth: %A" maxdP maxMove vdt_depth
                         failwith "Max move violated and run out of variable timestep depth. Reduce the timestep or increase the depth of the variability"
