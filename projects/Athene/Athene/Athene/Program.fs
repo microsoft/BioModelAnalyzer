@@ -26,11 +26,11 @@ let rec simulate (system: Physics.Particle list) (machineStates: Map<QN.var,int>
                     | _ ->  ()
     let (a,p) = match (steps%mg>0,steps%pg>0) with 
                         | (false,false)  ->    //let p = pUpdate nSystem staticGrid machineForces T dT rand 
-                                               let p = Physics.integrate system' topology staticGrid sOrigin machineForces T (dT*(float)pg) maxMove variableTimestepDepth 6.0<Physics.um> 1 rand
+                                               let p = Physics.integrate system' topology staticGrid sOrigin machineForces T (dT*(float)pg) maxMove variableTimestepDepth 6.0<Physics.um> 1 rand None
                                                let a = Automata.updateMachines qn machineStates'
                                                (a,p)
                         | (true,false)   ->    //let p = pUpdate system' staticGrid machineForces T dT rand 
-                                               let p = Physics.integrate system' topology staticGrid sOrigin machineForces T dT maxMove variableTimestepDepth 6.0<Physics.um> 1 rand
+                                               let p = Physics.integrate system' topology staticGrid sOrigin machineForces T dT maxMove variableTimestepDepth 6.0<Physics.um> 1 rand None
                                                (machineStates',p)
                         | (false,true)   ->    let a = Automata.updateMachines qn machineStates'
                                                (a,system')
