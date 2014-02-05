@@ -153,14 +153,35 @@ let noForce (p1: Particle) (p2: Particle) =
     {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} 
 
 let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<second>) (cluster: Particle) =
-//    let rNum = PRNG.nGaussianRandomMP rng 0. 1. 6
-//    let FrictionDrag = 0.5/cluster.frictioncoeff //Friction drag halves because we split the particle into two
-//    let tA =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}
-//    let tB =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 3) ; y= (List.nth rNum 4); z= (List.nth rNum 5)}
+    (*
+    Function for updating the orientation of a sphere by brownian motion
+    To get this we model the sphere as two point masses at the locations (A and B), the centers of mass of the half spheres, in the direction of the unit vector cluster.orientation (o here)
+    A' = Fa + A
+    B' = Fb + B
+    AB = A - B
+    AB' = A' - B'
+    AB' = AB + Fa - Fb
+
+    Fa and Fb are the thermal noise for identical particles (now just F), and both functions give a Gaussian distribution.
+    If we sum errors a&b with a normal distribution, we get a cumulative error of sqrt(a^2+b^2)
+    
+    So we approximate that 
+
+    AB' = AB + sqrt(2)F
+
+    The center of mass of a half sphere of radius r is 3/8 r from the circular plane
+
+    AB = o * 6/8 r
+
+    F = sqrt(2 * friction/(mass*0.5) * Kb * dT) * R
+
+    (AB + sqrt(2)*F).norm
+
+    *)
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
-    let FrictionDrag = 1./cluster.frictioncoeff 
+    let FrictionDrag = 2./cluster.frictioncoeff //We are considering the mass of half spheres now
     let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}
-    (cluster.orientation*cluster.radius+tV).norm
+    (cluster.orientation*cluster.radius*(3./4.)+sqrt(2.)*tV).norm
 
 
 let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton>) (p1: Particle) (p2: Particle) =
