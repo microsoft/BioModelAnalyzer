@@ -11,7 +11,6 @@
 // /// <reference path="vuePlotTypes.ts" />
 
 var svg: SVGSVGElement;
-var model: Model;
 
 window.onload = () => {
     var svgjq = $("#svgroot");
@@ -24,6 +23,13 @@ window.onload = () => {
     $("#general-tools").buttonset();
     $("#drawing-tools").buttonset();
     $("#prover-tools").buttonset();
+
+    var b = $("#button-undo");
+    b.button("option", "disabled", true);
+    b.click(ModelStack.undo);
+    b = $("#button-redo");
+    b.button("option", "disabled", true);
+    b.click(ModelStack.redo);
 
     $("#drawing-tools input").click(drawingToolClick);
     $("img.draggable-button").each(function (i) {
@@ -49,7 +55,7 @@ window.onload = () => {
 
     document.body.onmousewheel = doWheel;
 
-    model = new Model();
+    ModelStack.set(new Model());
 };
 
 function drawingToolClick(e: JQueryEventObject) {
@@ -279,6 +285,8 @@ class ModelStack {
             --ModelStack.index;
             ModelStack.current.createSvg();
         }
+        $("#button-undo").button("option", "disabled", !ModelStack.canUndo);
+        $("#button-redo").button("option", "disabled", false);
     }
 
     static redo() {
@@ -287,6 +295,8 @@ class ModelStack {
             ++ModelStack.index;
             ModelStack.current.createSvg();
         }
+        $("#button-undo").button("option", "disabled", false);
+        $("#button-redo").button("option", "disabled", !ModelStack.canRedo);
     }
 
     static set(m: Model) {
@@ -295,12 +305,21 @@ class ModelStack {
         ModelStack.models = [m];
         ModelStack.index = 0;
         ModelStack.current.createSvg();
+        $("#button-undo").button("option", "disabled", true);
+        $("#button-redo").button("option", "disabled", true);
     }
 
     static dup() {
+        ModelStack.models.length = ModelStack.index + 1; // Truncate the list
+        // Because the caller may have references to items in the model, place
+        // the duplicate *second* on the stack; also means the SVG resources
+        // don't need to be torn down and rebuilt
+        var orig = ModelStack.current;
+        ModelStack.models[ModelStack.index] = orig.clone();
+        ModelStack.models.push(orig);
         ++ModelStack.index;
-        ModelStack.models.length = ModelStack.index;
-        ModelStack.models.push(ModelStack.current.clone());
+        $("#button-undo").button("option", "disabled", false);
+        $("#button-redo").button("option", "disabled", true);
     }
 
     private static models: Model[] = [];
@@ -366,15 +385,15 @@ class SvgViewBoxManager {
 
     static zoomToFit() {
         var left = Number.MAX_VALUE, right = Number.MIN_VALUE, top = Number.MAX_VALUE, bottom = Number.MIN_VALUE;
-        if (!model.children.length) {
+        if (!ModelStack.current.children.length) {
             left = 0;
             right = 2000;
             top = 0;
             bottom = 1000;
         } else {
             // TODO - maybe this should be in the SVG section
-            for (var i = 0; i < model.children.length; ++i) {
-                var elem = model.children[i].element;
+            for (var i = 0; i < ModelStack.current.children.length; ++i) {
+                var elem = ModelStack.current.children[i].element;
                 var box = getTrueBBox(elem);
                 if (box.x < left) left = box.x;
                 if (box.y < top) top = box.y;
@@ -561,20 +580,28 @@ function svgRemoveClass(elem: SVGStylable, c: string) {
 function addItem(type: ItemType, pt: Point, elemAndPart: ElementAndPart): Item {
     switch (type) {
         case ItemType.Container:
-            if (elemAndPart == null)
+            if (elemAndPart == null) {
+                ModelStack.dup();
                 return addContainer(pt.x, pt.y);
+            }
             break;
         case ItemType.Variable:
-            if (elemAndPart && elemAndPart.type == "cell-inner")
+            if (elemAndPart && elemAndPart.type == "cell-inner") {
+                ModelStack.dup();
                 return addVariable(pt.x, pt.y, elemAndPart.elem.item);
+            }
             break;
         case ItemType.Constant:
-            if (elemAndPart == null)
+            if (elemAndPart == null) {
+                ModelStack.dup();
                 return addConstant(pt.x, pt.y);
+            }
             break;
         case ItemType.Receptor:
-            if (elemAndPart && elemAndPart.type == "cell-outer")
+            if (elemAndPart && elemAndPart.type == "cell-outer") {
+                ModelStack.dup();
                 return addReceptor(pt.x, pt.y, elemAndPart.elem.item);
+            }
             break;
     }
     return null;
@@ -582,7 +609,7 @@ function addItem(type: ItemType, pt: Point, elemAndPart: ElementAndPart): Item {
 
 function addContainer(x: number, y: number) {
     var container = new Container(x, y);
-    model.children.push(container);
+    ModelStack.current.children.push(container);
     container.createSvgElement();
     return container;
 }
@@ -597,7 +624,7 @@ function addVariable(x: number, y: number, container: Container) {
 
 function addConstant(x: number, y: number) {
     var constant = new Variable(ItemType.Constant, x, y);
-    model.children.push(constant);
+    ModelStack.current.children.push(constant);
     constant.createSvgElement();
     return constant;
 }
@@ -840,8 +867,12 @@ class Model {
     }
 
     deleteSvg() {
+        // TODO - why doesn't this clear things?
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].deleteSvgElement();
+        // HACK - forcibly clear
+        while (svg.lastChild)
+            svg.removeChild(svg.lastChild);
     }
 
     clone(): Model {
@@ -873,7 +904,7 @@ function getMaxId(node, v: number) {
 }
 
 function getNextId() {
-    return getMaxId(model, 0) + 1;
+    return getMaxId(ModelStack.current, 0) + 1;
 }
 
 function screenToSvg(x: number, y: number) {
