@@ -8,7 +8,7 @@ open Automata
 //open Microsoft.FSharp.Quotations.Typed
 //open Microsoft.FSharp.Quotations.Raw
 
-type particleModification = Death | Life of Particle*Map<QN.var,int> | Divide of (Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
+type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
 type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list)}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
@@ -69,14 +69,14 @@ let limitedLinearGrow (rate: float<um/second>) (property: limitMetric) (varID: i
 //                        //Divide ((Particle(p.id,p.name,p.location+(p.orientation*(posMod)),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(posMod)),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
 //                        //Divide (({p with location = p.location+ p.orientation*(posMod); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(posMod); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 //                        Divide (({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
-let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let max = if variation then max+sd*p.gRand else max
     match (m.[varID] = varState, limit) with
     | (false,_) -> Life (p,m) //Not in growth state
     | (true,None) ->
             match (p.radius < max) with
             | true -> Life ({p with radius = p.radius+rate*dt},m)// Growing if below limit  (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-            | false -> Divide (({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
+            | false -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
     | (true,Some(l)) ->
             let overLimit = match l with
                                         | RadiusLimit(n)     -> (p.radius > n)
@@ -87,7 +87,7 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
             match ((p.radius < max), overLimit) with
             | (_,true) -> Life (p,m)
             | (true,_)  -> Life ({p with radius = p.radius+rate*dt},m)
-            | (false,_) -> Divide (({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
+            | (false,_) -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 
             
             //Divide ((Particle(p.id,p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
@@ -104,28 +104,28 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
 //            | false -> Divide ((Particle(p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
 
 
-let apoptosis (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let apoptosis (varID: int) (varState: int) (varName: string) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt doesn't do anything here- this is an 'instant death' function
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> Death
+    | true -> Death (varName)
     // SI: consider switching to just if-then for these small expressions
     // if (m.[varID] = varState) then Death else Life (p,m)
 
-let shrinkingApoptosis (varID: int) (varState: int) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState, p.radius <= minSize) with
     | (false,_)    -> Life (p,m)
     | (true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
-    | (true,true)  -> Death
+    | (true,true)  -> Death (varName)
 
-let shrinkingRandomApoptosis (varID: int) (varState: int) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState, rng.NextDouble() < probability*dt, p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
-    | (true,true,true)  -> Death
+    | (true,true,true)  -> Death (varName)
 
-let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let biasMetric = match bias with
                         | Radius     -> float p.radius
                         | Age        -> float p.age
@@ -136,20 +136,20 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (minSize: float<Ph
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
-    | (true,true,true)  -> Death
+    | (true,true,true)  -> Death (varName)
 
-let certainDeath (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    Death
+let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    Death (varName)
 
-let randomApoptosis (varID: int) (varState: int) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt appropriately scales the probability with time
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true -> match (rng.NextDouble() < probability*dt) with
-                | true -> Death
+                | true -> Death (varName)
                 | false -> Life (p,m)
 
-let randomBiasApoptosis (varID: int) (varState: int) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
     let biasMetric = match bias with
                         | Radius     -> float p.radius
@@ -160,7 +160,7 @@ let randomBiasApoptosis (varID: int) (varState: int) (bias: floatMetric) (rng: S
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true -> match (rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
-                | true -> Death
+                | true -> Death (varName)
                 | false -> Life (p,m)
 
 //let randomSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (refC:float<um>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -204,19 +204,24 @@ let randomBiasApoptosis (varID: int) (varState: int) (bias: floatMetric) (rng: S
 //    | true , true  -> Death
 //    | true , false -> Life (p,m)
 
-let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification) (dT: float<second>) (pm: (Particle*Map<QN.var,int>) list) (acc: (Particle*Map<QN.var,int>) list) =
+let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification) (dT: float<second>) (pm: (Particle*Map<QN.var,int>) list) (acc: (Particle*Map<QN.var,int>) list) (birthDeathRegister: string list) (systemTime : float<second>)=
+    let reporter (p:Particle) (modification:particleModification) (systemTime:float<second>) =
+        match modification with
+        | Death(cause) -> sprintf "Death by %s of P = %s at T = %f seconds" cause p.ToString (systemTime*1.<second^-1>)
+        | Divide(cause,(p1,m1),(p2,m2)) -> sprintf "Division by %s of P = %s at T = %f seconds (birth of P&P: %s %s)" cause p.ToString (systemTime*1.<second^-1>) p1.ToString p2.ToString 
+        | _ -> ""
     match pm with
     | head::tail -> 
                     let (p,m) = head
                     match (f dT p m) with
-                    | Death -> dev f dT tail acc
-                    | Life(p1,m1) ->  dev f dT tail ((p1,m1)::acc)
-                    | Divide((p1,m1),(p2,m2)) -> dev f dT tail ((p1,m1)::((p2,m2)::acc))
+                    | Death(cause) -> dev f dT tail acc ((reporter p (Death (cause)) systemTime)::birthDeathRegister) systemTime
+                    | Life(p1,m1) ->  dev f dT tail ((p1,m1)::acc) birthDeathRegister systemTime
+                    | Divide(cause,(p1,m1),(p2,m2)) -> dev f dT tail ((p1,m1)::((p2,m2)::acc)) ((reporter p (Divide (cause,(p1,m1),(p2,m2))) systemTime)::birthDeathRegister) systemTime
     | [] -> List.fold (fun acc elem -> elem::acc) [] acc //reverse the list which has been created by cons'ing
 
-let rec devProcess (r : (float<second>->Particle->Map<QN.var,int>->particleModification) list) (dT:float<second>) (pm: (Particle*Map<QN.var,int>) list) = 
+let rec devProcess (r : (float<second>->Particle->Map<QN.var,int>->particleModification) list) (dT:float<second>) (pm: (Particle*Map<QN.var,int>) list) (birthDeathRegister: string list) (systemTime:float<second>) = 
     match r with
-    | head::tail -> devProcess tail dT (dev head dT pm [])
+    | head::tail -> devProcess tail dT (dev head dT pm [] birthDeathRegister systemTime) birthDeathRegister systemTime
     | [] -> pm
 
 let divideSystem system machineName =
@@ -233,11 +238,15 @@ let divideSystem system machineName =
     let (n,s,m) = List.foldBack f system (machineName,[],[])
     (s,m)
 
-let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list) (dT:float<second>) (intTop:interfaceTopology)  =
+let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list) (dT:float<second>) (intTop:interfaceTopology) (systemTime:float<second>) (birthDeathRegister: string list )  =
     //let (name,regions,responses) = iTop
     let name = intTop.name
     let regions = intTop.regions
     let responses = intTop.responses
+
+//    let birthDeathRegister = match interfaceMessages with
+//                                | Some(I) -> I
+//                                | _ -> []
     //let (staticSystem,machineSystem) = divideSystem system name
     //let machineSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
     //let staticSystem  = (List.filter (fun (p:Particle) -> p.freeze) system)
@@ -273,13 +282,13 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     //How do you fix the problem of physicsI update first or machineI update first?
     //Do I need to pass *both* new and old machines?
     //No, I'm going to update the physics first. The only way this could change things is by dividing across a region- this is not unreasonable
-    let pm = devProcess responses dT (List.zip machineSystem machineStates)
+    let pm = devProcess responses dT (List.zip machineSystem machineStates) birthDeathRegister systemTime
     let nMachineStates = [for (p,m) in pm -> regionListSwitch regions p m]
     let nmSystem = [for (p,m) in pm -> p]
     //let nSystem = List.foldBack (fun (p: Particle) acc -> p::acc) staticSystem nmSystem
-    let nSystem = nmSystem @ staticSystem
+    let nSystem = nmSystem // @ staticSystem
     //let nMachineStates = machineStates
     //let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
     let machineForces = List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem
     //let machineForces = seq { for p in nSystem do yield {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} }
-    (nSystem, nMachineStates, machineForces)
+    (nSystem, nMachineStates, machineForces, birthDeathRegister)
