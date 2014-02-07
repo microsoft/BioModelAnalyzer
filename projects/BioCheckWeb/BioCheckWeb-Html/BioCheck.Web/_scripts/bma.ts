@@ -99,11 +99,14 @@ function startDrag(e: JQueryMouseEventObject) {
 
     // Mouse down for drawing lines *doesn't* trigger a drag
     if (elem && (drawingItem == ItemType.Activate || drawingItem == ItemType.Inhibit)) {
-        var item = <Item>elem.item;
+        // Bit naughty to cast to Variable, but not accessing any specific
+        // properties of Variable until after the type (which is common) has
+        // been validated
+        var item = <Variable>elem.item;
         if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
             var pt = getTranslation(elem);
-            drawingLineSource = <Variable>item;
-            drawingLine = addLink(pt.x, pt.y, drawingItem);
+            drawingLineSource = item;
+            drawingLine = addLink(item, drawingItem);
         }
     } else {
         dragObject = elem;
@@ -155,37 +158,6 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     }
 }
 
-// TODO - tidy up
-/*
-function translateBy(elem: SVGGElement, dx: number, dy: number) {
-    translateSvgElementBy(elem, dx, dy);
-    var item = <Item>((<any>elem).item);
-    if (item.type == ItemType.Container) {
-        var children = (<Container>item).children;
-        for (var i = 0; i < children.length; ++i)
-            translateBy(children[i].element, dx, dy);
-    } else if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
-        var v = <Variable>item;
-        var pt = getTranslation(elem);
-        for (var i = 0; i < v.fromLinks.length; ++i) {
-            var line = <SVGLineElement>v.fromLinks[i].element.firstChild.firstChild;
-            line.x1.baseVal.value = pt.x;
-            line.y1.baseVal.value = pt.y;
-            var parent = line.parentNode;
-            parent.removeChild(line);
-            parent.appendChild(line);
-        }
-        for (var i = 0; i < v.toLinks.length; ++i) {
-            var line = <SVGLineElement>v.toLinks[i].element.firstChild.firstChild;
-            line.x2.baseVal.value = pt.x;
-            line.y2.baseVal.value = pt.y;
-            var parent = line.parentNode;
-            parent.removeChild(line);
-            parent.appendChild(line);
-        }
-    }
-}
-*/
 // TODO - min drag distance
 
 function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
@@ -292,6 +264,47 @@ function getEventElementAndPart(e) : ElementAndPart {
 interface ElementAndPart {
     elem: any; // TODO - stronger typing here - SVG element with "item" property
     type: string;
+}
+
+class ModelStack {
+    static get current() { return ModelStack.models[ModelStack.index]; }
+    static get hasModel() { return ModelStack.index >= 0; }
+
+    static get canUndo() { return ModelStack.index > 0; }
+    static get canRedo() { return ModelStack.index < ModelStack.models.length - 1; }
+
+    static undo() {
+        if (ModelStack.canUndo) {
+            ModelStack.current.deleteSvg();
+            --ModelStack.index;
+            ModelStack.current.createSvg();
+        }
+    }
+
+    static redo() {
+        if (ModelStack.canRedo) {
+            ModelStack.current.deleteSvg();
+            ++ModelStack.index;
+            ModelStack.current.createSvg();
+        }
+    }
+
+    static set(m: Model) {
+        if (ModelStack.hasModel)
+            ModelStack.current.deleteSvg();
+        ModelStack.models = [m];
+        ModelStack.index = 0;
+        ModelStack.current.createSvg();
+    }
+
+    static dup() {
+        ++ModelStack.index;
+        ModelStack.models.length = ModelStack.index;
+        ModelStack.models.push(ModelStack.current.clone());
+    }
+
+    private static models: Model[] = [];
+    private static index: number = -1;
 }
 
 interface Point {
@@ -497,22 +510,6 @@ function translateSvgElement(elem: SVGGElement, x: number, y: number) {
     applyNewTranslation(elem, x, y);
 }
 
-function XXtranslateSvgElementBy(elem: SVGGElement, dx: number, dy: number) {
-    // TODO - matrix manipulation instead
-    var transformList = elem.transform.baseVal;
-    for (var i = 0; i < transformList.numberOfItems; ++i) {
-        var transform = transformList.getItem(i);
-        if (transform.type == SVGTransform.SVG_TRANSFORM_TRANSLATE) {
-            var x = transform.matrix.e;
-            var y = transform.matrix.f;
-            transform.setTranslate(x + dx, y + dy);
-            return;
-        }
-    }
-    // Getting here means no translation was present
-    //applyNewTranslation(elem, dx, dy); ???
-}
-
 function getTranslation(elem: SVGGElement): Point {
     // TODO - matrix manipulation instead
     var transformList = elem.transform.baseVal;
@@ -555,6 +552,7 @@ function svgAddClass(elem: SVGStylable, c: string) {
 
 function svgRemoveClass(elem: SVGStylable, c: string) {
     var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
+    // TODO - coalesce spaces
     if (s == " ")
         s = null;
     elem.className.baseVal = s;
@@ -584,85 +582,38 @@ function addItem(type: ItemType, pt: Point, elemAndPart: ElementAndPart): Item {
 
 function addContainer(x: number, y: number) {
     var container = new Container(x, y);
-
-    var outerPath = createSvgPath("M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z", "#FAAF42");
-    svgAddClass(outerPath, "cell-outer");
-    var innerPath = createSvgPath("M3.6,45.5C-16.6,45.5-33,25.1-33,0.1c0-25,16.4-45.3,36.6-45.3c20.2,0,36.6,20.3,36.6,45.3C40.2,25.1,23.8,45.5,3.6,45.5z", "#FFF");
-    svgAddClass(innerPath, "cell-inner");
-    var graphic = createHighlightableSvgGroup([outerPath, innerPath], 0, 0, 2.5);
-    svgAddClass(graphic, "shape");
-    var text = createSvgText(container.name, -100, -125); // offset...
-    var elem = createTopGroupAndAdd([graphic, text], x, y);
-    container.element = elem;
-    (<any>elem).item = container;
-
     model.children.push(container);
+    container.createSvgElement();
     return container;
 }
 
 function addVariable(x: number, y: number, container: Container) {
     var variable = new Variable(ItemType.Variable, x, y);
-    var path = createSvgPath("M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z", "#EF4137");
-    var graphic = createHighlightableSvgGroup([path], 0, 0, 0.36);
-    svgAddClass(graphic, "shape");
-    var text = createSvgText(variable.name, 0, 50); // offset...
-    var elem = createTopGroupAndAdd([graphic, text], x, y);
-    variable.element = elem;
-    (<any>elem).item = variable;
-
     variable.parent = container;
     container.children.push(variable);
+    variable.createSvgElement();
     return variable;
 }
 
 function addConstant(x: number, y: number) {
     var constant = new Variable(ItemType.Constant, x, y);
-    var path = createSvgPath("M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z", "#BBBDBF");
-    var graphic = createHighlightableSvgGroup([path], 0, 0, 0.36);
-    svgAddClass(graphic, "shape");
-    var text = createSvgText(constant.name, 0, 50); // offset...
-    var elem = createTopGroupAndAdd([graphic, text], x, y);
-    constant.element = elem;
-    (<any>elem).item = constant;
-
     model.children.push(constant);
+    constant.createSvgElement();
     return constant;
 }
 
 function addReceptor(x: number, y: number, container: Container) {
-    var receptor = new Variable(ItemType.Constant, x, y);
-    var path = createSvgPath("M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z", "#3BB34A");
-    var graphic = createHighlightableSvgGroup([path], 0, 0, 1);
-    svgAddClass(graphic, "shape");
-    var elem = createTopGroupAndAdd([graphic], x, y);
-    receptor.element = elem;
-    (<any>elem).item = receptor;
-
+    var receptor = new Variable(ItemType.Receptor, x, y);
     container.children.push(receptor);
     receptor.parent = container;
+    receptor.createSvgElement();
     return receptor;
 }
 
-function addLink(x: number, y: number, type: ItemType) {
+function addLink(source: Variable, type: ItemType) {
     var link = new Link(type);
-    var line = <SVGLineElement>createSvgElement("line", 0, 0);
-    line.x1.baseVal.value = line.x2.baseVal.value = x;
-    line.y1.baseVal.value = line.y2.baseVal.value = y;
-    line.setAttribute("stroke-width", "3px");
-    line.setAttribute("stroke", "black");
-    // TODO - use classes instead
-    // Ack - serious problem with IE - marker-ended lines don't draw properly
-    // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
-    // http://connect.microsoft.com/IE/feedback/details/781964/svg-marker-is-not-updated-when-the-svg-element-is-moved-using-the-dom
-    // http://stackoverflow.com/questions/17654578/svg-marker-does-not-work-in-ie9-10 suggests remove and re-add as solution
-    line.setAttribute("marker-end", type == ItemType.Activate ? "url('#link-activate')" : "url('#link-inhibit')");
-    // TODO - highlight
-    var graphic = createSvgGroup([line], 0, 0, 1);
-    svgAddClass(graphic, "shape");
-    var elem = createTopGroupAndAdd([graphic], 0, 0);
-    link.element = elem;
-    (<any>elem).item = link;
-
+    link.source = source;
+    link.createSvgElement();
     return link;
 }
 
@@ -674,6 +625,23 @@ class Item {
         this.name = ItemType[type] + this.id;
     }
 
+    createSvgElement() {
+        // This should never occur - ideally would be an abstract method
+        throw new Error("Cannot create SVG element for item " + this.name + " (" + this.id + ")");
+    }
+
+    deleteSvgElement() {
+        if (this.element) {
+            this.element.parentNode.removeChild(this.element);
+            this.element = null;
+        }
+    }
+
+    clone(variableMap: { [original: number]: Variable }, linkList: Link[]): Item {
+        // This should never occur - ideally would be an abstract method
+        throw new Error("Cannot clone item " + this.name + " (" + this.id + ")");
+    }
+
     moveTo(x: number, y: number): void {
         moveBy(x - this.x, y - this.y);
     }
@@ -682,30 +650,6 @@ class Item {
         this.x += dx;
         this.y += dy;
         translateSvgElement(this.element, this.x, this.y);
-        if (this.type == ItemType.Container) {
-            var children = (<Container>this).children;
-            for (var i = 0; i < children.length; ++i)
-                children[i].moveBy(dx, dy);
-        } else if (this.type == ItemType.Variable || this.type == ItemType.Constant || this.type == ItemType.Receptor) {
-            var v = <Variable>this;
-            for (var i = 0; i < v.fromLinks.length; ++i) {
-                var line = <SVGLineElement>v.fromLinks[i].element.firstChild.firstChild;
-                line.x1.baseVal.value = this.x;
-                line.y1.baseVal.value = this.y;
-                var parent = line.parentNode;
-                // Need to do this to cause IE to redraw lines with markers
-                parent.removeChild(line);
-                parent.appendChild(line);
-            }
-            for (var i = 0; i < v.toLinks.length; ++i) {
-                var line = <SVGLineElement>v.toLinks[i].element.firstChild.firstChild;
-                line.x2.baseVal.value = this.x;
-                line.y2.baseVal.value = this.y;
-                var parent = line.parentNode;
-                parent.removeChild(line);
-                parent.appendChild(line);
-            }
-        }
     }
 
     id: number;
@@ -720,6 +664,76 @@ class Variable extends Item {
         this.fromLinks = [];
         this.toLinks = [];
     }
+
+    createSvgElement() {
+        var path: SVGPathElement;
+        var scale: number;
+        switch(this.type){
+            case ItemType.Variable:
+                path = createSvgPath("M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z", "#EF4137");
+                scale = 0.36;
+                break;
+            case ItemType.Constant:
+                path = createSvgPath("M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z", "#BBBDBF");
+                scale = 0.4;
+                break;
+            case ItemType.Receptor:
+                path = createSvgPath("M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z", "#3BB34A");
+                scale = 1.0;
+                break;
+            default:
+                throw new Error("Invalid variable type: " + this.type);
+        }
+        var graphic = createHighlightableSvgGroup([path], 0, 0, scale);
+        svgAddClass(graphic, "shape");
+        var text = createSvgText(this.name, 0, 50); // offset...
+        var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
+        this.element = elem;
+        (<any>elem).item = this;
+    }
+
+    deleteSvgElement() {
+        for (var i = 0; i < this.toLinks.length; ++i)
+            this.toLinks[i].deleteSvgElement();
+        super.deleteSvgElement();
+    }
+
+    clone(variableMap: { [original: number]: Variable }, linkList: Link[]): Variable {
+        var v = new Variable(this.type, this.x, this.y);
+        v.id = this.id;
+        v.name = this.name;
+        for (var i = 0; i < this.toLinks.length; ++i) {
+            var link = new Link(this.toLinks[i].type);
+            link.source = v;
+            link.target = this.toLinks[i].target; // This is the OLD target, will be patched up later
+            v.toLinks.push(link);
+            linkList.push(link);
+        }
+        variableMap[this.id] = v;
+        return v;
+    }
+
+    moveBy(dx: number, dy: number): void {
+        super.moveBy(dx, dy);
+        for (var i = 0; i < this.fromLinks.length; ++i) {
+            var line = <SVGLineElement>this.fromLinks[i].element.firstChild.firstChild;
+            line.x1.baseVal.value = this.x;
+            line.y1.baseVal.value = this.y;
+            var parent = line.parentNode;
+            // Need to do this to cause IE to redraw lines with markers
+            parent.removeChild(line);
+            parent.appendChild(line);
+        }
+        for (var i = 0; i < this.toLinks.length; ++i) {
+            var line = <SVGLineElement>this.toLinks[i].element.firstChild.firstChild;
+            line.x2.baseVal.value = this.x;
+            line.y2.baseVal.value = this.y;
+            var parent = line.parentNode;
+            parent.removeChild(line);
+            parent.appendChild(line);
+        }
+    }
+
     formula: string;
     parent: Container;
     fromLinks: Link[];
@@ -731,14 +745,83 @@ class Container extends Item {
         super(ItemType.Container, x, y);
         this.children = [];
     }
+
+    createSvgElement() {
+        var outerPath = createSvgPath("M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z", "#FAAF42");
+        svgAddClass(outerPath, "cell-outer");
+        var innerPath = createSvgPath("M3.6,45.5C-16.6,45.5-33,25.1-33,0.1c0-25,16.4-45.3,36.6-45.3c20.2,0,36.6,20.3,36.6,45.3C40.2,25.1,23.8,45.5,3.6,45.5z", "#FFF");
+        svgAddClass(innerPath, "cell-inner");
+        var graphic = createHighlightableSvgGroup([outerPath, innerPath], 0, 0, 2.5);
+        svgAddClass(graphic, "shape");
+        var text = createSvgText(this.name, -100, -125); // offset...
+        var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
+        this.element = elem;
+        (<any>elem).item = this;
+    }
+
+    deleteSvgElement() {
+        for (var i = 0; i < this.children.length; ++i)
+            this.children[i].deleteSvgElement();
+        super.deleteSvgElement();
+    }
+
+    clone(variableMap: { [original: number]: Variable }, linkList: Link[]): Container {
+        var c = new Container(this.x, this.y);
+        c.id = this.id;
+        c.name = this.name;
+        for (var i = 0; i < this.children.length; ++i)
+            c.children.push(this.children[i].clone(variableMap, linkList));
+        return c;
+    }
+
+    moveBy(dx: number, dy: number): void {
+        super.moveBy(dx, dy);
+        for (var i = 0; i < this.children.length; ++i)
+            this.children[i].moveBy(dx, dy);
+    }
+
     children: Variable[];
     size: number;
 }
 
-class Link /*extends Item*/ {
+class Link {
     constructor(public type: ItemType) {
-        /*super(type);*/
     }
+
+    createSvgElement() {
+        // TODO - need to shorten and re-angle to allow gap
+        // TODO - need to handle self-links
+        var line = <SVGLineElement>createSvgElement("line", 0, 0);
+        var v = this.source;
+        line.x1.baseVal.value = v.x;
+        line.y1.baseVal.value = v.y;
+        if (this.target)
+            v = this.target;
+        line.x2.baseVal.value = v.x;
+        line.y2.baseVal.value = v.y;
+        line.setAttribute("stroke-width", "3px");
+        line.setAttribute("stroke", "black");
+        // TODO - use classes instead
+        // Ack - serious problem with IE - marker-ended lines don't draw properly
+        // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
+        // http://connect.microsoft.com/IE/feedback/details/781964/svg-marker-is-not-updated-when-the-svg-element-is-moved-using-the-dom
+        // http://stackoverflow.com/questions/17654578/svg-marker-does-not-work-in-ie9-10 suggests remove and re-add as solution
+        line.setAttribute("marker-end", this.type == ItemType.Activate ? "url('#link-activate')" : "url('#link-inhibit')");
+        // TODO - highlight
+        var graphic = createSvgGroup([line], 0, 0, 1);
+        svgAddClass(graphic, "shape");
+        var elem = createTopGroupAndAdd([graphic], 0, 0);
+        this.element = elem;
+        (<any>elem).item = this;
+    }
+
+    deleteSvgElement() {
+        if (this.element) {
+            this.element.parentNode.removeChild(this.element);
+            this.element = null;
+        }
+    }
+
     source: Variable;
     target: Variable;
     element: SVGGElement;
@@ -747,6 +830,34 @@ class Link /*extends Item*/ {
 class Model {
     constructor() {
         this.children = [];
+    }
+
+    createSvg() {
+        // TODO - should create containers first, then variables, then links
+        // to ensure all is visible
+        for (var i = 0; i < this.children.length; ++i)
+            this.children[i].createSvgElement();
+    }
+
+    deleteSvg() {
+        for (var i = 0; i < this.children.length; ++i)
+            this.children[i].deleteSvgElement();
+    }
+
+    clone(): Model {
+        var m = new Model();
+        m.name = this.name;
+        var variableMap: { [original: number]: Variable } = {};
+        var linkList: Link[] = [];
+        for (var i = 0; i < this.children.length; ++i)
+            m.children.push(this.children[i].clone(variableMap, linkList));
+        // Patch up backward links
+        for (i = 0; i < linkList.length; ++i) {
+            var link = linkList[i];
+            link.target = variableMap[link.target.id];
+            link.target.fromLinks.push(link);
+        }
+        return m;
     }
 
     name: string;
