@@ -61,6 +61,7 @@ let run_tests () =
     Printf.printf "Running tests--------------------------------------------\n";
     let num = List.length !tests
     let failed = ref []
+    // SI: old function, no longer used. 
     let run_test (expected_result,test,info) =
         // This is probably not the right thing to do............
         let (file,name,line) = info
@@ -86,8 +87,40 @@ let run_tests () =
         end
         Printf.printf "%A\n" (System.DateTime.Now.Subtract start_time)
 
+    // SI: async version of run_test. Allows timeout. (Should pull timeout out to be a cl flag.) 
+    let run_test_async (expected_result,test,info) =
+        async {
+            let (file,name,line) = info
+            Printf.printf "Running test %s,%d," file line
+            let start_time = System.DateTime.Now
+            let b = begin
+                    try let b = test()
+                        if b<>expected_result then
+                              Printf.printf "Regression: %s,%d\n" file line
+                              Printf.printf "expected_result = %b, Current = %b\n" expected_result b
+                              failed := (info,b,expected_result) :: !failed;
+                        b
+                    with e ->
+                        Printf.printf "Regression: %s,%d\n" file line
+                        Printf.printf "RAISED EXCEPTION!!!!!\n"
+                        Printf.printf "expected_result = %b, Current = %s\n" expected_result
+                                       "exception"
+                        Printf.printf "Exception: %s\n" (e.ToString())
+                        failed := (info,false,expected_result) :: !failed;
+
+                        false
+            end
+            Printf.printf "%A\n" (System.DateTime.Now.Subtract start_time)
+        }
+
     if not !found_debug then
-        List.iter run_test !tests
+        List.iter 
+            (fun t -> 
+                // run_test t
+                try Async.RunSynchronously(run_test_async t, 10000)
+                with exc -> printfn "%s" exc.Message
+            )
+            !tests
     let failed_len = List.length !failed
     Printf.printf "\n\n----------------------------------------\n\n"
     Printf.printf "TEST RESULTS: %d regressions on %d tests\n" failed_len num
