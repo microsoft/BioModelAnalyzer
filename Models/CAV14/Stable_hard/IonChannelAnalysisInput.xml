@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput ModelName="New Model(4)">
+  <Variables>
+    <Variable Id="6">
+      <Name>Potential</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="7">
+      <Name>ActionPotential</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="24">
+      <Name />
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="25">
+      <Name />
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="26">
+      <Name />
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="27">
+      <Name />
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="1">
+      <Name>Pore</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>max(var(3),var(1))-var(5)</Function>
+    </Variable>
+    <Variable Id="3">
+      <Name>VS</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="4">
+      <Name>CTD_connect</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="5">
+      <Name>CTD</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="4">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="5">
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="10">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>24</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="18">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</AnalysisInput>
