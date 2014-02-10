@@ -717,6 +717,8 @@ class Variable extends Item {
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         (<any>elem).item = this;
+        for (var i = 0; i < this.toLinks.length; ++i)
+            this.toLinks[i].createSvgElement();
     }
 
     deleteSvgElement() {
@@ -784,6 +786,8 @@ class Container extends Item {
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         (<any>elem).item = this;
+        for (var i = 0; i < this.children.length; ++i)
+            this.children[i].createSvgElement();
     }
 
     deleteSvgElement() {
