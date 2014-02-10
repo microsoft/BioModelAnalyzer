@@ -1,0 +1,627 @@
+-- Generated with BioCheck on Thu Apr 08 19:58:25 BST 2010
+
+module main() {
+
+	Biosynth1 : 0 .. 2; 
+	F26bP : 0 .. 2; 
+	SuccinylCoA : 0 .. 2; 
+	P23bPG : 0 .. 2; 
+	aKetoglut : 0 .. 2; 
+	LXRa : 0 .. 2; 
+	AcetylCoA3 : 0 .. 2; 
+	AcetylCoA4 : 0 .. 2; 
+	AcetylCoA1 : 0 .. 2; 
+	AcetylCoA2 : 0 .. 2; 
+	betaox1 : 0 .. 2; 
+	betaox2 : 0 .. 2; 
+	Tfdp1 : 0 .. 2; 
+	Lysphos : 0 .. 2; 
+	NcoR1 : 0 .. 2; 
+	F6P1 : 0 .. 2; 
+	F6P2 : 0 .. 2; 
+	ELOVL6 : 0 .. 2; 
+	Citrate2 : 0 .. 2; 
+	Mlxipl : 0 .. 2; 
+	betaox : 0 .. 2; 
+	CoA : 0 .. 2; 
+	PPARg1 : 0 .. 2; 
+	G3P : 0 .. 2; 
+	Citrate1 : 0 .. 2; 
+	Glucose2 : 0 .. 2; 
+	Succinate : 0 .. 2; 
+	PP1 : 0 .. 2; 
+	Fumarate : 0 .. 2; 
+	Pyruvate : 0 .. 2; 
+	FattyAcids : 0 .. 2; 
+	Malate : 0 .. 2; 
+	Acetoac1 : 0 .. 2; 
+	PFK : 0 .. 2; 
+	Oxaloac1 : 0 .. 2; 
+	AcacCoA : 0 .. 2; 
+	F16bP : 0 .. 2; 
+	CPT : 0 .. 2; 
+	Lysphos2 : 0 .. 2; 
+	Glucose : 0 .. 2; 
+	ACAC : 0 .. 2; 
+	DHAP : 0 .. 2; 
+	P13bPG : 0 .. 2; 
+	LongChain : 0 .. 2; 
+	Lysphos1 : 0 .. 2; 
+	CoA2 : 0 .. 2; 
+	FASN : 0 .. 2; 
+	TBC1D4 : 0 .. 2; 
+	CoA1 : 0 .. 2; 
+	Glut4 : 0 .. 2; 
+	RXRa : 0 .. 2; 
+	Steroids : 0 .. 2; 
+	Rab : 0 .. 2; 
+	PPARg : 0 .. 2; 
+	Fat : 0 .. 2; 
+	Oxaloac : 0 .. 2; 
+	PPARa : 0 .. 2; 
+	AcacCoA2 : 0 .. 2; 
+	E2f : 0 .. 2; 
+	PPARa1 : 0 .. 2; 
+	AcacCoA1 : 0 .. 2; 
+	PPARa2 : 0 .. 2; 
+	CPT1A : 0 .. 2; 
+	F6P : 0 .. 2; 
+	MaloCoA : 0 .. 2; 
+	PYGL : 0 .. 2; 
+	Steroids1 : 0 .. 2; 
+	preCoA : 0 .. 2; 
+	Mlxipl2 : 0 .. 2; 
+	LXRa1 : 0 .. 2; 
+	Citrate : 0 .. 2; 
+	AcetylCoA : 0 .. 2; 
+	peroxi : 0 .. 2; 
+	Mlxipl1 : 0 .. 2; 
+	Isocitrate : 0 .. 2; 
+
+	init(Biosynth1) := {0,1,2};
+	init(F26bP) := {0,1,2};
+	init(SuccinylCoA) := {0,1,2};
+	init(P23bPG) := {0,1,2};
+	init(aKetoglut) := {0,1,2};
+	init(LXRa) := {0,1,2};
+	init(AcetylCoA3) := {0,1,2};
+	init(AcetylCoA4) := {0,1,2};
+	init(AcetylCoA1) := {0,1,2};
+	init(AcetylCoA2) := {0,1,2};
+	init(betaox1) := {0,1,2};
+	init(betaox2) := {0,1,2};
+	init(Tfdp1) := {0,1,2};
+	init(Lysphos) := {0,1,2};
+	init(NcoR1) := {0,1,2};
+	init(F6P1) := {0,1,2};
+	init(F6P2) := {0,1,2};
+	init(ELOVL6) := {0,1,2};
+	init(Citrate2) := {0,1,2};
+	init(Mlxipl) := {0,1,2};
+	init(betaox) := {0,1,2};
+	init(CoA) := {0,1,2};
+	init(PPARg1) := {0,1,2};
+	init(G3P) := {0,1,2};
+	init(Citrate1) := {0,1,2};
+	init(Glucose2) := {0,1,2};
+	init(Succinate) := {0,1,2};
+	init(PP1) := {0,1,2};
+	init(Fumarate) := {0,1,2};
+	init(Pyruvate) := {0,1,2};
+	init(FattyAcids) := {0,1,2};
+	init(Malate) := {0,1,2};
+	init(Acetoac1) := {0,1,2};
+	init(PFK) := {0,1,2};
+	init(Oxaloac1) := {0,1,2};
+	init(AcacCoA) := {0,1,2};
+	init(F16bP) := {0,1,2};
+	init(CPT) := {0,1,2};
+	init(Lysphos2) := {0,1,2};
+	init(Glucose) := {0,1,2};
+	init(ACAC) := {0,1,2};
+	init(DHAP) := {0,1,2};
+	init(P13bPG) := {0,1,2};
+	init(LongChain) := {0,1,2};
+	init(Lysphos1) := {0,1,2};
+	init(CoA2) := {0,1,2};
+	init(FASN) := {0,1,2};
+	init(TBC1D4) := {0,1,2};
+	init(CoA1) := {0,1,2};
+	init(Glut4) := {0,1,2};
+	init(RXRa) := {0,1,2};
+	init(Steroids) := {0,1,2};
+	init(Rab) := {0,1,2};
+	init(PPARg) := {0,1,2};
+	init(Fat) := {0,1,2};
+	init(Oxaloac) := {0,1,2};
+	init(PPARa) := {0,1,2};
+	init(AcacCoA2) := {0,1,2};
+	init(E2f) := {0,1,2};
+	init(PPARa1) := {0,1,2};
+	init(AcacCoA1) := {0,1,2};
+	init(PPARa2) := {0,1,2};
+	init(CPT1A) := {0,1,2};
+	init(F6P) := {0,1,2};
+	init(MaloCoA) := {0,1,2};
+	init(PYGL) := {0,1,2};
+	init(Steroids1) := {0,1,2};
+	init(preCoA) := {0,1,2};
+	init(Mlxipl2) := {0,1,2};
+	init(LXRa1) := {0,1,2};
+	init(Citrate) := {0,1,2};
+	init(AcetylCoA) := {0,1,2};
+	init(peroxi) := {0,1,2};
+	init(Mlxipl1) := {0,1,2};
+	init(Isocitrate) := {0,1,2};
+
+	if (((1 > Biosynth1) & (0 > Biosynth1)))
+		next(Biosynth1) := Biosynth1 + 1;
+	else if (((1 < Biosynth1) | (0 < Biosynth1)))
+		next(Biosynth1) := Biosynth1 - 1;
+	else next(Biosynth1) := Biosynth1;
+	if (((F6P > F26bP) & (0 > F26bP)))
+		next(F26bP) := F26bP + 1;
+	else if (((F6P < F26bP) | (0 < F26bP)))
+		next(F26bP) := F26bP - 1;
+	else next(F26bP) := F26bP;
+	if (((aKetoglut > SuccinylCoA) & (0 > SuccinylCoA)))
+		next(SuccinylCoA) := SuccinylCoA + 1;
+	else if (((aKetoglut < SuccinylCoA) | (0 < SuccinylCoA)))
+		next(SuccinylCoA) := SuccinylCoA - 1;
+	else next(SuccinylCoA) := SuccinylCoA;
+	if (((P13bPG > P23bPG) & (2 > P23bPG)))
+		next(P23bPG) := P23bPG + 1;
+	else if (((P13bPG < P23bPG) | (2 < P23bPG)))
+		next(P23bPG) := P23bPG - 1;
+	else next(P23bPG) := P23bPG;
+	if (((Isocitrate > aKetoglut) & (2 > aKetoglut)))
+		next(aKetoglut) := aKetoglut + 1;
+	else if (((Isocitrate < aKetoglut) | (2 < aKetoglut)))
+		next(aKetoglut) := aKetoglut - 1;
+	else next(aKetoglut) := aKetoglut;
+	if (((LXRa1 - 2) > LXRa))
+		next(LXRa) := LXRa + 1;
+	else if ((((LXRa1 - 2) < LXRa) & (LXRa > 0)))
+		next(LXRa) := LXRa - 1;
+	else next(LXRa) := LXRa;
+	if (((Citrate1 > AcetylCoA3) & (0 > AcetylCoA3)))
+		next(AcetylCoA3) := AcetylCoA3 + 1;
+	else if (((Citrate1 < AcetylCoA3) | (0 < AcetylCoA3)))
+		next(AcetylCoA3) := AcetylCoA3 - 1;
+	else next(AcetylCoA3) := AcetylCoA3;
+	if (((CoA > AcetylCoA4) & (0 > AcetylCoA4)))
+		next(AcetylCoA4) := AcetylCoA4 + 1;
+	else if (((CoA < AcetylCoA4) | (0 < AcetylCoA4)))
+		next(AcetylCoA4) := AcetylCoA4 - 1;
+	else next(AcetylCoA4) := AcetylCoA4;
+	if (((CoA > AcetylCoA1) & (0 > AcetylCoA1)))
+		next(AcetylCoA1) := AcetylCoA1 + 1;
+	else if (((CoA < AcetylCoA1) | (0 < AcetylCoA1)))
+		next(AcetylCoA1) := AcetylCoA1 - 1;
+	else next(AcetylCoA1) := AcetylCoA1;
+	if (((CoA > AcetylCoA2) & (preCoA > AcetylCoA2)))
+		next(AcetylCoA2) := AcetylCoA2 + 1;
+	else if (((CoA < AcetylCoA2) | (preCoA < AcetylCoA2)))
+		next(AcetylCoA2) := AcetylCoA2 - 1;
+	else next(AcetylCoA2) := AcetylCoA2;
+	if (((FattyAcids > betaox1) & (CPT > betaox1)))
+		next(betaox1) := betaox1 + 1;
+	else if (((FattyAcids < betaox1) | (CPT < betaox1)))
+		next(betaox1) := betaox1 - 1;
+	else next(betaox1) := betaox1;
+	if (((LongChain > betaox2) & (CPT > betaox2)))
+		next(betaox2) := betaox2 + 1;
+	else if (((LongChain < betaox2) | (CPT < betaox2)))
+		next(betaox2) := betaox2 - 1;
+	else next(betaox2) := betaox2;
+	if ((E2f > Tfdp1))
+		next(Tfdp1) := Tfdp1 + 1;
+	else if ((E2f < Tfdp1))
+		next(Tfdp1) := Tfdp1 - 1;
+	else next(Tfdp1) := Tfdp1;
+	if (((Lysphos1 + Lysphos2) > (2 * Lysphos)))
+		next(Lysphos) := Lysphos + 1;
+	else if (((Lysphos1 + Lysphos2) < ((2 * Lysphos) - 1)))
+		next(Lysphos) := Lysphos - 1;
+	else next(Lysphos) := Lysphos;
+	if (((2 - PPARg) > NcoR1))
+		next(NcoR1) := NcoR1 + 1;
+	else if (((2 - PPARg) < NcoR1))
+		next(NcoR1) := NcoR1 - 1;
+	else next(NcoR1) := NcoR1;
+	if (((Glucose > F6P1) & (PFK > F6P1)))
+		next(F6P1) := F6P1 + 1;
+	else if (((Glucose < F6P1) | (PFK < F6P1)))
+		next(F6P1) := F6P1 - 1;
+	else next(F6P1) := F6P1;
+	if (((F26bP > F6P2) & (0 > F6P2)))
+		next(F6P2) := F6P2 + 1;
+	else if (((F26bP < F6P2) | (0 < F6P2)))
+		next(F6P2) := F6P2 - 1;
+	else next(F6P2) := F6P2;
+	if ((Mlxipl > ELOVL6))
+		next(ELOVL6) := ELOVL6 + 1;
+	else if ((Mlxipl < ELOVL6))
+		next(ELOVL6) := ELOVL6 - 1;
+	else next(ELOVL6) := ELOVL6;
+	if (((AcetylCoA > Citrate2) & (0 > Citrate2)))
+		next(Citrate2) := Citrate2 + 1;
+	else if (((AcetylCoA < Citrate2) | (0 < Citrate2)))
+		next(Citrate2) := Citrate2 - 1;
+	else next(Citrate2) := Citrate2;
+	if (((Mlxipl1 - Mlxipl2) > Mlxipl))
+		next(Mlxipl) := Mlxipl + 1;
+	else if ((((Mlxipl1 - Mlxipl2) < Mlxipl) & (Mlxipl > 0)))
+		next(Mlxipl) := Mlxipl - 1;
+	else next(Mlxipl) := Mlxipl;
+	if (((betaox1 + betaox2) > (2 * betaox)))
+		next(betaox) := betaox + 1;
+	else if (((betaox1 + betaox2) < ((2 * betaox) - 1)))
+		next(betaox) := betaox - 1;
+	else next(betaox) := betaox;
+	if (((CoA1 + CoA2) > (2 * CoA)))
+		next(CoA) := CoA + 1;
+	else if (((CoA1 + CoA2) < ((2 * CoA) - 1)))
+		next(CoA) := CoA - 1;
+	else next(CoA) := CoA;
+	if (((0 + 0) > (2 * PPARg1)))
+		next(PPARg1) := PPARg1 + 1;
+	else if (((0 + 0) < ((2 * PPARg1) - 1)))
+		next(PPARg1) := PPARg1 - 1;
+	else next(PPARg1) := PPARg1;
+	if (((DHAP > G3P) & (0 > G3P)))
+		next(G3P) := G3P + 1;
+	else if (((DHAP < G3P) | (0 < G3P)))
+		next(G3P) := G3P - 1;
+	else next(G3P) := G3P;
+	if (((Citrate > Citrate1) & (CoA > Citrate1)))
+		next(Citrate1) := Citrate1 + 1;
+	else if (((Citrate < Citrate1) | (CoA < Citrate1)))
+		next(Citrate1) := Citrate1 - 1;
+	else next(Citrate1) := Citrate1;
+	if (((1 > Glucose2) & (PYGL > Glucose2)))
+		next(Glucose2) := Glucose2 + 1;
+	else if (((1 < Glucose2) | (PYGL < Glucose2)))
+		next(Glucose2) := Glucose2 - 1;
+	else next(Glucose2) := Glucose2;
+	if (((SuccinylCoA > Succinate) & (0 > Succinate)))
+		next(Succinate) := Succinate + 1;
+	else if (((SuccinylCoA < Succinate) | (0 < Succinate)))
+		next(Succinate) := Succinate - 1;
+	else next(Succinate) := Succinate;
+	if (((2 - 0) > PP1))
+		next(PP1) := PP1 + 1;
+	else if (((2 - 0) < PP1))
+		next(PP1) := PP1 - 1;
+	else next(PP1) := PP1;
+	if (((Succinate > Fumarate) & (0 > Fumarate)))
+		next(Fumarate) := Fumarate + 1;
+	else if (((Succinate < Fumarate) | (0 < Fumarate)))
+		next(Fumarate) := Fumarate - 1;
+	else next(Fumarate) := Fumarate;
+	if ((P13bPG > Pyruvate))
+		next(Pyruvate) := Pyruvate + 1;
+	else if ((P13bPG < Pyruvate))
+		next(Pyruvate) := Pyruvate - 1;
+	else next(Pyruvate) := Pyruvate;
+	if (((FASN > FattyAcids) & (MaloCoA > FattyAcids)))
+		next(FattyAcids) := FattyAcids + 1;
+	else if (((FASN < FattyAcids) | (MaloCoA < FattyAcids)))
+		next(FattyAcids) := FattyAcids - 1;
+	else next(FattyAcids) := FattyAcids;
+	if (((Fumarate > Malate) & (0 > Malate)))
+		next(Malate) := Malate + 1;
+	else if (((Fumarate < Malate) | (0 < Malate)))
+		next(Malate) := Malate - 1;
+	else next(Malate) := Malate;
+	if (((1 > Acetoac1) & (0 > Acetoac1)))
+		next(Acetoac1) := Acetoac1 + 1;
+	else if (((1 < Acetoac1) | (0 < Acetoac1)))
+		next(Acetoac1) := Acetoac1 - 1;
+	else next(Acetoac1) := Acetoac1;
+	if ((F26bP > PFK))
+		next(PFK) := PFK + 1;
+	else if ((F26bP < PFK))
+		next(PFK) := PFK - 1;
+	else next(PFK) := PFK;
+	if (((Malate > Oxaloac1) & (0 > Oxaloac1)))
+		next(Oxaloac1) := Oxaloac1 + 1;
+	else if (((Malate < Oxaloac1) | (0 < Oxaloac1)))
+		next(Oxaloac1) := Oxaloac1 - 1;
+	else next(Oxaloac1) := Oxaloac1;
+	if (((AcacCoA1 + AcacCoA2) > (2 * AcacCoA)))
+		next(AcacCoA) := AcacCoA + 1;
+	else if (((AcacCoA1 + AcacCoA2) < ((2 * AcacCoA) - 1)))
+		next(AcacCoA) := AcacCoA - 1;
+	else next(AcacCoA) := AcacCoA;
+	if ((F6P > F16bP))
+		next(F16bP) := F16bP + 1;
+	else if ((F6P < F16bP))
+		next(F16bP) := F16bP - 1;
+	else next(F16bP) := F16bP;
+	if (((CPT1A > CPT) & (0 > CPT)))
+		next(CPT) := CPT + 1;
+	else if (((CPT1A < CPT) | (0 < CPT)))
+		next(CPT) := CPT - 1;
+	else next(CPT) := CPT;
+	if (((LongChain > Lysphos2) & (0 > Lysphos2)))
+		next(Lysphos2) := Lysphos2 + 1;
+	else if (((LongChain < Lysphos2) | (0 < Lysphos2)))
+		next(Lysphos2) := Lysphos2 - 1;
+	else next(Lysphos2) := Lysphos2;
+	if (((Glut4 + Glucose2) > (2 * Glucose)))
+		next(Glucose) := Glucose + 1;
+	else if (((Glut4 + Glucose2) < ((2 * Glucose) - 1)))
+		next(Glucose) := Glucose - 1;
+	else next(Glucose) := Glucose;
+	if ((Mlxipl > ACAC))
+		next(ACAC) := ACAC + 1;
+	else if ((Mlxipl < ACAC))
+		next(ACAC) := ACAC - 1;
+	else next(ACAC) := ACAC;
+	if (((F16bP > DHAP) & (0 > DHAP)))
+		next(DHAP) := DHAP + 1;
+	else if (((F16bP < DHAP) | (0 < DHAP)))
+		next(DHAP) := DHAP - 1;
+	else next(DHAP) := DHAP;
+	if ((DHAP > P13bPG))
+		next(P13bPG) := P13bPG + 1;
+	else if ((DHAP < P13bPG))
+		next(P13bPG) := P13bPG - 1;
+	else next(P13bPG) := P13bPG;
+	if (((FattyAcids > LongChain) & (ELOVL6 > LongChain)))
+		next(LongChain) := LongChain + 1;
+	else if (((FattyAcids < LongChain) | (ELOVL6 < LongChain)))
+		next(LongChain) := LongChain - 1;
+	else next(LongChain) := LongChain;
+	if (((FattyAcids > Lysphos1) & (0 > Lysphos1)))
+		next(Lysphos1) := Lysphos1 + 1;
+	else if (((FattyAcids < Lysphos1) | (0 < Lysphos1)))
+		next(Lysphos1) := Lysphos1 - 1;
+	else next(Lysphos1) := Lysphos1;
+	if (((AcetylCoA > CoA2) & (0 > CoA2)))
+		next(CoA2) := CoA2 + 1;
+	else if (((AcetylCoA < CoA2) | (0 < CoA2)))
+		next(CoA2) := CoA2 - 1;
+	else next(CoA2) := CoA2;
+	if ((Mlxipl > FASN))
+		next(FASN) := FASN + 1;
+	else if ((Mlxipl < FASN))
+		next(FASN) := FASN - 1;
+	else next(FASN) := FASN;
+	if (((2 - 0) > TBC1D4))
+		next(TBC1D4) := TBC1D4 + 1;
+	else if (((2 - 0) < TBC1D4))
+		next(TBC1D4) := TBC1D4 - 1;
+	else next(TBC1D4) := TBC1D4;
+	if (((Biosynth1 > CoA1) & (0 > CoA1)))
+		next(CoA1) := CoA1 + 1;
+	else if (((Biosynth1 < CoA1) | (0 < CoA1)))
+		next(CoA1) := CoA1 - 1;
+	else next(CoA1) := CoA1;
+	if (((Rab + Mlxipl) > (2 * Glut4)))
+		next(Glut4) := Glut4 + 1;
+	else if (((Rab + Mlxipl) < ((2 * Glut4) - 1)))
+		next(Glut4) := Glut4 - 1;
+	else next(Glut4) := Glut4;
+	if (((0 - NcoR1) > RXRa))
+		next(RXRa) := RXRa + 1;
+	else if ((((0 - NcoR1) < RXRa) & (RXRa > 0)))
+		next(RXRa) := RXRa - 1;
+	else next(RXRa) := RXRa;
+	if (((Steroids1 > Steroids) & (0 > Steroids)))
+		next(Steroids) := Steroids + 1;
+	else if (((Steroids1 < Steroids) | (0 < Steroids)))
+		next(Steroids) := Steroids - 1;
+	else next(Steroids) := Steroids;
+	if (((2 - TBC1D4) > Rab))
+		next(Rab) := Rab + 1;
+	else if (((2 - TBC1D4) < Rab))
+		next(Rab) := Rab - 1;
+	else next(Rab) := Rab;
+	if (((PPARg1 - 2) > PPARg))
+		next(PPARg) := PPARg + 1;
+	else if ((((PPARg1 - 2) < PPARg) & (PPARg > 0)))
+		next(PPARg) := PPARg - 1;
+	else next(PPARg) := PPARg;
+	if ((Lysphos > Fat))
+		next(Fat) := Fat + 1;
+	else if ((Lysphos < Fat))
+		next(Fat) := Fat - 1;
+	else next(Fat) := Fat;
+	if (((Oxaloac1 + AcetylCoA2) > (2 * Oxaloac)))
+		next(Oxaloac) := Oxaloac + 1;
+	else if (((Oxaloac1 + AcetylCoA2) < ((2 * Oxaloac) - 1)))
+		next(Oxaloac) := Oxaloac - 1;
+	else next(Oxaloac) := Oxaloac;
+	if (((PPARa1 - PPARa2) > PPARa))
+		next(PPARa) := PPARa + 1;
+	else if ((((PPARa1 - PPARa2) < PPARa) & (PPARa > 0)))
+		next(PPARa) := PPARa - 1;
+	else next(PPARa) := PPARa;
+	if (((Acetoac1 > AcacCoA2) & (CoA > AcacCoA2)))
+		next(AcacCoA2) := AcacCoA2 + 1;
+	else if (((Acetoac1 < AcacCoA2) | (CoA < AcacCoA2)))
+		next(AcacCoA2) := AcacCoA2 - 1;
+	else next(AcacCoA2) := AcacCoA2;
+	if (((PPARg - 0) > E2f))
+		next(E2f) := E2f + 1;
+	else if ((((PPARg - 0) < E2f) & (E2f > 0)))
+		next(E2f) := E2f - 1;
+	else next(E2f) := E2f;
+	if (((0 + 0) > (2 * PPARa1)))
+		next(PPARa1) := PPARa1 + 1;
+	else if (((0 + 0) < ((2 * PPARa1) - 1)))
+		next(PPARa1) := PPARa1 - 1;
+	else next(PPARa1) := PPARa1;
+	if (((AcetylCoA > AcacCoA1) & (0 > AcacCoA1)))
+		next(AcacCoA1) := AcacCoA1 + 1;
+	else if (((AcetylCoA < AcacCoA1) | (0 < AcacCoA1)))
+		next(AcacCoA1) := AcacCoA1 - 1;
+	else next(AcacCoA1) := AcacCoA1;
+	if (((2 + NcoR1) > (2 * PPARa2)))
+		next(PPARa2) := PPARa2 + 1;
+	else if (((2 + NcoR1) < ((2 * PPARa2) - 1)))
+		next(PPARa2) := PPARa2 - 1;
+	else next(PPARa2) := PPARa2;
+	if ((Mlxipl > CPT1A))
+		next(CPT1A) := CPT1A + 1;
+	else if ((Mlxipl < CPT1A))
+		next(CPT1A) := CPT1A - 1;
+	else next(CPT1A) := CPT1A;
+	if (((F6P1 + F6P2) > (2 * F6P)))
+		next(F6P) := F6P + 1;
+	else if (((F6P1 + F6P2) < ((2 * F6P) - 1)))
+		next(F6P) := F6P - 1;
+	else next(F6P) := F6P;
+	if (((AcetylCoA > MaloCoA) & (ACAC > MaloCoA)))
+		next(MaloCoA) := MaloCoA + 1;
+	else if (((AcetylCoA < MaloCoA) | (ACAC < MaloCoA)))
+		next(MaloCoA) := MaloCoA - 1;
+	else next(MaloCoA) := MaloCoA;
+	if (((Mlxipl - PP1) > PYGL))
+		next(PYGL) := PYGL + 1;
+	else if ((((Mlxipl - PP1) < PYGL) & (PYGL > 0)))
+		next(PYGL) := PYGL - 1;
+	else next(PYGL) := PYGL;
+	if (((AcacCoA > Steroids1) & (0 > Steroids1)))
+		next(Steroids1) := Steroids1 + 1;
+	else if (((AcacCoA < Steroids1) | (0 < Steroids1)))
+		next(Steroids1) := Steroids1 - 1;
+	else next(Steroids1) := Steroids1;
+	if (((Pyruvate > preCoA) & (0 > preCoA)))
+		next(preCoA) := preCoA + 1;
+	else if (((Pyruvate < preCoA) | (0 < preCoA)))
+		next(preCoA) := preCoA - 1;
+	else next(preCoA) := preCoA;
+	if ((((0 + NcoR1 + 2) + 1) > (2 + (3 * Mlxipl2))))
+		next(Mlxipl2) := Mlxipl2 + 1;
+	else if ((((0 + NcoR1 + 2) + 1) < (3 * Mlxipl2)))
+		next(Mlxipl2) := Mlxipl2 - 1;
+	else next(Mlxipl2) := Mlxipl2;
+	if ((((0 + PPARg + 0 + RXRa + PPARa) + 2) > (4 + (5 * LXRa1))))
+		next(LXRa1) := LXRa1 + 1;
+	else if ((((0 + PPARg + 0 + RXRa + PPARa) + 2) < (5 * LXRa1)))
+		next(LXRa1) := LXRa1 - 1;
+	else next(LXRa1) := LXRa1;
+	if (((Citrate2 > Citrate) & (Oxaloac > Citrate)))
+		next(Citrate) := Citrate + 1;
+	else if (((Citrate2 < Citrate) | (Oxaloac < Citrate)))
+		next(Citrate) := Citrate - 1;
+	else next(Citrate) := Citrate;
+	if ((((AcetylCoA1 + AcetylCoA2 + AcetylCoA3 + AcetylCoA4) + 2) > (3 + (4 * AcetylCoA))))
+		next(AcetylCoA) := AcetylCoA + 1;
+	else if ((((AcetylCoA1 + AcetylCoA2 + AcetylCoA3 + AcetylCoA4) + 2) < (4 * AcetylCoA)))
+		next(AcetylCoA) := AcetylCoA - 1;
+	else next(AcetylCoA) := AcetylCoA;
+	if (((FattyAcids > peroxi) & (0 > peroxi)))
+		next(peroxi) := peroxi + 1;
+	else if (((FattyAcids < peroxi) | (0 < peroxi)))
+		next(peroxi) := peroxi - 1;
+	else next(peroxi) := peroxi;
+	if ((((Glucose + 0 + 0 + LXRa + Tfdp1 + 0 + 0 + 0) + 4) > (7 + (8 * Mlxipl1))))
+		next(Mlxipl1) := Mlxipl1 + 1;
+	else if ((((Glucose + 0 + 0 + LXRa + Tfdp1 + 0 + 0 + 0) + 4) < (8 * Mlxipl1)))
+		next(Mlxipl1) := Mlxipl1 - 1;
+	else next(Mlxipl1) := Mlxipl1;
+	if (((Citrate > Isocitrate) & (0 > Isocitrate)))
+		next(Isocitrate) := Isocitrate + 1;
+	else if (((Citrate < Isocitrate) | (0 < Isocitrate)))
+		next(Isocitrate) := Isocitrate - 1;
+	else next(Isocitrate) := Isocitrate;
+
+-- Exists unique (
+ --   k0, k1, k2, k3, k4, 
+ --   k5, k6, k7, k8, k9, 
+ --   k10, k11, k12, k13, k14, 
+ --   k15, k16, k17, k18, k19, 
+ --   k20, k21, k22, k23, k24, 
+ --   k25, k26, k27, k28, k29, 
+ --   k30, k31, k32, k33, k34, 
+ --   k35, k36, k37, k38, k39, 
+ --   k40, k41, k42, k43, k44, 
+ --   k45, k46, k47, k48, k49, 
+ --   k50, k51, k52, k53, k54, 
+ --   k55, k56, k57, k58, k59, 
+ --   k60, k61, k62, k63, k64, 
+ --   k65, k66, k67, k68, k69, 
+ --   k70, k71, k72, k73, k74
+ -- ) such that 
+ -- 
+ --      F G(Biosynth1 = k0)
+ --    & F G(CoA1 = k1)
+ --    & F G(AcetylCoA1 = k2)
+ --    & F G(CoA2 = k3)
+ --    & F G(CoA = k4)
+ --    & F G(AcetylCoA2 = k5)
+ --    & F G(Citrate1 = k6)
+ --    & F G(AcetylCoA3 = k7)
+ --    & F G(AcetylCoA4 = k8)
+ --    & F G(AcetylCoA = k9)
+ --    & F G(Citrate2 = k10)
+ --    & F G(Citrate = k11)
+ --    & F G(Isocitrate = k12)
+ --    & F G(aKetoglut = k13)
+ --    & F G(SuccinylCoA = k14)
+ --    & F G(Succinate = k15)
+ --    & F G(Fumarate = k16)
+ --    & F G(Malate = k17)
+ --    & F G(Oxaloac1 = k18)
+ --    & F G(Oxaloac = k19)
+ --    & F G(F26bP = k20)
+ --    & F G(F6P2 = k21)
+ --    & F G(PFK = k22)
+ --    & F G(F6P1 = k23)
+ --    & F G(F6P = k24)
+ --    & F G(F16bP = k25)
+ --    & F G(DHAP = k26)
+ --    & F G(G3P = k27)
+ --    & F G(P13bPG = k28)
+ --    & F G(P23bPG = k29)
+ --    & F G(Pyruvate = k30)
+ --    & F G(preCoA = k31)
+ --    & F G(ACAC = k32)
+ --    & F G(FASN = k33)
+ --    & F G(ELOVL6 = k34)
+ --    & F G(CPT1A = k35)
+ --    & F G(AcacCoA1 = k36)
+ --    & F G(Acetoac1 = k37)
+ --    & F G(AcacCoA2 = k38)
+ --    & F G(AcacCoA = k39)
+ --    & F G(Steroids1 = k40)
+ --    & F G(Steroids = k41)
+ --    & F G(MaloCoA = k42)
+ --    & F G(FattyAcids = k43)
+ --    & F G(peroxi = k44)
+ --    & F G(LongChain = k45)
+ --    & F G(CPT = k46)
+ --    & F G(betaox1 = k47)
+ --    & F G(betaox2 = k48)
+ --    & F G(betaox = k49)
+ --    & F G(Lysphos1 = k50)
+ --    & F G(Lysphos2 = k51)
+ --    & F G(Lysphos = k52)
+ --    & F G(Fat = k53)
+ --    & F G(PPARg1 = k54)
+ --    & F G(PPARg = k55)
+ --    & F G(NcoR1 = k56)
+ --    & F G(RXRa = k57)
+ --    & F G(PPARa1 = k58)
+ --    & F G(PPARa2 = k59)
+ --    & F G(PPARa = k60)
+ --    & F G(LXRa1 = k61)
+ --    & F G(LXRa = k62)
+ --    & F G(E2f = k63)
+ --    & F G(Tfdp1 = k64)
+ --    & F G(Mlxipl1 = k65)
+ --    & F G(Mlxipl2 = k66)
+ --    & F G(Mlxipl = k67)
+ --    & F G(TBC1D4 = k68)
+ --    & F G(Rab = k69)
+ --    & F G(Glut4 = k70)
+ --    & F G(PP1 = k71)
+ --    & F G(PYGL = k72)
+ --    & F G(Glucose2 = k73)
+ --    & F G(Glucose = k74)
+
+}

@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput ModelName="Coli Simple-Tarfunc">
+  <Variables>
+    <Variable Id="14">
+      <Name>Aspartate</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>0</Function>
+    </Variable>
+    <Variable Id="15">
+      <Name>Nickel</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>0</Function>
+    </Variable>
+    <Variable Id="1">
+      <Name>Tar</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>2*(1-var(14)+var(15))-floor((var(3)/2+var(16)/2)*2/3)+var(13)</Function>
+    </Variable>
+    <Variable Id="2">
+      <Name>CheA</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>var(1)</Function>
+    </Variable>
+    <Variable Id="9">
+      <Name>CheY</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>ceil(var(2)/3)</Function>
+    </Variable>
+    <Variable Id="10">
+      <Name>Motor</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="13">
+      <Name>CheR</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function>1</Function>
+    </Variable>
+    <Variable Id="3">
+      <Name>CheB</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="16">
+      <Name>CheBSlow</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Function></Function>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="6">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>9</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="1">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="11">
+      <FromVariableId>13</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="12">
+      <FromVariableId>15</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="13">
+      <FromVariableId>14</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="14">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="7">
+      <FromVariableId>9</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="15">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>16</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="16">
+      <FromVariableId>16</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</AnalysisInput>

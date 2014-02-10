@@ -1,0 +1,701 @@
+-- Generated with BioCheck on Thu Apr 08 19:58:26 BST 2010
+
+module main() {
+
+	deltaext6 : 0 .. 3; 
+	deltaext5 : 0 .. 3; 
+	deltaext4 : 0 .. 3; 
+	deltaext3 : 0 .. 3; 
+	deltaext2 : 0 .. 3; 
+	deltaext1 : 0 .. 3; 
+	deltaext0 : 0 .. 3; 
+	bcat6 : 0 .. 3; 
+	bcat5 : 0 .. 3; 
+	bcat4 : 0 .. 3; 
+	delta0 : 0 .. 3; 
+	delta1 : 0 .. 3; 
+	delta2 : 0 .. 3; 
+	delta3 : 0 .. 3; 
+	delta4 : 0 .. 3; 
+	delta5 : 0 .. 3; 
+	delta6 : 0 .. 3; 
+	wnt6 : 0 .. 3; 
+	wnt5 : 0 .. 3; 
+	wnt2 : 0 .. 3; 
+	wnt1 : 0 .. 3; 
+	wnt4 : 0 .. 3; 
+	wnt3 : 0 .. 3; 
+	wnt0 : 0 .. 3; 
+	p21_0 : 0 .. 3; 
+	p21_1 : 0 .. 3; 
+	p21_2 : 0 .. 3; 
+	p21_3 : 0 .. 3; 
+	p21_4 : 0 .. 3; 
+	p21_5 : 0 .. 3; 
+	p21_6 : 0 .. 3; 
+	dsh0 : 0 .. 3; 
+	dsh2 : 0 .. 3; 
+	dsh1 : 0 .. 3; 
+	dsh4 : 0 .. 3; 
+	dsh3 : 0 .. 3; 
+	dsh6 : 0 .. 3; 
+	dsh5 : 0 .. 3; 
+	wntext5 : 0 .. 3; 
+	gt1_1 : 0 .. 3; 
+	gt1_2 : 0 .. 3; 
+	wntext4 : 0 .. 3; 
+	wntext6 : 0 .. 3; 
+	gt1_0 : 0 .. 3; 
+	gt2_1 : 0 .. 3; 
+	gt2_0 : 0 .. 3; 
+	gt2_5 : 0 .. 3; 
+	gt2_4 : 0 .. 3; 
+	gt2_3 : 0 .. 3; 
+	gt2_2 : 0 .. 3; 
+	gt1_5 : 0 .. 3; 
+	gt1_6 : 0 .. 3; 
+	gt1_3 : 0 .. 3; 
+	gt2_6 : 0 .. 3; 
+	gt1_4 : 0 .. 3; 
+	axin6 : 0 .. 3; 
+	axin4 : 0 .. 3; 
+	notchic0 : 0 .. 3; 
+	axin5 : 0 .. 3; 
+	notchic1 : 0 .. 3; 
+	wntext0 : 0 .. 3; 
+	axin2 : 0 .. 3; 
+	wntext1 : 0 .. 3; 
+	axin3 : 0 .. 3; 
+	wntext2 : 0 .. 3; 
+	axin0 : 0 .. 3; 
+	axin1 : 0 .. 3; 
+	wntext3 : 0 .. 3; 
+	bcat1 : 0 .. 3; 
+	bcat0 : 0 .. 3; 
+	bcat3 : 0 .. 3; 
+	bcat2 : 0 .. 3; 
+	notchic6 : 0 .. 3; 
+	notchic5 : 0 .. 3; 
+	notchic4 : 0 .. 3; 
+	notchic3 : 0 .. 3; 
+	notchic2 : 0 .. 3; 
+	frizzled6 : 0 .. 3; 
+	frizzled1 : 0 .. 3; 
+	frizzled0 : 0 .. 3; 
+	frizzled3 : 0 .. 3; 
+	frizzled2 : 0 .. 3; 
+	frizzled5 : 0 .. 3; 
+	frizzled4 : 0 .. 3; 
+
+	init(deltaext6) := {0,1,2,3};
+	init(deltaext5) := {0,1,2,3};
+	init(deltaext4) := {0,1,2,3};
+	init(deltaext3) := {0,1,2,3};
+	init(deltaext2) := {0,1,2,3};
+	init(deltaext1) := {0,1,2,3};
+	init(deltaext0) := {0,1,2,3};
+	init(bcat6) := {0,1,2,3};
+	init(bcat5) := {0,1,2,3};
+	init(bcat4) := {0,1,2,3};
+	init(delta0) := {0,1,2,3};
+	init(delta1) := {0,1,2,3};
+	init(delta2) := {0,1,2,3};
+	init(delta3) := {0,1,2,3};
+	init(delta4) := {0,1,2,3};
+	init(delta5) := {0,1,2,3};
+	init(delta6) := {0,1,2,3};
+	init(wnt6) := {0,1,2,3};
+	init(wnt5) := {0,1,2,3};
+	init(wnt2) := {0,1,2,3};
+	init(wnt1) := {0,1,2,3};
+	init(wnt4) := {0,1,2,3};
+	init(wnt3) := {0,1,2,3};
+	init(wnt0) := {0,1,2,3};
+	init(p21_0) := {0,1,2,3};
+	init(p21_1) := {0,1,2,3};
+	init(p21_2) := {0,1,2,3};
+	init(p21_3) := {0,1,2,3};
+	init(p21_4) := {0,1,2,3};
+	init(p21_5) := {0,1,2,3};
+	init(p21_6) := {0,1,2,3};
+	init(dsh0) := {0,1,2,3};
+	init(dsh2) := {0,1,2,3};
+	init(dsh1) := {0,1,2,3};
+	init(dsh4) := {0,1,2,3};
+	init(dsh3) := {0,1,2,3};
+	init(dsh6) := {0,1,2,3};
+	init(dsh5) := {0,1,2,3};
+	init(wntext5) := {0,1,2,3};
+	init(gt1_1) := {0,1,2,3};
+	init(gt1_2) := {0,1,2,3};
+	init(wntext4) := {0,1,2,3};
+	init(wntext6) := {0,1,2,3};
+	init(gt1_0) := {0,1,2,3};
+	init(gt2_1) := {0,1,2,3};
+	init(gt2_0) := {0,1,2,3};
+	init(gt2_5) := {0,1,2,3};
+	init(gt2_4) := {0,1,2,3};
+	init(gt2_3) := {0,1,2,3};
+	init(gt2_2) := {0,1,2,3};
+	init(gt1_5) := {0,1,2,3};
+	init(gt1_6) := {0,1,2,3};
+	init(gt1_3) := {0,1,2,3};
+	init(gt2_6) := {0,1,2,3};
+	init(gt1_4) := {0,1,2,3};
+	init(axin6) := {0,1,2,3};
+	init(axin4) := {0,1,2,3};
+	init(notchic0) := {0,1,2,3};
+	init(axin5) := {0,1,2,3};
+	init(notchic1) := {0,1,2,3};
+	init(wntext0) := {0,1,2,3};
+	init(axin2) := {0,1,2,3};
+	init(wntext1) := {0,1,2,3};
+	init(axin3) := {0,1,2,3};
+	init(wntext2) := {0,1,2,3};
+	init(axin0) := {0,1,2,3};
+	init(axin1) := {0,1,2,3};
+	init(wntext3) := {0,1,2,3};
+	init(bcat1) := {0,1,2,3};
+	init(bcat0) := {0,1,2,3};
+	init(bcat3) := {0,1,2,3};
+	init(bcat2) := {0,1,2,3};
+	init(notchic6) := {0,1,2,3};
+	init(notchic5) := {0,1,2,3};
+	init(notchic4) := {0,1,2,3};
+	init(notchic3) := {0,1,2,3};
+	init(notchic2) := {0,1,2,3};
+	init(frizzled6) := {0,1,2,3};
+	init(frizzled1) := {0,1,2,3};
+	init(frizzled0) := {0,1,2,3};
+	init(frizzled3) := {0,1,2,3};
+	init(frizzled2) := {0,1,2,3};
+	init(frizzled5) := {0,1,2,3};
+	init(frizzled4) := {0,1,2,3};
+
+	if (((delta5 + 2) > (2 * deltaext6)))
+		next(deltaext6) := deltaext6 + 1;
+	else if (((delta5 + 2) < ((2 * deltaext6) - 1)))
+		next(deltaext6) := deltaext6 - 1;
+	else next(deltaext6) := deltaext6;
+	if (((delta4 + delta6) > (2 * deltaext5)))
+		next(deltaext5) := deltaext5 + 1;
+	else if (((delta4 + delta6) < ((2 * deltaext5) - 1)))
+		next(deltaext5) := deltaext5 - 1;
+	else next(deltaext5) := deltaext5;
+	if (((delta3 + delta5) > (2 * deltaext4)))
+		next(deltaext4) := deltaext4 + 1;
+	else if (((delta3 + delta5) < ((2 * deltaext4) - 1)))
+		next(deltaext4) := deltaext4 - 1;
+	else next(deltaext4) := deltaext4;
+	if (((delta2 + delta4) > (2 * deltaext3)))
+		next(deltaext3) := deltaext3 + 1;
+	else if (((delta2 + delta4) < ((2 * deltaext3) - 1)))
+		next(deltaext3) := deltaext3 - 1;
+	else next(deltaext3) := deltaext3;
+	if (((delta1 + delta3) > (2 * deltaext2)))
+		next(deltaext2) := deltaext2 + 1;
+	else if (((delta1 + delta3) < ((2 * deltaext2) - 1)))
+		next(deltaext2) := deltaext2 - 1;
+	else next(deltaext2) := deltaext2;
+	if (((delta0 + delta2) > (2 * deltaext1)))
+		next(deltaext1) := deltaext1 + 1;
+	else if (((delta0 + delta2) < ((2 * deltaext1) - 1)))
+		next(deltaext1) := deltaext1 - 1;
+	else next(deltaext1) := deltaext1;
+	if (((2 + delta1) > (2 * deltaext0)))
+		next(deltaext0) := deltaext0 + 1;
+	else if (((2 + delta1) < ((2 * deltaext0) - 1)))
+		next(deltaext0) := deltaext0 - 1;
+	else next(deltaext0) := deltaext0;
+	if (((3 - axin6) > bcat6))
+		next(bcat6) := bcat6 + 1;
+	else if ((((3 - axin6) < bcat6) & (bcat6 > 0)))
+		next(bcat6) := bcat6 - 1;
+	else next(bcat6) := bcat6;
+	if (((3 - axin5) > bcat5))
+		next(bcat5) := bcat5 + 1;
+	else if ((((3 - axin5) < bcat5) & (bcat5 > 0)))
+		next(bcat5) := bcat5 - 1;
+	else next(bcat5) := bcat5;
+	if (((3 - axin4) > bcat4))
+		next(bcat4) := bcat4 + 1;
+	else if ((((3 - axin4) < bcat4) & (bcat4 > 0)))
+		next(bcat4) := bcat4 - 1;
+	else next(bcat4) := bcat4;
+	if (((gt1_0 + gt2_0) > (2 * delta0)))
+		next(delta0) := delta0 + 1;
+	else if (((gt1_0 + gt2_0) < ((2 * delta0) - 1)))
+		next(delta0) := delta0 - 1;
+	else next(delta0) := delta0;
+	if (((gt1_1 + gt2_1) > (2 * delta1)))
+		next(delta1) := delta1 + 1;
+	else if (((gt1_1 + gt2_1) < ((2 * delta1) - 1)))
+		next(delta1) := delta1 - 1;
+	else next(delta1) := delta1;
+	if (((gt1_2 + gt2_2) > (2 * delta2)))
+		next(delta2) := delta2 + 1;
+	else if (((gt1_2 + gt2_2) < ((2 * delta2) - 1)))
+		next(delta2) := delta2 - 1;
+	else next(delta2) := delta2;
+	if (((gt1_3 + gt2_3) > (2 * delta3)))
+		next(delta3) := delta3 + 1;
+	else if (((gt1_3 + gt2_3) < ((2 * delta3) - 1)))
+		next(delta3) := delta3 - 1;
+	else next(delta3) := delta3;
+	if (((gt1_4 + gt2_4) > (2 * delta4)))
+		next(delta4) := delta4 + 1;
+	else if (((gt1_4 + gt2_4) < ((2 * delta4) - 1)))
+		next(delta4) := delta4 - 1;
+	else next(delta4) := delta4;
+	if (((gt1_5 + gt2_5) > (2 * delta5)))
+		next(delta5) := delta5 + 1;
+	else if (((gt1_5 + gt2_5) < ((2 * delta5) - 1)))
+		next(delta5) := delta5 - 1;
+	else next(delta5) := delta5;
+	if (((gt1_6 + gt2_6) > (2 * delta6)))
+		next(delta6) := delta6 + 1;
+	else if (((gt1_6 + gt2_6) < ((2 * delta6) - 1)))
+		next(delta6) := delta6 - 1;
+	else next(delta6) := delta6;
+	if (((3 - p21_6) > wnt6))
+		next(wnt6) := wnt6 + 1;
+	else if (((3 - p21_6) < wnt6))
+		next(wnt6) := wnt6 - 1;
+	else next(wnt6) := wnt6;
+	if (((3 - p21_5) > wnt5))
+		next(wnt5) := wnt5 + 1;
+	else if (((3 - p21_5) < wnt5))
+		next(wnt5) := wnt5 - 1;
+	else next(wnt5) := wnt5;
+	if (((3 - p21_2) > wnt2))
+		next(wnt2) := wnt2 + 1;
+	else if (((3 - p21_2) < wnt2))
+		next(wnt2) := wnt2 - 1;
+	else next(wnt2) := wnt2;
+	if (((3 - p21_1) > wnt1))
+		next(wnt1) := wnt1 + 1;
+	else if (((3 - p21_1) < wnt1))
+		next(wnt1) := wnt1 - 1;
+	else next(wnt1) := wnt1;
+	if (((3 - p21_4) > wnt4))
+		next(wnt4) := wnt4 + 1;
+	else if (((3 - p21_4) < wnt4))
+		next(wnt4) := wnt4 - 1;
+	else next(wnt4) := wnt4;
+	if (((3 - p21_3) > wnt3))
+		next(wnt3) := wnt3 + 1;
+	else if (((3 - p21_3) < wnt3))
+		next(wnt3) := wnt3 - 1;
+	else next(wnt3) := wnt3;
+	if (((3 - p21_0) > wnt0))
+		next(wnt0) := wnt0 + 1;
+	else if (((3 - p21_0) < wnt0))
+		next(wnt0) := wnt0 - 1;
+	else next(wnt0) := wnt0;
+	if ((notchic0 > p21_0))
+		next(p21_0) := p21_0 + 1;
+	else if ((notchic0 < p21_0))
+		next(p21_0) := p21_0 - 1;
+	else next(p21_0) := p21_0;
+	if ((notchic1 > p21_1))
+		next(p21_1) := p21_1 + 1;
+	else if ((notchic1 < p21_1))
+		next(p21_1) := p21_1 - 1;
+	else next(p21_1) := p21_1;
+	if ((notchic2 > p21_2))
+		next(p21_2) := p21_2 + 1;
+	else if ((notchic2 < p21_2))
+		next(p21_2) := p21_2 - 1;
+	else next(p21_2) := p21_2;
+	if ((notchic3 > p21_3))
+		next(p21_3) := p21_3 + 1;
+	else if ((notchic3 < p21_3))
+		next(p21_3) := p21_3 - 1;
+	else next(p21_3) := p21_3;
+	if ((notchic4 > p21_4))
+		next(p21_4) := p21_4 + 1;
+	else if ((notchic4 < p21_4))
+		next(p21_4) := p21_4 - 1;
+	else next(p21_4) := p21_4;
+	if ((notchic5 > p21_5))
+		next(p21_5) := p21_5 + 1;
+	else if ((notchic5 < p21_5))
+		next(p21_5) := p21_5 - 1;
+	else next(p21_5) := p21_5;
+	if ((notchic6 > p21_6))
+		next(p21_6) := p21_6 + 1;
+	else if ((notchic6 < p21_6))
+		next(p21_6) := p21_6 - 1;
+	else next(p21_6) := p21_6;
+	if ((frizzled0 > dsh0))
+		next(dsh0) := dsh0 + 1;
+	else if ((frizzled0 < dsh0))
+		next(dsh0) := dsh0 - 1;
+	else next(dsh0) := dsh0;
+	if ((frizzled2 > dsh2))
+		next(dsh2) := dsh2 + 1;
+	else if ((frizzled2 < dsh2))
+		next(dsh2) := dsh2 - 1;
+	else next(dsh2) := dsh2;
+	if ((frizzled1 > dsh1))
+		next(dsh1) := dsh1 + 1;
+	else if ((frizzled1 < dsh1))
+		next(dsh1) := dsh1 - 1;
+	else next(dsh1) := dsh1;
+	if ((frizzled4 > dsh4))
+		next(dsh4) := dsh4 + 1;
+	else if ((frizzled4 < dsh4))
+		next(dsh4) := dsh4 - 1;
+	else next(dsh4) := dsh4;
+	if ((frizzled3 > dsh3))
+		next(dsh3) := dsh3 + 1;
+	else if ((frizzled3 < dsh3))
+		next(dsh3) := dsh3 - 1;
+	else next(dsh3) := dsh3;
+	if ((frizzled6 > dsh6))
+		next(dsh6) := dsh6 + 1;
+	else if ((frizzled6 < dsh6))
+		next(dsh6) := dsh6 - 1;
+	else next(dsh6) := dsh6;
+	if ((frizzled5 > dsh5))
+		next(dsh5) := dsh5 + 1;
+	else if ((frizzled5 < dsh5))
+		next(dsh5) := dsh5 - 1;
+	else next(dsh5) := dsh5;
+	if (((wnt4 + wnt6) > (1 + (2 * wntext5))))
+		next(wntext5) := wntext5 + 1;
+	else if (((wnt4 + wnt6) < (2 * wntext5)))
+		next(wntext5) := wntext5 - 1;
+	else next(wntext5) := wntext5;
+	if ((bcat1 > gt1_1))
+		next(gt1_1) := gt1_1 + 1;
+	else if ((bcat1 < gt1_1))
+		next(gt1_1) := gt1_1 - 1;
+	else next(gt1_1) := gt1_1;
+	if ((bcat2 > gt1_2))
+		next(gt1_2) := gt1_2 + 1;
+	else if ((bcat2 < gt1_2))
+		next(gt1_2) := gt1_2 - 1;
+	else next(gt1_2) := gt1_2;
+	if (((wnt3 + wnt5) > (1 + (2 * wntext4))))
+		next(wntext4) := wntext4 + 1;
+	else if (((wnt3 + wnt5) < (2 * wntext4)))
+		next(wntext4) := wntext4 - 1;
+	else next(wntext4) := wntext4;
+	if (((wnt5 + 0) > (1 + (2 * wntext6))))
+		next(wntext6) := wntext6 + 1;
+	else if (((wnt5 + 0) < (2 * wntext6)))
+		next(wntext6) := wntext6 - 1;
+	else next(wntext6) := wntext6;
+	if ((bcat0 > gt1_0))
+		next(gt1_0) := gt1_0 + 1;
+	else if ((bcat0 < gt1_0))
+		next(gt1_0) := gt1_0 - 1;
+	else next(gt1_0) := gt1_0;
+	if ((notchic1 > gt2_1))
+		next(gt2_1) := gt2_1 + 1;
+	else if ((notchic1 < gt2_1))
+		next(gt2_1) := gt2_1 - 1;
+	else next(gt2_1) := gt2_1;
+	if ((notchic0 > gt2_0))
+		next(gt2_0) := gt2_0 + 1;
+	else if ((notchic0 < gt2_0))
+		next(gt2_0) := gt2_0 - 1;
+	else next(gt2_0) := gt2_0;
+	if ((notchic5 > gt2_5))
+		next(gt2_5) := gt2_5 + 1;
+	else if ((notchic5 < gt2_5))
+		next(gt2_5) := gt2_5 - 1;
+	else next(gt2_5) := gt2_5;
+	if ((notchic4 > gt2_4))
+		next(gt2_4) := gt2_4 + 1;
+	else if ((notchic4 < gt2_4))
+		next(gt2_4) := gt2_4 - 1;
+	else next(gt2_4) := gt2_4;
+	if ((notchic3 > gt2_3))
+		next(gt2_3) := gt2_3 + 1;
+	else if ((notchic3 < gt2_3))
+		next(gt2_3) := gt2_3 - 1;
+	else next(gt2_3) := gt2_3;
+	if ((notchic2 > gt2_2))
+		next(gt2_2) := gt2_2 + 1;
+	else if ((notchic2 < gt2_2))
+		next(gt2_2) := gt2_2 - 1;
+	else next(gt2_2) := gt2_2;
+	if ((bcat5 > gt1_5))
+		next(gt1_5) := gt1_5 + 1;
+	else if ((bcat5 < gt1_5))
+		next(gt1_5) := gt1_5 - 1;
+	else next(gt1_5) := gt1_5;
+	if ((bcat6 > gt1_6))
+		next(gt1_6) := gt1_6 + 1;
+	else if ((bcat6 < gt1_6))
+		next(gt1_6) := gt1_6 - 1;
+	else next(gt1_6) := gt1_6;
+	if ((bcat3 > gt1_3))
+		next(gt1_3) := gt1_3 + 1;
+	else if ((bcat3 < gt1_3))
+		next(gt1_3) := gt1_3 - 1;
+	else next(gt1_3) := gt1_3;
+	if ((notchic6 > gt2_6))
+		next(gt2_6) := gt2_6 + 1;
+	else if ((notchic6 < gt2_6))
+		next(gt2_6) := gt2_6 - 1;
+	else next(gt2_6) := gt2_6;
+	if ((bcat4 > gt1_4))
+		next(gt1_4) := gt1_4 + 1;
+	else if ((bcat4 < gt1_4))
+		next(gt1_4) := gt1_4 - 1;
+	else next(gt1_4) := gt1_4;
+	if (((3 - dsh6) > axin6))
+		next(axin6) := axin6 + 1;
+	else if ((((3 - dsh6) < axin6) & (axin6 > 0)))
+		next(axin6) := axin6 - 1;
+	else next(axin6) := axin6;
+	if (((3 - dsh4) > axin4))
+		next(axin4) := axin4 + 1;
+	else if ((((3 - dsh4) < axin4) & (axin4 > 0)))
+		next(axin4) := axin4 - 1;
+	else next(axin4) := axin4;
+	if (((1 > notchic0) & (deltaext0 > notchic0)))
+		next(notchic0) := notchic0 + 1;
+	else if (((1 < notchic0) | (deltaext0 < notchic0)))
+		next(notchic0) := notchic0 - 1;
+	else next(notchic0) := notchic0;
+	if (((3 - dsh5) > axin5))
+		next(axin5) := axin5 + 1;
+	else if ((((3 - dsh5) < axin5) & (axin5 > 0)))
+		next(axin5) := axin5 - 1;
+	else next(axin5) := axin5;
+	if (((2 > notchic1) & (deltaext1 > notchic1)))
+		next(notchic1) := notchic1 + 1;
+	else if (((2 < notchic1) | (deltaext1 < notchic1)))
+		next(notchic1) := notchic1 - 1;
+	else next(notchic1) := notchic1;
+	if (((3 + wnt1) > (1 + (2 * wntext0))))
+		next(wntext0) := wntext0 + 1;
+	else if (((3 + wnt1) < (2 * wntext0)))
+		next(wntext0) := wntext0 - 1;
+	else next(wntext0) := wntext0;
+	if (((3 - dsh2) > axin2))
+		next(axin2) := axin2 + 1;
+	else if ((((3 - dsh2) < axin2) & (axin2 > 0)))
+		next(axin2) := axin2 - 1;
+	else next(axin2) := axin2;
+	if (((wnt0 + wnt2) > (1 + (2 * wntext1))))
+		next(wntext1) := wntext1 + 1;
+	else if (((wnt0 + wnt2) < (2 * wntext1)))
+		next(wntext1) := wntext1 - 1;
+	else next(wntext1) := wntext1;
+	if (((3 - dsh3) > axin3))
+		next(axin3) := axin3 + 1;
+	else if ((((3 - dsh3) < axin3) & (axin3 > 0)))
+		next(axin3) := axin3 - 1;
+	else next(axin3) := axin3;
+	if (((wnt1 + wnt3) > (1 + (2 * wntext2))))
+		next(wntext2) := wntext2 + 1;
+	else if (((wnt1 + wnt3) < (2 * wntext2)))
+		next(wntext2) := wntext2 - 1;
+	else next(wntext2) := wntext2;
+	if (((3 - dsh0) > axin0))
+		next(axin0) := axin0 + 1;
+	else if ((((3 - dsh0) < axin0) & (axin0 > 0)))
+		next(axin0) := axin0 - 1;
+	else next(axin0) := axin0;
+	if (((3 - dsh1) > axin1))
+		next(axin1) := axin1 + 1;
+	else if ((((3 - dsh1) < axin1) & (axin1 > 0)))
+		next(axin1) := axin1 - 1;
+	else next(axin1) := axin1;
+	if (((wnt2 + wnt4) > (1 + (2 * wntext3))))
+		next(wntext3) := wntext3 + 1;
+	else if (((wnt2 + wnt4) < (2 * wntext3)))
+		next(wntext3) := wntext3 - 1;
+	else next(wntext3) := wntext3;
+	if (((3 - axin1) > bcat1))
+		next(bcat1) := bcat1 + 1;
+	else if ((((3 - axin1) < bcat1) & (bcat1 > 0)))
+		next(bcat1) := bcat1 - 1;
+	else next(bcat1) := bcat1;
+	if (((3 - axin0) > bcat0))
+		next(bcat0) := bcat0 + 1;
+	else if ((((3 - axin0) < bcat0) & (bcat0 > 0)))
+		next(bcat0) := bcat0 - 1;
+	else next(bcat0) := bcat0;
+	if (((3 - axin3) > bcat3))
+		next(bcat3) := bcat3 + 1;
+	else if ((((3 - axin3) < bcat3) & (bcat3 > 0)))
+		next(bcat3) := bcat3 - 1;
+	else next(bcat3) := bcat3;
+	if (((3 - axin2) > bcat2))
+		next(bcat2) := bcat2 + 1;
+	else if ((((3 - axin2) < bcat2) & (bcat2 > 0)))
+		next(bcat2) := bcat2 - 1;
+	else next(bcat2) := bcat2;
+	if (((3 > notchic6) & (deltaext6 > notchic6)))
+		next(notchic6) := notchic6 + 1;
+	else if (((3 < notchic6) | (deltaext6 < notchic6)))
+		next(notchic6) := notchic6 - 1;
+	else next(notchic6) := notchic6;
+	if (((3 > notchic5) & (deltaext5 > notchic5)))
+		next(notchic5) := notchic5 + 1;
+	else if (((3 < notchic5) | (deltaext5 < notchic5)))
+		next(notchic5) := notchic5 - 1;
+	else next(notchic5) := notchic5;
+	if (((3 > notchic4) & (deltaext4 > notchic4)))
+		next(notchic4) := notchic4 + 1;
+	else if (((3 < notchic4) | (deltaext4 < notchic4)))
+		next(notchic4) := notchic4 - 1;
+	else next(notchic4) := notchic4;
+	if (((3 > notchic3) & (deltaext3 > notchic3)))
+		next(notchic3) := notchic3 + 1;
+	else if (((3 < notchic3) | (deltaext3 < notchic3)))
+		next(notchic3) := notchic3 - 1;
+	else next(notchic3) := notchic3;
+	if (((3 > notchic2) & (deltaext2 > notchic2)))
+		next(notchic2) := notchic2 + 1;
+	else if (((3 < notchic2) | (deltaext2 < notchic2)))
+		next(notchic2) := notchic2 - 1;
+	else next(notchic2) := notchic2;
+	if ((wntext6 > frizzled6))
+		next(frizzled6) := frizzled6 + 1;
+	else if ((wntext6 < frizzled6))
+		next(frizzled6) := frizzled6 - 1;
+	else next(frizzled6) := frizzled6;
+	if ((wntext1 > frizzled1))
+		next(frizzled1) := frizzled1 + 1;
+	else if ((wntext1 < frizzled1))
+		next(frizzled1) := frizzled1 - 1;
+	else next(frizzled1) := frizzled1;
+	if ((wntext0 > frizzled0))
+		next(frizzled0) := frizzled0 + 1;
+	else if ((wntext0 < frizzled0))
+		next(frizzled0) := frizzled0 - 1;
+	else next(frizzled0) := frizzled0;
+	if ((wntext3 > frizzled3))
+		next(frizzled3) := frizzled3 + 1;
+	else if ((wntext3 < frizzled3))
+		next(frizzled3) := frizzled3 - 1;
+	else next(frizzled3) := frizzled3;
+	if ((wntext2 > frizzled2))
+		next(frizzled2) := frizzled2 + 1;
+	else if ((wntext2 < frizzled2))
+		next(frizzled2) := frizzled2 - 1;
+	else next(frizzled2) := frizzled2;
+	if ((wntext5 > frizzled5))
+		next(frizzled5) := frizzled5 + 1;
+	else if ((wntext5 < frizzled5))
+		next(frizzled5) := frizzled5 - 1;
+	else next(frizzled5) := frizzled5;
+	if ((wntext4 > frizzled4))
+		next(frizzled4) := frizzled4 + 1;
+	else if ((wntext4 < frizzled4))
+		next(frizzled4) := frizzled4 - 1;
+	else next(frizzled4) := frizzled4;
+
+-- Exists unique (
+ --   k0, k1, k2, k3, k4, 
+ --   k5, k6, k7, k8, k9, 
+ --   k10, k11, k12, k13, k14, 
+ --   k15, k16, k17, k18, k19, 
+ --   k20, k21, k22, k23, k24, 
+ --   k25, k26, k27, k28, k29, 
+ --   k30, k31, k32, k33, k34, 
+ --   k35, k36, k37, k38, k39, 
+ --   k40, k41, k42, k43, k44, 
+ --   k45, k46, k47, k48, k49, 
+ --   k50, k51, k52, k53, k54, 
+ --   k55, k56, k57, k58, k59, 
+ --   k60, k61, k62, k63, k64, 
+ --   k65, k66, k67, k68, k69, 
+ --   k70, k71, k72, k73, k74, 
+ --   k75, k76, k77, k78, k79, 
+ --   k80, k81, k82, k83
+ -- ) such that 
+ -- 
+ --      F G(wntext0 = k0)
+ --    & F G(frizzled0 = k1)
+ --    & F G(dsh0 = k2)
+ --    & F G(axin0 = k3)
+ --    & F G(bcat0 = k4)
+ --    & F G(gt1_0 = k5)
+ --    & F G(gt2_0 = k6)
+ --    & F G(delta0 = k7)
+ --    & F G(deltaext0 = k8)
+ --    & F G(notchic0 = k9)
+ --    & F G(p21_0 = k10)
+ --    & F G(wnt0 = k11)
+ --    & F G(wntext1 = k12)
+ --    & F G(frizzled1 = k13)
+ --    & F G(dsh1 = k14)
+ --    & F G(axin1 = k15)
+ --    & F G(bcat1 = k16)
+ --    & F G(gt1_1 = k17)
+ --    & F G(gt2_1 = k18)
+ --    & F G(delta1 = k19)
+ --    & F G(deltaext1 = k20)
+ --    & F G(notchic1 = k21)
+ --    & F G(p21_1 = k22)
+ --    & F G(wnt1 = k23)
+ --    & F G(wntext2 = k24)
+ --    & F G(frizzled2 = k25)
+ --    & F G(dsh2 = k26)
+ --    & F G(axin2 = k27)
+ --    & F G(bcat2 = k28)
+ --    & F G(gt1_2 = k29)
+ --    & F G(gt2_2 = k30)
+ --    & F G(delta2 = k31)
+ --    & F G(deltaext2 = k32)
+ --    & F G(notchic2 = k33)
+ --    & F G(p21_2 = k34)
+ --    & F G(wnt2 = k35)
+ --    & F G(wntext3 = k36)
+ --    & F G(frizzled3 = k37)
+ --    & F G(dsh3 = k38)
+ --    & F G(axin3 = k39)
+ --    & F G(bcat3 = k40)
+ --    & F G(gt1_3 = k41)
+ --    & F G(gt2_3 = k42)
+ --    & F G(delta3 = k43)
+ --    & F G(deltaext3 = k44)
+ --    & F G(notchic3 = k45)
+ --    & F G(p21_3 = k46)
+ --    & F G(wnt3 = k47)
+ --    & F G(wntext4 = k48)
+ --    & F G(frizzled4 = k49)
+ --    & F G(dsh4 = k50)
+ --    & F G(axin4 = k51)
+ --    & F G(bcat4 = k52)
+ --    & F G(gt1_4 = k53)
+ --    & F G(gt2_4 = k54)
+ --    & F G(delta4 = k55)
+ --    & F G(deltaext4 = k56)
+ --    & F G(notchic4 = k57)
+ --    & F G(p21_4 = k58)
+ --    & F G(wnt4 = k59)
+ --    & F G(wntext5 = k60)
+ --    & F G(frizzled5 = k61)
+ --    & F G(dsh5 = k62)
+ --    & F G(axin5 = k63)
+ --    & F G(bcat5 = k64)
+ --    & F G(gt1_5 = k65)
+ --    & F G(gt2_5 = k66)
+ --    & F G(delta5 = k67)
+ --    & F G(deltaext5 = k68)
+ --    & F G(notchic5 = k69)
+ --    & F G(p21_5 = k70)
+ --    & F G(wnt5 = k71)
+ --    & F G(wntext6 = k72)
+ --    & F G(frizzled6 = k73)
+ --    & F G(dsh6 = k74)
+ --    & F G(axin6 = k75)
+ --    & F G(bcat6 = k76)
+ --    & F G(gt1_6 = k77)
+ --    & F G(gt2_6 = k78)
+ --    & F G(delta6 = k79)
+ --    & F G(deltaext6 = k80)
+ --    & F G(notchic6 = k81)
+ --    & F G(p21_6 = k82)
+ --    & F G(wnt6 = k83)
+
+}

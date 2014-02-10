@@ -1,0 +1,422 @@
+-- Generated with BioCheck on Thu Apr 08 19:58:27 BST 2010
+
+module main() {
+
+	notchic1_1 : 0 .. 3; 
+	notchic1_0 : 0 .. 3; 
+	deltaext1_1 : 0 .. 3; 
+	deltaext1_0 : 0 .. 3; 
+	deltaext2_1 : 0 .. 3; 
+	deltaext2_0 : 0 .. 3; 
+	notchic0_0 : 0 .. 3; 
+	wntext3_0 : 0 .. 3; 
+	notchic0_1 : 0 .. 3; 
+	wntext3_1 : 0 .. 3; 
+	deltaext0_0 : 0 .. 3; 
+	deltaext0_1 : 0 .. 3; 
+	notchic2_1 : 0 .. 3; 
+	notchic2_0 : 0 .. 3; 
+	notchic3_0 : 0 .. 3; 
+	wntext2_1 : 0 .. 3; 
+	notchic3_1 : 0 .. 3; 
+	notchic4_0 : 0 .. 3; 
+	wntext2_0 : 0 .. 3; 
+	deltaext4_1 : 0 .. 3; 
+	deltaext4_0 : 0 .. 3; 
+	notchic4_1 : 0 .. 3; 
+	deltaext3_0 : 0 .. 3; 
+	wntext1_0 : 0 .. 3; 
+	wntext1_1 : 0 .. 3; 
+	deltaext3_1 : 0 .. 3; 
+	wntext0_1 : 0 .. 3; 
+	wntext0_0 : 0 .. 3; 
+	wnt0_0 : 0 .. 3; 
+	delta0_0 : 0 .. 3; 
+	wnt0_1 : 0 .. 3; 
+	delta0_1 : 0 .. 3; 
+	wnt4_1 : 0 .. 3; 
+	wnt4_0 : 0 .. 3; 
+	wnt1_0 : 0 .. 3; 
+	wnt1_1 : 0 .. 3; 
+	wnt3_1 : 0 .. 3; 
+	wnt3_0 : 0 .. 3; 
+	delta1_1 : 0 .. 3; 
+	delta1_0 : 0 .. 3; 
+	delta2_0 : 0 .. 3; 
+	delta3_1 : 0 .. 3; 
+	delta3_0 : 0 .. 3; 
+	wnt2_1 : 0 .. 3; 
+	wnt2_0 : 0 .. 3; 
+	delta2_1 : 0 .. 3; 
+	wntext4_1 : 0 .. 3; 
+	wntext4_0 : 0 .. 3; 
+	delta4_1 : 0 .. 3; 
+	delta4_0 : 0 .. 3; 
+
+	init(notchic1_1) := {0,1,2,3};
+	init(notchic1_0) := {0,1,2,3};
+	init(deltaext1_1) := {0,1,2,3};
+	init(deltaext1_0) := {0,1,2,3};
+	init(deltaext2_1) := {0,1,2,3};
+	init(deltaext2_0) := {0,1,2,3};
+	init(notchic0_0) := {0,1,2,3};
+	init(wntext3_0) := {0,1,2,3};
+	init(notchic0_1) := {0,1,2,3};
+	init(wntext3_1) := {0,1,2,3};
+	init(deltaext0_0) := {0,1,2,3};
+	init(deltaext0_1) := {0,1,2,3};
+	init(notchic2_1) := {0,1,2,3};
+	init(notchic2_0) := {0,1,2,3};
+	init(notchic3_0) := {0,1,2,3};
+	init(wntext2_1) := {0,1,2,3};
+	init(notchic3_1) := {0,1,2,3};
+	init(notchic4_0) := {0,1,2,3};
+	init(wntext2_0) := {0,1,2,3};
+	init(deltaext4_1) := {0,1,2,3};
+	init(deltaext4_0) := {0,1,2,3};
+	init(notchic4_1) := {0,1,2,3};
+	init(deltaext3_0) := {0,1,2,3};
+	init(wntext1_0) := {0,1,2,3};
+	init(wntext1_1) := {0,1,2,3};
+	init(deltaext3_1) := {0,1,2,3};
+	init(wntext0_1) := {0,1,2,3};
+	init(wntext0_0) := {0,1,2,3};
+	init(wnt0_0) := {0,1,2,3};
+	init(delta0_0) := {0,1,2,3};
+	init(wnt0_1) := {0,1,2,3};
+	init(delta0_1) := {0,1,2,3};
+	init(wnt4_1) := {0,1,2,3};
+	init(wnt4_0) := {0,1,2,3};
+	init(wnt1_0) := {0,1,2,3};
+	init(wnt1_1) := {0,1,2,3};
+	init(wnt3_1) := {0,1,2,3};
+	init(wnt3_0) := {0,1,2,3};
+	init(delta1_1) := {0,1,2,3};
+	init(delta1_0) := {0,1,2,3};
+	init(delta2_0) := {0,1,2,3};
+	init(delta3_1) := {0,1,2,3};
+	init(delta3_0) := {0,1,2,3};
+	init(wnt2_1) := {0,1,2,3};
+	init(wnt2_0) := {0,1,2,3};
+	init(delta2_1) := {0,1,2,3};
+	init(wntext4_1) := {0,1,2,3};
+	init(wntext4_0) := {0,1,2,3};
+	init(delta4_1) := {0,1,2,3};
+	init(delta4_0) := {0,1,2,3};
+
+	if (((2 > notchic1_1) & (deltaext1_1 > notchic1_1)))
+		next(notchic1_1) := notchic1_1 + 1;
+	else if (((2 < notchic1_1) | (deltaext1_1 < notchic1_1)))
+		next(notchic1_1) := notchic1_1 - 1;
+	else next(notchic1_1) := notchic1_1;
+	if (((2 > notchic1_0) & (deltaext1_0 > notchic1_0)))
+		next(notchic1_0) := notchic1_0 + 1;
+	else if (((2 < notchic1_0) | (deltaext1_0 < notchic1_0)))
+		next(notchic1_0) := notchic1_0 - 1;
+	else next(notchic1_0) := notchic1_0;
+	if (((delta1_0 + delta2_1 + delta0_1) > (3 * deltaext1_1)))
+		next(deltaext1_1) := deltaext1_1 + 1;
+	else if (((delta1_0 + delta2_1 + delta0_1) < ((3 * deltaext1_1) - 2)))
+		next(deltaext1_1) := deltaext1_1 - 1;
+	else next(deltaext1_1) := deltaext1_1;
+	if (((delta2_0 + delta1_1 + delta0_0) > (3 * deltaext1_0)))
+		next(deltaext1_0) := deltaext1_0 + 1;
+	else if (((delta2_0 + delta1_1 + delta0_0) < ((3 * deltaext1_0) - 2)))
+		next(deltaext1_0) := deltaext1_0 - 1;
+	else next(deltaext1_0) := deltaext1_0;
+	if (((delta2_0 + delta3_1 + delta1_1) > (3 * deltaext2_1)))
+		next(deltaext2_1) := deltaext2_1 + 1;
+	else if (((delta2_0 + delta3_1 + delta1_1) < ((3 * deltaext2_1) - 2)))
+		next(deltaext2_1) := deltaext2_1 - 1;
+	else next(deltaext2_1) := deltaext2_1;
+	if (((delta3_0 + delta2_1 + delta1_0) > (3 * deltaext2_0)))
+		next(deltaext2_0) := deltaext2_0 + 1;
+	else if (((delta3_0 + delta2_1 + delta1_0) < ((3 * deltaext2_0) - 2)))
+		next(deltaext2_0) := deltaext2_0 - 1;
+	else next(deltaext2_0) := deltaext2_0;
+	if (((0 > notchic0_0) & (deltaext0_0 > notchic0_0)))
+		next(notchic0_0) := notchic0_0 + 1;
+	else if (((0 < notchic0_0) | (deltaext0_0 < notchic0_0)))
+		next(notchic0_0) := notchic0_0 - 1;
+	else next(notchic0_0) := notchic0_0;
+	if (((wnt4_0 + wnt3_1 + wnt2_0) > (2 + (3 * wntext3_0))))
+		next(wntext3_0) := wntext3_0 + 1;
+	else if (((wnt4_0 + wnt3_1 + wnt2_0) < (3 * wntext3_0)))
+		next(wntext3_0) := wntext3_0 - 1;
+	else next(wntext3_0) := wntext3_0;
+	if (((0 > notchic0_1) & (deltaext0_1 > notchic0_1)))
+		next(notchic0_1) := notchic0_1 + 1;
+	else if (((0 < notchic0_1) | (deltaext0_1 < notchic0_1)))
+		next(notchic0_1) := notchic0_1 - 1;
+	else next(notchic0_1) := notchic0_1;
+	if (((wnt3_0 + wnt4_1 + wnt2_1) > (2 + (3 * wntext3_1))))
+		next(wntext3_1) := wntext3_1 + 1;
+	else if (((wnt3_0 + wnt4_1 + wnt2_1) < (3 * wntext3_1)))
+		next(wntext3_1) := wntext3_1 - 1;
+	else next(wntext3_1) := wntext3_1;
+	if (((delta1_0 + delta0_1 + 2) > (3 * deltaext0_0)))
+		next(deltaext0_0) := deltaext0_0 + 1;
+	else if (((delta1_0 + delta0_1 + 2) < ((3 * deltaext0_0) - 2)))
+		next(deltaext0_0) := deltaext0_0 - 1;
+	else next(deltaext0_0) := deltaext0_0;
+	if (((delta0_0 + delta1_1 + 2) > (3 * deltaext0_1)))
+		next(deltaext0_1) := deltaext0_1 + 1;
+	else if (((delta0_0 + delta1_1 + 2) < ((3 * deltaext0_1) - 2)))
+		next(deltaext0_1) := deltaext0_1 - 1;
+	else next(deltaext0_1) := deltaext0_1;
+	if (((3 > notchic2_1) & (deltaext2_1 > notchic2_1)))
+		next(notchic2_1) := notchic2_1 + 1;
+	else if (((3 < notchic2_1) | (deltaext2_1 < notchic2_1)))
+		next(notchic2_1) := notchic2_1 - 1;
+	else next(notchic2_1) := notchic2_1;
+	if (((3 > notchic2_0) & (deltaext2_0 > notchic2_0)))
+		next(notchic2_0) := notchic2_0 + 1;
+	else if (((3 < notchic2_0) | (deltaext2_0 < notchic2_0)))
+		next(notchic2_0) := notchic2_0 - 1;
+	else next(notchic2_0) := notchic2_0;
+	if (((3 > notchic3_0) & (deltaext3_0 > notchic3_0)))
+		next(notchic3_0) := notchic3_0 + 1;
+	else if (((3 < notchic3_0) | (deltaext3_0 < notchic3_0)))
+		next(notchic3_0) := notchic3_0 - 1;
+	else next(notchic3_0) := notchic3_0;
+	if (((wnt2_0 + wnt3_1 + wnt1_1) > (2 + (3 * wntext2_1))))
+		next(wntext2_1) := wntext2_1 + 1;
+	else if (((wnt2_0 + wnt3_1 + wnt1_1) < (3 * wntext2_1)))
+		next(wntext2_1) := wntext2_1 - 1;
+	else next(wntext2_1) := wntext2_1;
+	if (((3 > notchic3_1) & (deltaext3_1 > notchic3_1)))
+		next(notchic3_1) := notchic3_1 + 1;
+	else if (((3 < notchic3_1) | (deltaext3_1 < notchic3_1)))
+		next(notchic3_1) := notchic3_1 - 1;
+	else next(notchic3_1) := notchic3_1;
+	if (((3 > notchic4_0) & (deltaext4_0 > notchic4_0)))
+		next(notchic4_0) := notchic4_0 + 1;
+	else if (((3 < notchic4_0) | (deltaext4_0 < notchic4_0)))
+		next(notchic4_0) := notchic4_0 - 1;
+	else next(notchic4_0) := notchic4_0;
+	if (((wnt3_0 + wnt2_1 + wnt1_0) > (2 + (3 * wntext2_0))))
+		next(wntext2_0) := wntext2_0 + 1;
+	else if (((wnt3_0 + wnt2_1 + wnt1_0) < (3 * wntext2_0)))
+		next(wntext2_0) := wntext2_0 - 1;
+	else next(wntext2_0) := wntext2_0;
+	if (((delta4_0 + 2 + delta3_1) > (3 * deltaext4_1)))
+		next(deltaext4_1) := deltaext4_1 + 1;
+	else if (((delta4_0 + 2 + delta3_1) < ((3 * deltaext4_1) - 2)))
+		next(deltaext4_1) := deltaext4_1 - 1;
+	else next(deltaext4_1) := deltaext4_1;
+	if (((2 + delta4_1 + delta3_0) > (3 * deltaext4_0)))
+		next(deltaext4_0) := deltaext4_0 + 1;
+	else if (((2 + delta4_1 + delta3_0) < ((3 * deltaext4_0) - 2)))
+		next(deltaext4_0) := deltaext4_0 - 1;
+	else next(deltaext4_0) := deltaext4_0;
+	if (((3 > notchic4_1) & (deltaext4_1 > notchic4_1)))
+		next(notchic4_1) := notchic4_1 + 1;
+	else if (((3 < notchic4_1) | (deltaext4_1 < notchic4_1)))
+		next(notchic4_1) := notchic4_1 - 1;
+	else next(notchic4_1) := notchic4_1;
+	if (((delta4_0 + delta3_1 + delta2_0) > (3 * deltaext3_0)))
+		next(deltaext3_0) := deltaext3_0 + 1;
+	else if (((delta4_0 + delta3_1 + delta2_0) < ((3 * deltaext3_0) - 2)))
+		next(deltaext3_0) := deltaext3_0 - 1;
+	else next(deltaext3_0) := deltaext3_0;
+	if (((wnt2_0 + wnt1_1 + wnt0_0) > (2 + (3 * wntext1_0))))
+		next(wntext1_0) := wntext1_0 + 1;
+	else if (((wnt2_0 + wnt1_1 + wnt0_0) < (3 * wntext1_0)))
+		next(wntext1_0) := wntext1_0 - 1;
+	else next(wntext1_0) := wntext1_0;
+	if (((wnt1_0 + wnt2_1 + wnt0_1) > (2 + (3 * wntext1_1))))
+		next(wntext1_1) := wntext1_1 + 1;
+	else if (((wnt1_0 + wnt2_1 + wnt0_1) < (3 * wntext1_1)))
+		next(wntext1_1) := wntext1_1 - 1;
+	else next(wntext1_1) := wntext1_1;
+	if (((delta3_0 + delta4_1 + delta2_1) > (3 * deltaext3_1)))
+		next(deltaext3_1) := deltaext3_1 + 1;
+	else if (((delta3_0 + delta4_1 + delta2_1) < ((3 * deltaext3_1) - 2)))
+		next(deltaext3_1) := deltaext3_1 - 1;
+	else next(deltaext3_1) := deltaext3_1;
+	if (((wnt0_0 + wnt1_1 + 3) > (2 + (3 * wntext0_1))))
+		next(wntext0_1) := wntext0_1 + 1;
+	else if (((wnt0_0 + wnt1_1 + 3) < (3 * wntext0_1)))
+		next(wntext0_1) := wntext0_1 - 1;
+	else next(wntext0_1) := wntext0_1;
+	if (((wnt1_0 + wnt0_1 + 3) > (2 + (3 * wntext0_0))))
+		next(wntext0_0) := wntext0_0 + 1;
+	else if (((wnt1_0 + wnt0_1 + 3) < (3 * wntext0_0)))
+		next(wntext0_0) := wntext0_0 - 1;
+	else next(wntext0_0) := wntext0_0;
+	if (((3 - notchic0_0) > wnt0_0))
+		next(wnt0_0) := wnt0_0 + 1;
+	else if (((3 - notchic0_0) < wnt0_0))
+		next(wnt0_0) := wnt0_0 - 1;
+	else next(wnt0_0) := wnt0_0;
+	if (((notchic0_0 + wntext0_0) > (2 * delta0_0)))
+		next(delta0_0) := delta0_0 + 1;
+	else if (((notchic0_0 + wntext0_0) < ((2 * delta0_0) - 1)))
+		next(delta0_0) := delta0_0 - 1;
+	else next(delta0_0) := delta0_0;
+	if (((3 - notchic0_1) > wnt0_1))
+		next(wnt0_1) := wnt0_1 + 1;
+	else if (((3 - notchic0_1) < wnt0_1))
+		next(wnt0_1) := wnt0_1 - 1;
+	else next(wnt0_1) := wnt0_1;
+	if (((notchic0_1 + wntext0_1) > (2 * delta0_1)))
+		next(delta0_1) := delta0_1 + 1;
+	else if (((notchic0_1 + wntext0_1) < ((2 * delta0_1) - 1)))
+		next(delta0_1) := delta0_1 - 1;
+	else next(delta0_1) := delta0_1;
+	if (((3 - notchic4_1) > wnt4_1))
+		next(wnt4_1) := wnt4_1 + 1;
+	else if (((3 - notchic4_1) < wnt4_1))
+		next(wnt4_1) := wnt4_1 - 1;
+	else next(wnt4_1) := wnt4_1;
+	if (((3 - notchic4_0) > wnt4_0))
+		next(wnt4_0) := wnt4_0 + 1;
+	else if (((3 - notchic4_0) < wnt4_0))
+		next(wnt4_0) := wnt4_0 - 1;
+	else next(wnt4_0) := wnt4_0;
+	if (((3 - notchic1_0) > wnt1_0))
+		next(wnt1_0) := wnt1_0 + 1;
+	else if (((3 - notchic1_0) < wnt1_0))
+		next(wnt1_0) := wnt1_0 - 1;
+	else next(wnt1_0) := wnt1_0;
+	if (((3 - notchic1_1) > wnt1_1))
+		next(wnt1_1) := wnt1_1 + 1;
+	else if (((3 - notchic1_1) < wnt1_1))
+		next(wnt1_1) := wnt1_1 - 1;
+	else next(wnt1_1) := wnt1_1;
+	if (((3 - notchic3_1) > wnt3_1))
+		next(wnt3_1) := wnt3_1 + 1;
+	else if (((3 - notchic3_1) < wnt3_1))
+		next(wnt3_1) := wnt3_1 - 1;
+	else next(wnt3_1) := wnt3_1;
+	if (((3 - notchic3_0) > wnt3_0))
+		next(wnt3_0) := wnt3_0 + 1;
+	else if (((3 - notchic3_0) < wnt3_0))
+		next(wnt3_0) := wnt3_0 - 1;
+	else next(wnt3_0) := wnt3_0;
+	if (((notchic1_1 + wntext1_1) > (2 * delta1_1)))
+		next(delta1_1) := delta1_1 + 1;
+	else if (((notchic1_1 + wntext1_1) < ((2 * delta1_1) - 1)))
+		next(delta1_1) := delta1_1 - 1;
+	else next(delta1_1) := delta1_1;
+	if (((notchic1_0 + wntext1_0) > (2 * delta1_0)))
+		next(delta1_0) := delta1_0 + 1;
+	else if (((notchic1_0 + wntext1_0) < ((2 * delta1_0) - 1)))
+		next(delta1_0) := delta1_0 - 1;
+	else next(delta1_0) := delta1_0;
+	if (((notchic2_0 + wntext2_0) > (2 * delta2_0)))
+		next(delta2_0) := delta2_0 + 1;
+	else if (((notchic2_0 + wntext2_0) < ((2 * delta2_0) - 1)))
+		next(delta2_0) := delta2_0 - 1;
+	else next(delta2_0) := delta2_0;
+	if (((notchic3_1 + wntext3_1) > (2 * delta3_1)))
+		next(delta3_1) := delta3_1 + 1;
+	else if (((notchic3_1 + wntext3_1) < ((2 * delta3_1) - 1)))
+		next(delta3_1) := delta3_1 - 1;
+	else next(delta3_1) := delta3_1;
+	if (((notchic3_0 + wntext3_0) > (2 * delta3_0)))
+		next(delta3_0) := delta3_0 + 1;
+	else if (((notchic3_0 + wntext3_0) < ((2 * delta3_0) - 1)))
+		next(delta3_0) := delta3_0 - 1;
+	else next(delta3_0) := delta3_0;
+	if (((3 - notchic2_1) > wnt2_1))
+		next(wnt2_1) := wnt2_1 + 1;
+	else if (((3 - notchic2_1) < wnt2_1))
+		next(wnt2_1) := wnt2_1 - 1;
+	else next(wnt2_1) := wnt2_1;
+	if (((3 - notchic2_0) > wnt2_0))
+		next(wnt2_0) := wnt2_0 + 1;
+	else if (((3 - notchic2_0) < wnt2_0))
+		next(wnt2_0) := wnt2_0 - 1;
+	else next(wnt2_0) := wnt2_0;
+	if (((notchic2_1 + wntext2_1) > (2 * delta2_1)))
+		next(delta2_1) := delta2_1 + 1;
+	else if (((notchic2_1 + wntext2_1) < ((2 * delta2_1) - 1)))
+		next(delta2_1) := delta2_1 - 1;
+	else next(delta2_1) := delta2_1;
+	if (((wnt4_0 + 0 + wnt3_1) > (2 + (3 * wntext4_1))))
+		next(wntext4_1) := wntext4_1 + 1;
+	else if (((wnt4_0 + 0 + wnt3_1) < (3 * wntext4_1)))
+		next(wntext4_1) := wntext4_1 - 1;
+	else next(wntext4_1) := wntext4_1;
+	if (((0 + wnt4_1 + wnt3_0) > (2 + (3 * wntext4_0))))
+		next(wntext4_0) := wntext4_0 + 1;
+	else if (((0 + wnt4_1 + wnt3_0) < (3 * wntext4_0)))
+		next(wntext4_0) := wntext4_0 - 1;
+	else next(wntext4_0) := wntext4_0;
+	if (((notchic4_1 + wntext4_1) > (2 * delta4_1)))
+		next(delta4_1) := delta4_1 + 1;
+	else if (((notchic4_1 + wntext4_1) < ((2 * delta4_1) - 1)))
+		next(delta4_1) := delta4_1 - 1;
+	else next(delta4_1) := delta4_1;
+	if (((notchic4_0 + wntext4_0) > (2 * delta4_0)))
+		next(delta4_0) := delta4_0 + 1;
+	else if (((notchic4_0 + wntext4_0) < ((2 * delta4_0) - 1)))
+		next(delta4_0) := delta4_0 - 1;
+	else next(delta4_0) := delta4_0;
+
+-- Exists unique (
+ --   k0, k1, k2, k3, k4, 
+ --   k5, k6, k7, k8, k9, 
+ --   k10, k11, k12, k13, k14, 
+ --   k15, k16, k17, k18, k19, 
+ --   k20, k21, k22, k23, k24, 
+ --   k25, k26, k27, k28, k29, 
+ --   k30, k31, k32, k33, k34, 
+ --   k35, k36, k37, k38, k39, 
+ --   k40, k41, k42, k43, k44, 
+ --   k45, k46, k47, k48, k49
+ -- ) such that 
+ -- 
+ --      F G(wntext0_0 = k0)
+ --    & F G(deltaext0_0 = k1)
+ --    & F G(notchic0_0 = k2)
+ --    & F G(delta0_0 = k3)
+ --    & F G(wnt0_0 = k4)
+ --    & F G(wntext1_0 = k5)
+ --    & F G(deltaext1_0 = k6)
+ --    & F G(notchic1_0 = k7)
+ --    & F G(delta1_0 = k8)
+ --    & F G(wnt1_0 = k9)
+ --    & F G(wntext2_0 = k10)
+ --    & F G(deltaext2_0 = k11)
+ --    & F G(notchic2_0 = k12)
+ --    & F G(delta2_0 = k13)
+ --    & F G(wnt2_0 = k14)
+ --    & F G(wntext3_0 = k15)
+ --    & F G(deltaext3_0 = k16)
+ --    & F G(notchic3_0 = k17)
+ --    & F G(delta3_0 = k18)
+ --    & F G(wnt3_0 = k19)
+ --    & F G(wntext4_0 = k20)
+ --    & F G(deltaext4_0 = k21)
+ --    & F G(notchic4_0 = k22)
+ --    & F G(delta4_0 = k23)
+ --    & F G(wnt4_0 = k24)
+ --    & F G(wntext0_1 = k25)
+ --    & F G(deltaext0_1 = k26)
+ --    & F G(notchic0_1 = k27)
+ --    & F G(delta0_1 = k28)
+ --    & F G(wnt0_1 = k29)
+ --    & F G(wntext1_1 = k30)
+ --    & F G(deltaext1_1 = k31)
+ --    & F G(notchic1_1 = k32)
+ --    & F G(delta1_1 = k33)
+ --    & F G(wnt1_1 = k34)
+ --    & F G(wntext2_1 = k35)
+ --    & F G(deltaext2_1 = k36)
+ --    & F G(notchic2_1 = k37)
+ --    & F G(delta2_1 = k38)
+ --    & F G(wnt2_1 = k39)
+ --    & F G(wntext3_1 = k40)
+ --    & F G(deltaext3_1 = k41)
+ --    & F G(notchic3_1 = k42)
+ --    & F G(delta3_1 = k43)
+ --    & F G(wnt3_1 = k44)
+ --    & F G(wntext4_1 = k45)
+ --    & F G(deltaext4_1 = k46)
+ --    & F G(notchic4_1 = k47)
+ --    & F G(delta4_1 = k48)
+ --    & F G(wnt4_1 = k49)
+
+}
