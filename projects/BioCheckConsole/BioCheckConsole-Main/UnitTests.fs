@@ -44,4 +44,17 @@ let register_tests () =
     Test.register_test true (fun () -> load_run_check "fs_biocheck_ex.xml" None (Some Result.cycles)) // SI: changed from fixpoint
     Test.register_test true (fun () -> load_run_check "fs_biocheck_ex1.xml" (Some Result.stabilizes) None)
     //Test.register_test true (fun () -> load_run_check "fs_diabetes_new_mod.xml" (Some Result.stabilizes) None) 
-
+    //Demo tests- these are commented out because they are graphical models rather than analysis inputs and BMA can't handle that yet
+    (*
+    Test.register_test true (fun () -> load_run_check "Demo/Skin1D.xml" (Some Result.stabilizes) None)
+    Test.register_test true (fun () -> load_run_check "Demo/Skin1D_unstable.xml" (Some Result.cycles) None)
+    Test.register_test true (fun () -> load_run_check "Demo/Bcr-Abl No Feedbacks.xml" (Some Result.cycles) None)
+    *)
+    //VMCAI paper models. These have been converted from the SMV (included in the folder).
+    //Some didn't convert easily so haven't been converted (and are absent), and some are v. slow to analyse (and have been commented out)
+    Test.register_test true (fun () -> load_run_check "VMCAI11/ESkin6Fxd.xml" (Some Result.stabilizes) None)
+    Test.register_test true (fun () -> load_run_check "VMCAI11/ESkin7Fxd.xml" (Some Result.stabilizes) None)
+    Test.register_test true (fun () -> load_run_check "VMCAI11/ESkin8Fxd.xml" (Some Result.stabilizes) None)
+    Test.register_test true (fun () -> load_run_check "VMCAI11/Skin2D.xml" (Some Result.stabilizes) None)
+    Test.register_test true (fun () -> load_run_check "VMCAI11/Skin2DFxd.xml" (Some Result.stabilizes) None)
+    Test.register_test true (fun () -> load_run_check "VMCAI11/Skin3D.xml" (Some Result.stabilizes) None)
