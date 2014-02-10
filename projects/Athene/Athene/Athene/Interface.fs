@@ -207,8 +207,8 @@ let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: fl
 let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification) (dT: float<second>) (pm: (Particle*Map<QN.var,int>) list) (acc: (Particle*Map<QN.var,int>) list) (birthDeathRegister: string list) (systemTime : float<second>)=
     let reporter (p:Particle) (modification:particleModification) (systemTime:float<second>) =
         match modification with
-        | Death(cause) -> sprintf "Death by %s of P = %s at T = %f seconds" cause p.ToString (systemTime*1.<second^-1>)
-        | Divide(cause,(p1,m1),(p2,m2)) -> sprintf "Division by %s of P = %s at T = %f seconds (birth of P&P: %s %s)" cause p.ToString (systemTime*1.<second^-1>) p1.ToString p2.ToString 
+        | Death(cause) -> sprintf "Death by %s of P = %d at T = %f seconds" cause p.id (systemTime*1.<second^-1>)
+        | Divide(cause,(p1,m1),(p2,m2)) -> sprintf "Division by %s of P = %d at T = %f seconds (birth of P&P: %d %d)" cause p.id (systemTime*1.<second^-1>) p1.id p2.id 
         | _ -> ""
     match pm with
     | head::tail -> 
@@ -217,12 +217,13 @@ let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification)
                     | Death(cause) -> dev f dT tail acc ((reporter p (Death (cause)) systemTime)::birthDeathRegister) systemTime
                     | Life(p1,m1) ->  dev f dT tail ((p1,m1)::acc) birthDeathRegister systemTime
                     | Divide(cause,(p1,m1),(p2,m2)) -> dev f dT tail ((p1,m1)::((p2,m2)::acc)) ((reporter p (Divide (cause,(p1,m1),(p2,m2))) systemTime)::birthDeathRegister) systemTime
-    | [] -> List.fold (fun acc elem -> elem::acc) [] acc //reverse the list which has been created by cons'ing
+    | [] -> ((List.fold (fun acc elem -> elem::acc) [] acc),birthDeathRegister) //reverse the list which has been created by cons'ing
 
 let rec devProcess (r : (float<second>->Particle->Map<QN.var,int>->particleModification) list) (dT:float<second>) (pm: (Particle*Map<QN.var,int>) list) (birthDeathRegister: string list) (systemTime:float<second>) = 
     match r with
-    | head::tail -> devProcess tail dT (dev head dT pm [] birthDeathRegister systemTime) birthDeathRegister systemTime
-    | [] -> pm
+    | head::tail -> let (pm',birthDeathRegister') = dev head dT pm [] birthDeathRegister systemTime
+                    devProcess tail dT pm' birthDeathRegister' systemTime
+    | [] -> (pm,birthDeathRegister)
 
 let divideSystem system machineName =
 //    let rec f (sys: Particle list) (accS: Particle list) (accM: Particle list) (name:string) =
@@ -282,7 +283,7 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     //How do you fix the problem of physicsI update first or machineI update first?
     //Do I need to pass *both* new and old machines?
     //No, I'm going to update the physics first. The only way this could change things is by dividing across a region- this is not unreasonable
-    let pm = devProcess responses dT (List.zip machineSystem machineStates) birthDeathRegister systemTime
+    let (pm,birthDeathRegister') = devProcess responses dT (List.zip machineSystem machineStates) birthDeathRegister systemTime
     let nMachineStates = [for (p,m) in pm -> regionListSwitch regions p m]
     let nmSystem = [for (p,m) in pm -> p]
     //let nSystem = List.foldBack (fun (p: Particle) acc -> p::acc) staticSystem nmSystem
@@ -291,4 +292,4 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     //let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
     let machineForces = List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem
     //let machineForces = seq { for p in nSystem do yield {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} }
-    (nSystem, nMachineStates, machineForces, birthDeathRegister)
+    (nSystem, nMachineStates, machineForces, birthDeathRegister')
