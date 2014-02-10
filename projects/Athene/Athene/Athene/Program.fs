@@ -1,11 +1,37 @@
-﻿type stateReporter = {EventWriter:(string list->unit);StateWriter:(Map<QN.var,int> list->unit);FrameWriter:(Physics.Particle list->unit)}
+﻿open System
+open System.Collections.Generic
+
+type stateReporter = {EventWriter:(string list->unit);StateWriter:(Map<QN.var,int> list->unit);FrameWriter:(Physics.Particle list->unit)}
+[<Serializable>]
+type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
+[<Serializable>]
+type systemDefinition = {   Topology:Map<string,Map<string,Physics.Particle -> Physics.Particle -> Vector.Vector3D<Physics.zNewton>>>; 
+                            BMA:QN.node list; 
+                            Interface: Interface.interfaceTopology;
+                            maxMove: float<Physics.um>;
+                            systemOrigin: Vector.Vector3D<Physics.um>;
+                            machineName: string;
+                            staticGrid: Map<int*int*int,Physics.Particle list>}//{system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName}
+[<Serializable>]
+type runningParameters = {  Temperature:            float<Physics.Kelvin>;
+                            Steps:                  int;
+                            Time:                   float<Physics.second>;
+                            TimeStep:               float<Physics.second>;
+                            InterfaceGranularity:   int;
+                            PhysicalGranularity:    int;
+                            MachineGranularity:     int;
+                            VariableTimestepDepth:  int;
+                            ReportingFrequency:     int;
+                            EventLog:               string list;
+                            NonBondedCutOff:        float<Physics.um>;
+                            }
 
 let rec listLinePrint l =
     match l with
     | head::tail -> printfn "%A" head; listLinePrint tail
     | [] -> ()
 
-let rec simulate (system: Physics.Particle list) (machineStates: Map<QN.var,int> list) (qn: QN.node list) (topology: Map<string,Map<string,Physics.Particle->Physics.Particle->Vector.Vector3D<Physics.zNewton>>>) (intTop: Interface.interfaceTopology) (steps: int) (T: float<Physics.Kelvin>) (dT: float<Physics.second>) (maxMove: float<Physics.um>) staticGrid sOrigin (output:stateReporter) (freq: int) mg pg ig variableTimestepDepth rand (systemTime:float<Physics.second>) (eventLog: string List)=
+let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runningParameters) (output:stateReporter) rand =
 //    let pUpdate (system: Physics.Particle list) staticGrid (machineForces: Vector.Vector3D<Physics.zNewton> list) (T: float<Physics.Kelvin>) (dT: float<Physics.second>) rand  =
 //        let F = Physics.forceUpdate topology 6.<Physics.um> system staticGrid sOrigin machineForces
 //        Physics.bdSystemUpdate system F Physics.bdOrientedAtomicUpdate T dT rand maxMove
@@ -17,29 +43,36 @@ let rec simulate (system: Physics.Particle list) (machineStates: Map<QN.var,int>
     We do it like this to ensure that the outputs aren't confusing; if we update the interface, then the machines, then write, the changes induced by the interface may be overridden
     Changing the order won't change the simulation itself *but* will change the outputs, making testing complicated. 
     *)
-    let (system', machineStates', machineForces, eventLog') = if (steps%ig=0) then (Interface.interfaceUpdate system machineStates (dT*(float)ig) intTop systemTime eventLog ) else (system,machineStates,(List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system),eventLog)
+    let steps = runInfo.Steps
+    let freq = runInfo.ReportingFrequency
+    let mg = runInfo.MachineGranularity
+    let ig = runInfo.InterfaceGranularity
+    let pg = runInfo.PhysicalGranularity
+    let eventLog = runInfo.EventLog
+
+    let (system', machineStates', machineForces, eventLog') = if (steps%ig=0) then (Interface.interfaceUpdate state.Physical state.Formal (runInfo.TimeStep*(float)ig) definition.Interface runInfo.Time eventLog ) else (state.Physical,state.Formal,(List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) state.Physical),eventLog)
     let write = match (steps%freq) with 
                     | 0 ->  output.FrameWriter system'
                             output.StateWriter machineStates'
                             output.EventWriter eventLog'
-                            let eventLog' = []
-                            ignore (if (steps%(freq*100)=0) then (IO.dumpSystem "Checkpoint.txt" system' machineStates') else ())
-                            let birthDeathRegister = None
+                            ignore (if (steps%(freq*100)=0) then (IO.dumpSystem "Checkpoint.txt" {Physical=system';Formal=machineStates'}) else ())
                             ()
                     | _ ->  ()
-    let (a,p) = match (steps%mg>0,steps%pg>0) with 
+    let eventLog' = if (steps%freq=0) then [] else eventLog'
+    let state' = match (steps%mg>0,steps%pg>0) with 
                         | (false,false)  ->    //let p = pUpdate nSystem staticGrid machineForces T dT rand 
-                                               let p = Physics.integrate system' topology staticGrid sOrigin machineForces T (dT*(float)pg) maxMove variableTimestepDepth 6.0<Physics.um> 1 rand None
-                                               let a = Automata.updateMachines qn machineStates'
-                                               (a,p)
+                                               let p = Physics.integrate system' definition.Topology definition.staticGrid definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand None
+                                               let a = Automata.updateMachines definition.BMA machineStates'
+                                               {Physical=p;Formal=a}
                         | (true,false)   ->    //let p = pUpdate system' staticGrid machineForces T dT rand 
-                                               let p = Physics.integrate system' topology staticGrid sOrigin machineForces T dT maxMove variableTimestepDepth 6.0<Physics.um> 1 rand None
-                                               (machineStates',p)
-                        | (false,true)   ->    let a = Automata.updateMachines qn machineStates'
-                                               (a,system')
-                        | (true,true)    ->    (machineStates',system')
+                                               let p = Physics.integrate system' definition.Topology definition.staticGrid definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand None
+                                               {Formal=machineStates';Physical=p}
+                        | (false,true)   ->    let a = Automata.updateMachines definition.BMA machineStates'
+                                               {Formal=a;Physical=system'}
+                        | (true,true)    ->    {Formal=machineStates';Physical=system'}
 
-    if steps > 0 then simulate p a qn topology intTop (steps-1) T dT maxMove staticGrid sOrigin output freq mg pg ig variableTimestepDepth rand (systemTime+dT) eventLog' else ()       
+    if steps > 0 then simulate state' definition {runInfo with Steps=(steps-1); Time=(runInfo.Time+runInfo.TimeStep); EventLog=eventLog'} output rand else ()       
+
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: System.Random) =
     let rec countCells acc (name: string) (s: Physics.Particle list) = 
         match s with
@@ -62,7 +95,8 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
-    (uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, sOrigin, staticGrid, machName)
+    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid})
+    //(uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, sOrigin, staticGrid, machName)
 
 let seed = ref 1982
 let steps = ref 100
@@ -92,7 +126,7 @@ let rec parse_args args =
     | "-report":: repo :: rest -> freq  := int(repo); parse_args rest
     | "-bma"   :: bck  :: rest -> bma   := bck;       parse_args rest
     | "-csv"   :: bck  :: rest -> csv   := bck;       parse_args rest
-    | "-ref"   :: name :: rest -> reg   := name;      parse_args rest
+    | "-reg"   :: name :: rest -> reg   := name;      parse_args rest
     | "-equili_steps" :: bck :: rest -> equil := (int)bck; parse_args rest
     | "-equili_len  " :: bck :: rest -> equillength := (float)bck*1.<Physics.um>; parse_args rest
     | "-mg"    :: tmp :: rest -> mg     := (int)tmp;  parse_args rest
@@ -148,13 +182,14 @@ let main argv =
 //                    | _ ->
 //                        !bma
     //if checkpoint_restart = "" then (let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand) else restart
-    let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand
+    //let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand
+    let (state,definition) = standardOptions pdb bma top rand
     let trajout = match !xyz with 
                     | "" -> 
-                        printfn "No xyz output specified"
+                        printfn "No xyz output (physics) specified"
                         IO.dropFrame
                     | _  -> 
-                        IO.xyzWriteFrame (!xyz) machName
+                        IO.xyzWriteFrame (!xyz) definition.machineName
     let csvout = match !csv with
                     | "" ->
                         printfn "No csv output (state machines) specified"
@@ -163,22 +198,26 @@ let main argv =
                         IO.csvWriteStates !csv
     let eventout  = match !reg with
                     | "" ->
-                        printfn "No csv output (state machines) specified"
+                        printfn "No births and deaths output (interface) specified"
                         IO.dropEvents
                     | _ ->
                         IO.interfaceEventWriteFrame !reg
     
     printfn "Initial system:"
-    printfn "Particles: %A" system.Length
-    printfn "Machines:  %A" machineStates.Length
+    printfn "Particles: %A" state.Physical.Length //system.Length
+    printfn "Machines:  %A" state.Formal.Length //machineStates.Length
     
     //printfn "Static grid: %A" staticGrid
-    let (mSystem,sSystem) = List.partition (fun (p:Physics.Particle) -> not p.freeze) system
+    let (mSystem,sSystem) = List.partition (fun (p:Physics.Particle) -> not p.freeze) state.Physical
     printfn "Performing %A step steepest descent EM (max length %Aum)" !equil !equillength
-    let eSystem = equilibrate mSystem topology !equil !equillength staticGrid sOrigin
+    let eSystem = equilibrate mSystem definition.Topology !equil !equillength definition.staticGrid definition.systemOrigin
     printfn "Completed EM. Running %A seconds of simulation (%A steps)" (!dT*((float) !steps)) !steps
     printfn "Reporting every %A seconds (total frames = %A)" (!dT*((float) !freq)) ((!steps)/(!freq))
     printfn "Physical timestep: %A Machine timestep: %A Interface timestep: %A" (!dT*(float)!pg) (!dT*(float)!mg) (!dT*(float)!ig)
-    simulate eSystem machineStates qn topology iTop !steps 298.<Physics.Kelvin> (!dT*1.0<Physics.second>) (maxMove*1.<Physics.um>) staticGrid sOrigin {EventWriter=eventout;FrameWriter=trajout;StateWriter=csvout} !freq !mg !pg !ig !vdt rand 0.<Physics.second>
+    let initialState = {state with Physical=eSystem}
+    let recorders = {EventWriter=eventout;FrameWriter=trajout;StateWriter=csvout}
+    let runInfo = {Temperature=298.<Physics.Kelvin>; Steps=(!steps); Time=0.<Physics.second>; TimeStep=(!dT*1.0<Physics.second>); InterfaceGranularity=(!ig); PhysicalGranularity=(!pg); MachineGranularity=(!mg); VariableTimestepDepth=(!vdt); ReportingFrequency=(!freq); EventLog=["Initialise system";]; NonBondedCutOff=6.0<Physics.um>}
+    //simulate eSystem machineStates qn topology iTop !steps 298.<Physics.Kelvin> (!dT*1.0<Physics.second>) (maxMove*1.<Physics.um>) staticGrid sOrigin recorders !freq !mg !pg !ig !vdt rand 0.<Physics.second> ["Initialise system";]
+    simulate initialState definition runInfo recorders rand
     0 // return an integer exit code
     
