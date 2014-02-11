@@ -61,7 +61,7 @@ window.onload = () => {
 function drawingToolClick(e: JQueryEventObject) {
     var target = <HTMLElement>e.target;
     drawingItem = ItemType[$(target).attr("data-type")];
-    panning = false;
+    dragMode = DragMode.None;
     dragObject = null;
     dragFromButton = false;
 
@@ -94,6 +94,8 @@ function startDrag(e: JQueryMouseEventObject) {
 
     if (e.button != 0) return;
 
+    dragMode = DragMode.None;
+
     var src = (<any>e).originalEvent.srcElement || (<any>e).originalEvent.originalTarget;
     var elem = null;
     if (src && (src.tagName == "path" || src.tagName == "g")) {
@@ -116,7 +118,7 @@ function startDrag(e: JQueryMouseEventObject) {
         }
     } else {
         dragObject = elem;
-        panning = !dragObject;
+        dragMode = dragObject ? DragMode.DragStart : DragMode.Panning;
         lastX = e.clientX; lastY = e.clientY;
     }
 }
@@ -126,9 +128,18 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     // IE is seems (!?) so rely on explicit flags set on mouse down operations
     // rather than asking for the state here
     //if (e.buttons != 1) return;
-    if (!panning && !dragObject && !dragFromButton && !drawingLine) return;
+    if (dragMode != DragMode.Panning && !dragObject && !dragFromButton && !drawingLine) return;
 
     var x = e.clientX, y = e.clientY;
+
+    // Min movement distance before enabling dragging, to avoid jittery clicks
+    if (dragMode == DragMode.DragStart) {
+        if (Math.abs(x - lastX) < 5 && Math.abs(y - lastY) < 5)
+            return;
+        dragMode = DragMode.Dragging;
+        ModelStack.dup();
+    }
+
     var p = screenToSvg(x, y);
 
     if (drawingLine) {
@@ -145,13 +156,14 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     lastX = x; lastY = y;
     var dx = p.x - p0.x, dy = p.y - p0.y;
 
-    if (panning) {
+    if (dragMode == DragMode.Panning) {
         // Panning the design surface, obviously
         var origin = SvgViewBoxManager.origin;
         origin.x -= dx; origin.y -= dy;
         SvgViewBoxManager.origin = origin;
     } else {
-        // Determine if drop on background or on cell, etc
+        // Determine if drag over background or on cell, etc
+        // TODO - remove currently dragged object from hit testing
         var hit = getEventElementAndPart(e.originalEvent);
         console.log(hit && hit.type);
         if (dragObject) {
@@ -164,8 +176,6 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     }
 }
 
-// TODO - min drag distance
-
 function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
     if (drawingLine) {
         // If over a suitable item, persist line, otherwise throw it away
@@ -176,22 +186,39 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
             if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
                 // TODO - check if link already present and handle self-links
                 var target = <Variable>item;
-                drawingLine.source = drawingLineSource;
+                // The below are already done (in addLink)
+                //drawingLine.source = drawingLineSource;
+                //drawingLineSource.fromLinks.push(drawingLine);
                 drawingLine.target = target;
-                drawingLineSource.fromLinks.push(drawingLine);
                 target.toLinks.push(drawingLine);
                 deleteIt = false;
             }
         }
-        if (deleteIt)
-            svg.removeChild(drawingLine.element);
+        if (deleteIt) {
+            //svg.removeChild(drawingLine.element);
+            ModelStack.undo(); // Get rid of the nascent line - bit heavyweight!
+            ModelStack.truncate();
+        }
     } else if (drawingItem /*&& !dragObject*/) {
         var pt = screenToSvg(e.clientX, e.clientY);
         addItem(drawingItem, pt, getEventElementAndPart(e.originalEvent));
+    } else {
+        // Verify that new placement is valid, revert to initial location if not
+        var item = <Item>(<any>dragObject).item;
+        var hit = getEventElementAndPart(e.originalEvent);
+        // TODO - need to get past the current element itself
+        if (true || item.isValidNewPlacement(hit)) {
+            if (item.type == ItemType.Variable || item.type == ItemType.Receptor) {
+                // Reparent
+            }
+        } else {
+            ModelStack.undo();
+            ModelStack.truncate();
+        }
     }
 
     // Reset *everything* to clear any draggy operation
-    panning = false;
+    dragMode = DragMode.None;
     dragObject = null;
     dragFromButton = false;
     drawingLine = null;
@@ -218,7 +245,10 @@ function doDropFromDrawingTool(e /*: JQueryEventObject*/, ui: JQueryUI.Droppable
     addItem(type, pt, hit);
 }
 
-var panning: boolean;
+// TODO - incorporate drag from button instead of flagging that separately
+enum DragMode { None, Panning, DragStart, Dragging }
+
+var dragMode: DragMode;
 var lastX: number, lastY: number;
 var dragObject: SVGGElement;
 var drawingItem: ItemType;
@@ -310,7 +340,7 @@ class ModelStack {
     }
 
     static dup() {
-        ModelStack.models.length = ModelStack.index + 1; // Truncate the list
+        ModelStack.truncate();
         // Because the caller may have references to items in the model, place
         // the duplicate *second* on the stack; also means the SVG resources
         // don't need to be torn down and rebuilt
@@ -320,6 +350,10 @@ class ModelStack {
         ++ModelStack.index;
         $("#button-undo").button("option", "disabled", false);
         $("#button-redo").button("option", "disabled", true);
+    }
+
+    static truncate() {
+        ModelStack.models.length = ModelStack.index + 1;
     }
 
     private static models: Model[] = [];
@@ -580,34 +614,27 @@ function svgRemoveClass(elem: SVGStylable, c: string) {
 function addItem(type: ItemType, pt: Point, elemAndPart: ElementAndPart): Item {
     switch (type) {
         case ItemType.Container:
-            if (elemAndPart == null) {
-                ModelStack.dup();
+            if (Container.isValidPlacement(elemAndPart))
                 return addContainer(pt.x, pt.y);
-            }
             break;
         case ItemType.Variable:
-            if (elemAndPart && elemAndPart.type == "cell-inner") {
-                ModelStack.dup();
+            if (Variable.isValidPlacement(type, elemAndPart))
                 return addVariable(pt.x, pt.y, elemAndPart.elem.item);
-            }
             break;
         case ItemType.Constant:
-            if (elemAndPart == null) {
-                ModelStack.dup();
+            if (Variable.isValidPlacement(type, elemAndPart))
                 return addConstant(pt.x, pt.y);
-            }
             break;
         case ItemType.Receptor:
-            if (elemAndPart && elemAndPart.type == "cell-outer") {
-                ModelStack.dup();
+            if (Variable.isValidPlacement(type, elemAndPart))
                 return addReceptor(pt.x, pt.y, elemAndPart.elem.item);
-            }
             break;
     }
     return null;
 }
 
 function addContainer(x: number, y: number) {
+    ModelStack.dup();
     var container = new Container(x, y);
     ModelStack.current.children.push(container);
     container.createSvgElement();
@@ -615,6 +642,7 @@ function addContainer(x: number, y: number) {
 }
 
 function addVariable(x: number, y: number, container: Container) {
+    ModelStack.dup();
     var variable = new Variable(ItemType.Variable, x, y);
     variable.parent = container;
     container.children.push(variable);
@@ -623,6 +651,7 @@ function addVariable(x: number, y: number, container: Container) {
 }
 
 function addConstant(x: number, y: number) {
+    ModelStack.dup();
     var constant = new Variable(ItemType.Constant, x, y);
     ModelStack.current.children.push(constant);
     constant.createSvgElement();
@@ -630,6 +659,7 @@ function addConstant(x: number, y: number) {
 }
 
 function addReceptor(x: number, y: number, container: Container) {
+    ModelStack.dup();
     var receptor = new Variable(ItemType.Receptor, x, y);
     container.children.push(receptor);
     receptor.parent = container;
@@ -638,8 +668,10 @@ function addReceptor(x: number, y: number, container: Container) {
 }
 
 function addLink(source: Variable, type: ItemType) {
+    ModelStack.dup();
     var link = new Link(type);
     link.source = source;
+    source.fromLinks.push(link);
     link.createSvgElement();
     return link;
 }
@@ -652,11 +684,13 @@ class Item {
         this.name = ItemType[type] + this.id;
     }
 
+    // Create the SVG structures that correspond to this particular item
     createSvgElement() {
         // This should never occur - ideally would be an abstract method
         throw new Error("Cannot create SVG element for item " + this.name + " (" + this.id + ")");
     }
 
+    // Delete all the SVG structures corresponding to this item
     deleteSvgElement() {
         if (this.element) {
             this.element.parentNode.removeChild(this.element);
@@ -664,19 +698,28 @@ class Item {
         }
     }
 
+    // Make a deep copy of this model data, excluding any SVG structures
     clone(variableMap: { [original: number]: Variable }, linkList: Link[]): Item {
         // This should never occur - ideally would be an abstract method
         throw new Error("Cannot clone item " + this.name + " (" + this.id + ")");
     }
 
+    // Move to absolute coordinates on the screen
     moveTo(x: number, y: number): void {
         moveBy(x - this.x, y - this.y);
     }
 
+    // Move to relative coordinate
     moveBy(dx: number, dy: number): void {
         this.x += dx;
         this.y += dy;
         translateSvgElement(this.element, this.x, this.y);
+    }
+
+    // Check if this item can be placed at the locaton specified
+    // TODO - snapping?
+    isValidNewPlacement(elemAndPart: ElementAndPart) {
+        return false;
     }
 
     id: number;
@@ -731,11 +774,11 @@ class Variable extends Item {
         var v = new Variable(this.type, this.x, this.y);
         v.id = this.id;
         v.name = this.name;
-        for (var i = 0; i < this.toLinks.length; ++i) {
-            var link = new Link(this.toLinks[i].type);
+        for (var i = 0; i < this.fromLinks.length; ++i) {
+            var link = new Link(this.fromLinks[i].type);
             link.source = v;
-            link.target = this.toLinks[i].target; // This is the OLD target, will be patched up later
-            v.toLinks.push(link);
+            link.target = this.fromLinks[i].target; // This is the OLD target, will be patched up later
+            v.fromLinks.push(link);
             linkList.push(link);
         }
         variableMap[this.id] = v;
@@ -763,10 +806,25 @@ class Variable extends Item {
         }
     }
 
+    isValidNewPlacement(elemAndPart: ElementAndPart) {
+        return Variable.isValidPlacement(this.type, elemAndPart);
+    }
+
+    static isValidPlacement(type: ItemType, elemAndPart: ElementAndPart) {
+        switch (type) {
+            case ItemType.Variable:
+                return elemAndPart && elemAndPart.type == "cell-inner";
+            case ItemType.Constant:
+                return elemAndPart == null;
+            case ItemType.Receptor:
+                return elemAndPart && elemAndPart.type == "cell-outer";
+        }
+    }
+
     formula: string;
     parent: Container;
-    fromLinks: Link[];
-    toLinks: Link[];
+    fromLinks: Link[]; // Links coming from this element - the link's source points to this
+    toLinks: Link[]; // Links coming to this element - the link's target points to this
 }
 
 class Container extends Item {
@@ -809,6 +867,14 @@ class Container extends Item {
         super.moveBy(dx, dy);
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].moveBy(dx, dy);
+    }
+
+    isValidNewPlacement(elemAndPart: ElementAndPart) {
+        return Container.isValidPlacement(elemAndPart);
+    }
+
+    static isValidPlacement(elemAndPart: ElementAndPart) {
+        return elemAndPart == null;
     }
 
     children: Variable[];
@@ -871,12 +937,8 @@ class Model {
     }
 
     deleteSvg() {
-        // TODO - why doesn't this clear things?
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].deleteSvgElement();
-        // HACK - forcibly clear
-        while (svg.lastChild)
-            svg.removeChild(svg.lastChild);
     }
 
     clone(): Model {
@@ -890,7 +952,7 @@ class Model {
         for (i = 0; i < linkList.length; ++i) {
             var link = linkList[i];
             link.target = variableMap[link.target.id];
-            link.target.fromLinks.push(link);
+            link.target.toLinks.push(link);
         }
         return m;
     }
