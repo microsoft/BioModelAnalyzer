@@ -4,6 +4,7 @@ open Vector
 open System.Linq
 open System.Threading
 
+
 (*
 Some back of the envelope calculations to make it all easier
 E.coli has a mass of 0.5 picograms
@@ -347,8 +348,9 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
     //let nonBonded = List.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff)) system
     let nonBonded = system
-                    |> Functional.PSeq.ofSeq
-                    |> Functional.PSeq.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff))
+                    |> List.toSeq
+                    |> Microsoft.FSharp.Collections.PSeq.ordered
+                    |> Microsoft.FSharp.Collections.PSeq.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff))
                     |> List.ofSeq
     (*
     This is expensive and only does one thing. We want to have it do a few other cheap things on the way.
@@ -360,11 +362,16 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     let forceDescriptors = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2>  }) externalF
     //List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF  
     let nonBondedTerms = List.map3 (fun x y z -> {System=x;Neighbours=y;Forces=z}) system nonBonded forceDescriptors
-    //List.map (fun x ->  populateForceEnvironment x.System x.Neighbours x.Forces) nonBondedTerms 
+    //let orig = List.map (fun x ->  populateForceEnvironment x.System x.Neighbours x.Forces) nonBondedTerms 
     nonBondedTerms 
-    |> Functional.PSeq.ofSeq
-    |> Functional.PSeq.map (fun x -> populateForceEnvironment x.System x.Neighbours x.Forces)
-    |> List.ofSeq
+                |> List.toSeq
+                |> Microsoft.FSharp.Collections.PSeq.ordered    
+                |> Microsoft.FSharp.Collections.PSeq.map (fun x -> populateForceEnvironment x.System x.Neighbours x.Forces)
+                |> List.ofSeq
+//    if (para <> orig) then 
+//                printf "Orig %A Para %A" (List.map (fun x -> x.force ) orig) (List.map (fun x -> x.force ) para)
+//                failwith "fault here"
+//    para
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
