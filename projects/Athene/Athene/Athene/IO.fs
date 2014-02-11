@@ -72,7 +72,7 @@ let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) =
         file.Close()
 
 let dumpSystem (filename: string) state = 
-        use file = new FileStream(filename, FileMode.CreateNew)//new StreamWriter(filename, false)
+        use file = new FileStream(filename, FileMode.Create)//new StreamWriter(filename, false)
         //file.WriteLine(machines.Length)
         //file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
         //file.WriteLine(String.concat "," (seq { for p in particles -> p.ToString }) )
