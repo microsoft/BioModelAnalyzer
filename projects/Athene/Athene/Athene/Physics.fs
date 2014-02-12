@@ -300,10 +300,10 @@ let nonBondedPairList (system: Particle list) (cutOff: float<um>) =
     [for i in system -> getNeighbours i system cutOff] 
 
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> }
-type nonBonded = {System: Particle ; Neighbours: Particle list ; Forces: forceEnv }
+type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin (externalF: Vector3D<zNewton> list) = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin (externalF: Vector3D<zNewton> list) threads = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | first_p::other_p -> sumForces p other_p (topology.[p.name].[first_p.name] first_p p) + acc
@@ -313,6 +313,12 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
         let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.radius - first_p.radius) * (-d - p.radius + first_p.radius) * (-d + p.radius + first_p.radius) * (d + p.radius + first_p.radius)  
         2.*System.Math.PI* intersectionRadiusSq
     let rec populateForceEnvironment (p: Particle) (neighbours: Particle list) (acc: forceEnv) =
+        (*
+        This is expensive and only does one important thing. We want to have it do a few other cheap things on the way.
+        The first version summed the vectors on a particle
+        This calculates 4 related things as well
+        The sum of the vector forces on a particle; the number of forces on a particle (confluence); the sum of the absolute scalar forces on a particle; the sum of the pressures
+        *) 
         match neighbours with
         | first_p::other_p ->   let f = topology.[p.name].[first_p.name] first_p p
                                 let d = (first_p.location - p.location).len
@@ -325,53 +331,30 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
                                                                                         acc.pressure + fMag/(sphereIntersectionArea p first_p)
                                 let fMag' = acc.absForceMag + fMag;
                                 let f' = acc.force + f
-                                //let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.radius - first_p.radius) * (-d - p.radius + first_p.radius) * (-d + p.radius + first_p.radius) * (d + p.radius + first_p.radius)  
-                                //(p.radius*p.radius  - (1./(4.*d*d)) * (d*d - first_p.radius*first_p.radius + p.radius*p.radius)* (d*d - first_p.radius*first_p.radius + p.radius*p.radius))
-                                //let intersectionArea = 2.*System.Math.PI* intersectionRadiusSq
                                 populateForceEnvironment p other_p {acc with 
                                                                         force = f'; 
                                                                         absForceMag = fMag' 
                                                                         confluence = confluence;
-                                                                        //absForceMag = lazy (acc.absForceMag.Value + fMag);
-                                                                        //eqn for an intersection of two spheres radius = 1/2d * sqrt(4*d**2.*p1.radius - (d**2. - p2.radius**2. + p1.radius**2.)**2.)
-                                                                        //therefore area =  2 * pi * (p1.radius - 1/4d**2.* (d**2. - p2.radius**2. + p1.radius**2.)**2.)
                                                                         pressure = pressure;
                                                                         }
-//                                acc.force <- acc.force + f
-//                                acc.confluence <- acc.confluence + 1
-//                                acc.absForceMag <- acc.absForceMag + abs(f.len)
-//                                acc.pressure <- if ((p.location - first_p.location).len > (p.radius + first_p.radius)) then acc.pressure else acc.pressure + abs(f.len)/intersectionArea
-//                                populateForceEnvironment p other_p acc
+
         | [] -> acc
+    let calculateNonBonded nonBondedGrid (nb: nonBonded) = 
+        if nb.P.freeze then [] else (collectGridNeighbours nb.P nonBondedGrid sOrigin cutOff)   //Get neighbours
+        |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
+        |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     //add all the mobile particles to the staticGrid
     let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
     let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
-    //let nonBonded = List.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff)) system
-    let nonBonded = system
-                    |> List.toSeq
-                    |> Microsoft.FSharp.Collections.PSeq.ordered
-                    |> Microsoft.FSharp.Collections.PSeq.map (fun (p: Particle) -> if p.freeze then [] else (collectGridNeighbours p nonBondedGrid sOrigin cutOff))
-                    |> List.ofSeq
-    (*
-    This is expensive and only does one thing. We want to have it do a few other cheap things on the way.
-    The first version sums the vectors on a particle
-    I want it to calculate 4 related things
-    The sum of the vector forces on a particle; the number of forces on a particle (confluence); the sum of the absolute scalar forces on a particle; the sum of the pressures
-    My first approach will be to use a record accumulator
-    *) 
-    let forceDescriptors = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2>  }) externalF
-    //List.map3 (fun x y z ->  sumForces x y z) system nonBonded externalF  
-    let nonBondedTerms = List.map3 (fun x y z -> {System=x;Neighbours=y;Forces=z}) system nonBonded forceDescriptors
-    //let orig = List.map (fun x ->  populateForceEnvironment x.System x.Neighbours x.Forces) nonBondedTerms 
+    let nonBondedTerms = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2>  }) externalF
+                            |> List.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
+         
     nonBondedTerms 
-                |> List.toSeq
                 |> Microsoft.FSharp.Collections.PSeq.ordered    
-                |> Microsoft.FSharp.Collections.PSeq.map (fun x -> populateForceEnvironment x.System x.Neighbours x.Forces)
+                |> Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads
+                |> Microsoft.FSharp.Collections.PSeq.map (calculateNonBonded nonBondedGrid)
                 |> List.ofSeq
-//    if (para <> orig) then 
-//                printf "Orig %A Para %A" (List.map (fun x -> x.force ) orig) (List.map (fun x -> x.force ) para)
-//                failwith "fault here"
-//    para
+
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
@@ -439,11 +422,11 @@ let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um
         //else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
         else {p with location = p.location+(f*modifier)} ]
 
-let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand (F: forceEnv list option) = 
+let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand threads (F: forceEnv list option) = 
     //Use previously caclulated forces from failed integration step if available
     let F = match F with
             | Some(F) -> F
-            | None -> forceUpdate topology nbCutOff system staticGrid sOrigin machineForces
+            | None -> forceUpdate topology nbCutOff system staticGrid sOrigin machineForces threads
     //let F = List.map (fun x -> x.force) Fenv
     //From the update, calculate if the maximum move is broken
     let system' = bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
@@ -452,11 +435,11 @@ let rec integrate (system: Particle list) topology staticGrid sOrigin (machineFo
     //system'
     match ((maxdP < maxMove),(steps=1),(vdt_depth>0)) with
     | (true,true,_)  -> system'
-    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand None //in a single call we shouldn't exceed maxmove, even if done in parts
+    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand threads None //in a single call we shouldn't exceed maxmove, even if done in parts
     | (false,_,true) -> //Maximum move is broken, but we have some variable dT depth left. Halve the timestep, double the steps, reduce the depth by 1 and repeat
                         //Avoid costly recalculation of the forces by supplying the forces calculated in the preceeding, too far step
                         //printf "Dropping down... NewDepth = %A " (vdt_depth-1) 
-                        integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand (Some F)
+                        integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand threads (Some F)
     | (false,_,false) -> //Maximum move is broken, and we have run out of variable dT depth. Fail and exit
                         printf "Max: %A Limit: %A Depth: %A" maxdP maxMove vdt_depth
                         failwith "Max move violated and run out of variable timestep depth. Reduce the timestep or increase the depth of the variability"
