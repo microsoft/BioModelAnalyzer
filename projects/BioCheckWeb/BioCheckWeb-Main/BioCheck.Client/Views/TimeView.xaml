@@ -2376,8 +2376,15 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                         </Grid>
                         <!-- Drag and droppable area ends. -->
 
+                        <!-- Uncomment below 4 objects and comment out below two objects when I'm coding. -->
 
-                        <TextBlock Grid.Column="0" Grid.Row="2" Text="English:" Style="{StaticResource PopupTextStyle}" 
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="Terminal:" Style="{StaticResource PopupTextStyle}" 
+                               HorizontalAlignment="Left" Margin="10,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
+
+                        <TextBox TextWrapping="Wrap" Text="{Binding LTLInput, Mode=TwoWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Margin="10,3,0,3" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>
+
+                        <!--<TextBlock Grid.Column="0" Grid.Row="2" Text="English:" Style="{StaticResource PopupTextStyle}" 
                                HorizontalAlignment="Left" Margin="10,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
 
                         <TextBox Background="Cornsilk" BorderBrush="Gray"
@@ -2387,13 +2394,14 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                HorizontalAlignment="Left" Margin="10,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
 
                         <TextBox TextWrapping="Wrap" Text="{Binding LTLInput, Mode=TwoWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Margin="10,3,0,3" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
-                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>-->
 
                     </Grid>
                 </Border>
 
-                <TextBox x:Name="tempDebug" TextWrapping="Wrap" Text="Temporary debug output here." VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="1" Margin="10,0" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
-                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>
+                <!-- Uncomment this line when debugging! -->
+                <!--<TextBox x:Name="tempDebug" TextWrapping="Wrap" Text="Temporary debug output here." VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="1" Margin="10,0" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>-->
 
                 <!-- Terminal Input settings -->
                 <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Center">
