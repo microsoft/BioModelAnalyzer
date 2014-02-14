@@ -4,7 +4,9 @@
   xmlns:app="clr-namespace:BioCheck"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"   
   x:Class="BioCheck.App"
-  Startup="Application_Startup">
+  Startup="Application_Startup"
+  UnhandledException="Application_UnhandledException">
+
 
     <Application.Resources>
         <ResourceDictionary>
@@ -27,6 +29,8 @@
                 <ResourceDictionary Source="Views/GridStyles.xaml"/>
                 <ResourceDictionary Source="Controls/ChildWindowStyle.xaml"/>
                 <ResourceDictionary Source="Controls/ToolbarItemStyle.xaml"/>
+                <!-- Time edit -->
+                <ResourceDictionary Source="Controls/TimebarItemStyle.xaml"/>
                 <ResourceDictionary Source="Controls/ContextBarStyle.xaml"/>
           
             </ResourceDictionary.MergedDictionaries>

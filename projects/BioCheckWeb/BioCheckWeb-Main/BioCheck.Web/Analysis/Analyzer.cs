@@ -152,7 +152,7 @@ namespace BioCheck.Web.Analysis
                     return outputData;
                 }
             }
-            else 
+            else if (engineName == "CAV")
             {   
                 // LTL Proof
                 try
@@ -214,7 +214,60 @@ namespace BioCheck.Web.Analysis
                     };
                     return outputData;
                 }
-            }   // Normal or LTL Proof
+            }
+            else
+            {
+                // if (engineName == "SYN")
+                try
+                {
+                    IAnalyzer2 analyzer = new UIMain.Analyzer2();                   // Needs changing to the SYN engine.
+
+                    var analyisStartTime = DateTime.Now;
+
+                    // Call the Analyzer and get the Output Xml
+                    if (input.EnableLogging)
+                    {
+                        analyzer.LoggingOn(log);
+                    }
+                    else
+                    {
+                        analyzer.LoggingOff();
+                        log.LogDebug("Enable Logging from the context menu to see more detailed logging info.");
+                    }
+
+                    var outputXml = analyzer.checkSynth(inputXml);                        // analyzer (set above)
+
+                    var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
+                    log.LogDebug(string.Format("Synthesis took {0} seconds to run.", time));
+
+                    // Convert to the Output Data
+                    var outputData = new AnalysisOutputDTO();
+
+                    outputData.Time = time;
+                    outputData.ErrorMessages = log.ErrorMessages;
+
+                    //outputData.ZippedXml = ZipHelper.Zip(inputXml.ToString());                      // Just sending back the input XML at the moment.
+                    outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());                   
+                    outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));  // The log!
+
+                    return outputData;
+                }
+                catch (Exception ex)
+                {
+                    azureLogService.Debug("SYN Exception", ex.ToString());
+
+                    // Return an Unknown if fails
+                    var outputData = new AnalysisOutputDTO
+                    {
+                        Status = StatusTypes.Unknown,
+                        Error = ex.ToString(),
+                        ErrorMessages = log.ErrorMessages,
+                        ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                    };
+                    return outputData;
+                }
+            }
+            // Normal proof, LTL or SYN
         }
 
         public SimulationOutputDTO Simulate(SimulationInputDTO input)

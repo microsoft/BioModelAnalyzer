@@ -191,6 +191,11 @@
     <Compile Include="Controls\MembraneReceptorSite.xaml.cs">
       <DependentUpon>MembraneReceptorSite.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TimebarControl.xaml.cs">
+      <DependentUpon>TimebarControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TimebarItem.cs" />
+    <Compile Include="Controls\TimebarTypes.cs" />
     <Compile Include="Controls\ToolbarTypes.cs" />
     <Compile Include="Controls\ToolbarControl.xaml.cs">
       <DependentUpon>ToolbarControl.xaml</DependentUpon>
@@ -234,6 +239,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Services\BusyIndicatorService.cs" />
+    <Compile Include="Services\SynthWindowService.cs" />
     <Compile Include="Services\TimeWindowService.cs" />
     <Compile Include="Services\ContextBarService.cs" />
     <Compile Include="Services\GraphWindowService.cs" />
@@ -314,6 +320,12 @@
     <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
     <Compile Include="ViewModel\Simulation\SimulationViewModelFactory.cs" />
     <Compile Include="ViewModel\Simulation\VariableSimViewModel.cs" />
+    <Compile Include="ViewModel\Synth\SynthInputDTOFactory.cs" />
+    <Compile Include="ViewModel\Synth\SynthOutput.cs" />
+    <Compile Include="ViewModel\Synth\SynthOutputFactory.cs" />
+    <Compile Include="ViewModel\Synth\SynthViewModel.cs" />
+    <Compile Include="ViewModel\Synth\SynthViewModelFactory.cs" />
+    <Compile Include="ViewModel\TimebarViewModel.cs" />
     <Compile Include="ViewModel\Time\TimeOutput.cs" />
     <Compile Include="ViewModel\Time\TimeOutputFactory.cs" />
     <Compile Include="ViewModel\Time\TimeInputDTOFactory.cs" />
@@ -330,6 +342,9 @@
     <Compile Include="Views\ContainerView.cs" />
     <Compile Include="Views\GraphView.xaml.cs">
       <DependentUpon>GraphView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SynthView.xaml.cs">
+      <DependentUpon>SynthView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TimeView.xaml.cs">
       <DependentUpon>TimeView.xaml</DependentUpon>
@@ -449,6 +464,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\TimebarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TimebarItemStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\ToolbarControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -486,6 +509,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\GraphView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SynthView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

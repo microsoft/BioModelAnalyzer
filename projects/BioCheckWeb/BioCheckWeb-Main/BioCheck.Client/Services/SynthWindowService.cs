@@ -2,46 +2,46 @@
 using System.Windows;
 using System.Windows.Controls;
 using BioCheck.ViewModel.Proof;
-using BioCheck.ViewModel.Time;
+using BioCheck.ViewModel.Synth;
 using BioCheck.Views;
 using Microsoft.Expression.Interactivity.Layout;
 
-// Time edit
+// Synth edit
 namespace BioCheck.Services
 {
-    public interface ITimeWindowService
+    public interface ISynthWindowService
     {
         // These MUST be implemented by a child class, i.e. below
-        void Show(TimeViewModel timeVM);
+        void Show(SynthViewModel synthVM);
         void Close();
     }
 
-    public class TimeWindowService : ITimeWindowService
+    public class SynthWindowService : ISynthWindowService
     {
-        const int DefaultHeight = 650;
-        const int DefaultWidth = 850;
+        const int DefaultHeight = 500;
+        const int DefaultWidth = 800;
 
         private readonly Canvas canvas;
         private readonly Shell shell;
         private readonly Grid layoutRoot;
-        private TimeViewModel timeVM;
+        private SynthViewModel synthVM;
 
-        private TimeView view;
+        private SynthView view;
 
         private bool isShowing;
 
-        public TimeWindowService(Shell shell)
+        public SynthWindowService(Shell shell)
         {
             this.shell = shell;
             this.canvas = shell.PopupCanvas;
             this.layoutRoot = shell.LayoutRoot;
         }       
 
-        public void Show(TimeViewModel timeVM)
+        public void Show(SynthViewModel synthVM)
         {
             if (view == null)
             {
-                view = new TimeView();
+                view = new SynthView(synthVM);
 
                 // Default to the Centre of the screen
                 view.HorizontalAlignment = HorizontalAlignment.Center;
@@ -58,13 +58,13 @@ namespace BioCheck.Services
                 beh.Attach(view);
             }
 
-            if (this.timeVM != null)
+            if (this.synthVM != null)
             {
-                this.timeVM.Dispose();              // Not entered at first startup, pre-run.
+                this.synthVM.Dispose();              // Not entered at first startup, pre-run.
             }
 
-            this.timeVM = timeVM;
-            view.DataContext = timeVM;
+            this.synthVM = synthVM;
+            view.DataContext = synthVM;
 
             if (!isShowing)
             {
@@ -82,9 +82,9 @@ namespace BioCheck.Services
         {
             if (isShowing)
             {
-                if (this.timeVM != null)
+                if (this.synthVM != null)
                 {
-                    this.timeVM.Dispose();
+                    this.synthVM.Dispose();
                 }
 
                 layoutRoot.Children.Remove(view);

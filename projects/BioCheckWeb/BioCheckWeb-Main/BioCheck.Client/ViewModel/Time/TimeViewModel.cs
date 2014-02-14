@@ -27,7 +27,8 @@ namespace BioCheck.ViewModel.Time
         private readonly DelegateCommand consoleCommand;
         private readonly DelegateCommand runSimulation;
         private readonly DelegateCommand runProve;
-   
+
+        private readonly TimebarViewModel timebarViewModel;         // For draggable buttons. Make this store What's dragged?   
 
         private AnalysisServiceClient analyzerClient;
 
@@ -36,7 +37,7 @@ namespace BioCheck.ViewModel.Time
         private bool ltlProof = false;
         private int ltlPath = 100;
         private string ltlInput = "True";   
-        private string ltlOutput;    
+        private string ltlOutput;
 
 
         public TimeViewModel()
@@ -47,6 +48,7 @@ namespace BioCheck.ViewModel.Time
             this.consoleCommand = new DelegateCommand(OnConsoleExecuted);
             this.runSimulation = new DelegateCommand(OnRunSimulationExecuted);
             this.runProve = new DelegateCommand(OnRunProveExecuted);
+            this.timebarViewModel = new TimebarViewModel();
         }
                 
         public DelegateCommand RunCommand
@@ -64,18 +66,28 @@ namespace BioCheck.ViewModel.Time
             get { return this.runProve; }
         }
 
+        // For draggable buttons.
+        public TimebarViewModel TimebarViewModel
+        {
+            get { return this.timebarViewModel; }              
+        }
 
         private AnalysisInputDTO timeInputDto;
 
         private void OnRunExecuted()
         {
             // Sanity check: Check that the model is active (early on at startup, it's not active)
+            // And that there is a model loaded at all.
             if (!ApplicationViewModel.Instance.HasActiveModel)
             {
+                // New
+                ApplicationViewModel.Instance.Container
+                 .Resolve<IMessageWindowService>()
+                 .Show("There is no active model to test your formulas on. Please load a model to continue.");
                 return;
             }
 
-            // Counter lack of input
+            // Counter lack of formula input
             if (this.LTLInput == null || this.LTLInput == "")
             {
                 this.LTLOutput = "\nYou wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
