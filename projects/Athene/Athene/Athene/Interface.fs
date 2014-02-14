@@ -9,7 +9,7 @@ open Automata
 //open Microsoft.FSharp.Quotations.Raw
 
 type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
-type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
+type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
 
@@ -18,12 +18,12 @@ type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Phy
 let cbrt2 = 2.**(1./3.)
 let rsqrt2 = 1./(2. ** 0.5)
 
-let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (p:Particle) (m: Map<QN.var,int>)  =
+let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
     //Takes one variable which influences the probability, and one variable which represents the motor itself
     //Initial version is a binary motor. If the state of the motor is non-zero then the motor is considered to be on
 
     //We find the mapping from the probVar state to a probability by assuming that high=likely to be on, low=likely to be off
-    let prob = (fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN)
+    let prob = ((fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN))**(dt/1.<second>)
 
     //First alter the motor based on a random number and the state of the probVar
     let m' = match (m.[motorVar],(rng.NextDouble())) with
@@ -81,7 +81,12 @@ let limitedLinearGrow (rate: float<um/second>) (property: limitMetric) (varID: i
 //                        //Divide (({p with location = p.location+ p.orientation*(posMod); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(posMod); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 //                        Divide (({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let max = if variation then max+sd*p.gRand else max
+    //Cells which have been born this way will have a Gaussian distribution of sizes
+    //This will change the distribution of times to get to the maximum
+    //We assume that the cells are the product of the same process and so the distribution will be
+    //  sqrt(2)*sd (an overestimate)
+    //We explicitly try to correct for this
+    let max = if variation then max+(sd*p.gRand*rsqrt2) else max
     match (m.[varID] = varState, limit) with
     | (false,_) -> Life (p,m) //Not in growth state
     | (true,None) ->
@@ -160,7 +165,7 @@ let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.
                 | true -> Death (varName)
                 | false -> Life (p,m)
 
-let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
     let biasMetric = match bias with
                         | Radius     -> float p.radius
@@ -168,9 +173,10 @@ let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: fl
                         | Pressure   -> float p.pressure
                         | Force      -> float p.forceMag
                         | Confluence -> float p.confluence
+    let probability = probability**(dt/1.<second>)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < dt*probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
+    | true -> match (rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
                 | true -> Death (varName)
                 | false -> Life (p,m)
 
@@ -301,13 +307,13 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     let nSystem = nmSystem // @ staticSystem
     //let nMachineStates = machineStates
     //let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
-    let rec getMotorForces (motorlist:(Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list) system machines (forceAcc:Vector.Vector3D<Physics.zNewton> list )= 
+    let rec getMotorForces (motorlist:(float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list) system machines (dT:float<Physics.second>) (forceAcc:Vector.Vector3D<Physics.zNewton> list )= 
         match motorlist with
-        | topMotor::otherMotors ->  let machineForces' = List.map2 topMotor system machines
+        | topMotor::otherMotors ->  let machineForces' = List.map2 (topMotor dT) system machines
                                     let forceAcc' = List.map2 (fun (f:Vector.Vector3D<Physics.zNewton>) (mf:Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) -> f + (snd mf)) forceAcc machineForces'
                                     let machines' = List.map (fun (mf:Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) -> fst mf) machineForces'
                                     //(forceAcc',machines')
-                                    getMotorForces otherMotors system machines' forceAcc'
+                                    getMotorForces otherMotors system machines' dT forceAcc'
         | [] -> (forceAcc,machines)
-    let (machineForces,nMachineStates) = getMotorForces intTop.randomMotors nSystem nMachineStates (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem)
+    let (machineForces,nMachineStates) = getMotorForces intTop.randomMotors nSystem nMachineStates dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem)
     (nSystem, nMachineStates, machineForces, birthDeathRegister')
