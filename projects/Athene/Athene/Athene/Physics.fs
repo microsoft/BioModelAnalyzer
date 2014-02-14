@@ -351,7 +351,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
          
     nonBondedTerms 
                 |> Microsoft.FSharp.Collections.PSeq.ordered    
-                |> Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads
+                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
                 |> Microsoft.FSharp.Collections.PSeq.map (calculateNonBonded nonBondedGrid)
                 |> List.ofSeq
 
