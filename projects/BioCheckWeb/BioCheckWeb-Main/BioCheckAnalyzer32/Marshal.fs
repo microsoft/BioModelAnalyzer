@@ -340,6 +340,27 @@ let xml_of_ltl_result (result:bool) (model:int * Map<int,Map<QN.var,int>>) =
     
     doc
 
+// Testing Synth's zipper. Function name, input, input
+// let xml_of_synth_result (result:string) (model:int * Map<int,Map<QN.var,int>>) = 
+// (model: QN.node list)
+let xml_of_synth_result (result:string) (moreResult:string) (model:XDocument) = 
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)
+
+    let output = new XElement(xn "Result", result)
+    root.Add(output)
+
+    let output2 = new XElement(xn "Details", moreResult)
+    root.Add(output2)
+    
+    //let model = new XElement(xn "Model", new XAttribute(xn "Id",model.ToString()))
+    let model = new XElement(xn "Model", model.ToString())
+    root.Add(model)
+    
+    doc
+// done
+
 
 // Result parsers
 let stabilizing_result_of_xml (xd:XDocument) =

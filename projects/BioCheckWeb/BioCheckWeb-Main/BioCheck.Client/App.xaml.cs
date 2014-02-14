@@ -29,10 +29,6 @@ namespace BioCheck
             //   webContext.Authentication = new FormsAuthentication();
             //  //webContext.Authentication = new WindowsAuthentication();
             // this.ApplicationLifetimeObjects.Add(webContext);
-
-            // Makes debugging easier if the unhandled exception handler is *not* installed
-            if (!Debugger.IsAttached)
-                this.UnhandledException += Application_UnhandledException;
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -106,6 +102,7 @@ namespace BioCheck
 
             // Time edit
             container.RegisterInstance(typeof(ITimeWindowService), new TimeWindowService(mainPage), new ContainerControlledLifetimeManager());
+            container.RegisterInstance(typeof(ISynthWindowService), new SynthWindowService(mainPage), new ContainerControlledLifetimeManager());
 
             var busyIndicator = new BioCheck.Controls.BusyIndicator();
             busyIndicator.Content = mainPage;
