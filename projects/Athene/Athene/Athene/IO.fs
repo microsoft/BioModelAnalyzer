@@ -300,7 +300,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Radius rng power (refC*1.<um>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState varName Radius rng power (refC*1.<um>) refM (probability)                    
                                 | "AgeRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -309,7 +309,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Age rng power (refC*1.<second>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState varName Age rng power (refC*1.<second>) refM (probability)                    
                                 | "ConfluenceRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -318,7 +318,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Confluence rng power (refC*1.) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState varName Confluence rng power (refC*1.) refM (probability)                    
                                 | "ForceRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -327,7 +327,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Force rng power (refC*1.<zNewton>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState varName Force rng power (refC*1.<zNewton>) refM (probability)                    
                                 | "PressureRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -336,7 +336,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Pressure rng power (refC*1.<zNewton um^-2>) refM (probability*1.<Physics.second^-1>)                    
+                                    randomBiasApoptosis varID varState varName Pressure rng power (refC*1.<zNewton um^-2>) refM (probability)                    
                                 | "RandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
