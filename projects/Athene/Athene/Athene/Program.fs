@@ -63,12 +63,12 @@ let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runn
     let state' = match (steps%mg>0,steps%pg>0) with 
                         | (false,false)  ->    //let p = pUpdate nSystem staticGrid machineForces T dT rand 
                                                let p = Physics.integrate system' definition.Topology definition.staticGrid definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand runInfo.Threads None
-                                               let a = Automata.updateMachines definition.BMA machineStates'
+                                               let a = Automata.updateMachines definition.BMA machineStates' runInfo.Threads
                                                {Physical=p;Formal=a}
                         | (true,false)   ->    //let p = pUpdate system' staticGrid machineForces T dT rand 
                                                let p = Physics.integrate system' definition.Topology definition.staticGrid definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand runInfo.Threads None
                                                {Formal=machineStates';Physical=p}
-                        | (false,true)   ->    let a = Automata.updateMachines definition.BMA machineStates'
+                        | (false,true)   ->    let a = Automata.updateMachines definition.BMA machineStates' runInfo.Threads
                                                {Formal=a;Physical=system'}
                         | (true,true)    ->    {Formal=machineStates';Physical=system'}
 
@@ -101,7 +101,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) (rng: Syste
 
 let seed = ref 1982
 let steps = ref 100
-let threads = ref 1
+let threads = ref 0
 let dT = ref 1. //Minimum timestep
 let xyz = ref ""
 let pdb = ref ""
@@ -120,7 +120,7 @@ let rec parse_args args =
     match args with 
     | [] -> () 
     | "-steps" :: t    :: rest -> steps := (int)t;    parse_args rest
-    | "-threads" :: t  :: rest -> threads := (int)t;    parse_args rest
+    | "-threadlimit" :: t  :: rest -> threads := (int)t;    parse_args rest
     | "-seed"  :: v0   :: rest -> seed  := int(v0);   parse_args rest
     | "-dt"    :: ts   :: rest -> dT    := float(ts); parse_args rest
     | "-pdb"   :: f    :: rest -> pdb   := f;         parse_args rest

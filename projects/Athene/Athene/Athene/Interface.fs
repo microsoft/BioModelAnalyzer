@@ -9,7 +9,7 @@ open Automata
 //open Microsoft.FSharp.Quotations.Raw
 
 type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
-type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list)}
+type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
 
@@ -18,11 +18,22 @@ type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Phy
 let cbrt2 = 2.**(1./3.)
 let rsqrt2 = 1./(2. ** 0.5)
 
-let probabilisticMotor (min:int) (max:int) (state:int) (rng:System.Random) (force:float<zNewton>) (p:Particle) =
-    //pMotor returns a force randomly depending on the state of the variable
-    match rng.Next(min,max) with
-    | x when x > state -> p.orientation*force
-    | _ -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
+let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (p:Particle) (m: Map<QN.var,int>)  =
+    //Takes one variable which influences the probability, and one variable which represents the motor itself
+    //Initial version is a binary motor. If the state of the motor is non-zero then the motor is considered to be on
+
+    //We find the mapping from the probVar state to a probability by assuming that high=likely to be on, low=likely to be off
+    let prob = (fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN)
+
+    //First alter the motor based on a random number and the state of the probVar
+    let m' = match (m.[motorVar],(rng.NextDouble())) with
+                | (0,rand) when rand < prob -> (Map.add motorVar 1 m)
+                | (_,rand) when rand <(1.-prob) -> (Map.add motorVar 0 m)
+                | (_,_) -> m
+    //Then respond with a force dependent on the state of the motor
+    let force = (if (m'.[motorVar]>0) then 1. else 0.) * p.orientation*force 
+    //Now return a tuple of the QN and the force
+    (m',force)
 
 //let rlinearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
 //    match (m.[varID] = varState) with
@@ -290,6 +301,13 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     let nSystem = nmSystem // @ staticSystem
     //let nMachineStates = machineStates
     //let machineForces = [for p in nSystem -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ]
-    let machineForces = List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem
-    //let machineForces = seq { for p in nSystem do yield {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} }
+    let rec getMotorForces (motorlist:(Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list) system machines (forceAcc:Vector.Vector3D<Physics.zNewton> list )= 
+        match motorlist with
+        | topMotor::otherMotors ->  let machineForces' = List.map2 topMotor system machines
+                                    let forceAcc' = List.map2 (fun (f:Vector.Vector3D<Physics.zNewton>) (mf:Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) -> f + (snd mf)) forceAcc machineForces'
+                                    let machines' = List.map (fun (mf:Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) -> fst mf) machineForces'
+                                    //(forceAcc',machines')
+                                    getMotorForces otherMotors system machines' forceAcc'
+        | [] -> (forceAcc,machines)
+    let (machineForces,nMachineStates) = getMotorForces intTop.randomMotors nSystem nMachineStates (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem)
     (nSystem, nMachineStates, machineForces, birthDeathRegister')
