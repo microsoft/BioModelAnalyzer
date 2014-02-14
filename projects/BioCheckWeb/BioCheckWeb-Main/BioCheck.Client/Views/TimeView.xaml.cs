@@ -411,7 +411,7 @@ namespace BioCheck.Views
 
                 restyleGrid_byKeyframeSelection(exactPath, exactTextBlock, x, selectedKeyframes_name, exactTextBox);
             }
-            tempDebug.Text = textForTempDebug;
+            //tempDebug.Text = textForTempDebug;
 
             // Extra path-drawing for 0, since it's failing..
             TextBlock zeroTextBlock = (TextBlock)textID(0);
@@ -461,7 +461,7 @@ namespace BioCheck.Views
 
                 restyleGrid_byKeyframeSelection(exactPath, exactTextBlock, x, selectedKeyframes_name, exactTextBox);
             }
-            tempDebug.Text = textForTempDebug;
+            //tempDebug.Text = textForTempDebug;
 
             // Extra path-drawing for 0, since it's failing..
             TextBlock zeroTextBlock = (TextBlock)textID(0);
@@ -577,7 +577,7 @@ namespace BioCheck.Views
 
         private void KeyFrames_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            tempDebug.Text = tempDebug.Text + "Keyframes MouseRightButtonDown";
+            //tempDebug.Text = tempDebug.Text + "Keyframes MouseRightButtonDown";
             e.Handled = true;   // Or Silverlight shows.
 
             // Find what's underneath
@@ -603,7 +603,7 @@ namespace BioCheck.Views
 
         private void KeyFrames_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            tempDebug.Text = tempDebug.Text + "Keyframes MouseRightButtonUp";
+            //tempDebug.Text = tempDebug.Text + "Keyframes MouseRightButtonUp";
             e.Handled = true;
         }
 
@@ -612,7 +612,7 @@ namespace BioCheck.Views
         private void KeyFrames_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Debug.WriteLine("Keyframes MouseLeftButtonDown");
-            tempDebug.Text = "Keyframes MouseLeftButtonDown";
+            //tempDebug.Text = "Keyframes MouseLeftButtonDown";
 
             e.Handled = true;   // Or the window moves.
             string keyframeChosen;
@@ -661,7 +661,7 @@ namespace BioCheck.Views
         private void KeyFrames_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Debug.WriteLine("Keyframes MouseLeftButtonUp");
-            tempDebug.Text = tempDebug.Text + "Keyframes MouseLeftButtonUp";
+            //tempDebug.Text = tempDebug.Text + "Keyframes MouseLeftButtonUp";
         }
 
         // --------------------------------------
@@ -689,10 +689,12 @@ namespace BioCheck.Views
             src.MouseMove += Operator_MouseMove;
             if (operatorName == "Variable" || operatorName == "Cell" || operatorName == "Equals" || operatorName == "LessThan" || operatorName == "MoreThan" )
             {
+                // Keyframe grid objects are being dropped
                 src.MouseLeftButtonUp += Operator_MouseLeftButtonUp;
             }
             else
             {
+                // A Formula grid symbol is being dropped
                 src.MouseLeftButtonUp += Keyframe_MouseLeftButtonUp;
             }
             
@@ -1044,6 +1046,7 @@ namespace BioCheck.Views
             }
         }
 
+        // Update the grid index' Path AND (some) storage - make separate function for storage?
         private void restylePath(Path rectN, int rectInt, string whatResourceName, string whatContentSign, TextBox boxN, TextBlock textN)
         {
             string compositeResourceName = "path" + rectInt.ToString() + whatResourceName.ToLower();
@@ -1172,7 +1175,7 @@ namespace BioCheck.Views
             }
             Debug.WriteLine(allStorage);
             textForTempDebug = textForTempDebug + "\n Updated varname storage : " + allStorage;
-            tempDebug.Text = textForTempDebug;
+            //tempDebug.Text = textForTempDebug;
         }
 
         
@@ -1745,7 +1748,7 @@ namespace BioCheck.Views
         {
             var src = (TextBox)sender;
             gridWithFocus = Int32.Parse((string)src.Tag);
-            tempDebug.Text = "Grid number " + gridWithFocus.ToString() + " has focus.";
+            //tempDebug.Text = "Grid number " + gridWithFocus.ToString() + " has focus.";
         }
 
         private void N_TextChanged(object sender, TextChangedEventArgs e)
@@ -1804,7 +1807,7 @@ namespace BioCheck.Views
                     }
                 }
                 Debug.WriteLine("Textbox was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered]);
-                tempDebug.Text = "Textbox " + gridLocusEntered.ToString() + " was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered];
+                //tempDebug.Text = "Textbox " + gridLocusEntered.ToString() + " was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered];
             }
         }
         
