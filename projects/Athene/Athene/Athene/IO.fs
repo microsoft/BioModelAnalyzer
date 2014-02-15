@@ -35,19 +35,19 @@ let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:Syste
     //Particle(gensym(),name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
     {Physics.defaultParticle with id=gensym();name=name;location={x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)};velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};orientation={x=1.;y=0.;z=0.};Friction= 1.<second>;radius=1.<um>;density=1.<pg um^-3>;age=0.<second>;gRand=(PRNG.gaussianMargalisPolar' rng);freeze=true} 
 
-let interfaceEventWriteFrame (filename:string) (register : string list) = 
+let interfaceEventWriteFrame (file:StreamWriter) (register : string list) = 
     let rec clear_buffer (file:StreamWriter) (events:string list) =
         match events with
         | last_event::rest ->   file.WriteLine(last_event)
                                 clear_buffer file rest
         | [] -> ()
-    use file = new StreamWriter(filename, true)
+    //use file = new StreamWriter(filename, true)
     clear_buffer file register
-    file.Close()
+    //file.Close()
     
     
-let xyzWriteFrame (filename: string) (machName: string) (system: Physics.Particle list) =
-        use file = new StreamWriter(filename, true)
+let xyzWriteFrame (file:StreamWriter) (machName: string) (system: Physics.Particle list)  =
+        //use file = new StreamWriter(filename, true)
 //        let mSystem = [for p in system do match System.String.Equals(p.name,machName) with 
 //                                            | true -> yield p
 //                                            | false -> ()
@@ -62,14 +62,14 @@ let xyzWriteFrame (filename: string) (machName: string) (system: Physics.Particl
 //                ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure/1000000000.) p.confluence (p.forceMag/1000000000.))] 
 //                }
 //        |> Async.StartImmediate
-        file.Close()
+        //file.Close()
 
-let csvWriteStates (filename: string) (machines: Map<QN.var,int> list) = 
-        use file = new StreamWriter(filename, true)
+let csvWriteStates (file:StreamWriter) (machines: Map<QN.var,int> list) = 
+        //use file = new StreamWriter(filename, true)
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
         //ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A" p.name p.location.x p.location.y p.location.z)]
         file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
-        file.Close()
+        //file.Close()
 
 let dumpSystem (filename: string) state = 
         use file = new FileStream(filename, FileMode.Create)//new StreamWriter(filename, false)
