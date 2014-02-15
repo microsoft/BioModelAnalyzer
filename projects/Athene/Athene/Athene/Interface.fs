@@ -86,6 +86,7 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
     //We assume that the cells are the product of the same process and so the distribution will be
     //  sqrt(2)*sd (an overestimate)
     //We explicitly try to correct for this
+    //let max = if variation then max+(sd*p.gRand) else max
     let max = if variation then max+(sd*p.gRand*rsqrt2) else max
     match (m.[varID] = varState, limit) with
     | (false,_) -> Life (p,m) //Not in growth state

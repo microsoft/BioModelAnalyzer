@@ -1,5 +1,6 @@
 ﻿open System
 open System.Collections.Generic
+open System.IO
 
 type stateReporter = {EventWriter:(string list->unit);StateWriter:(Map<QN.var,int> list->unit);FrameWriter:(Physics.Particle list->unit)}
 [<Serializable>]
@@ -187,24 +188,17 @@ let main argv =
     //if checkpoint_restart = "" then (let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand) else restart
     //let (system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName) = standardOptions pdb bma top rand
     let (state,definition) = standardOptions pdb bma top rand
-    let trajout = match !xyz with 
-                    | "" -> 
-                        printfn "No xyz output (physics) specified"
-                        IO.dropFrame
-                    | _  -> 
-                        IO.xyzWriteFrame (!xyz) definition.machineName
-    let csvout = match !csv with
-                    | "" ->
-                        printfn "No csv output (state machines) specified"
-                        IO.dropStates
-                    | _ ->
-                        IO.csvWriteStates !csv
-    let eventout  = match !reg with
-                    | "" ->
-                        printfn "No births and deaths output (interface) specified"
-                        IO.dropEvents
-                    | _ ->
-                        IO.interfaceEventWriteFrame !reg
+    if (!xyz="") then failwith "No xyz output (physics) specified" else ()
+    use xyzFile = new StreamWriter(!xyz, true)
+    let trajout = IO.xyzWriteFrame (xyzFile) definition.machineName
+
+    if (!csv="") then failwith "No csv output (state machines) specified" else ()
+    use csvFile = new StreamWriter(!csv, true)
+    let csvout = IO.csvWriteStates csvFile
+
+    if (!reg="") then failwith "No births and deaths output (interface) specified" else ()
+    use regFile = new StreamWriter(!reg, true)
+    let eventout = IO.interfaceEventWriteFrame regFile
     
     printfn "Initial system:"
     printfn "Particles: %A" state.Physical.Length //system.Length
@@ -222,5 +216,9 @@ let main argv =
     let runInfo = {Temperature=298.<Physics.Kelvin>; Steps=(!steps); Time=0.<Physics.second>; TimeStep=(!dT*1.0<Physics.second>); InterfaceGranularity=(!ig); PhysicalGranularity=(!pg); MachineGranularity=(!mg); VariableTimestepDepth=(!vdt); ReportingFrequency=(!freq); EventLog=["Initialise system";]; NonBondedCutOff=6.0<Physics.um>; Threads=(!threads)}
     //simulate eSystem machineStates qn topology iTop !steps 298.<Physics.Kelvin> (!dT*1.0<Physics.second>) (maxMove*1.<Physics.um>) staticGrid sOrigin recorders !freq !mg !pg !ig !vdt rand 0.<Physics.second> ["Initialise system";]
     simulate initialState definition runInfo recorders rand
+    //Clean up and close files
+    regFile.Close()
+    xyzFile.Close()
+    csvFile.Close()
     0 // return an integer exit code
     
