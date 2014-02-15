@@ -18,13 +18,13 @@ type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Phy
 let cbrt2 = 2.**(1./3.)
 let rsqrt2 = 1./(2. ** 0.5)
 
-let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
+let probabilisticBinaryMotor (maxQN:int) (rangeProb:float<Physics.second^-1>*float<Physics.second^-1>) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
     //Takes one variable which influences the probability, and one variable which represents the motor itself
     //Initial version is a binary motor. If the state of the motor is non-zero then the motor is considered to be on
 
     //We find the mapping from the probVar state to a probability by assuming that high=likely to be on, low=likely to be off
-    let prob = ((fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN))**(dt/1.<second>)
-
+    let prob = ((fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN)) * dt
+    assert(prob<=1.)
     //First alter the motor based on a random number and the state of the probVar
     let m' = match (m.[motorVar],(rng.NextDouble())) with
                 | (0,rand) when rand < prob -> (Map.add motorVar 1 m)
@@ -81,7 +81,7 @@ let limitedLinearGrow (rate: float<um/second>) (property: limitMetric) (varID: i
 //                        //Divide (({p with location = p.location+ p.orientation*(posMod); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(posMod); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 //                        Divide (({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    //Cells which have been born this way will have a Gaussian distribution of sizes
+ //Cells which have been born this way will have a Gaussian distribution of sizes
     //This will change the distribution of times to get to the maximum
     //We assume that the cells are the product of the same process and so the distribution will be
     //  sqrt(2)*sd (an overestimate)
@@ -159,21 +159,24 @@ let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>
 
 let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt appropriately scales the probability with time
+    let probability = probability*dt
+    assert(probability<=1.)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < probability*dt) with
+    | true -> match (rng.NextDouble() < probability) with
                 | true -> Death (varName)
                 | false -> Life (p,m)
 
-let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
+    let probability = probability*dt
+    assert(probability<=1.)
     let biasMetric = match bias with
                         | Radius     -> float p.radius
                         | Age        -> float p.age
                         | Pressure   -> float p.pressure
                         | Force      -> float p.forceMag
                         | Confluence -> float p.confluence
-    let probability = probability**(dt/1.<second>)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
     | true -> match (rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
