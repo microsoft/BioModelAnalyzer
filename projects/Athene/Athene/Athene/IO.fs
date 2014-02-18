@@ -16,11 +16,19 @@ Particle('E',{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<
 Particle("E",{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 0.7<um>, 1.3<pg um^-3>, 1.<second>, 1., false)
 *)
 
+type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
+
 let convertObjectToByteArray(data)=
     let bf = new BinaryFormatter()
     use mstream = new MemoryStream()
     bf.Serialize(mstream,data)
     mstream.ToArray()
+
+let readCheckpoint (filename) = 
+    use fileStream = new FileStream(filename, FileMode.Open)
+    let bf = new BinaryFormatter()
+    let result = bf.Deserialize(fileStream)
+    (result :?> systemState)
 
 let dropFrame (system: Physics.Particle list) =
     ()
@@ -290,14 +298,14 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
                                     randomApoptosis varID varState varName rng (probability/time)
                                 | "SizeRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -307,7 +315,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -317,7 +325,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -327,7 +335,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -337,7 +345,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -347,7 +355,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
 //                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
 //                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
 //                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -360,7 +368,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -372,7 +380,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -384,7 +392,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -396,7 +404,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -408,7 +416,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
@@ -427,7 +435,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let maxQN = try (int) (r.Attribute(xn "Max").Value) with _ -> failwith "Missing QN upper bound"
                                     let minProbOn  = try (float) (r.Attribute(xn "MinimumProbOn").Value)  with _ -> failwith "Missing min prob"
                                     let maxProbOn  = try (float) (r.Attribute(xn "MaximumProbOn").Value)  with _ -> failwith "Missing max prob"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing time associated with probability"
+                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                     let varIDProbability = try (int) (r.Attribute(xn "ProbId").Value) with _ -> failwith "Missing ID for variable which alters probability"
                                     let varIDMotor = try (int) (r.Attribute(xn "MotorId").Value) with _ -> failwith "Missing ID for motor variable"
                                     let forcemag  = try (float) (r.Attribute(xn "Force").Value)  with _ -> failwith "Force generated by motor"
