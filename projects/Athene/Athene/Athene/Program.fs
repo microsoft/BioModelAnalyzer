@@ -110,6 +110,7 @@ let top = ref ""
 let bma = ref ""
 let csv = ref ""
 let reg = ref ""
+let restart = ref ""
 let freq = ref 1 //Reporting frequency in steps
 let mg = ref 1 //Machine time granularity- update every mg timesteps
 let pg = ref 1 //Physical time granularity- update every pg timesteps
@@ -137,6 +138,7 @@ let rec parse_args args =
     | "-pg"    :: tmp :: rest -> pg     := (int)tmp;  parse_args rest
     | "-ig"    :: tmp :: rest -> ig     := (int)tmp;  parse_args rest
     | "-vdt"   :: tmp :: rest -> vdt    := (int)tmp;  parse_args rest
+    | "-restart" :: tmp :: rest -> restart := tmp  ;  parse_args rest
     | x::rest -> failwith (sprintf "Bad command line args: %s" x)
 
 let rec equilibrate (system: Physics.Particle list) (topology) (steps: int) (maxlength: float<Physics.um>) (staticGrid:Map<int*int*int,Physics.Particle list>) (sOrigin:Vector.Vector3D<Physics.um>) =
@@ -161,8 +163,6 @@ let standardOptions pdb bma top rand =
                     | _ ->
                         !bma
     defineSystem cart topfile bmafile rand
-
-let restart = 0
 
 
 [<EntryPoint>]
@@ -214,7 +214,11 @@ let main argv =
     let initialState = {state with Physical=eSystem}
     let recorders = {EventWriter=eventout;FrameWriter=trajout;StateWriter=csvout}
     let runInfo = {Temperature=298.<Physics.Kelvin>; Steps=(!steps); Time=0.<Physics.second>; TimeStep=(!dT*1.0<Physics.second>); InterfaceGranularity=(!ig); PhysicalGranularity=(!pg); MachineGranularity=(!mg); VariableTimestepDepth=(!vdt); ReportingFrequency=(!freq); EventLog=["Initialise system";]; NonBondedCutOff=6.0<Physics.um>; Threads=(!threads)}
-    //simulate eSystem machineStates qn topology iTop !steps 298.<Physics.Kelvin> (!dT*1.0<Physics.second>) (maxMove*1.<Physics.um>) staticGrid sOrigin recorders !freq !mg !pg !ig !vdt rand 0.<Physics.second> ["Initialise system";]
+    //If a restart file is used: open it and replace the system and machines with this
+    let initialState =  if (!restart <> "") then 
+                                let io = (IO.readCheckpoint !restart)
+                                {Physical=io.Physical;Formal=io.Formal}
+                        else initialState
     simulate initialState definition runInfo recorders rand
     //Clean up and close files
     regFile.Close()

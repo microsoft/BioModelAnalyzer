@@ -115,20 +115,9 @@ let gensym =
     (fun () -> incr x; !x)
 
 type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool} with
-    //member this.name = Name
-    //member this.id = id
-    //member this.location = R
-    //member this.velocity = V
-    //member this.orientation = O
-    //member this.Friction = Friction
     member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
-    //member this.radius = radius
-    //member this.density = density
     member this.mass = this.volume * this.density
     member this.frictioncoeff = this.mass / this.Friction
-    //member this.freeze = freeze
-    //member this.age = age
-    //member this.gRand = GaussianRandomNumber
     member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.velocity.x*1.<second um^-1>) (this.velocity.y*1.<second um^-1>) (this.velocity.z*1.<second um^-1>) (this.orientation.x) (this.orientation.y) (this.orientation.z) (this.Friction*1.<second^-1>) (this.radius*1.<um^-1>) (this.density*1.<um^3/pg>) (this.age*1.<second^-1>) (this.gRand) this.freeze
 
 let defaultParticle = { id=0;
@@ -203,14 +192,6 @@ let softSphereForce (repelPower: float) (repelConstant: float<zNewton>) ( attrac
     | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
     | _ -> repelConstant * ((ivec.len-mindist)*1.<um^-1>)**repelPower * (p1.location - p2.location).norm
 
-//let hardSphereForce (forcePower: float) (forceConstant: float<zNewton> ) (p1: Particle) (p2: Particle) =
-//    //the force felt by p2 due to collisions with p1 (relative distances)
-//    let ivec = (p1.location - p2.location)
-//    let mindist = p1.radius + p2.radius
-//    match ivec.len with 
-//    | d when mindist <= d -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
-//    | _ -> forceConstant * (-1./(ivec.len/mindist)**(forcePower)-1.) * (p1.location - p2.location).norm
-
 let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
     //'Hard' spheres repel based on a (normalised overlap ** -n) Originally meant to be similar to lennard-jones potentials
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
@@ -236,19 +217,14 @@ let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (
 
 let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
         let (x,y,z) = box
-        [for i in [0..2] do
-                            for j in [0..2] do
-                                                for k in [0..2] do
-                                                                    match grid.ContainsKey(x-1+i,y-1+j,z-1+k) with
-                                                                    | false -> ()
-                                                                    | true  -> yield grid.[x-1+i,y-1+j,z-1+k] ]
+        [   (0,0,0);(0,0,1);(0,0,2);   (1,0,0);(1,0,1);(1,0,2);   (2,0,0);(2,0,1);(2,0,2);
+            (0,1,0);(0,1,1);(0,1,2);   (1,1,0);(1,1,1);(1,1,2);   (2,1,0);(2,1,1);(2,1,2);
+            (0,2,0);(0,2,1);(0,2,2);   (1,2,0);(1,2,1);(1,2,2);   (2,2,0);(2,2,1);(2,2,2);  ]
+        |> List.map (fun (i:int,j:int,k:int) ->     (x-1+i,y-1+j,z-1+k) )
+        |> List.filter (fun (key:int*int*int) ->    grid.ContainsKey(key) )
+        |> List.map (fun (key:int*int*int) ->       grid.[key])
 
 let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
-         let everythingButThis (p: Particle) (l: Particle list) =
-            [for i in l do
-                            match i.id=p.id with
-                            | true -> ()
-                            | false -> yield i ]
          let rec quickJoin (l1: Particle list) (l2: Particle list) =
             match l2 with
             | head::tail -> quickJoin (head::l1) tail
@@ -261,20 +237,8 @@ let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (
          let dy = int ((p.location.y-minLoc.y)/cutOff)
          let dz = int ((p.location.z-minLoc.z)/cutOff)
          
-         everythingButThis p (quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] )
-
-let gridNonBondedPairList (system: Particle list) (cutOff: float<um>) minLoc = 
-    //Create a grid using the cutoff as a box size
-    //let (minLoc,maxLoc) = vecMinMax ([for p in system->p.location]) ((List.nth system 0).location,(List.nth system 0).location
-
-    let grid = gridFill system Map.empty minLoc cutOff
-
-//    let g = [for i in system -> 
-//                                let dx = int ((i.location.x-minLoc.x)/cutOff)
-//                                let dy = int ((i.location.y-minLoc.y)/cutOff)
-//                                let dz = int ((i.location.z-minLoc.z)/cutOff)
-//                                grid.[dx,dy,dz] ]
-    [for i in system -> collectGridNeighbours i (gridFill system Map.empty minLoc cutOff)]
+         quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] 
+         |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))
 
 let rec updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
     match mobileSystem with
@@ -288,16 +252,6 @@ let rec updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSyst
                             updateGrid (accGrid.Add((dx,dy,dz),newValue)) sOrigin tail cutOff
 
     | [] -> accGrid
-
-let nonBondedPairList (system: Particle list) (cutOff: float<um>) = 
-    let getNeighbours (p:Particle) (system: Particle list) (cutOff: float<um>) =
-        match p.freeze with
-        | false -> [for i in system do match (i.location-p.location).len with
-                                        | x when i=p -> ()
-                                        | x when x < cutOff-> yield i
-                                        | _ -> () ]
-        | true -> [] //don't calculate the forces on frozen particles- they don't respond/move
-    [for i in system -> getNeighbours i system cutOff] 
 
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
