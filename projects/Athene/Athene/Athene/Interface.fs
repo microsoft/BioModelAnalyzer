@@ -18,12 +18,25 @@ type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Phy
 let cbrt2 = 2.**(1./3.)
 let rsqrt2 = 1./(2. ** 0.5)
 
-let probabilisticBinaryMotor (maxQN:int) (rangeProb:float<Physics.second^-1>*float<Physics.second^-1>) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
+//pSlice is a function to return an appropriate probability per timestep based on an input probability, the time which that probability occurs in, and the timestep
+//probability calculated is the probability of an even occuring at least once
+//Memoized for speed
+let pSlice =
+    let cache = ref None
+    (fun probability (time:float<Physics.second>) (timestep:float<Physics.second>) ->
+    match !cache with
+    | Some result -> result
+    | None ->   let result = 1. - probability**(timestep/time)
+                cache := Some(result)
+                result)
+
+let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (pTime:float<Physics.second>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
     //Takes one variable which influences the probability, and one variable which represents the motor itself
     //Initial version is a binary motor. If the state of the motor is non-zero then the motor is considered to be on
 
     //We find the mapping from the probVar state to a probability by assuming that high=likely to be on, low=likely to be off
-    let prob = ((fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN)) * dt
+    //No timescaling at present
+    let prob = pSlice ( ((fst rangeProb) + ((snd rangeProb)-(fst rangeProb))*(float probVar)/(float maxQN)) ) pTime dt
     assert(prob<=1.)
     //First alter the motor based on a random number and the state of the probVar
     let m' = match (m.[motorVar],(rng.NextDouble())) with
@@ -135,21 +148,23 @@ let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (minSize: 
     | (true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true)  -> Death (varName)
 
-let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    match (m.[varID] = varState, rng.NextDouble() < probability*dt, p.radius <= minSize) with
+let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability = pSlice probability pTime dt
+    match (m.[varID] = varState, rng.NextDouble() < probability, p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
-let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability = pSlice probability pTime dt
     let biasMetric = match bias with
                         | Radius     -> float p.radius
                         | Age        -> float p.age
                         | Pressure   -> float p.pressure
                         | Force      -> float p.forceMag
                         | Confluence -> float p.confluence
-    match (m.[varID] = varState, rng.NextDouble() < probability*dt*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
+    match (m.[varID] = varState, rng.NextDouble() < probability*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
@@ -158,9 +173,9 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) 
 let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     Death (varName)
 
-let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (probability: float) (pTime: float<second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt appropriately scales the probability with time
-    let probability = probability*dt
+    let probability = pSlice probability pTime dt
     assert(probability<=1.)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
@@ -168,9 +183,9 @@ let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.
                 | true -> Death (varName)
                 | false -> Life (p,m)
 
-let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (pTime: float<second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
-    let probability = probability*dt
+    let probability = pSlice probability pTime dt
     assert(probability<=1.)
     let biasMetric = match bias with
                         | Radius     -> float p.radius

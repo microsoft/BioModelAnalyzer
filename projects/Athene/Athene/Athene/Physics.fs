@@ -240,7 +240,7 @@ let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (
          quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] 
          |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))
 
-let rec updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
+let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
     match mobileSystem with
     | head :: tail -> 
                             let dx = int ((head.location.x-sOrigin.x)/cutOff)
@@ -249,9 +249,15 @@ let rec updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSyst
                             let newValue = match accGrid.ContainsKey (dx,dy,dz) with
                                             | true  -> head::accGrid.[(dx,dy,dz)]
                                             | false -> [head]
-                            updateGrid (accGrid.Add((dx,dy,dz),newValue)) sOrigin tail cutOff
+                            _updateGrid (accGrid.Add((dx,dy,dz),newValue)) sOrigin tail cutOff
 
     | [] -> accGrid
+
+let updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) =
+    mobileSystem
+    |> List.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
+    |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
+    //|> List.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
 
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
@@ -335,23 +341,11 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
 let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
-    //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
-    let NewV = FrictionDrag * F.force //+ T * FrictionDrag * Kb
+    let NewV = FrictionDrag * F.force
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
     let dP = dT * FrictionDrag * F.force + ThermalP
-    //How can you ensure that the timestep is appropriate? This will breakdown for motor cells
-//    let safety = match (dP.len>maxMove) with
-//                    | true  -> 
-//                                printfn "Particle %s at %A moves %A, length %A" cluster.name cluster.location dP dP.len
-//                                printfn "Thermal %A" ThermalP.len
-//                                printfn "Force %A" (dT * FrictionDrag * F).len
-//                                failwith "Max move violated. Timestep possibly too large"
-//                    | false -> ()
-//    //assert (dP.len < 0.5<um>) //Ensure that motions are small
     let NewP = cluster.location + dP
-
     let NewO = thermalReorientation T rng dT cluster
-    //Particle(cluster.id,cluster.name, NewP,NewV,NewO,cluster.Friction, cluster.radius, cluster.density, cluster.age+dT, cluster.gRand, false)
     { cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT ; pressure=F.pressure; forceMag=F.absForceMag ; confluence=F.confluence}
 
 let bdSystemUpdate (system: Particle list) (forces: forceEnv list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
