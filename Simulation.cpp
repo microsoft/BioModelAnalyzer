@@ -128,8 +128,6 @@ pair<float,bool> Simulation::overlap(const string& name1, const string& name2) c
 		}
 	}
 
-	cout << "Birth1 " << b1 << " death1 " << d1 << endl;
-	cout << "Birth2 " << b2 << " death2 " << d2 << endl;
 	// b1 ... d1 ... b2 ... d2 --> d1-b2
 	// b1 ... b2 ... d1 ... d2 --> d1-b2
 	// b1 ... b2 ... d2 ... d1 --> d2-b2
@@ -172,6 +170,11 @@ ostream& operator<< (ostream& out, const Simulation& sim) {
 
 istream& operator>> (istream& in, Simulation& sim) {
 	string buffer;
+
+	// Skip the first two lines
+	getline(in,buffer);
+	getline(in,buffer);
+
 	// Every line is a comma separated thing that includes:
 	// Cell Name (string), Cell Cycle Length (float), Standard Deviation (float)
 	// Daughter1 (string), Daughter2 (string), some irrelevant mutation info
