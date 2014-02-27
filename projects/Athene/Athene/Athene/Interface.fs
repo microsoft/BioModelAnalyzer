@@ -7,8 +7,8 @@ open Automata
 //open Microsoft.FSharp.Quotations
 //open Microsoft.FSharp.Quotations.Typed
 //open Microsoft.FSharp.Quotations.Raw
-
-type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>)
+type cellDev = Shrink of float<Physics.um> | Growth of float<Physics.um>
+type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>) | Development of string*cellDev*Particle*Map<QN.var,int>
 type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
@@ -22,6 +22,7 @@ let rsqrt2 = 1./(2. ** 0.5)
 //probability calculated is the probability of an even occuring at least once
 //Memoized for speed
 let pSlice =
+    //Calculates the per timestep probability required to give the global probability requested over a larger number of steps
     let cache = ref None
     (fun probability (time:float<Physics.second>) (timestep:float<Physics.second>) ->
     match !cache with
@@ -29,6 +30,45 @@ let pSlice =
     | None ->   let result = 1. - probability**(timestep/time)
                 cache := Some(result)
                 result)
+
+//We need to find and sum a series of binomial coefficients to determine the per timestep probability
+//let fact (i:System.Numerics.BigInteger) = 
+//    let rec fact' (n:System.Numerics.BigInteger) acc = 
+//        if (n> (System.Numerics.BigInteger 1)) then fact' (n-(System.Numerics.BigInteger 1)) (n*acc) else acc
+//    fact' i (System.Numerics.BigInteger 1)
+//
+//let bigone = System.Numerics.BigInteger 1
+//
+//let binomialCoefficient n k = (fact n) / ((fact k)*(fact (n-k)))
+//
+//let listOfBinomialCoefficients n k =
+//    let rec s' n k acc =
+//        if k >= (uint64 0) then s' n (k-(uint64 1)) ((binomialCoefficient n k)::acc) else List.rev acc
+//    s' n k []
+//I want calculate an appropriate probability for a single cell per timestep
+//We know the total number of opportunities, and we calculate the necessary number of 'successes' from an input guestimate of the average amount of change
+let multiStepProbability (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) =
+    let steps = floor(time/dt)
+    let minimumStepsForSuccess = floor(totalChange / (dt * rate))
+    let p50 = minimumStepsForSuccess / steps //This is the probability which will have half the cells die
+    //printf "Steps: %A TotalSteps %A Prob50 %A " minimumStepsForSuccess steps p50
+    assert(p50<=1.)
+    let sd50 = sqrt(steps*p50*(1.-p50))
+//    let p84_1 = steps*p50+sd50
+//    let p97_7 = steps*p50+2.*sd50
+//    let p99_8 = steps*p50+3.*sd50
+    //how do we scale p50 to get the appropriate probability?
+    //we can work out what is the integer number of sigmas it lies away from the mean and do a cheap interpolation to get the rest
+    let low_sigma = match (abs (totalProb-0.5)) with
+                        | x when x < 0.341 -> x/0.341 //< 1 sigma
+                        | x when x < 0.477 -> 1. + (x-0.341)/0.136 //< 2 sigma
+                        | x when x < 0.498 -> 2. + (x-0.477)/0.021 //< 3 sigma
+                        | x when x < 0.499 -> 3. + (x-0.498)/0.001 //< 4 sigma
+                        | x -> 4. + (x-0.499)/0.001
+    //printf "SD50: %A low_sigma %A " sd50 low_sigma
+    if (totalProb-0.5>0.) then (minimumStepsForSuccess+low_sigma*sd50)/steps else (minimumStepsForSuccess-low_sigma*sd50)/steps
+    //p50*(0.5/totalProb)
+
 
 let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (pTime:float<Physics.second>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
     //Takes one variable which influences the probability, and one variable which represents the motor itself
@@ -48,23 +88,7 @@ let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (
     //Now return a tuple of the QN and the force
     (m',force)
 
-//let rlinearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-//    match (m.[varID] = varState) with
-//    | false -> p
-//    | true ->
-//            match (p.radius < max) with
-//            | true -> {p with radius = p.radius+rate*dt} //Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze)
-//            | false -> p
-
-//let linearGrow (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-//    match (m.[varID] = varState) with
-//    | false -> Life (p,m)
-//    | true ->
-//            match (p.radius < max) with
-//            | true -> Life ({p with radius = p.radius+rate*dt},m)//(Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-//            | false -> Life (p,m)
-
-let limitedLinearGrow (rate: float<um/second>) (property: limitMetric) (varID: int) (varState: int) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let limitedLinearGrow (rate: float<um/second>) (property: limitMetric) (varID: int) (varState: int) (varName: string) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //Limit grow by an arbitrary property
     let overLimit = match property with
                                         | RadiusLimit(n)     -> (p.radius > n)
@@ -75,7 +99,8 @@ let limitedLinearGrow (rate: float<um/second>) (property: limitMetric) (varID: i
     match (m.[varID] = varState, overLimit) with
     | (_,true)  -> Life (p,m)
     | (false,_) -> Life (p,m)
-    | (true,_)  -> Life ({p with radius = p.radius+rate*dt},m)//(Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
+    | (true,_)  -> Development (varName,Growth(rate*dt),{p with radius = p.radius+rate*dt},m)
+    //Life ({p with radius = p.radius+rate*dt},m)//(Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
 
 //let linearGrowDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (rng: System.Random) (limit: limitMetric option) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
 //    match (m.[varID] = varState) with
@@ -105,7 +130,7 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
     | (false,_) -> Life (p,m) //Not in growth state
     | (true,None) ->
             match (p.radius < max) with
-            | true -> Life ({p with radius = p.radius+rate*dt},m)// Growing if below limit  (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
+            | true -> Development (varName,Growth(rate*dt),{p with radius = p.radius+rate*dt},m)// Growing if below limit  (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
             | false -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
     | (true,Some(l)) ->
             let overLimit = match l with
@@ -116,7 +141,7 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
                                         | ConfluenceLimit(n) -> (p.confluence > n)
             match ((p.radius < max), overLimit) with
             | (_,true) -> Life (p,m)
-            | (true,_)  -> Life ({p with radius = p.radius+rate*dt},m)
+            | (true,_)  -> Development (varName,Growth(rate*dt),{p with radius = p.radius+rate*dt},m)
             | (false,_) -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 
             
@@ -145,19 +170,19 @@ let apoptosis (varID: int) (varState: int) (varName: string) (dt: float<second>)
 let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState, p.radius <= minSize) with
     | (false,_)    -> Life (p,m)
-    | (true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m) //Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true)  -> Death (varName)
 
-let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let probability = pSlice probability pTime dt
+let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (meanShrink: float<Physics.um>) (rng: System.Random) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability = multiStepProbability pTime dt shrinkRate meanShrink probability//pSlice probability pTime dt
     match (m.[varID] = varState, rng.NextDouble() < probability, p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
-    | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
-let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let probability = pSlice probability pTime dt
+let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (meanShrink: float<Physics.um>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability = multiStepProbability pTime dt shrinkRate meanShrink probability//pSlice probability pTime dt
     let biasMetric = match bias with
                         | Radius     -> float p.radius
                         | Age        -> float p.age
@@ -167,7 +192,7 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) 
     match (m.[varID] = varState, rng.NextDouble() < probability*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
-    | (true,true,false) -> Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
 let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -245,6 +270,9 @@ let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification)
         match modification with
         | Death(cause) -> sprintf "Death by %s of P = %d at T = %f seconds" cause p.id (systemTime*1.<second^-1>)
         | Divide(cause,(p1,m1),(p2,m2)) -> sprintf "Division by %s of P = %d at T = %f seconds (birth of P&P: %d %d)" cause p.id (systemTime*1.<second^-1>) p1.id p2.id 
+        | Development(cause,d,p1,m1) -> match d with
+                                        | Growth(c) -> sprintf "Growth by %f um due to  %s of P = %d at T = %f seconds" (c*1.<Physics.um^-1>) cause p1.id (systemTime*1.<second^-1>)
+                                        | Shrink(c) -> sprintf "Shinkage by %f um due to  %s of P = %d at T = %f seconds" (c*1.<Physics.um^-1>) cause p1.id (systemTime*1.<second^-1>)
         | _ -> ""
     match pm with
     | head::tail -> 
@@ -252,6 +280,7 @@ let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification)
                     match (f dT p m) with
                     | Death(cause) -> dev f dT tail acc ((reporter p (Death (cause)) systemTime)::birthDeathRegister) systemTime
                     | Life(p1,m1) ->  dev f dT tail ((p1,m1)::acc) birthDeathRegister systemTime
+                    | Development(cause,d,p1,m1) -> dev f dT tail ((p1,m1)::acc) ((reporter p (Development(cause,d,p1,m1)) systemTime)::birthDeathRegister) systemTime
                     | Divide(cause,(p1,m1),(p2,m2)) -> dev f dT tail ((p1,m1)::((p2,m2)::acc)) ((reporter p (Divide (cause,(p1,m1),(p2,m2))) systemTime)::birthDeathRegister) systemTime
     | [] -> ((List.fold (fun acc elem -> elem::acc) [] acc),birthDeathRegister) //reverse the list which has been created by cons'ing
 
