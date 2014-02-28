@@ -110,6 +110,9 @@ void Simulation::clear() {
 	_currentTime=0.0;
 }
 
+// There's an implicit assumption here that the first time a name is
+// mentioned the cell is born and that the last time the the cell is mentioned
+// it dies.
 pair<float,bool> Simulation::overlap(const string& name1, const string& name2) const {
 	float b1{-1.0},d1{-1.0},b2{-1.0},d2{-1.0};
 	for (auto event : _log) {
@@ -117,16 +120,22 @@ pair<float,bool> Simulation::overlap(const string& name1, const string& name2) c
 			if (b1<0.0) {
 				b1 = event->execTime();
 			}
-			d1 = event->execTime();
+			else {
+				d1 = event->execTime();
+			}
 		}
 
 		if (event->concerns(name2)) {
 			if (b2<0.0) {
 				b2 = event->execTime();
 			}
-			d2 = event->execTime();
+			else {
+				d2 = event->execTime();
+			}
 		}
 	}
+
+	// TODO: What happens if d1==-1.0 or d2==-1.0 ?????
 
 	// b1 ... d1 ... b2 ... d2 --> d1-b2
 	// b1 ... b2 ... d1 ... d2 --> d1-b2

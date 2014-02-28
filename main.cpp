@@ -7,12 +7,16 @@
 
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <utility>
 #include <iterator>
 #include <numeric>
+#include <math.h>
+#include <algorithm>
+#include <tuple>
 #include "Simulation.h"
 
 using std::cout;
@@ -90,20 +94,61 @@ int main() {
 					results2.push_back(p.first);
 			}
 
-			std::ostream_iterator<float> out_it (std::cout,", ");
+
+			auto statistics=[&](vector<float>& vec) -> vector<float> {
+				std::sort(vec.begin(),vec.end());
+				float min(vec[0]);
+				float max(vec[vec.size()-1]);
+				float mean(std::accumulate(vec.begin(),vec.end(),0.0)/vec.size());
+				float accum = 0.0;
+				std::for_each (vec.begin(), vec.end(), [&](const double d) {
+				    accum += (d - mean) * (d - mean);
+				});
+				float stdev = std::sqrt(accum / (vec.size()-1));
+				float q1(vec.size()%4 ? (vec[vec.size()/4-1]+vec[vec.size()/4])/2 : vec[vec.size()/4]);
+				float median(vec.size()%2 ? (vec[vec.size()/2-1]+vec[vec.size()/2])/2: vec[vec.size()/2]);
+				float q3(vec.size()%4 ? (vec[3*vec.size()/4-1]+vec[3*vec.size()/4])/2 : vec[3*vec.size()/4]);
+				return vector<float> {min,max,mean,stdev,q1,median,q3};
+			};
+
+			vector<string> names{"q1","min","median","max","q3","mean+std","mean-std","mean","stdev"};
+			auto print_entry=[&](const string& name, const float& val) {
+				cout << "| " << std::setw(8) << std::left << name << " | " << std::setw(6) << std::fixed << std::setprecision(2) << std::right << val << " |" << endl;
+			};
+			auto print_sep=[](unsigned int len) {
+				std::cout.fill('-');
+				std::cout.width(len);
+				std::cout << "" << endl;
+				std::cout.fill(' ');
+			};
+			auto print_all=[&](vector<float>& vec) {
+				// std::ostream_iterator<float> out_it (std::cout,", ");
+				// std::copy (results1.begin(), results1.end(),out_it);
+				// cout << endl;
+
+
+				vector<float> stat{statistics(vec)};
+
+				print_sep(8+7+6);
+
+				unsigned int oldprecision(cout.precision());
+				cout.precision(5);
+				vector<float> vals{stat[4],stat[0],stat[5],stat[1],stat[6],stat[2]+stat[3],stat[2]-stat[3],stat[2],stat[3]};
+				for (unsigned int i=0 ; i<names.size() ; ++i) {
+					print_entry(names[i],vals[i]);
+				}
+				cout.precision(oldprecision);
+				print_sep(8+7+6);
+			};
+
 			if (results1.size()) {
 				cout << name1 << " born before " << name2 << ":" << endl;
-				std::copy (results1.begin(), results1.end(),out_it);
-				cout << endl;
-				cout << "Average: " << std::accumulate(results1.begin(),results1.end(),0.0)/results1.size() << endl;
+				print_all(results1);
 			}
 
 			if (results2.size()) {
 				cout << name2 << " born before " << name1 << ":" << endl;
-				std::copy (results2.begin(),results2.end(),out_it);
-				cout << endl;
-				cout << "AVerage: " << std::accumulate(results2.begin(),results2.end(),0.0)/results2.size() << endl;
-
+				print_all(results2);
 			}
 			break;
 		}

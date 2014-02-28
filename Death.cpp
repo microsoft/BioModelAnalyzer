@@ -12,13 +12,10 @@ using std::vector;
 using std::ostream;
 using std::string;
 
-Death::Death(Simulation* s) : Event(0.0,0.0,s) {
-	// TODO Auto-generated constructor stub
-
+Death::Death(const string& name, Simulation* s) : Event(0.0,0.0,s), _cell(name) {
 }
 
 Death::~Death() {
-	// TODO Auto-generated destructor stub
 }
 
 vector<Event*> Death::execute() const {
@@ -26,13 +23,14 @@ vector<Event*> Death::execute() const {
 	return vector<Event*> {};
 }
 
-//void Death::output(ostream& out) const {
-//	Event::output(out);
-//}
-//
+void Death::output(ostream& out) const {
+	Event::output(out);
+	out << " " << _cell << " X";
+}
 
-bool Death::concerns(const string&) const {
-	return false;
+
+bool Death::concerns(const string& name) const {
+	return (_cell==name);
 }
 
 ostream& operator<<(ostream& out,const Death& state) {
