@@ -31,12 +31,14 @@ void options() {
 	cout << "Please choose:" << endl;
 	cout << "(0) Load a new program file." << endl;
 	cout << "(1) Check for the time overlap of two cells." << endl;
+	cout << "(2) Check for the time overlap of two cells (with raw data)." << endl;
 }
 
 int main() {
 	Simulation* s{nullptr};
 
 	while (true) {
+		bool rawData{false};
 		char which(0);
 		options();
 		cin >> which;
@@ -62,6 +64,9 @@ int main() {
 				cout << *s;
 			}
 			break;
+		}
+		case '2': {
+			rawData=true;
 		}
 		case '1': {
 			if (!s) {
@@ -122,10 +127,11 @@ int main() {
 				std::cout.fill(' ');
 			};
 			auto print_all=[&](vector<float>& vec) {
-				// std::ostream_iterator<float> out_it (std::cout,", ");
-				// std::copy (results1.begin(), results1.end(),out_it);
-				// cout << endl;
-
+				if (rawData) {
+				 std::ostream_iterator<float> out_it (std::cout,", ");
+				 std::copy (results1.begin(), results1.end(),out_it);
+				 cout << endl;
+				}
 
 				vector<float> stat{statistics(vec)};
 
