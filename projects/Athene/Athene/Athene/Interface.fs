@@ -12,6 +12,8 @@ type particleModification = Death of string | Life of Particle*Map<QN.var,int> |
 type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
+type interfaceState = {Physical: Physics.Particle list ; Formal: Map<QN.var,int> list ; Register: string list}
+type chance< [<Measure>] 'a> = Absolute of float | ModelledSingle of float*float<second> | ModelledMultiple of float*float<second>*float<'a>
 
 //type chance = Certain | Random of System.Random*float*float
 
@@ -173,16 +175,22 @@ let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (minSize: 
     | (true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m) //Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true)  -> Death (varName)
 
-let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (meanShrink: float<Physics.um>) (rng: System.Random) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let probability = multiStepProbability pTime dt shrinkRate meanShrink probability//pSlice probability pTime dt
+let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability = match pType with
+                        | Absolute(p) -> p
+                        | ModelledMultiple(p,pTime,mean) -> multiStepProbability pTime dt shrinkRate mean p//pSlice probability pTime dt
+                        | _ -> failwith "Illegal probability type for a multiple step random death"
     match (m.[varID] = varState, rng.NextDouble() < probability, p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
-let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (meanShrink: float<Physics.um>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (pTime: float<Physics.second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let probability = multiStepProbability pTime dt shrinkRate meanShrink probability//pSlice probability pTime dt
+let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability = match pType with
+                        | Absolute(p) -> p
+                        | ModelledMultiple(p,pTime,mean) -> multiStepProbability pTime dt shrinkRate mean p//pSlice probability pTime dt
+                        | _ -> failwith "Illegal probability type for a multiple step random death"
     let biasMetric = match bias with
                         | Radius     -> float p.radius
                         | Age        -> float p.age
@@ -198,9 +206,11 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) 
 let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     Death (varName)
 
-let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (probability: float) (pTime: float<second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    //dt appropriately scales the probability with time
-    let probability = pSlice probability pTime dt
+let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let probability =   match pType with
+                        | Absolute(p) -> p
+                        | ModelledSingle(p, pTime) -> pSlice p pTime dt
+                        | _ -> failwith "Illegal probability type for a single step random death"
     assert(probability<=1.)
     match (m.[varID] = varState) with
     | false -> Life (p,m)
@@ -208,9 +218,12 @@ let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.
                 | true -> Death (varName)
                 | false -> Life (p,m)
 
-let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (probability: float) (pTime: float<second>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
-    let probability = pSlice probability pTime dt
+    let probability =   match pType with
+                        | Absolute(p) -> p
+                        | ModelledSingle(p, pTime) -> pSlice p pTime dt
+                        | _ -> failwith "Illegal probability type for a single step random death"
     assert(probability<=1.)
     let biasMetric = match bias with
                         | Radius     -> float p.radius
@@ -280,7 +293,7 @@ let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification)
                     match (f dT p m) with
                     | Death(cause) -> dev f dT tail acc ((reporter p (Death (cause)) systemTime)::birthDeathRegister) systemTime
                     | Life(p1,m1) ->  dev f dT tail ((p1,m1)::acc) birthDeathRegister systemTime
-                    | Development(cause,d,p1,m1) -> dev f dT tail ((p1,m1)::acc) ((reporter p (Development(cause,d,p1,m1)) systemTime)::birthDeathRegister) systemTime
+                    | Development(cause,d,p1,m1) -> dev f dT tail ((p1,m1)::acc) birthDeathRegister systemTime
                     | Divide(cause,(p1,m1),(p2,m2)) -> dev f dT tail ((p1,m1)::((p2,m2)::acc)) ((reporter p (Divide (cause,(p1,m1),(p2,m2))) systemTime)::birthDeathRegister) systemTime
     | [] -> ((List.fold (fun acc elem -> elem::acc) [] acc),birthDeathRegister) //reverse the list which has been created by cons'ing
 

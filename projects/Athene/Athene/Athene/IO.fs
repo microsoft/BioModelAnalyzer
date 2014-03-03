@@ -39,6 +39,16 @@ let dropStates (machines: Map<QN.var,int> list) =
 let dropEvents (events: string list) = 
     ()
 
+let getBias (metric:string) = 
+    match metric with
+    | "Age" -> Age
+    | "Size" -> Radius
+    | "Confluence" -> Confluence
+    | "Force" -> Force
+    | "Pressure" -> Pressure
+    | _ -> failwith "Incorrect bias type"
+
+
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
     //Particle(gensym(),name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
     {Physics.defaultParticle with id=gensym();name=name;location={x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)};velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};orientation={x=1.;y=0.;z=0.};Friction= 1.<second>;radius=1.<um>;density=1.<pg um^-3>;age=0.<second>;gRand=(PRNG.gaussianMargalisPolar' rng);freeze=true} 
@@ -302,139 +312,79 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                 | "RandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let pType =  match probModel with 
+                                                    | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            Absolute(p)
+                                                    | "ModelledSingle" ->   let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                                                            ModelledSingle(p,time)
+                                                    | _ -> failwith "Invalid probability type for this random mechanism"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomApoptosis varID varState varName rng probability time
-                                | "SizeRandomApoptosis" ->
+                                    randomApoptosis varID varState varName rng pType
+                                | "BiasedRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                    let biasType = getBias (try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type")
+                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let pType =  match probModel with 
+                                                    | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            Absolute(p)
+                                                    | "ModelledSingle" ->   let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                                                            ModelledSingle(p,time)
+                                                    | _ -> failwith "Invalid probability type for this random mechanism"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Radius rng power (refC*1.<um>) refM probability time                  
-                                | "AgeRandomApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Age rng power (refC*1.<second>) refM probability time                    
-                                | "ConfluenceRandomApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Confluence rng power (refC*1.) refM probability time                    
-                                | "ForceRandomApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Force rng power (refC*1.<zNewton>) refM probability time                    
-                                | "PressureRandomApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomBiasApoptosis varID varState varName Pressure rng power (refC*1.<zNewton um^-2>) refM probability time                    
+                                    match biasType with
+                                    | Radius ->     randomBiasApoptosis varID varState varName Radius rng power (refC*1.<um>) refM pType 
+                                    | Age ->        randomBiasApoptosis varID varState varName Age rng power (refC*1.<Physics.second>) refM pType
+                                    | Confluence -> randomBiasApoptosis varID varState varName Confluence rng power (refC*1.) refM pType
+                                    | Force ->      randomBiasApoptosis varID varState varName Force rng power (refC*1.<zNewton>) refM pType
+                                    | Pressure ->   randomBiasApoptosis varID varState varName Pressure rng power (refC*1.<zNewton um^-2>) refM pType   
                                 | "RandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-//                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-//                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-//                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
+                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let pType =  match probModel with 
+                                                    | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            Absolute(p)
+                                                    | "ModelledMultiple" -> let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                                                            let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
+                                                                            ModelledMultiple(p,time,(totalShrink*1.<Physics.um>))
+                                                    | _ -> failwith "Invalid probability type for this random mechanism"
                                     let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
                                     let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
-                                    let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    //shrinkingRandomApoptosis varID varState (minsize*1.<um>) (shrinkRate*1.<um>) rng power (refC*1.<zNewton um^-2>) refM (probability*1.<Physics.second^-1>) 
-                                    shrinkingRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) rng probability time                    
-                                | "SizeRandomShrinkingApoptosis" ->
+                                    shrinkingRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) rng pType                    
+                                | "BiasedRandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                    let biasType = getBias (try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type")
+                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let pType =  match probModel with 
+                                                    | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            Absolute(p)
+                                                    | "ModelledMultiple" -> let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
+                                                                            let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                                                            let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
+                                                                            ModelledMultiple(p,time,(totalShrink*1.<Physics.um>))
+                                                    | _ -> failwith "Invalid probability type for this random mechanism"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
                                     let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
-                                    shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) Radius rng power (refC*1.<zNewton um^-2>) refM probability time 
-                                | "PressureRandomShrinkingApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
-                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
-                                    shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) Radius rng power (refC*1.<zNewton um^-2>) refM probability time 
-                                | "AgeRandomShrinkingApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
-                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
-                                    shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) Radius rng power (refC*1.<zNewton um^-2>) refM probability time 
-                                | "ConfluenceRandomShrinkingApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
-                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
-                                    shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) Radius rng power (refC*1.<zNewton um^-2>) refM probability time 
-                                | "ForceRandomShrinkingApoptosis" ->
-                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
-                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probability = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death"
-                                    let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
-                                    let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
-                                    let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
-                                    let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
-                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
-                                    shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) Radius rng power (refC*1.<zNewton um^-2>) refM probability time 
+                                    match biasType with
+                                    | Radius        -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Radius rng power (refC*1.<um>) refM pType 
+                                    | Age           -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Age rng power (refC*1.<second>) refM pType
+                                    | Pressure      -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Pressure rng power (refC*1.<zNewton um^-2>) refM pType 
+                                    | Force         -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Force rng power (refC*1.<zNewton>) refM pType 
+                                    | Confluence    -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Confluence rng power (refC*1.) refM pType 
                                 | _ -> failwith "Unknown function"
 
                         yield f
@@ -463,40 +413,5 @@ let xmlTopRead (filename: string) (rng: System.Random) =
     let intTop = {name=machName;regions=regions;responses=responses;randomMotors=motors}
     (pTypes,nbTypes,(machName,machI0),intTop,(sOrigin,maxMove))
     
-//let topRead (filename: string) =
-//    topology files describe the basic forces in the system
-//    They are csvs in sections with the following format
-//    System,Nonbonded cutoff, nlupdate
-//    Types,name,frictioncoeff,radius,density,freeze
-//    NonBonded,name,name,type,a,b,c,d
-//      ->where a,b,c and d are parameters for the energy function
-//    Tissues,name,particles,bonds,bondtype
-//    Contents,name,number
-//    let lineParse (line:string) =
-//        let elements = (line.Split[|','|])
-//        match Array.get elements 0 with 
-//        | "System"    -> ()
-//        | "Type"      -> Particle((Array.get elements 1),{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>}, (float (Array.get elements 2) ) *1.<second>, (float (Array.get elements 3) ) *1.<um>, (float (Array.get elements 4) ) *1.<pg um^-3>, (bool (Array.get elements 5)))
-//        | "NonBonded" -> ()
-//        | "Tissues"   -> ()
-//        | _ -> ()
-//        ()
-//    let Bdict = Map
-//    let AddFuncToDict (a: string) (b: string) F (D : Map) =
-//        let LocalMap = Map (b, F) 
-//        D.Add (a,LocalMap)
-//    let Bonds = (Physics.hardSphereForce, Physics.hardStickySphereForce)
-//    let PTypes = [for item in File.ReadLines(filename) do match (item.Split[|','|]) with 
-//                                                                | elements when (Array.get elements 0) = "Type" -> yield Particle((Array.get elements 1),{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, (float (Array.get elements 2) ) *1.<second>, (float (Array.get elements 3) ) *1.<um>, (float (Array.get elements 4) ) *1.<pg um^-3>, (System.String.Equals((Array.get elements 5),0.<second>,"true")))
-//                                                                | _ -> ()
-//                                                                ]
-//    let BTypes = [for item in File.ReadLines(filename) do match (item.Split[|','|]) with 
-//                                                                | elements when (Array.get elements 0) = "NonBonded" -> yield match (int (Array.get elements 1)) with
-//                                                                                                                                | 0 -> Physics.hardSphereForce ((float (Array.get elements 5))*1.0<aNewton>)
-//                                                                                                                                | 1 -> Physics.hardStickySphereForce ((float (Array.get elements 5))*1.0<aNewton>) ((float (Array.get elements 5))*1.0<aNewton/um>) ((float (Array.get elements 5))*1.0<um>)
-//                                                                                                                                | _ -> failwith "Bad NonBonded Topology"
-//                                                                | _ -> () ]
-//    PTypes
-
 let bmaRead (filename:string) = 
     Marshal.model_of_xml (XDocument.Load filename)
