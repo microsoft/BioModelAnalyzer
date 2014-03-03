@@ -13,7 +13,6 @@ using BioCheck.Helpers;
 using BioCheck.Services;
 using BioCheck.ViewModel.Simulation;
 using BioCheck.ViewModel.Time;                  //Time edit
-using BioCheck.ViewModel.Synth;                  
 using BioCheck.ViewModel.XML;
 using BioCheck.ViewModel.Models;
 using BioCheck.ViewModel.Proof;
@@ -26,9 +25,12 @@ using MvvmFx.Common.ViewModels.Commands;
 namespace BioCheck.ViewModel
 {
     /// <summary>
-    /// ViewModel for the toolbar
+    /// ViewModel for the timebar
+    /// This should track what's dragged and update the derived rules.
     /// </summary>
-    public class ToolbarViewModel : ObservableViewModel
+    /// 
+
+    public class TimebarViewModel : ObservableViewModel
     {
         #region Command fields
         private readonly DelegateCommand saveCommand;
@@ -36,7 +38,6 @@ namespace BioCheck.ViewModel
         private readonly DelegateCommand deleteCommand;
         private readonly DelegateCommand runProofCommand;
         private readonly DelegateCommand runTimeCommand;    //Time edit
-        private readonly DelegateCommand runSynthCommand;
         private readonly DelegateCommand runSimulationCommand;
         private readonly DelegateCommand clearProofCommand;
         private readonly DelegateCommand cancelProofCommand;
@@ -54,23 +55,20 @@ namespace BioCheck.ViewModel
         private bool isSelectionActive;
         private bool isActivatorActive;
         private bool isInhibitorActive;
-        private bool showLibrary;
-        private bool showToolbar;
+        private bool showTimebar;
         private bool isVariableActive;
         private bool mouseDownIsHandled;
 
         private AnalysisServiceClient analyzerClient;
         private ProofViewModel proofVM;
-        private SynthViewModel synthVM;
 
-        public ToolbarViewModel()
+        public TimebarViewModel()
         {
             this.saveCommand = new DelegateCommand(OnSaveExecuted);
             this.clearCommand = new DelegateCommand(OnClearExecuted);
             this.deleteCommand = new DelegateCommand(OnDeleteExecuted);
             this.runProofCommand = new DelegateCommand(OnRunProofExecuted);
             this.runTimeCommand = new DelegateCommand(OnRunTimeExecuted);       // Time edit
-            this.runSynthCommand = new DelegateCommand(OnRunSynthExecuted);
             this.runSimulationCommand = new DelegateCommand(OnRunSimulationExecuted);
             this.clearProofCommand = new DelegateCommand(OnClearProofExecuted);
             this.cancelProofCommand = new DelegateCommand(OnCancelProofExecuted);
@@ -84,7 +82,6 @@ namespace BioCheck.ViewModel
             this.redoCommand = new DelegateCommand(OnRedoExecuted);//, OnCanExecuteRedo);
 
             // Debug tools
-            this.resetLibraryCommand = new DelegateCommand(OnResetLibraryExecuted);
             this.gcCollectCommand = new DelegateCommand(OnGCCollectExecuted);
             this.exportAnalysisInputCommand = new DelegateCommand(OnExportAnalysisInputExecuted);
             this.exportAnalysisOutputCommand = new DelegateCommand(OnExportAnalysisOutputExecuted);
@@ -99,30 +96,6 @@ namespace BioCheck.ViewModel
 
             // Default to the Selection tool
             this.isSelectionActive = true;
-        }
-
-        /// <summary>
-        /// Gets or sets the value of the <see cref="ShowLibrary"/> property.
-        /// </summary>
-        public bool ShowLibrary
-        {
-            get { return this.showLibrary; }
-            set
-            {
-                if (this.showLibrary != value)
-                {
-                    if (ApplicationViewModel.Instance.Library != null)
-                    {
-                        if (value)
-                        {
-                            ApplicationViewModel.Instance.Library.SelectedModel =
-                                ApplicationViewModel.Instance.ActiveModel;
-                        }
-                        this.showLibrary = value;
-                        OnPropertyChanged(() => ShowLibrary);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -273,17 +246,17 @@ namespace BioCheck.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the value of the <see cref="ShowToolbar"/> property.
+        /// Gets or sets the value of the <see cref="ShowTimebar"/> property.
         /// </summary>
-        public bool ShowToolbar
+        public bool ShowTimebar
         {
-            get { return this.showToolbar; }
+            get { return this.showTimebar; }
             set
             {
-                if (this.showToolbar != value)
+                if (this.showTimebar != value)
                 {
-                    this.showToolbar = value;
-                    OnPropertyChanged(() => ShowToolbar);
+                    this.showTimebar = value;
+                    OnPropertyChanged(() => ShowTimebar);
                 }
             }
         }
@@ -303,9 +276,6 @@ namespace BioCheck.ViewModel
                 return;
             }
 
-            var busy = ApplicationViewModel.Instance.Container.Resolve<IBusyIndicatorService>();
-            busy.Show("Saving model...");
-
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
             modelVM.ModifiedDate = DateTime.Now;
 
@@ -315,8 +285,6 @@ namespace BioCheck.ViewModel
 
             // Log the saving of the model to the Log web service
             ApplicationViewModel.Instance.Log.SaveModel();
-
-            busy.Close(); 
         }
 
         /// <summary>
@@ -351,8 +319,6 @@ namespace BioCheck.ViewModel
                                                 ApplicationViewModel.Instance.Container.Resolve<IProofWindowService>().Close();
 
                                                 modelVM.Reset();
-                                                // Saving probably unnecessary here
-                                                //ApplicationViewModel.Instance.SaveActiveModel();
                                             }
                                         });
         }
@@ -389,24 +355,55 @@ namespace BioCheck.ViewModel
             if (checkedObjects == 0)
                 return;
 
-            ApplicationViewModel.Instance.DupActiveModel();
-            modelVM.RelationshipViewModels.RemoveAll(relationshipVM => relationshipVM.IsChecked);
 
-            foreach (var containerVM in modelVM.ContainerViewModels)
-            {
-                containerVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
-            }
+            // Prompt the user and delete the checked objects if they confirm
 
-            modelVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
-            modelVM.ContainerViewModels.RemoveAll(containerVM => containerVM.IsChecked);
+            string message =
+                "Are you sure you want to delete the selected objects?" + Environment.NewLine + Environment.NewLine;
 
-            // Reset the active variable and container and close the context menu
-            ApplicationViewModel.Instance.ActiveVariable = null;
-            ApplicationViewModel.Instance.ActiveContainer = null;
-            ApplicationViewModel.Instance.Container.Resolve<IContextBarService>().Close();
-            
-            // Saving probably unnecessary here
-            //ApplicationViewModel.Instance.SaveActiveModel();
+            if (checkedContainers == 1)
+                message += "There is 1 selected container." + Environment.NewLine;
+            else if (checkedContainers > 0)
+                message += string.Format("There are {0} selected containers.", checkedContainers) + Environment.NewLine;
+
+            if (checkedVariables == 1)
+                message += "There is 1 selected variable." + Environment.NewLine;
+            else if (checkedVariables > 0)
+                message += string.Format("There are {0} selected variables.", checkedVariables) + Environment.NewLine;
+
+            if (checkedConstants == 1)
+                message += "There is 1 selected constant." + Environment.NewLine;
+            else if (checkedConstants > 0)
+                message += string.Format("There are {0} selected constants.", checkedConstants) + Environment.NewLine;
+
+            if (checkedRelationships == 1)
+                message += "There is 1 selected relationship." + Environment.NewLine;
+            else if (checkedRelationships > 0)
+                message += string.Format("There are {0} selected relationships.", checkedRelationships);
+
+            ApplicationViewModel.Instance.Container
+                                        .Resolve<IMessageWindowService>()
+                                        .Show(message, MessageType.YesCancel, result =>
+                                        {
+                                            if (result == MessageResult.Yes)
+                                            {
+                                                ApplicationViewModel.Instance.DupActiveModel();
+                                                modelVM.RelationshipViewModels.RemoveAll(relationshipVM => relationshipVM.IsChecked);
+
+                                                foreach (var containerVM in modelVM.ContainerViewModels)
+                                                {
+                                                    containerVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
+                                                }
+
+                                                modelVM.VariableViewModels.RemoveAll(variableVM => variableVM.IsChecked);
+                                                modelVM.ContainerViewModels.RemoveAll(containerVM => containerVM.IsChecked);
+
+                                                // Reset the active variable and container and close the context menu
+                                                ApplicationViewModel.Instance.ActiveVariable = null;
+                                                ApplicationViewModel.Instance.ActiveContainer = null;
+                                                ApplicationViewModel.Instance.Container.Resolve<IContextBarService>().Close();
+                                            }
+                                        });
         }
 
         public DelegateCommand UndoCommand
@@ -527,8 +524,8 @@ namespace BioCheck.ViewModel
         {
             if (!ApplicationViewModel.Instance.HasActiveModel)
                 return;
-            
-            ApplicationViewModel.Instance.DupActiveModel(); 
+
+            ApplicationViewModel.Instance.DupActiveModel();
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
 
             if (ApplicationViewModel.Instance.HasActiveVariable)
@@ -550,8 +547,6 @@ namespace BioCheck.ViewModel
                     .Show("Please select only one cell to paste.");
                 }
             }
-
-            ApplicationViewModel.Instance.SaveActiveModel();
         }
 
         #endregion
@@ -572,14 +567,6 @@ namespace BioCheck.ViewModel
         public DelegateCommand RunTimeCommand
         {
             get { return this.runTimeCommand; }     // Time edit
-        }
-
-        /// <summary>
-        /// Gets the value of the <see cref="RunTimeCommand"/> property.
-        /// </summary>
-        public DelegateCommand RunSynthCommand
-        {
-            get { return this.runSynthCommand; }     // Synth edit
         }
 
         public DelegateCommand RunSimulationCommand
@@ -673,44 +660,6 @@ namespace BioCheck.ViewModel
             */
             timer = DateTime.Now;
             OnTimeProofCompleted();
-        }
-
-        private void OnRunSynthExecuted()
-        {
-            if (!ApplicationViewModel.Instance.HasActiveModel)
-            {
-                return;
-            }
-
-            // Show a Cancellable Busy Indicator window
-            ApplicationViewModel.Instance.Container
-                    .Resolve<IBusyIndicatorService>()
-                    .Show("Running synthesis...", CancelProofCommand);
-
-            //var modelVM = ApplicationViewModel.Instance.ActiveModel;
-
-            /*
-            // Create the Analysis Input Data from the active Model ViewModel
-            analysisInputDto = AnalysisInputDTOFactory.Create(modelVM);
-
-            // Enable/Disable logging
-            analysisInputDto.EnableLogging = this.EnableAnalyzerLogging;
-
-            // Create the analyzer client
-            if (analyzerClient == null)
-            {
-                var serviceUri = new Uri("../Services/AnalysisService.svc", UriKind.Relative);
-                var endpoint = new EndpointAddress(serviceUri);
-                analyzerClient = new AnalysisServiceClient("AnalysisServiceCustom", endpoint);
-                analyzerClient.AnalyzeCompleted += OnAnalysisCompleted;
-            }
-
-            // Invoke the async Analyze method on the service
-            timer = DateTime.Now;
-            analyzerClient.AnalyzeAsync(analysisInputDto);
-            */
-            timer = DateTime.Now;
-            OnSynthCompleted();
         }
 
 
@@ -938,27 +887,6 @@ namespace BioCheck.ViewModel
                .Close();
         }
 
-        private void OnSynthCompleted()
-        {
-            if (!ApplicationViewModel.Instance.HasActiveModel)
-            {
-                return;
-            }
-
-            var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
-
-            if (synthVM == null)
-            {
-                synthVM = SynthViewModelFactory.Create(modelVM);              // Sets only the name.
-            }
-
-            ApplicationViewModel.Instance.Container
-                    .Resolve<ISynthWindowService>().Show(synthVM);
-
-            ApplicationViewModel.Instance.Container
-               .Resolve<IBusyIndicatorService>()
-               .Close();
-        }
 
         /// <summary>
         /// Gets the value of the <see cref="ToggleAnalyzerLoggingCommand"/> property.
@@ -1014,7 +942,6 @@ namespace BioCheck.ViewModel
         private void OnExportAnalysisInputExecuted()
         {
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
-            //var input = AnalysisInputDTOFactory.Create(modelVM);      Deleted to not make doublet modelVMs
 
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "XML files (*.xml)|*.xml";
@@ -1025,7 +952,7 @@ namespace BioCheck.ViewModel
             {
                 using (var stream = saveFileDialog.OpenFile())
                 {
-                    var xml = ZipHelper.Unzip(this.analysisInputDto.ZippedXml); // Was   var xml = ZipHelper.Unzip(input.ZippedXml);
+                    var xml = ZipHelper.Unzip(this.analysisInputDto.ZippedXml);
                     var xdoc = XDocument.Parse(xml);
 
                     var xmlWriter = XmlWriter.Create(stream, new XmlWriterSettings() { Indent = true });
@@ -1321,46 +1248,6 @@ namespace BioCheck.ViewModel
         #endregion
 
         #region Debugging
-
-        /// <summary>
-        /// Gets the value of the <see cref="ResetLibraryCommand"/> property.
-        /// </summary>
-        public DelegateCommand ResetLibraryCommand
-        {
-            get { return this.resetLibraryCommand; }
-        }
-
-        private void OnResetLibraryExecuted()
-        {
-            var doReset = new Action(() =>
-                                         {
-                                             IsolatedStorageHelper.Reset();
-
-                                             var library = ApplicationViewModel.Instance.Library;
-                                             if (library == null)
-                                                 return;
-                                             library.SelectedModel = null;
-                                             library.Models.RemoveAll();
-
-                                             ApplicationViewModel.Instance.ActiveModel = null;
-
-                                             ApplicationViewModel.Instance.Settings.ActiveModel = ApplicationSettings.DefaultModel;
-                                             ApplicationViewModel.Instance.Settings.Save();
-
-                                             // Re-load the default model
-                                             ApplicationViewModel.Instance.Load();
-                                         });
-
-            ApplicationViewModel.Instance.Container
-                                          .Resolve<IMessageWindowService>()
-                                          .Show("Are you sure you want to reset the model library? This will delete all your models.", MessageType.OKCancel, result =>
-                                           {
-                                               if (result == MessageResult.OK)
-                                               {
-                                                   doReset();
-                                               }
-                                           });
-        }
 
         /// <summary>
         /// Gets the value of the <see cref="LogVisualTreeCommand"/> property.

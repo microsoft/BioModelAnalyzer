@@ -6,16 +6,16 @@ namespace BioCheck.ViewModel.Proof
 {
     //public class AnalysisTick
     //{
-    //    public int Time { get; set; }
+    //    public int Synth { get; set; }
 
     //    public List<VariableOutput> Variables { get; set; }
     //}
 
-    public class TimeOutput
+    public class SynthOutput
     {
         private readonly AnalysisOutputDTO dto;
 
-        public TimeOutput(AnalysisOutputDTO dto)
+        public SynthOutput(AnalysisOutputDTO dto)
         {
             this.dto = dto;         // All data.
             //this.Ticks = new List<AnalysisTick>();
@@ -31,12 +31,14 @@ namespace BioCheck.ViewModel.Proof
 
         public string Model { get; set; }
 
-        public List<AnalysisTick> Ticks { get; set; }
+        // public List<AnalysisTick> Ticks { get; set; }
 
         public string Error { get; set; }
 
         public List<string> ErrorMessages { get; set; }
 
         public double Time { get; set; }
+
+        public string Output { get; set; }
     }
 }

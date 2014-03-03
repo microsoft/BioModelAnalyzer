@@ -38,7 +38,11 @@ namespace BioCheckAnalyzerCommon
         XDocument findCExCycles(XDocument input_model, XDocument notstabilizing_result);
         XDocument findCExFixpoint(XDocument input_model, XDocument notstabilizing_result);
         // // CAV (LTL) interface
-        XDocument checkLTL(XDocument input_model, string formula, string num_of_steps); 
+        XDocument checkLTL(XDocument input_model, string formula, string num_of_steps);
+        
+        // SYN interface test / dahl
+        XDocument checkSynth(XDocument input_model);
+
         // // Simulation Interface.
         // Given initial_env (bindings of variable to a value), return the env at the next tick. 
         System.Collections.Generic.Dictionary<int, int> simulate_tick(XDocument input_model, System.Collections.Generic.Dictionary<int, int> initial_env);

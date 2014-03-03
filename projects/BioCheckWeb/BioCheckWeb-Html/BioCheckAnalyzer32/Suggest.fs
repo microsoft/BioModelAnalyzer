@@ -358,13 +358,24 @@ let Suggest (qn : QN.node list) =
         else
             Log.log_debug("Now sorting scores.. ")
 
+            // Original
+//            let tmp =
+//                Seq.tryFind
+//                    (fun ((sign, ntr), score) ->
+//                        Log.log_debug(sprintf "Edges:\n %s \n\n\n Nature: %A Score: %f" (edgelist_to_str (GetSuggestionFromSign qn sign)) ntr score)
+//                        Log.log_debug("Accept this and proceed? Y/N")
+//                        let inp = Console.ReadLine()
+//                        inp="Y" || inp="y"
+//                        )
+//                    (SortScores qn scores)
+
+            // Hack to get SYN working / dahl
+            // Seq.tryFind = Returns first element that returns True, If no success, returns None.
             let tmp =
                 Seq.tryFind
                     (fun ((sign, ntr), score) ->
-                        Log.log_debug(sprintf "Edges:\n %s \n\n\n Nature: %A Score: %f" (edgelist_to_str (GetSuggestionFromSign qn sign)) ntr score)
-                        Log.log_debug("Accept this and proceed? Y/N")
-                        let inp = Console.ReadLine()
-                        inp="Y" || inp="y"
+                        Log.log_debug(sprintf "Edges:\n %s \nNature: %A \nScore: %f" (edgelist_to_str (GetSuggestionFromSign qn sign)) ntr score)
+                        false
                         )
                     (SortScores qn scores)
                     
