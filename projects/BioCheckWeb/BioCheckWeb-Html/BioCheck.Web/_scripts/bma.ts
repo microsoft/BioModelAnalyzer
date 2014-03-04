@@ -184,14 +184,25 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
         if (hit) {
             var item = <Item>hit.elem.item;
             if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
-                // TODO - check if link already present and handle self-links
+                // TODO - handle self-links
                 var target = <Variable>item;
-                // The below are already done (in addLink)
-                //drawingLine.source = drawingLineSource;
-                //drawingLineSource.fromLinks.push(drawingLine);
-                drawingLine.target = target;
-                target.toLinks.push(drawingLine);
-                deleteIt = false;
+                // Does this link already exist? If so, don't add
+                // TODO - are links in the opposite direction allowed? (Should the lines bend to make both visible?)
+                var present = false;
+                for (var i = 0; i < drawingLineSource.fromLinks.length; ++i){
+                    if (drawingLineSource.fromLinks[i].target && drawingLineSource.fromLinks[i].target.id == target.id) {
+                        present = true;
+                        break;
+                    }
+                }
+                if (!present) {
+                    // The below are already done (in addLink)
+                    //drawingLine.source = drawingLineSource;
+                    //drawingLineSource.fromLinks.push(drawingLine);
+                    drawingLine.target = target;
+                    target.toLinks.push(drawingLine);
+                    deleteIt = false;
+                }
             }
         }
         if (deleteIt) {
@@ -788,18 +799,28 @@ class Variable extends Item {
     moveBy(dx: number, dy: number): void {
         super.moveBy(dx, dy);
         for (var i = 0; i < this.fromLinks.length; ++i) {
-            var line = <SVGLineElement>this.fromLinks[i].element.firstChild.firstChild;
-            line.x1.baseVal.value = this.x;
-            line.y1.baseVal.value = this.y;
+            var line = <any>this.fromLinks[i].element.firstChild.firstChild;
+            if (line.nodeName == "line") {
+                // TODO - need to move other end to keep aligned with centre of object
+                line.x1.baseVal.value = this.x;
+                line.y1.baseVal.value = this.y;
+            } else {
+                // TODO - avoid code dupe
+                line.setAttribute("d", "M" + this.x + "," + (this.y + 20) + " a30, 30 270 1 0 0, -40");
+            }
             var parent = line.parentNode;
             // Need to do this to cause IE to redraw lines with markers
             parent.removeChild(line);
             parent.appendChild(line);
         }
         for (var i = 0; i < this.toLinks.length; ++i) {
-            var line = <SVGLineElement>this.toLinks[i].element.firstChild.firstChild;
-            line.x2.baseVal.value = this.x;
-            line.y2.baseVal.value = this.y;
+            var line = <any>this.toLinks[i].element.firstChild.firstChild;
+            if (line.nodeName == "line") {
+                line.x2.baseVal.value = this.x;
+                line.y2.baseVal.value = this.y;
+            } else {
+                line.setAttribute("d", "M" + this.x + "," + (this.y + 20) + " a30, 30 270 1 0 0, -40");
+            }
             var parent = line.parentNode;
             parent.removeChild(line);
             parent.appendChild(line);
@@ -886,16 +907,28 @@ class Link {
     }
 
     createSvgElement() {
-        // TODO - need to shorten and re-angle to allow gap
-        // TODO - need to handle self-links
-        var line = <SVGLineElement>createSvgElement("line", 0, 0);
+        var line;
         var v = this.source;
-        line.x1.baseVal.value = v.x;
-        line.y1.baseVal.value = v.y;
-        if (this.target)
-            v = this.target;
-        line.x2.baseVal.value = v.x;
-        line.y2.baseVal.value = v.y;
+        var x1 = v.x, y1 = v.y;
+        if (this.target && this.target.id == this.source.id) {
+            line = createSvgElement("path", 0, 0);
+            line.setAttribute("d", "M" + x1 + "," + (y1 + 20) + " a30, 30 270 1 0 0, -40");
+            line.setAttribute("fill", "none");
+        } else {
+            line = createSvgElement("line", 0, 0);
+            if (this.target)
+                v = this.target;
+            var x2 = v.x, y2 = v.y;
+            // Adjust line to be a short distance from the actual centre
+            var dx = x2 - x1, dy = y2 - y1;
+            var len = Math.sqrt(dx * dx + dy * dy);
+            dx *= 30 / len;
+            dy *= 30 / len;
+            line.x1.baseVal.value = x1 + dx;
+            line.y1.baseVal.value = y1 + dy;
+            line.x2.baseVal.value = x2 - dx;
+            line.y2.baseVal.value = y2 - dy;
+        }
         line.setAttribute("stroke-width", "3px");
         line.setAttribute("stroke", "black");
         // TODO - use classes instead
