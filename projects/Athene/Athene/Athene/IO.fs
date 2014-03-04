@@ -110,10 +110,37 @@ let pdbRead (filename: string) (rng: System.Random) =
                                                             | atom when atom.StartsWith("ATOM") -> yield atomParse line
                                                             | _ -> () ]
 
-let xmlTopRead (filename: string) (rng: System.Random) =
+type runParameters = {
+                        steps:int
+                        temperature:float<Physics.Kelvin>
+                        timestep:float<Physics.second>
+                        pg:int
+                        mg:int
+                        ig:int
+                        report:int
+                        nonBond:float<Physics.um>
+                        vdt:int
+                        }
+
+let xmlTopRead (filename: string) =
     let xn s = XName.Get(s)
     let xd = XDocument.Load(filename)
     let maxMove = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "MaxMove").Value) with _ -> failwith "Set a maximum move distance"
+    let steps = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Steps").Value) with _ -> failwith "Set number of steps"
+    let seed = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Seed").Value) with _ -> failwith "Set random seed"
+    let temperature = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Temperature").Value) with _ -> failwith "Set temperature"
+    let timestep = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Timestep").Value) with _ -> failwith "Set timestep"
+    let pg = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "PG").Value) with _ -> failwith "Set physical time granularity"
+    let mg = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "MG").Value) with _ -> failwith "Set machine time granularity"
+    let ig = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "IG").Value) with _ -> failwith "Set interface time granularity"
+    let vdt = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "VariabledTDepth").Value) with _ -> 0
+    let report = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Report").Value) with _ -> 1
+    let nonBond = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "NonBondedCutoff").Value) with _ -> failwith "Set non bonded cutoff"
+    
+    let rng = System.Random(seed)
+
+    let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>)}
+
     let sOrigin = {x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
 //    let PBC = 
 //                { x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "PBC").Attribute(xn "X").Value) with _ -> failwith "Set an x PBC dimension")*1.<um>;
@@ -418,7 +445,7 @@ let xmlTopRead (filename: string) (rng: System.Random) =
     
     //let interfaceTopology = (machName,regions,responses)
     let intTop = {name=machName;regions=regions;responses=responses;randomMotors=motors}
-    (pTypes,nbTypes,(machName,machI0),intTop,(sOrigin,maxMove))
+    (pTypes,nbTypes,(machName,machI0),intTop,(sOrigin,maxMove),rp,rng)
     
 let bmaRead (filename:string) = 
     Marshal.model_of_xml (XDocument.Load filename)
