@@ -25,6 +25,7 @@ let rsqrt2 = 1./(2. ** 0.5)
 //Memoized for speed
 let pSlice =
     //Calculates the per timestep probability required to give the global probability requested over a larger number of steps
+    //Assumes you'll only calculate this once!
     let cache = ref None
     (fun probability (time:float<Physics.second>) (timestep:float<Physics.second>) ->
     match !cache with
@@ -48,6 +49,14 @@ let pSlice =
 //        if k >= (uint64 0) then s' n (k-(uint64 1)) ((binomialCoefficient n k)::acc) else List.rev acc
 //    s' n k []
 //I want calculate an appropriate probability for a single cell per timestep
+
+let erf x =
+    //Approximation of erf
+    1. - (1./(1. + 0.278393*x + 0.230389*(x**2.) + 0.000972*(x**3.) + 0.078108*(x**4.) )**4.)
+
+let sgn (x:float) = 
+    x/abs(x)
+
 //We know the total number of opportunities, and we calculate the necessary number of 'successes' from an input guestimate of the average amount of change
 let multiStepProbability (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) =
     let steps = floor(time/dt)
@@ -56,10 +65,11 @@ let multiStepProbability (time:float<second>) (dt:float<second>) (rate:float<'a 
     //printf "Steps: %A TotalSteps %A Prob50 %A " minimumStepsForSuccess steps p50
     assert(p50<=1.)
     let sd50 = sqrt(steps*p50*(1.-p50))
-//    let p84_1 = steps*p50+sd50
-//    let p97_7 = steps*p50+2.*sd50
-//    let p99_8 = steps*p50+3.*sd50
     //how do we scale p50 to get the appropriate probability?
+    //We want to shift the mean by a number of standard deviations so that the population which survives is equal to the input probability
+    //The population n SD from the mean (+/-) = erf (n/(2.**0.5))
+    //So the pop n SD from the mean + xor - = ( erf (n/(2.**0.5)) ) / 2
+
     //we can work out what is the integer number of sigmas it lies away from the mean and do a cheap interpolation to get the rest
     let low_sigma = match (abs (totalProb-0.5)) with
                         | x when x < 0.341 -> x/0.341 //< 1 sigma
@@ -168,6 +178,19 @@ let apoptosis (varID: int) (varState: int) (varName: string) (dt: float<second>)
     | true -> Death (varName)
     // SI: consider switching to just if-then for these small expressions
     // if (m.[varID] = varState) then Death else Life (p,m)
+
+let limitedApoptosis (limit: int) =
+    //Only a limited number of cells are allowed to die
+    let counter = ref 0
+    (fun (varID: int) (varState: int) (varName: string) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) ->
+        let result = apoptosis varID varState varName dt p m
+        match (!counter<limit,result) with
+        | (_,Life(p,m))         ->  Life(p,m)
+        | (true,Death(v))       ->  incr counter
+                                    Death (v)
+        | (false,Death(v))      ->  Life(p,m)
+        | (_,_)                 ->  failwith "Unexpected result from apoptosis" )
+
 
 let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     match (m.[varID] = varState, p.radius <= minSize) with

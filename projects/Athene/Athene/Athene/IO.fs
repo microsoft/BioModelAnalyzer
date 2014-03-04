@@ -309,6 +309,13 @@ let xmlTopRead (filename: string) (rng: System.Random) =
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"  
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
                                     apoptosis varID varState varName
+                                | "LimitedApoptosis" ->
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"  
+                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
+                                    let limit = try (int) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing maximum number of deaths" 
+                                    let apoptosis' = limitedApoptosis limit
+                                    apoptosis' varID varState varName
                                 | "RandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
