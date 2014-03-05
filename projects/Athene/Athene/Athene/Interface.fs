@@ -25,14 +25,12 @@ let rsqrt2 = 1./(2. ** 0.5)
 //Memoized for speed
 let pSlice =
     //Calculates the per timestep probability required to give the global probability requested over a larger number of steps
-    //Assumes you'll only calculate this once!
-    let cache = ref None
+    let cache = System.Collections.Generic.Dictionary<_, _>()
     (fun probability (time:float<Physics.second>) (timestep:float<Physics.second>) ->
-    match !cache with
-    | Some result -> result
-    | None ->   let result = 1. - probability**(timestep/time)
-                cache := Some(result)
-                result)
+    if cache.ContainsKey((probability,timestep)) then cache.[(probability,timestep)] 
+    else    let result = 1. - probability**(timestep/time)
+            cache.[(probability,timestep)] <- result
+            result )
 
 //We need to find and sum a series of binomial coefficients to determine the per timestep probability
 //let fact (i:System.Numerics.BigInteger) = 
@@ -57,8 +55,13 @@ let erf x =
 let sgn (x:float) = 
     x/abs(x)
 
+let inverf x =
+    let a = 0.147
+    let b = sqrt( (2./(System.Math.PI*a) + (0.5 * System.Math.Log(1.-x**2.)) )**2. - System.Math.Log(1.-x**2.)/a )
+    sgn(x) * sqrt( b - (2./(System.Math.PI*a) + 0.5 * System.Math.Log(1.-x**2.) ) )
+
 //We know the total number of opportunities, and we calculate the necessary number of 'successes' from an input guestimate of the average amount of change
-let multiStepProbability (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) =
+let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) =
     let steps = floor(time/dt)
     let minimumStepsForSuccess = floor(totalChange / (dt * rate))
     let p50 = minimumStepsForSuccess / steps //This is the probability which will have half the cells die
@@ -69,18 +72,30 @@ let multiStepProbability (time:float<second>) (dt:float<second>) (rate:float<'a 
     //We want to shift the mean by a number of standard deviations so that the population which survives is equal to the input probability
     //The population n SD from the mean (+/-) = erf (n/(2.**0.5))
     //So the pop n SD from the mean + xor - = ( erf (n/(2.**0.5)) ) / 2
+    //ie Adding n standard deviations to the mean should increase the population over the threshold by ( erf (n/(2.**0.5)) ) / 2
+    // ( inverf (d*2.) ) * sqrt(2)
 
     //we can work out what is the integer number of sigmas it lies away from the mean and do a cheap interpolation to get the rest
-    let low_sigma = match (abs (totalProb-0.5)) with
-                        | x when x < 0.341 -> x/0.341 //< 1 sigma
-                        | x when x < 0.477 -> 1. + (x-0.341)/0.136 //< 2 sigma
-                        | x when x < 0.498 -> 2. + (x-0.477)/0.021 //< 3 sigma
-                        | x when x < 0.499 -> 3. + (x-0.498)/0.001 //< 4 sigma
-                        | x -> 4. + (x-0.499)/0.001
+//    let low_sigma = match (abs (totalProb-0.5)) with
+//                        | x when x < 0.341 -> x/0.341 //< 1 sigma
+//                        | x when x < 0.477 -> 1. + (x-0.341)/0.136 //< 2 sigma
+//                        | x when x < 0.498 -> 2. + (x-0.477)/0.021 //< 3 sigma
+//                        | x when x < 0.499 -> 3. + (x-0.498)/0.001 //< 4 sigma
+//                        | x -> 4. + (x-0.499)/0.001
+    let d = abs(totalProb-0.5)
+    let low_sigma = if (0.=d) then 0. else (inverf (d*2.) ) * sqrt(2.)
     //printf "SD50: %A low_sigma %A " sd50 low_sigma
     if (totalProb-0.5>0.) then (minimumStepsForSuccess+low_sigma*sd50)/steps else (minimumStepsForSuccess-low_sigma*sd50)/steps
     //p50*(0.5/totalProb)
 
+let multiStepProbability = 
+    let cache = System.Collections.Generic.Dictionary<_, _>()
+    (fun (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) ->
+    if cache.ContainsKey((time,dt,rate,totalChange,totalProb)) then cache.[(time,dt,rate,totalChange,totalProb)] 
+    else    let result = multiStepProbability_nonmem time dt rate totalChange totalProb
+            cache.[(time,dt,rate,totalChange,totalProb)] <- result
+            result 
+    )
 
 let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (motorVar:int) (rng:System.Random) (force:float<zNewton>) (pTime:float<Physics.second>) (dt:float<Physics.second>) (p:Particle) (m: Map<QN.var,int>)  =
     //Takes one variable which influences the probability, and one variable which represents the motor itself

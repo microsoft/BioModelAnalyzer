@@ -346,7 +346,7 @@ let xmlTopRead (filename: string) =
                                 | "RandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let probModel = try (r.Attribute(xn "ProbabilityModel").Value) with _ -> failwith "Missing probability type" 
                                     let pType =  match probModel with 
                                                     | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             Absolute(p)
@@ -360,7 +360,7 @@ let xmlTopRead (filename: string) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let biasType = getBias (try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type")
-                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let probModel = try (r.Attribute(xn "ProbabilityModel").Value) with _ -> failwith "Missing probability type" 
                                     let pType =  match probModel with 
                                                     | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             Absolute(p)
@@ -381,7 +381,7 @@ let xmlTopRead (filename: string) =
                                 | "RandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
-                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let probModel = try (r.Attribute(xn "ProbabilityModel").Value) with _ -> failwith "Missing probability type" 
                                     let pType =  match probModel with 
                                                     | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             Absolute(p)
@@ -398,7 +398,7 @@ let xmlTopRead (filename: string) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let biasType = getBias (try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type")
-                                    let probModel = try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type" 
+                                    let probModel = try (r.Attribute(xn "ProbabilityModel").Value) with _ -> failwith "Missing probability type" 
                                     let pType =  match probModel with 
                                                     | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             Absolute(p)
