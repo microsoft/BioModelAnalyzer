@@ -143,12 +143,7 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     var p = screenToSvg(x, y);
 
     if (drawingLine) {
-        var line = <SVGLineElement>drawingLine.element.firstChild.firstChild;
-        line.x2.baseVal.value = p.x;
-        line.y2.baseVal.value = p.y;
-        var parent = line.parentNode;
-        parent.removeChild(line);
-        parent.appendChild(line);
+        drawingLine.redraw(p.x, p.y);
         return;
     }
 
@@ -201,6 +196,8 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
                     //drawingLineSource.fromLinks.push(drawingLine);
                     drawingLine.target = target;
                     target.toLinks.push(drawingLine);
+                    // Adjust endpoint correctly (was dropped on item, needs to be a little way away)
+                    drawingLine.redraw();
                     deleteIt = false;
                 }
             }
@@ -798,33 +795,10 @@ class Variable extends Item {
 
     moveBy(dx: number, dy: number): void {
         super.moveBy(dx, dy);
-        for (var i = 0; i < this.fromLinks.length; ++i) {
-            var line = <any>this.fromLinks[i].element.firstChild.firstChild;
-            if (line.nodeName == "line") {
-                // TODO - need to move other end to keep aligned with centre of object
-                line.x1.baseVal.value = this.x;
-                line.y1.baseVal.value = this.y;
-            } else {
-                // TODO - avoid code dupe
-                line.setAttribute("d", "M" + this.x + "," + (this.y + 20) + " a30, 30 270 1 0 0, -40");
-            }
-            var parent = line.parentNode;
-            // Need to do this to cause IE to redraw lines with markers
-            parent.removeChild(line);
-            parent.appendChild(line);
-        }
-        for (var i = 0; i < this.toLinks.length; ++i) {
-            var line = <any>this.toLinks[i].element.firstChild.firstChild;
-            if (line.nodeName == "line") {
-                line.x2.baseVal.value = this.x;
-                line.y2.baseVal.value = this.y;
-            } else {
-                line.setAttribute("d", "M" + this.x + "," + (this.y + 20) + " a30, 30 270 1 0 0, -40");
-            }
-            var parent = line.parentNode;
-            parent.removeChild(line);
-            parent.appendChild(line);
-        }
+        for (var i = 0; i < this.fromLinks.length; ++i)
+            this.fromLinks[i].redraw();
+        for (var i = 0; i < this.toLinks.length; ++i)
+            this.toLinks[i].redraw();
     }
 
     isValidNewPlacement(elemAndPart: ElementAndPart) {
@@ -913,7 +887,6 @@ class Link {
         if (this.target && this.target.id == this.source.id) {
             line = createSvgElement("path", 0, 0);
             line.setAttribute("d", "M" + x1 + "," + (y1 + 20) + " a30, 30 270 1 0 0, -40");
-            line.setAttribute("fill", "none");
         } else {
             line = createSvgElement("line", 0, 0);
             if (this.target)
@@ -929,9 +902,10 @@ class Link {
             line.x2.baseVal.value = x2 - dx;
             line.y2.baseVal.value = y2 - dy;
         }
+        line.setAttribute("fill", "none");
         line.setAttribute("stroke-width", "3px");
         line.setAttribute("stroke", "black");
-        // TODO - use classes instead
+        // TODO - use classes instead of setting attributes explicitly
         // Ack - serious problem with IE - marker-ended lines don't draw properly
         // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
         // http://connect.microsoft.com/IE/feedback/details/781964/svg-marker-is-not-updated-when-the-svg-element-is-moved-using-the-dom
@@ -950,6 +924,56 @@ class Link {
             this.element.parentNode.removeChild(this.element);
             this.element = null;
         }
+    }
+
+    // Reposition the line from source to target; if there is no target, use
+    // the supplied coordinates (eg, used in dragging when drawing the line in
+    // the first place). If the target is the source, draw a loop
+    redraw(x2: number = 0, y2: number = 0) {
+        // TODO - code dupe with line creation
+        var parent = this.element.firstChild; // The group containing the line/path object
+        var line = <any>parent.firstChild;
+        parent.removeChild(line);
+        var v = this.source;
+        var x1 = v.x, y1 = v.y;
+        v = this.target;
+        if (v && v.id == this.source.id) {
+            if (line.nodeName == "line") {
+                var newLine = createSvgElement("path", 0, 0);
+                Link.copyAttributes(line, newLine);
+                line = newLine;            }
+            line.setAttribute("d", "M" + x1 + "," + (y1 + 20) + " a30, 30 270 1 0 0, -40");
+        } else {
+            if (v) {
+                x2 = v.x; y2 = v.y;
+            }
+            // This should never happen in practice - a line might end up
+            // being converted from a straight line to a curve when being
+            // drawn for the first time, but a curve will never be converted
+            // to a straight segment - but leave the code here for
+            // completeness.
+            if (line.nodeName != "line") {
+                var newLine = createSvgElement("line", 0, 0);
+                Link.copyAttributes(line, newLine);
+                line = newLine;
+            }
+            // Adjust line to be a short distance from the actual centre
+            var dx = x2 - x1, dy = y2 - y1;
+            var len = Math.sqrt(dx * dx + dy * dy);
+            dx *= 30 / len;
+            dy *= 30 / len;
+            line.x1.baseVal.value = x1 + dx;
+            line.y1.baseVal.value = y1 + dy;
+            line.x2.baseVal.value = x2 - dx;
+            line.y2.baseVal.value = y2 - dy;
+        }
+        parent.appendChild(line);
+    }
+
+    private static copyAttributes(src: SVGElement, dst: SVGElement) {
+        var attrs = ["fill", "stroke-width", "stroke", "marker-end"];
+        for (var i = 0; i < attrs.length; ++i)
+            dst.setAttribute(attrs[i], src.getAttribute(attrs[i]));
     }
 
     source: Variable;
