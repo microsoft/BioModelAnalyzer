@@ -35,8 +35,9 @@
 		<div id="tool">
 			<div id="tools">
 				<div id="general-tools">
-					<button id="button-undo"><img src="_images/undo.png" title="Undo" /></button>
-					<button id="button-redo"><img src="_images/redo.png" title="Redo" /></button>
+					<button id="button-delete" title="Delete"><img src="_images/delete.png" /></button>
+					<button id="button-undo" title="Undo"><img src="_images/undo.png" /></button>
+					<button id="button-redo" title="Redo"><img src="_images/redo.png" /></button>
 				</div>
 
 				<div id="drawing-tools">
@@ -57,13 +58,13 @@
 				</div>
 
 				<div id="prover-tools">
-					<button id="button-run">Run</button>
-					<button id="button-simulate">Sim</button>
+					<button id="button-run" title="Run proof">Run</button>
+					<button id="button-simulate" title="Run simulation">Sim</button>
 				</div>
 
 				<div id="zoom-tools">
 					<div id="zoom-slider"></div>
-					<button id="button-zoomtofit">X</button>
+					<button id="button-zoomtofit" title="Zoom to fit"><img src="_images/zoomtofit.png" /></button>
 				</div>
 			</div>
 

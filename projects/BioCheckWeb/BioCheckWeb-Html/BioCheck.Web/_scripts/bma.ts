@@ -8,7 +8,7 @@
 
 /// <reference path="jquery/jquery.d.ts" />
 /// <reference path="jqueryui/jqueryui.d.ts" />
-// /// <reference path="vuePlotTypes.ts" />
+// /// <reference path="vuePlotTypes.ts" /> maybe use later?
 
 var svg: SVGSVGElement;
 
@@ -30,6 +30,10 @@ window.onload = () => {
     b = $("#button-redo");
     b.button("option", "disabled", true);
     b.click(ModelStack.redo);
+
+    b = $("#button-delete");
+    b.button("option", "disabled", true);
+    b.click(deleteSelectedItem);
 
     $("#drawing-tools input").click(drawingToolClick);
     $("img.draggable-button").each(function (i) {
@@ -59,6 +63,7 @@ window.onload = () => {
 };
 
 function drawingToolClick(e: JQueryEventObject) {
+    selectItem(null);
     var target = <HTMLElement>e.target;
     drawingItem = ItemType[$(target).attr("data-type")];
     dragMode = DragMode.None;
@@ -94,15 +99,19 @@ function startDrag(e: JQueryMouseEventObject) {
 
     if (e.button != 0) return;
 
+    // Clear any selection until mouse up
+    selectItem(null);
+
     dragMode = DragMode.None;
 
     var src = (<any>e).originalEvent.srcElement || (<any>e).originalEvent.originalTarget;
     var elem = null;
     if (src && (src.tagName == "path" || src.tagName == "g")) {
-        var node = src;
-        while (node && node.getAttribute("class") != "object")
-            node = <Element>node.parentNode;
-        elem = node;
+        //var node = src;
+        //while (node && node.getAttribute("class") != "object")
+        //    node = <Element>node.parentNode;
+        //elem = node;
+        elem = getAssociatedItemElement(src);
     }
 
     // Mouse down for drawing lines *doesn't* trigger a drag
@@ -184,7 +193,7 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
                 // Does this link already exist? If so, don't add
                 // TODO - are links in the opposite direction allowed? (Should the lines bend to make both visible?)
                 var present = false;
-                for (var i = 0; i < drawingLineSource.fromLinks.length; ++i){
+                for (var i = 0; i < drawingLineSource.fromLinks.length; ++i) {
                     if (drawingLineSource.fromLinks[i].target && drawingLineSource.fromLinks[i].target.id == target.id) {
                         present = true;
                         break;
@@ -210,7 +219,7 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
     } else if (drawingItem /*&& !dragObject*/) {
         var pt = screenToSvg(e.clientX, e.clientY);
         addItem(drawingItem, pt, getEventElementAndPart(e.originalEvent));
-    } else {
+    } else if (dragObject) {
         // Verify that new placement is valid, revert to initial location if not
         var item = <Item>(<any>dragObject).item;
         var hit = getEventElementAndPart(e.originalEvent);
@@ -263,6 +272,7 @@ var drawingItem: ItemType;
 var dragFromButton: boolean;
 var drawingLineSource: Variable;
 var drawingLine: Link;
+var selectedItem; // Item or Link
 
 var bodyCursor: string = "auto";
 
@@ -285,15 +295,11 @@ function getEventElementAndPart(e) : ElementAndPart {
     if (!src || (src.tagName != "path" && src.tagName != "g")) return null;
 
     var node = src;
-    var nodeClass = node.getAttribute("class"); // TODO - use hasclass
-    var itemClass = nodeClass;
-    while (nodeClass != "object") {
-        node = <Element>node.parentNode;
-        if (!node)
-            break;
+    var itemClass = node.getAttribute("class");
+    while (node && !svgHasClass(node, "object")) {
         if (!itemClass)
-            itemClass = nodeClass;
-        nodeClass = node.getAttribute("class");
+            itemClass = node.getAttribute("class");
+        node = <Element>node.parentNode;
     }
 
     if (node) {
@@ -325,6 +331,7 @@ class ModelStack {
         }
         $("#button-undo").button("option", "disabled", !ModelStack.canUndo);
         $("#button-redo").button("option", "disabled", false);
+        selectItem(null);
     }
 
     static redo() {
@@ -335,6 +342,7 @@ class ModelStack {
         }
         $("#button-undo").button("option", "disabled", false);
         $("#button-redo").button("option", "disabled", !ModelStack.canRedo);
+        selectItem(null);
     }
 
     static set(m: Model) {
@@ -538,6 +546,7 @@ function createHighlightableSvgGroup(children: SVGElement[], x: number, y: numbe
     var group = createSvgGroup(children, x, y, scale);
     group.setAttribute("onmouseover", "svgAddClass(this.childNodes[0], 'svg-highlight')");
     group.setAttribute("onmouseout", "svgRemoveClass(this.childNodes[0], 'svg-highlight')");
+    group.setAttribute("onmouseup", "/*if (e.button==1)*/ selectItem(getAssociatedItemElement(this).item)");
     // Allow the invisible stroke to still participate in hit testing
     group.setAttribute("pointer-events", "all");
     svgAddClass(group, "shape");
@@ -548,6 +557,12 @@ function createTopGroupAndAdd(children: SVGElement[], x: number, y: number) {
     var elem = createSvgGroup(children, x, y);
     svgAddClass(elem, "object");
     svg.appendChild(elem);
+    return elem;
+}
+
+function getAssociatedItemElement(elem) {
+    while (elem && !svgHasClass(elem, "object"))
+        elem = elem.parentNode;
     return elem;
 }
 
@@ -596,7 +611,7 @@ function getTrueBBox(elem: SVGGElement) {
 // most recent IE, so roll our own class manipulation
 
 function stringInString(s: string, find: string) {
-    return s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
+    return s && s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
 }
 
 function svgHasClass(elem: SVGStylable, c: string) {
@@ -612,11 +627,38 @@ function svgAddClass(elem: SVGStylable, c: string) {
 }
 
 function svgRemoveClass(elem: SVGStylable, c: string) {
-    var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
-    // TODO - coalesce spaces
+    // TODO - there's probably a better way to coalesce spaces than 2 REs
+    var s = elem.className.baseVal.replace(new RegExp("(\\s+|^)" + c + "(\\s+|$)"), " ");
+    s = s.replace(/\s+/g, " "); // TODO - remove trailing space
     if (s == " ")
-        s = null;
+        s = "";
     elem.className.baseVal = s;
+}
+
+// Item derived object, or Link
+function selectItem(item) {
+    // Only select item if not drawing
+    if (drawingItem || drawingLine)
+        return;
+    if (selectedItem) {
+        svgRemoveClass(selectedItem.element.childNodes[0].childNodes[0], "svg-selected");
+        selectedItem = null;
+    }
+    if (item) {
+        selectedItem = item;
+        svgAddClass(selectedItem.element.childNodes[0].childNodes[0], "svg-selected");
+    }
+    $("#button-delete").button("option", "disabled", !selectedItem);
+}
+
+function deleteSelectedItem() {
+    if (selectedItem) {
+        ModelStack.dup();
+        selectedItem.remove();
+        // Don't use selectItem, because setting the class on the previously selected item will fail now that it's been removed
+        selectedItem = null;
+        $("#button-delete").button("option", "disabled", true);
+    }
 }
 
 function addItem(type: ItemType, pt: Point, elemAndPart: ElementAndPart): Item {
@@ -692,6 +734,10 @@ class Item {
         this.name = ItemType[type] + this.id;
     }
 
+    remove() {
+        this.deleteSvgElement();
+    }
+
     // Create the SVG structures that correspond to this particular item
     createSvgElement() {
         // This should never occur - ideally would be an abstract method
@@ -741,6 +787,16 @@ class Variable extends Item {
         super(type, x, y);
         this.fromLinks = [];
         this.toLinks = [];
+    }
+
+    remove() {
+        while (this.fromLinks.length)
+            this.fromLinks[0].remove();
+        while (this.toLinks.length)
+            this.toLinks[0].remove();
+       if (this.parent)
+            removeItem(this.parent.children, this);
+        super.remove();
     }
 
     createSvgElement() {
@@ -828,6 +884,12 @@ class Container extends Item {
         this.children = [];
     }
 
+    remove() {
+        while (this.children.length)
+            this.children[0].remove();
+        removeItem(ModelStack.current.children, this);
+        super.remove();
+    }
     createSvgElement() {
         var outerPath = createSvgPath("M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z", "#FAAF42");
         svgAddClass(outerPath, "cell-outer");
@@ -878,6 +940,13 @@ class Container extends Item {
 
 class Link {
     constructor(public type: ItemType) {
+    }
+
+    remove() {
+        this.deleteSvgElement();
+        removeItem(this.source.fromLinks, this);
+        if (this.target)
+            removeItem(this.target.toLinks, this);
     }
 
     createSvgElement() {
@@ -951,7 +1020,7 @@ class Link {
             // being converted from a straight line to a curve when being
             // drawn for the first time, but a curve will never be converted
             // to a straight segment - but leave the code here for
-            // completeness.
+            // completeness.)
             if (line.nodeName != "line") {
                 var newLine = createSvgElement("line", 0, 0);
                 Link.copyAttributes(line, newLine);
@@ -1036,4 +1105,10 @@ function screenToSvg(x: number, y: number) {
     screenPt.y = y;
     var ctm = svg.getScreenCTM();
     return screenPt.matrixTransform(ctm.inverse());
+}
+
+function removeItem(array: any[], item) {
+    var index = array.indexOf(item);
+    if (index >= 0)
+        array.splice(index, 1);
 }

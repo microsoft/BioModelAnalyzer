@@ -99,6 +99,9 @@
     <Content Include="_images\constant.png" />
     <Content Include="_images\Container.cur" />
     <Content Include="_images\container.png" />
+    <Content Include="_images\delete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="_images\Inhibit.cur" />
     <Content Include="_images\inhibit.png" />
     <Content Include="_images\pointer.png" />
@@ -108,6 +111,9 @@
     <Content Include="_images\undo.png" />
     <Content Include="_images\Variable.cur" />
     <Content Include="_images\variable.png" />
+    <Content Include="_images\zoomtofit.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="_scripts\bma.css" />
     <None Include="Analysis\AnalysisOutputV2Diagram.cd" />
     <None Include="Analysis\ProofOutputDiagram.cd" />
