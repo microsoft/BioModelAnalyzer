@@ -106,13 +106,8 @@ function startDrag(e: JQueryMouseEventObject) {
 
     var src = (<any>e).originalEvent.srcElement || (<any>e).originalEvent.originalTarget;
     var elem = null;
-    if (src && (src.tagName == "path" || src.tagName == "g")) {
-        //var node = src;
-        //while (node && node.getAttribute("class") != "object")
-        //    node = <Element>node.parentNode;
-        //elem = node;
+    if (src && (src.tagName == "path" || src.tagName == "g"))
         elem = getAssociatedItemElement(src);
-    }
 
     // Mouse down for drawing lines *doesn't* trigger a drag
     if (elem && (drawingItem == ItemType.Activate || drawingItem == ItemType.Inhibit)) {
@@ -172,7 +167,6 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
         console.log(hit && hit.type);
         if (dragObject) {
             // Dragging an object
-            //translateBy(dragObject, dx, dy);
             (<Item>(<any>dragObject).item).moveBy(dx, dy);
         } else /* must be dragFromToolbar */ {
             // Participating in drag from toolbar
@@ -324,6 +318,7 @@ class ModelStack {
     static get canRedo() { return ModelStack.index < ModelStack.models.length - 1; }
 
     static undo() {
+        selectItem(null);
         if (ModelStack.canUndo) {
             ModelStack.current.deleteSvg();
             --ModelStack.index;
@@ -331,10 +326,10 @@ class ModelStack {
         }
         $("#button-undo").button("option", "disabled", !ModelStack.canUndo);
         $("#button-redo").button("option", "disabled", false);
-        selectItem(null);
     }
 
     static redo() {
+        selectItem(null);
         if (ModelStack.canRedo) {
             ModelStack.current.deleteSvg();
             ++ModelStack.index;
@@ -342,7 +337,6 @@ class ModelStack {
         }
         $("#button-undo").button("option", "disabled", false);
         $("#button-redo").button("option", "disabled", !ModelStack.canRedo);
-        selectItem(null);
     }
 
     static set(m: Model) {
@@ -544,8 +538,8 @@ function createHighlightableSvgGroup(children: SVGElement[], x: number, y: numbe
     highlightPath.setAttribute("stroke-width", (3 / scale) + "px");
     highlightPath.setAttribute("stroke", "transparent");
     var group = createSvgGroup(children, x, y, scale);
-    group.setAttribute("onmouseover", "svgAddClass(this.childNodes[0], 'svg-highlight')");
-    group.setAttribute("onmouseout", "svgRemoveClass(this.childNodes[0], 'svg-highlight')");
+    group.setAttribute("onmouseover", "svgAddClass(this.firstChild, 'svg-highlight')");
+    group.setAttribute("onmouseout", "svgRemoveClass(this.firstChild, 'svg-highlight')");
     group.setAttribute("onmouseup", "/*if (e.button==1)*/ selectItem(getAssociatedItemElement(this).item)");
     // Allow the invisible stroke to still participate in hit testing
     group.setAttribute("pointer-events", "all");
@@ -635,18 +629,24 @@ function svgRemoveClass(elem: SVGStylable, c: string) {
     elem.className.baseVal = s;
 }
 
-// Item derived object, or Link
+// Item derived object, or Link - could do with tidying this up a bit
 function selectItem(item) {
     // Only select item if not drawing
     if (drawingItem || drawingLine)
         return;
     if (selectedItem) {
-        svgRemoveClass(selectedItem.element.childNodes[0].childNodes[0], "svg-selected");
+        if (selectedItem.type == ItemType.Activate || selectedItem.type==ItemType.Inhibit)
+            svgRemoveClass(selectedItem.element.firstChild.firstChild, "svg-line-selected");
+        else
+            svgRemoveClass(selectedItem.element.firstChild.firstChild, "svg-selected");
         selectedItem = null;
     }
     if (item) {
         selectedItem = item;
-        svgAddClass(selectedItem.element.childNodes[0].childNodes[0], "svg-selected");
+        if (selectedItem.type == ItemType.Activate || selectedItem.type == ItemType.Inhibit)
+            svgAddClass(selectedItem.element.firstChild.firstChild, "svg-line-selected");
+        else
+            svgAddClass(selectedItem.element.firstChild.firstChild, "svg-selected");
     }
     $("#button-delete").button("option", "disabled", !selectedItem);
 }
@@ -950,12 +950,17 @@ class Link {
     }
 
     createSvgElement() {
+        // TODO - currently links are implemented as lines, differently to the
+        // other objects (this is primarily because they change length, which
+        // makes a stroked type easier to deal with than outline paths.
+        // However, this does mean that selection and highlighting have to be
+        // reimplemented differently for links... Maybe reconcile?
         var line;
         var v = this.source;
         var x1 = v.x, y1 = v.y;
         if (this.target && this.target.id == this.source.id) {
             line = createSvgElement("path", 0, 0);
-            line.setAttribute("d", "M" + x1 + "," + (y1 + 20) + " a30, 30 270 1 0 0, -40");
+            line.setAttribute("d", "M" + x1 + "," + (y1 + 20) + "a30,30 270 1 0 0,-40");
         } else {
             line = createSvgElement("line", 0, 0);
             if (this.target)
@@ -971,17 +976,19 @@ class Link {
             line.x2.baseVal.value = x2 - dx;
             line.y2.baseVal.value = y2 - dy;
         }
-        line.setAttribute("fill", "none");
-        line.setAttribute("stroke-width", "3px");
-        line.setAttribute("stroke", "black");
-        // TODO - use classes instead of setting attributes explicitly
+        svgAddClass(line, "svg-line");
         // Ack - serious problem with IE - marker-ended lines don't draw properly
         // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
         // http://connect.microsoft.com/IE/feedback/details/781964/svg-marker-is-not-updated-when-the-svg-element-is-moved-using-the-dom
-        // http://stackoverflow.com/questions/17654578/svg-marker-does-not-work-in-ie9-10 suggests remove and re-add as solution
+        // http://stackoverflow.com/questions/17654578/svg-marker-does-not-work-in-ie9-10 suggests
+        // remove and re-add as solution, which is why there's a lot of that in line drawing here
+        // TODO - class for end markers?
         line.setAttribute("marker-end", this.type == ItemType.Activate ? "url('#link-activate')" : "url('#link-inhibit')");
         // TODO - highlight
         var graphic = createSvgGroup([line], 0, 0, 1);
+        graphic.setAttribute("onmouseover", "svgAddClass(this.firstChild, 'svg-line-highlight')");
+        graphic.setAttribute("onmouseout", "svgRemoveClass(this.firstChild, 'svg-line-highlight')");
+        graphic.setAttribute("onmouseup", "/*if (e.button==1)*/ selectItem(getAssociatedItemElement(this).item)");
         svgAddClass(graphic, "shape");
         var elem = createTopGroupAndAdd([graphic], 0, 0);
         this.element = elem;
@@ -1040,7 +1047,7 @@ class Link {
     }
 
     private static copyAttributes(src: SVGElement, dst: SVGElement) {
-        var attrs = ["fill", "stroke-width", "stroke", "marker-end"];
+        var attrs = ["class", "marker-end"];
         for (var i = 0; i < attrs.length; ++i)
             dst.setAttribute(attrs[i], src.getAttribute(attrs[i]));
     }

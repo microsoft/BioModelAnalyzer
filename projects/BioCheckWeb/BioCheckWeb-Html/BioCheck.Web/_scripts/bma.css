@@ -85,3 +85,19 @@ html, body {
 	/* Make important so that it overrides the transient highlighting above */
 	stroke: gray !important;
 }
+
+.svg-line {
+	fill: none;
+	stroke: black;
+	stroke-width: 3px;
+}
+
+.svg-line-highlight {
+	stroke: darkgray !important;
+	stroke-width: 7px !important;
+}
+
+.svg-line-selected {
+	stroke: gray !important;
+	stroke-width: 7px !important;
+}
