@@ -57,7 +57,8 @@ window.onload = () => {
     });
     $("#button-zoomtofit").button().click(SvgViewBoxManager.zoomToFit);
 
-    document.body.onmousewheel = doWheel;
+    document.onmousewheel = doWheel;
+    document.onkeyup = doKey; // Need to use this to trap the delete key (since keypress hides that)
 
     ModelStack.set(new Model());
 };
@@ -79,13 +80,36 @@ function drawingToolClick(e: JQueryEventObject) {
 
 function doWheel(e: MouseWheelEvent) {
     var x = e.clientX, y = e.clientY;
-    var p = screenToSvg(x, y);
-    // TODO - check for keyboard modifiers and scroll if ctrl/shift
-    var zoom = $("#zoom-slider");
-    // TypeScript of slider API doesn't include single arg fn, hence <any> cast
-    zoom.slider("value", (<any>zoom).slider("value") + (e.wheelDelta > 0 ? 0.1 : -0.1));
-    // Indirecting via the slider control automatically applies range limits
-    SvgViewBoxManager.scaleAroundPoint((<any>zoom).slider("value"), p.x, p.y);
+    var up = e.wheelDelta > 0;
+    if (e.shiftKey) {
+        // Vertical
+        SvgViewBoxManager.moveBy(0, up ? -20 : 20);
+    } else if (e.ctrlKey) {
+        // Horizontal
+        SvgViewBoxManager.moveBy(up ? -30 : 30, 0);
+    } else {
+        // Zoom
+        var zoom = $("#zoom-slider");
+        // TypeScript of slider API doesn't include single arg fn, hence <any> cast
+        zoom.slider("value", (<any>zoom).slider("value") + (up ? 0.1 : -0.1));
+        // Indirecting via the slider control automatically applies range limits
+        var p = screenToSvg(x, y);
+        SvgViewBoxManager.scaleAroundPoint((<any>zoom).slider("value"), p.x, p.y);
+    }
+    // Prevent the browser from handling ctrl-wheel to zoom
+    // Probably overkill, and might not actually work with Chrome...
+    if (e.preventDefault)
+        e.preventDefault();
+    if (e.stopPropagation)
+        e.stopPropagation();
+    return false;
+}
+
+function doKey(e: KeyboardEvent) {
+    // TODO - don't do this when text box editing is happening!
+    // TODO - don't do this when the mouse is down (ie, in the middle of some other operation)
+    if (e.keyCode == 46 /*DEL*/)
+        deleteSelectedItem();
 }
 
 function startDrag(e: JQueryMouseEventObject) {
@@ -206,7 +230,7 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
             }
         }
         if (deleteIt) {
-            //svg.removeChild(drawingLine.element);
+            svg.removeChild(drawingLine.element);
             ModelStack.undo(); // Get rid of the nascent line - bit heavyweight!
             ModelStack.truncate();
         }
@@ -915,8 +939,11 @@ class Container extends Item {
         var c = new Container(this.x, this.y);
         c.id = this.id;
         c.name = this.name;
-        for (var i = 0; i < this.children.length; ++i)
-            c.children.push(this.children[i].clone(variableMap, linkList));
+        for (var i = 0; i < this.children.length; ++i) {
+            var cc = this.children[i].clone(variableMap, linkList);
+            c.children.push(cc);
+            cc.parent = c;
+        }
         return c;
     }
 
