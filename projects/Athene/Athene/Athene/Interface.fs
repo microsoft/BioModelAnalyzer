@@ -28,8 +28,9 @@ let pSlice =
     let cache = System.Collections.Generic.Dictionary<_, _>()
     (fun probability (time:float<Physics.second>) (timestep:float<Physics.second>) ->
     if cache.ContainsKey((probability,timestep)) then cache.[(probability,timestep)] 
-    else    let result = 1. - probability**(timestep/time)
+    else    let result = 1. - (1. - probability)**(timestep/time)
             cache.[(probability,timestep)] <- result
+            assert(result>0.&&result<1.) //Fail rather than give a bogus probability
             result )
 
 //We need to find and sum a series of binomial coefficients to determine the per timestep probability
@@ -66,7 +67,7 @@ let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:fl
     let minimumStepsForSuccess = floor(totalChange / (dt * rate))
     let p50 = minimumStepsForSuccess / steps //This is the probability which will have half the cells die
     //printf "Steps: %A TotalSteps %A Prob50 %A " minimumStepsForSuccess steps p50
-    assert(p50<=1.)
+    assert(p50<1.&&p50>0.)//If the suggested probability is certainty fail
     let sd50 = sqrt(steps*p50*(1.-p50))
     //how do we scale p50 to get the appropriate probability?
     //We want to shift the mean by a number of standard deviations so that the population which survives is equal to the input probability
@@ -85,8 +86,10 @@ let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:fl
     let d = abs(totalProb-0.5)
     let low_sigma = if (0.=d) then 0. else (inverf (d*2.) ) * sqrt(2.)
     //printf "SD50: %A low_sigma %A " sd50 low_sigma
-    if (totalProb-0.5>0.) then (minimumStepsForSuccess+low_sigma*sd50)/steps else (minimumStepsForSuccess-low_sigma*sd50)/steps
+    let result = if (totalProb-0.5>0.) then (minimumStepsForSuccess+low_sigma*sd50)/steps else (minimumStepsForSuccess-low_sigma*sd50)/steps
     //p50*(0.5/totalProb)
+    assert(result>0.&&result<1.) //Fail rather than giving a bogus probability
+    result
 
 let multiStepProbability = 
     let cache = System.Collections.Generic.Dictionary<_, _>()
@@ -250,11 +253,10 @@ let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.
                         | ModelledSingle(p, pTime) -> pSlice p pTime dt
                         | _ -> failwith "Illegal probability type for a single step random death"
     assert(probability<=1.)
-    match (m.[varID] = varState) with
-    | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < probability) with
-                | true -> Death (varName)
-                | false -> Life (p,m)
+    match (m.[varID] = varState, rng.NextDouble() < probability) with
+    | (false,_)     -> Life (p,m)
+    | (true,true)   -> Death (varName)
+    | (true,false)  -> Life (p,m)
 
 let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
@@ -269,11 +271,10 @@ let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: fl
                         | Pressure   -> float p.pressure
                         | Force      -> float p.forceMag
                         | Confluence -> float p.confluence
-    match (m.[varID] = varState) with
-    | false -> Life (p,m)
-    | true -> match (rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
-                | true -> Death (varName)
-                | false -> Life (p,m)
+    match (m.[varID] = varState, rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
+    | (false,_) -> Life (p,m)
+    | (true,true) -> Death (varName)
+    | (true,false) -> Life (p,m)
 
 //let randomSizeApoptosis (varID: int) (varState: int) (rng: System.Random) (sizePower:float) (refC:float<um>) (refM:float) (probability: float<second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
 //    //cells have a higher chance of dying based on their size- the power determines the precise relationship

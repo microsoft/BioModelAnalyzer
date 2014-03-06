@@ -1,5 +1,6 @@
-﻿(* SI: give brief description of what module does. 
-    Module IO: Read and Write xml files.... *)
+﻿(*  Module IO: Read and Write files
+    Does some checking of file format and tests input values
+ *)
 
 module IO
 
@@ -352,6 +353,7 @@ let xmlTopRead (filename: string) =
                                                                             Absolute(p)
                                                     | "ModelledSingle" ->   let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                                                            ignore (Interface.pSlice p time (timestep*1.<Physics.second>)) //cache and check probability 
                                                                             ModelledSingle(p,time)
                                                     | _ -> failwith "Invalid probability type for this random mechanism"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
@@ -366,6 +368,7 @@ let xmlTopRead (filename: string) =
                                                                             Absolute(p)
                                                     | "ModelledSingle" ->   let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
+                                                                            ignore (Interface.pSlice p time (timestep*1.<Physics.second>)) //cache and check probability 
                                                                             ModelledSingle(p,time)
                                                     | _ -> failwith "Invalid probability type for this random mechanism"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
@@ -382,16 +385,17 @@ let xmlTopRead (filename: string) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let probModel = try (r.Attribute(xn "ProbabilityModel").Value) with _ -> failwith "Missing probability type" 
+                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
+                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
                                     let pType =  match probModel with 
                                                     | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             Absolute(p)
                                                     | "ModelledMultiple" -> let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                                                             let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
+                                                                            ignore (Interface.multiStepProbability time (timestep*1.<Physics.second>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) p) //cache and check probability
                                                                             ModelledMultiple(p,time,(totalShrink*1.<Physics.um>))
                                                     | _ -> failwith "Invalid probability type for this random mechanism"
-                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
-                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
                                     shrinkingRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) rng pType                    
                                 | "BiasedRandomShrinkingApoptosis" ->
@@ -399,19 +403,20 @@ let xmlTopRead (filename: string) =
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
                                     let biasType = getBias (try (r.Attribute(xn "State").Value) with _ -> failwith "Missing probability type")
                                     let probModel = try (r.Attribute(xn "ProbabilityModel").Value) with _ -> failwith "Missing probability type" 
+                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
+                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
                                     let pType =  match probModel with 
                                                     | "Absolute" ->         let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             Absolute(p)
                                                     | "ModelledMultiple" -> let p = try (float) (r.Attribute(xn "Probability").Value) with _ -> failwith "Missing probability of death" 
                                                                             let time = try 1.<Physics.second>*(float) (r.Attribute(xn "PTime").Value) with _ -> failwith "Missing time associated with probability"
                                                                             let totalShrink = try (float) (r.Attribute(xn "TotalShrink").Value) with _ -> failwith "Missing guess of average death shrink"
+                                                                            ignore (Interface.multiStepProbability time (timestep*1.<Physics.second>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) p) //cache and check probability
                                                                             ModelledMultiple(p,time,(totalShrink*1.<Physics.um>))
                                                     | _ -> failwith "Invalid probability type for this random mechanism"
                                     let power = try (float) (r.Attribute(xn "Power").Value) with _ -> failwith "Missing power of size dependence" 
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
-                                    let minSize = try (float) (r.Attribute(xn "DeathSize").Value) with _ -> failwith "Missing size for death"
-                                    let shrinkRate = try (float) (r.Attribute(xn "ShrinkRate").Value) with _ -> failwith "Missing rate of death shrink"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
                                     match biasType with
                                     | Radius        -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Radius rng power (refC*1.<um>) refM pType 
