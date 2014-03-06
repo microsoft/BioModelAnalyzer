@@ -768,6 +768,13 @@ class Item {
         throw new Error("Cannot create SVG element for item " + this.name + " (" + this.id + ")");
     }
 
+    // The above will not create links when called on containers or
+    // variables - the reason drawing is split into two phases is to
+    // ensure that links are at the top of the z-order. This method
+    // creates the links...
+    createSvgLinkElements() {
+    }
+
     // Delete all the SVG structures corresponding to this item
     deleteSvgElement() {
         if (this.element) {
@@ -848,6 +855,9 @@ class Variable extends Item {
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         (<any>elem).item = this;
+    }
+
+    createSvgLinkElements() {
         for (var i = 0; i < this.toLinks.length; ++i)
             this.toLinks[i].createSvgElement();
     }
@@ -914,6 +924,7 @@ class Container extends Item {
         removeItem(ModelStack.current.children, this);
         super.remove();
     }
+
     createSvgElement() {
         var outerPath = createSvgPath("M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z", "#FAAF42");
         svgAddClass(outerPath, "cell-outer");
@@ -927,6 +938,11 @@ class Container extends Item {
         (<any>elem).item = this;
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].createSvgElement();
+    }
+
+    createSvgLinkElements() {
+        for (var i = 0; i < this.children.length; ++i)
+            this.children[i].createSvgLinkElements();
     }
 
     deleteSvgElement() {
@@ -1090,10 +1106,10 @@ class Model {
     }
 
     createSvg() {
-        // TODO - should create containers first, then variables, then links
-        // to ensure all is visible
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].createSvgElement();
+        for (i = 0; i < this.children.length; ++i)
+            this.children[i].createSvgLinkElements();
     }
 
     deleteSvg() {
