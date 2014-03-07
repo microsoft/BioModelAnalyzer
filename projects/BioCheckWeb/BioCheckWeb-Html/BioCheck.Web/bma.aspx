@@ -68,6 +68,28 @@
 				</div>
 			</div>
 
+			<div id="dialog-variable" title="Properties">
+				<form>
+					<fieldset>
+						<label for="variable-name">Name</label>
+						<input type="text" id="variable-name" name="name" class="text ui-widget-content" />
+						<br />
+						<label for="variable-range0">Range</label>
+						<input type="text" id="variable-range0" name="range" class="text ui-widget-content" />
+						<input type="text" id="variable-range1" name="range" class="text ui-widget-content" />
+					</fieldset>
+				</form>
+			</div>
+
+			<div id="dialog-container" title="Properties">
+				<form>
+					<fieldset>
+						<label for="container-name">Name</label>
+						<input type="text" id="container-name" name="name" class="text ui-widget-content" />
+					</fieldset>
+				</form>
+			</div>
+
 			<div id="design-surface">
 				<svg id="svgroot" version="1.1" xmlns="http://www.w3.org/2000/svg"
 					 viewBox="0 0 2000 1000" preserveAspectRatio="xMinyMin meet">

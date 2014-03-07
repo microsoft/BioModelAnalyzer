@@ -57,6 +57,52 @@ window.onload = () => {
     });
     $("#button-zoomtofit").button().click(SvgViewBoxManager.zoomToFit);
 
+    var d = $("#dialog-variable");
+    d.dialog({
+        title: "Properties",
+        autoOpen: false,
+        modal: true,
+        buttons: {
+            OK: function () {
+                // TODO - validation
+                var v: Variable = $(this).data("item");
+                var t: SVGTextElement = $(this).data("text");
+                t.textContent = v.name = $("#variable-name").val();
+                $(this).dialog("close");
+            },
+            Cancel: function () {
+                $(this).dialog("close");
+            }
+        },
+        open: function () {
+            var v : Variable = $(this).data("item");
+            $("#variable-name").val(v.name);
+        }
+    });
+
+    d = $("#dialog-container");
+    d.dialog({
+        title: "Properties",
+        autoOpen: false,
+        modal: true,
+        buttons: {
+            OK: function () {
+                // TODO - validation
+                var c: Container = $(this).data("item");
+                var t: SVGTextElement = $(this).data("text");
+                t.textContent = c.name = $("#container-name").val();
+                $(this).dialog("close");
+            },
+            Cancel: function () {
+                $(this).dialog("close");
+            }
+        },
+        open: function () {
+            var c: Container = $(this).data("item");
+            $("#container-name").val(c.name);
+        }
+    });
+
     document.onmousewheel = doWheel;
     document.onkeyup = doKey; // Need to use this to trap the delete key (since keypress hides that)
 
@@ -562,9 +608,9 @@ function createHighlightableSvgGroup(children: SVGElement[], x: number, y: numbe
     highlightPath.setAttribute("stroke-width", (3 / scale) + "px");
     highlightPath.setAttribute("stroke", "transparent");
     var group = createSvgGroup(children, x, y, scale);
-    group.setAttribute("onmouseover", "svgAddClass(this.firstChild, 'svg-highlight')");
-    group.setAttribute("onmouseout", "svgRemoveClass(this.firstChild, 'svg-highlight')");
-    group.setAttribute("onmouseup", "/*if (e.button==1)*/ selectItem(getAssociatedItemElement(this).item)");
+    group.onmouseover = function (e: MouseEvent) { svgAddClass(this.firstChild, 'svg-highlight') };
+    group.onmouseout = function (e: MouseEvent) { svgRemoveClass(this.firstChild, 'svg-highlight') };
+    group.onmouseup = function (e: MouseEvent) { if (e.button == 0) selectItem(getAssociatedItemElement(this).item) };
     // Allow the invisible stroke to still participate in hit testing
     group.setAttribute("pointer-events", "all");
     svgAddClass(group, "shape");
@@ -852,6 +898,7 @@ class Variable extends Item {
         var graphic = createHighlightableSvgGroup([path], 0, 0, scale);
         svgAddClass(graphic, "shape");
         var text = createSvgText(this.name, 0, 50); // offset...
+        text.onmouseup = (e: MouseEvent) => { if (e.button == 0) this.showPropertyPage(text); };
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         (<any>elem).item = this;
@@ -906,6 +953,16 @@ class Variable extends Item {
         }
     }
 
+    // Takes the text element directly to avoid having to find it within the UI elements
+    private showPropertyPage(text: SVGTextElement) {
+        //alert("Property page: name " + this.name + " (" + text.textContent + ")");
+        var d = $("#dialog-variable");
+        // Rather clunky way to pass data to the dialog box - is there a better way?
+        d.data("item", this);
+        d.data("text", text);
+        d.dialog("open");
+    }
+
     formula: string;
     parent: Container;
     fromLinks: Link[]; // Links coming from this element - the link's source points to this
@@ -933,6 +990,7 @@ class Container extends Item {
         var graphic = createHighlightableSvgGroup([outerPath, innerPath], 0, 0, 2.5);
         svgAddClass(graphic, "shape");
         var text = createSvgText(this.name, -100, -125); // offset...
+        text.onmouseup = (e: MouseEvent) => { if (e.button == 0) this.showPropertyPage(text); };
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         (<any>elem).item = this;
@@ -975,6 +1033,15 @@ class Container extends Item {
 
     static isValidPlacement(elemAndPart: ElementAndPart) {
         return elemAndPart == null;
+    }
+
+    // Takes the text element directly to avoid having to find it within the UI elements
+    private showPropertyPage(text: SVGTextElement) {
+        var d = $("#dialog-container");
+        // Rather clunky way to pass data to the dialog box - is there a better way?
+        d.data("item", this);
+        d.data("text", text);
+        d.dialog("open");
     }
 
     children: Variable[];
@@ -1029,9 +1096,9 @@ class Link {
         line.setAttribute("marker-end", this.type == ItemType.Activate ? "url('#link-activate')" : "url('#link-inhibit')");
         // TODO - highlight
         var graphic = createSvgGroup([line], 0, 0, 1);
-        graphic.setAttribute("onmouseover", "svgAddClass(this.firstChild, 'svg-line-highlight')");
-        graphic.setAttribute("onmouseout", "svgRemoveClass(this.firstChild, 'svg-line-highlight')");
-        graphic.setAttribute("onmouseup", "/*if (e.button==1)*/ selectItem(getAssociatedItemElement(this).item)");
+        graphic.onmouseover = function (e: MouseEvent) { svgAddClass(this.firstChild, 'svg-line-highlight') };
+        graphic.onmouseout = function (e: MouseEvent) { svgRemoveClass(this.firstChild, 'svg-line-highlight') };
+        graphic.onmouseup = function (e: MouseEvent) { if (e.button == 0) selectItem(getAssociatedItemElement(this).item) };
         svgAddClass(graphic, "shape");
         var elem = createTopGroupAndAdd([graphic], 0, 0);
         this.element = elem;
