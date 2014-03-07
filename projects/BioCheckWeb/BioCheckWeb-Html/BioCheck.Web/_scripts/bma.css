@@ -73,6 +73,10 @@ html, body {
 	display: inline-block;
 }
 
+.dialog-grid input {
+	width: 100%;
+}
+
 #svgroot {
 	height: 100%;
 }
