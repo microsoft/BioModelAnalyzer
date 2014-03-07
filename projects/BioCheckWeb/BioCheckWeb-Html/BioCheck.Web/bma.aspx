@@ -72,13 +72,49 @@
 				<table class="dialog-grid" width="100%">
 					<tr>
 						<td>Name: </td>
-						<td colspan="3"><input type="text" id="variable-name" name="name" class="text ui-widget-content" /></td>
+						<td colspan="3"><input type="text" id="variable-name" name="name" class="text ui-widget-content fill-width" /></td>
 					</tr>
 					<tr>
 						<td>Range: </td>
-						<td><input type="text" id="variable-range0" name="range" class="text ui-widget-content" /></td>
+						<td><input type="text" id="variable-range0" name="range" class="text ui-widget-content" size="5" /></td>
 						<td>&nbsp;</td>
-						<td><input type="text" id="variable-range1" name="range" class="text ui-widget-content" /></td>
+						<td><input type="text" id="variable-range1" name="range" class="text ui-widget-content" size="5" /></td>
+					</tr>
+					<tr>
+						<td colspan="4">Target function</td>
+					</tr>
+					<tr>
+						<td>
+							<select id="variable-function-list" size="6" class="fill-width">
+								<option data-syntax="var(name)" data-description="A variable, where name is the name of the variable" value="var()" data-back="1">var</option>
+								<option data-syntax="avg(x,y,z)" data-description="The average of a list of expressions. E.g., avg( var(X); var(Y); 22; var(Z)*2 )" value="avg(,)" data-back="2">avg</option>
+								<option data-syntax="min(x, y)" data-description="The minimum of two expressions. E.g., min(var(X),var(Y)), or min(var(X), 0))" value="min(,)" data-back="2">min</option>
+								<option data-syntax="max(x, y)" data-description="The maximum of two expressions. E.g., max(var(X),var(Y))" value="max(,)" data-back="2">max</option>
+								<option data-syntax="22 or const(22)" data-description="An integer number. E.g., 1234, 42, -9" value="const()" data-back="1">const</option>
+								<option data-syntax="x + y" data-description="Usual addition operator. E.g., 2+3, 44 + var(X)" value=" + " data-back="0">plus</option>
+								<option data-syntax="x - y" data-description="Usual subtraction operator. E.g., 2-3, 44 - var(X)" value=" - " data-back="0">minus</option>
+								<option data-syntax="x * y" data-description="Usual multiplication operator. E.g., 2*3, 44 * var(X)" value=" * " data-back="0">times</option>
+								<option data-syntax="x / y" data-description="Usual division operator. E.g., 2/3, 44 / var(X)" value=" / " data-back="0">div</option>
+								<option data-syntax="ceil(x)" data-description="The ceiling of an expression. E.g., ceil(var(X))" value="ceil()" data-back="1">ceil</option>
+								<option data-syntax="floor(x)" data-description="The floor of an expression. E.g., floor(var(X))" value="floor()" data-back="1">floor</option>
+							</select>
+						</td>
+						<td colspan="3">
+							<button id="variable-function-insert">Insert</button>
+							<p><b id="variable-function-syntax"></b></p>
+							<p id="variable-function-description"></p>
+						</td>
+					</tr>
+					<tr>
+						<td>Inputs:</td>
+						<td colspan="3">
+							<select id="variable-variable-list" size="1" class="fill-width" />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<textarea id="variable-function" rows="3" class="text ui-widget-content fill-width"></textarea>
+						</td>
 					</tr>
 				</table>
 			</div>
@@ -87,7 +123,7 @@
 				<table class="dialog-grid" width="100%">
 					<tr>
 						<td>Name: </td>
-						<td><input type="text" id="container-name" name="name" class="text ui-widget-content" /></td>
+						<td><input type="text" id="container-name" name="name" class="text ui-widget-content fill-width" /></td>
 					</tr>
 				</table>
 			</div>

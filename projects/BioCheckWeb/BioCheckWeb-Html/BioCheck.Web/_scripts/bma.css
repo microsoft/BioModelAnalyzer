@@ -73,8 +73,12 @@ html, body {
 	display: inline-block;
 }
 
-.dialog-grid input {
+.fill-width {
 	width: 100%;
+}
+
+.variable-function-description {
+	font-size: 9pt;
 }
 
 #svgroot {

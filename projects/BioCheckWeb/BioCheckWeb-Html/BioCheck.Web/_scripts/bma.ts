@@ -62,6 +62,8 @@ window.onload = () => {
         title: "Properties",
         autoOpen: false,
         modal: true,
+        minWidth: 400,
+        minHeight: 300,
         buttons: {
             OK: function () {
                 // TODO - validation
@@ -77,7 +79,35 @@ window.onload = () => {
         open: function () {
             var v : Variable = $(this).data("item");
             $("#variable-name").val(v.name);
+            // TODO - range, formula
+            var options = []
+            for (var i = 0; i < v.toLinks.length; ++i){
+                var o = $("<option>");
+                o.text(v.toLinks[i].source.name);
+                options.push(o);
+            }
+            $("#variable-variable-list").append(options);
         }
+    });
+    $("#variable-range0").spinner();
+    $("#variable-range1").spinner();
+    $("#variable-function-list").change(function () {
+        var f = $("#variable-function-list option:selected");
+        $("#variable-function-syntax").text(f.data("syntax"));
+        $("#variable-function-description").text(f.data("description"));
+        $("#variable-function-insert").data("insert",f.val()).data("back",f.data("back"));
+    });
+    b = $("#variable-function-insert");
+    b.button();
+    b.click(function () {
+        //alert($(this).data("insert"));
+        var t = $(this);
+        insertText($("#variable-function").get()[0], t.data("insert"), t.data("back"));
+    });
+    $("#variable-variable-list").change(function () {
+        var v = $("#variable-variable-list option:selected");
+        //alert(v.text());
+        insertText($("#variable-function").get()[0], v.text());
     });
 
     d = $("#dialog-container");
@@ -1228,4 +1258,11 @@ function removeItem(array: any[], item) {
     var index = array.indexOf(item);
     if (index >= 0)
         array.splice(index, 1);
+}
+
+function insertText(text: HTMLTextAreaElement, s: string, stepBack: number = 0) {
+    var s0 = text.selectionStart, s1 = text.selectionEnd;
+    var orig = text.value;
+    text.value = orig.substring(0, s0) + s + orig.substring(s1);
+    text.selectionStart = text.selectionEnd = s0 + s.length - stepBack;
 }
