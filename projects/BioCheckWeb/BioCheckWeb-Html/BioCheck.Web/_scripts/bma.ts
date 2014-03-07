@@ -86,13 +86,13 @@ window.onload = () => {
             $("#variable-range0").val(v.range0);
             $("#variable-range1").val(v.range1);
             $("#variable-function").val(v.formula);
-            var options = []
+            var options = [$("<option>Inputs</option>")];
             for (var i = 0; i < v.toLinks.length; ++i){
                 var o = $("<option>");
                 o.text(v.toLinks[i].source.name);
                 options.push(o);
             }
-            $("#variable-variable-list").append(options);
+            $("#variable-variable-list").empty().append(options);
         }
     });
     $("#variable-range0").spinner();

@@ -106,8 +106,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Inputs:</td>
-						<td colspan="3">
+						<td colspan="4">
 							<select id="variable-variable-list" size="1" class="fill-width" />
 						</td>
 					</tr>
