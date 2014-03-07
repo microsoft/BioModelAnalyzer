@@ -66,10 +66,14 @@ window.onload = () => {
         minHeight: 300,
         buttons: {
             OK: function () {
+                ModelStack.dup();
                 // TODO - validation
                 var v: Variable = $(this).data("item");
                 var t: SVGTextElement = $(this).data("text");
                 t.textContent = v.name = $("#variable-name").val();
+                v.range0 = $("#variable-range0").val();
+                v.range1 = $("#variable-range1").val();
+                v.formula = $("#variable-function").val(); // TODO - replace newline with space?
                 $(this).dialog("close");
             },
             Cancel: function () {
@@ -79,7 +83,9 @@ window.onload = () => {
         open: function () {
             var v : Variable = $(this).data("item");
             $("#variable-name").val(v.name);
-            // TODO - range, formula
+            $("#variable-range0").val(v.range0);
+            $("#variable-range1").val(v.range1);
+            $("#variable-function").val(v.formula);
             var options = []
             for (var i = 0; i < v.toLinks.length; ++i){
                 var o = $("<option>");
@@ -117,6 +123,7 @@ window.onload = () => {
         modal: true,
         buttons: {
             OK: function () {
+                ModelStack.dup();
                 // TODO - validation
                 var c: Container = $(this).data("item");
                 var t: SVGTextElement = $(this).data("text");
@@ -892,6 +899,9 @@ class Item {
 class Variable extends Item {
     constructor(type: ItemType, x: number, y: number) {
         super(type, x, y);
+        this.range0 = 0;
+        this.range1 = 1;
+        this.formula = "avg(pos) - avg(neg)";
         this.fromLinks = [];
         this.toLinks = [];
     }
@@ -949,6 +959,9 @@ class Variable extends Item {
         var v = new Variable(this.type, this.x, this.y);
         v.id = this.id;
         v.name = this.name;
+        v.range0 = this.range0;
+        v.range1 = this.range1;
+        v.formula = this.formula;
         for (var i = 0; i < this.fromLinks.length; ++i) {
             var link = new Link(this.fromLinks[i].type);
             link.source = v;
@@ -994,6 +1007,8 @@ class Variable extends Item {
     }
 
     formula: string;
+    range0: number;
+    range1: number;
     parent: Container;
     fromLinks: Link[]; // Links coming from this element - the link's source points to this
     toLinks: Link[]; // Links coming to this element - the link's target points to this
