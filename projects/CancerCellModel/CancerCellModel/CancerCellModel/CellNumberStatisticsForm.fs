@@ -37,7 +37,7 @@ type CellNumberStatisticsForm() =
                 (int (ParamFormBase.get_chart_yvalue(series_dying, x)))
 
     do
-        // create the main chart (with statistics for different kinds of cells)
+        // create the main chart (with statistics for different types of cells)
         base.Controls.Add(chart)
         let chart_area = new ChartArea()
         chart.Titles.Add("The statistics of the number of different kinds of cells") |> ignore

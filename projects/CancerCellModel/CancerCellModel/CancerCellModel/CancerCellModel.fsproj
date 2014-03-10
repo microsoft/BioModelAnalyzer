@@ -42,8 +42,23 @@
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
+    <Compile Include="CellCycleStatisticsForm.fs">
+      <Link>CellCycleStatisticsForm.fs</Link>
+    </Compile>
     <Compile Include="Geometry.fs" />
     <Compile Include="MathFunctions.fs" />
     <Compile Include="NumericalComputations.fs" />
@@ -53,6 +68,9 @@
     <Compile Include="MolecularDynamics.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="ParamFormBase.fs" />
+    <Compile Include="RadiationForm.fs">
+      <Link>RadiationForm.fs</Link>
+    </Compile>
     <Compile Include="Render.fs" />
     <Compile Include="StemCellParamForm.fs" />
     <Compile Include="NonStemCellParamForm.fs" />

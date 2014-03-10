@@ -39,7 +39,7 @@ let uniform_float(interval: FloatInterval) =
 // and its limitedness between min and max are convenient for our purposes.
 //
 // 2) To avoid confusion: the function has nothing to do with probability distribution.
-// f(x) not desribe the probability of taking value x but rather the probability
+// f(x) not describe the probability of taking value x but rather the probability
 // of some other event (cell division) (where x is e.g. the amount of O2)
 type LogisticFunc(min: Point, max: Point) as this =
     [<DefaultValue>] val mutable s: float
