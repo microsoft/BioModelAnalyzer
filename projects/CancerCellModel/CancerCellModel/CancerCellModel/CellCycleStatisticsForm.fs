@@ -5,7 +5,7 @@ open System.Windows.Forms
 open Model
 open ParamFormBase
 
-type CellCycleStatisticsForm(stem_cell_cycle_statistics: CellCycleStatistics, nonstem_cell_cycle_statistics: CellCycleStatistics) = 
+type CellCycleStatisticsForm (stem_cell_cycle_statistics: CellCycleStatistics, nonstem_cell_cycle_statistics: CellCycleStatistics) = 
     inherit ParamFormBase(Visible = false, Width = 700, Height = 300)
 
     let stem_G0_numofcells_textbox = new TextBox()
