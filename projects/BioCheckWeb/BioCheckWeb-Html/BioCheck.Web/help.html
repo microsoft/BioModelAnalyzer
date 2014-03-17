@@ -30,6 +30,7 @@
 	function makeMin12() { b12.innerHTML = (b12.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin13() { b13.innerHTML = (b13.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin14() { b14.innerHTML = (b14.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
+	function makeMin15() { b15.innerHTML = (b15.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 
 </script>
 
@@ -187,6 +188,14 @@
 				</p>
 			</div>
 			
+			<div class="FAQ_question">
+				<a onclick=makeMin15();(toggleInfo('#q15'))><span id='b15'>[+]</span></a> <span class="bold">Text cannot be typed into name, formula, etc. text boxes with Chrome on Macs.</span><br />
+				<p style="display:none" id="q15">
+					According to the <a href="http://www.microsoft.com/getsilverlight/get-started/install/default.aspx">Silverlight system requirements</a>, Chrome is <b>not</b> included in the list of supported browsers on the Mac, and this effect seems to be a symptom of that.
+					A workaround, suggested <a href="http://connect.microsoft.com/VisualStudio/feedback/details/750664/silverlight-forum-cannot-type-in-chrome-browser-on-mac-silverlight-5">here</a> is to type the text in some other application and then copy &amp; paste it into the app. Probably easier to use another browser, sorry.
+				</p>
+			</div>
+
 		</div>
 	
 	</div>
