@@ -59,7 +59,7 @@ void Simulation::run(const string& initial) {
 	}
 
 	string name(firstProg->first);
-	Cell* cell(firstProg->second);
+	CellProgram* cell(firstProg->second);
 	vector<Event*> events(cell->firstEvent(_currentTime));
 
 	class EventPtrComparison
@@ -152,7 +152,7 @@ void Simulation::readFile(const string& filename) {
 }
 
 
-Cell* Simulation::program(const string& name) {
+CellProgram* Simulation::program(const string& name) {
 	auto prog(_programs.find(name));
 	if (prog == _programs.end()) {
 		return nullptr;
@@ -191,7 +191,7 @@ istream& operator>> (istream& in, Simulation& sim) {
 		 string name,d1,d2;
 		 float meanCycle{0.0}, sd{0.0};
 		 sim._parseLine(buffer,name,meanCycle,sd,d1,d2);
-		 Cell* newCell(new Cell(name,meanCycle,sd,d1,d2,&sim));
+		 CellProgram* newCell(new CellProgram(name,meanCycle,sd,d1,d2,&sim));
 		 (sim._programs).insert(make_pair(name,newCell));
 //		 cerr << "Read cell: " << *newCell << endl;
 	}

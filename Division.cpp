@@ -45,8 +45,8 @@ void Division::setDaughter2(const string& d2) {
 
 vector<Event*> Division::execute() const {
 	Simulation* sim(simulation());
-	Cell* d1(sim->program(_daughter1));
-	Cell* d2(sim->program(_daughter2));
+	CellProgram* d1(sim->program(_daughter1));
+	CellProgram* d2(sim->program(_daughter2));
 	vector<Event*> events{},events1{},events2{};
 	if (d1)
 		events1=d1->firstEvent(this->execTime());

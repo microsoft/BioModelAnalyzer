@@ -15,7 +15,7 @@ class Simulation;
 #include <iosfwd>
 #include <string>
 #include <utility>
-#include "Cell.h"
+#include "CellProgram.h"
 #include "Event.h"
 
 class Simulation {
@@ -24,8 +24,8 @@ public:
 	Simulation(const std::string& filename);
 	virtual ~Simulation();
 
-	bool removeCell(Cell* c);
-	bool addCell(Cell* c);
+	bool removeCell(CellProgram* c);
+	bool addCell(CellProgram* c);
 
 	void readFile(const std::string& filename);
 	void run(const std::string& initial);
@@ -34,7 +34,7 @@ public:
 	std::pair<float,bool> overlap(const std::string&, const std::string&) const;
 
 
-	Cell* program(const std::string&);
+	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
 
 	friend std::istream& operator>>(std::istream&, Simulation&);
@@ -47,7 +47,7 @@ private:
 	std::vector<Event*> _log;
 	// std::set<Cell*> _activeCells;
 	// std::set<Cell*> _allCells;
-	std::map<std::string,Cell*> _programs;
+	std::map<std::string,CellProgram*> _programs;
 };
 
 #endif /* SIMULATION_H_ */
