@@ -188,12 +188,18 @@ istream& operator>> (istream& in, Simulation& sim) {
 	// Cell Name (string), Cell Cycle Length (float), Standard Deviation (float)
 	// Daughter1 (string), Daughter2 (string), some irrelevant mutation info
 	while (getline(in,buffer) && buffer.size()!=0) {
-		 string name,d1,d2;
+		 string name{},condition{},action{},d1{},d2{};
 		 float meanCycle{0.0}, sd{0.0};
-		 sim._parseLine(buffer,name,meanCycle,sd,d1,d2);
-		 CellProgram* newCell(new CellProgram(name,meanCycle,sd,d1,d2,&sim));
-		 (sim._programs).insert(make_pair(name,newCell));
-//		 cerr << "Read cell: " << *newCell << endl;
+		 Simulation::_LineStructure line=sim._parseLine(buffer);
+		 std::tie(name,condition,meanCycle,sd,action,d1,d2) = line;
+		 auto progIt=sim._programs.find(name);
+		 if (progIt==sim._programs.end()) {
+			 CellProgram* newCell(new CellProgram(name,&sim));
+			 (sim._programs).insert(make_pair(name,newCell));
+			 protIt=sim._programs.find(name);
+		 }
+		 Event* e{new Division(name,d1,d2,meanCycle,sd,&sim,nullptr)};
+		 progIt->second->addCondition(condition,e);
 	}
 	if (!in.eof()) {
 		cerr << "Something went wrong with reading" << endl;
@@ -217,8 +223,16 @@ istream& operator>> (istream& in, Simulation& sim) {
 	return in;
 }
 
+Simulation::_LineStructure Simulation::_parseLine(const string& line) {
 
-void Simulation::_parseLine(const string& line,string& name,float& mean, float& sd, string& d1,string& d2) {
+	string name{};
+	string condition{};
+	float mean{};
+	float sd{};
+	string action{};
+	string d1{};
+	string d2{};
+
 	const string whitespace=" \n\t";
 	const string comma=",";
 	const string wsc=whitespace+comma;
@@ -226,32 +240,45 @@ void Simulation::_parseLine(const string& line,string& name,float& mean, float& 
 	// cout << "Read: " << buffer << endl;
 	size_t current(line.find_first_not_of(whitespace));
 	size_t next(line.find_first_of(wsc,current+1));
-	for (unsigned int i=0 ; i<5 ; ++ i) {
+
+	for (unsigned int i=0 ; i<static_cast<unsigned int>(LASTDELIM) ; ++ i) {
 		const string piece(line.substr(current,next-current));
 
-		switch (i) {
-		case 0: {
+		switch (static_cast<CsvFields>(i)) {
+		case NAME:
+		{
 			name = piece;
 		}
 		break;
-		case 1:
+		case CONDITION: {
+			condition = piece;
+		}
+		break;
+		case MEANTIME: // Mean time
 		{
 			std::stringstream str(piece);
 			str >> mean;
 		}
-
 		break;
-		case 2: {
+		case STANDARDDEV: // Standard Deviation
+		{
 			std::stringstream str(piece);
 			str >> sd;
 		}
 		break;
-		case 3: {
+		case ACTION:
+		{
+			action = piece;
+		}
+		break;
+		case DAUGHTER1: // Daughter 1
+		{
 			d1 = piece;
 		}
 		break;
-		case 4:
-		default: {
+		case DAUGHTER2:
+		default: // Daughter 2
+		{
 			d2 = piece;
 		}
 		}
@@ -262,8 +289,12 @@ void Simulation::_parseLine(const string& line,string& name,float& mean, float& 
 
 
 //			 cout << "Name: |" << name << "|" << endl;
+//			 cout << "Condition: |" << condition << "|" << endl;
 //			 cout << "Mean: |" << mean << "|" << endl;
 //			 cout << "SD: |" << sd << "|" << endl;
+//			 cout << "Action: |" << action << "|" << endl;
 //			 cout << "D1: |" << d1 << "|" << endl;
 //			 cout << "D2: |" << d2 << "|" << endl;
+
+	return std::make_tuple(name,condition,mean,sd,action,d1,d2);
 }

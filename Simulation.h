@@ -15,6 +15,7 @@ class Simulation;
 #include <iosfwd>
 #include <string>
 #include <utility>
+#include <tuple>
 #include "CellProgram.h"
 #include "Event.h"
 
@@ -33,15 +34,16 @@ public:
 
 	std::pair<float,bool> overlap(const std::string&, const std::string&) const;
 
-
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
 
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
 private:
-	void _parseLine(const std::string& line,std::string& name,float& mean, float& sd, std::string& d1,std::string& d2);
+	typedef std::tuple<std::string, std::string, float, float, std::string, std::string, std::string> _LineStructure;
+	enum CsvFields { NAME, CONDITION, MEANTIME, STANDARDDEV, ACTION, DAUGHTER1, DAUGHTER2, LASTDELIM};
 
+	_LineStructure _parseLine(const std::string& line);
 
 	float _currentTime;
 	std::vector<Event*> _log;

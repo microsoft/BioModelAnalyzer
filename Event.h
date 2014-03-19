@@ -12,15 +12,17 @@ class Event;
 
 #include <vector>
 #include <iosfwd>
+#include "Cell.h"
 #include "Simulation.h"
 
 class Event {
 public:
 	Event() =delete;
-	Event(float d, float t, Simulation* s);
+	Event(float d, float t, Simulation* s, Cell* c);
 
 	virtual ~Event();
 
+	Cell* cell() const;
 	Simulation* simulation() const;
 	float duration() const;
 	float execTime() const;
@@ -40,6 +42,7 @@ private:
 	float _duration;
 	float _execTime;
 	Simulation* _sim;
+	Cell* _cell;
 };
 
 #endif /* EVENT_H_ */

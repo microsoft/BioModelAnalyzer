@@ -6,13 +6,26 @@
  */
 
 #include "Condition.h"
+#include "HelperFunctions.h"
 
-Condition::Condition() {
-	// TODO Auto-generated constructor stub
+using std::string;
+using std::map;
 
+Condition::Condition(const string& initializer)
+: _conjunction{splitConjunction(initializer)}
+{
 }
 
 Condition::~Condition() {
-	// TODO Auto-generated destructor stub
 }
 
+bool Condition::evaluate(const State& st) const {
+	// TODO: implement this
+	return false;
+}
+
+
+bool Condition::operator==(const Condition& other) const {
+	// TODO: implement this
+	return false;
+}

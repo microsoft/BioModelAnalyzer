@@ -15,7 +15,7 @@
 class Division: public Event {
 public:
 	Division() =delete;
-	Division(const std::string& p, const std::string& d1, const std::string& d2, float d, float t, Simulation* s);
+	Division(const std::string& p, const std::string& d1, const std::string& d2, float d, float t, Simulation* s, Cell* c);
 	virtual ~Division();
 
 	std::string parent() const;

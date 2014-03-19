@@ -14,8 +14,8 @@ using std::vector;
 
 // Division::Division() : Event(0.0,0.0), _parent(), _daughter1(), _daughter2() {}
 
-Division::Division(const std::string& p, const std::string& d1, const std::string& d2, float d, float t, Simulation* s)
-: Event(d,t,s), _parent(p), _daughter1(d1), _daughter2(d2) {}
+Division::Division(const std::string& p, const std::string& d1, const std::string& d2, float d, float t, Simulation* s, Cell* c)
+: Event(d,t,s,c), _parent(p), _daughter1(d1), _daughter2(d2) {}
 
 Division::~Division() {
 }

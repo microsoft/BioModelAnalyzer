@@ -11,13 +11,19 @@
 using std::ostream;
 
 
-Event::Event(float d, float t, Simulation* s)
+Event::Event(float d, float t, Simulation* s, Cell* c)
 : _duration(d),
   _execTime(t),
-  _sim(s)
+  _sim(s),
+  _cell(c)
   {}
 
 Event::~Event() {
+}
+
+Cell* Event::cell() const
+{
+	return _cell;
 }
 
 Simulation* Event::simulation() const

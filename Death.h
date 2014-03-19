@@ -14,7 +14,7 @@
 class Death: public Event {
 public:
 	Death()=delete;
-	Death(const std::string&, Simulation* s=nullptr);
+	Death(const std::string&, Simulation* s=nullptr, Cell* c=nullptr);
 	virtual ~Death();
 
 	virtual std::vector<Event*> execute() const;

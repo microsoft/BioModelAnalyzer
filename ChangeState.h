@@ -13,7 +13,7 @@
 
 class ChangeState: public Event {
 public:
-	ChangeState(Simulation* s=nullptr);
+	ChangeState(Simulation* s=nullptr, Cell* c=nullptr);
 	virtual ~ChangeState();
 
 	virtual std::vector<Event*> execute() const;

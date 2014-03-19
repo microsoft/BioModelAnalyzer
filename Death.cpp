@@ -12,7 +12,7 @@ using std::vector;
 using std::ostream;
 using std::string;
 
-Death::Death(const string& name, Simulation* s) : Event(0.0,0.0,s), _cell(name) {
+Death::Death(const string& name, Simulation* s, Cell* c) : Event(0.0,0.0,s,c), _cell(name) {
 }
 
 Death::~Death() {

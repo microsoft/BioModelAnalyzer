@@ -12,7 +12,7 @@ using std::ostream;
 using std::vector;
 using std::string;
 
-ChangeState::ChangeState(Simulation* s) : Event(0.0,0.0,s) {
+ChangeState::ChangeState(Simulation* s, Cell* c) : Event(0.0,0.0,s,c) {
 	// TODO Auto-generated constructor stub
 
 }
