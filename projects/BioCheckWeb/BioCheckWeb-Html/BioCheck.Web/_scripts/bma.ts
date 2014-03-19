@@ -382,7 +382,6 @@ function getCursorUrl(elem: HTMLElement) {
     return type ? "url(_images/" + type + ".cur), pointer" : "auto";
 }
 
-// getIntersectionList not available in FireFox, so can't use this mechanism
 //function hitTest(x: number, y: number) {
 //    var o = $("#design-surface").offset();
 //    var r = svg.createSVGRect();
@@ -391,7 +390,42 @@ function getCursorUrl(elem: HTMLElement) {
 //    return svg.getIntersectionList(r, null);
 //}
 
-function getEventElementAndPart(e) : ElementAndPart {
+// Different browsers have different support for SVG hit testing, hence this mess
+function svgHitTest(x: number, y: number) : any {
+    // IE10+ is the easiest - meElementsFromPoint returns all elements all the
+    // way up to <html> - see http://ie.microsoft.com/testdrive/HTML5/HitTest/
+    if (document.msElementsFromPoint)
+        return document.msElementsFromPoint(x, y);
+    // document.elementFromPoint allegedly returns the <svg> element on Opera
+    // rather than the sub-elements, but getIntersectionList seems to work
+    // http://stackoverflow.com/questions/2259613/locate-an-element-within-svg-in-opera-by-coordinates
+    // This returns SVG elements, and nothing higher than that
+    if (svg.getIntersectionList) {
+        var o = $("#design-surface").offset();
+        var r = svg.createSVGRect();
+        r.width = r.height = 1;
+        r.x = x - o.left; r.y = y - o.top;
+        return svg.getIntersectionList(r, null);
+    }
+    // getIntersectionList not available in FireFox so need a fallback...
+    // https://developer.mozilla.org/en-US/docs/SVG_in_Firefox
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=501421
+    // Solution taken from http://stackoverflow.com/questions/9910008/dispatching-a-mouse-event-to-an-element-that-is-visually-behind-the-receiving
+    var nodes = [];
+    var visibilities: string[] = [];
+    var node;
+    // This stops at the SVG element
+    while ((node = document.elementFromPoint(x, y)) && node != svg) {
+        nodes.push(node);
+        visibilities.push(node.style.visibility);
+        node.style.visibility = "hidden";
+    }
+    for (var i = 0; i < nodes.length; ++i)
+        nodes[i].style.visibility = visibilities[i];
+    return nodes;
+}
+
+function getEventElementAndPartOld(e) : ElementAndPart {
     var src = e.srcElement || e.originalTarget;
     if (!src || (src.tagName != "path" && src.tagName != "g")) return null;
 
@@ -410,6 +444,35 @@ function getEventElementAndPart(e) : ElementAndPart {
     }
     else
         return null;
+}
+
+function getEventElementAndPart(e, ignore = null, abort: ItemType[] = []): ElementAndPart {
+    var nodes = svgHitTest(e.clientX, e.clientY);
+    for (var i = 0; i < nodes.length; ++i) {
+        var node = nodes[i];
+        if (node == svg)
+            return null;
+
+        var itemClass = node.getAttribute("class");
+        while (node && !svgHasClass(node, "object")) {
+            if (!itemClass)
+                itemClass = node.getAttribute("class");
+            node = <Element>node.parentNode;
+        }
+
+        if (node) {
+            if (abort.indexOf(node.item.type) >= 0)
+                return null;
+            if (node == ignore)
+                continue;
+            // TODO - better split job, currently fingers crossed that the
+            // class of interest is at the start! Maybe use something other
+            // than class?
+            itemClass = itemClass.split(" ")[0];
+            return { elem: node, type: itemClass };
+        }
+    }
+    return null;
 }
 
 interface ElementAndPart {
@@ -471,6 +534,7 @@ class ModelStack {
 
     static truncate() {
         ModelStack.models.length = ModelStack.index + 1;
+        $("#button-redo").button("option", "disabled", true);
     }
 
     private static models: Model[] = [];
