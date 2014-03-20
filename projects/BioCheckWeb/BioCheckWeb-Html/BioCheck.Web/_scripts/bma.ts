@@ -270,7 +270,7 @@ function doDrag(e /*: JQueryMouseEventObject*/) {
     } else {
         // Determine if drag over background or on cell, etc
         // TODO - remove currently dragged object from hit testing
-        var hit = getEventElementAndPart(e.originalEvent);
+        var hit = getEventElementAndPart(e.originalEvent, dragObject);
         console.log(hit && hit.type);
         if (dragObject) {
             // Dragging an object
@@ -285,7 +285,7 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
     if (drawingLine) {
         // If over a suitable item, persist line, otherwise throw it away
         var deleteIt = true;
-        var hit = getEventElementAndPart(e.originalEvent);
+        var hit = getEventElementAndPart(e.originalEvent, drawingLine.element);
         if (hit) {
             var item = <Item>hit.elem.item;
             if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
@@ -323,9 +323,8 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
     } else if (dragObject) {
         // Verify that new placement is valid, revert to initial location if not
         var item = <Item>(<any>dragObject).item;
-        var hit = getEventElementAndPart(e.originalEvent);
-        // TODO - need to get past the current element itself
-        if (true || item.isValidNewPlacement(hit)) {
+        var hit = getEventElementAndPart(e.originalEvent, dragObject);
+        if (item.isValidNewPlacement(hit)) {
             if (item.type == ItemType.Variable || item.type == ItemType.Receptor) {
                 // Reparent
             }
