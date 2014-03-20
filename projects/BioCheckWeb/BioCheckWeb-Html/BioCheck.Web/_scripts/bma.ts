@@ -327,6 +327,13 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
         if (item.isValidNewPlacement(hit)) {
             if (item.type == ItemType.Variable || item.type == ItemType.Receptor) {
                 // Reparent
+                var oldParent = <Container>item.parent;
+                var newParent = <Container>hit.elem.item;
+                if (oldParent != newParent) {
+                    removeItem(oldParent.children, item);
+                    item.parent = newParent;
+                    newParent.children.push(<Variable>item);
+                }
             }
         } else {
             ModelStack.undo();
@@ -381,14 +388,6 @@ function getCursorUrl(elem: HTMLElement) {
     return type ? "url(_images/" + type + ".cur), pointer" : "auto";
 }
 
-//function hitTest(x: number, y: number) {
-//    var o = $("#design-surface").offset();
-//    var r = svg.createSVGRect();
-//    r.width = r.height = 1;
-//    r.x = x - o.left; r.y = y - o.top;
-//    return svg.getIntersectionList(r, null);
-//}
-
 // Different browsers have different support for SVG hit testing, hence this mess
 function svgHitTest(x: number, y: number) : any {
     // IE10+ is the easiest - meElementsFromPoint returns all elements all the
@@ -424,33 +423,12 @@ function svgHitTest(x: number, y: number) : any {
     return nodes;
 }
 
-function getEventElementAndPartOld(e) : ElementAndPart {
-    var src = e.srcElement || e.originalTarget;
-    if (!src || (src.tagName != "path" && src.tagName != "g")) return null;
-
-    var node = src;
-    var itemClass = node.getAttribute("class");
-    while (node && !svgHasClass(node, "object")) {
-        if (!itemClass)
-            itemClass = node.getAttribute("class");
-        node = <Element>node.parentNode;
-    }
-
-    if (node) {
-        // TODO - better split job, currently fingers crossed that the class of interest is at the start! Maybe use something other than class?
-        itemClass = itemClass.split(" ")[0];
-        return { elem: node, type: itemClass };
-    }
-    else
-        return null;
-}
-
-function getEventElementAndPart(e, ignore = null, abort: ItemType[] = []): ElementAndPart {
+function getEventElementAndPart(e, ignore = null): ElementAndPart {
     var nodes = svgHitTest(e.clientX, e.clientY);
     for (var i = 0; i < nodes.length; ++i) {
         var node = nodes[i];
         if (node == svg)
-            return null;
+            break;
 
         var itemClass = node.getAttribute("class");
         while (node && !svgHasClass(node, "object")) {
@@ -459,11 +437,7 @@ function getEventElementAndPart(e, ignore = null, abort: ItemType[] = []): Eleme
             node = <Element>node.parentNode;
         }
 
-        if (node) {
-            if (abort.indexOf(node.item.type) >= 0)
-                return null;
-            if (node == ignore)
-                continue;
+        if (node && node != ignore) {
             // TODO - better split job, currently fingers crossed that the
             // class of interest is at the start! Maybe use something other
             // than class?
