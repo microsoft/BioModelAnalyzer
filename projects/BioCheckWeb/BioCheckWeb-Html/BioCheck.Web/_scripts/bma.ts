@@ -335,6 +335,8 @@ function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
                     newParent.children.push(<Variable>item);
                 }
             }
+            if (item.type == ItemType.Receptor)
+                (<Variable>item).adjustReceptorAngle();
         } else {
             ModelStack.undo();
             ModelStack.truncate();
@@ -710,10 +712,30 @@ function applyNewTranslation(elem: any, x: number, y: number) {
     elem.transform.baseVal.appendItem(transform);
 }
 
+function rotateSvgElement(elem: SVGGElement, angle: number) {
+    //var bbox = getTrueBBox(elem);
+    var bbox = elem.getBBox();
+    var cx = bbox.x + bbox.width / 2;
+    var cy = bbox.y + bbox.height / 2;
+    // TODO - matrix manipulation instead
+    var transformList = elem.transform.baseVal;
+    for (var i = 0; i < transformList.numberOfItems; ++i) {
+        var transform = transformList.getItem(i);
+        if (transform.type == SVGTransform.SVG_TRANSFORM_ROTATE) {
+            transform.setRotate(angle, cx, cy);
+            return;
+        }
+    }
+    // Getting here means no rotation was present
+    var transform = svg.createSVGTransform();
+    transform.setRotate(angle, cx, cy);
+    elem.transform.baseVal.appendItem(transform);
+}
+
 function translateSvgElement(elem: SVGGElement, x: number, y: number) {
     // TODO - matrix manipulation instead
     var transformList = elem.transform.baseVal;
-    for (var i in transformList) {
+    for (var i = 0; i < transformList.numberOfItems; ++i) {
         var transform = transformList.getItem(i);
         if (transform.type == SVGTransform.SVG_TRANSFORM_TRANSLATE) {
             transform.setTranslate(x, y);
@@ -736,13 +758,17 @@ function getTranslation(elem: SVGGElement): Point {
 }
 
 // getBBox doesn't take transformations into account; this function looks at
-// the currently applied translation (note, doesn't walk any further up the
-// tree, nor does it take scale into account so only useful for top level
-// objects)
-function getTrueBBox(elem: SVGGElement) {
-    var box = elem.getBBox();
-    var tr = getTranslation(elem);
-    return { x: box.x + tr.x, y: box.y + tr.y, width: box.width, height: box.height };
+// the currently applied translations
+function getTrueBBox(elem) {
+    var bbox = elem.getBBox();
+    var box = { x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height };
+    while (elem != svg) {
+        var tr = getTranslation(elem);
+        box.x += tr.x;
+        box.y += tr.y;
+        elem = elem.parentNode;
+    }
+    return box;
 }
 
 // SVG class seems to be treated as a "normal" string attribute in all but the
@@ -858,6 +884,7 @@ function addReceptor(x: number, y: number, container: Container) {
     container.children.push(receptor);
     receptor.parent = container;
     receptor.createSvgElement();
+    receptor.adjustReceptorAngle();
     return receptor;
 }
 
@@ -1031,6 +1058,19 @@ class Variable extends Item {
             case ItemType.Receptor:
                 return elemAndPart && elemAndPart.type == "cell-outer";
         }
+    }
+
+    adjustReceptorAngle() {
+        if (this.type != ItemType.Receptor)
+            return;
+
+        // First child is the shape part (second is text)
+        var bbox = getTrueBBox(<SVGGElement>this.element.firstChild);
+        var pbbox = getTrueBBox(<SVGGElement>this.parent.element.firstChild);
+        var dx = bbox.x - pbbox.x + (bbox.width - pbbox.width) / 2;
+        var dy = bbox.y - pbbox.y + (bbox.height - pbbox.height) / 2;
+        var angle = Math.atan2(dx, -dy) * 180 / Math.PI;
+        rotateSvgElement(<SVGGElement>this.element.firstChild, angle);
     }
 
     // Takes the text element directly to avoid having to find it within the UI elements
