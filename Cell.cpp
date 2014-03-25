@@ -8,6 +8,7 @@
 #include "Cell.h"
 
 using std::string;
+using std::pair;
 
 Cell::Cell(const string& condition) : _state(condition) {
 }
@@ -15,8 +16,8 @@ Cell::Cell(const string& condition) : _state(condition) {
 Cell::~Cell() {
 }
 
-unsigned int Cell::evaluate(const Condition& cond) const {
-	return _state.evaluate(cond);
+pair<bool,unsigned int> Cell::evaluate(const Condition& cond) const {
+	return cond.evaluate(_state);
 }
 
 bool Cell::update(const string& var,bool val) {

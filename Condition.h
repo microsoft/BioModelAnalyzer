@@ -10,7 +10,10 @@
 
 class Condition;
 
+#include <iosfwd>
+#include <map>
 #include "State.h"
+
 
 class Condition {
 public:
@@ -18,9 +21,11 @@ public:
 	Condition(const std::string& initializer);
 	virtual ~Condition();
 
-	virtual bool evaluate(const State& st) const;
+	std::pair<bool,unsigned int> evaluate(const State& st) const;
 
 	bool operator==(const Condition& other) const;
+	bool operator<(const Condition& other) const;
+	friend std::ostream& operator<< (std::ostream&, const Condition&);
 private:
 	std::map<std::string,bool> _conjunction;
 };

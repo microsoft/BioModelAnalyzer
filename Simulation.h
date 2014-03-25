@@ -17,7 +17,7 @@ class Simulation;
 #include <utility>
 #include <tuple>
 #include "CellProgram.h"
-#include "Event.h"
+#include "Event/Event.h"
 
 class Simulation {
 public:
@@ -43,7 +43,7 @@ private:
 	typedef std::tuple<std::string, std::string, float, float, std::string, std::string, std::string> _LineStructure;
 	enum CsvFields { NAME, CONDITION, MEANTIME, STANDARDDEV, ACTION, DAUGHTER1, DAUGHTER2, LASTDELIM};
 
-	_LineStructure _parseLine(const std::string& line);
+	_LineStructure _parseLine(const std::string& line) const ;
 
 	float _currentTime;
 	std::vector<Event*> _log;

@@ -12,8 +12,8 @@ class Event;
 
 #include <vector>
 #include <iosfwd>
-#include "Cell.h"
-#include "Simulation.h"
+#include "../Cell.h"
+#include "../Simulation.h"
 
 class Event {
 public:

@@ -12,6 +12,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include "Directive/Divide.h"
 #include "Simulation.h"
 
 using std::string;
@@ -196,10 +197,10 @@ istream& operator>> (istream& in, Simulation& sim) {
 		 if (progIt==sim._programs.end()) {
 			 CellProgram* newCell(new CellProgram(name,&sim));
 			 (sim._programs).insert(make_pair(name,newCell));
-			 protIt=sim._programs.find(name);
+			 progIt=sim._programs.find(name);
 		 }
-		 Event* e{new Division(name,d1,d2,meanCycle,sd,&sim,nullptr)};
-		 progIt->second->addCondition(condition,e);
+		 Directive* d{new Divide(meanCycle,sd,d1,d2)};
+		 progIt->second->addCondition(condition,d);
 	}
 	if (!in.eof()) {
 		cerr << "Something went wrong with reading" << endl;
@@ -223,7 +224,7 @@ istream& operator>> (istream& in, Simulation& sim) {
 	return in;
 }
 
-Simulation::_LineStructure Simulation::_parseLine(const string& line) {
+Simulation::_LineStructure Simulation::_parseLine(const string& line) const {
 
 	string name{};
 	string condition{};

@@ -14,10 +14,10 @@ class CellProgram;
 #include <string>
 #include <map>
 #include <iosfwd>
-#include <random>
 #include "Simulation.h"
 #include "Condition.h"
-#include "Event.h"
+#include "Directive/Directive.h"
+#include "Event/Event.h"
 
 
 // What are the things that I would like to do:
@@ -25,6 +25,11 @@ class CellProgram;
 //    in the simulation and an EVENTTEMPLATE that just gives an
 //    instruction. A template is part of a program
 //    An event is part of an execution.
+//    I think that I need a Directive class
+//    it will be very similar to event
+//    but it's main action would be to take a state
+//    and return an appropriate event.
+//    for now it can be a string.
 // 2. There is no such thing as first event of a program
 //    There is only the next event and the next event is dependent
 //    on a state.
@@ -43,16 +48,13 @@ public:
 	std::vector<Event*> nextEvent(float currentTime, Event* lastEvent) const;
 	std::vector<std::string> otherPrograms() const;
 
-	void addCondition(const std::string& condition, Event* e);
+	void addCondition(const std::string& condition, Directive* d);
 
 	friend std::ostream& operator<<(std::ostream&, const CellProgram&);
 private:
 	std::string _name;
-	std::map<Condition,Event*> _program;
+	std::map<Condition,Directive*> _program;
 	Simulation* _sim;
-
-	static std::random_device _randomDev;
-	static std::mt19937 _randomGen;
 
 	bool _conditionExists(const Condition&) const;
 };

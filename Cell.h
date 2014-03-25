@@ -9,6 +9,7 @@
 #define CELL_H_
 
 #include <string>
+#include <tuple>
 #include "State.h"
 #include "Condition.h"
 
@@ -18,7 +19,7 @@ public:
 	Cell(const std::string& condition);
 	~Cell();
 
-	unsigned int evaluate(const Condition& condition) const;
+	std::pair<bool,unsigned int> evaluate(const Condition& condition) const;
 	bool update(const std::string& var, bool value);
 private:
 	State _state;

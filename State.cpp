@@ -21,9 +21,8 @@ State::State(const string& initializer)
 State::~State() {
 }
 
-unsigned int State::evaluate(const Condition& cond) const {
-	// TODO: complete this
-	return 0;
+pair<bool,unsigned int> State::evaluate(const Condition& cond) const {
+	return cond.evaluate(*this);
 }
 
 pair<bool,bool> State::value(const string& var) const {
