@@ -26,7 +26,7 @@ type CellDivisionStatisticsForm (stemcell_division_statistics: CellDivisionStati
     let create_division_stat_controls(average_textbox: TextBox, min_textbox: TextBox, max_textbox: TextBox,
                                         parent: Control, stat: CellDivisionStatistics) =
         let div_interval_label = new Label()
-        div_interval_label.Text <- "Time between two consecutive divisions (in steps)"
+        div_interval_label.Text <- "Time between two consecutive divisions (in steps):"
         div_interval_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (6, 1))
         div_interval_label.AutoSize <- true
         div_interval_label.Location <- FormDesigner.initial_location
@@ -65,12 +65,14 @@ type CellDivisionStatisticsForm (stemcell_division_statistics: CellDivisionStati
                                             max_label; max_textbox|])
 
     do
+        base.Text <- "Cell division statistics"
+
         let stem_groupbox = new GroupBox()
         stem_groupbox.Text <- "Stem cells"
         stem_groupbox.Size <- Drawing.Size(base.ClientSize.Width - FormDesigner.x_interval, base.ClientSize.Height/2 - FormDesigner.y_interval)
         stem_groupbox.Location <- Drawing.Point(FormDesigner.x_interval, FormDesigner.y_interval)
         stem_groupbox.ClientSize <- Drawing.Size(int (float stem_groupbox.Size.Width * 0.9),
-                                                        int (float stem_groupbox.Size.Height*0.9))
+                                                        int (float stem_groupbox.Size.Height * 0.9))
 
         create_division_stat_controls(stem_div_average_interval_textbox,
                                         stem_div_min_interval_textbox, stem_div_max_interval_textbox,
@@ -81,7 +83,7 @@ type CellDivisionStatisticsForm (stemcell_division_statistics: CellDivisionStati
         nonstem_groupbox.Size <- Drawing.Size(base.ClientSize.Width - FormDesigner.x_interval, base.ClientSize.Height/2 - FormDesigner.y_interval)
         FormDesigner.place_control_below(nonstem_groupbox, stem_groupbox)
         nonstem_groupbox.ClientSize <- Drawing.Size(int (float nonstem_groupbox.Size.Width * 0.9),
-                                                        int (float nonstem_groupbox.Size.Height*0.9))
+                                                        int (float nonstem_groupbox.Size.Height * 0.9))
 
         create_division_stat_controls(nonstem_div_average_interval_textbox,
                                         nonstem_div_min_interval_textbox, nonstem_div_max_interval_textbox,

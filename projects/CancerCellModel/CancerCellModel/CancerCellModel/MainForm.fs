@@ -8,8 +8,13 @@ open NonStemCellParamForm
 open ForcesParamForm
 open GlobalStateParamForm
 open GlobalStateForm
+open CellCycleParamForm
+//open GeneExpressionParamForm
 open CellDivisionStatisticsForm
+open CellCycleStatisticsForm
 open CellNumberStatisticsForm
+open RadiationForm
+//open MoleculeInhibitorsForm
 open Cell
 open ModelParameters
 open Model
@@ -41,14 +46,18 @@ type MainForm () as this =
     let nonstem_prop_dialog = new NonStemCellParamForm()    // the parameters of non-stem cells
     let forces_prop_dialog = new ForcesParamForm()          // the parameters of forces acting on the cells
     let glbstate_prop_dialog = new GlobalStateParamForm()   // the parameters of the global state
-
-    let division_statistics_dialog = new CellDivisionStatisticsForm(model.StemCellDivisionStatistics,   
-                                                        model.NonstemCellDivisionStatistics) // the statistics of cell division
+    let cell_cycle_prop_dialog = new CellCycleParamForm()          // the parameters of the cell cycle
+//    let gene_expression_dialog = new GeneExpressionParamForm()  // the parameters of gene expression (for EGFR and PDGFR)
 
     let cellnumbers_stat_dialog = new CellNumberStatisticsForm()  // the statistics of the number of different types of cells in the model
-    
+    let division_statistics_dialog = new CellDivisionStatisticsForm(model.StemCellDivisionStatistics, model.NonStemCellDivisionStatistics) // the statistics of cell division
+    let cell_cycle_stat_dialog = new CellCycleStatisticsForm(model.StemCellCycleStatistics, model.NonStemCellCycleStatistics)  // the cell cycle statistics
     let o2_dialog = new O2Form(model.GlobalState, model.GlobalState.O2, ModelParameters.O2Limits) // the plot of the function of the concentration of oxygen
+    let glucose_dialog = new GlucoseForm(model.GlobalState, model.GlobalState.Glucose, ModelParameters.GlucoseLimits)   // the plot of the function of the concentration of glucose
     
+    let radiation_dialog = new RadiationForm()  // the dialog for radiation
+//    let molecule_inhibitors = new MoleculeInhibitorsForm()  // the dialog for molecule inhibitors
+
     let cell_tooltip = new ToolTip() // a pop-up tooltip, shows the summary of the system in a given point
     let status_bar = new StatusBar() // shows the state and the number of step of the simulation 
     let mainwindow_delegate = new ControlDelegate(this.UpdateMainWindow)    // a delegate used to update the main window from the simulation thread
@@ -84,14 +93,11 @@ type MainForm () as this =
 
         let simulation_menuitem = new MenuItem("Simulation")
         let rerun_model_menuitem = new MenuItem("Rerun the simulation")
-        let save_screenshots_menuitem = new MenuItem("Save the screenshots")
-        
         rerun_model_menuitem.Click.Add(fun args ->
             Interlocked.Exchange(&restart_simulation, 1) |> ignore)
-
+        let save_screenshots_menuitem = new MenuItem("Save the screenshots")
         save_screenshots_menuitem.Click.Add(fun args -> change_saving_screenshots(save_screenshots_menuitem))
-
-        simulation_menuitem.MenuItems.AddRange([|rerun_model_menuitem; save_screenshots_menuitem|])
+        simulation_menuitem.MenuItems.AddRange([| rerun_model_menuitem; save_screenshots_menuitem |])
 
         let model_param_menuitem = new MenuItem("Model parameters")
         let stem_cell_param_menuitem = new MenuItem("Stem cells")
@@ -102,19 +108,35 @@ type MainForm () as this =
         global_state_param_menuitem.Click.Add(fun args -> glbstate_prop_dialog.Visible <- true)
         let forces_param_menuitem = new MenuItem("Forces")
         forces_param_menuitem.Click.Add(fun args -> forces_prop_dialog.Visible <- true)
-        model_param_menuitem.MenuItems.AddRange([|stem_cell_param_menuitem; nonstem_cell_param_menuitem;
-                                                    forces_param_menuitem; global_state_param_menuitem|]) |> ignore
+        let cell_cycle_param_menuitem = new MenuItem("Cell cycle")
+        cell_cycle_param_menuitem.Click.Add(fun args -> cell_cycle_prop_dialog.Visible <- true)
+        let gene_expression_param_menuitem = new MenuItem("Gene expression")
+//        gene_expression_menuitem.Click.Add(fun args -> gene_expression_dialog.Visible <- true)
+        model_param_menuitem.MenuItems.AddRange([| stem_cell_param_menuitem; nonstem_cell_param_menuitem;
+                                                   forces_param_menuitem; global_state_param_menuitem; 
+                                                   cell_cycle_param_menuitem; gene_expression_param_menuitem |]) |> ignore
 
         let stat_menuitem = new MenuItem("Statistics")
         let cell_number_menuitem = new MenuItem("Statistics of the number of cells")
         cell_number_menuitem.Click.Add(fun args -> cellnumbers_stat_dialog.Visible <- true)
         let division_stat_menuitem = new MenuItem("Cell division statistics")
         division_stat_menuitem.Click.Add(fun args -> division_statistics_dialog.Visible <- true)
-        let o2_menuitem = new MenuItem("The concentration of O2")
+        let cell_cycle_stat_menuitem = new MenuItem("Cell cycle statistics")
+        cell_cycle_stat_menuitem.Click.Add(fun args -> cell_cycle_stat_dialog.Visible <- true)
+        let o2_menuitem = new MenuItem("Concentration of O2")
         o2_menuitem.Click.Add(fun args -> o2_dialog.Visible <- true)
+        let glucose_menuitem = new MenuItem("Concentration of glucose")
+        glucose_menuitem.Click.Add(fun args -> glucose_dialog.Visible <- true)
+        stat_menuitem.MenuItems.AddRange([| cell_number_menuitem; division_stat_menuitem; cell_cycle_stat_menuitem; o2_menuitem; glucose_menuitem |])
 
-        stat_menuitem.MenuItems.AddRange([|cell_number_menuitem; division_stat_menuitem; o2_menuitem |])
-        base.Menu.MenuItems.AddRange([|simulation_menuitem; model_param_menuitem; stat_menuitem|]) |> ignore
+        let perturbation_menuitem = new MenuItem("Perturbations")
+        let radiation_menuitem = new MenuItem("Radiation")
+        radiation_menuitem.Click.Add(fun args -> radiation_dialog.Visible <- true)
+        let molecule_inhibitors_menuitem = new MenuItem("Molecule inhibitors")
+//        molecule_inhibitors_menuitem.Click.Add(fun args -> molecule_inhibitors_dialog.Visible <- true)
+        perturbation_menuitem.MenuItems.AddRange([| radiation_menuitem; molecule_inhibitors_menuitem |])
+
+        base.Menu.MenuItems.AddRange([| simulation_menuitem; model_param_menuitem; stat_menuitem; perturbation_menuitem |]) |> ignore
         
         base.Controls.Add(status_bar)
 
@@ -135,7 +157,11 @@ type MainForm () as this =
             cellnumbers_stat_dialog :> ParamFormBase;
             glbstate_prop_dialog :> ParamFormBase;
             o2_dialog :> ParamFormBase;
-            division_statistics_dialog :> ParamFormBase |]
+            glucose_dialog :> ParamFormBase;
+            division_statistics_dialog :> ParamFormBase;
+            cell_cycle_stat_dialog :> ParamFormBase;
+            cell_cycle_prop_dialog :> ParamFormBase;
+            radiation_dialog :> ParamFormBase |]
 
         // start the simulation of the model
         Async.Start(this.run_simulation(), cancellation_token.Token)
@@ -147,7 +173,7 @@ type MainForm () as this =
     member this.render_cells() = 
         // draw the image on a bitmap
         render.RenderCells(model.AllCells)
-        //render.DrawGrid(model.ExtState.O2.Grid)
+        //render.DrawGrid(model.GlobalState.O2.Grid)    // uncomment this line to display grid in the main window
 
         // copy the bitmap to the form
         let graphics = this.CreateGraphics()
@@ -189,6 +215,7 @@ type MainForm () as this =
 
         String.Concat( [| (sprintf "i=%d, j=%d\n" i_grid j_grid); msg;
                           (model.GlobalState.O2Summary(p)); "\n";
+                          (model.GlobalState.GlucoseSummary(p)); "\n";
                           (model.GlobalState.CellPackingDensitySummary(p)) |] )
 
     member this.UpdateMainWindow() =
@@ -206,7 +233,10 @@ type MainForm () as this =
             glb.NumofNonstemWithmemoryCells, step)
 
         o2_dialog.Refresh()
+        glucose_dialog.Refresh()
         division_statistics_dialog.Refresh()
+        cell_cycle_stat_dialog.Refresh()
+        radiation_dialog.Refresh()
 
     // run the simulation of the model in a loop
     member this.run_simulation() = 

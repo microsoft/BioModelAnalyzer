@@ -64,6 +64,17 @@ type O2Form(glb: GlobalState, f: GridFunction1D, f_limits: FloatInterval) =
         base.plot_func_to_bitmap()
         base.Render.DrawGrid2DRegion(glb.Peripheral, glb.O2.Grid)
 
+type GlucoseForm(glb: GlobalState, f: GridFunction1D, f_limits: FloatInterval) =
+    inherit GridFuncForm("The concentration of glucose", f, f_limits)
+
+    override this.get_summary(p: Geometry.Point) =
+        sprintf "%s\n%s" (base.get_summary(p))
+                    (glb.GlucoseSummary(p))
+
+    override this.plot_func_to_bitmap() =
+        base.plot_func_to_bitmap()
+        base.Render.DrawGrid2DRegion(glb.Peripheral, glb.Glucose.Grid)
+
 type DensityForm(glb: GlobalState, f, f_limits) =
     inherit GridFuncForm("Cell packing density", f, f_limits)
 

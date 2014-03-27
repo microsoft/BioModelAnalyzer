@@ -46,6 +46,8 @@ type CellRender (graphics: Graphics)=
 
         if cell.State = PreNecrosisState then color <- Color.Brown
         else if cell.State = NecrosisState then color <- Color.Black
+        else if cell.CellCycleStage = G0 then color <- Color.Yellow
+        else if cell.State = DeathByRadiation then color <- Color.Crimson
         color <- Color.FromArgb(125, color)
         color
 

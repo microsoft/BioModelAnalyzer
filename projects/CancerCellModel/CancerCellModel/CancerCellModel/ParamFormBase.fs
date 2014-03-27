@@ -12,7 +12,7 @@ type FormDesigner() =
     static member y_interval with get() = 15
     static member initial_location with get() = Drawing.Point(30, 30)
     static member label_size with get() = Drawing.Size(50, 15)
-    static member button_size with get() = Drawing.Size(60, 20)
+    static member button_size with get() = Drawing.Size(50, 20)
     static member textbox_size with get() = Drawing.Size(50, 10)
     static member plot_size with get() = Drawing.Size(350, 350)
 
@@ -31,7 +31,7 @@ type FormDesigner() =
     static member place_control_below(c1: Control, c2: Control, ?extra_space: int) =
         let dy = defaultArg extra_space 0
         c1.Location <- Drawing.Point(c2.Location.X, c2.Location.Y +
-                                     (if c2.AutoSize && c2.MaximumSize.Height > 0 then c2.MaximumSize.Height else c2.Height) +
+                                     (if c2.AutoSize && c2.MaximumSize.Height>0 then c2.MaximumSize.Height else c2.Height) +
                                      FormDesigner.y_interval + dy)
 
     static member textbox_float_interval_check(textbox: TextBox, name: string, range: FloatInterval)
@@ -271,7 +271,7 @@ type ShiftExpFuncParamDialog(x_limits: FloatInterval, is_var_integer: bool) as t
                                     ShiftExponentFunc(p1 = Point(0., max), p2 = Point(x3, min + (max - min)/y_scale), ymin = min)
 
 type ParamFormBase(?Width, ?Height) =
-    inherit Form (Visible = false, Width = defaultArg Width 1200, Height = defaultArg Height 850)
+    inherit Form(Visible = false, Width = defaultArg Width 1200, Height = defaultArg Height 850)
 
     static member func_plot(series: Series, func: float -> float, x_limits: FloatInterval) =
         let x = ref x_limits.Min
@@ -358,16 +358,23 @@ type ParamFormBase(?Width, ?Height) =
             tooltip.Hide(form)
 
 
-    static member create_logistic_func_controls(parent: Control, prev_control: Control, chart: Chart,
+    (*static member create_logistic_func_controls(parent: Control, prev_control: Control, chart: Chart,
                                                 func: ref<LogisticFunc>,
+                                                x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float) =*)
+
+    static member create_logistic_func_controls(parent: Control, prev_control: Control, location: string, chart: Chart,
+                                                func: ref<LogisticFunc>, 
                                                 x_limits: FloatInterval, y_limits: FloatInterval, y_scale: float) =
 
         let panel = new Panel()
         panel.ClientSize <- FormDesigner.plot_size
         
         if prev_control <> null
-            then FormDesigner.place_control_below(panel, prev_control)
-            else panel.Location <- FormDesigner.initial_location
+            then match location with
+                    |"below" -> FormDesigner.place_control_below(panel, prev_control, 35)
+                    |"totheright" -> FormDesigner.place_control_totheright(panel, prev_control)
+                    |_ -> raise(InnerError(sprintf "Error: Specify location for control below or totheright"))
+        else panel.Location <- FormDesigner.initial_location
 
         panel.Controls.Add(chart)
 
@@ -383,7 +390,7 @@ type ParamFormBase(?Width, ?Height) =
         change_param_button.AutoSize <- true
         change_param_button.Text <- "Change parameters"
         change_param_button.Click.Add(ParamFormBase.show_logistic_func_dialog(chart, func, x_limits, y_limits, y_scale))
-        FormDesigner.place_control_totheright(change_param_button, panel)
+        FormDesigner.place_control_below(change_param_button, panel)
 
         ParamFormBase.refresh_logistic_func_chart(chart, !func, x_limits)
 
@@ -424,7 +431,7 @@ type ParamFormBase(?Width, ?Height) =
         change_param_button.AutoSize <- true
         change_param_button.Text <- "Change parameters"
         change_param_button.Click.Add(ParamFormBase.show_shiftexp_func_dialog(chart, func, x_limits, y_limits, y_scale, is_var_integer))
-        FormDesigner.place_control_totheright(change_param_button, panel)
+        FormDesigner.place_control_below(change_param_button, panel)
 
         ParamFormBase.refresh_shiftexp_func_chart(chart, !func, x_limits) 
         parent.Controls.AddRange([| panel; change_param_button |])
@@ -484,7 +491,7 @@ type ParamFormBase(?Width, ?Height) =
         interval_label.Text <- name
         interval_label.MaximumSize <- FormDesigner.Scale(FormDesigner.label_size, (10., 1.))
         interval_label.AutoSize <- true
-        FormDesigner.place_control_below(interval_label, prev_control)
+        FormDesigner.place_control_below(interval_label, prev_control, 25)
 
         let min_label = new Label()
         min_label.Text <- "Min"
