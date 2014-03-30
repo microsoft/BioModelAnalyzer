@@ -1,6 +1,8 @@
 ﻿module Physics
 
 open Vector
+open System
+open System.Collections.Generic
 open System.Linq
 open System.Threading
 
@@ -114,6 +116,7 @@ let gensym =
     let x = ref 0
     (fun () -> incr x; !x)
 
+[<Serializable>]
 type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool} with
     member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
     member this.mass = this.volume * this.density
@@ -221,8 +224,11 @@ let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle li
             (0,1,0);(0,1,1);(0,1,2);   (1,1,0);(1,1,1);(1,1,2);   (2,1,0);(2,1,1);(2,1,2);
             (0,2,0);(0,2,1);(0,2,2);   (1,2,0);(1,2,1);(1,2,2);   (2,2,0);(2,2,1);(2,2,2);  ]
         |> List.map (fun (i:int,j:int,k:int) ->     (x-1+i,y-1+j,z-1+k) )
-        |> List.filter (fun (key:int*int*int) ->    grid.ContainsKey(key) )
-        |> List.map (fun (key:int*int*int) ->       grid.[key])
+//        |> List.filter (fun (key:int*int*int) ->    grid.ContainsKey(key) )
+//        |> List.map (fun (key:int*int*int) ->       grid.[key])
+        |> List.map (fun (key:int*int*int) ->   match grid.TryFind(key) with
+                                                | Some res -> res
+                                                | None -> []  )
 
 let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
          let rec quickJoin (l1: Particle list) (l2: Particle list) =

@@ -2,9 +2,11 @@
 open System.Collections.Generic
 open System.IO
 
+open IO
+
 type stateReporter = {EventWriter:(string list->unit);StateWriter:(Map<QN.var,int> list->unit);FrameWriter:(Physics.Particle list->unit)}
-[<Serializable>]
-type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
+//[<Serializable>]
+//type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
 [<Serializable>]
 type systemDefinition = {   Topology:Map<string,Map<string,Physics.Particle -> Physics.Particle -> Vector.Vector3D<Physics.zNewton>>>; 
                             BMA:QN.node list; 
@@ -26,6 +28,11 @@ type runningParameters = {  Temperature:            float<Physics.Kelvin>;
                             EventLog:               string list;
                             NonBondedCutOff:        float<Physics.um>;
                             Threads:                int;
+<<<<<<< HEAD
+=======
+                            CheckPointDisable:      bool;
+                            CheckPointFreq:         int;
+>>>>>>> 7d3bc2b... Checkpointing, death protection, and minor performance tweak
                             }
 
 let rec listLinePrint l =
@@ -57,7 +64,11 @@ let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runn
                     | 0 ->  output.FrameWriter system'
                             output.StateWriter machineStates'
                             output.EventWriter eventLog'
+<<<<<<< HEAD
                             ignore (if (steps%(freq*100)=0) then (IO.dumpSystem "Checkpoint.txt" {Physical=system';Formal=machineStates'}) else ())
+=======
+                            ignore (if ((not runInfo.CheckPointDisable) && (steps%(runInfo.CheckPointFreq)=0) ) then (IO.dumpSystem "Checkpoint.txt" {Physical=system';Formal=machineStates'}) else ())
+>>>>>>> 7d3bc2b... Checkpointing, death protection, and minor performance tweak
                             ()
                     | _ ->  ()
     let eventLog' = if (steps%freq=0) then [] else eventLog'
@@ -97,7 +108,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
-    let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false}
+    let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false; CheckPointFreq=rp.checkpointReport}
 
     ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid},runInfo,rng)
     //(uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, sOrigin, staticGrid, machName)
@@ -200,11 +211,7 @@ let main argv =
     printfn "Physical timestep: %A Machine timestep: %A Interface timestep: %A" (runInfo.TimeStep*(float runInfo.PhysicalGranularity)) (runInfo.TimeStep*(float runInfo.MachineGranularity)) (runInfo.TimeStep * (float runInfo.InterfaceGranularity) )//(!dT*(float)!pg) (!dT*(float)!mg) (!dT*(float)!ig)
     let initialState = {state with Physical=eSystem}
     let recorders = {EventWriter=eventout;FrameWriter=trajout;StateWriter=csvout}
-<<<<<<< HEAD
-    let runInfo = {Temperature=298.<Physics.Kelvin>; Steps=(!steps); Time=0.<Physics.second>; TimeStep=(!dT*1.0<Physics.second>); InterfaceGranularity=(!ig); PhysicalGranularity=(!pg); MachineGranularity=(!mg); VariableTimestepDepth=(!vdt); ReportingFrequency=(!freq); EventLog=["Initialise system";]; NonBondedCutOff=6.0<Physics.um>; Threads=(!threads)}
-=======
 //    let runInfo = {Temperature=298.<Physics.Kelvin>; Steps=(!steps); Time=0.<Physics.second>; TimeStep=(!dT*1.0<Physics.second>); InterfaceGranularity=(!ig); PhysicalGranularity=(!pg); MachineGranularity=(!mg); VariableTimestepDepth=(!vdt); ReportingFrequency=(!freq); EventLog=["Initialise system";]; NonBondedCutOff=6.0<Physics.um>; Threads=(!threads); CheckPointDisable=(!disablecheckpoint)}
->>>>>>> 27637d8... Moved model parameters from CLI to topology XML
     //If a restart file is used: open it and replace the system and machines with this
     let initialState =  if (!restart <> "") then 
                                 let io = (IO.readCheckpoint !restart)

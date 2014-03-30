@@ -12,8 +12,23 @@ type particleModification = Death of string | Life of Particle*Map<QN.var,int> |
 type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
+type protectMetric =    RadiusMin of float<Physics.um>
+                        | PressureMin of float<Physics.zNewton Physics.um^-2>
+                        | AgeMin of float<Physics.second> 
+                        | ConfluenceMin of int 
+                        | ForceMin of float<Physics.zNewton> 
+                        | RadiusMax of float<Physics.um>
+                        | PressureMax of float<Physics.zNewton Physics.um^-2>
+                        | AgeMax of float<Physics.second> 
+                        | ConfluenceMax of int 
+                        | ForceMax of float<Physics.zNewton> 
+                        | Unprotected
 type interfaceState = {Physical: Physics.Particle list ; Formal: Map<QN.var,int> list ; Register: string list}
 type chance< [<Measure>] 'a> = Absolute of float | ModelledSingle of float*float<second> | ModelledMultiple of float*float<second>*float<'a>
+//Counter type; for measuring the state of mutable responses
+type counter = Unlimited | Instances of int
+type probe = Contents | Fill of int
+
 
 //type chance = Certain | Random of System.Random*float*float
 
@@ -62,7 +77,7 @@ let inverf x =
     sgn(x) * sqrt( b - (2./(System.Math.PI*a) + 0.5 * System.Math.Log(1.-x**2.) ) )
 
 //We know the total number of opportunities, and we calculate the necessary number of 'successes' from an input guestimate of the average amount of change
-let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) =
+let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:float<Physics.um second^-1>) (totalChange:float<Physics.um>) (totalProb:float) =
     let steps = floor(time/dt)
     let minimumStepsForSuccess = floor(totalChange / (dt * rate))
     let p50 = minimumStepsForSuccess / steps //This is the probability which will have half the cells die
@@ -93,7 +108,7 @@ let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:fl
 
 let multiStepProbability = 
     let cache = System.Collections.Generic.Dictionary<_, _>()
-    (fun (time:float<second>) (dt:float<second>) (rate:float<'a second^-1>) (totalChange:float<'a>) (totalProb:float) ->
+    (fun (time:float<second>) (dt:float<second>) (rate:float<Physics.um second^-1>) (totalChange:float<Physics.um>) (totalProb:float) ->
     if cache.ContainsKey((time,dt,rate,totalChange,totalProb)) then cache.[(time,dt,rate,totalChange,totalProb)] 
     else    let result = multiStepProbability_nonmem time dt rate totalChange totalProb
             cache.[(time,dt,rate,totalChange,totalProb)] <- result
@@ -174,24 +189,24 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
             | (true,_)  -> Development (varName,Growth(rate*dt),{p with radius = p.radius+rate*dt},m)
             | (false,_) -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 
-            
-            //Divide ((Particle(p.id,p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(gensym(),p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
+let testProtection (protection: protectMetric) (p: Physics.Particle) =
+    match protection with 
+                                        | RadiusMin(n)     -> (p.radius > n)
+                                        | AgeMin(n)        -> (p.age > n)
+                                        | PressureMin(n)   -> (p.pressure > n)
+                                        | ForceMin(n)      -> (p.forceMag > n)
+                                        | ConfluenceMin(n) -> (p.confluence > n)
+                                        | RadiusMax(n)     -> (p.radius < n)
+                                        | AgeMax(n)        -> (p.age < n)
+                                        | PressureMax(n)   -> (p.pressure < n)
+                                        | ForceMax(n)      -> (p.forceMag < n)
+                                        | ConfluenceMax(n) -> (p.confluence < n)
+                                        | Unprotected      -> true
 
-//let growDivide (rate: float<um/second>) (max: float<um>) (varID: int) (varState: int) (cha: chance) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) = 
-//    let eMax = match cha with
-//                | Certain -> max
-//                | Random(rng,mean,sd) -> max+sd*(p.gRand*1.<um>)
-//    match (m.[varID] = varState) with
-//    | false -> Life (p,m)
-//    | true ->
-//            match (p.radius < eMax) with
-//            | true -> Life (Particle(p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-//            | false -> Divide ((Particle(p.name,p.location+(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,p.age,(PRNG.gaussianMargalisPolar' rng),p.freeze),m),(Particle(p.name,p.location-(p.orientation*(p.radius/(cbrt2))),p.velocity*rsqrt2,p.orientation,p.Friction,(p.radius/(cbrt2)),p.density,0.<second>,(PRNG.gaussianMargalisPolar' rng),p.freeze),m))
-
-
-let apoptosis (varID: int) (varState: int) (varName: string) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let apoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //dt doesn't do anything here- this is an 'instant death' function
-    match (m.[varID] = varState) with
+    let allowDeath = testProtection protection p
+    match (m.[varID] = varState && allowDeath ) with
     | false -> Life (p,m)
     | true -> Death (varName)
     // SI: consider switching to just if-then for these small expressions
@@ -200,8 +215,8 @@ let apoptosis (varID: int) (varState: int) (varName: string) (dt: float<second>)
 let limitedApoptosis (limit: int) =
     //Only a limited number of cells are allowed to die
     let counter = ref 0
-    (fun (varID: int) (varState: int) (varName: string) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) ->
-        let result = apoptosis varID varState varName dt p m
+    (fun (varID: int) (varState: int) (varName: string) (protection: protectMetric) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) ->
+        let result = apoptosis varID varState varName protection dt p m
         match (!counter<limit,result) with
         | (_,Life(p,m))         ->  Life(p,m)
         | (true,Death(v))       ->  incr counter
@@ -210,24 +225,29 @@ let limitedApoptosis (limit: int) =
         | (_,_)                 ->  failwith "Unexpected result from apoptosis" )
 
 
-let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    match (m.[varID] = varState, p.radius <= minSize) with
+let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let allowDeath = testProtection protection p
+    //Note: an alternative way to do this would be to just prevent *death* ie allow the cells to shrink but not die
+    match (m.[varID] = varState && allowDeath, p.radius <= minSize) with
     | (false,_)    -> Life (p,m)
     | (true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m) //Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true)  -> Death (varName)
 
-let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let allowDeath = testProtection protection p
     let probability = match pType with
                         | Absolute(p) -> p
                         | ModelledMultiple(p,pTime,mean) -> multiStepProbability pTime dt shrinkRate mean p//pSlice probability pTime dt
                         | _ -> failwith "Illegal probability type for a multiple step random death"
+    //Note: an alternative way to do this would be to just prevent *death* ie allow the cells to shrink but not die
     match (m.[varID] = varState, rng.NextDouble() < probability, p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
-let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let allowDeath = testProtection protection p
     let probability = match pType with
                         | Absolute(p) -> p
                         | ModelledMultiple(p,pTime,mean) -> multiStepProbability pTime dt shrinkRate mean p//pSlice probability pTime dt
@@ -238,7 +258,7 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) 
                         | Pressure   -> float p.pressure
                         | Force      -> float p.forceMag
                         | Confluence -> float p.confluence
-    match (m.[varID] = varState, rng.NextDouble() < probability*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
+    match (m.[varID] = varState && allowDeath, rng.NextDouble() < probability*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
     | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
@@ -247,18 +267,20 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) 
 let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     Death (varName)
 
-let randomApoptosis (varID: int) (varState: int) (varName: string) (rng: System.Random) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (rng: System.Random) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let allowDeath = testProtection protection p
     let probability =   match pType with
                         | Absolute(p) -> p
                         | ModelledSingle(p, pTime) -> pSlice p pTime dt
                         | _ -> failwith "Illegal probability type for a single step random death"
     assert(probability<=1.)
-    match (m.[varID] = varState, rng.NextDouble() < probability) with
+    match (m.[varID] = varState && allowDeath, rng.NextDouble() < probability) with
     | (false,_)     -> Life (p,m)
     | (true,true)   -> Death (varName)
     | (true,false)  -> Life (p,m)
 
-let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (bias: floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType: chance<_>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let allowDeath = testProtection protection p
     //cells have a higher chance of dying based on some metric- the power determines the precise relationship
     let probability =   match pType with
                         | Absolute(p) -> p
@@ -271,7 +293,7 @@ let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (bias: fl
                         | Pressure   -> float p.pressure
                         | Force      -> float p.forceMag
                         | Confluence -> float p.confluence
-    match (m.[varID] = varState, rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
+    match (m.[varID] = varState && allowDeath, rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
     | (false,_) -> Life (p,m)
     | (true,true) -> Death (varName)
     | (true,false) -> Life (p,m)

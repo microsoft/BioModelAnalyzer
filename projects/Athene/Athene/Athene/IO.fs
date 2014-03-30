@@ -4,6 +4,8 @@
 
 module IO
 
+open System
+open System.Collections.Generic
 open System.IO
 open Physics
 open Vector
@@ -16,8 +18,10 @@ open System.Runtime.Serialization.Formatters.Binary
 Particle('E',{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 1.,  0.7<um>, 1.3<pg um^-3>, false)
 Particle("E",{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 0.7<um>, 1.3<pg um^-3>, 1.<second>, 1., false)
 *)
-
+[<Serializable>]
 type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
+[<Serializable>]
+type systemStorage = {Physical: Physics.Particle list; LFormal: (QN.var*int) list list}
 
 let convertObjectToByteArray(data)=
     let bf = new BinaryFormatter()
@@ -29,7 +33,16 @@ let readCheckpoint (filename) =
     use fileStream = new FileStream(filename, FileMode.Open)
     let bf = new BinaryFormatter()
     let result = bf.Deserialize(fileStream)
-    (result :?> systemState)
+    let state' = (result :?> systemStorage)
+    let mapped = state'.LFormal |> List.map (fun m -> Map.ofList m)
+    let p = state'.Physical
+    //Read the maximum gensym and sync the current gensym to that
+    let maxG = p |> List.map (fun i -> i.id) |> List.max
+    let rec updateGensym (max:int) =
+        let g' = Physics.gensym ()
+        if (g' < max) then updateGensym max else ()
+    ignore (updateGensym maxG)
+    {Formal=mapped;Physical=p;}
 
 let dropFrame (system: Physics.Particle list) =
     ()
@@ -90,12 +103,16 @@ let csvWriteStates (file:StreamWriter) (machines: Map<QN.var,int> list) =
         file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
         //file.Close()
 
-let dumpSystem (filename: string) state = 
+let dumpSystem (filename: string) (state: systemState) = 
         use file = new FileStream(filename, FileMode.Create)//new StreamWriter(filename, false)
         //file.WriteLine(machines.Length)
         //file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
         //file.WriteLine(String.concat "," (seq { for p in particles -> p.ToString }) )
-        let byteArray = convertObjectToByteArray(state)
+        //Create a mapless system state
+        //This is because BinaryFormatter cannot serialize maps http://fpish.net/topic/None/59723
+        let mapless = state.Formal |> List.map (fun m -> Map.toList m)
+        let state' = {Physical=state.Physical;LFormal=mapless}
+        let byteArray = convertObjectToByteArray(state')
         file.Write(byteArray,0,byteArray.Length)
         file.Close()
         ()
@@ -121,7 +138,34 @@ type runParameters = {
                         report:int
                         nonBond:float<Physics.um>
                         vdt:int
+                        checkpointReport:int
                         }
+
+let getProtection protectType protectValue =
+    match protectType with
+    | "LargerThan"              ->  let size = (float) protectValue
+                                    RadiusMin(1.<Physics.um>*size)
+    | "SmallerThan"             ->  let size = (float) protectValue
+                                    RadiusMax(1.<Physics.um>*size)
+    | "OlderThan"               ->  let age = (float) protectValue
+                                    AgeMin(1.<Physics.second>*age)
+    | "YoungerThan"             ->  let age = (float) protectValue
+                                    AgeMax(1.<Physics.second>*age)
+    | "PressureGreaterThan"     ->  let pressure = (float) protectValue
+                                    PressureMin(1.<Physics.zNewton/Physics.um^2>*pressure)
+    | "PressureLessThan"        ->  let pressure = (float) protectValue
+                                    PressureMax(1.<Physics.zNewton/Physics.um^2>*pressure)
+    | "ConfluenceGreaterThan"   ->  let conf = (int) protectValue
+                                    ConfluenceMin(conf)
+    | "ConfluenceLessThan"      ->  let conf = (int) protectValue
+                                    ConfluenceMax(conf)
+    | "ForceGreaterThan"        ->  let pressure = (float) protectValue
+                                    PressureMin(1.<Physics.zNewton/Physics.um^2>*pressure)
+    | "ForceLessThan"           ->  let pressure = (float) protectValue
+                                    PressureMax(1.<Physics.zNewton/Physics.um^2>*pressure)
+    | "None"                    ->  Unprotected
+    | _                         ->  printf("Unrecognised apoptosis protection mechanism. Proceeding unprotected\n")
+                                    Unprotected
 
 let xmlTopRead (filename: string) =
     let xn s = XName.Get(s)
@@ -136,11 +180,12 @@ let xmlTopRead (filename: string) =
     let ig = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "IG").Value) with _ -> failwith "Set interface time granularity"
     let vdt = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "VariabledTDepth").Value) with _ -> 0
     let report = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Report").Value) with _ -> 1
+    let checkpoint = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "CheckpointFreq").Value) with _ -> 100 * report
     let nonBond = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "NonBondedCutoff").Value) with _ -> failwith "Set non bonded cutoff"
     
     let rng = System.Random(seed)
 
-    let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>)}
+    let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>);checkpointReport=checkpoint}
 
     let sOrigin = {x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
 //    let PBC = 
@@ -336,14 +381,18 @@ let xmlTopRead (filename: string) =
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"  
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    apoptosis varID varState varName
+                                    let protectLevel = try (r.Attribute(xn "ProtectionLevel").Value) with _ -> ""
+                                    let varProtection = try (getProtection (r.Attribute(xn "ProtectionType").Value) protectLevel) with _ -> Unprotected
+                                    apoptosis varID varState varName varProtection
                                 | "LimitedApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"  
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
                                     let limit = try (int) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing maximum number of deaths" 
                                     let apoptosis' = limitedApoptosis limit
-                                    apoptosis' varID varState varName
+                                    let protectLevel = try (r.Attribute(xn "ProtectionLevel").Value) with _ -> ""
+                                    let varProtection = try (getProtection (r.Attribute(xn "ProtectionType").Value) protectLevel) with _ -> Unprotected
+                                    apoptosis' varID varState varName varProtection
                                 | "RandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -357,7 +406,9 @@ let xmlTopRead (filename: string) =
                                                                             ModelledSingle(p,time)
                                                     | _ -> failwith "Invalid probability type for this random mechanism"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    randomApoptosis varID varState varName rng pType
+                                    let protectLevel = try (r.Attribute(xn "ProtectionLevel").Value) with _ -> ""
+                                    let varProtection = try (getProtection (r.Attribute(xn "ProtectionType").Value) protectLevel) with _ -> Unprotected
+                                    randomApoptosis varID varState varName varProtection rng pType
                                 | "BiasedRandomApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -375,12 +426,14 @@ let xmlTopRead (filename: string) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
+                                    let protectLevel = try (r.Attribute(xn "ProtectionLevel").Value) with _ -> ""
+                                    let varProtection = try (getProtection (r.Attribute(xn "ProtectionType").Value) protectLevel) with _ -> Unprotected
                                     match biasType with
-                                    | Radius ->     randomBiasApoptosis varID varState varName Radius rng power (refC*1.<um>) refM pType 
-                                    | Age ->        randomBiasApoptosis varID varState varName Age rng power (refC*1.<Physics.second>) refM pType
-                                    | Confluence -> randomBiasApoptosis varID varState varName Confluence rng power (refC*1.) refM pType
-                                    | Force ->      randomBiasApoptosis varID varState varName Force rng power (refC*1.<zNewton>) refM pType
-                                    | Pressure ->   randomBiasApoptosis varID varState varName Pressure rng power (refC*1.<zNewton um^-2>) refM pType   
+                                    | Radius ->     randomBiasApoptosis varID varState varName varProtection Radius rng power (refC*1.<um>) refM pType 
+                                    | Age ->        randomBiasApoptosis varID varState varName varProtection Age rng power (refC*1.<Physics.second>) refM pType
+                                    | Confluence -> randomBiasApoptosis varID varState varName varProtection Confluence rng power (refC*1.) refM pType
+                                    | Force ->      randomBiasApoptosis varID varState varName varProtection Force rng power (refC*1.<zNewton>) refM pType
+                                    | Pressure ->   randomBiasApoptosis varID varState varName varProtection Pressure rng power (refC*1.<zNewton um^-2>) refM pType   
                                 | "RandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -396,8 +449,10 @@ let xmlTopRead (filename: string) =
                                                                             ignore (Interface.multiStepProbability time (timestep*1.<Physics.second>) (shrinkRate*1.<Physics.um/Physics.second>) (totalShrink*1.<Physics.um>) p) //cache and check probability
                                                                             ModelledMultiple(p,time,(totalShrink*1.<Physics.um>))
                                                     | _ -> failwith "Invalid probability type for this random mechanism"
-                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
-                                    shrinkingRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) rng pType                    
+                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name" 
+                                    let protectLevel = try (r.Attribute(xn "ProtectionLevel").Value) with _ -> ""
+                                    let varProtection = try (getProtection (r.Attribute(xn "ProtectionType").Value) protectLevel) with _ -> Unprotected  
+                                    shrinkingRandomApoptosis varID varState varName varProtection (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) rng pType                    
                                 | "BiasedRandomShrinkingApoptosis" ->
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
@@ -418,12 +473,14 @@ let xmlTopRead (filename: string) =
                                     let refC =  try (float) (r.Attribute(xn "Constant").Value) with _ -> failwith "Missing reference constant"
                                     let refM =  try (float) (r.Attribute(xn "Gradient").Value) with _ -> failwith "Missing reference gradient"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
+                                    let protectLevel = try (r.Attribute(xn "ProtectionLevel").Value) with _ -> ""
+                                    let varProtection = try (getProtection (r.Attribute(xn "ProtectionType").Value) protectLevel) with _ -> Unprotected
                                     match biasType with
-                                    | Radius        -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Radius rng power (refC*1.<um>) refM pType 
-                                    | Age           -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Age rng power (refC*1.<second>) refM pType
-                                    | Pressure      -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Pressure rng power (refC*1.<zNewton um^-2>) refM pType 
-                                    | Force         -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Force rng power (refC*1.<zNewton>) refM pType 
-                                    | Confluence    -> shrinkingBiasRandomApoptosis varID varState varName (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Confluence rng power (refC*1.) refM pType 
+                                    | Radius        -> shrinkingBiasRandomApoptosis varID varState varName varProtection (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Radius rng power (refC*1.<um>) refM pType 
+                                    | Age           -> shrinkingBiasRandomApoptosis varID varState varName varProtection (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Age rng power (refC*1.<second>) refM pType
+                                    | Pressure      -> shrinkingBiasRandomApoptosis varID varState varName varProtection (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Pressure rng power (refC*1.<zNewton um^-2>) refM pType 
+                                    | Force         -> shrinkingBiasRandomApoptosis varID varState varName varProtection (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Force rng power (refC*1.<zNewton>) refM pType 
+                                    | Confluence    -> shrinkingBiasRandomApoptosis varID varState varName varProtection (minSize*1.<Physics.um>) (shrinkRate*1.<Physics.um/Physics.second>) Confluence rng power (refC*1.) refM pType 
                                 | _ -> failwith "Unknown function"
 
                         yield f
