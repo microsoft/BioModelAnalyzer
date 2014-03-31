@@ -1291,10 +1291,10 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
         </Style>
 
         
-        <!-- Empty -->
+        <!-- Empty New: Fill = Transparent.. Since old path seems to be coloured in.. -->
         <Style x:Key="EmptyStyle" TargetType="Path">
-            <Setter Property="Data" Value=""/>
-            <Setter Property="Fill" Value="White"/>
+            <Setter Property="Data" Value=" "/>
+            <Setter Property="Fill" Value="Transparent"/>
             <Setter Property="Canvas.ZIndex" Value="99"/>
         </Style>
 
@@ -1372,10 +1372,10 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                     <RowDefinition Height="2*"/>
                     <RowDefinition Height="*" MinHeight="30"/>
 
-                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="7*"/>  <!-- Was 5* _____ -->
                     <RowDefinition Height="*" MinHeight="35"/>
-                    <RowDefinition Height="12*"/>
-                    <RowDefinition Height="55"/>
+                    <RowDefinition Height="10*"/> <!-- Was 12* _____ -->
+                    <RowDefinition Height="55"/> <!-- Was 55 _____ -->
 
                 </Grid.RowDefinitions>
 
@@ -1415,10 +1415,12 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
             Fill="#FFFAAF40" Height="42.663" Stretch="Fill" Width="38.201" UseLayoutRounding="False" Margin="5"
             Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
+                <!--
                 <Path x:Name="Number_shadow" Data="F1M56.707,149.7656L54.707,149.7656L54.707,141.2066C54.707,138.6506,56.304,136.9236,57.849,135.2536C59.367,133.6126,60.801,132.0616,60.801,129.7446L60.801,107.4766C60.801,106.4676,59.98,105.6476,58.971,105.6476C57.963,105.6476,57.143,106.4676,57.143,107.4766L57.143,125.2476L55.143,125.2476L55.143,107.4766C55.143,106.4676,54.322,105.6476,53.313,105.6476C52.305,105.6476,51.484,106.4676,51.484,107.4766L51.484,125.2476L49.484,125.2476L49.484,107.4766C49.484,106.4676,48.664,105.6476,47.656,105.6476C46.647,105.6476,45.826,106.4676,45.826,107.4766L45.826,125.2476L43.826,125.2476L43.826,107.4766C43.826,106.4676,43.006,105.6476,41.998,105.6476C40.989,105.6476,40.168,106.4676,40.168,107.4766L40.168,127.2796L38.168,127.2796L38.168,119.6626C38.168,118.6536,37.348,117.8326,36.341,117.8326C35.332,117.8326,34.511,118.6536,34.511,119.6626L34.511,129.7446C34.511,131.7866,36.134,133.0946,38.013,134.6086C40.043,136.2436,42.345,138.0976,42.345,141.2066L42.345,149.7656L40.345,149.7656L40.345,141.2066C40.345,139.0546,38.603,137.6516,36.759,136.1656C34.768,134.5616,32.511,132.7436,32.511,129.7446L32.511,119.6626C32.511,117.5516,34.229,115.8326,36.341,115.8326C37.002,115.8326,37.624,116.0016,38.168,116.2986L38.168,107.4766C38.168,105.3656,39.886,103.6476,41.998,103.6476C43.117,103.6476,44.126,104.1306,44.827,104.8986C45.527,104.1306,46.537,103.6476,47.656,103.6476C48.775,103.6476,49.784,104.1306,50.484,104.8986C51.185,104.1306,52.194,103.6476,53.313,103.6476C54.433,103.6476,55.442,104.1306,56.143,104.8986C56.843,104.1306,57.852,103.6476,58.971,103.6476C61.082,103.6476,62.801,105.3656,62.801,107.4766L62.801,129.7446C62.801,132.8456,60.95,134.8466,59.317,136.6116C57.916,138.1256,56.707,139.4336,56.707,141.2066z" 
             ToolTipService.ToolTip="Number"
             Fill="#FF808184" Height="46.118" Stretch="Fill" Width="30.29" UseLayoutRounding="False" Margin="5"
             Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+                -->
 
                 <Path x:Name="Until_shadow"  
                     StrokeLineJoin="Round" Stroke="#FF58595B" Fill="#FF58595B" Data="M 0.5,0.49998L 107.167,0.49998L 107.167,57.6667L 0.5,57.6667L 0.5,0.49998 Z M 4.29148,4.06315L 4.29148,52.864L 102.617,52.864L 102.617,4.06315L 4.29148,4.06315 Z M 37.8333,31.5207C 37.8333,38.5068 34.5625,41.9999 28.0208,41.9999C 21.6736,41.9999 18.5,38.5884 18.5,31.7655L 18.5,18.3332L 23.8333,18.3332L 23.8333,31.729C 23.8333,35.4651 25.2917,37.3332 28.2083,37.3332C 31.0694,37.3332 32.5,35.5293 32.5,31.9217L 32.5,18.3332L 37.8333,18.3332L 37.8333,31.5207 Z M 58.5,41.6665L 53.5,41.6665L 53.5,32.4999C 53.5,29.9443 52.5504,28.6665 50.651,28.6665C 49.7344,28.6665 48.98,29.005 48.388,29.6822C 47.796,30.3592 47.5,31.2186 47.5,32.2603L 47.5,41.6665L 42.5,41.6665L 42.5,24.9999L 47.5,24.9999L 47.5,27.7707L 47.5677,27.7707C 48.7969,25.7012 50.5885,24.6665 52.9427,24.6665C 56.6476,24.6665 58.5,26.946 58.5,31.505L 58.5,41.6665 Z M 72.1667,41.3332C 71.4236,41.7776 70.3055,41.9999 68.8125,41.9999C 65.2708,41.9999 63.5,40.1092 63.5,36.328L 63.5,28.6665L 60.8333,28.6665L 60.8333,24.9999L 63.5,24.9999L 63.5,21.4478L 68.5,19.9999L 68.5,24.9999L 72.1667,24.9999L 72.1667,28.6665L 68.5,28.6665L 68.5,35.3957C 68.5,37.1318 69.1753,37.9999 70.526,37.9999C 71.0573,37.9999 71.6042,37.8887 72.1667,37.6665L 72.1667,41.3332 Z M 78,22.3332C 77.1701,22.3332 76.4904,22.0736 75.9609,21.5545C 75.4314,21.0354 75.1667,20.3974 75.1667,19.6405C 75.1667,18.8662 75.4314,18.2325 75.9609,17.7394C 76.4904,17.2464 77.1701,16.9999 78,16.9999C 78.8403,16.9999 79.5226,17.2464 80.0469,17.7394C 80.5712,18.2325 80.8333,18.8662 80.8333,19.6405C 80.8333,20.4287 80.5712,21.0745 80.0469,21.578C 79.5226,22.0815 78.8403,22.3332 78,22.3332 Z M 80.5,41.6665L 75.5,41.6665L 75.5,24.9999L 80.5,24.9999L 80.5,41.6665 Z M 89.8333,41.6665L 84.8333,41.6665L 84.8333,16.9999L 89.8333,16.9999L 89.8333,41.6665 Z "
@@ -1476,13 +1478,36 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                 <!-- Model name -->
                 <TextBlock TextWrapping="NoWrap" TextTrimming="WordEllipsis" Text="{Binding ModelName}" VerticalAlignment="Center" Margin="10,10,0,0" Style="{StaticResource TitleTextStyle}" FontSize="21.333" d:LayoutOverrides="Width" Grid.Row="1" Grid.ColumnSpan="2"/>
 
-                <!-- Right-hand corner Test button -->
-                <Button VerticalAlignment="Center" Margin="0,10,40,0" 
+                <!-- Just for the Debug evaluate button. ____Delete this stackpanel once no more necessary. -->
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    
+                    <!-- Temporary Evaluate command, to update the Terminal field. -->
+                    <Button Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,10,10,0" HorizontalAlignment="Right" d:LayoutOverrides="HorizontalAlignment"
+                        Click="Evaluate_expressions" 
+                        Background="Chocolate"
+                        Content="Evaluate Rules" 
+                        Cursor="Hand" 
+                        Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
+                    
+                    <!-- Right-hand corner Test button -->
+                    <Button Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,10,40,0" HorizontalAlignment="Right" d:LayoutOverrides="HorizontalAlignment"
                         Command="{Binding RunCommand}" 
                         Background="#FF82BD82" 
                         Content="TEST" 
                         Cursor="Hand" 
-                        Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333" HorizontalAlignment="Right" d:LayoutOverrides="HorizontalAlignment" Grid.Row="1" Grid.Column="1"/>
+                        Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
+                    
+                </StackPanel>
+
+                <!-- UNCOMMENT____ once TEST -> evaluates KF rules and LTL formula, and updates the Terminal field. -->
+                <!-- Right-hand corner Test button -->
+                <!--<Button Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,10,40,0" HorizontalAlignment="Right" d:LayoutOverrides="HorizontalAlignment"
+                        Command="{Binding RunCommand}" 
+                        Background="#FF82BD82" 
+                        Content="TEST" 
+                        Cursor="Hand" 
+                        Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
+                -->
 
                 <!-- Superstate text -->
                 <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" Text="Keyframes" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0">
@@ -1509,6 +1534,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                              MouseLeftButtonUp="KeyFrames_MouseLeftButtonUp" 
                              MouseLeftButtonDown="KeyFrames_MouseLeftButtonDown"
                              SelectionChanged="KeyFrames_SelectionChanged" 
+                             
                              >
                         <!-- Path doesn't exist for ListBox, so needs be created within ItemTemplates-->
                         <ListBox.ItemTemplate>
@@ -1520,12 +1546,14 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                             <SolidColorBrush Color="{Binding Color}" />
                                         </Path.Fill>
                                     </Path>-->
-                                    <Rectangle Height="20" Width="20" MouseLeftButtonDown="KeyFrames_MouseLeftButtonDown" Tag="{Binding Name}">
+                                    <Rectangle Height="20" Width="20" MouseLeftButtonDown="KeyFrames_MouseLeftButtonDown" MouseRightButtonDown="KeyFrames_MouseRightButtonDown" Tag="{Binding Name}">
                                         <Rectangle.Fill>
                                             <SolidColorBrush Color="{Binding Color}" />
                                         </Rectangle.Fill>
                                     </Rectangle>
-                                    <TextBox Text="{Binding Name, Mode=TwoWay}" Margin="2" MouseLeftButtonDown="KeyFrames_MouseLeftButtonDown" Tag="{Binding Name}" >
+                                    <TextBox Text="{Binding Name, Mode=TwoWay}" Margin="2" 
+                                             MouseLeftButtonDown="KeyFrames_MouseLeftButtonDown" MouseRightButtonDown="KeyFrames_MouseRightButtonDown" 
+                                             Tag="{Binding Name}" TextChanged="Keyframe_TextChanged" BorderBrush="Transparent">
                                         <TextBox.Background>
                                             <SolidColorBrush Color="{Binding Color}" />
                                         </TextBox.Background>
@@ -1603,89 +1631,113 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
+                            <!--<RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/> _____ -->
 
                         </Grid.RowDefinitions>
                         <!-- Row 0 -->
-                        <Rectangle x:Name="rect0" Tag="0" 
-                                   Grid.Column="0" Grid.Row="0" 
+                        <Rectangle x:Name="rect0" Tag="0" Grid.Column="0" Grid.Row="0" 
+                                   Style="{StaticResource rectForGrid}"
+                                   MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" 
+                                   MouseLeftButtonDown="Rect_MouseLeftButtonUp" MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   />
+                        <TextBlock x:Name="text0" Tag="0" Grid.Column="0" Grid.Row="0" 
+                                   Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                        <Path      x:Name="path0" Tag="0" Grid.Row="0" Grid.Column="0" 
+                                   Canvas.ZIndex="15" ToolTipService.ToolTip="" AllowDrop="False" 
+                                   MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseRightButtonDown="path_MouseRightButtonDown"
+                                   />
+                        <TextBox x:Name="N0" Tag="0" Grid.Column="0" Grid.Row="0" 
+                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
+                                 Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
+                                 AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" 
+                                 TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" 
+                                 GotFocus="N_GotFocus" MouseRightButtonDown="textbox_MouseRightButtonDown" TextChanged="N_TextChanged"
+                                 />
+
+                        <Rectangle x:Name="rect1" Tag="1" Grid.Column="1" Grid.Row="0" 
+                                   Style="{StaticResource rectForGrid}"
+                                   MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" 
+                                   MouseLeftButtonDown="Rect_MouseLeftButtonUp" MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   />
+                        <TextBlock x:Name="text1" Tag="1" Grid.Column="1" Grid.Row="0" 
+                                   Style="{StaticResource textForGrid}" 
+                                   MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                        <Path      x:Name="path1" Tag="1" Grid.Row="0" Grid.Column="1"  
+                                   Canvas.ZIndex="15" ToolTipService.ToolTip="" AllowDrop="False" 
+                                   MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseRightButtonDown="path_MouseRightButtonDown"
+                                   />
+                        <TextBox x:Name="N1" Tag="1" Grid.Column="1" Grid.Row="0" 
+                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
+                                 Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
+                                 AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" 
+                                 TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" 
+                                 GotFocus="N_GotFocus" MouseRightButtonDown="textbox_MouseRightButtonDown" TextChanged="N_TextChanged" 
+                                 />
+
+                        <Rectangle x:Name="rect2" Tag="2" 
+                                   Grid.Column="2" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
                                    MouseRightButtonDown="rect_MouseRightButtonDown"
                                    />
-                        <TextBlock x:Name="text0" Tag="0" Grid.Column="0" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
-                        <Path      x:Name="path0" Tag="0" 
-                                   Grid.Row="0" Grid.Column="0" Canvas.ZIndex="15"
-                                   ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
-
-                        <TextBox x:Name="N0" Tag="0" Grid.Column="0" Grid.Row="0" 
+                        <TextBlock x:Name="text2" Tag="2" Grid.Column="2" Grid.Row="0" 
+                                   Style="{StaticResource textForGrid}" 
+                                   MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                        <Path      x:Name="path2" Tag="2" Grid.Row="0" Grid.Column="2"  Canvas.ZIndex="15"
+                                   ToolTipService.ToolTip="" AllowDrop="False" 
+                                   MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseRightButtonDown="path_MouseRightButtonDown"
+                                   />
+                        <TextBox x:Name="N2" Tag="2" Grid.Column="2" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
-                                 TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
-                                 Style="{StaticResource ReadOnlyStyle}"
-                                 GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" 
+                                 TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" 
+                                 GotFocus="N_GotFocus" MouseRightButtonDown="textbox_MouseRightButtonDown" TextChanged="N_TextChanged" 
                                  />
 
-
-                        <Rectangle x:Name="rect1" Tag="1" 
-                                   Grid.Column="1" Grid.Row="0" 
+                        <Rectangle x:Name="rect3" Tag="3" Grid.Column="3" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                        <TextBlock x:Name="text1" Tag="1" Grid.Column="1" Grid.Row="0" Style="{StaticResource textForGrid}"
+                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   />
+                        <TextBlock x:Name="text3" Tag="3" Grid.Column="3" Grid.Row="0" 
+                                   Style="{StaticResource textForGrid}" 
                                    MouseRightButtonDown="textblock_MouseRightButtonDown"/>
-                        <Path      x:Name="path1" Tag="1" 
-                                   Grid.Row="0" Grid.Column="1"  Canvas.ZIndex="15"
-                                   ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
-
-                        <TextBox x:Name="N1" Tag="1" Grid.Column="1" Grid.Row="0" 
+                        <Path      x:Name="path3" Tag="3" Grid.Row="0" Grid.Column="3" 
+                                   Canvas.ZIndex="15" ToolTipService.ToolTip="" AllowDrop="False" 
+                                   MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseRightButtonDown="path_MouseRightButtonDown"
+                                   />
+                        <TextBox x:Name="N3" Tag="3" Grid.Column="3" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
-                                 TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" GotFocus="N_GotFocus" 
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
+                                 AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" 
+                                 TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" 
+                                 GotFocus="N_GotFocus" MouseRightButtonDown="textbox_MouseRightButtonDown" TextChanged="N_TextChanged"
+                                 />
 
-                        <Rectangle x:Name="rect2" Tag="2" Grid.Column="2" Grid.Row="0" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                        <TextBlock x:Name="text2" Tag="2" Grid.Column="2" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
-                        <Path      x:Name="path2" Tag="2" Grid.Row="0" Grid.Column="2"  Canvas.ZIndex="15"
-                                   ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
-                        <TextBox x:Name="N2" Tag="2" Grid.Column="2" Grid.Row="0" 
-                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"
-                                 Style="{StaticResource ReadOnlyStyle}"
-                                 GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
-
-                        <Rectangle x:Name="rect3" Tag="3" Grid.Column="3" Grid.Row="0" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                        <TextBlock x:Name="text3" Tag="3" Grid.Column="3" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
-                        <Path      x:Name="path3" Tag="3" Grid.Row="0" Grid.Column="3"  Canvas.ZIndex="15"
-                                   ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
-                        <TextBox x:Name="N3" Tag="3" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" Background="Transparent" 
-                                 Style="{StaticResource ReadOnlyStyle}"
-                                 GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
-
-                        <Rectangle x:Name="rect4" Tag="4" Grid.Column="4" Grid.Row="0" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                        <TextBlock x:Name="text4" Tag="4" Grid.Column="4" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                        <Rectangle x:Name="rect4" Tag="4" Grid.Column="4" Grid.Row="0" 
+                                   Style="{StaticResource rectForGrid}"
+                                   MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" 
+                                   MouseLeftButtonDown="Rect_MouseLeftButtonUp" MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   />
+                        <TextBlock x:Name="text4" Tag="4" Grid.Column="4" Grid.Row="0" 
+                                   Style="{StaticResource textForGrid}" 
+                                   MouseRightButtonDown="textblock_MouseRightButtonDown"/>
                         <Path      x:Name="path4" Tag="4" Grid.Row="0" Grid.Column="4"  Canvas.ZIndex="15"
-                                   ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
-                        <TextBox x:Name="N4" Tag="4" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" Background="Transparent" 
-                                 Style="{StaticResource ReadOnlyStyle}"
-                                 GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
+                                   ToolTipService.ToolTip="" AllowDrop="False" 
+                                   MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseRightButtonDown="path_MouseRightButtonDown"
+                                   />
+                        <TextBox x:Name="N4" Tag="4" Grid.Column="4" Grid.Row="0" 
+                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
+                                 Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
+                                 AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3"
+                                 TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" 
+                                 GotFocus="N_GotFocus" MouseRightButtonDown="textbox_MouseRightButtonDown" TextChanged="N_TextChanged" 
+                                 />
 
+                        
                         <!-- Row 1 NEEDS PATHS! -->
                         <Rectangle x:Name="rect5" Tag="5" Grid.Column="0" Grid.Row="1" Style="{StaticResource rectForGrid}"
                         MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
@@ -2382,7 +2434,8 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                HorizontalAlignment="Left" Margin="10,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
 
                         <TextBox TextWrapping="Wrap" Text="{Binding LTLInput, Mode=TwoWay}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Margin="10,3,0,3" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
-                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"
+                                 x:Name="tempKF"/>
 
                         <!--<TextBlock Grid.Column="0" Grid.Row="2" Text="English:" Style="{StaticResource PopupTextStyle}" 
                                HorizontalAlignment="Left" Margin="10,5,0,0" Foreground="Black" VerticalAlignment="Center"/>
@@ -2399,9 +2452,12 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                     </Grid>
                 </Border>
 
-                <!-- Uncomment this line when debugging! -->
-                <!--<TextBox x:Name="tempDebug" TextWrapping="Wrap" Text="Temporary debug output here." VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="1" Margin="10,0" Background="Cornsilk" Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
-                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>-->
+                <!-- Uncomment this line when debugging! Foreground for show is now Cornsilk ______  -->
+                <TextBox x:Name="tempDebug" TextWrapping="Wrap" Text="Temporary debug output here." VerticalAlignment="Stretch" 
+                         HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="1" Margin="10,0" Background="Cornsilk" Foreground="Cornsilk" 
+                         Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto"/>
+               
 
                 <!-- Terminal Input settings -->
                 <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Center">
@@ -2426,7 +2482,8 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                 <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding LTLOutput}" 
                            Grid.Row="4" Grid.Column="1" Margin="10,34.75,23,10" Foreground="#FF7E7E7E" 
                            ToolTipService.ToolTip="Proof output" Grid.RowSpan="2" 
-                           ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                           ScrollViewer.VerticalScrollBarVisibility="Auto"                           
+                           />
 
                 <!-- Bottom gray line -->
                 <Grid x:Name="FooterPanel" Grid.Row="6" Grid.ColumnSpan="2">
