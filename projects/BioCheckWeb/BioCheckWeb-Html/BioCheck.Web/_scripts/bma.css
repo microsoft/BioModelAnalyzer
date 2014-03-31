@@ -6,21 +6,12 @@
 
 ******************************************************************************/
 
-html, body {
+html, body, #tool-container {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
-}
-
-#tool-container, #tool {
-	display: table;
-}
-
-#tool-container {
-	height: 100%;
-	width: 100%;
 }
 
 #tool {
@@ -30,8 +21,21 @@ html, body {
 }
 
 #tools, #design-surface, #tools-top, #tool-footer {
-	display: table-row;
 	width: 100%;
+}
+
+#tools-top {
+	position: relative;
+	height: calc(100% - 40px);
+}
+
+#design-surface {
+	height: calc(100% - 40px);
+}
+
+#tool-footer {
+	position: absolute;
+	bottom: 0;
 }
 
 #tools {
@@ -83,6 +87,10 @@ html, body {
 
 #svgroot {
 	height: 100%;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 .svg-highlight {
