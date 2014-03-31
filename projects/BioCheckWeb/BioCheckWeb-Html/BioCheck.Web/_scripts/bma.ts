@@ -19,6 +19,8 @@ window.onload = () => {
     svgjq.mousedown(startDrag);
     svgjq.mousemove(doDrag);
     svgjq.mouseup(drawItemOrStopDrag);
+    svgjq.attr("unselectable", "on");
+    svgjq.on("selectstart", function () { return false; });
 
     $("#general-tools").buttonset();
     $("#drawing-tools").buttonset();
@@ -712,8 +714,9 @@ function applyNewTranslation(elem: any, x: number, y: number) {
     elem.transform.baseVal.appendItem(transform);
 }
 
+// TODO - specify origin instead of assuming actual centre
 function rotateSvgElement(elem: SVGGElement, angle: number) {
-    //var bbox = getTrueBBox(elem);
+    // Need the b-box relative to the container, not the absolute one
     var bbox = elem.getBBox();
     var cx = bbox.x + bbox.width / 2;
     var cy = bbox.y + bbox.height / 2;
@@ -778,8 +781,11 @@ function stringInString(s: string, find: string) {
     return s && s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
 }
 
-function svgHasClass(elem: SVGStylable, c: string) {
-    return stringInString(elem.className.baseVal, c);
+function svgHasClass(elem: SVGStylable, c: string): any {
+    if (elem.className && elem.className.baseVal)
+        return stringInString(elem.className.baseVal, c);
+    else
+        return false;
 }
 
 function svgAddClass(elem: SVGStylable, c: string) {
