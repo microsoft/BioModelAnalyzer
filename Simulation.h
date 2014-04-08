@@ -16,8 +16,13 @@ class Simulation;
 #include <string>
 #include <utility>
 #include <tuple>
+
+class Simulation;
+
 #include "CellProgram.h"
+#include "Condition.h"
 #include "Event/Event.h"
+#include "Directive/Directive.h"
 
 class Simulation {
 public:
@@ -25,8 +30,8 @@ public:
 	Simulation(const std::string& filename);
 	virtual ~Simulation();
 
-	bool removeCell(CellProgram* c);
-	bool addCell(CellProgram* c);
+//	bool addCellProgram(CellProgram* c);
+	void addCell(Cell* c);
 
 	void readFile(const std::string& filename);
 	void run(const std::string& initial);
@@ -40,15 +45,24 @@ public:
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
 private:
-	typedef std::tuple<std::string, std::string, float, float, std::string, std::string, std::string> _LineStructure;
+	// typedef std::tuple<CellProgram*, Condition*, Directive*> _LineStructure;
 	enum CsvFields { NAME, CONDITION, MEANTIME, STANDARDDEV, ACTION, DAUGHTER1, DAUGHTER2, LASTDELIM};
 
-	_LineStructure _parseLine(const std::string& line) const ;
+	class EventPtrComparison
+	{
+	public:
+	  bool operator() (Event* lhs,  Event* rhs) const;
+	};
+
+
+//	_LineStructure _parseLine(const std::string& line) const ;
+	void _parseLine(const std::string& line);
+	void _sanitize(std::string& buffer);
+	std::pair<std::string,State*> _parseCellWithState(const std::string& cell) const;
 
 	float _currentTime;
 	std::vector<Event*> _log;
-	// std::set<Cell*> _activeCells;
-	// std::set<Cell*> _allCells;
+	std::vector<Cell*> _cells;
 	std::map<std::string,CellProgram*> _programs;
 };
 

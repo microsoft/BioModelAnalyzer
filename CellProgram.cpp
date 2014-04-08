@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "CellProgram.h"
 #include "HelperFunctions.h"
 #include "Event/Division.h"
@@ -13,34 +14,64 @@
 
 using std::string;
 using std::ostream;
+using std::stringstream;
 using std::vector;
 using std::make_pair;
 
 CellProgram::CellProgram(const std::string& n, Simulation* s)
-: _name(n), _sim(s)
+: _name(n), _sim(s), _program([](Condition* first, Condition* second) { return *first<*second;})
 {
 }
 
 CellProgram::~CellProgram() {
 	for (auto condDir : _program) {
+		delete condDir.first;
 		delete condDir.second;
 	}
-	// TODO: Auto-generated destructor stub
 }
 
-vector<Event*> CellProgram::firstEvent(float currentTime) const {
-//	Event* nextEvent(new Division(_name,_daughter1,_daughter2,time,currentTime+time,_sim,nullptr));
-//	return vector<Event*>{nextEvent};
-
-
-	// TODO: implement this
-	return vector<Event*>{};
+string CellProgram::name() const {
+	return _name;
 }
 
-vector<Event*> CellProgram::nextEvent(float currentTime, Event* lastEvent) const {
-	// TODO implement this
-	return vector<Event*>{};
+Simulation* CellProgram::simulation() const {
+	return _sim;
 }
+
+vector<Event*> CellProgram::firstEvent(float currentTime, State* currentState) const {
+	Directive* best{_bestMatch(currentState)};
+	if (nullptr==best) {
+		stringstream err;
+		err << "In Cell " << _name << ". ";
+		if (currentState) {
+			err << "Failed to match state: " << *currentState;
+		}
+		else {
+			err << "There is no default.";
+		}
+		throw err.str();
+	}
+
+	// TODO:
+	// Notice that if more than one event is created then
+	// all events correspond to the same cell!
+	State* currentCopy=(nullptr==currentState ? nullptr : new State(*currentState));
+	Cell* cell{new Cell(this,currentCopy)};
+	_sim->addCell(cell);
+	vector<Event*> res=best->nextEvents(currentTime,cell,currentState);
+	return res;
+}
+
+//vector<Event*> CellProgram::nextEvent(float currentTime, State* currentState) const {
+//	Directive* best{_bestMatch(*currentState)};
+//	if (nullptr==best) {
+//		stringstream err{"in Cell "};
+//		err << _name << ". Failed to match state: " << *currentState;
+//		throw err.str();
+//	}
+//	vector<Event*> res=best->nextEvents(currentTime,currentState);
+//	return res;
+//}
 
 vector<string> CellProgram::otherPrograms() const {
 	vector<string> ret{};
@@ -51,15 +82,14 @@ vector<string> CellProgram::otherPrograms() const {
 	return ret;
 }
 
-void CellProgram::addCondition(const string& cond, Directive* d)
+void CellProgram::addCondition(Condition* cond, Directive* d)
 {
-	Condition newCond{cond};
-	if (_conditionExists(newCond)) {
+	if (_conditionExists(cond)) {
 		const string error{"A program created with the same condition twice"};
 		throw error;
 	}
 
-	_program.insert(make_pair(newCond,d));
+	_program.insert(make_pair(cond,d));
 }
 
 ostream& operator<<(ostream& out, const CellProgram& c) {
@@ -76,11 +106,28 @@ ostream& operator<<(ostream& out, const CellProgram& c) {
 	return out;
 }
 
-bool CellProgram::_conditionExists(const Condition& newCond) const {
+bool CellProgram::_conditionExists(Condition* newCond) const {
 	for (auto condDir : _program) {
-		if (condDir.first == newCond) {
+		if (*(condDir.first) == *newCond) {
 			return true;
 		}
 	}
 	return false;
+}
+
+Directive* CellProgram::_bestMatch(const State* st) const {
+	Directive* best{nullptr};
+	unsigned int val{0};
+	for (auto condDir : _program) {
+		Condition* cond{condDir.first};
+		Directive* dir{condDir.second};
+		auto satVal = cond->evaluate(st);
+		if (satVal.first &&
+			((nullptr==best && satVal.second==0) || // default hasn't been found
+			 satVal.second>val)) { // some real condition (in particular the value>0)
+			best=dir;
+			val=satVal.second;
+		}
+	}
+	return best;
 }

@@ -16,17 +16,32 @@ using std::make_pair;
 using std::ostream;
 
 Condition::Condition(const string& initializer)
-: _conjunction{splitConjunction(initializer)}
+: _def(false)
 {
+	if (removeSpace(initializer)=="DEFAULT") {
+		_def=true;
+		return;
+	}
+	_conjunction=splitConjunction(initializer);
 }
 
 Condition::~Condition() {
 }
 
-std::pair<bool,unsigned int> Condition::evaluate(const State& st) const {
+bool Condition::isDef() const {
+	return _def;
+}
+
+std::pair<bool,unsigned int> Condition::evaluate(const State* st) const {
+	if (_def) {
+		return make_pair(true,0);
+	}
+	if (!st) {
+		return make_pair(false,0); // What do you do with a state that is null?
+	}
 	unsigned int ret{0};
 	for (auto mapElem : _conjunction) {
-		pair<bool,bool> stVal=st.value(mapElem.first);
+		pair<bool,bool> stVal=st->value(mapElem.first);
 		if (!stVal.first) {
 			if (mapElem.second) {
 				return make_pair(false,0);
@@ -49,6 +64,10 @@ std::pair<bool,unsigned int> Condition::evaluate(const State& st) const {
 
 
 bool Condition::operator==(const Condition& other) const {
+	if (_def || other._def) {
+		return _def==other._def;
+	}
+
 	auto otherIt = other._conjunction.begin();
 	for (auto myIt = _conjunction.begin() ; myIt != _conjunction.end() ; ++myIt) {
 		// Different lengths
@@ -71,6 +90,10 @@ bool Condition::operator==(const Condition& other) const {
 }
 
 bool Condition::operator<(const Condition& other) const {
+	if (_def || other._def) {
+		return !other._def;
+	}
+
 	auto otherIt = other._conjunction.begin();
 	for (auto myIt = _conjunction.begin(); myIt != _conjunction.end() ; ++myIt, ++otherIt) {
 		// Other reached end first
@@ -107,15 +130,21 @@ bool Condition::operator<(const Condition& other) const {
 }
 
 ostream& operator<<(ostream& out, const Condition& c) {
+	if (c._def) {
+		out << "DEFAULT";
+		return out;
+	}
+
 	bool first{true};
-	for (auto strBool : c._conjunction) {
+	for (auto condVal : c._conjunction) {
 		if (!first) {
 			out << "&";
 		}
-		if (!(strBool.second)) {
+		if (!(condVal.second)) {
 			out << "!";
 		}
-		out << strBool.first;
+		out << condVal.first;
+		first = false;
 	}
 	return out;
 }

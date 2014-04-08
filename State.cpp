@@ -5,9 +5,11 @@
  *      Author: np183
  */
 
+#include <iostream>
 #include "State.h"
 #include "HelperFunctions.h"
 
+using std::ostream;
 using std::map;
 using std::string;
 using std::make_pair;
@@ -18,11 +20,16 @@ State::State(const string& initializer)
 {
 }
 
+State::State(const State& other)
+: _varVals{other._varVals}
+{
+}
+
 State::~State() {
 }
 
 pair<bool,unsigned int> State::evaluate(const Condition& cond) const {
-	return cond.evaluate(*this);
+	return cond.evaluate(this);
 }
 
 pair<bool,bool> State::value(const string& var) const {
@@ -42,3 +49,21 @@ bool State::update(const string& var, bool val) {
 	return true;
 }
 
+// TODO:
+// This code is copied from Condition operator<<
+// Move the printout of the map to either a helper function or a class
+// that wraps the joint map
+ostream& operator<<(ostream& out, const State& st) {
+	bool first{true};
+	for (auto varPol : st._varVals) {
+		if (!first) {
+			out << "&";
+		}
+		if (!(varPol.second)) {
+			out << "!";
+		}
+		out << varPol.first;
+		first = false;
+	}
+	return out;
+}

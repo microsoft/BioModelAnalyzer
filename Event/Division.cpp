@@ -14,10 +14,15 @@ using std::vector;
 
 // Division::Division() : Event(0.0,0.0), _parent(), _daughter1(), _daughter2() {}
 
-Division::Division(const std::string& p, const std::string& d1, const std::string& d2, float d, float t, Simulation* s, Cell* c)
-: Event(d,t,s,c), _parent(p), _daughter1(d1), _daughter2(d2) {}
+Division::Division(const std::string& p, const std::string& d1, State* st1,
+		                                 const std::string& d2, State* st2,
+		                                 float d, float t,
+		                                 Simulation* s, Cell* c)
+: Event(d,t,s,c), _parent(p), _daughter1(d1), _st1(st1), _daughter2(d2), _st2(st2) {}
 
 Division::~Division() {
+	delete _st1;
+	delete _st2;
 }
 
 
@@ -49,9 +54,9 @@ vector<Event*> Division::execute() const {
 	CellProgram* d2(sim->program(_daughter2));
 	vector<Event*> events{},events1{},events2{};
 	if (d1)
-		events1=d1->firstEvent(this->execTime());
+		events1=d1->firstEvent(this->execTime(),_st1);
 	if (d2)
-		events2=d2->firstEvent(this->execTime());
+		events2=d2->firstEvent(this->execTime(),_st2);
 	for (auto event : events1) {
 		events.push_back(event);
 	}
@@ -63,7 +68,16 @@ vector<Event*> Division::execute() const {
 
 void Division::output(ostream& out) const {
 	Event::output(out);
-	out << " " << _parent << " -> (" << _daughter1 << "," << _daughter2 << ")";
+	out << " " << _parent << " -> (" << _daughter1;
+	if (_st1!=nullptr) {
+		out << "[" << *_st1 << "]";
+	}
+	out << "," << _daughter2;
+	if (_st2!=nullptr) {
+		out << "[" << *_st2 << "]";
+	}
+	out << ")";
+	// out << "(" << _daughter1.size() << "," << _daughter2.size() << ")";
 }
 
 

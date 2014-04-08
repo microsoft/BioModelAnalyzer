@@ -15,7 +15,9 @@
 class Division: public Event {
 public:
 	Division() =delete;
-	Division(const std::string& p, const std::string& d1, const std::string& d2, float d, float t, Simulation* s, Cell* c);
+	Division(const std::string& p, const std::string& d1, State* st1,
+			                       const std::string& d2, State* st2,
+			                       float d, float t, Simulation* s, Cell* c);
 	virtual ~Division();
 
 	std::string parent() const;
@@ -35,7 +37,9 @@ public:
 private:
 	std::string _parent;
 	std::string _daughter1;
+	State* _st1;
 	std::string _daughter2;
+	State* _st2;
 };
 
 #endif /* DIVISION_H_ */

@@ -29,6 +29,7 @@ public:
 
 //	void setDuration(float t);
 //	void setExecTime(float t);
+	void setCell(Cell*);
 
 	virtual std::vector<Event*> execute() const=0;
 	virtual void output(std::ostream&) const;

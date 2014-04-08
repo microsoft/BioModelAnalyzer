@@ -48,10 +48,10 @@ float Event::execTime() const
 //void Event::setExecTime(float t) {
 //	_execTime=t;
 //}
-//
-//void Event::setCell(Cell* c) {
-//	_cell=c;
-//}
+
+void Event::setCell(Cell* c) {
+	_cell=c;
+}
 
 bool Event::operator<(const Event& other) const {
 	return (_execTime < other._execTime);

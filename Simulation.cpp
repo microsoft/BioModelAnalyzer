@@ -12,10 +12,14 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <memory>
 #include "Directive/Divide.h"
+#include "State.h"
 #include "Simulation.h"
+#include "HelperFunctions.h"
 
 using std::string;
+using std::stringstream;
 using std::pair;
 using std::make_pair;
 using std::vector;
@@ -31,10 +35,16 @@ using std::size_t;
 using std::make_pair;
 using std::min;
 using std::max;
+using std::unique_ptr;
 // using boost::lexical_cast;
 
+const int NUMBER_OF_LINES_TO_SKIP{1};
+
+bool Simulation::EventPtrComparison::operator() (Event* lhs, Event* rhs) const {
+	return (rhs->operator<(*lhs));
+}
+
 Simulation::Simulation() : _currentTime(0.0) {
-	// TODO Auto-generated constructor stub
 }
 
 Simulation::Simulation(const string& filename) : _currentTime(0.0) {
@@ -47,30 +57,30 @@ Simulation::~Simulation() {
 		delete event;
 	}
 
+	for (auto cell : _cells) {
+		delete cell;
+	}
+
 	for (auto prog : _programs) {
 		delete prog.second;
 	}
 }
 
 void Simulation::run(const string& initial) {
-	auto firstProg(_programs.find(initial));
+	auto cellState=_parseCellWithState(initial);
+	const string cellName{cellState.first};
+	// This is unique pointer so that I can use throw.
+	unique_ptr<State> state(cellState.second);
+
+	auto firstProg(_programs.find(cellName));
 	if (firstProg==_programs.end()) {
-		cerr << "Could not find the initial cell" << endl;
-		return;
+		string err{"Could not find the initial cell: "};
+		err+=cellName;
+		throw err;
 	}
 
-	string name(firstProg->first);
-	CellProgram* cell(firstProg->second);
-	vector<Event*> events(cell->firstEvent(_currentTime));
-
-	class EventPtrComparison
-	{
-	public:
-	  bool operator() (Event* lhs,  Event* rhs) const
-	  {
-		  return ((*rhs)<(*lhs));
-	  }
-	};
+	CellProgram* cellProg(firstProg->second);
+	vector<Event*> events(cellProg->firstEvent(_currentTime,state.get()));
 
 	std::priority_queue<Event*, deque<Event*>, EventPtrComparison> _pending;
 
@@ -87,7 +97,7 @@ void Simulation::run(const string& initial) {
 		// TODO:
 		// If you want events to fail then they should throw
 		// an exception!
-		vector<Event*> nextEvents(current->execute());
+		vector<Event*> nextEvents{current->execute()};
 		// cout << *current << endl;
 		_log.push_back(current);
 
@@ -148,10 +158,16 @@ void Simulation::readFile(const string& filename) {
 	ifstream infile(filename);
 	if (infile)
 		infile >> *this;
-	else
-		cerr << "Failed to open file " << filename << endl;
+	else {
+		string err{"Failed to open file "};
+		err+=filename;
+		throw err;
+	}
 }
 
+void Simulation::addCell(Cell* c) {
+	_cells.push_back(c);
+}
 
 CellProgram* Simulation::program(const string& name) {
 	auto prog(_programs.find(name));
@@ -179,28 +195,30 @@ ostream& operator<< (ostream& out, const Simulation& sim) {
 }
 
 istream& operator>> (istream& in, Simulation& sim) {
+	int lineNo{1};
 	string buffer;
 
 	// Skip the first two lines
-	getline(in,buffer);
-	getline(in,buffer);
+	for (; lineNo < NUMBER_OF_LINES_TO_SKIP+1 ; ++lineNo) {
+//		cout << "Skipping line number " << lineNo << "\n";
+		getline(in,buffer);
+	}
 
 	// Every line is a comma separated thing that includes:
 	// Cell Name (string), Cell Cycle Length (float), Standard Deviation (float)
 	// Daughter1 (string), Daughter2 (string), some irrelevant mutation info
 	while (getline(in,buffer) && buffer.size()!=0) {
-		 string name{},condition{},action{},d1{},d2{};
-		 float meanCycle{0.0}, sd{0.0};
-		 Simulation::_LineStructure line=sim._parseLine(buffer);
-		 std::tie(name,condition,meanCycle,sd,action,d1,d2) = line;
-		 auto progIt=sim._programs.find(name);
-		 if (progIt==sim._programs.end()) {
-			 CellProgram* newCell(new CellProgram(name,&sim));
-			 (sim._programs).insert(make_pair(name,newCell));
-			 progIt=sim._programs.find(name);
+		 try {
+			 sim._sanitize(buffer);
+			 sim._parseLine(buffer);
+			 ++lineNo;
 		 }
-		 Directive* d{new Divide(meanCycle,sd,d1,d2)};
-		 progIt->second->addCondition(condition,d);
+		 catch (const string& err) {
+			 stringstream error;
+			 error << "Error: on line " << lineNo << ":" << err;
+			 const string withLineNum{error.str()};
+			 throw withLineNum;
+		 }
 	}
 	if (!in.eof()) {
 		cerr << "Something went wrong with reading" << endl;
@@ -224,7 +242,7 @@ istream& operator>> (istream& in, Simulation& sim) {
 	return in;
 }
 
-Simulation::_LineStructure Simulation::_parseLine(const string& line) const {
+void Simulation::_parseLine(const string& line) {
 
 	string name{};
 	string condition{};
@@ -234,16 +252,13 @@ Simulation::_LineStructure Simulation::_parseLine(const string& line) const {
 	string d1{};
 	string d2{};
 
-	const string whitespace=" \n\t";
-	const string comma=",";
-	const string wsc=whitespace+comma;
+	const vector<string> fields{splitOn(',',line)};
 
 	// cout << "Read: " << buffer << endl;
-	size_t current(line.find_first_not_of(whitespace));
-	size_t next(line.find_first_of(wsc,current+1));
 
-	for (unsigned int i=0 ; i<static_cast<unsigned int>(LASTDELIM) ; ++ i) {
-		const string piece(line.substr(current,next-current));
+	for (unsigned int i=0 ; i<static_cast<unsigned int>(LASTDELIM) && i<fields.size() ;
+		 ++ i) {
+		const string piece{fields.at(i)};
 
 		switch (static_cast<CsvFields>(i)) {
 		case NAME:
@@ -283,19 +298,39 @@ Simulation::_LineStructure Simulation::_parseLine(const string& line) const {
 			d2 = piece;
 		}
 		}
-
-		current = line.find_first_not_of(wsc,next+1);
-		next=line.find_first_of(wsc,current+1);
 	}
 
+	auto progIt=_programs.find(name);
+	if (progIt==_programs.end()) {
+		CellProgram* newProg=new CellProgram(name,this);
+		_programs.insert(make_pair(name,newProg));
+		progIt=_programs.find(name);
+	}
 
-//			 cout << "Name: |" << name << "|" << endl;
-//			 cout << "Condition: |" << condition << "|" << endl;
-//			 cout << "Mean: |" << mean << "|" << endl;
-//			 cout << "SD: |" << sd << "|" << endl;
-//			 cout << "Action: |" << action << "|" << endl;
-//			 cout << "D1: |" << d1 << "|" << endl;
-//			 cout << "D2: |" << d2 << "|" << endl;
+	Condition* cond{new Condition(condition)};
+	pair<string,State*> d1S1{_parseCellWithState(d1)};
+	pair<string,State*> d2S2{_parseCellWithState(d2)};
+	Directive* d{new Divide(mean,sd,progIt->second,d1S1.first,d1S1.second,d2S2.first,d2S2.second)};
+	progIt->second->addCondition(cond,d);
+}
 
-	return std::make_tuple(name,condition,mean,sd,action,d1,d2);
+bool notIsPrint (char c)
+{
+    return !isprint((unsigned)c);
+}
+
+void Simulation::_sanitize(string & str)
+{
+    str.erase(remove_if(str.begin(),str.end(), notIsPrint) , str.end());
+}
+
+pair<string,State*> Simulation::_parseCellWithState(const std::string& cell) const {
+	if (cell.find('[')==string::npos) {
+		return make_pair(cell,nullptr);
+	}
+	string stateStr{cell.substr(cell.find('[')+1,cell.find(']')-cell.find('[')-1)};
+	State* state{new State(stateStr)};
+	string cellName{cell.substr(0,cell.find('['))};
+
+	return make_pair(cellName,state);
 }
