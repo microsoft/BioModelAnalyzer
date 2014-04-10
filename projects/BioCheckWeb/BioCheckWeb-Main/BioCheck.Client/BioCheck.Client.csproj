@@ -240,6 +240,7 @@
     </Compile>
     <Compile Include="Services\BusyIndicatorService.cs" />
     <Compile Include="Services\SynthWindowService.cs" />
+    <Compile Include="Services\SCMWindowService.cs" />
     <Compile Include="Services\TimeWindowService.cs" />
     <Compile Include="Services\ContextBarService.cs" />
     <Compile Include="Services\GraphWindowService.cs" />
@@ -265,6 +266,10 @@
     <Compile Include="ViewModel\ApplicationSettings.cs" />
     <Compile Include="ViewModel\ApplicationUser.cs" />
     <Compile Include="ViewModel\ApplicationViewModel.cs" />
+    <Compile Include="ViewModel\SCM\SCMInputDTOFactory.cs" />
+    <Compile Include="ViewModel\SCM\SCMViewModel.cs" />
+    <Compile Include="ViewModel\SCM\SCMViewModelFactory.cs" />
+    <Compile Include="ViewModel\SCM\SCMViewModelFactory_ServerOutput.cs" />
     <Compile Include="ViewModel\Cells\ContainerViewModel.cs" />
     <Compile Include="ViewModel\Cells\ContainerViewModels.cs" />
     <Compile Include="ViewModel\Cells\ContainerSizeTypes.cs" />
@@ -342,6 +347,9 @@
     <Compile Include="Views\ContainerView.cs" />
     <Compile Include="Views\GraphView.xaml.cs">
       <DependentUpon>GraphView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SCMView.xaml.cs">
+      <DependentUpon>SCMView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SynthView.xaml.cs">
       <DependentUpon>SynthView.xaml</DependentUpon>
@@ -509,6 +517,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\GraphView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SCMView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

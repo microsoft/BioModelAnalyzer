@@ -2481,7 +2481,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                 <!-- Terminal Output box -->
                 <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding LTLOutput}" 
                            Grid.Row="4" Grid.Column="1" Margin="10,34.75,23,10" Foreground="#FF7E7E7E" 
-                           ToolTipService.ToolTip="Proof output" Grid.RowSpan="2" 
+                           ToolTipService.ToolTip="LTL output" Grid.RowSpan="2" 
                            ScrollViewer.VerticalScrollBarVisibility="Auto"                           
                            />
 

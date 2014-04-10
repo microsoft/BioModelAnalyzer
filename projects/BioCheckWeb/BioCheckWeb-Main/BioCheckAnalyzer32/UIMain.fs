@@ -49,6 +49,7 @@ type Analyzer2() =
             let network = Marshal.model_of_xml input_model    
             complexity network
 
+        // 1. VMCAI interface
         member this.checkStability(input_model:XDocument) = 
             try
                 let network = Marshal.model_of_xml input_model
@@ -67,6 +68,7 @@ type Analyzer2() =
         member this.findCExFixpoint(xml_model:XDocument, xml_notstabilizing_result:XDocument ) = 
             find_cex xml_model xml_notstabilizing_result Stabilize.find_cex_fixpoint            
 
+        // 2. CAV interface
         member this.checkLTL(input_model:XDocument, formula:string, num_of_steps:string) = 
             try
                 let network = Marshal.model_of_xml input_model
@@ -87,24 +89,8 @@ type Analyzer2() =
                     Marshal.xml_of_ltl_result res model
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.xml_of_error id msg
-        
-        // testing. -->
 
-        // Main.fs:
-
-         //Run SYN engine        (inc from latest BMA check-in /dahl)
-//        if (!model <> ""  && !engine = Some EngineSYN) then
-//            Log.log_debug "Running Stability Suggestion Engine"
-
-//            let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-//            let sug = Suggest.SuggestLoop model
-//            match sug with
-//            | Suggest.Stable(p) -> Log.log_debug(sprintf "Single Stable Point \n %s" (Expr.str_of_env p))
-//            | Suggest.NoSuggestion(b) -> Log.log_debug(sprintf "No Suggestion Found \n %s" (QN.str_of_range model b))
-//            | Suggest.Edges(edges, nature) -> 
-//                    Log.log_debug(sprintf "Suggested edges: %s Nature: %A" (Suggest.edgelist_to_str edges) nature)
-
-
+        // 3. SYN interface 
         member this.checkSynth(input_model:XDocument) = 
             try 
                 let model = Marshal.model_of_xml input_model
@@ -116,9 +102,6 @@ type Analyzer2() =
                    | Suggest.NoSuggestion(b) -> "No Suggestion Found"
                    | Suggest.Edges(edges, nature) -> "Suggested edges:"
 
-//                let stringNature input = 
-//                   input.ToString
-
                 let details = 
                    match sug with
                    | Suggest.Stable(p) -> (Expr.str_of_env p)
@@ -127,12 +110,32 @@ type Analyzer2() =
                 
                 
                 Marshal.xml_of_synth_result result details input_model
-                //Marshal.xml_of_synth_result result model
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.xml_of_error id msg
             
-        // <-- testing.                
+        // 4. SCM interface 
+        member this.checkSCM(input_model:XDocument) = 
+            try
+                let qn = Marshal.model_of_xml input_model
+                let (stablePoint, cex) = Prover.ProveStability qn
+                let result,details = 
+                    match (stablePoint, cex) with
+                    | (Some p, None) -> 
+                        "SingleStablePoint",  (Expr.str_of_env p)
+                    | (None, Some (Prover.Bifurcation(p1, p2))) -> 
+                        "MultiStablePoints",  ((Expr.str_of_env p1) + "; " + (Expr.str_of_env p2))
+                    | (None, Some (Prover.Cycle(p, len))) -> 
+                        "Cycle", ((Expr.str_of_env p) + ";" + (string)len)
+                    | _ -> 
+                        "UnknownResult", ""
+
+
+                Marshal.xml_of_SCMResult result details
+
+            with Marshal.MarshalInFailed(id,msg) -> Marshal.xml_of_error id msg                
             
+    
+        // 5. Simulation interface             
         member this.simulate_tick(xml_model:XDocument, env:System.Collections.Generic.Dictionary<int,int>) = 
             let qn = 
                 try Marshal.model_of_xml xml_model
