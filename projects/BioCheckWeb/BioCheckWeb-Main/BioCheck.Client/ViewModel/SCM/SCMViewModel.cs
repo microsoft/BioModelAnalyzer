@@ -94,8 +94,8 @@ namespace BioCheck.ViewModel.SCM
         {
 
             var time = Math.Round((DateTime.Now - timer).TotalSeconds, 1);
-            string timeString = (string.Format("Analyzer took {0} seconds to run.", time));
-            Debug.WriteLine(string.Format("Analyzer took {0} seconds to run.", time));
+            string timeString = (string.Format("The Shrink-Cut-Merge algorithm took {0} seconds to run.", time));
+            Debug.WriteLine(string.Format("The Shrink-Cut-Merge algorithm took {0} seconds to run.", time));
 
             string finalOutput;
             finalOutput = timeString;    // Testing..
