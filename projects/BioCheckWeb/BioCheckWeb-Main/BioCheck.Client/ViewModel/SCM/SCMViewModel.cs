@@ -83,7 +83,7 @@ namespace BioCheck.ViewModel.SCM
 
             // Invoke the async Analyze method on the service
             timer = DateTime.Now;
-            analyzerClient.AnalyzeAsync(scmInputDto);                // Result in an AnalysisService.svc.cs input with a Proof signature.
+            analyzerClient.AnalyzeAsync(scmInputDto);                // Result in an AnalysisService.svc.cs input with a SCM signature.
               
         }
 
@@ -94,23 +94,26 @@ namespace BioCheck.ViewModel.SCM
         {
 
             var time = Math.Round((DateTime.Now - timer).TotalSeconds, 1);
-            string timeString = (string.Format("The Shrink-Cut-Merge algorithm took {0} seconds to run.", time));
+            string finalOutput = (string.Format("The Shrink-Cut-Merge algorithm took {0} seconds to run.", time));
             Debug.WriteLine(string.Format("The Shrink-Cut-Merge algorithm took {0} seconds to run.", time));
 
-            string finalOutput;
-            finalOutput = timeString;    // Testing..
             string unzippedDetails = "";
 
             if (e.Error == null)
             {
                 try
                 {
-                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result);   // <---- Server output 
+                    // Unzip server output
+                    // Initiate analysisOutput.Status and add Details to the same string.
+                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
 
                     // Retrieve the Details
                     string[] varName = this.analysisOutput.Status.Split(' ');
                     
+                    // Re-set Status to the Status only
                     this.analysisOutput.Status = varName[0];
+
+                    // Create separate Details variable
                     int counter = 0;
                     foreach(string detail in varName)
                     {
@@ -163,29 +166,41 @@ namespace BioCheck.ViewModel.SCM
                 }
                 else
                 {
-                    //  WORKED! 
-                    // Clear the current proof
-                    ResetStability(true);
+                    // ------------------------ from Proof: Single stable, Bifurcation and Cycle all get here.
+                    // I more colours are needed.
+                   
+                    //// Clear the current proof
+                    //ResetStability(true);
 
-                    // Process the analysis output results
-                    AnalysisOutputHandler.Handle(analysisOutput);
+                    //// Process the analysis output results
+                    //AnalysisOutputHandler.Handle(analysisOutput);
+
+                    //// Show the Proof view
+                    //this.proofVM = ProofViewModelFactory.Create(analysisInputDto, analysisOutput);
+                    
+                    //-------------------- Above from proof
+
+
+                    //  WORKED!
+                    // Clear the current proof: true = bool showStability
+                    // All model vars and containers stabilities are set to true/false according to ResetStability's input.
+                    // Need Reset to colour anything in.
+                    if (analysisOutput.Status == "SingleStablePoint")
+                    {
+                        ResetStability(true); // Results in only SingleStablePoint being coloured, green.
+                    }
+
+                    // Process the analysis output results 
+                    // Detect in/stability in components (but this is currently not passed back by SCM)
+                    // AnalysisOutputHandler.Handle(analysisOutput);
 
                     ApplicationViewModel.Instance.Container
                         .Resolve<IBusyIndicatorService>()
                         .Close();
 
                     // Edit the Proof view
-                    this.proofVM = SCMViewModelFactory_ServerOutput.Create(scmInputDto, analysisOutput);
-                    
-                    //finalOutput += "\nThe model " + this.proofVM.ModelName + " did ";
-                    //if (this.proofVM.IsStable)
-                    //{
-                    //    finalOutput += "stabilize.\n";
-                    //}
-                    //else
-                    //{
-                    //    finalOutput += "not stabilize.\n";
-                    //}
+                    // Set modelname and whether stable (only by SingleStablePoint) or not.
+                    this.proofVM = SCMViewModelFactory_ServerOutput.Create(scmInputDto, analysisOutput);                   
 
                     finalOutput += "\nThe model \"" + this.proofVM.ModelName + "\" ";
                     switch (analysisOutput.Status)
