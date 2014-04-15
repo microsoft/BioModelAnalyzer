@@ -2100,8 +2100,14 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
+                            <!-- Custom scroller: Left -->
+                            <Path x:Name="ScrollLeft"  
+                                Data="F1 M 33.7431,2.03401e-005L -2.61613e-005,19.185L 33.4863,38.815L 33.7431,2.03401e-005 Z " 
+                                ToolTipService.ToolTip="Scroll left" MouseLeftButtonDown="ScrollLeft_MouseLeftButtonDown"  MouseLeftButtonUp="ScrollLeft_MouseLeftButtonUp"
+                                Fill="LightGray"  Height="40" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="100" />
+                            
                             <!-- 0 -->
-                            <Rectangle x:Name="f_rect0" Tag="0" 
+                            <!--<Rectangle x:Name="f_rect0" Tag="0" 
                                    Grid.Column="0" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
@@ -2121,7 +2127,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
                                  MouseRightButtonDown="textbox_MouseRightButtonDown"
-                                 />
+                                 />-->
 
                             <!-- 1 -->
                             <Rectangle x:Name="f_rect1" Tag="1" 
@@ -2139,7 +2145,8 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                             <TextBox x:Name="f_N1" Tag="1" Grid.Column="1" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
-                                 TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent" Style="{StaticResource ReadOnlyStyle}" GotFocus="N_GotFocus" 
+                                 TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" 
+                                 Background="Transparent" Style="{StaticResource ReadOnlyStyle}" GotFocus="N_GotFocus" 
                                  MouseRightButtonDown="textbox_MouseRightButtonDown"/>
 
                             <!-- 2 -->
@@ -2315,7 +2322,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  />
 
                             <!-- 11 -->
-                            <Rectangle x:Name="f_rect11" Tag="11" 
+                            <!--<Rectangle x:Name="f_rect11" Tag="11" 
                                    Grid.Column="11" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
@@ -2334,16 +2341,22 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
                                  MouseRightButtonDown="textbox_MouseRightButtonDown"
-                                 />
+                                 />-->
+
+                            <!-- Custom scroller: Right -->
+                            <Path x:Name="ScrollRight"  
+                                Data="F1 M -4.0799e-005,38.8149L 33.7431,19.6299L 0.25679,0L -4.0799e-005,38.8149 Z " Grid.Row="0" Grid.Column="11"
+                                ToolTipService.ToolTip="Scroll right" MouseLeftButtonDown="ScrollRight_MouseLeftButtonDown"  MouseLeftButtonUp="ScrollRight_MouseLeftButtonUp"
+                                Fill="LightGray"  Height="40" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="100" />
 
                             <!-- Dashed Griddedness -->
                             <!-- Row 0 -->
-                            <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
+                            <!--<Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
                               Grid.Column="0" Grid.Row="0" VerticalAlignment="Top" StrokeDashArray="8 8" Margin="2,0,0,0"/>
                             <Path Data="M25.833334,4 L26.5,85.833336" Style="{StaticResource DottedVertical}"
                               Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" StrokeDashArray="8 8" Margin="2,0,0,0"/>
                             <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
-                              Grid.Column="0" Grid.Row="0" VerticalAlignment="Bottom" StrokeDashArray="8 8" Margin="2,0,0,0"/>
+                              Grid.Column="0" Grid.Row="0" VerticalAlignment="Bottom" StrokeDashArray="8 8" Margin="2,0,0,0"/>-->
 
                             <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
                               Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" StrokeDashArray="8 8"/>
@@ -2414,15 +2427,15 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                               Grid.Column="10" Grid.Row="0" HorizontalAlignment="Left" StrokeDashArray="8 8"/>
                             <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
                               Grid.Column="10" Grid.Row="0" VerticalAlignment="Bottom" StrokeDashArray="8 8"/>
-
-                            <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
-                              Grid.Column="11" Grid.Row="0" VerticalAlignment="Top" StrokeDashArray="8 8"/>
                             <Path Data="M25.833334,4 L26.5,85.833336" Style="{StaticResource DottedVertical}"
                               Grid.Column="11" Grid.Row="0" HorizontalAlignment="Left" StrokeDashArray="8 8"/>
+                            
+                            <!--<Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
+                              Grid.Column="11" Grid.Row="0" VerticalAlignment="Top" StrokeDashArray="8 8"/>                            
                             <Path Data="M25.833334,4 L26.5,85.833336" Style="{StaticResource DottedVertical}"
                               Grid.Column="11" Grid.Row="0" HorizontalAlignment="Right" StrokeDashArray="8 8" Margin="0,0,2,0"/>
                             <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
-                              Grid.Column="11" Grid.Row="0" VerticalAlignment="Bottom" StrokeDashArray="8 8"/>
+                              Grid.Column="11" Grid.Row="0" VerticalAlignment="Bottom" StrokeDashArray="8 8"/>-->
 
 
                         </Grid>
@@ -2452,7 +2465,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                     </Grid>
                 </Border>
 
-                <!-- Uncomment this line when debugging! Foreground for show is now Cornsilk ______  -->
+                <!-- Make Foreground black when I'm debugging. Else use Cornsilk ______  -->
                 <TextBox x:Name="tempDebug" TextWrapping="Wrap" Text="Temporary debug output here." VerticalAlignment="Stretch" 
                          HorizontalAlignment="Stretch" Grid.Row="5" Grid.Column="1" Margin="10,0" Background="Cornsilk" Foreground="Cornsilk" 
                          Cursor="IBeam" ToolTipService.ToolTip="Please input your LTL query here." 
