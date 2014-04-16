@@ -39,11 +39,6 @@ Simulation* CellProgram::simulation() const {
 }
 
 vector<Event*> CellProgram::firstEvent(float currentTime, State* currentState) const {
-	if (this->name()=="ABala") {
-		int i{0};
-		++i;
-	}
-
 	// Create the cell for this event
 	State* currentCopy=(nullptr==currentState ? nullptr : new State(*currentState));
 	Cell* cell{new Cell(this,currentCopy)};
