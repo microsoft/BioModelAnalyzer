@@ -10,10 +10,10 @@
 using std::string;
 using std::pair;
 
-Cell::Cell(const CellProgram* prog, const string& state) : _state(new State(state)), _program(prog) {
+Cell::Cell(const CellProgram* prog, const string& state) : _alive(true), _state(new State(state)), _program(prog) {
 }
 
-Cell::Cell(const CellProgram* prog, State* state) : _state(state), _program(prog) {
+Cell::Cell(const CellProgram* prog, State* state) : _alive(true), _state(state), _program(prog) {
 }
 
 Cell::~Cell() {
@@ -21,9 +21,25 @@ Cell::~Cell() {
 }
 
 pair<bool,unsigned int> Cell::evaluate(Condition* cond) const {
-	return cond->evaluate(_state);
+	return cond->evaluate(_state,_program->simulation());
 }
 
 bool Cell::update(const string& var,bool val) {
 	return _state->update(var,val);
+}
+
+const string Cell::name() const {
+	return _program->name();
+}
+
+bool Cell::expressed(const string& cond) const {
+	return _state->value(cond).first && _state->value(cond).second;
+}
+
+bool Cell::alive() const {
+	return _alive;
+}
+
+void Cell::kill() {
+	_alive=false;
 }

@@ -16,6 +16,7 @@ class Condition;
 class Condition;
 
 #include "State.h"
+#include "Simulation.h"
 
 class Condition {
 public:
@@ -32,7 +33,8 @@ public:
 	// every state with the value 0.
 	// Otherwise, the value is the number of conjuncts that are
 	// satisfied.
-	std::pair<bool,unsigned int> evaluate(const State* st) const;
+	// The simulation is needed in order to evaluate conditions on other Cells.
+	std::pair<bool,unsigned int> evaluate(const State* st, const Simulation* sim) const;
 
 	// Should be identical
 	bool operator==(const Condition& other) const;
@@ -47,6 +49,8 @@ public:
 private:
 	bool _def;
 	std::map<std::string,bool> _conjunction;
+
+	bool _generalCondition(const std::string &) const;
 };
 
 #endif /* CONDITION_H_ */

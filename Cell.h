@@ -25,8 +25,16 @@ public:
 	~Cell();
 
 	std::pair<bool,unsigned int> evaluate(Condition* condition) const;
+	bool expressed(const std::string&) const;
+
 	bool update(const std::string& var, bool value);
+
+	const std::string name() const;
+
+	bool alive() const;
+	void kill();
 private:
+	bool _alive;
 	State* _state;
 	const CellProgram* _program;
 };

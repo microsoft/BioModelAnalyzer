@@ -53,14 +53,7 @@ Simulation::Simulation(const string& filename) : _currentTime(0.0) {
 
 
 Simulation::~Simulation() {
-	for (auto event : _log) {
-		delete event;
-	}
-
-	for (auto cell : _cells) {
-		delete cell;
-	}
-
+	clear();
 	for (auto prog : _programs) {
 		delete prog.second;
 	}
@@ -117,7 +110,16 @@ void Simulation::run(const string& initial) {
 }
 
 void Simulation::clear() {
+	for (auto event : _log) {
+		delete event;
+	}
 	_log.clear();
+
+	for (auto cell : _cells) {
+		delete cell.second;
+	}
+	_cells.clear();
+
 	_currentTime=0.0;
 }
 
@@ -166,7 +168,20 @@ void Simulation::readFile(const string& filename) {
 }
 
 void Simulation::addCell(Cell* c) {
-	_cells.push_back(c);
+	_cells.insert(make_pair(c->name(),c));
+}
+
+vector<Cell*> Simulation::cells(const string& name) const {
+	auto beginEnd=_cells.equal_range(name);
+	auto begin=beginEnd.first;
+	auto end=beginEnd.second;
+	vector<Cell*> ret{};
+	for (auto it=begin ; it!= end ; ++it) {
+		if (it->second->alive()) {
+			ret.push_back(it->second);
+		}
+	}
+	return ret;
 }
 
 CellProgram* Simulation::program(const string& name) {
@@ -181,6 +196,25 @@ unsigned int Simulation::numPrograms() const {
 	return _programs.size();
 }
 
+bool Simulation::expressed(const string& cond) const {
+	if (cond.find('[')==std::string::npos ||
+		cond.find(']')==std::string::npos ||
+		cond.find(']') < cond.find('[')) {
+		 const string err{"Trying to evaluate a local condition on the simulation."}
+		 throw err;
+	}
+
+	string var{cond.substr(0,cond.find('['))};
+	string cellName{cond.substr(cond.find('[')+1,cond.find(']')-cond.find('[')-1)};
+
+	vector<Cell*> matchingCells{cells(cellName)};
+	for (auto cell : matchingCells) {
+		if (cell->expressed(var)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 ostream& operator<< (ostream& out, const Simulation& sim) {
 //	for (auto prog : sim._programs) {

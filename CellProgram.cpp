@@ -39,6 +39,17 @@ Simulation* CellProgram::simulation() const {
 }
 
 vector<Event*> CellProgram::firstEvent(float currentTime, State* currentState) const {
+	if (this->name()=="ABala") {
+		int i{0};
+		++i;
+	}
+
+	// Create the cell for this event
+	State* currentCopy=(nullptr==currentState ? nullptr : new State(*currentState));
+	Cell* cell{new Cell(this,currentCopy)};
+	_sim->addCell(cell);
+
+	// Search for the next event applicable to this Cell
 	Directive* best{_bestMatch(currentState)};
 	if (nullptr==best) {
 		stringstream err;
@@ -52,12 +63,8 @@ vector<Event*> CellProgram::firstEvent(float currentTime, State* currentState) c
 		throw err.str();
 	}
 
-	// TODO:
 	// Notice that if more than one event is created then
 	// all events correspond to the same cell!
-	State* currentCopy=(nullptr==currentState ? nullptr : new State(*currentState));
-	Cell* cell{new Cell(this,currentCopy)};
-	_sim->addCell(cell);
 	vector<Event*> res=best->nextEvents(currentTime,cell,currentState);
 	return res;
 }
@@ -121,7 +128,7 @@ Directive* CellProgram::_bestMatch(const State* st) const {
 	for (auto condDir : _program) {
 		Condition* cond{condDir.first};
 		Directive* dir{condDir.second};
-		auto satVal = cond->evaluate(st);
+		auto satVal = cond->evaluate(st,_sim);
 		if (satVal.first &&
 			((nullptr==best && satVal.second==0) || // default hasn't been found
 			 satVal.second>val)) { // some real condition (in particular the value>0)

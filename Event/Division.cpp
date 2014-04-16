@@ -53,6 +53,7 @@ vector<Event*> Division::execute() const {
 	CellProgram* d1(sim->program(_daughter1));
 	CellProgram* d2(sim->program(_daughter2));
 	vector<Event*> events{},events1{},events2{};
+	this->cell()->kill();
 	if (d1)
 		events1=d1->firstEvent(this->execTime(),_st1);
 	if (d2)

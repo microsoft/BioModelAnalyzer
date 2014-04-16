@@ -32,7 +32,7 @@ bool Condition::isDef() const {
 	return _def;
 }
 
-std::pair<bool,unsigned int> Condition::evaluate(const State* st) const {
+std::pair<bool,unsigned int> Condition::evaluate(const State* st, const Simulation* sim) const {
 	if (_def) {
 		return make_pair(true,0);
 	}
@@ -40,28 +40,37 @@ std::pair<bool,unsigned int> Condition::evaluate(const State* st) const {
 		return make_pair(false,0); // What do you do with a state that is null?
 	}
 	unsigned int ret{0};
-	for (auto mapElem : _conjunction) {
-		pair<bool,bool> stVal=st->value(mapElem.first);
-		if (!stVal.first) {
-			if (mapElem.second) {
-				return make_pair(false,0);
+	for (auto varPol : _conjunction) {
+		if (_generalCondition(varPol.first)) {
+			if (nullptr!=sim && sim->expressed(varPol.first)) {
+				++ret;
 			}
 			else {
-				++ret;
+				return make_pair(false,0);
 			}
 		}
 		else {
-			if (stVal.second != mapElem.second) {
-				return make_pair(false,0);
+			pair<bool,bool> satVal{st->value(varPol.first)};
+			if (!satVal.first) {
+				if (varPol.second) {
+					return make_pair(false,0);
+				}
+				else {
+					++ret;
+				}
 			}
 			else {
-				++ret;
+				if (satVal.second != varPol.second) {
+					return make_pair(false,0);
+				}
+				else {
+					++ret;
+				}
 			}
 		}
 	}
 	return make_pair(true,ret);
 }
-
 
 bool Condition::operator==(const Condition& other) const {
 	if (_def || other._def) {
@@ -149,3 +158,6 @@ ostream& operator<<(ostream& out, const Condition& c) {
 	return out;
 }
 
+bool Condition::_generalCondition(const string& name) const {
+	return name.find('[')!=std::string::npos;
+}

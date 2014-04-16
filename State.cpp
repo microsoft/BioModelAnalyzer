@@ -28,11 +28,15 @@ State::State(const State& other)
 State::~State() {
 }
 
-pair<bool,unsigned int> State::evaluate(const Condition& cond) const {
-	return cond.evaluate(this);
-}
+//pair<bool,unsigned int> State::evaluate(const Condition& cond) const {
+//	return cond.evaluate(this);
+//}
 
 pair<bool,bool> State::value(const string& var) const {
+	if (var.find('[') || var.find(']')) {
+		const string err{"trying to evaluate a global condition on a state"};
+		throw err;
+	}
 	auto it=_varVals.find(var);
 	if (it == _varVals.end()) {
 		return make_pair(false,false);

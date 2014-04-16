@@ -14,6 +14,7 @@
 
 class State;
 
+#include "Simulation.h"
 #include "Condition.h"
 
 class State {
@@ -23,7 +24,9 @@ public:
 	State(const State&);
 	~State();
 
-	std::pair<bool,unsigned int> evaluate(const Condition&) const;
+	// std::pair<bool,unsigned int> evaluate(const Condition&) const;
+
+	// Returns if the variable exists and its polarity
 	std::pair<bool,bool> value(const std::string& var) const;
 	bool update(const std::string& var,bool val);
 

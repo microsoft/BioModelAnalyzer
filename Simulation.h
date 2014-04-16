@@ -32,6 +32,7 @@ public:
 
 //	bool addCellProgram(CellProgram* c);
 	void addCell(Cell* c);
+	std::vector<Cell*> cells(const std::string& name) const;
 
 	void readFile(const std::string& filename);
 	void run(const std::string& initial);
@@ -41,6 +42,8 @@ public:
 
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
+
+	bool expressed(const std::string&) const;
 
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
@@ -62,7 +65,7 @@ private:
 
 	float _currentTime;
 	std::vector<Event*> _log;
-	std::vector<Cell*> _cells;
+	std::multimap<std::string,Cell*> _cells;
 	std::map<std::string,CellProgram*> _programs;
 };
 
