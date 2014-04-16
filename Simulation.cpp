@@ -200,7 +200,7 @@ bool Simulation::expressed(const string& cond) const {
 	if (cond.find('[')==std::string::npos ||
 		cond.find(']')==std::string::npos ||
 		cond.find(']') < cond.find('[')) {
-		 const string err{"Trying to evaluate a local condition on the simulation."}
+		 const string err{"Trying to evaluate a local condition on the simulation."};
 		 throw err;
 	}
 
