@@ -1,0 +1,67 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+RM := rm -rf
+
+HelperFunctions.o : HelperFunctions.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c HelperFunctions.cpp -o HelperFunctions.o
+Condition.o : Condition.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Condition.cpp -o Condition.o
+
+Cell.o : Cell.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Cell.cpp -o Cell.o
+
+CellProgram.o : CellProgram.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c CellProgram.cpp -o CellProgram.o
+
+Directive.o : Directive/Directive.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Directive/Directive.cpp -o Directive.o
+
+Divide.o : Directive/Divide.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Directive/Divide.cpp -o Divide.o
+
+ChangeState.o : Event/ChangeState.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/ChangeState.cpp -o ChangeState.o
+
+Death.o : Event/Death.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/Death.cpp -o Death.o
+
+Division.o : Event/Division.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/Division.cpp -o Division.o
+
+Event.o : Event/Event.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/Event.cpp -o Event.o
+
+Simulation.o : Simulation.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Simulation.cpp -o Simulation.o
+
+main.o : main.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c main.cpp -o main.o
+
+State.o : State.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c State.cpp -o State.o
+
+
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+# Add inputs and outputs from these tool invocations to the build variables 
+
+# All Target
+all: Lineage
+
+# Tool invocations
+Lineage: Condition.o CellProgram.o State.o Cell.o ChangeState.o Death.o Division.o Event.o Simulation.o main.o Divide.o Directive.o HelperFunctions.o 
+	@echo 'Building target: $@'
+	@echo 'Invoking: Cygwin C++ Linker'
+	g++ -std=c++0x -o Lineage HelperFunctions.o Cell.o Directive.o Divide.o Condition.o State.o CellProgram.o ChangeState.o Death.o Division.o Event.o Simulation.o main.o 
+	@echo 'Finished building target: $@'
+	@echo ' '
+
+# Other Targets
+clean:
+	-$(RM) *.o
+	-@echo ' '
+
