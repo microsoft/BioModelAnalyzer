@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <utility>
 #include <iterator>
 #include <numeric>
@@ -27,15 +28,61 @@ using std::endl;
 using std::string;
 using std::ifstream;
 using std::vector;
+using std::map;
 using std::pair;
 
-const string INITIALPROGRAM{"P0[SPERM_LEFT]"};
+enum class Options { load, overlap, overlapraw, existence };
+
+const string INITIALPROG{"P0"};
+const string INITIALPROGWITHCOND{"P0[SPERM_LEFT]"};
+
 
 void printOptions() {
+	unsigned int op{0};
 	cout << "Please choose:" << endl;
-	cout << "(0) Load a new program file." << endl;
-	cout << "(1) Check for the time overlap of two cells." << endl;
-	cout << "(2) Check for the time overlap of two cells (with raw data)." << endl;
+	cout << "(" << static_cast<int>(Options::load) << ") Load a new program file." << endl;
+	cout << "(" << static_cast<int>(Options::overlap) << ") Check for the time overlap of two cells." << endl;
+	cout << "(" << static_cast<int>(Options::overlapraw) << ") Check for the time overlap of two cells (with raw data)." << endl;
+	cout << "(" << static_cast<int>(Options::existence) << ") Check cell existence." << endl;
+}
+
+string ChooseConditionFromProgram(Simulation*& s,const string& name) {
+	cout << "Which condition would you like to start from:" << endl;
+	CellProgram* cProg { s->program(name) };
+	if (!cProg) {
+		const string err {"Could not find the initial program " + name};
+		throw err;
+	}
+
+	{
+		CellProgram::iterator it { cProg->begin() };
+		unsigned int i { 1 };
+		while (it != cProg->end()) {
+			cout << i++ << ") " << *it << endl;
+			++it;
+		}
+	}
+
+	unsigned int which { 0 };
+	if (!cin >> which) {
+		const string err{"Wrong option."};
+		cin.clear();
+		throw err;
+	}
+
+	CellProgram::iterator it { cProg->begin() };
+	unsigned int i { 1 };
+	while (i != which && it != cProg->end()) {
+		++it;
+		++i;
+	}
+	if (it == cProg->end()) {
+		const string err { "Wrong option." };
+		throw err;
+	}
+	std::stringstream temp { };
+	temp << *it;
+	return temp.str();
 }
 
 void readSimulation(Simulation*& s) {
@@ -47,7 +94,11 @@ void readSimulation(Simulation*& s) {
 		s = nullptr;
 	}
 	s = new Simulation(file);
-	s->run(INITIALPROGRAM);
+
+	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
+	s->run(INITIALPROG+"["+condition+"]");
+	//s->run(INITIALPROGWITHCOND);
+
 	cout << "Would you like to see a simulation?" << endl;
 	char answer;
 	cin >> answer;
@@ -79,7 +130,7 @@ void timeOverlap(Simulation* s,bool rawData) {
 	vector<float> results2; // cell2 born before cell1
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		s->run(INITIALPROGRAM);
+		s->run(INITIALPROGWITHCOND);
 		pair<float,bool> p(s->overlap(name1,name2));
 		if (p.second)
 			results1.push_back(p.first);
@@ -146,6 +197,45 @@ void timeOverlap(Simulation* s,bool rawData) {
 
 }
 
+void cellCount(Simulation* s) {
+	if (!s) {
+			cout << "Please upload a program first." << endl;
+			 return;
+	}
+	unsigned int repetitions{0};
+	cout << "How many simulations would you like to run?" << endl;
+	cin >> repetitions;
+
+	unsigned int maxLen{0};
+	map<string,unsigned int> total{};
+	for (unsigned int i{0} ; i<repetitions ; ++i) {
+		s->clear();
+		s->run(INITIALPROGWITHCOND);
+		map<string,unsigned int> res{s->cellCount()};
+		for (auto nameCount : res) {
+			if (nameCount.first.size() > maxLen) {
+				maxLen=nameCount.first.size();
+			}
+
+			if (total.find(nameCount.first)==total.end()) {
+				total.insert(nameCount);
+			}
+			else {
+				total[nameCount.first] += nameCount.second;
+			}
+		}
+	}
+
+	for (auto nameCount : total) {
+		// Do something with padding to make sure that this
+		// is printed to the right length;
+		cout << std::setw(2+maxLen+3+3+2) << std::setfill('-') << "" << endl;
+		cout << "| " << nameCount.first << " |";
+		cout << std::setw(3) << std::right << nameCount.second << "|" << endl;
+		cout << std::setw(2+maxLen+3+3+2) << std::setfill('-') << "" << endl;
+	}
+}
+
 void bad() {
 	cout << "Bad option. Please try again." << endl;
 }
@@ -158,19 +248,22 @@ int main() {
 			char which(0);
 			printOptions();
 			cin >> which;
-			switch (which) {
-			case '0': {
+			switch (static_cast<Options>(which)) {
+			case Options::load: {
 				readSimulation(s);
 			}
 			break;
-			case '2': {
+			case Options::overlapraw: {
 				rawData=true;
 			}
 			/* no break */
-			case '1': {
+			case Options::overlap: {
 				timeOverlap(s,rawData);
 			}
 			break;
+			case Options::existence: {
+				cellCount(s);
+			}
 			default:
 				bad();
 			}

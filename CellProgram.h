@@ -39,7 +39,29 @@ public:
 	void addCondition(Condition* c, Directive* d);
 
 	friend std::ostream& operator<<(std::ostream&, const CellProgram&);
+
+	class iterator {
+	public:
+		iterator(const iterator&);
+		iterator(iterator&&);
+		~iterator();
+
+		bool operator==(const iterator&) const;
+		bool operator!=(const iterator&) const;
+		iterator operator++();
+		iterator operator++(int);
+		Condition* operator->() const;
+		Condition operator*() const;
+	private:
+		iterator();
+		std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition*b)>>::iterator _it;
+	};
+
+	iterator begin();
+	iterator end();
+
 private:
+	typedef
 	std::string _name;
 	Simulation* _sim;
 	std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition* b)>> _program;

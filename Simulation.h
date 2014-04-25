@@ -12,6 +12,7 @@ class Simulation;
 
 #include <vector>
 #include <set>
+#include <map>
 #include <iosfwd>
 #include <string>
 #include <utility>
@@ -39,6 +40,7 @@ public:
 	void clear();
 
 	std::pair<float,bool> overlap(const std::string&, const std::string&) const;
+	std::map<std::string,unsigned int> cellCount() const;
 
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;

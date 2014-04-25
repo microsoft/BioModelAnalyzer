@@ -133,3 +133,55 @@ Directive* CellProgram::_bestMatch(const State* st) const {
 	}
 	return best;
 }
+
+CellProgram::iterator::iterator() {}
+CellProgram::iterator::iterator(const CellProgram::iterator& it) {
+	_it=it._it;
+}
+
+CellProgram::iterator::iterator(CellProgram::iterator&& it) {
+	_it=it._it;
+}
+
+CellProgram::iterator::~iterator() {}
+
+CellProgram::iterator CellProgram::begin() {
+	iterator ret{};
+	auto local=_program.
+	ret._it=_program.begin();
+	return ret;
+}
+
+CellProgram::iterator CellProgram::end() {
+	iterator ret{};
+	ret._it=_program.end();
+	return ret;
+}
+
+bool CellProgram::iterator::operator==(const iterator& other) const {
+	return _it==other._it;
+}
+
+bool CellProgram::iterator::operator!=(const iterator& other) const {
+	return !(*this==other);
+}
+
+CellProgram::iterator CellProgram::iterator::operator++() {
+	++_it;
+	return *this;
+}
+
+CellProgram::iterator CellProgram::iterator::operator++(int i) {
+	++_it;
+	return *this;
+}
+Condition* CellProgram::iterator::operator->() const {
+	std::pair<Condition*,Directive*> elem{*_it};
+	return elem.first;
+}
+
+Condition CellProgram::iterator::operator*() const {
+	std::pair<Condition*,Directive*> elem{*_it};
+	return *(elem.first);
+}
+

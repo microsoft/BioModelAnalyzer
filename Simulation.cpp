@@ -156,6 +156,20 @@ pair<float,bool> Simulation::overlap(const string& name1, const string& name2) c
 	return make_pair(min(d1,d2)-max(b2,b1),b1<b2);
 }
 
+map<string,unsigned int> Simulation::cellCount() const {
+	map<string,unsigned int> ret{};
+
+	for (auto nameCellP : _cells) {
+		if (ret.find(nameCellP.first) != ret.end()) {
+			ret[nameCellP.first]+=1;
+		}
+		else {
+			ret.insert(make_pair(nameCellP.first,1));
+		}
+	}
+	return ret;
+}
+
 void Simulation::readFile(const string& filename) {
 	ifstream infile(filename);
 	if (infile)
