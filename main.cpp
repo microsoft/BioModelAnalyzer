@@ -9,6 +9,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -27,23 +28,25 @@ using std::cin;
 using std::endl;
 using std::string;
 using std::ifstream;
+using std::ofstream;
+using std::stringstream;
 using std::vector;
 using std::map;
 using std::pair;
 
-enum class Options { load, overlap, overlapraw, existence };
+enum class Options { load, overlap, overlapraw, existence, exportSim };
 
 const string INITIALPROG{"P0"};
 const string INITIALPROGWITHCOND{"P0[SPERM_LEFT]"};
 
 
 void printOptions() {
-	unsigned int op{0};
 	cout << "Please choose:" << endl;
 	cout << "(" << static_cast<int>(Options::load) << ") Load a new program file." << endl;
 	cout << "(" << static_cast<int>(Options::overlap) << ") Check for the time overlap of two cells." << endl;
 	cout << "(" << static_cast<int>(Options::overlapraw) << ") Check for the time overlap of two cells (with raw data)." << endl;
 	cout << "(" << static_cast<int>(Options::existence) << ") Check cell existence." << endl;
+	cout << "(" << static_cast<int>(Options::exportSim) << ") Export simulations to file." << endl;
 }
 
 string ChooseConditionFromProgram(Simulation*& s,const string& name) {
@@ -64,7 +67,7 @@ string ChooseConditionFromProgram(Simulation*& s,const string& name) {
 	}
 
 	unsigned int which { 0 };
-	if (!cin >> which) {
+	if (!(cin >> which)) {
 		const string err{"Wrong option."};
 		cin.clear();
 		throw err;
@@ -80,7 +83,7 @@ string ChooseConditionFromProgram(Simulation*& s,const string& name) {
 		const string err { "Wrong option." };
 		throw err;
 	}
-	std::stringstream temp { };
+	stringstream temp;
 	temp << *it;
 	return temp.str();
 }
@@ -95,14 +98,14 @@ void readSimulation(Simulation*& s) {
 	}
 	s = new Simulation(file);
 
-	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
-	s->run(INITIALPROG+"["+condition+"]");
-	//s->run(INITIALPROGWITHCOND);
-
 	cout << "Would you like to see a simulation?" << endl;
 	char answer;
 	cin >> answer;
 	if (answer == 'y') {
+		string condition{ChooseConditionFromProgram(s,INITIALPROG)};
+		s->run(INITIALPROG+"["+condition+"]");
+		//s->run(INITIALPROGWITHCOND);
+
 		cout << *s;
 	}
 }
@@ -202,15 +205,19 @@ void cellCount(Simulation* s) {
 			cout << "Please upload a program first." << endl;
 			 return;
 	}
+
 	unsigned int repetitions{0};
 	cout << "How many simulations would you like to run?" << endl;
 	cin >> repetitions;
+
+	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
+	string initialProgram{INITIALPROG+"["+condition+"]"};
 
 	unsigned int maxLen{0};
 	map<string,unsigned int> total{};
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		s->run(INITIALPROGWITHCOND);
+		s->run(initialProgram);
 		map<string,unsigned int> res{s->cellCount()};
 		for (auto nameCount : res) {
 			if (nameCount.first.size() > maxLen) {
@@ -226,13 +233,49 @@ void cellCount(Simulation* s) {
 		}
 	}
 
+	cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
 	for (auto nameCount : total) {
 		// Do something with padding to make sure that this
 		// is printed to the right length;
-		cout << std::setw(2+maxLen+3+3+2) << std::setfill('-') << "" << endl;
-		cout << "| " << nameCount.first << " |";
-		cout << std::setw(3) << std::right << nameCount.second << "|" << endl;
-		cout << std::setw(2+maxLen+3+3+2) << std::setfill('-') << "" << endl;
+		cout << "| " << std::setw(maxLen) << std::left << nameCount.first;
+		cout << " |" << std::setw(5) << std::right << nameCount.second << "|" << endl;
+		cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
+	}
+}
+
+void exportSimulations(Simulation *s) {
+	if (!s) {
+			cout << "Please upload a program first." << endl;
+			 return;
+	}
+
+	unsigned int repetitions{0};
+	cout << "How many simulations would you like to run?" << endl;
+	if (!(cin >> repetitions)) {
+		cin.clear();
+		const string err{"Bad input."};
+		throw err;
+	}
+
+	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
+	string initialProgram{INITIALPROG+"["+condition+"]"};
+
+	cout << "Please enter the name of a file to write to." << endl;
+	string outFile;
+	if (!(cin >> outFile)) {
+		cin.clear();
+		const string err{"Bad input."};
+		throw err;
+	}
+	ofstream ofile(outFile);
+	if (!ofile) {
+		const string err{"Could not open " + outFile + " for writing."};
+		throw err;
+	}
+	for (unsigned int i{0} ; i<repetitions ; ++i) {
+		s->clear();
+		s->run(initialProgram);
+		ofile << s->toString(i+1);
 	}
 }
 
@@ -245,10 +288,16 @@ int main() {
 	while (true) {
 		try {
 			bool rawData{false};
-			char which(0);
+			int which(0);
 			printOptions();
-			cin >> which;
-			switch (static_cast<Options>(which)) {
+			if (!(cin >> which)) {
+				cin.clear();
+				const string err{"Something went wrong with reading your input. Please try again."};
+				throw err;
+			}
+
+			Options op{static_cast<Options>(which)};
+			switch (op) {
 			case Options::load: {
 				readSimulation(s);
 			}
@@ -264,6 +313,11 @@ int main() {
 			case Options::existence: {
 				cellCount(s);
 			}
+			break;
+			case Options::exportSim: {
+				exportSimulations(s);
+			}
+			break;
 			default:
 				bad();
 			}

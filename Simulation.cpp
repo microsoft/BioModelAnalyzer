@@ -13,11 +13,13 @@
 #include <deque>
 #include <algorithm>
 #include <memory>
+#include <map>
 #include "Directive/Divide.h"
 #include "State.h"
 #include "Simulation.h"
 #include "HelperFunctions.h"
 
+using std::map;
 using std::string;
 using std::stringstream;
 using std::pair;
@@ -230,6 +232,14 @@ bool Simulation::expressed(const string& cond) const {
 	return false;
 }
 
+string Simulation::toString(unsigned int num) const {
+	stringstream temp;
+	for (auto ev : _log) {
+		temp << num << "," << ev->toString() << "\n";
+	}
+
+	return temp.str();
+}
 ostream& operator<< (ostream& out, const Simulation& sim) {
 //	for (auto prog : sim._programs) {
 //		out << *prog.second << endl;

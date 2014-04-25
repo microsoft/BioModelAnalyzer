@@ -6,10 +6,12 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "State.h"
 #include "HelperFunctions.h"
 
 using std::ostream;
+using std::stringstream;
 using std::map;
 using std::string;
 using std::make_pair;
@@ -53,6 +55,11 @@ bool State::update(const string& var, bool val) {
 	return true;
 }
 
+string State::toString() const {
+	stringstream temp{};
+	temp << *this;
+	return temp.str();
+}
 // TODO:
 // This code is copied from Condition operator<<
 // Move the printout of the map to either a helper function or a class

@@ -28,6 +28,10 @@ void Death::output(ostream& out) const {
 	out << " " << _cell << " X";
 }
 
+string Death::toString() const {
+	// TODO implement me
+	return "";
+}
 
 bool Death::concerns(const string& name) const {
 	return (_cell==name);

@@ -42,6 +42,9 @@ public:
 
 	class iterator {
 	public:
+		friend class CellProgram;
+
+		iterator();
 		iterator(const iterator&);
 		iterator(iterator&&);
 		~iterator();
@@ -53,15 +56,13 @@ public:
 		Condition* operator->() const;
 		Condition operator*() const;
 	private:
-		iterator();
 		std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition*b)>>::iterator _it;
 	};
 
-	iterator begin();
-	iterator end();
+	CellProgram::iterator begin();
+	CellProgram::iterator end();
 
 private:
-	typedef
 	std::string _name;
 	Simulation* _sim;
 	std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition* b)>> _program;

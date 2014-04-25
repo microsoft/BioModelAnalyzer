@@ -31,6 +31,11 @@ bool ChangeState::concerns(const string&) const {
 	return false;
 }
 
+string ChangeState::toString() const {
+	// TODO: implement me
+	return "";
+}
+
 ostream& operator<<(ostream& out,const ChangeState& state) {
 	state.output(out);
 	return out;

@@ -135,6 +135,7 @@ Directive* CellProgram::_bestMatch(const State* st) const {
 }
 
 CellProgram::iterator::iterator() {}
+
 CellProgram::iterator::iterator(const CellProgram::iterator& it) {
 	_it=it._it;
 }
@@ -147,7 +148,6 @@ CellProgram::iterator::~iterator() {}
 
 CellProgram::iterator CellProgram::begin() {
 	iterator ret{};
-	auto local=_program.
 	ret._it=_program.begin();
 	return ret;
 }

@@ -6,9 +6,12 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "Event.h"
 
 using std::ostream;
+using std::string;
+using std::stringstream;
 
 
 Event::Event(float d, float t, Simulation* s, Cell* c)
@@ -61,6 +64,11 @@ void Event::output(ostream& out) const {
 	out << "@" << _execTime << ":";
 }
 
+string Event::toString() const {
+	stringstream temp{};
+	temp << _execTime;
+	return temp.str();
+}
 ostream& operator<<(ostream& out, const Event& ev) {
 	ev.output(out);
 	return out;

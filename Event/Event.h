@@ -11,6 +11,7 @@ class Event;
 #define EVENT_H_
 
 #include <vector>
+#include <string>
 #include <iosfwd>
 #include "../Cell.h"
 #include "../Simulation.h"
@@ -37,6 +38,7 @@ public:
 
 	bool operator<(const Event& other) const;
 
+	virtual std::string toString() const;
 	friend std::ostream& operator<<(std::ostream&,const Event&);
 
 private:

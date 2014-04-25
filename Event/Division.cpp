@@ -85,6 +85,26 @@ void Division::output(ostream& out) const {
 bool Division::concerns(const string& name) const {
 	return (_parent==name || _daughter1==name || _daughter2==name);
 }
+
+string Division::toString() const {
+	string ret{};
+	ret+=Event::toString();
+	ret+=",";
+	ret+=_parent;
+	ret+=",";
+	ret+=_daughter1;
+	ret+=",";
+	if (_st1!=nullptr) {
+		ret+=_st1->toString();
+	}
+	ret+=",";
+	ret+=_daughter2;
+	ret+=",";
+	if (_st2!=nullptr) {
+		ret+=_st2->toString();
+	}
+	return ret;
+}
 ostream& operator<<(ostream& out, const Division& d) {
 	d.output(out);
 	return out;

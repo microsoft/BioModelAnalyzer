@@ -30,6 +30,7 @@ public:
 	std::pair<bool,bool> value(const std::string& var) const;
 	bool update(const std::string& var,bool val);
 
+	std::string toString() const;
 	friend std::ostream& operator<< (std::ostream&, const State&);
 private:
 	std::map<std::string, bool> _varVals;
