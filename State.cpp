@@ -33,7 +33,7 @@ State::~State() {
 //}
 
 pair<bool,bool> State::value(const string& var) const {
-	if (var.find('[') || var.find(']')) {
+	if (var.find('[')!=std::string::npos || var.find(']')!=std::string::npos) {
 		const string err{"trying to evaluate a global condition on a state"};
 		throw err;
 	}
