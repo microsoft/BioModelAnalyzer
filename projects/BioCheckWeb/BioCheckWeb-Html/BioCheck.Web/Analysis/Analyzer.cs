@@ -90,11 +90,10 @@ namespace BioCheck.Web.Analysis
             var log = new DefaultLogService();
 
             var azureLogService = new LogService();
-            
+
             // SI: Refactor if-clauses into separate methods. 
             if (engineName == "VMCAI")
             {
-                // Standard Proof
                 try
                 {
                     IAnalyzer2 analyzer = new UIMain.Analyzer2();
@@ -151,10 +150,10 @@ namespace BioCheck.Web.Analysis
                                          };
                     return outputData;
                 }
-            }
+            } // VMCAI 
+
             else if (engineName == "CAV")
             {   
-                // LTL Proof
                 try
                 {
                     string formula = inputXml.Descendants("Engine").Elements("Formula").First().Value;
@@ -214,10 +213,10 @@ namespace BioCheck.Web.Analysis
                     };
                     return outputData;
                 }
-            }
-            else
+            } // CAV
+
+            else if (engineName == "SYN")
             {
-                // if (engineName == "SYN")
                 try
                 {
                     IAnalyzer2 analyzer = new UIMain.Analyzer2();                   // Needs changing to the SYN engine.
@@ -266,8 +265,74 @@ namespace BioCheck.Web.Analysis
                     };
                     return outputData;
                 }
+            } // SYN
+
+            else if (engineName == "SCM")
+            {
+                try
+                {
+                    IAnalyzer2 analyzer = new UIMain.Analyzer2();
+
+                    var analyisStartTime = DateTime.Now;
+
+                    // Call the Analyzer and get the Output Xml
+                    if (input.EnableLogging)
+                   {
+                        analyzer.LoggingOn(log);
+                    }
+                    else
+                    {
+                        analyzer.LoggingOff();
+                        log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                    }
+
+                    var outputXml = analyzer.checkSCM(inputXml);
+
+                    // Log the output XML each time it's run
+                    var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
+                    log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
+
+                    
+                    // Convert outuptXml to outputData
+                    var outputData = new AnalysisOutputDTO();
+                    outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;
+
+                    outputData.Time = time;
+                    outputData.ErrorMessages = log.ErrorMessages;
+                    outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
+                    outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
+
+                    return outputData;
+                }
+                catch (Exception ex)
+                {
+                    azureLogService.Debug("Analyze Exception", ex.ToString());
+
+                    // Return an Unknown if fails
+                    var outputData = new AnalysisOutputDTO
+                                         {
+                                             Status = StatusTypes.Unknown,
+                                             Error = ex.ToString(),
+                                             ErrorMessages = log.ErrorMessages,
+                                             ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                                         };
+                    return outputData;
+                }
+            } // SCM
+
+            else 
+            {
+                // Not an engine we know about. 
+                var outputData = new AnalysisOutputDTO
+                {
+                    Status = StatusTypes.Unknown,
+                    Error = "Not an engine name we know about",
+                    ErrorMessages = log.ErrorMessages,
+                    ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                };
+                return outputData;
+
             }
-            // Normal proof, LTL or SYN
         }
 
         public SimulationOutputDTO Simulate(SimulationInputDTO input)

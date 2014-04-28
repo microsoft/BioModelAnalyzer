@@ -77,8 +77,19 @@ namespace BioCheck.ViewModel.Proof
             // output.Status == StatusTypes.TryingStabilizing ||
             // output.Status == StatusTypes.Unknown)
             {
-                var error = xdoc.Descendants("Error").FirstOrDefault();
-                output.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
+                // SCM edit: no error, just alternate state
+                if (output.Status == "SingleStablePoint" || output.Status == "MultiStablePoints" || output.Status == "Cycle" )
+                {
+                    // Add on the zipped Details
+                    output.Status += " ";
+                    output.Status += xdoc.Descendants("Details").FirstOrDefault().Value;
+                }
+                else 
+                {
+                    var error = xdoc.Descendants("Error").FirstOrDefault();
+                    output.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
+                }
+                
             }
 
             return output;

@@ -362,6 +362,20 @@ let xml_of_synth_result (result:string) (moreResult:string) (model:XDocument) =
 // done
 
 
+let xml_of_SCMResult (result:string) (details:string) = 
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)
+
+    let output = new XElement(xn "Status", result)
+    root.Add(output)
+
+    let output2 = new XElement(xn "Details", details)
+    root.Add(output2)
+    
+    doc
+
+
 // Result parsers
 let stabilizing_result_of_xml (xd:XDocument) =
     let parse_tick (tick:XElement) =

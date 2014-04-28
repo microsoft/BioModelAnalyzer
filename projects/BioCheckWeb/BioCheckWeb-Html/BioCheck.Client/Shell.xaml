@@ -227,7 +227,8 @@
                                     
                                     <controlsInputToolkit:Separator/>
                                     <controlsInputToolkit:MenuItem Header="Query temporal features" Command="{Binding RunTimeCommand}"/>
-                                    <controlsInputToolkit:MenuItem Header="Network stability by synthesis" Command="{Binding RunSynthCommand}"/>                                   
+                                    <controlsInputToolkit:MenuItem Header="Network stability by synthesis" Command="{Binding RunSynthCommand}"/>
+                                    <controlsInputToolkit:MenuItem Header="SCM analysis" Command="{Binding RunSCMCommand}"/>
                                 </controlsInputToolkit:ContextMenu>
                             </controlsInputToolkit:ContextMenuService.ContextMenu>
 
