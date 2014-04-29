@@ -13,11 +13,12 @@
 
 class ChangeState: public Event {
 public:
-	ChangeState(Simulation* s=nullptr, Cell* c=nullptr);
+	ChangeState() =delete;
+	ChangeState(float d, float t,Simulation* s=nullptr, Cell* c);
 	virtual ~ChangeState();
 
 	virtual std::vector<Event*> execute() const;
-//	virtual void output(std::ostream&) const;
+	virtual void output(std::ostream&) const;
 	virtual bool concerns(const std::string&) const;
 
 	virtual std::string toString() const;
