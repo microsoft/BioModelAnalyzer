@@ -25,7 +25,7 @@ vector<string> Divide::programs() const {
 	return vector<string>{_daughter1,_daughter2};
 }
 
-vector<Event*> Divide::nextEvents(float currentTime, Cell* c, State* currentState) const {
+vector<Event*> Divide::nextEvents(float currentTime, Cell* c) const {
 	// TODO: implement this
 	float duration{_randomTime()};
 	State* st1Copy=(_st1==nullptr ? nullptr : new State(*_st1));

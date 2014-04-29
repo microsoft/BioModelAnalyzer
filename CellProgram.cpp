@@ -39,32 +39,31 @@ Simulation* CellProgram::simulation() const {
 }
 
 vector<Event*> CellProgram::firstEvent(float currentTime, State* currentState) const {
-	// Create the cell for this event
-	State* currentCopy=(nullptr==currentState ? nullptr : new State(*currentState));
+	State* currentCopy=(nullptr==currentState ? nullptr : new State*(currentState));
 	Cell* cell{new Cell(this,currentCopy)};
 	_sim->addCell(cell);
 
-	// Search for the next event applicable to this Cell
-	Directive* best{_bestMatch(currentState)};
-	if (nullptr==best) {
-		stringstream err;
-		err << "In Cell " << _name << ". ";
-		if (currentState) {
-			err << "Failed to match state: " << *currentState;
-		}
-		else {
-			err << "There is no default.";
-		}
-		throw err.str();
-	}
-
-	// Notice that if more than one event is created then
-	// all events correspond to the same cell!
-	vector<Event*> res=best->nextEvents(currentTime,cell,currentState);
-	return res;
+	return vector<Event*>{new Birth(name(),currentCopy,0,currentTime,simulation(),cell)};
 }
 
-//vector<Event*> CellProgram::nextEvent(float currentTime, State* currentState) const {
+//vector<Event*> CellProgram::nextEvent(float currentTime, Cell* cell) const {
+//	// Search for the next event applicable to this Cell
+//	Directive* best{_bestMatch(cell->state())};
+//	if (nullptr==best) {
+//		stringstream err;
+//		err << "In Cell " << _name << ". ";
+//		err << "Failed to match state: " << cell->state();
+//		throw err.str();
+//	}
+//
+//	// Notice that if more than one event is created then
+//	// all events correspond to the same cell!
+//	vector<Event*> res=best->nextEvents(currentTime,cell);
+//	return res;
+//}
+//
+//
+
 //	Directive* best{_bestMatch(*currentState)};
 //	if (nullptr==best) {
 //		stringstream err{"in Cell "};
@@ -117,7 +116,7 @@ bool CellProgram::_conditionExists(Condition* newCond) const {
 	return false;
 }
 
-Directive* CellProgram::_bestMatch(const State* st) const {
+Directive* CellProgram::_bestMatch(const State st) const {
 	Directive* best{nullptr};
 	unsigned int val{0};
 	for (auto condDir : _program) {

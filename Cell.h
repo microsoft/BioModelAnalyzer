@@ -24,6 +24,7 @@ public:
 	Cell(const CellProgram*,State*);
 	~Cell();
 
+	const State state() const;
 	std::pair<bool,unsigned int> evaluate(Condition* condition) const;
 	bool expressed(const std::string&) const;
 

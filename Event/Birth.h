@@ -19,19 +19,19 @@ public:
 
 	virtual ~Birth();
 
-	std::string cell() const;
+	std::string cellName() const;
 
 	void setCell(const std::string& c);
 
-	virtual std::vector<Event*> excute() const;
+	virtual std::vector<Event*> execute() const;
 	virtual void output(std::ostream&) const;
-	virtual void concerns(const std::string&) const;
+	virtual bool concerns(const std::string&) const;
 
 	virtual std::string toString() const;
 
 	friend std::ostream& operator<<(std::ostream&, const Birth&);
 private:
-	std::string _cell;
+	std::string _cellName;
 	State* _st;
 };
 

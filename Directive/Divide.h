@@ -24,7 +24,7 @@ public:
 
 	// Return a vector of next events
 	// All corresponding to the same Cell!!!!!!
-	virtual std::vector<Event*> nextEvents(float, Cell*, State*) const;
+	virtual std::vector<Event*> nextEvents(float, Cell*) const;
 private:
 	std::string _daughter1;
 	State* _st1;

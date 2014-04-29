@@ -33,7 +33,7 @@ public:
 	std::string name() const;
 	Simulation* simulation() const;
 	std::vector<Event*> firstEvent(float currentTime, State* state) const;
-	// std::vector<Event*> nextEvent(float currentTime, Cell* cell, State* state) const;
+	std::vector<Event*> nextEvent(float currentTime, Cell* cell) const;
 	std::vector<std::string> otherPrograms() const;
 
 	void addCondition(Condition* c, Directive* d);
@@ -68,7 +68,7 @@ private:
 	std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition* b)>> _program;
 
 	bool _conditionExists(Condition*) const;
-	Directive* _bestMatch(const State* st) const;
+	Directive* _bestMatch(const State st) const;
 };
 
 #endif /* CELL_H_ */

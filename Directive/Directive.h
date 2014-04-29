@@ -28,7 +28,7 @@ public:
 	virtual std::vector<std::string> programs() const=0;
 	// Return a vector of next events
 	// All corresponding to the same Cell!!!!!!
-	virtual std::vector<Event*> nextEvents(float,Cell*, State*) const=0;
+	virtual std::vector<Event*> nextEvents(float,Cell*) const=0;
 private:
 	float _mean;
 	float _sd;

@@ -21,8 +21,10 @@ Division::Division(const std::string& p, const std::string& d1, State* st1,
 : Event(d,t,s,c), _parent(p), _daughter1(d1), _st1(st1), _daughter2(d2), _st2(st2) {}
 
 Division::~Division() {
-	delete _st1;
-	delete _st2;
+	if (nullptr != _st1)
+		delete _st1;
+	if (nullptr != _st2)
+		delete _st2;
 }
 
 
