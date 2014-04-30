@@ -10,143 +10,168 @@
 /// <reference path="jqueryui/jqueryui.d.ts" />
 // /// <reference path="vuePlotTypes.ts" /> maybe use later?
 
+// NB: Yes, I do know variables are function scoped, I just find it helpful to
+// have the declaration close to use.
+
 var svg: SVGSVGElement;
 
 window.onload = () => {
-    var svgjq = $("#svgroot");
-    // Indirection via <any> to stop compiler complaining :-|
-    svg = <any>svgjq[0];
-    svgjq.mousedown(startDrag);
-    svgjq.mousemove(doDrag);
-    svgjq.mouseup(drawItemOrStopDrag);
-    svgjq.attr("unselectable", "on");
-    svgjq.on("selectstart", function () { return false; });
+	// Chrome doesn't seem to correctly map coordinates when doing an SVG
+	// intersection test. The object coordinates are scaled by the current
+	// zoom value, and even the positioning of new objects is dealt with
+	//correctly, but the incoming rectangle for getIntersectionList *isn't*.
+	// Compute a rough scaling factor here.
+	// From http://stackoverflow.com/questions/1713771/how-to-detect-page-zoom-level-in-all-modern-browsers
+	// NB: assumes dropdown scaling factors and will probably screw up on
+	// custom ones, because of the margin fiddle factor (window borders?
+	// scroll bar width?)
+	// For IE this will always result in a scale of 1.0, which is fine
+	// because IE does transform the rectangle properly.
+	// Not applicable to Firefox since that doesn't support SVG intersection
+	// tests currently.
+	// TODO - deal with changes in zoom level as the app is running
+	getIntersectionListScaleFiddleFactor = Math.round((window.outerWidth - 8) / window.innerWidth * 100)/100;
 
-    $("#general-tools").buttonset();
-    $("#drawing-tools").buttonset();
-    $("#prover-tools").buttonset();
+	var svgjq = $("#svgroot");
+	// Indirection via <any> to stop compiler complaining :-|
+	svg = <any>svgjq[0];
+	svgjq.mousedown(startDrag);
+	svgjq.mousemove(doDrag);
+	svgjq.mouseup(drawItemOrStopDrag);
+	svgjq.attr("unselectable", "on");
+	svgjq.on("selectstart", function () { return false; });
 
-    var b = $("#button-undo");
-    b.button("option", "disabled", true);
-    b.click(ModelStack.undo);
-    b = $("#button-redo");
-    b.button("option", "disabled", true);
-    b.click(ModelStack.redo);
+	$("#general-tools").buttonset();
+	$("#drawing-tools").buttonset();
+	$("#prover-tools").buttonset();
 
-    b = $("#button-delete");
-    b.button("option", "disabled", true);
-    b.click(deleteSelectedItem);
+	var b = $("#button-undo");
+	b.button("option", "disabled", true);
+	b.click(ModelStack.undo);
+	b = $("#button-redo");
+	b.button("option", "disabled", true);
+	b.click(ModelStack.redo);
 
-    $("#drawing-tools input").click(drawingToolClick);
-    $("img.draggable-button").each(function (i) {
-        $(this).draggable({
-            helper: null,
-            cursor: getCursorUrl(this),
-            delay: 300,
-            start: function () { dragFromButton = true; }
-        })
-    });
+	b = $("#button-delete");
+	b.button("option", "disabled", true);
+	b.click(deleteSelectedItem);
 
-    $("#design-surface").droppable({ drop: doDropFromDrawingTool });
+	$("#drawing-tools input").click(drawingToolClick);
+	$("img.draggable-button").each(function (i) {
+		$(this).draggable({
+			helper: null,
+			cursor: getCursorUrl(this),
+			delay: 300,
+			start: function () { dragFromButton = true; }
+		})
+	});
 
-    $("#zoom-slider").slider({
-        min: -2,
-        max: 3,
-        value: SvgViewBoxManager.zoomLevel,
-        step: 0.1,
-        // TODO - define slider args type - see http://stackoverflow.com/questions/17999653/jquery-ui-widgets-in-typescript
-        slide: function (e: JQueryEventObject, ui /*: JQueryUI.SliderUIParams */) { SvgViewBoxManager.zoomLevel = ui.value; }
-    });
-    $("#button-zoomtofit").button().click(SvgViewBoxManager.zoomToFit);
+	$("#design-surface").droppable({ drop: doDropFromDrawingTool });
 
-    var d = $("#dialog-variable");
-    d.dialog({
-        title: "Properties",
-        autoOpen: false,
-        modal: true,
-        minWidth: 400,
-        minHeight: 300,
-        buttons: {
-            OK: function () {
-                ModelStack.dup();
-                // TODO - validation
-                var v: Variable = $(this).data("item");
-                var t: SVGTextElement = $(this).data("text");
-                t.textContent = v.name = $("#variable-name").val();
-                v.range0 = $("#variable-range0").val();
-                v.range1 = $("#variable-range1").val();
-                v.formula = $("#variable-function").val(); // TODO - replace newline with space?
-                $(this).dialog("close");
-            },
-            Cancel: function () {
-                $(this).dialog("close");
-            }
-        },
-        open: function () {
-            var v : Variable = $(this).data("item");
-            $("#variable-name").val(v.name);
-            $("#variable-range0").val(v.range0);
-            $("#variable-range1").val(v.range1);
-            $("#variable-function").val(v.formula);
-            var options = [$("<option>Inputs</option>")];
-            for (var i = 0; i < v.toLinks.length; ++i){
-                var o = $("<option>");
-                o.text(v.toLinks[i].source.name);
-                options.push(o);
-            }
-            $("#variable-variable-list").empty().append(options);
-        }
-    });
-    $("#variable-range0").spinner();
-    $("#variable-range1").spinner();
-    $("#variable-function-list").change(function () {
-        var f = $("#variable-function-list option:selected");
-        $("#variable-function-syntax").text(f.data("syntax"));
-        $("#variable-function-description").text(f.data("description"));
-        $("#variable-function-insert").data("insert",f.val()).data("back",f.data("back"));
-    });
-    b = $("#variable-function-insert");
-    b.button();
-    b.click(function () {
-        //alert($(this).data("insert"));
-        var t = $(this);
-        insertText($("#variable-function").get()[0], t.data("insert"), t.data("back"));
-    });
-    $("#variable-variable-list").change(function () {
-        var v = $("#variable-variable-list option:selected");
-        //alert(v.text());
-        insertText($("#variable-function").get()[0], v.text());
-    });
+	$("#zoom-slider").slider({
+		min: -2,
+		max: 3,
+		value: SvgViewBoxManager.zoomLevel,
+		step: 0.1,
+		// TODO - define slider args type - see http://stackoverflow.com/questions/17999653/jquery-ui-widgets-in-typescript
+		slide: function (e: JQueryEventObject, ui /*: JQueryUI.SliderUIParams */) { SvgViewBoxManager.zoomLevel = ui.value; }
+	});
+	$("#button-zoomtofit").button().click(SvgViewBoxManager.zoomToFit);
 
-    d = $("#dialog-container");
-    d.dialog({
-        title: "Properties",
-        autoOpen: false,
-        modal: true,
-        buttons: {
-            OK: function () {
-                ModelStack.dup();
-                // TODO - validation
-                var c: Container = $(this).data("item");
-                var t: SVGTextElement = $(this).data("text");
-                t.textContent = c.name = $("#container-name").val();
-                $(this).dialog("close");
-            },
-            Cancel: function () {
-                $(this).dialog("close");
-            }
-        },
-        open: function () {
-            var c: Container = $(this).data("item");
-            $("#container-name").val(c.name);
-        }
-    });
+	var d = $("#dialog-variable");
+	d.dialog({
+		title: "Properties",
+		autoOpen: false,
+		modal: true,
+		minWidth: 400,
+		minHeight: 300,
+		buttons: {
+			OK: function () {
+				ModelStack.dup();
+				// TODO - validation
+				var v: Variable = $(this).data("item");
+				var t: SVGTextElement = $(this).data("text");
+				t.textContent = v.name = $("#variable-name").val();
+				v.range0 = $("#variable-range0").val();
+				v.range1 = $("#variable-range1").val();
+				v.formula = $("#variable-function").val(); // TODO - replace newline with space?
+				$(this).dialog("close");
+			},
+			Cancel: function () {
+				$(this).dialog("close");
+			}
+		},
+		open: function () {
+			var v : Variable = $(this).data("item");
+			$("#variable-name").val(v.name);
+			$("#variable-range0").val(v.range0);
+			$("#variable-range1").val(v.range1);
+			$("#variable-function").val(v.formula);
+			var options = [$("<option>Inputs</option>")];
+			for (var i = 0; i < v.toLinks.length; ++i){
+				var o = $("<option>");
+				o.text(v.toLinks[i].source.name);
+				options.push(o);
+			}
+			$("#variable-variable-list").empty().append(options);
+		}
+	});
+	$("#variable-range0").spinner();
+	$("#variable-range1").spinner();
+	$("#variable-function-list").change(function () {
+		var f = $("#variable-function-list option:selected");
+		$("#variable-function-syntax").text(f.data("syntax"));
+		$("#variable-function-description").text(f.data("description"));
+		$("#variable-function-insert").data("insert",f.val()).data("back",f.data("back"));
+	});
+	b = $("#variable-function-insert");
+	b.button();
+	b.click(function () {
+		//alert($(this).data("insert"));
+		var t = $(this);
+		insertText($("#variable-function").get()[0], t.data("insert"), t.data("back"));
+	});
+	$("#variable-variable-list").change(function () {
+		var v = $("#variable-variable-list option:selected");
+		//alert(v.text());
+		insertText($("#variable-function").get()[0], v.text());
+	});
 
-    document.onmousewheel = doWheel;
-    document.onkeyup = doKey; // Need to use this to trap the delete key (since keypress hides that)
+	d = $("#dialog-container");
+	d.dialog({
+		title: "Properties",
+		autoOpen: false,
+		modal: true,
+		buttons: {
+			OK: function () {
+				ModelStack.dup();
+				// TODO - validation
+				var c: Container = $(this).data("item");
+				var t: SVGTextElement = $(this).data("text");
+				t.textContent = c.name = $("#container-name").val();
+				$(this).dialog("close");
+			},
+			Cancel: function () {
+				$(this).dialog("close");
+			}
+		},
+		open: function () {
+			var c: Container = $(this).data("item");
+			$("#container-name").val(c.name);
+		}
+	});
 
-    ModelStack.set(new Model());
+	document.onmousewheel = doWheel;
+	document.onkeyup = doKey; // Need to use this to trap the delete key (since keypress hides that)
+
+	ModelStack.set(new Model());
 };
+
+// From http://stackoverflow.com/questions/20581319/disabling-zoom-on-chrome-trick
+//window.onresize = function () {
+//    var zoom = window.devicePixelRatio;
+//    document.body.style.zoom = (100 / zoom) + "%";
+//}
 
 function drawingToolClick(e: JQueryEventObject) {
     selectItem(null);
@@ -198,6 +223,7 @@ function doKey(e: KeyboardEvent) {
 }
 
 function startDrag(e: JQueryMouseEventObject) {
+<<<<<<< HEAD
     //var sx = window.event.x, sy = window.event.y;
     //var pt = screenToSvg(sx, sy);
     //var circ = createSvgElement("circle", pt.x, pt.y);
@@ -234,6 +260,45 @@ function startDrag(e: JQueryMouseEventObject) {
         dragMode = dragObject ? DragMode.DragStart : DragMode.Panning;
         lastX = e.clientX; lastY = e.clientY;
     }
+=======
+	//hitTestTest(e.clientX, e.clientY);
+	//var sx = window.event.x, sy = window.event.y;
+	//var ppt = screenToSvg(sx, sy);
+	//var circ = createSvgElement("circle", ppt.x, ppt.y);
+	//circ.setAttribute("fill", "red");
+	//circ.setAttribute("r", "2px");
+	//svg.appendChild(circ);
+	//return;
+
+	if (e.button != 0) return;
+
+	// Clear any selection until mouse up
+	selectItem(null);
+
+	dragMode = DragMode.None;
+
+	var src = (<any>e).originalEvent.srcElement || (<any>e).originalEvent.originalTarget;
+	var elem = null;
+	if (src && (src.tagName == "path" || src.tagName == "g"))
+		elem = getAssociatedItemElement(src);
+
+	// Mouse down for drawing lines *doesn't* trigger a drag
+	if (elem && (drawingItem == ItemType.Activate || drawingItem == ItemType.Inhibit)) {
+		// Bit naughty to cast to Variable, but not accessing any specific
+		// properties of Variable until after the type (which is common) has
+		// been validated
+		var item = <Variable>elem.item;
+		if (item.type == ItemType.Variable || item.type == ItemType.Constant || item.type == ItemType.Receptor) {
+			var pt = getTranslation(elem);
+			drawingLineSource = item;
+			drawingLine = addLink(item, drawingItem);
+		}
+	} else {
+		dragObject = elem;
+		dragMode = dragObject ? DragMode.DragStart : DragMode.Panning;
+		lastX = e.clientX; lastY = e.clientY;
+	}
+>>>>>>> 313e0cf... Figured out why SVG hot testing fails in Chrome, and partly addressed it
 }
 
 function doDrag(e /*: JQueryMouseEventObject*/) {
@@ -392,8 +457,46 @@ function getCursorUrl(elem: HTMLElement) {
     return type ? "url(_images/" + type + ".cur), pointer" : "auto";
 }
 
+/*
+function hitTestTest(x: number, y: number) {
+	var p = screenToSvg(x, y);
+	var a, b, c;
+	if (document.msElementsFromPoint)
+		a = document.msElementsFromPoint(x, y);
+	if (svg.getIntersectionList) {
+		var o = $("#design-surface").offset();
+		var r = svg.createSVGRect();
+		r.width = r.height = 1;
+		r.x = p.x; r.y = p.y;
+		b = svg.getIntersectionList(r, svg);
+		r.x = (x - o.left) * getIntersectionListScaleFiddleFactor; r.y = (y - o.top) * getIntersectionListScaleFiddleFactor;
+		c = svg.getIntersectionList(r, svg);
+	}
+	var circ = createSvgElement("circle", p.x, p.y);
+	circ.setAttribute("fill", "red");
+	circ.setAttribute("r", "2px");
+	svg.appendChild(circ);
+	var s = "Original (" + Math.round(x) + "," + Math.round(y) + ") svg (" + Math.round(p.x) + "," + Math.round(p.y) + ")";
+	alert(s + "\na " + dump(a) + "\nb " + dump(b) + "\nc " + dump(c));
+}
+
+function dump(list) {
+	if (!list)
+		return "undefined";
+	var s = "(" + list.length + ")";
+	for (var i = 0; i < list.length; ++i) {
+		if (!list[i].className || !list[i].className.baseVal)
+			break;
+		s = s + " " + list[i].nodeName + "(" + list[i].className.baseVal + ")";
+	}
+	return s;
+}
+*/
+
 // Different browsers have different support for SVG hit testing, hence this mess
+// Returns hit elements in reverse z-order (ie, uppermost first)
 function svgHitTest(x: number, y: number) : any {
+<<<<<<< HEAD
     // IE10+ is the easiest - meElementsFromPoint returns all elements all the
     // way up to <html> - see http://ie.microsoft.com/testdrive/HTML5/HitTest/
     if (document.msElementsFromPoint)
@@ -425,7 +528,46 @@ function svgHitTest(x: number, y: number) : any {
     for (var i = 0; i < nodes.length; ++i)
         nodes[i].style.visibility = visibilities[i];
     return nodes;
+=======
+	// IE10+ is the easiest - meElementsFromPoint returns all elements all the
+	// way up to <html> - see http://ie.microsoft.com/testdrive/HTML5/HitTest/
+	if (document.msElementsFromPoint)
+		return document.msElementsFromPoint(x, y);
+	// document.elementFromPoint allegedly returns the <svg> element on Opera
+	// rather than the sub-elements, but getIntersectionList seems to work
+	// http://stackoverflow.com/questions/2259613/locate-an-element-within-svg-in-opera-by-coordinates
+	// This returns SVG elements, and nothing higher than that
+	if (svg.getIntersectionList) {
+		var o = $("#design-surface").offset();
+		var r = svg.createSVGRect();
+		r.width = r.height = 1;
+		r.x = (x - o.left) * getIntersectionListScaleFiddleFactor; r.y = (y - o.top) * getIntersectionListScaleFiddleFactor;
+		var list = svg.getIntersectionList(r, svg);
+		var reversedList = [];
+		for (var i = list.length - 1; i >= 0; --i)
+			reversedList.push(list[i]);
+		return reversedList;
+	}
+	// getIntersectionList not available in FireFox so need a fallback...
+	// https://developer.mozilla.org/en-US/docs/SVG_in_Firefox
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=501421
+	// Solution taken from http://stackoverflow.com/questions/9910008/dispatching-a-mouse-event-to-an-element-that-is-visually-behind-the-receiving
+	// TODO - doesn't actually work!!!
+	var nodes = [];
+	var visibilities: string[] = [];
+	var node;
+	while ((node = document.elementFromPoint(x, y)) && node != svg && node != document.body) {
+		nodes.push(node);
+		visibilities.push(node.style.visibility);
+		node.style.visibility = "hidden";
+	}
+	for (var i = 0; i < nodes.length; ++i)
+		nodes[i].style.visibility = visibilities[i];
+	return nodes;
+>>>>>>> 313e0cf... Figured out why SVG hot testing fails in Chrome, and partly addressed it
 }
+
+var getIntersectionListScaleFiddleFactor: number;
 
 function getEventElementAndPart(e, ignore = null): ElementAndPart {
     var nodes = svgHitTest(e.clientX, e.clientY);

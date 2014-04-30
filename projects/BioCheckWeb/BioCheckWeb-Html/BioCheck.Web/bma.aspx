@@ -27,6 +27,9 @@
 	<!-- <link rel="stylesheet" href="_scripts/vuePlot.css" type="text/css" />
 	<script src="_scripts/vueplot.js" type="text/javascript"></script> -->
 
+	<!-- NB: scale 1.0 != 100% - However, disable user zoom change, except that this doesn't seem to have an effect -->
+	<meta name="viewport" content="user-scalable=no" />
+
 	<script src="_scripts/bma.js" type="text/javascript"></script>
 </head>
 <body>
