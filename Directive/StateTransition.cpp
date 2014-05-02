@@ -29,7 +29,7 @@ vector<string> StateTransition::programs() const {
 	return vector<string>{_cProg->name()};
 }
 
-std::pair<Event*,std::vector<Happening*>> StateTransition::apply(Cell* c) const {
+std::pair<Event*,std::vector<Happening*>> StateTransition::apply(Cell* c,float duration, float time) const {
 	// TODO: Implement this
 	Event* e{nullptr};
 	return make_pair(e,vector<Happening*>{});
