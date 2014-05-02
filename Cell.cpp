@@ -17,15 +17,12 @@ Cell::Cell(const CellProgram* prog, State* state) : _alive(true), _state(state),
 }
 
 Cell::~Cell() {
-	delete _state;
+	if (_state)
+		delete _state;
 }
 
-const State Cell::state() const {
-	if (nullptr==_state) {
-		const string err{"Cell with no state."};
-		throw err;
-	}
-	return *_state;
+const State* Cell::state() const {
+	return _state;
 }
 
 pair<bool,unsigned int> Cell::evaluate(Condition* cond) const {
@@ -38,6 +35,10 @@ bool Cell::update(const string& var,bool val) {
 
 const string Cell::name() const {
 	return _program->name();
+}
+
+const CellProgram* Cell::program() const {
+	return _program;
 }
 
 bool Cell::expressed(const string& cond) const {

@@ -24,6 +24,7 @@ class Simulation;
 #include "Condition.h"
 #include "Event/Event.h"
 #include "Directive/Directive.h"
+#include "Happening.h"
 
 class Simulation {
 public:
@@ -36,7 +37,9 @@ public:
 	std::vector<Cell*> cells(const std::string& name) const;
 
 	void readFile(const std::string& filename);
-	void run(const std::string& initial);
+	void run(const std::string& initialProg,
+			 const std::string& initialState,
+			 float initialMean, float initialSD);
 	void clear();
 
 	std::pair<float,bool> overlap(const std::string&, const std::string&) const;
@@ -51,20 +54,23 @@ public:
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
 private:
-	// typedef std::tuple<CellProgram*, Condition*, Directive*> _LineStructure;
-	enum CsvFields { NAME, CONDITION, MEANTIME, STANDARDDEV, ACTION, DAUGHTER1, DAUGHTER2, LASTDELIM};
+	enum CsvFields { NAME, CONDITION, ACTION,
+					 DAUGHTER1, STATE1, MEANTIME1, STANDARDDEV1,
+					 DAUGHTER2, STATE2, MEANTIME2, STANDARDDEV2,
+					 LASTDELIM};
 
 	class EventPtrComparison
 	{
 	public:
-	  bool operator() (Event* lhs,  Event* rhs) const;
+	  bool operator() (Happening* lhs,  Happening* rhs) const;
 	};
 
 
 //	_LineStructure _parseLine(const std::string& line) const ;
 	void _parseLine(const std::string& line);
+	float _readFloat(const std::string& input) const;
 	void _sanitize(std::string& buffer);
-	std::pair<std::string,State*> _parseCellWithState(const std::string& cell) const;
+	// std::pair<std::string,State*> _parseCellWithState(const std::string& cell) const;
 
 	float _currentTime;
 	std::vector<Event*> _log;

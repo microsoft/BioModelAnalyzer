@@ -12,17 +12,17 @@ using std::vector;
 using std::ostream;
 using std::string;
 
-Death::Death(const string& name, Simulation* s, Cell* c) : Event(0.0,0.0,s,c), _cell(name) {
+Death::Death(const string& name, /*Simulation* s,*/ Cell* c) : Event(0.0,0.0,/*s,*/c), _cell(name) {
 }
 
 Death::~Death() {
 }
 
-vector<Event*> Death::execute() const {
-	// TODO Auto-generated destructor stub
-	return vector<Event*> {};
-}
-
+//vector<Event*> Death::execute() const {
+//	// TODO Auto-generated destructor stub
+//	return vector<Event*> {};
+//}
+//
 void Death::output(ostream& out) const {
 	Event::output(out);
 	out << " " << _cell << " X";

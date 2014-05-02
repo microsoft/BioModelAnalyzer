@@ -12,22 +12,22 @@ using std::ostream;
 using std::vector;
 using std::string;
 
-ChangeState::ChangeState(float d, float t, Simulation* s, Cell* c) : Event(d,t,s,c) {
+ChangeState::ChangeState(float d, float t, /*Simulation* s,*/ Cell* c) : Event(d,t,/*s,*/c) {
 }
 
 ChangeState::~ChangeState() {
 }
 
-vector<Event*> ChangeState::execute() const
-{
-	Simulation *sim(simulation());
-	//TODO: implement this
-	// 1. get the best match for this program
-	// 2. create a new division that matches
-	// 3. what you've found
-	return vector<Event*>{};
-}
-
+//vector<Event*> ChangeState::execute() const
+//{
+//	Simulation *sim(simulation());
+//	//TODO: implement this
+//	// 1. get the best match for this program
+//	// 2. create a new division that matches
+//	// 3. what you've found
+//	return vector<Event*>{};
+//}
+//
 void ChangeState::output(ostream& out) const {
 }
 

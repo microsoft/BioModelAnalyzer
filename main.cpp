@@ -103,7 +103,7 @@ void readSimulation(Simulation*& s) {
 	cin >> answer;
 	if (answer == 'y') {
 		string condition{ChooseConditionFromProgram(s,INITIALPROG)};
-		s->run(INITIALPROG+"["+condition+"]");
+		//s->run(INITIALPROG+"["+condition+"]");
 		//s->run(INITIALPROGWITHCOND);
 
 		cout << *s;
@@ -133,7 +133,7 @@ void timeOverlap(Simulation* s,bool rawData) {
 	vector<float> results2; // cell2 born before cell1
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		s->run(INITIALPROGWITHCOND);
+		//s->run(INITIALPROGWITHCOND);
 		pair<float,bool> p(s->overlap(name1,name2));
 		if (p.second)
 			results1.push_back(p.first);
@@ -217,7 +217,7 @@ void cellCount(Simulation* s) {
 	map<string,unsigned int> total{};
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		s->run(initialProgram);
+		//s->run(initialProgram);
 		map<string,unsigned int> res{s->cellCount()};
 		for (auto nameCount : res) {
 			if (nameCount.first.size() > maxLen) {
@@ -274,7 +274,7 @@ void exportSimulations(Simulation *s) {
 	}
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		s->run(initialProgram);
+		//s->run(initialProgram);
 		ofile << s->toString(i+1);
 	}
 }

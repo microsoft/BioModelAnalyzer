@@ -17,7 +17,7 @@ public:
 	Division() =delete;
 	Division(const std::string& p, const std::string& d1, State* st1,
 			                       const std::string& d2, State* st2,
-			                       float d, float t, Simulation* s, Cell* c);
+			                       float d, float t, /*Simulation* s, */Cell* c);
 	virtual ~Division();
 
 	std::string parent() const;
@@ -28,7 +28,7 @@ public:
 	void setDaughter1(const std::string& d1);
 	void setDaughter2(const std::string& d2);
 
-	virtual std::vector<Event*> execute() const;
+	// virtual std::vector<Event*> execute() const;
 	virtual void output(std::ostream&) const;
 	virtual bool concerns(const std::string&) const;
 

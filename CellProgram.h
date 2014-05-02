@@ -14,15 +14,15 @@ class CellProgram;
 #include <string>
 #include <map>
 #include <iosfwd>
-#include <functional>
 #include <memory>
+#include <functional>
 #include "Simulation.h"
 #include "Condition.h"
 #include "Directive/Directive.h"
-#include "Event/Event.h"
+// #include "Event/Event.h"
+#include "Happening.h"
 
-
-// typedef std::map<Mutation,Pair<Distribution,Pair<Cell,Cell>>> Plan;
+typedef std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition* b)>> MyMapType;
 
 class CellProgram {
 public:
@@ -32,11 +32,20 @@ public:
 
 	std::string name() const;
 	Simulation* simulation() const;
-	std::vector<Event*> firstEvent(float currentTime, State* state) const;
-	std::vector<Event*> nextEvent(float currentTime, Cell* cell) const;
+	std::vector<Happening*> firstEvent(float currentTime, const std::string& state, float mean, float sd) const;
+
+	//std::vector<Event*> firstEvent(float currentTime, State* state) const;
+	//std::vector<Event*> nextEvent(float currentTime, Cell* cell) const;
+
+	const Directive* bestDirective(const State* state) const;
 	std::vector<std::string> otherPrograms() const;
 
+	void setDefaults(State*, float, float);
 	void addCondition(Condition* c, Directive* d);
+
+	const State* defState() const;
+	float defMean() const;
+	float defSD() const;
 
 	friend std::ostream& operator<<(std::ostream&, const CellProgram&);
 
@@ -56,7 +65,7 @@ public:
 		Condition* operator->() const;
 		Condition operator*() const;
 	private:
-		std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition*b)>>::iterator _it;
+		MyMapType::iterator _it;
 	};
 
 	CellProgram::iterator begin();
@@ -65,10 +74,11 @@ public:
 private:
 	std::string _name;
 	Simulation* _sim;
-	std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition* b)>> _program;
-
+	MyMapType _program;
+	State* _defState;
+	float _defMean;
+	float _defSD;
 	bool _conditionExists(Condition*) const;
-	Directive* _bestMatch(const State st) const;
 };
 
 #endif /* CELL_H_ */

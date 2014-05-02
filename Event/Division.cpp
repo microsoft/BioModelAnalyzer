@@ -17,8 +17,8 @@ using std::vector;
 Division::Division(const std::string& p, const std::string& d1, State* st1,
 		                                 const std::string& d2, State* st2,
 		                                 float d, float t,
-		                                 Simulation* s, Cell* c)
-: Event(d,t,s,c), _parent(p), _daughter1(d1), _st1(st1), _daughter2(d2), _st2(st2) {}
+		                                 /*Simulation* s,*/ Cell* c)
+: Event(d,t,/*s,*/c), _parent(p), _daughter1(d1), _st1(st1), _daughter2(d2), _st2(st2) {}
 
 Division::~Division() {
 	if (nullptr != _st1)
@@ -50,24 +50,25 @@ void Division::setDaughter2(const string& d2) {
 	_daughter2=d2;
 }
 
-vector<Event*> Division::execute() const {
-	Simulation* sim(simulation());
-	CellProgram* d1(sim->program(_daughter1));
-	CellProgram* d2(sim->program(_daughter2));
-	vector<Event*> events{},events1{},events2{};
-	this->cell()->kill();
-	if (d1)
-		events1=d1->firstEvent(this->execTime(),_st1);
-	if (d2)
-		events2=d2->firstEvent(this->execTime(),_st2);
-	for (auto event : events1) {
-		events.push_back(event);
-	}
-	for (auto event : events2) {
-		events.push_back(event);
-	}
-	return events;
-}
+//vector<Event*> Division::execute() const {
+//	Simulation* sim(simulation());
+//	CellProgram* d1(sim->program(_daughter1));
+//	CellProgram* d2(sim->program(_daughter2));
+//	vector<Event*> events{},events1{},events2{};
+//	this->cell()->kill();
+//	if (d1)
+//		events1=d1->firstEvent(this->execTime(),_st1);
+//	if (d2)
+//		events2=d2->firstEvent(this->execTime(),_st2);
+//	for (auto event : events1) {
+//		events.push_back(event);
+//	}
+//	for (auto event : events2) {
+//		events.push_back(event);
+//	}
+//	return events;
+//}
+//
 
 void Division::output(ostream& out) const {
 	Event::output(out);

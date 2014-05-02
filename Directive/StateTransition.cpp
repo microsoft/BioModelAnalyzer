@@ -10,8 +10,8 @@
 using std::string;
 using std::vector;
 
-StateTransition::StateTransition(float m, float s, CellProgram *c)
-: Directive(m,s,c) {}
+StateTransition::StateTransition(CellProgram *c, float m, float s)
+: Directive(c), _mean(m), _sd(s) {}
 
 StateTransition::~StateTransition() {
 }
@@ -29,7 +29,8 @@ vector<string> StateTransition::programs() const {
 	return vector<string>{_cProg->name()};
 }
 
-vector<Event*> nextEvents(float t, Cell* c, State* s) const {
+std::pair<Event*,std::vector<Happening*>> StateTransition::apply(Cell* c) const {
 	// TODO: Implement this
-	return vector<Event*>{};
+	Event* e{nullptr};
+	return make_pair(e,vector<Happening*>{});
 }

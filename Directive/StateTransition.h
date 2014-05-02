@@ -16,7 +16,7 @@
 class StateTransition: public Directive {
 public:
 	StateTransition()=delete;
-	StateTransition(float m, float s, CellProgram* c);
+	StateTransition(CellProgram* c,float m, float s);
 
 	virtual ~StateTransition();
 
@@ -24,9 +24,12 @@ public:
 
 	virtual std::vector<std::string> programs() const;
 
-	virtual std::vector<Event*> nextEvents(float, Cell*, State*) const;
+	//virtual std::vector<Event*> nextEvents(float, Cell*, State*) const;
+	virtual std::pair<Event*,std::vector<Happening*>> apply(Cell*,float duration, float time) const;
 
 private:
+	float _mean;
+	float _sd;
 	std::map<std::string,bool> _changes;
 };
 

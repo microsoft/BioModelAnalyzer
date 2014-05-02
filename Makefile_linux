@@ -4,10 +4,26 @@
 
 RM := rm -rf
 
-HelperFunctions.o : HelperFunctions.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c HelperFunctions.cpp -o HelperFunctions.o
-Condition.o : Condition.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Condition.cpp -o Condition.o
+Directive/Directive.o : Directive/Directive.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Directive/Directive.cpp -o Directive/Directive.o
+
+Directive/Divide.o : Directive/Divide.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Directive/Divide.cpp -o Directive/Divide.o
+
+Directive/StateTransition.o : Directive/StateTransition.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Directive/StateTransition.cpp -o Directive/StateTransition.o
+
+Event/ChangeState.o : Event/ChangeState.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/ChangeState.cpp -o Event/ChangeState.o
+
+Event/Death.o : Event/Death.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/Death.cpp -o Event/Death.o
+
+Event/Division.o : Event/Division.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/Division.cpp -o Event/Division.o
+
+Event/Event.o : Event/Event.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Event/Event.cpp -o Event/Event.o
 
 Cell.o : Cell.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c Cell.cpp -o Cell.o
@@ -15,29 +31,20 @@ Cell.o : Cell.cpp
 CellProgram.o : CellProgram.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c CellProgram.cpp -o CellProgram.o
 
-Directive.o : Directive/Directive.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Directive/Directive.cpp -o Directive.o
+Condition.o : Condition.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Condition.cpp -o Condition.o
 
-Divide.o : Directive/Divide.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Directive/Divide.cpp -o Divide.o
+Happening.o : Happening.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Happening.cpp -o Happening.o
 
-ChangeState.o : Event/ChangeState.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Event/ChangeState.cpp -o ChangeState.o
-
-Death.o : Event/Death.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Event/Death.cpp -o Death.o
-
-Division.o : Event/Division.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Event/Division.cpp -o Division.o
-
-Event.o : Event/Event.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Event/Event.cpp -o Event.o
-
-Simulation.o : Simulation.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Simulation.cpp -o Simulation.o
+HelperFunctions.o : HelperFunctions.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c HelperFunctions.cpp -o HelperFunctions.o
 
 main.o : main.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c main.cpp -o main.o
+
+Simulation.o : Simulation.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Simulation.cpp -o Simulation.o
 
 State.o : State.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c State.cpp -o State.o
@@ -53,15 +60,22 @@ State.o : State.cpp
 all: Lineage
 
 # Tool invocations
-Lineage: Condition.o CellProgram.o State.o Cell.o ChangeState.o Death.o Division.o Event.o Simulation.o main.o Divide.o Directive.o HelperFunctions.o 
+Lineage: Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
+		 Event/ChangeState.o Event/Death.o Event/Division.o Event/Event.o \
+		 Cell.o CellProgram.o Condition.o Happening.o HelperFunctions.o \
+		 main.o Simulation.o State.o  
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cygwin C++ Linker'
-	g++ -std=c++0x -o Lineage HelperFunctions.o Cell.o Directive.o Divide.o Condition.o State.o CellProgram.o ChangeState.o Death.o Division.o Event.o Simulation.o main.o 
+	g++ -std=c++0x -o Lineage  \
+		Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
+		Event/ChangeState.o Event/Death.o Event/Division.o Event/Event.o \
+		Cell.o CellProgram.o Condition.o Happening.o HelperFunctions.o \
+		main.o Simulation.o State.o
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) *.o
+	-$(RM) *.o Event/*.o Directive/*.o
 	-@echo ' '
 

@@ -14,10 +14,10 @@ using std::string;
 using std::stringstream;
 
 
-Event::Event(float d, float t, Simulation* s, Cell* c)
+Event::Event(float d, float t, /*Simulation* s,*/ Cell* c)
 : _duration(d),
   _execTime(t),
-  _sim(s),
+  // _sim(s),
   _cell(c)
   {}
 
@@ -29,11 +29,11 @@ Cell* Event::cell() const
 	return _cell;
 }
 
-Simulation* Event::simulation() const
-{
-	return _sim;
-}
-
+//Simulation* Event::simulation() const
+//{
+//	return _sim;
+//}
+//
 float Event::duration() const
 {
 	return _duration;
@@ -54,10 +54,6 @@ float Event::execTime() const
 
 void Event::setCell(Cell* c) {
 	_cell=c;
-}
-
-bool Event::operator<(const Event& other) const {
-	return (_execTime < other._execTime);
 }
 
 void Event::output(ostream& out) const {

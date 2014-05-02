@@ -41,8 +41,10 @@ using std::unique_ptr;
 // using boost::lexical_cast;
 
 const int NUMBER_OF_LINES_TO_SKIP{1};
+const string DIVIDE{"divide"};
+const string DEF_INIT{"default_init"};
 
-bool Simulation::EventPtrComparison::operator() (Event* lhs, Event* rhs) const {
+bool Simulation::EventPtrComparison::operator() (Happening* lhs, Happening* rhs) const {
 	return (rhs->operator<(*lhs));
 }
 
@@ -61,30 +63,31 @@ Simulation::~Simulation() {
 	}
 }
 
-void Simulation::run(const string& initial) {
-	auto cellState=_parseCellWithState(initial);
-	const string cellName{cellState.first};
-	// This is unique pointer so that I can use throw.
-	unique_ptr<State> state(cellState.second);
+void Simulation::run(const string& initialProg,
+					 const string& initialState,
+					 float initialMean, float initialSD) {
 
-	auto firstProg(_programs.find(cellName));
+	// Find the right program
+	auto firstProg(_programs.find(initialProg));
 	if (firstProg==_programs.end()) {
 		string err{"Could not find the initial cell: "};
-		err+=cellName;
+		err+=initialProg;
 		throw err;
 	}
-
 	CellProgram* cellProg(firstProg->second);
-	vector<Event*> events(cellProg->firstEvent(_currentTime,state.get()));
 
-	std::priority_queue<Event*, deque<Event*>, EventPtrComparison> _pending;
+//	vector<Event*> events(cellProg->firstEvent(_currentTime,state.get()));
+	vector<Happening*> happenings(cellProg->firstEvent(_currentTime,initialState,initialMean,initialSD));
 
-	for (auto event : events) {
-		_pending.push(event);
+	// TODO: Change pointers to unique_pointers!
+	std::priority_queue<Happening*, deque<Happening*>, EventPtrComparison> _pending;
+
+	for (auto h : happenings) {
+		_pending.push(h);
 	}
 
 	while (!_pending.empty()) {
-		Event* current=_pending.top();
+		Happening* current=_pending.top();
 		_pending.pop();
 
 		_currentTime = current->execTime();
@@ -92,22 +95,13 @@ void Simulation::run(const string& initial) {
 		// TODO:
 		// If you want events to fail then they should throw
 		// an exception!
-		vector<Event*> nextEvents{current->execute()};
-		// cout << *current << endl;
-		_log.push_back(current);
+		pair<Event*,vector<Happening*>> nextEvents{current->execute()};
+		_log.push_back(nextEvents.first);
+		delete current;
 
-		for (auto ev : nextEvents) {
-			_pending.push(ev);
+		for (auto h : nextEvents.second) {
+			_pending.push(h);
 		}
-		// TODO:
-		// An event (change state) could have the state of the program
-		// and then actually apply the state change
-		// The events are actually the things that are alive!
-		// Event should have the relative time and the absolute time
-		// When it is created it has the relative time (for the p-q) and
-		// when it is executed it logs the absolute time when
-		// it happened.
-		// What about activeCells and allCells?
 	}
 }
 
@@ -263,8 +257,13 @@ istream& operator>> (istream& in, Simulation& sim) {
 	}
 
 	// Every line is a comma separated thing that includes:
-	// Cell Name (string), Cell Cycle Length (float), Standard Deviation (float)
-	// Daughter1 (string), Daughter2 (string), some irrelevant mutation info
+	// Cell Name (string), Condition (string), action (string),
+	// Daughter 1 (string), State 1 (string), mean time (float), standard deviation (float),
+	// Daughter 2 (string), State 2 (string), mean time (float), standard deviation (float),
+
+	// Currently the possible actions are: divide, and default_init
+	// For default_init only fields 1,3,5,6,7 are full
+	// For divide all fields are applicable
 	while (getline(in,buffer) && buffer.size()!=0) {
 		 try {
 			 sim._sanitize(buffer);
@@ -302,13 +301,22 @@ istream& operator>> (istream& in, Simulation& sim) {
 
 void Simulation::_parseLine(const string& line) {
 
-	string name{};
+	// Cell Name (string), Condition (string), action (string),
+	// Daughter 1 (string), State 1 (string), mean1 time (float), standard deviation (float),
+	// Daughter 2 (string), State 2 (string), mean1 time (float), standard deviation (float),
+
+
+	string cellName{};
 	string condition{};
-	float mean{};
-	float sd{};
 	string action{};
 	string d1{};
+	string state1{};
+	float mean1{};
+	float sd1{};
 	string d2{};
+	string state2{};
+	float mean2{};
+	float sd2{};
 
 	const vector<string> fields{splitOn(',',line)};
 
@@ -321,23 +329,11 @@ void Simulation::_parseLine(const string& line) {
 		switch (static_cast<CsvFields>(i)) {
 		case NAME:
 		{
-			name = piece;
+			cellName = piece;
 		}
 		break;
 		case CONDITION: {
 			condition = piece;
-		}
-		break;
-		case MEANTIME: // Mean time
-		{
-			std::stringstream str(piece);
-			str >> mean;
-		}
-		break;
-		case STANDARDDEV: // Standard Deviation
-		{
-			std::stringstream str(piece);
-			str >> sd;
 		}
 		break;
 		case ACTION:
@@ -350,26 +346,89 @@ void Simulation::_parseLine(const string& line) {
 			d1 = piece;
 		}
 		break;
+		case STATE1:
+		{
+			state1 = piece;
+		}
+		break;
+		case MEANTIME1: // Mean time
+		{
+			mean1=_readFloat(piece);
+		}
+		break;
+		case STANDARDDEV1: // Standard Deviation
+		{
+			sd1=_readFloat(piece);
+		}
+		break;
 		case DAUGHTER2:
-		default: // Daughter 2
 		{
 			d2 = piece;
 		}
+		break;
+		case STATE2:
+		{
+			state2 = piece;
+		}
+		break;
+		case MEANTIME2: // Mean time
+		{
+			mean2=_readFloat(piece);
+		}
+		break;
+		case STANDARDDEV2: // Standard Deviation
+		{
+			sd2=_readFloat(piece);
+		}
+		break;
+		default:
+		{
+			const string err{"Too many fields."};
+			throw err;
+		}
 		}
 	}
 
-	auto progIt=_programs.find(name);
+	auto progIt=_programs.find(cellName);
 	if (progIt==_programs.end()) {
-		CellProgram* newProg=new CellProgram(name,this);
-		_programs.insert(make_pair(name,newProg));
-		progIt=_programs.find(name);
+		CellProgram* newProg=new CellProgram(cellName,this);
+		_programs.insert(make_pair(cellName,newProg));
+		progIt=_programs.find(cellName);
 	}
 
-	Condition* cond{new Condition(condition)};
-	pair<string,State*> d1S1{_parseCellWithState(d1)};
-	pair<string,State*> d2S2{_parseCellWithState(d2)};
-	Directive* d{new Divide(mean,sd,progIt->second,d1S1.first,d1S1.second,d2S2.first,d2S2.second)};
-	progIt->second->addCondition(cond,d);
+	unique_ptr<Condition> cond{(condition.size()==0 ? nullptr : new Condition(condition))};
+	if (DIVIDE==action) {
+		State* st1{(state1.size()==0 ? nullptr : new State(state1))};
+		State* st2{(state2.size()==0 ? nullptr : new State(state2))};
+		Directive* d{new Divide(progIt->second,d1,st1,mean1,sd1,d2,st2,mean2,sd2)};
+		progIt->second->addCondition(cond.release(),d);
+	}
+	else if (DEF_INIT==action) {
+		if (mean2!=-1.0 || sd2!=-1.0 || state2.size()!=0 || cond!=nullptr) {
+			const string err{"Badly structured default initialization."};
+			throw err;
+		}
+		State* st1{(state1.size()==0 ? nullptr : new State(state1))};
+		progIt->second->setDefaults(st1,mean1,sd1);
+	}
+	else {
+		const string err{"Unexpected action."};
+		throw err;
+	}
+}
+
+float Simulation::_readFloat(const string& input) const {
+	if (input.size()==0) {
+		return -1.0;
+	}
+	std::stringstream str(input);
+	float ret{};
+	str >> ret;
+	if (!str) {
+		const string err{"Expecting a number for mean time."};
+		throw err;
+	}
+	return ret;
 }
 
 bool notIsPrint (char c)
@@ -382,13 +441,13 @@ void Simulation::_sanitize(string & str)
     str.erase(remove_if(str.begin(),str.end(), notIsPrint) , str.end());
 }
 
-pair<string,State*> Simulation::_parseCellWithState(const std::string& cell) const {
-	if (cell.find('[')==string::npos) {
-		return make_pair(cell,nullptr);
-	}
-	string stateStr{cell.substr(cell.find('[')+1,cell.find(']')-cell.find('[')-1)};
-	State* state{new State(stateStr)};
-	string cellName{cell.substr(0,cell.find('['))};
-
-	return make_pair(cellName,state);
-}
+//pair<string,State*> Simulation::_parseCellWithState(const std::string& cell) const {
+//	if (cell.find('[')==string::npos) {
+//		return make_pair(cell,nullptr);
+//	}
+//	string stateStr{cell.substr(cell.find('[')+1,cell.find(']')-cell.find('[')-1)};
+//	State* state{new State(stateStr)};
+//	string cellName{cell.substr(0,cell.find('['))};
+//
+//	return make_pair(cellName,state);
+//}

@@ -19,12 +19,12 @@ class Event;
 class Event {
 public:
 	Event() =delete;
-	Event(float d, float t, Simulation* s, Cell* c);
+	Event(float d, float t, /*Simulation* s,*/ Cell* c);
 
 	virtual ~Event();
 
 	Cell* cell() const;
-	Simulation* simulation() const;
+	//Simulation* simulation() const;
 	float duration() const;
 	float execTime() const;
 
@@ -32,19 +32,16 @@ public:
 //	void setExecTime(float t);
 	void setCell(Cell*);
 
-	virtual std::vector<Event*> execute() const=0;
+	// virtual std::vector<Event*> execute() const=0;
 	virtual void output(std::ostream&) const;
 	virtual bool concerns(const std::string&) const=0;
 
-	bool operator<(const Event& other) const;
-
 	virtual std::string toString() const;
 	friend std::ostream& operator<<(std::ostream&,const Event&);
-
 private:
 	float _duration;
 	float _execTime;
-	Simulation* _sim;
+	//Simulation* _sim;
 	Cell* _cell;
 };
 
