@@ -58,6 +58,16 @@ namespace BioCheck.Services
 
         private IDropTarget currentDropTarget;
 
+        /* The following constructor should probably be replaced with 
+         *          
+            public DragDropService(IDragSource source)
+                : this(source, null)
+            { }
+         * 
+         * currently it has a copy and paste weirdness:
+         *             this.dragOrigin = dragOrigin;
+         * does nothing.
+         */
         public DragDropService(IDragSource source)
         {
             // Asign the drag source
