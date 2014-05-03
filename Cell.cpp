@@ -25,10 +25,10 @@ const State* Cell::state() const {
 	return _state;
 }
 
-pair<bool,unsigned int> Cell::evaluate(Condition* cond) const {
-	return cond->evaluate(_state,_program->simulation());
-}
-
+//pair<bool,unsigned int> Cell::evaluate(Condition* cond) const {
+//	return cond->evaluate(_state,_program->simulation());
+//}
+//
 bool Cell::update(const string& var,bool val) {
 	return _state->update(var,val);
 }
@@ -41,9 +41,10 @@ const CellProgram* Cell::program() const {
 	return _program;
 }
 
-bool Cell::expressed(const string& cond) const {
-	return _state->value(cond).first && _state->value(cond).second;
-}
+//bool Cell::expressed(const string& cond) const {
+//	return _state->value(cond).first && _state->value(cond).second;
+//}
+//
 
 bool Cell::alive() const {
 	return _alive;

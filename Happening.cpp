@@ -53,7 +53,7 @@ pair<Event*, vector<Happening*>> Happening::execute() const {
 	if (prog==nullptr) {
 		return make_pair(e,vector<Happening*>{});
 	}
-	const Directive* d={prog->bestDirective(_cell->state())};
+	const Directive* d={prog->bestDirective(_cell->state(),_execTime-_duration,_execTime)};
 	if (d==nullptr) {
 		return make_pair(e,vector<Happening*>{});
 	}

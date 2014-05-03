@@ -37,7 +37,8 @@ public:
 	//std::vector<Event*> firstEvent(float currentTime, State* state) const;
 	//std::vector<Event*> nextEvent(float currentTime, Cell* cell) const;
 
-	const Directive* bestDirective(const State* state) const;
+	// const Directive* bestDirective(const State* state) const;
+	const Directive* bestDirective(const State* state, float from, float to) const;
 	std::vector<std::string> otherPrograms() const;
 
 	void setDefaults(State*, float, float);

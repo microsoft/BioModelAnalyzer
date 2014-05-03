@@ -34,7 +34,7 @@ public:
 	// Otherwise, the value is the number of conjuncts that are
 	// satisfied.
 	// The simulation is needed in order to evaluate conditions on other Cells.
-	std::pair<bool,unsigned int> evaluate(const State* st, const Simulation* sim) const;
+	std::pair<bool,unsigned int> evaluate(const State* st, const Simulation* sim, float from, float to) const;
 
 	// Should be identical
 	bool operator==(const Condition& other) const;

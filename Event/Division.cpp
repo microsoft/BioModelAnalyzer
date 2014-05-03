@@ -11,6 +11,7 @@
 using std::ostream;
 using std::string;
 using std::vector;
+using std::pair;
 
 // Division::Division() : Event(0.0,0.0), _parent(), _daughter1(), _daughter2() {}
 
@@ -87,6 +88,22 @@ void Division::output(ostream& out) const {
 
 bool Division::concerns(const string& name) const {
 	return (_parent==name || _daughter1==name || _daughter2==name);
+}
+
+bool Division::expressed(const string& cell, const string& var) const {
+	if (_daughter1==cell && _st1!=nullptr) {
+		pair<bool,bool> existsVal{_st1->value(var)};
+		if (existsVal.first && existsVal.second) {
+			return true;
+		}
+	}
+	if (_daughter2==cell && _st2!=nullptr) {
+		pair<bool,bool> existsVal{_st2->value(var)};
+		if (existsVal.first && existsVal.second) {
+			return true;
+		}
+	}
+	return false;
 }
 
 string Division::toString() const {

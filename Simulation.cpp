@@ -209,7 +209,7 @@ unsigned int Simulation::numPrograms() const {
 	return _programs.size();
 }
 
-bool Simulation::expressed(const string& cond) const {
+bool Simulation::expressed(const string& cond,float from, float to) const {
 	if (cond.find('[')==std::string::npos ||
 		cond.find(']')==std::string::npos ||
 		cond.find(']') < cond.find('[')) {
@@ -220,12 +220,28 @@ bool Simulation::expressed(const string& cond) const {
 	string var{cond.substr(0,cond.find('['))};
 	string cellName{cond.substr(cond.find('[')+1,cond.find(']')-cond.find('[')-1)};
 
-	vector<Cell*> matchingCells{cells(cellName)};
-	for (auto cell : matchingCells) {
-		if (cell->expressed(var)) {
+	// TODO: Replace this by a check of all the events in the range
+	// (from,to)
+	auto rit=_log.rbegin();
+
+	// Skip events that happen after to
+	while (rit!=_log.rend() && (*rit)->execTime() >= to) {
+		++rit;
+	}
+
+	// Search events that happen before to and after from
+	while (rit!=_log.rend() && (*rit)->execTime() > from) {
+		if ((*rit)->expressed(cellName,var)) {
 			return true;
 		}
+		++rit;
 	}
+//	vector<Cell*> matchingCells{cells(cellName)};
+//	for (auto cell : matchingCells) {
+//		if (cell->expressed(var)) {
+//			return true;
+//		}
+//	}
 	return false;
 }
 

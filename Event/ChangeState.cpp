@@ -35,6 +35,11 @@ bool ChangeState::concerns(const string& name) const {
 	return cell()->name()==name;
 }
 
+bool ChangeState::expressed(const string& cell, const string& var) const {
+	// TODO: implement me
+	return false;
+}
+
 string ChangeState::toString() const {
 	return "";
 }

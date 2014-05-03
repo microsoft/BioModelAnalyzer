@@ -48,7 +48,7 @@ public:
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
 
-	bool expressed(const std::string&) const;
+	bool expressed(const std::string&,float from, float to) const;
 
 	std::string toString(unsigned int num=0) const;
 	friend std::istream& operator>>(std::istream&, Simulation&);

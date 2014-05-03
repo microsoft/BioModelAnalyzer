@@ -32,7 +32,7 @@ bool Condition::isDef() const {
 	return _def;
 }
 
-std::pair<bool,unsigned int> Condition::evaluate(const State* st, const Simulation* sim) const {
+std::pair<bool,unsigned int> Condition::evaluate(const State* st, const Simulation* sim, float from, float to) const {
 	if (_def) {
 		return make_pair(true,0);
 	}
@@ -42,7 +42,7 @@ std::pair<bool,unsigned int> Condition::evaluate(const State* st, const Simulati
 	unsigned int ret{0};
 	for (auto varPol : _conjunction) {
 		if (_generalCondition(varPol.first)) {
-			if (nullptr!=sim && sim->expressed(varPol.first)) {
+			if (nullptr!=sim && sim->expressed(varPol.first,from,to)) {
 				++ret;
 			}
 			else {

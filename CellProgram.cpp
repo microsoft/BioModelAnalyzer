@@ -131,13 +131,14 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 //	return res;
 //}
 
-const Directive* CellProgram::bestDirective(const State* state) const {
+//const Directive* CellProgram::bestDirective(const State* state) const {
+const Directive* CellProgram::bestDirective(const State* state, float from, float to) const {
 	Directive* best{nullptr};
 	unsigned int val{0};
 	for (pair<Condition*,Directive*> condDir : _program) {
 		Condition* cond{condDir.first};
 		Directive* dir{condDir.second};
-		auto satVal = cond->evaluate(state,_sim);
+		auto satVal = cond->evaluate(state,_sim,from,to);
 		if (satVal.first &&
 				((nullptr==best && satVal.second==0) || // default hasn't been found
 						satVal.second>val)) { // some real condition (in particular the value>0)

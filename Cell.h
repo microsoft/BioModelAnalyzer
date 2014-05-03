@@ -25,8 +25,8 @@ public:
 	~Cell();
 
 	const State* state() const;
-	std::pair<bool,unsigned int> evaluate(Condition* condition) const;
-	bool expressed(const std::string&) const;
+//	std::pair<bool,unsigned int> evaluate(Condition* condition) const;
+//	bool expressed(const std::string&) const;
 
 	bool update(const std::string& var, bool value);
 

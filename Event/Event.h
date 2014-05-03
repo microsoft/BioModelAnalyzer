@@ -35,6 +35,7 @@ public:
 	// virtual std::vector<Event*> execute() const=0;
 	virtual void output(std::ostream&) const;
 	virtual bool concerns(const std::string&) const=0;
+	virtual bool expressed(const std::string& call,const std::string& var) const=0;
 
 	virtual std::string toString() const;
 	friend std::ostream& operator<<(std::ostream&,const Event&);

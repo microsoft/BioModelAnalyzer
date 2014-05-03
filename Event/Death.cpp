@@ -37,6 +37,10 @@ bool Death::concerns(const string& name) const {
 	return (_cell==name);
 }
 
+bool Death::expressed(const string& cell, const string& var) const {
+	return false;
+}
+
 ostream& operator<<(ostream& out,const Death& state) {
 	state.output(out);
 	return out;
