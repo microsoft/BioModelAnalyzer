@@ -96,8 +96,11 @@ void Simulation::run(const string& initialProg,
 		// If you want events to fail then they should throw
 		// an exception!
 		pair<Event*,vector<Happening*>> nextEvents{current->execute()};
-		_log.push_back(nextEvents.first);
 		delete current;
+
+		if (nextEvents.first!=nullptr) {
+			_log.push_back(nextEvents.first);
+		}
 
 		for (auto h : nextEvents.second) {
 			_pending.push(h);

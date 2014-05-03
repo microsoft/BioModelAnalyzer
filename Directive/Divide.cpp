@@ -64,15 +64,22 @@ std::pair<Event*,std::vector<Happening*>> Divide::apply(Cell* c,float duration, 
 						  duration,time,c)};
 
 	Simulation* sim{c->program()->simulation()};
-	CellProgram* d1{sim->program(_daughter1)};
-	CellProgram* d2{sim->program(_daughter2)};
-	const string st1Str{_st1==nullptr ? "" : _st1->toString()};
-	const string st2Str{_st2==nullptr ? "" : _st2->toString()};
 
 	c->kill();
-	vector<Happening*> first{d1->firstEvent(time,st1Str,_mean1,_sd1)};
-	vector<Happening*> second{d2->firstEvent(time,st2Str,_mean2,_sd2)};
-	first.insert(first.end(),second.begin(),second.end());
 
-	return make_pair(e,first);
+	vector<Happening*> ret{};
+	CellProgram* d1{sim->program(_daughter1)};
+	if (d1!=nullptr) {
+		const string st1Str{_st1==nullptr ? "" : _st1->toString()};
+		vector<Happening*> first{d1->firstEvent(time,st1Str,_mean1,_sd1)};
+		ret.insert(ret.end(),first.begin(),first.end());
+	}
+	CellProgram* d2{sim->program(_daughter2)};
+	if (d2!=nullptr) {
+		const string st2Str{_st2==nullptr ? "" : _st2->toString()};
+		vector<Happening*> second{d2->firstEvent(time,st2Str,_mean2,_sd2)};
+		ret.insert(ret.end(),second.begin(),second.end());
+	}
+
+	return make_pair(e,ret);
 }

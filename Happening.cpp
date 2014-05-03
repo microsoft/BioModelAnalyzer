@@ -48,9 +48,15 @@ bool Happening::operator<(const Happening& other) const {
 }
 
 pair<Event*, vector<Happening*>> Happening::execute() const {
-	// TODO: implement this
+	Event* e{nullptr};
 	const CellProgram* prog{_cell->program()};
-	const Directive* d{prog->bestDirective(_cell->state())};
+	if (prog==nullptr) {
+		return make_pair(e,vector<Happening*>{});
+	}
+	const Directive* d={prog->bestDirective(_cell->state())};
+	if (d==nullptr) {
+		return make_pair(e,vector<Happening*>{});
+	}
 	return d->apply(_cell,_duration,_execTime);
 }
 

@@ -37,7 +37,8 @@ using std::pair;
 enum class Options { load, overlap, overlapraw, existence, exportSim };
 
 const string INITIALPROG{"P0"};
-const string INITIALPROGWITHCOND{"P0[SPERM_LEFT]"};
+const string INITIALCOND{"SPERM_LEFT"};
+const string INITIALPROGWITHCOND{INITIALPROG+"["+INITIALCOND+"]"};
 
 
 void printOptions() {
@@ -103,7 +104,7 @@ void readSimulation(Simulation*& s) {
 	cin >> answer;
 	if (answer == 'y') {
 		string condition{ChooseConditionFromProgram(s,INITIALPROG)};
-		//s->run(INITIALPROG+"["+condition+"]");
+		s->run(INITIALPROG,condition,-1.0,-1.0);
 		//s->run(INITIALPROGWITHCOND);
 
 		cout << *s;
@@ -133,7 +134,7 @@ void timeOverlap(Simulation* s,bool rawData) {
 	vector<float> results2; // cell2 born before cell1
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		//s->run(INITIALPROGWITHCOND);
+		s->run(INITIALPROG,INITIALCOND,-1.0,-1.0);
 		pair<float,bool> p(s->overlap(name1,name2));
 		if (p.second)
 			results1.push_back(p.first);
@@ -211,13 +212,12 @@ void cellCount(Simulation* s) {
 	cin >> repetitions;
 
 	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
-	string initialProgram{INITIALPROG+"["+condition+"]"};
 
 	unsigned int maxLen{0};
 	map<string,unsigned int> total{};
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		//s->run(initialProgram);
+		s->run(INITIALPROG,condition,-1.0,-1.0);
 		map<string,unsigned int> res{s->cellCount()};
 		for (auto nameCount : res) {
 			if (nameCount.first.size() > maxLen) {
@@ -258,7 +258,6 @@ void exportSimulations(Simulation *s) {
 	}
 
 	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
-	string initialProgram{INITIALPROG+"["+condition+"]"};
 
 	cout << "Please enter the name of a file to write to." << endl;
 	string outFile;
@@ -274,7 +273,7 @@ void exportSimulations(Simulation *s) {
 	}
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
-		//s->run(initialProgram);
+		s->run(INITIALPROG,condition,-1.0,-1.0);
 		ofile << s->toString(i+1);
 	}
 }
