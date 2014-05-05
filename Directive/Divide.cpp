@@ -56,9 +56,10 @@ vector<string> Divide::programs() const {
 //}
 
 std::pair<Event*,std::vector<Happening*>> Divide::apply(Cell* c,float duration, float time) const {
+	State* stpCopy{c->state()==nullptr ? nullptr : new State(*(c->state()))};
 	State* st1Copy{_st1==nullptr ? nullptr : new State(*_st1)};
 	State* st2Copy{_st2==nullptr ? nullptr : new State(*_st2)};
-	Event* e{new Division(_cProg->name(),
+	Event* e{new Division(_cProg->name(),stpCopy,
 						  _daughter1,st1Copy,
 						  _daughter2,st2Copy,
 						  duration,time,c)};

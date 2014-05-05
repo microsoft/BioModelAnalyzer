@@ -15,9 +15,10 @@
 class Division: public Event {
 public:
 	Division() =delete;
-	Division(const std::string& p, const std::string& d1, State* st1,
-			                       const std::string& d2, State* st2,
-			                       float d, float t, /*Simulation* s, */Cell* c);
+	Division(const std::string& p,  State* stp,
+			 const std::string& d1, State* st1,
+			 const std::string& d2, State* st2,
+			 float d, float t, /*Simulation* s, */Cell* c);
 	virtual ~Division();
 
 	std::string parent() const;
@@ -38,6 +39,7 @@ public:
 	friend std::ostream& operator<<(std::ostream&,const Division&);
 private:
 	std::string _parent;
+	State* _stp;
 	std::string _daughter1;
 	State* _st1;
 	std::string _daughter2;

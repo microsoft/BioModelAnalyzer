@@ -13,15 +13,16 @@ using std::string;
 using std::vector;
 using std::pair;
 
-// Division::Division() : Event(0.0,0.0), _parent(), _daughter1(), _daughter2() {}
-
-Division::Division(const std::string& p, const std::string& d1, State* st1,
-		                                 const std::string& d2, State* st2,
-		                                 float d, float t,
-		                                 /*Simulation* s,*/ Cell* c)
-: Event(d,t,/*s,*/c), _parent(p), _daughter1(d1), _st1(st1), _daughter2(d2), _st2(st2) {}
+Division::Division(const std::string& p, State* stp,
+				   const std::string& d1, State* st1,
+		           const std::string& d2, State* st2,
+		           float d, float t,
+		           /*Simulation* s,*/ Cell* c)
+: Event(d,t,/*s,*/c), _parent(p), _stp(stp), _daughter1(d1), _st1(st1), _daughter2(d2), _st2(st2) {}
 
 Division::~Division() {
+	if (nullptr != _stp)
+		delete _stp;
 	if (nullptr != _st1)
 		delete _st1;
 	if (nullptr != _st2)
@@ -91,6 +92,12 @@ bool Division::concerns(const string& name) const {
 }
 
 bool Division::expressed(const string& cell, const string& var) const {
+	if (_parent==cell && _stp!=nullptr) {
+		pair<bool,bool> existsVal{_stp->value(var)};
+		if (existsVal.first && existsVal.second) {
+			return true;
+		}
+	}
 	if (_daughter1==cell && _st1!=nullptr) {
 		pair<bool,bool> existsVal{_st1->value(var)};
 		if (existsVal.first && existsVal.second) {
