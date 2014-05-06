@@ -233,13 +233,14 @@ void cellCount(Simulation* s) {
 		}
 	}
 
-	cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
+//	cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
 	for (auto nameCount : total) {
 		// Do something with padding to make sure that this
 		// is printed to the right length;
-		cout << "| " << std::setw(maxLen) << std::left << nameCount.first;
-		cout << " |" << std::setw(5) << std::right << nameCount.second << "|" << endl;
-		cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
+//		cout << "| " << std::setw(maxLen) << std::left << nameCount.first;
+//		cout << " |" << std::setw(5) << std::right << nameCount.second << "|" << endl;
+//		cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
+		cout << nameCount.first << "," << nameCount.second << endl;
 	}
 }
 

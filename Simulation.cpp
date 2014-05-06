@@ -236,12 +236,19 @@ bool Simulation::expressed(const string& cond,float from, float to) const {
 		}
 		++rit;
 	}
-//	vector<Cell*> matchingCells{cells(cellName)};
-//	for (auto cell : matchingCells) {
-//		if (cell->expressed(var)) {
-//			return true;
-//		}
-//	}
+
+	if (_currentTime<=to && _currentTime >=from) {
+		vector<Cell*> matchingCells{cells(cellName)};
+		for (auto cell : matchingCells) {
+			if (cell->expressed(var)) {
+				return true;
+			}
+		}
+	}
+	else {
+		const string err{"Asking to evalute expression level in the past. This is currently not supported."};
+		throw err;
+	}
 	return false;
 }
 

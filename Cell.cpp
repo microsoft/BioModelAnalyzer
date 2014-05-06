@@ -41,10 +41,10 @@ const CellProgram* Cell::program() const {
 	return _program;
 }
 
-//bool Cell::expressed(const string& cond) const {
-//	return _state->value(cond).first && _state->value(cond).second;
-//}
-//
+bool Cell::expressed(const string& cond) const {
+	return _state->value(cond).first && _state->value(cond).second;
+}
+
 
 bool Cell::alive() const {
 	return _alive;

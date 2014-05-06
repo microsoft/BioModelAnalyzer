@@ -43,6 +43,10 @@ private:
 	State* _st2;
 	float _mean2;
 	float _sd2;
+
+
+	std::string _stringState(const State* pt) const;
+	State* _copyOverwrite(const State* a,const State* b=nullptr) const;
 };
 
 #endif /* DIVIDE_H_ */

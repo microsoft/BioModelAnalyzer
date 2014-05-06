@@ -30,6 +30,8 @@ public:
 	std::pair<bool,bool> value(const std::string& var) const;
 	bool update(const std::string& var,bool val);
 
+	State* copyOverwrite(const State*) const;
+
 	std::string toString() const;
 	friend std::ostream& operator<< (std::ostream&, const State&);
 private:

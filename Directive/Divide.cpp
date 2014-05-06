@@ -56,9 +56,9 @@ vector<string> Divide::programs() const {
 //}
 
 std::pair<Event*,std::vector<Happening*>> Divide::apply(Cell* c,float duration, float time) const {
-	State* stpCopy{c->state()==nullptr ? nullptr : new State(*(c->state()))};
-	State* st1Copy{_st1==nullptr ? nullptr : new State(*_st1)};
-	State* st2Copy{_st2==nullptr ? nullptr : new State(*_st2)};
+	State* stpCopy{_copyOverwrite(c->state())};
+	State* st1Copy{_copyOverwrite(c->state(),_st1)};
+	State* st2Copy{_copyOverwrite(c->state(),_st2)};
 	Event* e{new Division(_cProg->name(),stpCopy,
 						  _daughter1,st1Copy,
 						  _daughter2,st2Copy,
@@ -71,16 +71,29 @@ std::pair<Event*,std::vector<Happening*>> Divide::apply(Cell* c,float duration, 
 	vector<Happening*> ret{};
 	CellProgram* d1{sim->program(_daughter1)};
 	if (d1!=nullptr) {
-		const string st1Str{_st1==nullptr ? "" : _st1->toString()};
+		const string st1Str{_stringState(_st1)};
 		vector<Happening*> first{d1->firstEvent(time,st1Str,_mean1,_sd1)};
 		ret.insert(ret.end(),first.begin(),first.end());
 	}
 	CellProgram* d2{sim->program(_daughter2)};
 	if (d2!=nullptr) {
-		const string st2Str{_st2==nullptr ? "" : _st2->toString()};
+		const string st2Str{_stringState(_st2)};
 		vector<Happening*> second{d2->firstEvent(time,st2Str,_mean2,_sd2)};
 		ret.insert(ret.end(),second.begin(),second.end());
 	}
 
 	return make_pair(e,ret);
+}
+
+string Divide::_stringState(const State* pt) const {
+	if (nullptr==pt)
+		return "";
+	return pt->toString();
+}
+State* Divide::_copyOverwrite(const State* source,const State* change) const {
+	if (source!=nullptr)
+		return source->copyOverwrite(change);
+	if (change!=nullptr)
+		return change->copyOverwrite(nullptr);
+	return nullptr;
 }

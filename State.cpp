@@ -55,6 +55,19 @@ bool State::update(const string& var, bool val) {
 	return true;
 }
 
+State* State::copyOverwrite(const State* other) const {
+	State* ret{new State(*this)};
+	if (nullptr==other) {
+		return ret;
+	}
+
+	for (auto varVal : other->_varVals) {
+		ret->update(varVal.first,varVal.second);
+	}
+	return ret;
+}
+
+
 string State::toString() const {
 	stringstream temp{};
 	temp << *this;
