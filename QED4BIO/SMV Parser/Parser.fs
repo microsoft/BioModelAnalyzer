@@ -4,6 +4,7 @@ module Parser
 
 open FParsec.CharParsers
 open FParsec
+open Ast
 
 let ws : Parser<unit,unit> = many 
                                 (skipString "--" .>> (skipRestOfLine true)
@@ -35,9 +36,6 @@ let parguments_opt pp =  opt (parguments pp)
 
 let pidentexpr = sepBy pident (skipString ".")
 
-type types = Set of string list
-           | Module of string * (string list) list option 
-           | Range of int64 * int64
 let ptype = 
     (plist "{" "}" "," pident |>> Set)
     <|> (pident .>>. parguments_opt pidentexpr |>> Module)
@@ -46,23 +44,6 @@ let ptype =
 let pvardecl = pident .>> skipString ":" .>>. ptype .>> skipString ";"
 
 let pvardecls = many1 pvardecl
-
-type expr = 
-    | Next of expr
-    | Not of expr 
-    | Ident of string
-    | And of expr * expr
-    | Or of expr * expr
-    | Imp of expr * expr
-    | Lt of expr * expr
-    | Le of expr * expr
-    | Ge of expr * expr
-    | Gt of expr * expr
-    | Eq of expr * expr
-    | Neq of expr * expr 
-    | Add of expr * expr 
-    | Int of int64
-    | Cases of (expr * expr) list
 
 let opp = new OperatorPrecedenceParser<expr,unit,unit>()
 let pexpr = opp.ExpressionParser .>> ws
@@ -99,10 +80,6 @@ let pdefn pkw pbody =
     pkw >>. skipString "(" >>. pident .>> skipString ")" .>> 
         skipString ":=" .>>. pbody .>> skipString ";"
 
-type assign = 
-    | InitAssign of string * expr
-    | NextAssign of string * expr
-
 let pinitvar = pdefn kwinit pexpr |>> InitAssign
 
 let pupdatevar = pdefn kwnext pexpr |>> NextAssign
@@ -110,12 +87,6 @@ let pupdatevar = pdefn kwnext pexpr |>> NextAssign
 let pupdate = 
       pinitvar
       <|> pupdatevar  
-
-type section = 
-    | Assigns of assign list
-    | Init of expr
-    | Trans of expr
-    | Var of (string * types) list
 
 let pVarSec = kwVar >>. pvardecls |>> Var
 let pTransSec = kwTrans >>. pexpr |>> Trans
@@ -126,5 +97,8 @@ let pSecs = pVarSec <|> pTransSec <|> pInitSec <|> pAssignSec
 
 let pModule =
     kwModule >>. pident .>>. (parguments_opt pident) .>>. many pSecs 
+        |>> fun ((name,ps),ss) -> 
+            let ps = match ps with None -> [] | Some ps -> ps
+            {name=name; parameters=ps; sections=ss}
 
 let pSmv = (ws >>. many pModule .>> eof)
