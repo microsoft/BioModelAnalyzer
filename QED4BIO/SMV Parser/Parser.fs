@@ -14,8 +14,10 @@ let ws : Parser<unit,unit> = many
 let skipString a =  skipString a .>> ws
 let pint64 = pint64 .>> ws
 
+
 let kwModule = skipString "MODULE"
 let kwVar = skipString "VAR"
+let kwBounded = skipString  "BOUNDED"
 let kwAssign = skipString "ASSIGN"
 let kwinit = skipString "init"
 let kwnext = skipString "next"
@@ -24,7 +26,7 @@ let kwTrans = skipString "TRANS"
 let kwcase = skipString "case"
 let kwesac = skipString "esac"
 
-let keywords = ["MODULE"; "VAR"; "ASSIGN"; "init"; "next"; "INIT"; "TRANS"; "case"; "esac"]
+let keywords = ["MODULE"; "VAR"; "BOUNDED";"ASSIGN"; "init"; "next"; "INIT"; "TRANS"; "case"; "esac"]
 
 let pident : Parser<string,unit> = attempt (many1Satisfy2 (fun c -> isLetter c) (fun c -> isLetter c || isDigit c || '_' = c ) >>= fun s -> if List.exists ( (=) s) keywords then pzero else preturn s) .>> ws  
 
@@ -44,6 +46,11 @@ let ptype =
 let pvardecl = ((pident .>> skipString ":") .>>. ptype) .>> skipString ";"
 
 let pvardecls : Parser<(string * types) list,unit> = many1 pvardecl
+
+let pbounddecl = ((pident .>> skipString ":") .>>. ptype) .>> skipString ";"
+
+let pbounddecls : Parser<(string * types) list,unit> = many1 pbounddecl
+
 
 let opp = new OperatorPrecedenceParser<expr,unit,unit>()
 let pexpr = opp.ExpressionParser .>> ws
@@ -89,11 +96,12 @@ let pupdate =
       <|> pupdatevar  
 
 let pVarSec = kwVar >>. pvardecls |>> Var
+let pBoundSec = kwBounded >>. pbounddecls |>> Bounded
 let pTransSec = kwTrans >>. pexpr |>> Trans
 let pInitSec = kwInit >>. pexpr |>> Init
 let pAssignSec = kwAssign >>. many pupdate |>> Assigns
 
-let pSecs = pVarSec <|> pTransSec <|> pInitSec <|> pAssignSec
+let pSecs = pVarSec <|> pBoundSec <|> pTransSec <|> pInitSec <|> pAssignSec
 
 let pModule =
     kwModule >>. pident .>>. (parguments_opt pident) .>>. many pSecs 
@@ -105,7 +113,9 @@ let pSmv = (ws >>. many pModule .>> eof)
 
 exception ParseException of string
 
-let parser_smv string = 
-    match runParserOnString  pSmv () "From String" string with 
+let parser_smv file = 
+    let res = runParserOnFile  pSmv () file  System.Text.Encoding.Default 
+    match res with 
     | Success(r,_,_) -> r
-    | Failure(errormsg, _, _) -> raise (ParseException(errormsg))
+    | Failure(errormsg, _, _)  -> raise (ParseException(errormsg))
+

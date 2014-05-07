@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Bounded_Async_Translator
 {
@@ -10,7 +11,20 @@ namespace Bounded_Async_Translator
     {
         static void Main(string[] args)
         {
-            Parser.parser_smv("MODULE I INIT TRUE ");
+            string fileName = "mutant.smv";
+            if (!System.IO.File.Exists(fileName))
+            {
+                System.Console.WriteLine("File can not be found");
+            }
+
+           // FileStream stream = File.Open("mutant.smv", FileMode.Open);
+            
+            var r = Parser.parser_smv( fileName);
+            foreach (var m in r)
+            {
+               
+                
+            }
         }
     }
 }

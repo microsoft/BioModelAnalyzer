@@ -30,6 +30,7 @@ type section =
     | Init of expr
     | Trans of expr
     | Var of (string * types) list
+    | Bounded of (string * types) list
 
 type smv_module = 
     {name : string

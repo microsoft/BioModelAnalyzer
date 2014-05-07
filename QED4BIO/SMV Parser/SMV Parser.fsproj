@@ -57,7 +57,6 @@
   <ItemGroup>
     <Compile Include="Ast.fs" />
     <Compile Include="Parser.fs" />
-    <Compile Include="Tests.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="mutant.smv">
