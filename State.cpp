@@ -46,6 +46,13 @@ pair<bool,bool> State::value(const string& var) const {
 	return make_pair(true,it->second);
 }
 
+void State::set(const string& var,bool val) {
+	if (update(var,val)) {
+		return;
+	}
+	_varVals.insert(make_pair(var,val));
+}
+
 bool State::update(const string& var, bool val) {
 	if (_varVals.find(var) == _varVals.end()) {
 		return false;
@@ -62,7 +69,7 @@ State* State::copyOverwrite(const State* other) const {
 	}
 
 	for (auto varVal : other->_varVals) {
-		ret->update(varVal.first,varVal.second);
+		ret->set(varVal.first,varVal.second);
 	}
 	return ret;
 }

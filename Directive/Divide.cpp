@@ -71,13 +71,13 @@ std::pair<Event*,std::vector<Happening*>> Divide::apply(Cell* c,float duration, 
 	vector<Happening*> ret{};
 	CellProgram* d1{sim->program(_daughter1)};
 	if (d1!=nullptr) {
-		const string st1Str{_stringState(_st1)};
+		const string st1Str{_stringState(st1Copy)};
 		vector<Happening*> first{d1->firstEvent(time,st1Str,_mean1,_sd1)};
 		ret.insert(ret.end(),first.begin(),first.end());
 	}
 	CellProgram* d2{sim->program(_daughter2)};
 	if (d2!=nullptr) {
-		const string st2Str{_stringState(_st2)};
+		const string st2Str{_stringState(st2Copy)};
 		vector<Happening*> second{d2->firstEvent(time,st2Str,_mean2,_sd2)};
 		ret.insert(ret.end(),second.begin(),second.end());
 	}

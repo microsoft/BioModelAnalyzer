@@ -28,6 +28,7 @@ public:
 
 	// Returns if the variable exists and its polarity
 	std::pair<bool,bool> value(const std::string& var) const;
+	void set(const std::string& var, bool val);
 	bool update(const std::string& var,bool val);
 
 	State* copyOverwrite(const State*) const;
