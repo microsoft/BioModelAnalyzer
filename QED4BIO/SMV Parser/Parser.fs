@@ -41,9 +41,9 @@ let ptype =
     <|> (pident .>>. parguments_opt pidentexpr |>> Module)
     <|> (pint64 .>> skipString ".." .>>. pint64 |>> Range)
 
-let pvardecl = pident .>> skipString ":" .>>. ptype .>> skipString ";"
+let pvardecl = ((pident .>> skipString ":") .>>. ptype) .>> skipString ";"
 
-let pvardecls = many1 pvardecl
+let pvardecls : Parser<(string * types) list,unit> = many1 pvardecl
 
 let opp = new OperatorPrecedenceParser<expr,unit,unit>()
 let pexpr = opp.ExpressionParser .>> ws
@@ -102,3 +102,10 @@ let pModule =
             {name=name; parameters=ps; sections=ss}
 
 let pSmv = (ws >>. many pModule .>> eof)
+
+exception ParseException of string
+
+let parser_smv string = 
+    match runParserOnString  pSmv () "From String" string with 
+    | Success(r,_,_) -> r
+    | Failure(errormsg, _, _) -> raise (ParseException(errormsg))

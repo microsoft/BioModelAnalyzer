@@ -3,9 +3,10 @@ open Parser
 open FParsec
 
 let testparser string = 
-    match runParserOnString  pSmv () "Tests" string with 
-    | Success _ -> printfn "Success"
-    | Failure(errormsg, _, _) -> printfn "Failed:%s" errormsg
+    try 
+        Parser.parser_smv string |> ignore
+        printfn "Sucess"
+    with ParseException(e) -> printfn "Failed %s" e
 
 let test1 = "-- Model of the VPC system 
 -- NuSMV 2.5.3
