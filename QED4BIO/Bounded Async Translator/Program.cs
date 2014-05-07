@@ -19,10 +19,10 @@ namespace Bounded_Async_Translator
 
            // FileStream stream = File.Open("mutant.smv", FileMode.Open);
             
-            var r = Parser.parser_smv( fileName);
+            var r = new Parser.SMV().parser_smv( fileName);
             foreach (var m in r)
             {
-               
+                System.Console.Out.WriteLine(m.name);
                 
             }
         }
