@@ -1,11 +1,12 @@
 ﻿module Tests
 open Parser
-open FParsec
 
-let testparser string = 
+let p = new SMV()
+
+let testparser teststring = 
     try 
-        Parser.parser_smv string |> ignore
-        printfn "Sucess"
+        let v = p.parser_smv_string teststring 
+        printfn "Sucess: %O" (String.concat "\n-------------\n" (List.map string v))
     with ParseException(e) -> printfn "Failed %s" e
 
 let test1 = "-- Model of the VPC system 
