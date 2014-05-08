@@ -313,6 +313,7 @@ BOUNDED
 	lin3  : {ko, wt};
 	lin15 : {ko, rf, wt};
 	lin12 : {ko, wt, gf};
+
 INIT
 	(ac = formed ) &
 	lin3 = wt &
@@ -358,7 +359,12 @@ INIT
 	var6  = FALSE &
 	reset = FALSE
 TRANS
-	((!var1 & next(var1)) | (var1 & next(var1) & !reset) | (var1 & !next(var1) & reset)) & ((!var2 & next(var2)) | (var2 & next(var2) & !reset) | (var2 & !next(var2) & reset)) & ((!var3 & next(var3)) | (var3 & next(var3) & !reset) | (var3 & !next(var3) & reset)) & ((!var4 & next(var4)) | (var4 & next(var4) & !reset) | (var4 & !next(var4) & reset)) & ((!var5 & next(var5)) | (var5 & next(var5) & !reset) | (var5 & !next(var5) & reset)) & ((!var6 & next(var6)) | (var6 & next(var6) & !reset) | (var6 & !next(var6) & reset))
+	((!var1 & next(var1)) | (var1 & next(var1) & !reset) | (var1 & !next(var1) & reset)) & 
+	((!var2 & next(var2)) | (var2 & next(var2) & !reset) | (var2 & !next(var2) & reset)) & 
+	((!var3 & next(var3)) | (var3 & next(var3) & !reset) | (var3 & !next(var3) & reset)) & 
+	((!var4 & next(var4)) | (var4 & next(var4) & !reset) | (var4 & !next(var4) & reset)) & 
+	((!var5 & next(var5)) | (var5 & next(var5) & !reset) | (var5 & !next(var5) & reset)) & 
+	((!var6 & next(var6)) | (var6 & next(var6) & !reset) | (var6 & !next(var6) & reset))
 TRANS
 	var1 & var2 & var3 & var4 & var5 & var6 -> reset
 
