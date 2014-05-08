@@ -120,3 +120,9 @@ type SMV() =
         | Success(r,_,_) -> r
         | Failure(errormsg, _, _)  -> raise (ParseException(errormsg))
 
+    member this.parser_smv_string string = 
+        let res = runParserOnString  pSmv () "From string" string
+        match res with 
+        | Success(r,_,_) -> r
+        | Failure(errormsg, _, _)  -> raise (ParseException(errormsg))
+
