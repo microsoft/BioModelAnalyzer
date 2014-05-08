@@ -313,7 +313,9 @@ BOUNDED
 	lin3  : {ko, wt};
 	lin15 : {ko, rf, wt};
 	lin12 : {ko, wt, gf};
-
+	P3p : VPC(AC.ISd3, low, P4p.LS, mut.lin12,
+	      mut.let23, mut.sem5, mut.let60,
+	      mut.mpk1, mut.dep1, mut.lst, t.var1, c.time);
 INIT
 	(ac = formed ) &
 	lin3 = wt &
