@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define DEBUG
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.IO;
 
 namespace Bounded_Async_Translator
 {
+    
     class Translator
     {
         static Dictionary<Ast.smv_module, List<Tuple<string, Ast.expr>>> _nassigns;
@@ -24,11 +26,12 @@ namespace Bounded_Async_Translator
         static Translator()
         {
         }
-        public void CreateTranslator(string fname)
+        public static void CreateTranslator(string fname)
         {
 
             //Instantiate Parser Object
             var parser = new Parser.SMV().parser_smv(fname);
+            InitTables();
             //Create Module Name Table
             foreach (var mod in parser)
             {
@@ -37,7 +40,7 @@ namespace Bounded_Async_Translator
             //Create Tables of Module Sections
             CreateSectionTables(_modules);
         }
-        private void InitTables() {
+        private static void InitTables() {
             _nassigns = new Dictionary<Ast.smv_module, List<Tuple<string, Ast.expr>>>();
             _iassigns = new Dictionary<Ast.smv_module, List<Tuple<string, Ast.expr>>>();
             _init = new Dictionary<Ast.smv_module, Ast.expr>();
@@ -49,7 +52,7 @@ namespace Bounded_Async_Translator
             //bounded to add
             _modules = new HashSet<Ast.smv_module>();
         }
-        private void CreateSectionTables(HashSet<Ast.smv_module> parsed)
+        private static void CreateSectionTables(HashSet<Ast.smv_module> parsed)
         {
             CreateParamsTables(parsed);
             CreateInitTable(parsed);
@@ -58,7 +61,7 @@ namespace Bounded_Async_Translator
             CreateBoundedTable(parsed);
             CreateAssignsTable(parsed);
         }
-        private void CreateParamsTables(HashSet<Ast.smv_module> parsed)
+        private static void CreateParamsTables(HashSet<Ast.smv_module> parsed)
         {
             // Create Params Table
             foreach (var modl in parsed)
@@ -71,21 +74,28 @@ namespace Bounded_Async_Translator
                 _params.Add(modl, pars);
             }
         }
-        private void CreateTransTable(HashSet<Ast.smv_module> parsed)
+        private static void CreateTransTable(HashSet<Ast.smv_module> parsed)
         {
             foreach (var modl in parsed)
             {
+#if DEBUG
+                System.Console.WriteLine("module name" + modl.name);
+
+#endif
                 foreach (var trns in modl.sections)
                 {
                     if (trns.IsTrans)
                     {
                         var trs = trns as Ast.section.Trans;
                         _trans.Add(modl, trs.Item);
+#if DEBUG
+                        System.Console.WriteLine("transition" + trs.Item);
+#endif
                     }
                 }
             }
         }
-        private void CreateInitTable(HashSet<Ast.smv_module> parsed)
+        private static void CreateInitTable(HashSet<Ast.smv_module> parsed)
         {
             foreach (var modl in parsed)
             {
@@ -99,15 +109,13 @@ namespace Bounded_Async_Translator
                 }
             }
         }
-        private void CreateVarTable(HashSet<Ast.smv_module> parsed)
+        private static void CreateVarTable(HashSet<Ast.smv_module> parsed)
         {
             foreach (var modl in parsed)
             {
                 // list 
                 foreach (var vars in modl.sections)
                 {
-
-
                     if (vars.IsVar)
                     {
                         List<Tuple<string, List<string>>> svars = new List<Tuple<string, List<string>>>();
@@ -171,7 +179,6 @@ namespace Bounded_Async_Translator
                                             List<List<string>> argslists = new List<List<string>>();
                                             Tuple<string, List<List<string>>> varmodlist = new Tuple<string, List<List<string>>>(moduletype.Item1, argslists);
                                             mvars.Add(varmodlist);
-
                                         }
                                     }
                                 }
@@ -185,19 +192,19 @@ namespace Bounded_Async_Translator
             }
         }
 
-        private void CreateBoundedTable(HashSet<Ast.smv_module> parsed) 
+        private static void CreateBoundedTable(HashSet<Ast.smv_module> parsed) 
         { 
             // 
             
         }
-        private void CreateAssignsTable(HashSet<Ast.smv_module> parsed)
+        private static void CreateAssignsTable(HashSet<Ast.smv_module> parsed)
         {
 
         }
 
         static void Main(string[] args)
         {
-
+            Cret
             
         }
     }
