@@ -308,7 +308,11 @@ VAR
 	mpk1  : {ko, wt};
 	dep1  : {ko, wt};
 	lst   : {ko, wt};
-
+BOUNDED
+	ac    : {ablated, formed};
+	lin3  : {ko, wt};
+	lin15 : {ko, rf, wt};
+	lin12 : {ko, wt, gf};
 INIT
 	(ac = formed ) &
 	lin3 = wt &
