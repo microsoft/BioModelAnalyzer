@@ -19,7 +19,7 @@ type SMV() =
 
     let kwModule = skipString "MODULE"
     let kwVar = skipString "VAR"
-    let kwBounded = skipString  "BOUNDED"
+  //  let kwBounded = skipString  "BOUNDED"
     let kwAssign = skipString "ASSIGN"
     let kwinit = skipString "init"
     let kwnext = skipString "next"
@@ -28,7 +28,7 @@ type SMV() =
     let kwcase = skipString "case"
     let kwesac = skipString "esac"
 
-    let keywords = ["MODULE"; "VAR"; "BOUNDED";"ASSIGN"; "init"; "next"; "INIT"; "TRANS"; "case"; "esac"]
+    let keywords = ["MODULE"; "VAR";"ASSIGN"; "init"; "next"; "INIT"; "TRANS"; "case"; "esac"]
 
     let pident : Parser<string,unit> = attempt (many1Satisfy2 (fun c -> isLetter c) (fun c -> isLetter c || isDigit c || '_' = c ) >>= fun s -> if List.exists ( (=) s) keywords then pzero else preturn s) .>> ws  
 
@@ -49,9 +49,9 @@ type SMV() =
 
     let pvardecls : Parser<(string * types) list,unit> = many1 pvardecl
 
-    let pbounddecl = ((pident .>> skipString ":") .>>. ptype) .>> skipString ";"
+   // let pbounddecl = ((pident .>> skipString ":") .>>. ptype) .>> skipString ";"
 
-    let pbounddecls : Parser<(string * types) list,unit> = many1 pbounddecl
+  //  let pbounddecls : Parser<(string * types) list,unit> = many1 pbounddecl
 
 
     let opp = new OperatorPrecedenceParser<expr,unit,unit>()
@@ -98,12 +98,12 @@ type SMV() =
           <|> pupdatevar  
 
     let pVarSec = kwVar >>. pvardecls |>> Var
-    let pBoundSec = kwBounded >>. pbounddecls |>> Bounded
+   // let pBoundSec = kwBounded >>. pbounddecls |>> Bounded
     let pTransSec = kwTrans >>. pexpr |>> Trans
     let pInitSec = kwInit >>. pexpr |>> Init
     let pAssignSec = kwAssign >>. many pupdate |>> Assigns
 
-    let pSecs = pVarSec <|> pBoundSec <|> pTransSec <|> pInitSec <|> pAssignSec
+    let pSecs = pVarSec <|> pTransSec <|> pInitSec <|> pAssignSec
 
     let pModule =
         kwModule >>. pident .>>. (parguments_opt pident) .>>. many pSecs 

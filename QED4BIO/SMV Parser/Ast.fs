@@ -61,14 +61,14 @@ type section =
     | Init of expr
     | Trans of expr
     | Var of (string * types) list
-    | Bounded of (string * types) list
+  //  | Bounded of (string * types) list
     override this.ToString() = 
        match this with 
        | Assigns al -> "ASSIGN\n\t" + (String.concat "\t" (List.map (string) al)) + "\n\n"
        | Init e -> "INIT\n\t" + e.ToString() + ";\n\n"
        | Trans e -> "TRANS\n\t" + e.ToString() + ";\n\n"
        | Var vdl -> "VAR\n\t" + (String.concat "\t" (List.map (fun (v,t) -> v + " : " + t.ToString() + ";\n") vdl)) + "\n"
-       | Bounded vdl -> "BOUNDED\n\t" + (String.concat "\t" (List.map (fun (v,t) -> v + " : " + t.ToString() + ";\n") vdl)) + "\n"
+     //  | Bounded vdl -> "BOUNDED\n\t" + (String.concat "\t" (List.map (fun (v,t) -> v + " : " + t.ToString() + ";\n") vdl)) + "\n"
 
 
 type smv_module = 
@@ -79,3 +79,6 @@ type smv_module =
     override this.ToString() =
         "MODULE " + this.name + (match this.parameters with [] -> "" | _ -> "(" + (String.concat ", " (List.map string this.parameters))  + ")" )
         + "\n\n\n" + (String.concat "\n\n\n" (List.map string this.sections))
+
+let mkModuleType (n, argls : System.Collections.Generic.List<System.Collections.Generic.List<string>>) : (string * (string list list option)) = 
+    (n, Some (Seq.toList (Seq.map (Seq.toList) argls)))
