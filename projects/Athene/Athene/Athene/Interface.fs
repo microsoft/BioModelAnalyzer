@@ -189,6 +189,11 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
             | (true,_)  -> Development (varName,Growth(rate*dt),{p with radius = p.radius+rate*dt},m)
             | (false,_) -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 
+let linearGrowDivideWithVectorDistanceDependence (origin: Vector.Vector3D<Physics.um>) (direction: Vector.Vector3D<1>) (gradient: float<um^-1>) (constant: float<um/second>) (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
+    let projection =  (p.location - origin) * direction.norm
+    let rate = projection * gradient * rate + constant  
+    linearGrowDivide rate max sd varID varState varName rng limit variation dt p m
+
 let testProtection (protection: protectMetric) (p: Physics.Particle) =
     match protection with 
                                         | RadiusMin(n)     -> (p.radius > n)
