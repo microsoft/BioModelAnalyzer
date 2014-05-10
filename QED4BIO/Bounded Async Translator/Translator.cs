@@ -21,20 +21,19 @@ namespace Bounded_Async_Translator
         static Dictionary<Ast.smv_module, List<string>> _params; // parameters
         static Dictionary<Ast.smv_module, List<Tuple<string, List<string>>>> _svars; // set variables
         static Dictionary<Ast.smv_module, List<Tuple<string, Tuple<Int64, Int64>>>> _rvars; // range variables
-        static Dictionary<Ast.smv_module, List<Tuple<string, Tuple<string,List<List<string>>>>>> _mvars; // module variables
+        static Dictionary<Ast.smv_module, List<Tuple<string, Tuple<string, List<List<string>>>>>> _mvars; // module variables
         static HashSet<Ast.smv_module> _modules;
-        static Dictionary<Ast.smv_module,List<string>> _bmodules;
+        static Dictionary<Ast.smv_module, List<string>> _bmodules;
         static long _asyncbound;
         static long _nthread;
         static Translator()
         {
         }
-        public static void CreateTranslator(string fname,string cfname)
+        public static string CreateTranslator(string fname, string cfname)
         {
             //Instantiate Parser Object
             var parser = new Parser.SMV().parser_smv(fname);
             InitTables();
-           
             //Create Module Name Table
             foreach (var mod in parser)
             {
@@ -45,17 +44,19 @@ namespace Bounded_Async_Translator
             _modules.Add(CreateTimeModule("timer"));
             IntroduceAsyncBound();
             List<Ast.smv_module> asynbndintroduced = GenSmvModlsFromMem();
-            FlushModules(asynbndintroduced);
+            return FlushModules(asynbndintroduced, fname);
         }
-     
-        private static void SetConfiguration(string cfname){
+
+        private static void SetConfiguration(string cfname)
+        {
             StreamReader r = new StreamReader(cfname);
             string line;
             List<string> lines = new List<string>();
-            while ((line = r.ReadLine()) != null) {
+            while ((line = r.ReadLine()) != null)
+            {
                 lines.Add(line);
             }
-             List<Tuple<string,List<string>>> bmodules=  GetBoundedModules(lines);
+            List<Tuple<string, List<string>>> bmodules = GetBoundedModules(lines);
 #if !DEBUG
              foreach (var vr in bmodules) {
                  System.Console.WriteLine("Bounded Variable Name : " + vr.Item1);
@@ -63,46 +64,53 @@ namespace Bounded_Async_Translator
                      System.Console.WriteLine("-- Bounded subfield : " + v);
                  }
              }
-#endif 
-             foreach (var module in bmodules)
-             {
+#endif
+            foreach (var module in bmodules)
+            {
 
-                 foreach (var modl in _modules)
-                 {
-                     
+                foreach (var modl in _modules)
+                {
+
 #if !DEBUG
                      System.Console.WriteLine("Module name is " + modl.name);
                      //foreach (var v in modl.Item2) {
                      //   System.Console.WriteLine("Variable is  : " + v);
                      //}
 #endif
-                     if (modl.name == module.Item1) {
+                    if (modl.name == module.Item1)
+                    {
 
-                         _bmodules.Add( modl, module.Item2);
-                     }
-                 }
-             }
-        }        
-        private static void IntroduceAsyncBound(){
+                        _bmodules.Add(modl, module.Item2);
+                    }
+                }
+            }
+        }
+        private static void IntroduceAsyncBound()
+        {
             //
             int counter = 0;
-            foreach (var modl in _modules) {
+            foreach (var modl in _modules)
+            {
 
-                if (_bmodules.ContainsKey(modl)) {
+                if (_bmodules.ContainsKey(modl))
+                {
 #if !DEBUG
                     System.Console.WriteLine("Bounded module name : " + modl.name);
-#endif 
-                    
+#endif
+
                     if (modl.name == "main")
                     {
                         // foreach variable in bounded variable set of this module is constructor and needs to be introduced with parameter
                         List<List<string>> timervarlist = new List<List<string>>();
                         Tuple<string, List<List<string>>> timerconstvartupl = new Tuple<string, List<List<string>>>("timer", timervarlist);
-                        Tuple<string, Tuple<string,List<List<string>>>> timerident = new Tuple<string,Tuple<string,List<List<string>>>>("t",timerconstvartupl);
+                        Tuple<string, Tuple<string, List<List<string>>>> timerident = new Tuple<string, Tuple<string, List<List<string>>>>("t", timerconstvartupl);
                         _mvars[modl].Add(timerident);
-                        foreach(var boundvar in _bmodules[modl]){
-                            foreach(var mvar in _mvars[modl]){
-                                if (boundvar == mvar.Item1) {
+                        foreach (var boundvar in _bmodules[modl])
+                        {
+                            foreach (var mvar in _mvars[modl])
+                            {
+                                if (boundvar == mvar.Item1)
+                                {
 #if !DEBUG
                                     System.Console.WriteLine("Name of modl is " + modl);
 #endif
@@ -120,62 +128,77 @@ namespace Bounded_Async_Translator
                                 }
                             }
                             counter++;
-                        }                    
+                        }
                     }
-                    else { 
+                    else
+                    {
                         // put timerparameter to module's declaration
                         _params[modl].Add("t");
                         string asyncboundparam = _params[modl][_params[modl].Count - 1];
-                        Ast.expr asyncident= Ast.expr.NewIdent(asyncboundparam);
+                        Ast.expr asyncident = Ast.expr.NewIdent(asyncboundparam);
                         Ast.expr nasyncindent = Ast.expr.NewNext(asyncident);
-                        Ast.expr takestep = Ast.expr.NewLt(asyncident,nasyncindent);
+                        Ast.expr takestep = Ast.expr.NewLt(asyncident, nasyncindent);
+                        Ast.expr tru = Ast.expr.NewIdent("TRUE");
                         // foreach bounded variable belongs to this module need to be introduce with async bound in their next assignments
-                        for (int i = 0; i < _nassigns[modl].Count; i++) {
+                        for (int i = 0; i < _nassigns[modl].Count; i++)
+                        {
                             Ast.expr.Cases nassign = _nassigns[modl][i].Item2 as Ast.expr.Cases;
                             Debug.Assert(nassign.IsCases);
                             List<Tuple<Ast.expr, Ast.expr>> caselist = new List<Tuple<Ast.expr, Ast.expr>>();
-                            for(int j = 0 ;j<nassign.Item.Length; j++){
-                               Ast.expr asyncupdated = Ast.expr.NewAnd(takestep, nassign.Item[j].Item1);
-                                FSharpList<Tuple<Ast.expr,Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr,Ast.expr>>(nassign.Item);                              
-                                caselist.Add( new Tuple<Ast.expr,Ast.expr>(asyncupdated,exprlst[j].Item2));
-
+                            for (int j = 0; j < nassign.Item.Length; j++)
+                            {
+                                if (nassign.Item[j].Item1.ToString() != "TRUE")
+                                {
+                                    Ast.expr asyncupdated = Ast.expr.NewAnd(takestep, nassign.Item[j].Item1);
+                                    FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
+                                    caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
+                                }
+                                else {
+                                    Ast.expr asyncupdated =  nassign.Item[j].Item1;
+                                    FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
+                                    caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
+                                
+                                }
 #if !DEBUG 
                                 System.Console.WriteLine("Item1 : " + nassign.Item[j].Item1.ToString() ); //expr
-                                System.Console.WriteLine("Item2 : " + nassign.Item[j].Item2.ToString()); // val 
+    //                            System.Console.WriteLine("Item2 : " + nassign.Item[j].Item2.ToString()); // val 
                                // _nassign[modl] = 
 #endif
                             }
-                           
-                           Tuple<string, Ast.expr> asyncupdatedassign = new Tuple<string,Ast.expr>(_nassigns[modl][i].Item1,
-                                Ast.expr.NewCases( FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr,Ast.expr>>(caselist)));
-                          
+
+                            Tuple<string, Ast.expr> asyncupdatedassign = new Tuple<string, Ast.expr>(_nassigns[modl][i].Item1,
+                                 Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caselist)));
+
 
 #if !DEBUG
                            System.Console.WriteLine("Next assign var " + asyncupdatedassign.Item1);
                            System.Console.WriteLine("   Expr is " + asyncupdatedassign.Item2.ToString());
 #endif
-                            
-                           _nassigns[modl][i] = asyncupdatedassign;
-                        
+
+                            _nassigns[modl][i] = asyncupdatedassign;
+
                         }
                     }
                 }
 #if DEBUG
-              //  System.Console.WriteLine("Module name : " + modl.name);
-#endif 
-            }                  
+                //  System.Console.WriteLine("Module name : " + modl.name);
+#endif
+            }
         }
-        private static List<Ast.smv_module> GenSmvModlsFromMem() {
+        private static List<Ast.smv_module> GenSmvModlsFromMem()
+        {
             List<Ast.smv_module> astmodules = new List<Ast.smv_module>();
-            foreach (var modl in _modules) { 
-               List<Ast.section> sections = new List<Ast.section>();
-               List <Tuple<string, Ast.types>> vrs = new List<Tuple<string, Ast.types>>();
+            foreach (var modl in _modules)
+            {
+                List<Ast.section> sections = new List<Ast.section>();
+                List<Tuple<string, Ast.types>> vrs = new List<Tuple<string, Ast.types>>();
                 //svars
-                List<Tuple<string, Ast.types>> svars =ConvertSetTupleToTypes(_svars[modl]);
-                foreach(var v in svars){
+                List<Tuple<string, Ast.types>> svars = ConvertSetTupleToTypes(_svars[modl]);
+                foreach (var v in svars)
+                {
                     vrs.Add(v);
                 }
-               // Ast.section svarsec = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>> (svars));
+                // Ast.section svarsec = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>> (svars));
                 //rvars
                 List<Tuple<string, Ast.types>> rvars = ConvertRngTupleToTypes(_rvars[modl]);
                 foreach (var v in rvars)
@@ -183,25 +206,27 @@ namespace Bounded_Async_Translator
                     vrs.Add(v);
                 }
                 //Ast.section rvarsec = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>> (rvars));
-                
+
                 //mvars
                 List<Tuple<string, Ast.types>> mvars = ConvertModlTupleToTypes(_mvars[modl]);
                 foreach (var v in mvars)
                 {
                     vrs.Add(v);
                 }
-                Ast.section varsec = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>> (vrs));
+                Ast.section varsec = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>>(vrs));
                 //sections.Add(rvarsec); sections.Add(svarsec); 
 #if !DEBUG
                 System.Console.WriteLine(varsec.ToString());
 #endif
                 sections.Add(varsec);
                 //init
-                foreach (var init in _init[modl]) {
+                foreach (var init in _init[modl])
+                {
                     sections.Add(Ast.section.NewInit(init));
                 }
                 //trans
-                foreach (var trans in _trans[modl]) {
+                foreach (var trans in _trans[modl])
+                {
 #if !DEBUG
                     System.Console.WriteLine("\n\n");
                     System.Console.WriteLine(trans.ToString());
@@ -211,65 +236,93 @@ namespace Bounded_Async_Translator
                 }
                 //assigns
 
-                List<Ast.assign> assigns = new List<Ast.assign>();
-                foreach (var nassign in _nassigns[modl]) {
-                    Ast.assign asgn = Ast.assign.NewNextAssign(nassign.Item1, nassign.Item2);
-#if !DEBUG
-                    System.Console.WriteLine( asgn.ToString());
-#endif
-                    assigns.Add( asgn);                   
-                }
+                List<Ast.assign> assigns = new List<Ast.assign>();             
                 //sections.Add(Ast.section.NewAssigns(FSharpInteropExtensions.ToFSharplist<Ast.assign>(nassigns)));
                 //List<Ast.assign> iassigns = new List<Ast.assign>();
-                foreach (var iassign in _iassigns[modl]) {
-                    Ast.assign asgn = Ast.assign.NewInitAssign(iassign.Item1, iassign.Item2);   
+                
+                using(var e1 = _iassigns[modl].GetEnumerator())
+                using (var e2 = _nassigns[modl].GetEnumerator()) {
+
+                    while (e1.MoveNext() && e2.MoveNext()) {
+                       var  iassign = e1.Current;
+                       var nassign = e2.Current;
+                        Ast.assign iasgn = Ast.assign.NewInitAssign(iassign.Item1, iassign.Item2);
+                        Ast.assign nasgn = Ast.assign.NewNextAssign(nassign.Item1, nassign.Item2);
+                        assigns.Add(iasgn);
+                        assigns.Add(nasgn);
+                    }
+                }
+
+                /*
+                foreach (var iassign in _iassigns[modl])
+                {
+                    Ast.assign asgn = Ast.assign.NewInitAssign(iassign.Item1, iassign.Item2);
 #if !DEBUG
                     System.Console.WriteLine(asgn.ToString());
 #endif
                     assigns.Add(asgn);
                 }
-                if (assigns.Count > 0) 
-                { 
+                foreach (var nassign in _nassigns[modl])
+                {
+                    Ast.assign asgn = Ast.assign.NewNextAssign(nassign.Item1, nassign.Item2);
+#if !DEBUG
+                    System.Console.WriteLine( asgn.ToString());
+#endif
+                    assigns.Add(asgn);
+                }*/
+                if (assigns.Count > 0)
+                {
                     sections.Add(Ast.section.NewAssigns(FSharpInteropExtensions.ToFSharplist<Ast.assign>(assigns)));
                 }
-                Ast.smv_module asyncboundedmodl = new Ast.smv_module(modl.name,FSharpInteropExtensions.ToFSharplist<string>(_params[modl]) /*modl.parameters*/, FSharpInteropExtensions.ToFSharplist<Ast.section>(sections));
+                Ast.smv_module asyncboundedmodl = new Ast.smv_module(modl.name, FSharpInteropExtensions.ToFSharplist<string>(_params[modl]) /*modl.parameters*/, FSharpInteropExtensions.ToFSharplist<Ast.section>(sections));
 #if !DEBUG
                 foreach(var p in asyncboundedmodl.parameters){
                     System.Console.WriteLine("paramerter after : "+ p);
                 }
 #endif
-            //   System.Console.WriteLine( asyncboundedmodl.ToString());
+                //   System.Console.WriteLine( asyncboundedmodl.ToString());
                 astmodules.Add(asyncboundedmodl);
             }
             return astmodules;
         }
-        private static void FlushModules(List<Ast.smv_module> modules) {
-            foreach (var modl in modules) {
-                System.Console.WriteLine(modl.ToString());
-                System.Console.WriteLine("\n\n---------------------\n\n");
+        private static string FlushModules(List<Ast.smv_module> modules, string fname)
+        {
+            string[] splitf = fname.Split('.');
+            string genfname = splitf[0] + "_async.smv";
+            StreamWriter writer = new StreamWriter(genfname);
+            foreach (var modl in modules)
+            {
+                writer.WriteLine(modl.ToString());
             }
+            writer.Close();
+            return genfname;
         }
-
-        private static List<Tuple<string,List<string>>> GetBoundedModules(List<string> conflines) { 
-            List<Tuple<string,List<string>>> bmodules = new List<Tuple<string,List<string>>>();
-            foreach(string l in conflines){
+        private static List<Tuple<string, List<string>>> GetBoundedModules(List<string> conflines)
+        {
+            List<Tuple<string, List<string>>> bmodules = new List<Tuple<string, List<string>>>();
+            foreach (string l in conflines)
+            {
                 string[] words = l.Split(' ');
                 if (words[0] == "module")
                 {
                     List<string> varnames = new List<string>();
-                    for(int i =2 ;i<words.Length;i++){
-                        varnames.Add(words[i]);                      
+                    for (int i = 2; i < words.Length; i++)
+                    {
+                        varnames.Add(words[i]);
                     }
                     Tuple<string, List<string>> modlvars = new Tuple<string, List<string>>(words[1], varnames);
                     bmodules.Add(modlvars);
                 }
-                else {
+                else
+                {
                     if (words[0] == "numthread")
                     {
                         _nthread = Int64.Parse(words[1]);
                     }
-                    else { 
-                        if(words[0] == "asyncbound"){
+                    else
+                    {
+                        if (words[0] == "asyncbound")
+                        {
                             _asyncbound = Int64.Parse(words[1]);
                         }
                     }
@@ -277,9 +330,6 @@ namespace Bounded_Async_Translator
             }
             return bmodules;
         }
-       
-
-
         private static void InitTables()
         {
             _nassigns = new Dictionary<Ast.smv_module, List<Tuple<string, Ast.expr>>>();
@@ -289,7 +339,7 @@ namespace Bounded_Async_Translator
             _params = new Dictionary<Ast.smv_module, List<string>>();
             _svars = new Dictionary<Ast.smv_module, List<Tuple<string, List<string>>>>();
             _rvars = new Dictionary<Ast.smv_module, List<Tuple<string, Tuple<long, long>>>>();
-            _mvars = new Dictionary<Ast.smv_module, List<Tuple<string, Tuple<string,List<List<string>>>>>>();
+            _mvars = new Dictionary<Ast.smv_module, List<Tuple<string, Tuple<string, List<List<string>>>>>>();
             _bmodules = new Dictionary<Ast.smv_module, List<string>>();
             _modules = new HashSet<Ast.smv_module>();
         }
@@ -393,7 +443,7 @@ namespace Bounded_Async_Translator
                     {
                         List<Tuple<string, List<string>>> svars = new List<Tuple<string, List<string>>>();
                         List<Tuple<string, Tuple<Int64, Int64>>> rvars = new List<Tuple<string, Tuple<long, long>>>();
-                        List<Tuple<string, Tuple<string,List<List<string>>>>> mvars = new List<Tuple<string, Tuple<string,List<List<string>>>>>();
+                        List<Tuple<string, Tuple<string, List<List<string>>>>> mvars = new List<Tuple<string, Tuple<string, List<List<string>>>>>();
 
                         var varlst = vars as Ast.section.Var;
                         foreach (var v in varlst.Item)
@@ -433,7 +483,7 @@ namespace Bounded_Async_Translator
                                         {   //
                                             //Has arguments
                                             var argumentslists = moduleargs.Value;
-                                            List<List<string>> argslists = new List<List<string>>();                                            
+                                            List<List<string>> argslists = new List<List<string>>();
                                             foreach (var argumentlist in argumentslists)
                                             {
                                                 List<string> arglst = new List<string>();
@@ -478,7 +528,7 @@ namespace Bounded_Async_Translator
                 variables.Add(varrangtup);
             }
             string rststr = "reset";
-            Tuple<Int64, Int64> varrst = new Tuple<Int64, Int64>(0, 0);
+            Tuple<Int64, Int64> varrst = new Tuple<Int64, Int64>(0, 1);
             Tuple<string, Tuple<Int64, Int64>> varrangtuprst = new Tuple<string, Tuple<Int64, Int64>>(rststr, varrst);
             variables.Add(varrangtuprst);
             return variables;
@@ -492,8 +542,8 @@ namespace Bounded_Async_Translator
                 Ast.expr valident = Ast.expr.NewInt(v.Item2.Item1);
                 Ast.expr valvareqident = Ast.expr.NewEq(varident, valident);
                 identifiers.Add(valvareqident);
-            }            
-            return  ConjuctAll(identifiers);
+            }
+            return ConjuctAll(identifiers);
         }
         /*Framework:  
         //TR1. forall var:variable :: var == asyncbound && !reset --> next(var) == var
@@ -503,7 +553,7 @@ namespace Bounded_Async_Translator
         //TR5. forall var: variables : next(var) != var
         //TR6. forall var:variables :: var < asyncbound --> next(var) = var+1 | next(var) = var
          */
-       private static Ast.expr TimerTransitions(List<Tuple<string, Tuple<Int64, Int64>>> variables, Ast.expr resetident)
+        private static Ast.expr TimerTransitions(List<Tuple<string, Tuple<Int64, Int64>>> variables, Ast.expr resetident)
         {
             List<Ast.expr> transrel = new List<Ast.expr>();
             List<Ast.expr> transrel1 = new List<Ast.expr>();
@@ -527,27 +577,27 @@ namespace Bounded_Async_Translator
             //TR1
             foreach (Ast.expr vident in varident)
             {
-                transrel1.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident,Ast.expr.NewInt(0))),
+                transrel1.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
                                              Ast.expr.NewEq(vident, Ast.expr.NewNext(vident))));
             }
             transrel.Add(ConjuctAll(transrel1));
             //TR2
             foreach (Ast.expr vident in varident)
             {
-                transrel2.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident,Ast.expr.NewInt(0))),
+                transrel2.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
                               Ast.expr.NewEq(vident, Ast.expr.NewInt(0))));
             }
             transrel.Add(ConjuctAll(transrel2));
             //TR3
             foreach (Ast.expr vident in varident)
             {
-                transrel3.Add(Ast.expr.NewImp(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident),Ast.expr.NewInt(1))));
+                transrel3.Add(Ast.expr.NewImp(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(1))));
             }
             transrel.Add(ConjuctAll(transrel3));
             //TR4
             foreach (Ast.expr vident in varident)
             {
-                transrel4.Add(Ast.expr.NewImp(Ast.expr.NewNeq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident),Ast.expr.NewInt(0))));
+                transrel4.Add(Ast.expr.NewImp(Ast.expr.NewNeq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(0))));
             }
             transrel.Add(ConjuctAll(transrel4));
             //TR5
@@ -567,11 +617,11 @@ namespace Bounded_Async_Translator
             return ConjuctAll(transrel);
         }
         private static Ast.expr ConjuctAll(List<Ast.expr> transitions)
-        {            
+        {
             Ast.expr[] conjuctions = transitions.ToArray();
             Ast.expr allconjucted = conjuctions[0];
 
-            for(int i =1 ;i<conjuctions.Length;i++)
+            for (int i = 1; i < conjuctions.Length; i++)
             {
                 allconjucted = Ast.expr.NewAnd(allconjucted, conjuctions[i]);
             }
@@ -581,52 +631,55 @@ namespace Bounded_Async_Translator
         private static List<Tuple<string, Ast.types>> ConvertRngTupleToTypes(List<Tuple<string, Tuple<Int64, Int64>>> variables)
         {
             List<Tuple<string, Ast.types>> vartypes = new List<Tuple<string, Ast.types>>();
-            foreach(var v in variables){
+            foreach (var v in variables)
+            {
                 Tuple<string, Ast.types> vartypetup = new Tuple<string, Ast.types>(v.Item1, Ast.types.NewRange(v.Item2.Item1, v.Item2.Item2));
                 vartypes.Add(vartypetup);
             }
             return vartypes;
         }
-        private static List<Tuple<string, Ast.types>> ConvertModlTupleToTypes(List<Tuple<string,Tuple<string,List<List<string>>>>> variables)
+        private static List<Tuple<string, Ast.types>> ConvertModlTupleToTypes(List<Tuple<string, Tuple<string, List<List<string>>>>> variables)
         {
             List<Tuple<string, Ast.types>> vartypes = new List<Tuple<string, Ast.types>>();
-            foreach(var v in variables){
-                var a = Ast.mkModuleType(v.Item2.Item1, v.Item2.Item2);                
+            foreach (var v in variables)
+            {
+                var a = Ast.mkModuleType(v.Item2.Item1, v.Item2.Item2);
                 Tuple<string, Ast.types> vartypetup = new Tuple<string, Ast.types>(v.Item1, Ast.types.NewModule(a.Item1, a.Item2));
                 vartypes.Add(vartypetup);
             }
             return vartypes;
-       }
+        }
         private static List<Tuple<string, Ast.types>> ConvertSetTupleToTypes(List<Tuple<string, List<string>>> variables)
         {
             List<Tuple<string, Ast.types>> vartypes = new List<Tuple<string, Ast.types>>();
-            foreach (var v in variables) {
-                Tuple<string, Ast.types> vartypetup = new Tuple<string, Ast.types>(v.Item1, Ast.types.NewSet( FSharpInteropExtensions.ToFSharplist<string>(v.Item2)));
+            foreach (var v in variables)
+            {
+                Tuple<string, Ast.types> vartypetup = new Tuple<string, Ast.types>(v.Item1, Ast.types.NewSet(FSharpInteropExtensions.ToFSharplist<string>(v.Item2)));
                 vartypes.Add(vartypetup);
             }
             return vartypes;
         }
         private static Ast.smv_module CreateTimeModule(string name)
         {
-            List<Tuple<string, Tuple<Int64, Int64>>> vars ;
-            List<Tuple<string,Ast.types>> varwithtpyes ;
+            List<Tuple<string, Tuple<Int64, Int64>>> vars;
+            List<Tuple<string, Ast.types>> varwithtpyes;
             Ast.expr init;
             Ast.expr transrel;
-            Ast.expr resetident  = Ast.expr.NewIdent("reset");            
-            List<string> parameters = new List<string>();            
+            Ast.expr resetident = Ast.expr.NewIdent("reset");
+            List<string> parameters = new List<string>();
             //             
-            vars=TimerVars();
+            vars = TimerVars();
             varwithtpyes = ConvertRngTupleToTypes(vars);
-            init=TimerInit(vars);
-            transrel=TimerTransitions(vars, resetident);
+            init = TimerInit(vars);
+            transrel = TimerTransitions(vars, resetident);
             Debug.Assert(transrel != null);
             // Create sections 
             Ast.section trans = Ast.section.NewTrans(transrel);
             Ast.section inits = Ast.section.NewInit(init);
-            Ast.section varbls = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string,Ast.types>>(varwithtpyes));
+            Ast.section varbls = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>>(varwithtpyes));
             // Dirty conversions
             List<Ast.section> secs = new List<Ast.section>();
-            secs.Add(varbls);secs.Add(inits);secs.Add(trans);
+            secs.Add(varbls); secs.Add(inits); secs.Add(trans);
             Microsoft.FSharp.Collections.FSharpList<Ast.section> sections = FSharpInteropExtensions.ToFSharplist<Ast.section>(secs);
             Microsoft.FSharp.Collections.FSharpList<string> pars = FSharpInteropExtensions.ToFSharplist<string>(parameters);
             // Create module
@@ -635,7 +688,7 @@ namespace Bounded_Async_Translator
             //Trans
             List<Ast.expr> transrels = new List<Ast.expr>();
             transrels.Add(transrel);
-            _trans.Add(timermodule,transrels);
+            _trans.Add(timermodule, transrels);
             //init
             List<Ast.expr> initials = new List<Ast.expr>();
             initials.Add(init);
@@ -653,15 +706,8 @@ namespace Bounded_Async_Translator
             //nassigns
             _nassigns.Add(timermodule, new List<Tuple<string, Ast.expr>>());
             // System.Console.WriteLine( timermodule.ToString());
-            return timermodule;            
+            return timermodule;
         }
-  
-
-
-
-
-
-      
     }
 
     public static class FSharpInteropExtensions
@@ -681,9 +727,40 @@ namespace Bounded_Async_Translator
 
         static void Main(string[] args)
         {
-            Translator.CreateTranslator("mutant.smv","Config.txt");
-            System.Console.WriteLine(" ");
-        }
 
+            if (args.Length < 2 || args.Length > 2)
+            {
+
+                System.Console.WriteLine(" Usage : program.exe source.smv config.txt");
+            }
+            else
+            {
+                string[] arg0 = args[0].Split('.');
+                string[] arg1 = args[0].Split('.');
+                //string[] arg2 = args[0].Split('.');
+                if (arg0[1] != "smv")
+                {
+                    System.Console.Error.WriteLine("Error : .smv source required");
+                    return;
+                }
+
+                else
+                {
+                    string filegen = Translator.CreateTranslator(args[0], args[1]);
+                    /*ProcessStartInfo start = new ProcessStartInfo();
+                    start.Arguments = args[2] +" "+Directory.GetCurrentDirectory()+@"\"+filegen;
+                    start.FileName = args[2];
+                    start.WindowStyle = ProcessWindowStyle.Normal;
+                    start.CreateNoWindow = false;
+                    using(Process proc = Process.Start(start)){
+                        string output = proc.StandardOutput.ReadToEnd();
+                        proc.WaitForExit();
+                        var exitcode = proc.ExitCode;
+                    }*/
+                    return;
+                    
+                }
+            }
+        }
     }
 }
