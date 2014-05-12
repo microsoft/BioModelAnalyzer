@@ -192,6 +192,7 @@ let linearGrowDivide (rate: float<um/second>) (max: float<um>) (sd: float<um>) (
 let linearGrowDivideWithVectorDistanceDependence (origin: Vector.Vector3D<Physics.um>) (direction: Vector.Vector3D<1>) (gradient: float<Physics.second^-1>) (rate: float<um/second>) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let projection =  (p.location - origin) * direction.norm
     let rate' = projection * gradient + rate  
+    let rate' = if (rate'< 0.<Physics.um/Physics.second>) then 0.<Physics.um/Physics.second> else rate' //Rate must be positive or zero
     linearGrowDivide rate' max sd varID varState varName rng limit variation dt p m
 
 let testProtection (protection: protectMetric) (p: Physics.Particle) =

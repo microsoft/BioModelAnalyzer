@@ -357,6 +357,41 @@ let xmlTopRead (filename: string) =
                                                 | "ForceLimitedLinearGrowDivideVectorRate" ->
                                                     Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState varName rng (Some (ForceLimit (limit * 1.<zNewton>))) false   
                                                 | _ -> failwith "Incorrect growth type"                                    
+                                //Random, varying growth rates based on vector distance from a location
+                                | ( "LinearProbabilisticGrowDivideVectorRate"| "PressureLimitedLinearProbabilisticGrowDivideVectorRate" | "AgeLimitedLinearProbabilisticGrowDivideVectorRate" | "ConfluenceLimitedLinearProbabilisticGrowDivideVectorRate" | "ForceLimitedLinearProbabilisticGrowDivideVectorRate" ) as growth ->
+                                    let rate = try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate"
+                                    let max  = try (float) (r.Attribute(xn "Max").Value)  with _ -> failwith "Missing max cell size"
+                                    let sd = try (float) (r.Attribute(xn "SD").Value)  with _ -> failwith "Missing standard deviation of cell size"
+                                    let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
+                                    let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"   
+                                    let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name" 
+                                    let gradient = try (float) (r.Attribute(xn "Gradient").Value)  with _ -> failwith "Missing variation of growth rate"
+                                                    |> (fun x -> x*1.<Physics.second^-1>)
+                                    let xOrigin = try (float) (r.Attribute(xn "xOrigin").Value)  with _ -> failwith "No origin- X"
+                                    let yOrigin = try (float) (r.Attribute(xn "yOrigin").Value)  with _ -> failwith "No origin- Y"
+                                    let zOrigin = try (float) (r.Attribute(xn "zOrigin").Value)  with _ -> failwith "No origin- Z"
+                                    let origin = {x=(xOrigin*1.<Physics.um>);y=(yOrigin*1.<Physics.um>);z=(zOrigin*1.<Physics.um>)}
+                                    let xVector = try (float) (r.Attribute(xn "xVector").Value)  with _ -> failwith "No vector- X"
+                                    let yVector = try (float) (r.Attribute(xn "yVector").Value)  with _ -> failwith "No vector- Y"
+                                    let zVector = try (float) (r.Attribute(xn "zVector").Value)  with _ -> failwith "No vector- Z"
+                                    let direction = {x=xVector;y=yVector;z=zVector}
+                                    match growth with
+                                    | "LinearProbabilisticGrowDivideVectorRate" ->
+                                        Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng None false  
+                                    | "ConfluenceLimitedLinearProbabilisticGrowDivideVectorRate" ->
+                                        let limit = try (int) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing limit"
+                                        Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (ConfluenceLimit (limit))) false   
+                                    | _ as growth ->
+                                            let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing limit"
+                                            match growth with
+                                                | "PressureLimitedLinearProbabilisticGrowDivideVectorRate" ->
+                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (PressureLimit (limit * 1.<zNewton/um^2>))) false                            
+                                                | "AgeLimitedLinearProbabilisticGrowDivideVectorRate" ->
+                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (AgeLimit (limit * 1.<second>))) false                         
+                                                | "ForceLimitedLinearProbabilisticGrowDivideVectorRate" ->
+                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (ForceLimit (limit * 1.<zNewton>))) false   
+                                                | _ -> failwith "Incorrect growth type"                                    
+                                
                                 | "CertainDeath" ->
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name"   
                                     certainDeath varName
