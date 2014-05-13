@@ -88,6 +88,10 @@ namespace Bounded_Async_Translator
                         Tuple<string, List<List<string>>> timerconstvartupl = new Tuple<string, List<List<string>>>("timer", timervarlist);
                         Tuple<string, Tuple<string, List<List<string>>>> timerident = new Tuple<string, Tuple<string, List<List<string>>>>("t", timerconstvartupl);
                         _mvars[modl].Add(timerident);
+                        List<List<string>> clockvarlist = new List<List<string>>();
+                        Tuple<string, List<List<string>>> clockconstvartupl = new Tuple<string, List<List<string>>>("clock", clockvarlist);
+                        Tuple<string, Tuple<string, List<List<string>>>> clockident = new Tuple<string, Tuple<string, List<List<string>>>>("c", clockconstvartupl);
+                        _mvars[modl].Add(clockident);
                         foreach (var boundvar in _bmodules[modl])
                         {
                             foreach (var mvar in _mvars[modl])
@@ -758,7 +762,7 @@ namespace Bounded_Async_Translator
         {
             if (args.Length < 5 || args.Length > 5)
             {
-                System.Console.WriteLine(" Usage : program.exe source.smv config.txt");
+                System.Console.WriteLine(" Usage : program.exe source.smv config.txt numthread asyncbound clockbound");
             }
             else
             {
