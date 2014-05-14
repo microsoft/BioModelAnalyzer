@@ -62,7 +62,7 @@ pair<Event*, vector<Happening*>> Happening::execute() const {
 
 float Happening::_randomTime(const float& mean, const float& sd) const {
 	std::normal_distribution<> d(mean,sd);
-	return d(_randomGen);
+	return static_cast<float>(d(_randomGen));
 }
 
 

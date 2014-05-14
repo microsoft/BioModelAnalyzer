@@ -8,6 +8,7 @@
 #ifndef CELL_H_
 #define CELL_H_
 
+#include <memory>
 #include <string>
 #include <tuple>
 
@@ -29,6 +30,7 @@ public:
 	bool expressed(const std::string&) const;
 
 	bool update(const std::string& var, bool value);
+	bool update(const State* s);
 
 	const std::string name() const;
 	const CellProgram* program() const;
@@ -37,7 +39,7 @@ public:
 	void kill();
 private:
 	bool _alive;
-	State* _state;
+	std::auto_ptr<State> _state;
 	const CellProgram* _program;
 };
 

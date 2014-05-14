@@ -30,6 +30,7 @@ public:
 	std::pair<bool,bool> value(const std::string& var) const;
 	void set(const std::string& var, bool val);
 	bool update(const std::string& var,bool val);
+	bool update(const State* other);
 
 	State* copyOverwrite(const State*) const;
 

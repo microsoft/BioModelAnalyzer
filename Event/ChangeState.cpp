@@ -8,11 +8,13 @@
 #include <iostream>
 #include "ChangeState.h"
 
+using std::auto_ptr;
 using std::ostream;
 using std::vector;
 using std::string;
 
-ChangeState::ChangeState(float d, float t, /*Simulation* s,*/ Cell* c) : Event(d,t,/*s,*/c) {
+ChangeState::ChangeState(float d, float t, State* oldS, State* newS,/*Simulation* s,*/ Cell* c) 
+: Event(d, t,/*s,*/c), _oldState{ oldS }, _newState{ newS } {
 }
 
 ChangeState::~ChangeState() {
@@ -36,7 +38,21 @@ bool ChangeState::concerns(const string& name) const {
 }
 
 bool ChangeState::expressed(const string& cell, const string& var) const {
-	// TODO: implement me
+	if (cell != this->cell()->name()) {
+		return false;
+	}
+	if (nullptr != _oldState.get()) {
+		auto existsVal = _oldState->value(var);
+		if (existsVal.first && existsVal.second) {
+			return true;
+		}
+	}
+	if (nullptr != _newState.get()) {
+		auto existsVal = _newState->value(var);
+		if (existsVal.first && existsVal.second) {
+			return true;
+		}
+	}
 	return false;
 }
 

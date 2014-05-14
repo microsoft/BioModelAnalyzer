@@ -62,6 +62,20 @@ bool State::update(const string& var, bool val) {
 	return true;
 }
 
+bool State::update(const State* other) {
+	if (other == nullptr)
+		return false;
+
+	bool ret{ true };
+	for (auto varVal : other->_varVals) {
+		if (!update(varVal.first, varVal.second)) {
+			ret = false;
+			set(varVal.first, varVal.second);
+		}
+	}
+	return ret;
+}
+
 State* State::copyOverwrite(const State* other) const {
 	State* ret{new State(*this)};
 	if (nullptr==other) {

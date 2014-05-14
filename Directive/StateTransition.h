@@ -17,10 +17,11 @@ class StateTransition: public Directive {
 public:
 	StateTransition()=delete;
 	StateTransition(CellProgram* c,float m, float s);
+	StateTransition(CellProgram* c, float m, float s, State* st);
 
 	virtual ~StateTransition();
 
-	void addChange(const std::string&, bool);
+	// void addChange(const std::string&, bool);
 
 	virtual std::vector<std::string> programs() const;
 
@@ -30,7 +31,9 @@ public:
 private:
 	float _mean;
 	float _sd;
-	std::map<std::string,bool> _changes;
+	std::auto_ptr<State> _changes;
+	// Why not change this to a State?????
+	// std::map<std::string,bool> _changes;
 };
 
 #endif /* STATETRANSITION_H_ */

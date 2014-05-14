@@ -31,30 +31,6 @@ vector<string> Divide::programs() const {
 	return vector<string>{_daughter1,_daughter2};
 }
 
-
-//tuple<const string&, const State*, float, float>
-//Divide::daughter1() {
-//	return make_tuple(_daughter1,_st1,_mean1,_sd1);
-//}
-//
-//tuple<const string&, const State*, float, float>
-//Divide::daughter2() {
-//	return make_tuple(_daughter2,_st2,_mean2,_sd2);
-//}
-//
-//vector<Event*> Divide::nextEvents(float currentTime, Cell* c) const {
-//	// TODO: implement this
-//	float duration{_randomTime()};
-//	State* st1Copy=(_st1==nullptr ? nullptr : new State(*_st1));
-//	State* st2Copy=(_st2==nullptr ? nullptr : new State(*_st2));
-//	Event* div=new Division(_cProg->name(),_daughter1,st1Copy,
-//			                _daughter2,st2Copy,
-//			                duration,currentTime+duration,
-//			                _cProg->simulation(),c);
-//
-//	return vector<Event*>{div};
-//}
-
 std::pair<Event*,std::vector<Happening*>> Divide::apply(Cell* c,float duration, float time) const {
 	State* stpCopy{_copyOverwrite(c->state())};
 	State* st1Copy{_copyOverwrite(c->state(),_st1)};

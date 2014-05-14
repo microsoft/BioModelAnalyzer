@@ -76,36 +76,45 @@ void Simulation::run(const string& initialProg,
 	}
 	CellProgram* cellProg(firstProg->second);
 
-//	vector<Event*> events(cellProg->firstEvent(_currentTime,state.get()));
 	vector<Happening*> happenings(cellProg->firstEvent(_currentTime,initialState,initialMean,initialSD));
 
-	// TODO: Change pointers to unique_pointers!
-	std::priority_queue<Happening*, deque<Happening*>, EventPtrComparison> _pending;
+	std::priority_queue<Happening*, deque<Happening*>, EventPtrComparison> pending;
 
 	for (auto h : happenings) {
-		_pending.push(h);
+		pending.push(h);
 	}
 
-	while (!_pending.empty()) {
-		Happening* current=_pending.top();
-		_pending.pop();
+	try {
+		while (!pending.empty()) {
+			Happening* current = pending.top();
 
-		_currentTime = current->execTime();
+			_currentTime = current->execTime();
 
-		// TODO:
-		// If you want events to fail then they should throw
-		// an exception!
-		pair<Event*,vector<Happening*>> nextEvents{current->execute()};
-		delete current;
+			pair<Event*, vector<Happening*>> nextEvents{ current->execute() };
+			// If an exception is thrown by nextEvents then
+			// current is still on the queue and will be destroyed by the catch
+			// below
+			pending.pop();
+			delete current;
 
-		if (nextEvents.first!=nullptr) {
-			_log.push_back(nextEvents.first);
-		}
+			if (nextEvents.first != nullptr) {
+				_log.push_back(nextEvents.first);
+			}
 
-		for (auto h : nextEvents.second) {
-			_pending.push(h);
+			for (auto h : nextEvents.second) {
+				pending.push(h);
+			}
 		}
 	}
+	catch (const string& err) {
+		while (!pending.empty()) {
+			Happening* current = pending.top();
+			pending.pop();
+			delete current;
+		}
+		throw err;
+	}
+
 }
 
 void Simulation::clear() {
@@ -324,6 +333,7 @@ istream& operator>> (istream& in, Simulation& sim) {
 	in.clear();
 	return in;
 }
+
 
 void Simulation::_parseLine(const string& line) {
 

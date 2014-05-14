@@ -93,45 +93,6 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 	return vector<Happening*>{h};
 }
 
-//vector<Event*> CellProgram::firstEvent(float currentTime, State* currentState) const {
-//	State* currentCopy=(nullptr==currentState ? nullptr : new State(*currentState));
-//	Cell* cell{new Cell(this,currentCopy)};
-//	_sim->addCell(cell);
-//
-//	Birth* b{new Birth(name(),currentCopy,0,currentTime,simulation(),cell)};
-//	return vector<Event*>{b};
-//}
-//
-//vector<Event*> CellProgram::nextEvent(float currentTime, Cell* cell) const {
-////	// Search for the next event applicable to this Cell
-////	Directive* best{_bestMatch(cell->state())};
-////	if (nullptr==best) {
-////		stringstream err;
-////		err << "In Cell " << _name << ". ";
-////		err << "Failed to match state: " << cell->state();
-////		throw err.str();
-////	}
-////
-////	// Notice that if more than one event is created then
-////	// all events correspond to the same cell!
-////	vector<Event*> res=best->nextEvents(currentTime,cell);
-//	vector<Event*> res{};
-//	return res;
-//}
-//
-//
-
-//	Directive* best{_bestMatch(*currentState)};
-//	if (nullptr==best) {
-//		stringstream err{"in Cell "};
-//		err << _name << ". Failed to match state: " << *currentState;
-//		throw err.str();
-//	}
-//	vector<Event*> res=best->nextEvents(currentTime,currentState);
-//	return res;
-//}
-
-//const Directive* CellProgram::bestDirective(const State* state) const {
 const Directive* CellProgram::bestDirective(const State* state, float from, float to) const {
 	Directive* best{nullptr};
 	unsigned int val{0};

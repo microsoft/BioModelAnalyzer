@@ -7,6 +7,7 @@
 
 #include "Cell.h"
 
+using std::auto_ptr;
 using std::string;
 using std::pair;
 
@@ -17,12 +18,10 @@ Cell::Cell(const CellProgram* prog, State* state) : _alive(true), _state(state),
 }
 
 Cell::~Cell() {
-	if (_state)
-		delete _state;
 }
 
 const State* Cell::state() const {
-	return _state;
+	return _state.get();
 }
 
 //pair<bool,unsigned int> Cell::evaluate(Condition* cond) const {
@@ -31,6 +30,10 @@ const State* Cell::state() const {
 //
 bool Cell::update(const string& var,bool val) {
 	return _state->update(var,val);
+}
+
+bool Cell::update(const State* s) {
+	return _state->update(s);
 }
 
 const string Cell::name() const {
