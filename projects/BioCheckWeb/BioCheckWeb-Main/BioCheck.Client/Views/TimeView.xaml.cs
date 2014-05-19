@@ -25,15 +25,16 @@ using System.Collections.ObjectModel;           // For ObservableCollection
 
 // Time edit
 namespace BioCheck.Views
-{   
+{
+    // Public TimeView classes used in TimeView
+    #region Public TimeView classes used in TimeView
     public class KeyFrames
     {
         // Keyframe features
         public string Name { get; set; }            // name (set by direct typing in the box)
         public string Rule { get; set; }
         public Color Color { get; set; }
-        public string[] Content 
-        { 
+        public string[] Content { 
             get; 
             set;
         }       // "var", "cell", "N", "<", "=" or ">". Feeds into the Rule OR allows retrieval of full name from NameContent
@@ -59,6 +60,7 @@ namespace BioCheck.Views
     {
         public string Name { get; set; }       // name (set by popup)
     }
+    #endregion
 
     public partial class TimeView : UserControl
     {
@@ -75,13 +77,15 @@ namespace BioCheck.Views
 
         public string textForTempDebug = "";
 
+        // Initialization at startup
+        #region Initialization at startup
         public TimeView()
         {
             InitializeComponent();
 
             this.DataContextChanged += TimeView_DataContextChanged;
             this.AllowDrop = true;          // Still have not tested this.
-            Debug.WriteLine("Opening TimeView.");
+            Debug.WriteLine("Opening TimeView window.");
                         
             // ObservableCollection makes it visible.
             allKeyframes = new ObservableCollection<KeyFrames>();
@@ -110,12 +114,14 @@ namespace BioCheck.Views
                 addVars2ComboBox();
             }
         }
+    #endregion
 
         // -----------------------------------------------------------------------------------------------
         //
         //      Combobox events: Populate with loaded model cell and variable names, open and close
         //
         // ------------------------------------------------------------------------------------------------
+        #region Combobox events: Populate with loaded model cell and variable names, open and close
 
         // Populate a dropdown menu for Cells
         private void addCells2ComboBox()
@@ -283,7 +289,6 @@ namespace BioCheck.Views
         {
             //var src = (ComboBox)sender;
             //cellName_choice = (string)src.SelectedValue;     // But set to default value if nothing chosen actively.
-            //Debug.WriteLine(cellName_choice);
 
             object selectedItem = this.dropdownCell.SelectedItem;
             cellName_choice = (selectedItem == null)
@@ -297,30 +302,6 @@ namespace BioCheck.Views
             exactTextBlock.Text = cellName_choice;
             tempDebug.Text = "Changed Text from dropdownCell_SelectionChanged at line 270.";
             ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[nameChangeGridN] = cellName_choice;
-
-            //switch (nameChangeGridN)
-            //{
-            //    case 0:
-            //        this.text0.Text = cellName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[0] = cellName_choice;
-            //        break;
-            //    case 1:
-            //        this.text1.Text = cellName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[1] = cellName_choice;
-            //        break;
-            //    case 2:
-            //        this.text2.Text = cellName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[2] = cellName_choice;
-            //        break;
-            //    case 3:
-            //        this.text3.Text = cellName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[3] = cellName_choice;
-            //        break;
-            //    case 4:
-            //        this.text4.Text = cellName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[4] = cellName_choice;
-            //        break;
-            //}
 
             string allStorage = "";
             Debug.WriteLine("1172: Updated var/cellnames in storage by combobox selection change: ");
@@ -345,7 +326,7 @@ namespace BioCheck.Views
                 this.dropdownVar.Visibility = System.Windows.Visibility.Collapsed;
                 varDropWasOpen = false;
 
-                // Set the textbox and Storage ____New
+                // Set the textbox and Storage
                 object selectedItem = this.dropdownVar.SelectedItem;
                 string theVarName_choice = (selectedItem == null)
                                     ? string.Empty
@@ -378,30 +359,6 @@ namespace BioCheck.Views
             exactTextBlock.Text = varName_choice;
             ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[nameChangeGridN] = varName_choice;
 
-            //switch (nameChangeGridN)
-            //{
-            //    case 0:
-            //        this.text0.Text = varName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[0] = varName_choice;
-            //        break;
-            //    case 1:
-            //        this.text1.Text = varName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[1] = varName_choice;
-            //        break;
-            //    case 2:
-            //        this.text2.Text = varName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[2] = varName_choice;
-            //        break;
-            //    case 3:
-            //        this.text3.Text = varName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[3] = varName_choice;
-            //        break;
-            //    case 4:
-            //        this.text4.Text = varName_choice;
-            //        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[4] = varName_choice;
-            //        break;
-            //}
-
             string allStorage = "";
             Debug.WriteLine("1525: Updated varnames in storage by combobox selection change: ");
             foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
@@ -411,12 +368,14 @@ namespace BioCheck.Views
             Debug.WriteLine(allStorage);
             Keyframe_Storage_checker(); 
         }
+#endregion
 
         // --------------------------------------
         //
         //       Keyframe listbox events
         //
         // --------------------------------------
+        #region Keyframe listbox functions
 
         // Reflect a user's keyframe renaming in Storage, and change keyframe
         private void Keyframe_TextChanged(object sender, TextChangedEventArgs e)
@@ -436,7 +395,8 @@ namespace BioCheck.Views
             {
                 if (keyframe.Name.ToString() == testing_origin)
                 {
-                    // Only change selected KF, and its grid objects, if a new KF's textbox was clicked.
+                    // If a new KF's textbox was clicked, 
+                    // just change what is the selected KF, and update the Grid to show its grid objects
                     if (this.KeyFrames.SelectedIndex != kf_index)
                     {
                         textChange_by_Keyframe = true;
@@ -449,13 +409,41 @@ namespace BioCheck.Views
                         textChange_by_Keyframe = false;         // Because I'm done changing the grid around.
                     }
                     else
-                    { 
+                    {
+                        // The user is changing the KF's name! Update storage:
                         // Test: deactivate KF change (I might just be re-labeling my KF.)
                         textChange_by_Keyframe = false;     // Because I'm not changing the text by clicking Another KF.
-                        // Then change the stored name to the newly given name
+
+                        // Search the Formula for instances of this keyframe: change this name, too, to keep everything updated.
+                        for (int formulaElementIndex = 0; formulaElementIndex < allFormulaElements.Count(); formulaElementIndex++)
+                        {
+                            if (allFormulaElements[formulaElementIndex].Content != null)
+                            {
+                                // If a keyframe
+                                if (allFormulaElements[formulaElementIndex].Content == "keyframe")
+                                {
+                                    if (allFormulaElements[formulaElementIndex].KeyframeName == testing_origin)
+                                    {
+                                        // Change the name in Formula storage.
+                                        allFormulaElements[formulaElementIndex].KeyframeName = noWhite;
+                                        // Update the textbox name too, if in sight:
+
+                                        // Storage directs visual appearance, so must be offset by [- N_rightScrollClicks]
+                                        int vis_from_storageElement = formulaElementIndex - N_rightScrollClicks;
+                                        if (vis_from_storageElement >= 1 && vis_from_storageElement <= 10)
+                                        {
+                                            // Add visuals: 
+                                            f_textID(vis_from_storageElement).Text = noWhite;
+                                            // Not perfect. If two KFs have the same start name, both will be edited..
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Then change the stored KF name to the newly given name
                         ((KeyFrames)this.KeyFrames.SelectedItem).Name = noWhite;
                     }
-
                     //this.KeyFrames.SelectedItem = allKeyframes[kf_index];
                 }
                 kf_index++;
@@ -730,7 +718,7 @@ namespace BioCheck.Views
             var list = (ObservableCollection<KeyFrames>)this.KeyFrames.ItemsSource;       // Return the full list.
             if (list.Count > 0)
                 list.RemoveAt(0);
-        }
+        }        
 
         // Delete a right-clicked keyframe
         private void KeyFrames_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -765,6 +753,28 @@ namespace BioCheck.Views
                 // Was .. == keyframeChosen
                 if (allKeyframes[keyframeIndex].Name == keyframeGoAway)
                 {
+
+                    // Rm any occurances of this KF in the Formula:
+                    // Search the Formula for instances of this keyframe: change this name, too, to keep everything updated.
+
+                    for (int formulaElementIndex = 0; formulaElementIndex < allFormulaElements.Count(); formulaElementIndex++)
+                    {
+                        if (allFormulaElements[formulaElementIndex].Content != null)
+                        {
+                            // If a keyframe
+                            if (allFormulaElements[formulaElementIndex].Content == "keyframe")
+                            {
+                                if (allFormulaElements[formulaElementIndex].KeyframeName == keyframeGoAway)
+                                {
+                                    // Erase the Formula storage and view (if in view).
+                                    // Not perfect. If two KFs have the same start name, both will be removed..
+                                    Formula_eraseGridContent(formulaElementIndex);
+                                }
+                            }
+                        }
+                    }
+
+
                     //this.KeyFrames.SelectedItem = allKeyframes[keyframeIndex];
 
                     // Get index of selected item. If same as keyframeIndex, change selected item pre-delete (or error occurs)
@@ -816,13 +826,15 @@ namespace BioCheck.Views
             Debug.WriteLine(">>>>>>>>>>>>>>>>>>>KeyFrames_MouseRightButtonUp <<<<<<<<<<<<<<<<<<<<<<<<");
             textChange_by_Keyframe = false;
         }
+        #endregion
 
         // --------------------------------------
         //
-        //         Keyframe Drag-n-Drop
+        //         Keyframe Drag-n-Drop to Formula
         //
         // --------------------------------------
-      
+        #region Keyframe Drag-n-Drop
+
         bool textChange_by_Keyframe = false;
         private void KeyFrames_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -884,12 +896,14 @@ namespace BioCheck.Views
             Debug.WriteLine("Keyframes MouseLeftButtonUp");
             //tempDebug.Text = tempDebug.Text + "Keyframes MouseLeftButtonUp";
         }
+        #endregion
 
         // --------------------------------------
         //
         //          Mouse interactivity from the Toolbar
         //
         // --------------------------------------
+        #region Mouse interactivity from the Toolbar
         string operatorName;            // So it can be accessed globally for mouse move and mouse 
 
         // A toolbar icon is clicked
@@ -1015,7 +1029,8 @@ namespace BioCheck.Views
             this.Keyframe_shadow.RenderTransform = new TranslateTransform { X = pos.X - Keyframe_shadow.Width / 2, Y = pos.Y - Keyframe_shadow.Height / 2 };
         }
 
-        // Mouse-up from the Keyframe: make the shadow disappear
+        // Mouse-up from the Keyframe: make the shadow disappear, 
+        // possibly update the Formula grid content (if landed in Formula)
         private void Keyframe_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Debug.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>>>>Keyframe_MouseLeftButtonUp <<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -1503,9 +1518,7 @@ namespace BioCheck.Views
                 Keyframe_Storage_checker();
             }
         }
-
-        
-
+        #endregion
 
         // ------------------------------------------------
         //
@@ -1514,6 +1527,7 @@ namespace BioCheck.Views
         //
         // ------------------------------------------------
 
+        #region Keyframe Grid move elements around
         string objectClicked;
         string styleClicked;
         int gridLocusClicked;
@@ -2165,8 +2179,15 @@ namespace BioCheck.Views
                 tempDebug.Text = "Textbox change prevented by Keyframe push.";
             }
         }
-        
-        // Retrieve the correct object in the Grid
+        #endregion
+
+        // --------------------------------------
+        //
+        //          Simplifying code! 
+        //          Retrieve the correct object in the Grid
+        //
+        // --------------------------------------
+        #region Simplifying code to retrieve the correct clicked things (less, more versatile code is good code)
         private TextBox textboxID (int gridN)
         {
             switch(gridN)
@@ -2352,13 +2373,14 @@ namespace BioCheck.Views
             return this.f_text1;
         }
 
-
         // Colors
         SolidColorBrush myBlueBrush = new SolidColorBrush(Colors.Blue);
         SolidColorBrush myRedBrush = new SolidColorBrush(Colors.Red);
         SolidColorBrush myGrayBrush = new SolidColorBrush(Colors.LightGray);
         SolidColorBrush myDarkGrayBrush = new SolidColorBrush(Colors.Gray);
         SolidColorBrush myWhiteBrush = new SolidColorBrush(Colors.White);
+
+        #endregion
 
         // Change opacity when entering/leaving the window (so underlying Model is easier to view)
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
@@ -2413,7 +2435,17 @@ namespace BioCheck.Views
             e.Handled = true;           // Stops the window dragging! Rest of functionality intact?
         }
 
-        // Delete grid elements upon right-clicking
+        // -----------------------------------------------------------
+        //
+        //              Deleting Grid elements by RC
+        //                  (Grid or Formula)
+        //
+        // -----------------------------------------------------------
+        #region Delete Grid (Formula and/or Grid) content by RC
+
+        // Delete grid elements upon right-clicking _any_ part of the Grid element
+
+        // Grid erasing:
         private void rect_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var src = (Rectangle)sender;
@@ -2485,12 +2517,87 @@ namespace BioCheck.Views
             restylePath(exactPath, gridN, null, null, exactTextBox, exactTextBlock);
         }
 
+        // Formula erasing:
+        private void f_rect_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var src = (Rectangle)sender;
+            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
+
+            // Correct for scroller clicks
+            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
+            
+            // Send off the Formula storage index to be deleted:
+            Formula_eraseGridContent(actual_storageIndex);
+            e.Handled = true;
+        }
+        private void f_textblock_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var src = (TextBlock)sender;
+            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
+
+            // Correct for scroller clicks
+            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
+
+            // Send off the Formula storage index to be deleted:
+            Formula_eraseGridContent(actual_storageIndex);
+            e.Handled = true;
+        }
+
+        private void f_path_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var src = (Path)sender;
+            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
+
+            // Correct for scroller clicks
+            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
+
+            // Send off the Formula storage index to be deleted:
+            Formula_eraseGridContent(actual_storageIndex);
+            e.Handled = true;
+        }
+
+        private void f_textbox_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var src = (TextBox)sender;
+            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
+
+            // Correct for scroller clicks
+            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
+
+            // Send off the Formula storage index to be deleted:
+            Formula_eraseGridContent(actual_storageIndex);
+            e.Handled = true;
+        }
+
+        // Delete a right-clicked (or where a linked KF is erased) Formula Grid element from visuals and storage
+        private void Formula_eraseGridContent(int gridN)
+        {
+            // NB gridN == Storage index, not the visual Formula grid index
+            // Delete Formula grid content
+            allFormulaElements[gridN].Content = null;
+            allFormulaElements[gridN].KeyframeName = null;
+            allFormulaElements[gridN].KeyframeColor = Colors.White;
+            allFormulaElements[gridN].Rule = null;
+
+            // Storage directs visual appearance, so must be offset by [- N_rightScrollClicks]
+            int whatVisIndexToDraw = gridN - N_rightScrollClicks;
+
+            // If the Formula storage's grid is in view, delete its content:
+            if (whatVisIndexToDraw >= 1 && whatVisIndexToDraw <= 10)
+            {
+                f_pathID(whatVisIndexToDraw).Fill = new SolidColorBrush(Colors.Transparent);
+                restylePath(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, null, null, f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
+            }
+        }
+
+        #endregion
+
         //------------------------------------------------------------------------------
         //
         //           Evaluate drawn rules for the backend
         //
         //------------------------------------------------------------------------------
-
+        #region Evaluate KF and Formula rules for the backend
         // Evaluate current keyframe rules
         private void Evaluate_expressions(object sender, RoutedEventArgs e)
         {
@@ -2979,8 +3086,14 @@ namespace BioCheck.Views
             
             Debug.WriteLine("Test");
         }
+        #endregion
 
-        // The Formula Scoller
+        // --------------------------------------
+        //
+        //          The Formula Scoller
+        //
+        // --------------------------------------
+        #region Formula scroller code
         private void ScrollLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
@@ -2998,7 +3111,9 @@ namespace BioCheck.Views
                 if (allFormulaElements[formulaElementIndex].Content != null)
                 {
                     tempDebug.Text = "allFormulaElements index " + formulaElementIndex + " is non-null: " + allFormulaElements[formulaElementIndex].Content;
-                    // Found something. Move it forwards one element, where there's nothing. Then nullify the current element's storage.
+                    // Found something in the Formula grid. 
+                    // Move all grid content forwards one element, where there's nothing. 
+                    // Then erase the current Formula grid element's storage.
                     allFormulaElements[formulaElementIndex +1].Content = allFormulaElements[formulaElementIndex].Content;
                     allFormulaElements[formulaElementIndex].Content = null;
 
@@ -3102,5 +3217,6 @@ namespace BioCheck.Views
             src.Fill = myGrayBrush;
             src.MouseLeftButtonUp -= ScrollRight_MouseLeftButtonUp;
         }
+        #endregion
     }
 }

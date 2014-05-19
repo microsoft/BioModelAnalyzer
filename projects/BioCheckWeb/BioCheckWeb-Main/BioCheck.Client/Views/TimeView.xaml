@@ -2134,73 +2134,73 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="1" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"/>
                             <TextBlock x:Name="f_text1" Tag="1" Grid.Column="1" Grid.Row="0" Style="{StaticResource textForGrid}"
-                                   MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path1" Tag="1" 
                                    Grid.Row="0" Grid.Column="1"  Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N1" Tag="1" Grid.Column="1" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" 
                                  Background="Transparent" Style="{StaticResource ReadOnlyStyle}" GotFocus="N_GotFocus" 
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"/>
 
                             <!-- 2 -->
                             <Rectangle x:Name="f_rect2" Tag="2" Grid.Column="2" Grid.Row="0" Style="{StaticResource rectForGrid}"
                         MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                            <TextBlock x:Name="f_text2" Tag="2" Grid.Column="2" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text2" Tag="2" Grid.Column="2" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path2" Tag="2" Grid.Row="0" Grid.Column="2"  Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
                             <TextBox x:Name="f_N2" Tag="2" Grid.Column="2" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"/>
 
                             <!-- 3 -->
                             <Rectangle x:Name="f_rect3" Tag="3" Grid.Column="3" Grid.Row="0" Style="{StaticResource rectForGrid}"
                         MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                            <TextBlock x:Name="f_text3" Tag="3" Grid.Column="3" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text3" Tag="3" Grid.Column="3" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path3" Tag="3" Grid.Row="0" Grid.Column="3"  Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
                             <TextBox x:Name="f_N3" Tag="3" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" Background="Transparent" 
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"/>
 
                             <!-- 4 -->
                             <Rectangle x:Name="f_rect4" Tag="4" Grid.Column="4" Grid.Row="0" Style="{StaticResource rectForGrid}"
                         MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"/>
-                            <TextBlock x:Name="f_text4" Tag="4" Grid.Column="4" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text4" Tag="4" Grid.Column="4" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path4" Tag="4" Grid.Row="0" Grid.Column="4"  Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
                             <TextBox x:Name="f_N4" Tag="4" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" Background="Transparent" 
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"/>
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"/>
 
                             <!-- 5 -->
                             <Rectangle x:Name="f_rect5" Tag="5" 
                                    Grid.Column="5" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text5" Tag="5" Grid.Column="5" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text5" Tag="5" Grid.Column="5" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path5" Tag="5" 
                                    Grid.Row="0" Grid.Column="5" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N5" Tag="5" Grid.Column="5" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2208,7 +2208,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"
                                  />
 
                             <!-- 6 -->
@@ -2216,13 +2216,13 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="6" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text6" Tag="6" Grid.Column="6" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text6" Tag="6" Grid.Column="6" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path6" Tag="6" 
                                    Grid.Row="0" Grid.Column="6" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N6" Tag="6" Grid.Column="6" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2230,7 +2230,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"
                                  />
 
                             <!-- 7 -->
@@ -2238,13 +2238,13 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="7" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text7" Tag="7" Grid.Column="7" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text7" Tag="7" Grid.Column="7" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path7" Tag="7" 
                                    Grid.Row="0" Grid.Column="7" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N7" Tag="7" Grid.Column="7" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2252,7 +2252,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"
                                  />
 
                             <!-- 8 -->
@@ -2260,13 +2260,13 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="8" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text8" Tag="8" Grid.Column="8" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text8" Tag="8" Grid.Column="8" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path8" Tag="8" 
                                    Grid.Row="0" Grid.Column="8" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N8" Tag="8" Grid.Column="8" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2274,7 +2274,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"
                                  />
 
                             <!-- 9 -->
@@ -2282,13 +2282,13 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="9" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text9" Tag="9" Grid.Column="9" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text9" Tag="9" Grid.Column="9" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path9" Tag="9" 
                                    Grid.Row="0" Grid.Column="9" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N9" Tag="9" Grid.Column="9" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2296,7 +2296,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"
                                  />
 
                             <!-- 10 -->
@@ -2304,13 +2304,13 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="10" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="f_rect_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text10" Tag="10" Grid.Column="10" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text10" Tag="10" Grid.Column="10" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="f_textblock_MouseRightButtonDown"/>
                             <Path      x:Name="f_path10" Tag="10" 
                                    Grid.Row="0" Grid.Column="10" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N10" Tag="10" Grid.Column="10" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2318,7 +2318,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
                                  Style="{StaticResource ReadOnlyStyle}"
                                  GotFocus="N_GotFocus"
-                                 MouseRightButtonDown="textbox_MouseRightButtonDown"
+                                 MouseRightButtonDown="f_textbox_MouseRightButtonDown"
                                  />
 
                             <!-- 11 -->
