@@ -26,6 +26,7 @@ namespace BioCheck.ViewModel.Proof
             var xdoc = XDocument.Parse(xml);
 
             var output = new AnalysisOutput(analysisOutputDto);
+            output.Time = analysisOutputDto.Time;
 
             output.Status = xdoc.Descendants("Status").FirstOrDefault().Value;
 

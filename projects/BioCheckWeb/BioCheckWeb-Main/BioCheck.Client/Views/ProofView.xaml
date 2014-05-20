@@ -172,16 +172,19 @@
 						   VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Auto"
                   CanUserReorderColumns="False"
-                            CanUserResizeColumns="False"
+                            CanUserResizeColumns="True"
                             CanUserSortColumns="False"   
                  CellStyle="{StaticResource PopupDataGridCellStyle}"
                 >
                 <sdk:DataGrid.Columns>
                     <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
                     <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
-                    <sdk:DataGridTextColumn Binding="{Binding CalculatedBound}" IsReadOnly="True" Header="Calculated Bound" Width="*"/>
-                    <sdk:DataGridTextColumn Binding="{Binding Fix1}" IsReadOnly="True" Header="Fix 1" Width="0.4*"/>
-                    <sdk:DataGridTextColumn Binding="{Binding Fix2}" IsReadOnly="True" Header="Fix 2" Width="0.4*"/>
+                    <sdk:DataGridTextColumn Binding="{Binding CalculatedBound}" IsReadOnly="True" Header="Bound"/>
+                    <!-- Was  Width="*" -->
+                    <sdk:DataGridTextColumn Binding="{Binding Fix1}" IsReadOnly="True" Header="Fix 1"/>
+                    <!-- Was  Width="0.4*" -->
+                    <sdk:DataGridTextColumn Binding="{Binding Fix2}" IsReadOnly="True" Header="Fix 2"/>
+                    <!-- Was  Width="0.4*" -->
 
                 </sdk:DataGrid.Columns>
             </sdk:DataGrid>
@@ -206,15 +209,22 @@
 							RowStyle="{StaticResource DataGridRowStyle}" 
 							VerticalScrollBarVisibility="Auto" 
                         CanUserReorderColumns="False"
-                            CanUserResizeColumns="False"
+                            CanUserResizeColumns="True"
                             CanUserSortColumns="False"
                  CellStyle="{StaticResource PopupDataGridCellStyle}"
                     >
+
+                <!-- New -->
+                <i:Interaction.Behaviors>
+                    <behaviors:ScrollIntoViewBehavior/>
+                </i:Interaction.Behaviors>
+                <!-- New stops -->
+                
                 <sdk:DataGrid.Columns>
                     <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell" />
                     <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name" />
-                    <sdk:DataGridTextColumn Binding="{Binding CalculatedBound}" IsReadOnly="True" Header="Calculated Bound" />
-                    <sdk:DataGridTextColumn Binding="{Binding Oscillation}" IsReadOnly="True" Header="Oscillation" Width="*"/>
+                    <sdk:DataGridTextColumn Binding="{Binding CalculatedBound}" IsReadOnly="True" Header="Bound" />
+                    <sdk:DataGridTextColumn Binding="{Binding Oscillation}" IsReadOnly="True" Header="Oscillation" />
 
                 </sdk:DataGrid.Columns>
             </sdk:DataGrid>
@@ -596,7 +606,8 @@
                             <TextBlock TextWrapping="Wrap" Text="seconds. After stepping through" Style="{StaticResource PopupTextStyle}"/>
                         </StackPanel>
                         <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
-                            <TextBlock x:Name="stepsText" Text="{Binding NumberOfSteps}" Style="{StaticResource PopupStableTextStyle}" Margin="0,0,5,0"/>
+                            <TextBlock x:Name="stepsText" Text="{Binding Steps}" Style="{StaticResource PopupStableTextStyle}" Margin="0,0,5,0"/>
+                            <!-- was: Text="{Binding NumberOfSteps}" -->
                             <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}"><Run Text="separate interactions, the model eventual"/><Run Text="ly"/></TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="3">
@@ -604,7 +615,8 @@
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
                         <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
-                        <TextBlock TextWrapping="Wrap" Text="{Binding NumberOfSteps}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Steps}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <!-- was: Text="{Binding NumberOfSteps}" -->
                         <TextBlock TextWrapping="Wrap" Text="steps" Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/>
                         <Path x:Name="ValidPath" Data="M421.9858,569.6992L428.3078,576.0212L441.8538,562.4742" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource StableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False" Margin="0" HorizontalAlignment="Left" Width="24" Height="18" VerticalAlignment="Center" Grid.RowSpan="2"/>
                         <TextBlock TextWrapping="Wrap" Text="Stabilizes" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource StableBrush}" Grid.RowSpan="2"/>
@@ -704,7 +716,8 @@
                         <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Analysis" HorizontalAlignment="Left" Width="118" Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF292929" FontSize="16"/>
                         <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
                             <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="After stepping through"/>
-                            <TextBlock x:Name="unstableSteps" Text="{Binding NumberOfSteps}" Margin="5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                            <TextBlock x:Name="unstableSteps" Text="{Binding Steps}" Margin="5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                            <!-- was: Text="{Binding NumberOfSteps}" -->
                             <TextBlock TextWrapping="Wrap" Text="separate interactions in" Style="{StaticResource PopupTextStyle}"/>
                         </StackPanel>
                         <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
@@ -715,7 +728,8 @@
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource NotStableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
                         <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
-                        <TextBlock TextWrapping="Wrap" Text="{Binding NumberOfSteps}" Foreground="{StaticResource NotStableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Steps}" Foreground="{StaticResource NotStableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                        <!-- was: Text="{Binding NumberOfSteps}" -->
                         <TextBlock TextWrapping="Wrap" Text="steps" Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/>
                         <Path x:Name="InvalidPath1" 
 							Data="M2,2 L17,17 M2,17 L17,2" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource NotStableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False"
@@ -734,9 +748,9 @@
 							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
 							Foreground="#FF58595B" 
 							BorderThickness="1" 
-							HorizontalScrollBarVisibility="Hidden" 
+							HorizontalScrollBarVisibility="Auto" 
 							    CanUserReorderColumns="False"
-                            CanUserResizeColumns="False"
+                            CanUserResizeColumns="True"
                             CanUserSortColumns="False"
                                       FontFamily="Verdana" 
 							FontSize="13.333"
@@ -754,7 +768,8 @@
                             <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
                             <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
 
-                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True" Width="*">
+                            <!-- Below had Width="*" -->
+                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True">
                                 <sdk:DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding TargetFunction}" HorizontalAlignment="Center"/>
@@ -779,9 +794,9 @@
 							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
 							Foreground="#FF58595B" 
 							BorderThickness="1" 
-							HorizontalScrollBarVisibility="Hidden" 
+							HorizontalScrollBarVisibility="Auto" 
 							    CanUserReorderColumns="False"
-                            CanUserResizeColumns="False"
+                            CanUserResizeColumns="True"
                             CanUserSortColumns="False"
                                       FontFamily="Verdana" 
 							FontSize="13.333"
@@ -800,14 +815,14 @@
                             <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
                             <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
 
-                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True" Width="*">
+                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True" >
                                 <sdk:DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding TargetFunction}" HorizontalAlignment="Center"/>
                                     </DataTemplate>
                                 </sdk:DataGridTemplateColumn.CellTemplate>
                             </sdk:DataGridTemplateColumn>
-                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Final range"/>
+                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Bound"/> <!-- Was "Final range"-->
                         </sdk:DataGrid.Columns>
                     </sdk:DataGrid>
 

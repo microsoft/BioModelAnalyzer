@@ -820,6 +820,7 @@ namespace BioCheck.ViewModel
                         this.proofVM.ResetOutput();
 
                     this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
+                    this.analysisOutput.Time = time;
                 }
                 catch (Exception ex)
                 {
