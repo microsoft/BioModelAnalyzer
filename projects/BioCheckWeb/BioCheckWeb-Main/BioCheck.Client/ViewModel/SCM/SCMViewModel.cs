@@ -67,7 +67,8 @@ namespace BioCheck.ViewModel.SCM
                     .Show("Running SCM ...", CancelSCMCommand);
 
             var modelVM = ApplicationViewModel.Instance.ActiveModel;
-            scmInputDto = SCMInputDTOFactory.Create(modelVM); // Edits engine to SCM __ eventually
+            scmInputDto = SCMInputDTOFactory.Create(modelVM); // Edits engine to SCM
+            this.ModelName = modelVM.Name; // Renames the SCM model title
 
             // Enable/Disable logging
             scmInputDto.EnableLogging = ApplicationViewModel.Instance.ToolbarViewModel.EnableAnalyzerLogging;
@@ -200,8 +201,8 @@ namespace BioCheck.ViewModel.SCM
 
                     // Edit the Proof view
                     // Set modelname and whether stable (only by SingleStablePoint) or not.
-                    this.proofVM = SCMViewModelFactory_ServerOutput.Create(scmInputDto, analysisOutput);                   
-
+                    this.proofVM = SCMViewModelFactory_ServerOutput.Create(scmInputDto, analysisOutput);
+                    
                     finalOutput += "\nThe model \"" + this.proofVM.ModelName + "\" ";
                     switch (analysisOutput.Status)
                     {
@@ -252,7 +253,7 @@ namespace BioCheck.ViewModel.SCM
                 // Log the error to the Log web service
                 ApplicationViewModel.Instance.Log.Error("There was an error running the analysis.", details);
             }
-            this.SCMOutput = finalOutput;
+            this.SCMOutput = finalOutput;            
         }
 
         public void ResetStability(bool showStability)
