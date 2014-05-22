@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Generic;       // lists.
 using System.Linq;
 using System.Net;
 using System.Windows;
@@ -51,6 +51,14 @@ namespace BioCheck.Views
         public string Content { get; set; }           // "logics", "keyframe" or null
     }
 
+    public class NonNull_Formula
+    {
+        // Post-processed Formula content
+        public string Content { get; set; }           // "logics", "keyframe" or null
+        public string Rule { get; set; }              // The logical expression, or the keyframe's rule
+                                                      // "Until", "If", "Eventually", "Always", "cb", "ob" et.c.
+    }
+
     public class BMAvars
     {
         public string Name { get; set; }       // name (set by popup)
@@ -72,6 +80,7 @@ namespace BioCheck.Views
         private TimeViewModel timeVM;
         public ObservableCollection<KeyFrames> allKeyframes;            // Now it's accessible throughout.
         public ObservableCollection<FormulaType> allFormulaElements;
+        public List<NonNull_Formula> noNullElements = new List<NonNull_Formula>();     // Create list for parsed Formula consiting of non-null Formula elements only.
         public ObservableCollection<BMAvars> allVariables;
         public ObservableCollection<BMAcells> allCells;
 
@@ -2411,24 +2420,23 @@ namespace BioCheck.Views
         {
             var mouseLocus = e.GetPosition(this);                   // this refers to the element wrt which the coordinates are reported. Here = the LTL window.     
             this.timeVM.LTLInput = mouseLocus.ToString();
-
         }
 
-        private void SuperstateDragGrid_Drop(object sender, DragEventArgs e)        // This may actually not do anything.. / Gavin
-        {
-            var mouseLocus = e.GetPosition(this);
-            this.timeVM.LTLInput = "The button was dragged to " + mouseLocus.ToString();
-        }
+        //private void SuperstateDragGrid_Drop(object sender, DragEventArgs e)        // This may actually not do anything.. / Gavin
+        //{
+        //    var mouseLocus = e.GetPosition(this);
+        //    this.timeVM.LTLInput = "The button was dragged to " + mouseLocus.ToString();
+        //}
 
-        private void SuperstateDragGrid_Enter(object sender, DragEventArgs e)
-        {
-            //DragDroptextBlock.FontWeight = FontWeights.ExtraBold;
-        }
+        //private void SuperstateDragGrid_Enter(object sender, DragEventArgs e)
+        //{
+        //    //DragDroptextBlock.FontWeight = FontWeights.ExtraBold;
+        //}
 
-        private void SuperstateDragGrid_DragLeave(object sender, DragEventArgs e)       // This may actually not do anything.. / Gavin
-        {
-            //DragDroptextBlock.FontWeight = FontWeights.Normal;              // x:Name and a function.
-        }
+        //private void SuperstateDragGrid_DragLeave(object sender, DragEventArgs e)       // This may actually not do anything.. / Gavin
+        //{
+        //    //DragDroptextBlock.FontWeight = FontWeights.Normal;              // x:Name and a function.
+        //}
 
         private void Make_popup_notMove (object sender, MouseButtonEventArgs e)
         {
@@ -2441,9 +2449,8 @@ namespace BioCheck.Views
         //                  (Grid or Formula)
         //
         // -----------------------------------------------------------
-        #region Delete Grid (Formula and/or Grid) content by RC
-
         // Delete grid elements upon right-clicking _any_ part of the Grid element
+        #region Delete Grid (Formula and/or Grid) content by RC
 
         // Grid erasing:
         private void rect_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -2453,19 +2460,6 @@ namespace BioCheck.Views
 
             // Send off grid to be deleted:
             deleteGrid_visuals_andStorage(gridLocusEntered);
-
-            //// Delete storage
-            //((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = null;
-            //((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;
-
-            //// Delete visuals
-            //TextBlock exactTextBlock = (TextBlock)textID(gridLocusEntered);
-            //Path exactPath = (Path)pathID(gridLocusEntered);
-            //TextBox exactTextBox = (TextBox)textboxID(gridLocusEntered);
-            //KeyFrames selectedKeyframes_storedGridItems = ((KeyFrames)this.KeyFrames.SelectedItem);
-            //string selectedKeyframes_name = (string)selectedKeyframes_storedGridItems.Name;
-
-            //restyleGrid_byKeyframeSelection(exactPath, exactTextBlock, gridLocusEntered, null, exactTextBox);
             e.Handled = true;
         }
         private void textblock_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -3028,7 +3022,7 @@ namespace BioCheck.Views
         private void createFormulaRule()
         {
             tempKF.Text += "\nThe final formula will be composed of the following components: ";
-            // Get all details to the Formula.
+            // Just debug: Get all details to the Formula.
             foreach (FormulaType formulaElement in allFormulaElements)
             { 
                 if (formulaElement.Content != null)
@@ -3040,24 +3034,233 @@ namespace BioCheck.Views
                         {
                             if (avail_kf.Name == formulaElement.KeyframeName)
                             {
-                                // Poss evaluate the rule here, prior to using it. _____
-                                formulaElement.Rule = avail_kf.Rule;
+                                // Poss evaluate the rule here, prior to using it. ______________
+                                formulaElement.Rule = avail_kf.Rule;    // Sets the Rule!
                             }
                         }
                     }
                     else
                     {
-                        // Logics. Already in the rule.
+                        // Logics. The formulaElement.Rule string below IS the logical rule.
                     }
-                    tempKF.Text += "\n" + formulaElement.Rule;
+                    tempKF.Text += "\nContent = " + formulaElement.Content + " and Rule = " + formulaElement.Rule;
                 }
             }
-            // Next, check for Rule elements that make the smallest bracket-components.
-            // Use my pseudo-code.
-            // _______
 
-            // ..then put together the final Formula.
+            // Tackle the final formula
+            //List<NonNull_Formula> noNullElements = new List<NonNull_Formula>();     // Create list for parsed Formula (at top, global now)
+            string debugText = "";
+
+            if (noNullElements.Count > 0)
+            {
+                noNullElements.RemoveRange(0, noNullElements.Count);
+            }
+
+            // Remove spaces (nulls)
+            foreach (FormulaType formulaElement in allFormulaElements)
+            {
+                if (formulaElement.Content != null)
+                {
+                    noNullElements.Add(new NonNull_Formula{Content = formulaElement.Content, Rule = formulaElement.Rule});
+                }
+            }
+
+            debugText += "noNullElements = \n";
+            foreach (NonNull_Formula nnf in noNullElements)
+            {
+                debugText += nnf.Content + " " + nnf.Rule + "\n";
+            }
+
+            // Detect brackets (ob and cb)
+            // "Until", "If", "Eventually", "Always", "cb", "ob" et.c.
+            int formulaIndex = 0;
+            int[] ob_boolArray = new int[noNullElements.Count()];
+            int ob_boolArrayIndex = 0;
+            int[] cb_boolArray = new int[noNullElements.Count()];
+            int cb_boolArrayIndex = 0;
+            
+            int openingBracketHere = 0;
+            int closingBracketHere = 0;
+           
+            foreach (NonNull_Formula noNullElement in noNullElements)
+            {
+                if (noNullElement.Rule == "ob")
+                {
+                    // Opening bracket
+                    ob_boolArray[ob_boolArrayIndex] = formulaIndex; // [3,5,9]
+                    ob_boolArrayIndex++;
+                    debugText += "\nob at " + formulaIndex;
+                }
+                else if (noNullElement.Rule == "cb")
+                {
+                    // Closing bracket
+                    cb_boolArray[cb_boolArrayIndex] = formulaIndex; // [3,5,9]
+                    cb_boolArrayIndex++;
+                    debugText += "\ncb at " + formulaIndex;
+                }
+                formulaIndex++;
+            }
+
+            debugText += "Detected " + ob_boolArrayIndex + " obs and " + cb_boolArrayIndex + " cbs.";
+
+            // Deal with brackets (if any were detected): de-nest expressions
+            if (ob_boolArrayIndex != 0)
+            {
+                int bracketSeparation = 5000;
+                if (ob_boolArrayIndex == cb_boolArrayIndex)
+                {
+                    // Balanced numbers of brackets. 
+                    // Pair up each cb with an ob:
+
+                    // Do this iteratively until no brackets remain:
+                    // Per closing bracket, detect the belonging opening bracket
+                    for (int cb_index = 0; cb_index < cb_boolArrayIndex; cb_index++)
+                    {
+                        int rm_this_obIndex = 0;
+                        for (int ob_index = 0; ob_index < ob_boolArrayIndex; ob_index++)
+                        {
+                            if (ob_boolArray[ob_index] != -1)
+                            {
+                                // Get smallest positive bracket separation
+                                if (((cb_boolArray[cb_index] - ob_boolArray[ob_index]) > 0) && ((cb_boolArray[cb_index] - ob_boolArray[ob_index]) < bracketSeparation))
+                                {
+                                    // If > 0 and the smallest separation so far, set as [new] smallest separation
+                                    bracketSeparation = cb_boolArray[cb_index] - ob_boolArray[ob_index];
+                                    // Save the bracket pair: (ob index, cb index)
+                                    openingBracketHere = ob_boolArray[ob_index];
+                                    rm_this_obIndex = ob_index;
+                                    closingBracketHere = cb_boolArray[cb_index];
+                                }
+                            }
+                        }
+                        bracketSeparation = 5000; // Lazy reset
+
+                        // This bracket is necessarily un-nested.
+                        // Send bracket content for bracketing (make into a function eventually)
+
+                        // Edit the nonNullFormula from ob to cb, exclusive of brackets:
+                        editNonNull_Formula(openingBracketHere + 1, closingBracketHere - 1);
+
+                        // Bracketed content done. Rm the brackets
+                        noNullElements[openingBracketHere].Content = null;
+                        noNullElements[openingBracketHere].Rule = null;
+
+                        noNullElements[closingBracketHere].Content = null;
+                        noNullElements[closingBracketHere].Rule = null;
+
+                        ob_boolArray[rm_this_obIndex] = -1; // Not used again.
+                    }; // Per closing bracket
+                }
+                else
+                { 
+                    // Unbalanced N of brackets: error.
+                }
+            }
+            // Whether no brackets to begin with or de-bracketed from above; go ahead and parse logics L to R.
+            editNonNull_Formula(0, (noNullElements.Count -1));
+                        
+            debugText += "\n\nParsed the Formula! Per element, it is:\n";
+            Debug.WriteLine("Parsed the Formula! Per element, it is:");
+            for (int formIndex = 0; formIndex < noNullElements.Count; formIndex++)
+            {
+                debugText += formIndex + " = Content: " + noNullElements[formIndex].Content + " Rule: " + noNullElements[formIndex].Rule + "\n";
+                if (noNullElements[formIndex].Rule != null)
+                {
+                    tempKF.Text = noNullElements[formIndex].Rule;
+                    Debug.WriteLine(noNullElements[formIndex].Rule);
+                }
+            }
+            tempDebug.Text = debugText;
+            tempDebug.Text = "";
         }
+
+        // Inputs the start and end index to edit
+        private void editNonNull_Formula(int start, int end)
+        {
+            string mergedRule = "";
+            for (int formulaIndex = start; formulaIndex <= end; formulaIndex++)
+            {
+                // Check what logical expressions are here:
+                if (noNullElements[formulaIndex].Content == "logic")
+                {
+                    // Logical expressions that expect one unit afterwards:
+                    if (noNullElements[formulaIndex].Rule == "Eventually" || noNullElements[formulaIndex].Rule == "Always" || noNullElements[formulaIndex].Rule == "Not")
+                    {
+                        // Piece together this logics expression and next non-null element (whatever it is)
+                        bool foundNonNull = false;
+                        for (int seekingNonNull = (formulaIndex + 1); seekingNonNull <= end; seekingNonNull++)
+                        {
+                            if (!foundNonNull && noNullElements[seekingNonNull].Content != null)
+                            {
+                                // Piece together the .Rules
+                                mergedRule = "(" + noNullElements[formulaIndex].Rule + " "+ noNullElements[seekingNonNull].Rule + ")";
+
+                                // Edit the noNullElements content to reflect new merged Rules
+                                noNullElements[formulaIndex].Content = "Merged";
+                                noNullElements[formulaIndex].Rule = mergedRule;
+
+                                noNullElements[seekingNonNull].Content = null;
+                                noNullElements[seekingNonNull].Rule = null;
+
+                                foundNonNull = true;
+                            }
+                        }
+                        if (!foundNonNull)
+                        {
+                            // Report error.
+                        }
+                    }
+                    else if (noNullElements[formulaIndex].Rule == "Until" || noNullElements[formulaIndex].Rule == "Implies" || noNullElements[formulaIndex].Rule == "And")
+                    {
+                        // Piece together this logics expression, the previous non-null element and the next non-null element (whatever they are)
+
+                        // Find previous:
+                        bool foundPreNonNull = false;
+                        for (int seekingNonNull = (formulaIndex - 1); seekingNonNull >= start; seekingNonNull--)
+                        {
+                            if (!foundPreNonNull && noNullElements[seekingNonNull].Content != null)
+                            {
+                                // Piece together the .Rules
+                                mergedRule = "(" + noNullElements[formulaIndex].Rule + " " + noNullElements[seekingNonNull].Rule;
+
+                                // Edit the noNullElements content to reflect new merged Rules
+                                noNullElements[seekingNonNull].Content = null;
+                                noNullElements[seekingNonNull].Rule = null;
+
+                                foundPreNonNull = true;
+                            }
+                        }
+                        if (foundPreNonNull)
+                        {
+                            // Find next:
+                            bool foundPostNonNull = false;
+                            for (int seekingNonNull = (formulaIndex + 1); seekingNonNull <= end; seekingNonNull++)
+                            {
+                                if (!foundPostNonNull && noNullElements[seekingNonNull].Content != null)
+                                {
+                                    // Piece together the .Rules
+                                    mergedRule += " " + noNullElements[seekingNonNull].Rule + ")";
+
+                                    // Edit the noNullElements content to reflect new merged Rules
+                                    noNullElements[formulaIndex].Content = "Merged";
+                                    noNullElements[formulaIndex].Rule = mergedRule;
+
+                                    noNullElements[seekingNonNull].Content = null;
+                                    noNullElements[seekingNonNull].Rule = null;
+
+                                    foundPostNonNull = true;
+                                }
+                            }
+                            if (!foundPostNonNull)
+                            {
+                                // Report error.
+                            }
+                        }
+                    }; // Unary: Eventually, Always, Not     or    Binary: Until, Implies, And
+                }; // logics element found in Formula
+            }; // Per Formula element
+        }
+
 
         // Where minibrackets are made, based on individual KF triplets.
         List<string> minibracketList = new List<string>();
