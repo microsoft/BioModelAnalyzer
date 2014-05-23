@@ -667,6 +667,20 @@ namespace BioCheck.Views
                     boxN.IsHitTestVisible = false;
                     boxN.IsReadOnly = true;
                     break;
+                case "<=":
+                    compositeResourceName = "path" + gridInt.ToString() + "lte";
+                    textN.Text = "";
+                    boxN.Text = "";
+                    boxN.IsHitTestVisible = false;
+                    boxN.IsReadOnly = true;
+                    break;
+                case ">=":
+                    compositeResourceName = "path" + gridInt.ToString() + "mte";
+                    textN.Text = "";
+                    boxN.Text = "";
+                    boxN.IsHitTestVisible = false;
+                    boxN.IsReadOnly = true;
+                    break;
                 case "cell":
                     compositeResourceName = "path" + gridInt.ToString() + "cell";
                     textN.Text = ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridInt];
@@ -931,7 +945,7 @@ namespace BioCheck.Views
             Shadow_initialLocus(operatorName, offset);
 
             src.MouseMove += Operator_MouseMove;
-            if (operatorName == "Variable" || operatorName == "Cell" || operatorName == "Equals" || operatorName == "LessThan" || operatorName == "MoreThan" )
+            if (operatorName == "Variable" || operatorName == "Cell" || operatorName == "Equals" || operatorName == "LessThan" || operatorName == "MoreThan" || operatorName == "LessThanEq" || operatorName == "MoreThanEq")
             {
                 // Keyframe grid objects are being dropped
                 src.MouseLeftButtonUp += Operator_MouseLeftButtonUp;
@@ -973,13 +987,23 @@ namespace BioCheck.Views
                 case "MoreThan":
                     this.MoreThan_shadow.Visibility = System.Windows.Visibility.Visible;
                     this.MoreThan_shadow.Opacity = 0.6;
-                    this.MoreThan_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - Variable_shadow.Width / 2, Y = refCoord.Y - Variable_shadow.Height / 2 };
+                    this.MoreThan_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - MoreThan_shadow.Width / 2, Y = refCoord.Y - MoreThan_shadow.Height / 2 };
+                    break;
+                case "LessThanEq":
+                    this.LessThanEq_shadow.Visibility = System.Windows.Visibility.Visible;
+                    this.LessThanEq_shadow.Opacity = 0.6;
+                    this.LessThanEq_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - LessThanEq_shadow.Width / 2, Y = refCoord.Y - LessThanEq_shadow.Height / 2 };
+                    break;
+                case "MoreThanEq":
+                    this.MoreThanEq_shadow.Visibility = System.Windows.Visibility.Visible;
+                    this.MoreThanEq_shadow.Opacity = 0.6;
+                    this.MoreThanEq_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - MoreThanEq_shadow.Width / 2, Y = refCoord.Y - MoreThanEq_shadow.Height / 2 };
                     break;
                 case "Keyframe":
                     this.Keyframe_shadow.Fill = new SolidColorBrush(((KeyFrames)this.KeyFrames.SelectedItem).Color);
                     this.Keyframe_shadow.Visibility = System.Windows.Visibility.Visible;
                     this.Keyframe_shadow.Opacity = 0.6;
-                    this.Keyframe_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - Variable_shadow.Width / 2, Y = refCoord.Y - Variable_shadow.Height / 2 };
+                    this.Keyframe_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - Keyframe_shadow.Width / 2, Y = refCoord.Y - Keyframe_shadow.Height / 2 };
                     break;
                 case "Until":
                     this.Until_shadow.Visibility = System.Windows.Visibility.Visible;
@@ -1199,6 +1223,12 @@ namespace BioCheck.Views
                 case "MoreThan":
                     this.MoreThan_shadow.RenderTransform = new TranslateTransform { X = pos.X - MoreThan_shadow.Width / 2, Y = pos.Y - MoreThan_shadow.Height / 2 };
                     break;
+                case "LessThanEq":
+                    this.LessThanEq_shadow.RenderTransform = new TranslateTransform { X = pos.X - LessThanEq_shadow.Width / 2, Y = pos.Y - LessThanEq_shadow.Height / 2 };
+                    break;
+                case "MoreThanEq":
+                    this.MoreThanEq_shadow.RenderTransform = new TranslateTransform { X = pos.X - MoreThanEq_shadow.Width / 2, Y = pos.Y - MoreThanEq_shadow.Height / 2 };
+                    break;
                 case "Keyframe":
                     this.Keyframe_shadow.RenderTransform = new TranslateTransform { X = pos.X - Keyframe_shadow.Width / 2, Y = pos.Y - Keyframe_shadow.Height / 2 };
                     break;
@@ -1252,6 +1282,12 @@ namespace BioCheck.Views
                 case "MoreThan":
                     this.MoreThan_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
+                case "LessThanEq":
+                    this.LessThanEq_shadow.Visibility = System.Windows.Visibility.Collapsed;
+                    break;
+                case "MoreThanEq":
+                    this.MoreThanEq_shadow.Visibility = System.Windows.Visibility.Collapsed;
+                    break;
                 case "Keyframe":
                     this.Keyframe_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
@@ -1304,6 +1340,7 @@ namespace BioCheck.Views
             }
             else
             {
+
                 // Create visuals
                 // Draw the correct path in the correct place
                 compositeResourceName = "path" + rectInt.ToString() + whatResourceName.ToLower();
@@ -1311,7 +1348,7 @@ namespace BioCheck.Views
                 tempDebug.Text += "Tried to draw path " + compositeResourceName + " at visual element " + rectInt.ToString();
 
                 // Keyframe storage only
-                if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "=")
+                if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "<=" || whatContentSign == ">=" || whatContentSign == "=")
                 {
                     ((KeyFrames)this.KeyFrames.SelectedItem).Content[rectInt] = whatContentSign;
                 }
@@ -1393,7 +1430,7 @@ namespace BioCheck.Views
             rectN.Style = (Style)this.Resources[compositeResourceName];
 
             // Keyframe storage only
-            if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "=")
+            if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "<=" || whatContentSign == ">=" || whatContentSign == "=")
             {
                 ((KeyFrames)this.KeyFrames.SelectedItem).Content[rectInt] = whatContentSign;
             }
@@ -1471,7 +1508,15 @@ namespace BioCheck.Views
                         break;
                     case "MoreThan":
                         whatResourceName = "mt";
-                        whatContentSign = whatContentSign = ">";
+                        whatContentSign = ">";
+                        break;
+                    case "LessThanEq":
+                        whatResourceName = "lte";
+                        whatContentSign = "<=";
+                        break;
+                    case "MoreThanEq":
+                        whatResourceName = "mte";
+                        whatContentSign = ">=";
                         break;
                     case "Cell":
                         whatResourceName = whatContentSign = "cell";
@@ -1554,6 +1599,12 @@ namespace BioCheck.Views
                 case "<":
                     styleClicked = "path" + gridLocusClicked.ToString() + "lt";
                     break;
+                case ">=":
+                    styleClicked = "path" + gridLocusClicked.ToString() + "mte";
+                    break;
+                case "<=":
+                    styleClicked = "path" + gridLocusClicked.ToString() + "lte";
+                    break;
                 default:
                     styleClicked = "path" + gridLocusClicked.ToString() + objectClicked;
                     break;
@@ -1609,6 +1660,12 @@ namespace BioCheck.Views
                             break;
                         case "<":
                             shadowToEdit = LessThan_shadow;
+                            break;
+                        case ">=":
+                            shadowToEdit = MoreThanEq_shadow;
+                            break;
+                        case "<=":
+                            shadowToEdit = LessThanEq_shadow;
                             break;
                         case "var":
                             shadowToEdit = Variable_shadow;
@@ -1704,6 +1761,12 @@ namespace BioCheck.Views
                 case "<":
                     this.LessThan_shadow.RenderTransform = new TranslateTransform { X = pos.X - LessThan_shadow.Width / 2, Y = pos.Y - LessThan_shadow.Height / 2 };
                     break;
+                case ">=":
+                    this.MoreThanEq_shadow.RenderTransform = new TranslateTransform { X = pos.X - MoreThanEq_shadow.Width / 2, Y = pos.Y - MoreThanEq_shadow.Height / 2 };
+                    break;
+                case "<=":
+                    this.LessThanEq_shadow.RenderTransform = new TranslateTransform { X = pos.X - LessThanEq_shadow.Width / 2, Y = pos.Y - LessThanEq_shadow.Height / 2 };
+                    break;
                 case "var":
                     this.Variable_shadow.RenderTransform = new TranslateTransform { X = pos.X - Variable_shadow.Width / 2, Y = pos.Y - Variable_shadow.Height / 2 };
                     break;
@@ -1791,6 +1854,12 @@ namespace BioCheck.Views
                 case "<":
                     this.LessThan_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
+                case ">=":
+                    this.MoreThanEq_shadow.Visibility = System.Windows.Visibility.Collapsed;
+                    break;
+                case "<=":
+                    this.LessThanEq_shadow.Visibility = System.Windows.Visibility.Collapsed;
+                    break;
                 case "var":
                     this.Variable_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
@@ -1817,6 +1886,12 @@ namespace BioCheck.Views
                     break;
                 case "<":
                     resourceStyleToUse = "path" + nowGrid.ToString() + "lt";
+                    break;
+                case ">=":
+                    resourceStyleToUse = "path" + nowGrid.ToString() + "mte";
+                    break;
+                case "<=":
+                    resourceStyleToUse = "path" + nowGrid.ToString() + "lte";
                     break;
                 default:
                     resourceStyleToUse = "path" + nowGrid.ToString() + objectClicked;
@@ -2141,7 +2216,7 @@ namespace BioCheck.Views
                         ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;
                         exactRect.Fill = myWhiteBrush;
                     }
-                    else if (noWhite == "=" || noWhite == "<" || noWhite == ">")
+                    else if (noWhite == "=" || noWhite == "<" || noWhite == ">" || noWhite == "<=" || noWhite == ">=")
                     {
                         // Accepted non-numeric input
                         ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = noWhite;
@@ -2495,7 +2570,7 @@ namespace BioCheck.Views
         private void deleteGrid_visuals_andStorage(int gridN)
         {
             // Just in case editing is prevented.
-            //textChange_by_Keyframe = false;       // SHould be no need.
+            //textChange_by_Keyframe = false;       // Should be no need.
 
             // Delete storage
             ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridN] = null;
@@ -3171,7 +3246,7 @@ namespace BioCheck.Views
                 }
             }
             tempDebug.Text = debugText;
-            tempDebug.Text = "";
+            tempDebug.Text = ""; // DEBUG : comment out for debug mode.
         }
 
         // Inputs the start and end index to edit
@@ -3282,7 +3357,26 @@ namespace BioCheck.Views
                     minibracketList.Add("(And (> " + var + " " + Nmin.ToString() + ") (< " + var + " " + Nmax.ToString() + "))");
                 }
             }
-            else 
+            else if (op == "<=")
+            {
+                // Since <= is not supported, convert it to < 
+                // E.g.   x <= 3   ==   x < 4
+                int Nmax = Int32.Parse(N) + 1;
+                minibracketList.Add("(< " + var + " " + Nmax.ToString() + ")");
+            }
+            else if (op == ">=")
+            {
+                // Since >= is not supported, convert it to > 
+                // E.g.   x >= 3   ==   x > 2
+                if (N != "0")
+                {
+                    // If N = 0, the variable can be any value. 
+                    // No rule is thus needed, so is ignored in the final formula.
+                    int Nmin = Int32.Parse(N) - 1;
+                    minibracketList.Add("(> " + var + " " + Nmin.ToString() + ")");
+                }
+            }
+            else
             {
                 minibracketList.Add("(" + op + " " + var + " " + N + ")");
             }
