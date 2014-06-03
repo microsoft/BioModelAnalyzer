@@ -15,8 +15,9 @@ using std::make_pair;
 StateTransition::StateTransition(CellProgram *c, float m, float s)
 : Directive(c), _mean(m), _sd(s) {}
 
-StateTransition::StateTransition(CellProgram *c, float m, float s, State* st) 
+StateTransition::StateTransition(CellProgram *c, float m, float s, State* st)
 	: Directive(c), _mean(m), _sd(s), _changes(st)
+{}
 
 StateTransition::~StateTransition() {
 }
@@ -42,7 +43,7 @@ std::pair<Event*,std::vector<Happening*>> StateTransition::apply(Cell* c,float d
 	}
 
 	State* oldState{ c->state() == nullptr ? nullptr : new State(*(c->state())) };
-	c->update(_changes);
+	c->update(_changes.get());
 	//for (auto varVal : _changes) {
 	//	c->update(varVal.first, varVal.second);
 	//}
