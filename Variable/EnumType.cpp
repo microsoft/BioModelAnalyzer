@@ -76,7 +76,7 @@ bool EnumType::Value::isValid() const {
 	return _it != _myEnum._elements.end();
 }
 
-bool EnumType::Value::operator==(const Value& other) const {
+bool EnumType::Value::operator==(const Type::Value& other) const {
 	if (typeid(*this) != typeid(other)) {
 		return false;
 	}
@@ -94,4 +94,9 @@ ostream& operator<<(ostream& out, const EnumType::Value& val) {
 	else {
 		out << *(val._it);
 	}
+	return out;
+}
+
+string EnumType::Value::toString() const {
+	return *_it;
 }

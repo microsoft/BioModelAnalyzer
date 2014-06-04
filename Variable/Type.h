@@ -2,6 +2,8 @@
 #ifndef TYPE_H_
 #define TYPE_H_
 
+#include <string>
+
 class Type
 {
 public:
@@ -18,6 +20,8 @@ public:
 
 		virtual bool operator==(const Value&) const=0;
 		virtual bool operator!=(const Value&) const;
+
+		virtual std::string toString() const=0;
 	};
 };
 

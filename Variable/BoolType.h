@@ -16,7 +16,7 @@ public:
 
 	virtual bool operator==(const Type& other) const;
 
-	BoolType& getInstance();
+	static BoolType& getInstance();
 
 	class Value : public Type::Value {
 	public:
@@ -26,7 +26,9 @@ public:
 		virtual ~Value();
 
 		bool value() const;
-		virtual bool operator==(const Value& other) const;
+		virtual bool operator==(const Type::Value& other) const;
+
+		virtual std::string toString() const;
 	private:
 		bool _val;
 	};

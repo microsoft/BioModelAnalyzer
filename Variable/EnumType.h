@@ -31,8 +31,9 @@ public:
 		bool isValid() const;
 		std::string value() const;
 
-		virtual bool operator==(const Value& other) const;
+		virtual bool operator==(const Type::Value& other) const;
 
+		virtual std::string toString() const;
 		friend std::ostream& operator<<(std::ostream&, const Value&);
 	private:
 		const EnumType& _myEnum;
