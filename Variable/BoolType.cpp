@@ -25,6 +25,10 @@ BoolType::Value::Value(const bool val) : _val(val) {
 
 }
 
+BoolType::Value::~Value() 
+{
+}
+
 bool BoolType::Value::value() const {
 	return _val;
 }

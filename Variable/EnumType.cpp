@@ -65,6 +65,11 @@ EnumType::Value::Value(const EnumType& en, const string& val)
 	_it = _myEnum._elements.end();
 }
 
+
+EnumType::Value::~Value() 
+{
+}
+
 string EnumType::Value::value() const {
 	if (_it == _myEnum._elements.end()) {
 		return "";
