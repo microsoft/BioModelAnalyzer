@@ -166,7 +166,7 @@ namespace Bounded_Async_Translator
                                 _nassigns[modl][i] = asyncupdatedassign;
                             }
                         }
-                            // Put here also for one AC
+                         
                         else
                         {
                             if (modl.name == "Anchorcell")
