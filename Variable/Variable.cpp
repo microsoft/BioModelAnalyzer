@@ -18,6 +18,8 @@ Variable::Variable(const string& name, EnumType* t, EnumType::Value* v)
 
 Variable::~Variable()
 {
+	// The type is not owned by the variable
+	// The value is owned by the variable
 	delete _val;
 }
 
