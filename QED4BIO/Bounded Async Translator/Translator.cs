@@ -44,7 +44,7 @@ namespace Bounded_Async_Translator
             CreateSectionTables(_modules);
             _nthread = numthread;
             _asyncbound = asyncbound;
-            _clockbound = clockbound;            
+            _clockbound = clockbound;
             _modules.Add(CreateTimeModule("timer"));
             _modules.Add(CreateClockModule("clock"));
             SetConfiguration(cfname);
@@ -107,12 +107,22 @@ namespace Bounded_Async_Translator
                                     }
                                     else
                                     {
-                                        List<string> mtimervar = new List<string>();
-                                        Debug.Assert(counter < _nthread);
-                                        mtimervar.Add("t");
-                                        mtimervar.Add("var" + counter.ToString());
-                                        mvar.Item2.Item2.Add(mtimervar);
-                                        counter++;
+                                        if (mvar.Item2.Item1 == "Anchorcell") {
+                                            List<string> mtimervar = new List<string>();
+                                            mtimervar.Add("t");
+                                            mtimervar.Add("reset");
+                                            mvar.Item2.Item2.Add(mtimervar);
+                                        }
+                                        else
+                                        {
+                                            List<string> mtimervar = new List<string>();
+                                            Debug.Assert(counter < _nthread);
+                                            mtimervar.Add("t");
+                                            mtimervar.Add("var" + counter.ToString());
+                                            mvar.Item2.Item2.Add(mtimervar);
+                                            counter++;
+                                        }
+
                                     }
                                 }
                             }
@@ -125,42 +135,12 @@ namespace Bounded_Async_Translator
                         if (modl.name == "clock")
                         {
                             _params[modl].Add("reset");
-                            string asyncboundparam = _params[modl][_params[modl].Count - 1];
-                            Ast.expr asyncident = Ast.expr.NewIdent(asyncboundparam);
-                            Ast.expr resetident = Ast.expr.NewEq(Ast.expr.NewIdent("reset"), Ast.expr.NewInt(1));
-                            for (int i = 0; i < _nassigns[modl].Count; i++)
-                            {
-                                Ast.expr.Cases nassign = _nassigns[modl][i].Item2 as Ast.expr.Cases;
-                                Debug.Assert(nassign.IsCases);
-                                List<Tuple<Ast.expr, Ast.expr>> caselist = new List<Tuple<Ast.expr, Ast.expr>>();
-                                for (int j = 0; j < nassign.Item.Length; j++)
-                                {
-                                    if (nassign.Item[j].Item1.ToString() != "TRUE")
-                                    {
-                                        Ast.expr asyncupdated = Ast.expr.NewAnd(resetident, nassign.Item[j].Item1);
-                                        FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
-                                        caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
-                                    }
-                                    else
-                                    {
-                                        Ast.expr asyncupdated = nassign.Item[j].Item1;
-                                        FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
-                                        caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
-                                    }
-                                }
-                                Tuple<string, Ast.expr> asyncupdatedassign = new Tuple<string, Ast.expr>(_nassigns[modl][i].Item1,
-                                   Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caselist)));
-                                _nassigns[modl][i] = asyncupdatedassign;
-                            }
-                        }
-                        else
-                        {
-                            _params[modl].Add("t");
-                            string asyncboundparam = _params[modl][_params[modl].Count - 1];
-                            Ast.expr asyncident = Ast.expr.NewIdent(asyncboundparam);
-                            Ast.expr nasyncindent = Ast.expr.NewNext(asyncident);
-                            Ast.expr takestep = Ast.expr.NewLt(asyncident, nasyncindent);
-                            // foreach bounded variable belongs to this module need to be introduce with async bound in their next assignments
+                            Ast.expr rst = Ast.expr.NewIdent("reset");
+                            Ast.expr resetident = Ast.expr.NewEq(rst, Ast.expr.NewInt(0));
+                            Ast.expr resetnident = Ast.expr.NewNext(rst);
+                            Ast.expr resetnidenttru = Ast.expr.NewEq(resetnident, Ast.expr.NewInt(1));
+                            Ast.expr takestep = Ast.expr.NewAnd(resetident, resetnidenttru);
+
                             for (int i = 0; i < _nassigns[modl].Count; i++)
                             {
                                 Ast.expr.Cases nassign = _nassigns[modl][i].Item2 as Ast.expr.Cases;
@@ -182,9 +162,79 @@ namespace Bounded_Async_Translator
                                     }
                                 }
                                 Tuple<string, Ast.expr> asyncupdatedassign = new Tuple<string, Ast.expr>(_nassigns[modl][i].Item1,
-                                     Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caselist)));
+                                   Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caselist)));
                                 _nassigns[modl][i] = asyncupdatedassign;
                             }
+                        }
+                            // Put here also for one AC
+                        else
+                        {
+                            if (modl.name == "Anchorcell")
+                            {
+                                _params[modl].Add("reset");
+                                Ast.expr rst = Ast.expr.NewIdent("reset");
+                                Ast.expr resetident = Ast.expr.NewEq(rst, Ast.expr.NewInt(0));
+                                Ast.expr resetnident = Ast.expr.NewNext(rst);
+                                Ast.expr resetnidenttru = Ast.expr.NewEq(resetnident, Ast.expr.NewInt(1));
+                                Ast.expr takestep = Ast.expr.NewAnd(resetident, resetnidenttru);
+                                
+                                for (int i = 0; i < _nassigns[modl].Count; i++)
+                                {
+                                    Ast.expr.Cases nassign = _nassigns[modl][i].Item2 as Ast.expr.Cases;
+                                    Debug.Assert(nassign.IsCases);
+                                    List<Tuple<Ast.expr, Ast.expr>> caselist = new List<Tuple<Ast.expr, Ast.expr>>();
+                                    for (int j = 0; j < nassign.Item.Length; j++)
+                                    {
+                                        if (nassign.Item[j].Item1.ToString() != "TRUE")
+                                        {
+                                            Ast.expr asyncupdated = Ast.expr.NewAnd(takestep, nassign.Item[j].Item1);
+                                            FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
+                                            caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
+                                        }
+                                        else
+                                        {
+                                            Ast.expr asyncupdated = nassign.Item[j].Item1;
+                                            FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
+                                            caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
+                                        }
+                                    }
+                                    Tuple<string, Ast.expr> asyncupdatedassign = new Tuple<string, Ast.expr>(_nassigns[modl][i].Item1,
+                                       Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caselist)));
+                                    _nassigns[modl][i] = asyncupdatedassign;
+                                }                          
+                            }                           
+                            else {
+                                _params[modl].Add("t");
+                                string asyncboundparam = _params[modl][_params[modl].Count - 1];
+                                Ast.expr asyncident = Ast.expr.NewIdent(asyncboundparam);
+                                Ast.expr nasyncindent = Ast.expr.NewNext(asyncident);
+                                Ast.expr takestep = Ast.expr.NewLt(asyncident, nasyncindent);
+                                // foreach bounded variable belongs to this module need to be introduce with async bound in their next assignments
+                                for (int i = 0; i < _nassigns[modl].Count; i++)
+                                {
+                                    Ast.expr.Cases nassign = _nassigns[modl][i].Item2 as Ast.expr.Cases;
+                                    Debug.Assert(nassign.IsCases);
+                                    List<Tuple<Ast.expr, Ast.expr>> caselist = new List<Tuple<Ast.expr, Ast.expr>>();
+                                    for (int j = 0; j < nassign.Item.Length; j++)
+                                    {
+                                        if (nassign.Item[j].Item1.ToString() != "TRUE")
+                                        {
+                                            Ast.expr asyncupdated = Ast.expr.NewAnd(takestep, nassign.Item[j].Item1);
+                                            FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
+                                            caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
+                                        }
+                                        else
+                                        {
+                                            Ast.expr asyncupdated = nassign.Item[j].Item1;
+                                            FSharpList<Tuple<Ast.expr, Ast.expr>> exprlst = FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(nassign.Item);
+                                            caselist.Add(new Tuple<Ast.expr, Ast.expr>(asyncupdated, exprlst[j].Item2));
+                                        }
+                                    }
+                                    Tuple<string, Ast.expr> asyncupdatedassign = new Tuple<string, Ast.expr>(_nassigns[modl][i].Item1,
+                                         Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caselist)));
+                                    _nassigns[modl][i] = asyncupdatedassign;
+                                }                   
+                           }
                         }
                     }
                 }
@@ -497,11 +547,12 @@ namespace Bounded_Async_Translator
             variables.Add(varrangtuprst);
             return variables;
         }
-        private static List<Tuple<string, Tuple<Int64, Int64>>> ClockVars() {
+        private static List<Tuple<string, Tuple<Int64, Int64>>> ClockVars()
+        {
             string variable = "time";
             List<Tuple<string, Tuple<Int64, Int64>>> variables = new List<Tuple<string, Tuple<long, long>>>();
-            Tuple<Int64, Int64> timerng = new Tuple<long, long>(0,_clockbound);
-            Tuple<string, Tuple<Int64, Int64>> vartimerng = new Tuple<string, Tuple<long, long>>(variable,timerng);
+            Tuple<Int64, Int64> timerng = new Tuple<long, long>(0, _clockbound);
+            Tuple<string, Tuple<Int64, Int64>> vartimerng = new Tuple<string, Tuple<long, long>>(variable, timerng);
             variables.Add(vartimerng);
             return variables;
         }
@@ -630,66 +681,66 @@ namespace Bounded_Async_Translator
             }
             return vartypes;
         }
-        private static Tuple<Ast.section,Tuple<List<Tuple<string,Ast.expr>>, List<Tuple<string,Ast.expr>> >> ClockAssigns(List<Tuple<string,Tuple<Int64,Int64>>> variables)
+        private static Tuple<Ast.section, Tuple<List<Tuple<string, Ast.expr>>, List<Tuple<string, Ast.expr>>>> ClockAssigns(List<Tuple<string, Tuple<Int64, Int64>>> variables)
         {
             List<Tuple<string, Ast.expr>> stringexprlstinit = new List<Tuple<string, Ast.expr>>();
             List<Tuple<string, Ast.expr>> stringexprlstnext = new List<Tuple<string, Ast.expr>>();
             Ast.expr clockindent = Ast.expr.NewInt(_clockbound);
-            
+
             Ast.expr timerident = Ast.expr.NewIdent("time");
             Ast.expr inctimerident = Ast.expr.NewAdd(timerident, Ast.expr.NewInt(1));
             Ast.expr truident = Ast.expr.NewIdent("TRUE");
             Ast.expr zeroident = Ast.expr.NewInt(0);
             Ast.expr guard = Ast.expr.NewLt(timerident, Ast.expr.NewInt(_clockbound));
             // init 
-            Ast.assign initident = Ast.assign.NewInitAssign("time", zeroident);            
+            Ast.assign initident = Ast.assign.NewInitAssign("time", zeroident);
             // next
             List<Tuple<Ast.expr, Ast.expr>> caseslst = new List<Tuple<Ast.expr, Ast.expr>>();
-            Tuple<Ast.expr, Ast.expr> guardcs = new Tuple<Ast.expr, Ast.expr>(guard,inctimerident);
+            Tuple<Ast.expr, Ast.expr> guardcs = new Tuple<Ast.expr, Ast.expr>(guard, inctimerident);
             caseslst.Add(guardcs);
-            stringexprlstinit.Add(new Tuple<string,Ast.expr>("time",zeroident)); 
+            stringexprlstinit.Add(new Tuple<string, Ast.expr>("time", zeroident));
 
             Tuple<Ast.expr, Ast.expr> trucs = new Tuple<Ast.expr, Ast.expr>(truident, timerident);
             caseslst.Add(trucs);
-            Ast.expr caseident = Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr,Ast.expr>>( caseslst));
+            Ast.expr caseident = Ast.expr.NewCases(FSharpInteropExtensions.ToFSharplist<Tuple<Ast.expr, Ast.expr>>(caseslst));
             Ast.assign nextident = Ast.assign.NewNextAssign("time", caseident);
-            stringexprlstnext.Add(new Tuple<string,Ast.expr>("time",caseident));
+            stringexprlstnext.Add(new Tuple<string, Ast.expr>("time", caseident));
 
             List<Ast.assign> assignlst = new List<Ast.assign>();
             assignlst.Add(initident);
             assignlst.Add(nextident);
             Ast.section assignsec = Ast.section.NewAssigns(FSharpInteropExtensions.ToFSharplist<Ast.assign>(assignlst));
 
-            Tuple<Ast.section, Tuple<List<Tuple<string, Ast.expr>>, List<Tuple<string, Ast.expr>>>> sectionwithmemoryvalues = 
+            Tuple<Ast.section, Tuple<List<Tuple<string, Ast.expr>>, List<Tuple<string, Ast.expr>>>> sectionwithmemoryvalues =
                 new Tuple<Ast.section, Tuple<List<Tuple<string, Ast.expr>>, List<Tuple<string, Ast.expr>>>>
-               (assignsec, new Tuple<List<Tuple<string, Ast.expr>>,List<Tuple<string, Ast.expr>>> (stringexprlstinit,stringexprlstnext));
+               (assignsec, new Tuple<List<Tuple<string, Ast.expr>>, List<Tuple<string, Ast.expr>>>(stringexprlstinit, stringexprlstnext));
             return sectionwithmemoryvalues;
         }
-        private static Ast.smv_module CreateClockModule(string name) 
+        private static Ast.smv_module CreateClockModule(string name)
         {
             List<Tuple<string, Tuple<Int64, Int64>>> vars;
             List<Tuple<string, Ast.types>> varwithtpyes;
             List<string> parameters = new List<string>();
-            List<Ast.section> sections  = new List<Ast.section>();
+            List<Ast.section> sections = new List<Ast.section>();
             // Variable section
             vars = ClockVars();
             varwithtpyes = ConvertRngTupleToTypes(vars);
             Ast.section varsec = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>>(varwithtpyes));
             //Assignment section
             Tuple<Ast.section, Tuple<List<Tuple<string, Ast.expr>>, List<Tuple<string, Ast.expr>>>> getsections = ClockAssigns(vars);
-            Ast.section assignsec = getsections.Item1;            
+            Ast.section assignsec = getsections.Item1;
             sections.Add(varsec); sections.Add(assignsec);
             //Create Module 
-            Ast.smv_module clockmodl = new Ast.smv_module(name, 
-                                        FSharpInteropExtensions.ToFSharplist<string>(parameters), 
-                                        FSharpInteropExtensions.ToFSharplist<Ast.section> (sections));
+            Ast.smv_module clockmodl = new Ast.smv_module(name,
+                                        FSharpInteropExtensions.ToFSharplist<string>(parameters),
+                                        FSharpInteropExtensions.ToFSharplist<Ast.section>(sections));
             _iassigns[clockmodl] = getsections.Item2.Item1;
             _nassigns[clockmodl] = getsections.Item2.Item2;
             _params[clockmodl] = parameters;
             _init[clockmodl] = new List<Ast.expr>();
-            _mvars[clockmodl] = new List<Tuple<string,Tuple<string,List<List<string>>>>>();
+            _mvars[clockmodl] = new List<Tuple<string, Tuple<string, List<List<string>>>>>();
             _rvars[clockmodl] = vars;
-            _svars[clockmodl] = new List<Tuple<string,List<string>>>();
+            _svars[clockmodl] = new List<Tuple<string, List<string>>>();
             _trans[clockmodl] = new List<Ast.expr>();
 
             return clockmodl;
@@ -717,7 +768,7 @@ namespace Bounded_Async_Translator
             List<Ast.section> secs = new List<Ast.section>();
             secs.Add(varbls); secs.Add(inits); secs.Add(trans);
             Microsoft.FSharp.Collections.FSharpList<Ast.section> sections = FSharpInteropExtensions.ToFSharplist<Ast.section>(secs);
-            Microsoft.FSharp.Collections.FSharpList<string> pars = FSharpInteropExtensions.ToFSharplist<string>(parameters);           
+            Microsoft.FSharp.Collections.FSharpList<string> pars = FSharpInteropExtensions.ToFSharplist<string>(parameters);
             // Create module
             Ast.smv_module timermodule = new Ast.smv_module(name, pars, sections);
             //Fill memory representation
@@ -776,7 +827,7 @@ namespace Bounded_Async_Translator
                 }
                 else
                 {
-                    string filegen = Translator.CreateTranslator(args[0],  args[1], Int64.Parse(args[2]), Int64.Parse(args[3]),Int64.Parse(args[4]));
+                    string filegen = Translator.CreateTranslator(args[0], args[1], Int64.Parse(args[2]), Int64.Parse(args[3]), Int64.Parse(args[4]));
                     return;
                 }
             }
