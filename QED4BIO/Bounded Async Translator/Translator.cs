@@ -115,19 +115,22 @@ namespace Bounded_Async_Translator
                                         }
                                         else
                                         {
-                                            List<string> mtimervar = new List<string>();
-                                            List<string> clockvar = new List<string>();
+                                            if (mvar.Item2.Item1 == "VPC") {
 
-                                            Debug.Assert(counter < _nthread);
+                                                List<string> mtimervar = new List<string>();
+                                                List<string> clockvar = new List<string>();
 
-                                            clockvar.Add("c");
-                                            clockvar.Add("time");
-                                            mvar.Item2.Item2.Add(clockvar);
+                                                Debug.Assert(counter < _nthread);
 
-                                            mtimervar.Add("t");
-                                            mtimervar.Add("var" + counter.ToString());
-                                            mvar.Item2.Item2.Add(mtimervar);
-                                            counter++;
+                                                clockvar.Add("c");
+                                                clockvar.Add("time");
+                                                mvar.Item2.Item2.Add(clockvar);
+
+                                                mtimervar.Add("t");
+                                                mtimervar.Add("var" + counter.ToString());
+                                                mvar.Item2.Item2.Add(mtimervar);
+                                                counter++;  
+                                            }
                                         }
                                     }
                                 }
@@ -266,7 +269,7 @@ namespace Bounded_Async_Translator
                 foreach (var v in rvars)
                 {
                     vrs.Add(v);
-                }
+                } 
                 //mvars
                 List<Tuple<string, Ast.types>> mvars = ConvertModlTupleToTypes(_mvars[modl]);
                 foreach (var v in mvars)
@@ -374,7 +377,7 @@ namespace Bounded_Async_Translator
         private static void CreateAssignsTable(HashSet<Ast.smv_module> parsed)
         {
             foreach (var modl in parsed)
-            {
+            {  
                 List<Tuple<string, Ast.expr>> iassigns = new List<Tuple<string, Ast.expr>>();
                 List<Tuple<string, Ast.expr>> nassigns = new List<Tuple<string, Ast.expr>>();
                 foreach (var assignsec in modl.sections)
@@ -393,11 +396,12 @@ namespace Bounded_Async_Translator
 
                             }
                             else
-                            {
+                            {                               
                                 Debug.Assert(assigntyped.IsNextAssign);
                                 var assingnext = assigntyped as Ast.assign.NextAssign;
                                 Tuple<string, Ast.expr> varassignnext = new Tuple<string, Ast.expr>(assingnext.Item1, assingnext.Item2);
-                                nassigns.Add(varassignnext);
+                                nassigns.Add(varassignnext);                              
+                            
                             }
                         }
                     }
@@ -562,7 +566,7 @@ namespace Bounded_Async_Translator
             variables.Add(vartimerng);
             return variables;
         }
-        private static List<Ast.expr> TimerInit(List<Tuple<string, Tuple<Int64, Int64>>> variables)
+        private static Ast.expr TimerInit(List<Tuple<string, Tuple<Int64, Int64>>> variables)
         {
             List<Ast.expr> identifiers = new List<Ast.expr>();
             foreach (var v in variables)
@@ -572,8 +576,8 @@ namespace Bounded_Async_Translator
                 Ast.expr valvareqident = Ast.expr.NewEq(varident, valident);
                 identifiers.Add(valvareqident);
             }
-          //  return ConjuctAll(identifiers);
-            return identifiers;
+            return ConjuctAll(identifiers);
+            //return identifiers;
         }
         /*Framework:  
         //TR1. forall var:variable :: var == asyncbound && !reset --> next(var) == var
@@ -583,7 +587,7 @@ namespace Bounded_Async_Translator
         //TR5. forall var: variables : next(var) != var
         //TR6. forall var:variables :: var < asyncbound --> next(var) = var+1 | next(var) = var
          */
-        private static List<Ast.expr> TimerTransitions(List<Tuple<string, Tuple<Int64, Int64>>> variables, Ast.expr resetident)
+        private static Ast.expr TimerTransitions(List<Tuple<string, Tuple<Int64, Int64>>> variables, Ast.expr resetident)
         {
             List<Ast.expr> transrel = new List<Ast.expr>();
             List<Ast.expr> transrel1 = new List<Ast.expr>();
@@ -606,47 +610,47 @@ namespace Bounded_Async_Translator
             //TR1
             foreach (Ast.expr vident in varident)
             {
-                transrel.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
+                transrel1.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
                                              Ast.expr.NewEq(vident, Ast.expr.NewNext(vident))));
             }
-            //transrel.Add(ConjuctAll(transrel1));
+            transrel.Add(ConjuctAll(transrel1));
           //  transrel.Add(transrel1);
             //TR2
             foreach (Ast.expr vident in varident)
             {
-                transrel.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
+                transrel2.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
                               Ast.expr.NewEq(vident, Ast.expr.NewInt(0))));
             }
-            //transrel.Add(ConjuctAll(transrel2));
+            transrel.Add(ConjuctAll(transrel2));
           //  transrel.Add(transrel2);
             //TR3
             foreach (Ast.expr vident in varident)
             {
-                transrel.Add(Ast.expr.NewImp(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(1))));
+                transrel3.Add(Ast.expr.NewImp(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(1))));
             }
-            //transrel.Add(ConjuctAll(transrel3));
+            transrel.Add(ConjuctAll(transrel3));
           //  transrel.Add(transrel3);
             //TR4
             foreach (Ast.expr vident in varident)
             {
-                transrel.Add(Ast.expr.NewImp(Ast.expr.NewNeq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(0))));
+                transrel4.Add(Ast.expr.NewImp(Ast.expr.NewNeq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(0))));
             }
-           // transrel.Add(ConjuctAll(transrel4));
+            transrel.Add(ConjuctAll(transrel4));
             //TR5
             foreach (Ast.expr vident in varident)
             {
-                transrel.Add(Ast.expr.NewNeq(Ast.expr.NewNext(vident), vident));
+                transrel5.Add(Ast.expr.NewNeq(Ast.expr.NewNext(vident), vident));
             }
-            //transrel.Add(ConjuctAll(transrel5));
+            transrel.Add(ConjuctAll(transrel5));
 
             //TR6
             foreach (Ast.expr vident in varident)
             {
-                transrel.Add(Ast.expr.NewImp(Ast.expr.NewLt(vident, asyncbndident), Ast.expr.NewOr(Ast.expr.NewEq(Ast.expr.NewNext(vident), Ast.expr.NewAdd(vident, Ast.expr.NewInt(1))),
+                transrel6.Add(Ast.expr.NewImp(Ast.expr.NewLt(vident, asyncbndident), Ast.expr.NewOr(Ast.expr.NewEq(Ast.expr.NewNext(vident), Ast.expr.NewAdd(vident, Ast.expr.NewInt(1))),
                                                Ast.expr.NewEq(Ast.expr.NewNext(vident), vident))));
             }
-            //transrel.Add(ConjuctAll(transrel6));
-            return transrel;
+            transrel.Add(ConjuctAll(transrel6));
+            return ConjuctAll(transrel);
         }
         private static Ast.expr ConjuctAll(List<Ast.expr> transitions)
         {
@@ -760,8 +764,8 @@ namespace Bounded_Async_Translator
         {
             List<Tuple<string, Tuple<Int64, Int64>>> vars;
             List<Tuple<string, Ast.types>> varwithtpyes;
-            List<Ast.expr> init;
-            List<Ast.expr> transrel;
+            Ast.expr init;
+            Ast.expr transrel;
             Ast.expr resetident = Ast.expr.NewIdent("reset");
             List<string> parameters = new List<string>();
             List<Ast.section> secs = new List<Ast.section>();
@@ -772,22 +776,10 @@ namespace Bounded_Async_Translator
             transrel = TimerTransitions(vars, resetident);
             Debug.Assert(transrel != null);
             // Create sections 
-            //Ast.section trans = Ast.section.NewTrans(transrel);
-
-            foreach (var trs in transrel) {
-                Ast.section trans = Ast.section.NewTrans(trs);
-                secs.Add(trans);
-            }
-
-            foreach (var i in init) {
-                Ast.section inits = Ast.section.NewInit(i);
-                secs.Add(inits);
-            }
-           // Ast.section inits = Ast.section.NewInit(init);
+            Ast.section trans = Ast.section.NewTrans(transrel);
+            Ast.section inits = Ast.section.NewInit(init);
             Ast.section varbls = Ast.section.NewVar(FSharpInteropExtensions.ToFSharplist<Tuple<string, Ast.types>>(varwithtpyes));
-            // Dirty conversions
-            
-           // secs.Add(varbls); secs.Add(inits); secs.Add(trans);
+            // Dirty conversions            
             Microsoft.FSharp.Collections.FSharpList<Ast.section> sections = FSharpInteropExtensions.ToFSharplist<Ast.section>(secs);
             Microsoft.FSharp.Collections.FSharpList<string> pars = FSharpInteropExtensions.ToFSharplist<string>(parameters);
             // Create module
@@ -795,18 +787,11 @@ namespace Bounded_Async_Translator
             //Fill memory representation
             //Trans
             List<Ast.expr> transrels = new List<Ast.expr>();
-            foreach (var trs in transrel) {
-                transrels.Add(trs);
-            
-            }
+            transrels.Add(transrel);
             _trans.Add(timermodule, transrels);
             //init
             List<Ast.expr> initials = new List<Ast.expr>();
-            foreach (var i in init)
-            {
-                initials.Add(i);
-            
-            }
+            initials.Add(init);
             _init.Add(timermodule, initials);
             //params
             _params.Add(timermodule, parameters);
