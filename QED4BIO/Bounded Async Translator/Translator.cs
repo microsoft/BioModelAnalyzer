@@ -618,30 +618,47 @@ namespace Bounded_Async_Translator
             //TR2
             foreach (Ast.expr vident in varident)
             {
-                transrel2.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(0))),
-                              Ast.expr.NewEq(vident, Ast.expr.NewInt(0))));
+                transrel2.Add(Ast.expr.NewImp(Ast.expr.NewAnd(Ast.expr.NewEq(vident, asyncbndident), Ast.expr.NewEq(resetident, Ast.expr.NewInt(1))),
+                              Ast.expr.NewEq(Ast.expr.NewNext (vident), Ast.expr.NewInt(0))));
             }
             transrel.Add(ConjuctAll(transrel2));
-          //  transrel.Add(transrel2);
-            //TR3
+            
+            //TR3            
+            //  transrel.Add(transrel2);
+            // collect all variables = asyncbound
+            List<Ast.expr> allvreachedbound = new List<Ast.expr>();
             foreach (Ast.expr vident in varident)
             {
-                transrel3.Add(Ast.expr.NewImp(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(1))));
+                allvreachedbound.Add(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident));                
             }
+            Ast.expr allconjucted = ConjuctAll(allvreachedbound);
+            //foreach (Ast.expr vident in varident)
+            //{
+                transrel3.Add(Ast.expr.NewImp(allconjucted, Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(1))));
+            //}
+
             transrel.Add(ConjuctAll(transrel3));
+               
           //  transrel.Add(transrel3);
             //TR4
+            List<Ast.expr> allvnotreachedbound = new List<Ast.expr>();
             foreach (Ast.expr vident in varident)
             {
-                transrel4.Add(Ast.expr.NewImp(Ast.expr.NewNeq(Ast.expr.NewNext(vident), asyncbndident), Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(0))));
+                allvnotreachedbound.Add(Ast.expr.NewEq(Ast.expr.NewNext(vident), asyncbndident));
             }
+            Ast.expr allnconjucted = ConjuctAll(allvnotreachedbound);
+            Ast.expr notreached = Ast.expr.NewNot(allnconjucted);
+            //foreach (Ast.expr vident in varident)
+            //{
+                transrel4.Add(Ast.expr.NewImp(notreached, Ast.expr.NewEq(Ast.expr.NewNext(resetident), Ast.expr.NewInt(0))));
+            //}
             transrel.Add(ConjuctAll(transrel4));
             //TR5
             foreach (Ast.expr vident in varident)
             {
                 transrel5.Add(Ast.expr.NewNeq(Ast.expr.NewNext(vident), vident));
             }
-            transrel.Add(ConjuctAll(transrel5));
+            transrel.Add(DisjunctAll(transrel5));
 
             //TR6
             foreach (Ast.expr vident in varident)
@@ -663,7 +680,18 @@ namespace Bounded_Async_Translator
             }
             return allconjucted;
         } // Take care of one extra conj.
+        private static Ast.expr DisjunctAll(List<Ast.expr> transitions ){
+        
+            Ast.expr[] disjunctions = transitions.ToArray();
+            Ast.expr alldisjuncted = disjunctions[0];
 
+            for (int i = 1; i < disjunctions.Length; i++)
+            {
+                alldisjuncted = Ast.expr.NewOr(alldisjuncted, disjunctions[i]);
+            }
+            return alldisjuncted;
+        
+        }
         private static List<Tuple<string, Ast.types>> ConvertRngTupleToTypes(List<Tuple<string, Tuple<Int64, Int64>>> variables)
         {
             List<Tuple<string, Ast.types>> vartypes = new List<Tuple<string, Ast.types>>();
