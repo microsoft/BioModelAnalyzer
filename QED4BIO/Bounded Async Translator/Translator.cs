@@ -288,19 +288,26 @@ namespace Bounded_Async_Translator
                 {
                     sections.Add(Ast.section.NewTrans(trans));
                 }
-                //assigns
+
                 List<Ast.assign> assigns = new List<Ast.assign>();
                 using (var e1 = _iassigns[modl].GetEnumerator())
+                {
+                    while (e1.MoveNext())
+                    {
+                        var iassign = e1.Current;
+                        Ast.assign iasgn = Ast.assign.NewInitAssign(iassign.Item1, iassign.Item2);
+                        assigns.Add(iasgn);
+                    }                
+                }
+
+                //assigns Bug is here 
                 using (var e2 = _nassigns[modl].GetEnumerator())
                 {
 
-                    while (e1.MoveNext() && e2.MoveNext())
+                    while ( e2.MoveNext())
                     {
-                        var iassign = e1.Current;
                         var nassign = e2.Current;
-                        Ast.assign iasgn = Ast.assign.NewInitAssign(iassign.Item1, iassign.Item2);
                         Ast.assign nasgn = Ast.assign.NewNextAssign(nassign.Item1, nassign.Item2);
-                        assigns.Add(iasgn);
                         assigns.Add(nasgn);
                     }
                 }
@@ -400,8 +407,7 @@ namespace Bounded_Async_Translator
                                 Debug.Assert(assigntyped.IsNextAssign);
                                 var assingnext = assigntyped as Ast.assign.NextAssign;
                                 Tuple<string, Ast.expr> varassignnext = new Tuple<string, Ast.expr>(assingnext.Item1, assingnext.Item2);
-                                nassigns.Add(varassignnext);                              
-                            
+                                nassigns.Add(varassignnext);                                                          
                             }
                         }
                     }
