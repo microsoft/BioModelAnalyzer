@@ -81,6 +81,10 @@ bool EnumType::Value::isValid() const {
 	return _it != _myEnum._elements.end();
 }
 
+const Type& EnumType::Value::type() const {
+	return _myEnum;
+}
+
 bool EnumType::Value::operator==(const Type::Value& other) const {
 	if (typeid(*this) != typeid(other)) {
 		return false;

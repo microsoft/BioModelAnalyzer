@@ -33,6 +33,11 @@ bool BoolType::Value::value() const {
 	return _val;
 }
 
+const Type& BoolType::Value::type() const {
+	return BoolType::getInstance();
+}
+
+
 bool BoolType::Value::operator==(const Type::Value& other) const {
 	if (typeid(*this) != typeid(other)) {
 		return false;

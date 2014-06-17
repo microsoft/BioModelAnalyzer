@@ -9,6 +9,7 @@
 #include <sstream>
 #include "State.h"
 #include "HelperFunctions.h"
+#include "Variable/BoolType.h"
 
 using std::ostream;
 using std::stringstream;
@@ -18,41 +19,51 @@ using std::make_pair;
 using std::pair;
 
 State::State(const string& initializer)
-: _varVals{splitConjunction(initializer)}
+: _vars{splitConjunction(initializer)}
 {
 }
 
 State::State(const State& other)
-: _varVals{other._varVals}
+: _vars{other._vars} // Check what does copy constructor do
 {
+	// TODO: Need to implement a deep copy of the variables!!!
 }
 
 State::~State() {
+	// TODO: need to release the memory stored in the variables
 }
 
-//pair<bool,unsigned int> State::evaluate(const Condition& cond) const {
-//	return cond.evaluate(this);
-//}
-
-pair<bool,bool> State::value(const string& var) const {
+pair<bool,const Type::Value*> State::value(const string& var) const {
 	if (var.find('[')!=std::string::npos || var.find(']')!=std::string::npos) {
 		const string err{"trying to evaluate a global condition on a state"};
 		throw err;
 	}
-	auto it=_varVals.find(var);
-	if (it == _varVals.end()) {
-		return make_pair(false,false);
+	auto it=_vars.find(var);
+	if (it == _vars.end()) {
+		return make_pair(false,nullptr);
 	}
-	return make_pair(true,it->second);
+	return make_pair(true,it->second->value());
 }
 
-void State::set(const string& var,bool val) {
-	if (update(var,val)) {
-		return;
+bool State::set(const string& var,bool val) {
+	// TODO: add some type checking 
+	if (update(var, val)) {
+		return true;
 	}
-	_varVals.insert(make_pair(var,val));
+	_vars.insert(make_pair(var,new Variable(var,val)));
+	return false;
 }
 
+bool State::set(const string& var, Type::Value& val) {
+	// TODO: add some type checking
+	if (update(var, val)) {
+		return true;
+	}
+	// TODO: How do I get the type from a value???
+	_vars.insert(make_pair(var, new Variable(var, val.type(), val)))
+}
+
+// TODO: add some type checking 
 bool State::update(const string& var, bool val) {
 	if (_varVals.find(var) == _varVals.end()) {
 		return false;
@@ -62,6 +73,7 @@ bool State::update(const string& var, bool val) {
 	return true;
 }
 
+// TODO: add some type checking 
 bool State::update(const State* other) {
 	if (other == nullptr)
 		return false;

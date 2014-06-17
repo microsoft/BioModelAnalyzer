@@ -20,6 +20,7 @@ public:
 
 		virtual bool operator==(const Value&) const=0;
 		virtual bool operator!=(const Value&) const;
+		virtual const Type& type() const=0;
 
 		virtual std::string toString() const=0;
 	};

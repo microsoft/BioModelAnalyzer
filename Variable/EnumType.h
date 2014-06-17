@@ -30,6 +30,7 @@ public:
 		
 		bool isValid() const;
 		std::string value() const;
+		virtual const Type& type() const = 0;
 
 		virtual bool operator==(const Type::Value& other) const;
 
