@@ -18,6 +18,8 @@ Cell::Cell(const CellProgram* prog, State* state) : _alive(true), _state(state),
 }
 
 Cell::~Cell() {
+	// _state is auto_ptr.
+	// There is no need to release it
 }
 
 const State* Cell::state() const {
@@ -33,7 +35,7 @@ bool Cell::update(const string& var,bool val) {
 }
 
 bool Cell::update(const State* s) {
-	return _state->update(s);
+	return _state->set(s);
 }
 
 const string Cell::name() const {

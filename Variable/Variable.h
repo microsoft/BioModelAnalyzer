@@ -14,8 +14,11 @@ public:
 	Variable& operator=(const Variable&) = delete;
 
 	Variable(const std::string&, bool val); // Create a Bool Variable
-	Variable(const std::string&, const Type& t, Type::Value*); // Create an Enumerated 
+	Variable(const std::string&/*, const Type& t*/, Type::Value*); // Create an Enumerated 
 	~Variable();
+
+	void set(bool val);
+	void set(const Type::Value&);
 
 	const Type::Value* value() const;
 	bool operator==(const Variable& other) const;

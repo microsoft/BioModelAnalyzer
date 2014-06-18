@@ -30,7 +30,9 @@ State::State(const State& other)
 }
 
 State::~State() {
-	// TODO: need to release the memory stored in the variables
+	for (auto pair : _vars) {
+		delete pair.second;
+	}
 }
 
 pair<bool,const Type::Value*> State::value(const string& var) const {
@@ -60,32 +62,36 @@ bool State::set(const string& var, Type::Value& val) {
 		return true;
 	}
 	// TODO: How do I get the type from a value???
-	_vars.insert(make_pair(var, new Variable(var, val.type(), val)))
+	_vars.insert(make_pair(var, new Variable(var, val.type(), val.duplicate())));
+	return false;
 }
 
 // TODO: add some type checking 
-bool State::update(const string& var, bool val) {
-	if (_varVals.find(var) == _varVals.end()) {
-		return false;
-	}
-
-	_varVals[var]=val;
-	return true;
-}
-
-// TODO: add some type checking 
-bool State::update(const State* other) {
+bool State::set(const State* other) {
 	if (other == nullptr)
 		return false;
 
 	bool ret{ true };
-	for (auto varVal : other->_varVals) {
-		if (!update(varVal.first, varVal.second)) {
+	for (auto var : other->_vars) {
+		if (!update(var.first, var.second->value())) {
 			ret = false;
-			set(varVal.first, varVal.second);
+			set(var.first, var.second->value());
 		}
 	}
 	return ret;
+}
+
+
+// TODO: add some type checking 
+bool State::update(const string& var, bool val) {
+	if (_vars.find(var) == _vars.end()) {
+		return false;
+	}
+
+	Variable* temp = _vars.find(var)->second;
+	_vars.find(var)->second->set(val);
+
+	return true;
 }
 
 State* State::copyOverwrite(const State* other) const {
@@ -94,8 +100,8 @@ State* State::copyOverwrite(const State* other) const {
 		return ret;
 	}
 
-	for (auto varVal : other->_varVals) {
-		ret->set(varVal.first,varVal.second);
+	for (auto varVal : other->_vars) {
+		ret->set(varVal.first,varVal.second->value());
 	}
 	return ret;
 }
@@ -112,14 +118,11 @@ string State::toString() const {
 // that wraps the joint map
 ostream& operator<<(ostream& out, const State& st) {
 	bool first{true};
-	for (auto varPol : st._varVals) {
+	for (auto var : st._vars) {
 		if (!first) {
 			out << "&";
 		}
-		if (!(varPol.second)) {
-			out << "!";
-		}
-		out << varPol.first;
+		out << *(var.second);
 		first = false;
 	}
 	return out;

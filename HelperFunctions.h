@@ -12,8 +12,13 @@
 #include <vector>
 #include <map>
 
+#include "Variable\Variable.h"
+#include "Expression\BoolExp.h"
+
 std::vector<std::string> splitOn(char c,const std::string& line);
 std::string removeSpace(const std::string& in);
-std::map<std::string,bool> splitConjunction(const std::string& initializer);
+BoolExp* parseSimpleBoolExp(const  std::string& exp);
+BoolExp* parseBoolExp(const std::string& boolexp);
+std::map<std::string,Variable*> splitConjunction(const std::string& initializer);
 
 #endif /* HELPERFUNCTIONS_H_ */

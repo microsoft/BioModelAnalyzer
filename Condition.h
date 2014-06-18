@@ -17,6 +17,8 @@ class Condition;
 
 #include "State.h"
 #include "Simulation.h"
+#include "Expression\BoolExp.h"
+//#include "Variable\Variable.h"
 
 class Condition {
 public:
@@ -48,9 +50,10 @@ public:
 	friend std::ostream& operator<< (std::ostream&, const Condition&);
 private:
 	bool _def;
-	std::map<std::string,bool> _conjunction;
+	// std::map<std::string,Variable*> _conjunction;
+	BoolExp* _conjunction;
 
-	bool _generalCondition(const std::string &) const;
+	// bool _generalCondition(const std::string &) const;
 };
 
 #endif /* CONDITION_H_ */

@@ -37,6 +37,9 @@ const Type& BoolType::Value::type() const {
 	return BoolType::getInstance();
 }
 
+Type::Value* BoolType::Value::duplicate() const {
+	return new BoolType::Value(*this); 
+}
 
 bool BoolType::Value::operator==(const Type::Value& other) const {
 	if (typeid(*this) != typeid(other)) {

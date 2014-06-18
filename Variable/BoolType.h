@@ -27,7 +27,8 @@ public:
 
 		bool value() const;
 		virtual bool operator==(const Type::Value& other) const;
-		virtual const Type& type() const = 0;
+		virtual const Type& type() const;
+		virtual Type::Value* duplicate() const;
 
 		virtual std::string toString() const;
 	private:

@@ -74,6 +74,8 @@ private:
 
 	float _currentTime;
 	std::vector<Event*> _log;
+	// TODO: Change to multiset and set that are sorted by the name
+	//       of the object in them.
 	std::multimap<std::string,Cell*> _cells;
 	std::map<std::string,CellProgram*> _programs;
 };
