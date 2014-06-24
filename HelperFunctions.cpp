@@ -5,19 +5,21 @@
  *      Author: np183
  */
 
+#include <memory>
 
 #include "HelperFunctions.h"
-#include "Expression\AndExp.h"
-#include "Expression\BoolVar.h"
-#include "Expression\EqExp.h"
-#include "Expression\Negation.h"
-#include "Expression\NeqExp.h"
+#include "Expression/AndExp.h"
+#include "Expression/BoolVar.h"
+#include "Expression/EqExp.h"
+#include "Expression/Negation.h"
+#include "Expression/NeqExp.h"
 
 
 using std::map;
 using std::vector;
 using std::string;
 using std::make_pair;
+using std::unique_ptr;
 
 vector<string> splitOn(char c, const string& line) {
 	vector<string> ret{};
@@ -46,36 +48,31 @@ BoolExp* parseBoolExp(const string& boolexp) {
 	vector<string> fields{ splitOn('&', boolexp) };
 
 	if (fields.size() > 1) {
-		BoolExp* prev{ nullptr };
-		BoolExp* temp{ nullptr };
+		// Avoid memory leaks in case of exception
+		unique_ptr<BoolExp> prev{ nullptr };
+		unique_ptr<BoolExp> temp{ nullptr };
 		for (string field : fields) {
 			field = removeSpace(field);
 			if (field.size() == 0) {
 				const string error{ "Empty conjunct!" };
-				if (prev) {
-					delete prev;
-				}
 				throw error;
 			}
 			try {
-				temp = parseSimpleBoolExp(field);
+				temp = unique_ptr<BoolExp>(parseSimpleBoolExp(field));
 			}
 			catch (const string& err) {
-				if (prev) {
-					delete prev;
-				}
 				throw err;
 			}
-			if (prev) {
-				prev = new AndExp(prev, temp);
+			if (prev.get()!=nullptr) {
+				prev = unique_ptr<BoolExp>(new AndExp(prev.release() , temp.release()));
 			}
 			else {
-				prev = temp;
+				prev = unique_ptr<BoolExp>(temp.release());
 			}
-			temp = nullptr;
+			temp.reset();
 		}
 
-		return prev;
+		return prev.release();
 	}
 	else {
 		return parseSimpleBoolExp(removeSpace(fields[0]));
@@ -84,15 +81,15 @@ BoolExp* parseBoolExp(const string& boolexp) {
 
 BoolExp* parseSimpleBoolExp(const string& exp) {
 	if (exp.find("&") != std::string::npos) {
-		const string error{ " The symbol & should not appear here!" };
+		const string error{ "The symbol & should not appear here!" };
 		throw error;
 	}
 	if (exp.at(0) == '!') {
 		if (exp.find('=') != std::string::npos) {
-			const string error{ "Expression of the form !var=val is not allowed. Change to var!=val!" };
+			const string error{ "Expression of the form !var=val is not allowed. Change to var!=val" };
 			throw error;
 		}
-		return new Negation(new BoolVar(exp.substr(1, exp.length() - 1)))
+		return new Negation(new BoolVar(exp.substr(1, exp.length() - 1)));
 	}
 	else if (exp.find("!=") != std::string::npos) {
 		string varname = exp.substr(0, exp.find("!="));

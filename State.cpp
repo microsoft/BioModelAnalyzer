@@ -62,7 +62,7 @@ bool State::set(const string& var, Type::Value& val) {
 		return true;
 	}
 	// TODO: How do I get the type from a value???
-	_vars.insert(make_pair(var, new Variable(var, val.type(), val.duplicate())));
+	_vars.insert(make_pair(var, new Variable(var/*, val.type()*/, val.duplicate())));
 	return false;
 }
 

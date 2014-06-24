@@ -2,10 +2,10 @@
 #define NEQEXP_H_
 
 
+#include "BoolExp.h"
 #include "EqExp.h"
 
-class NeqExp :
-	public EqExp
+class NeqExp : public EqExp
 {
 public:
 	NeqExp()=delete;

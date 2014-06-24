@@ -26,8 +26,8 @@ public:
 	virtual std::string toString() const;
 	friend std::ostream& operator<<(std::ostream&,const ChangeState&);
 private:
-	std::auto_ptr<State> _oldState;
-	std::auto_ptr<State> _newState;
+	std::unique_ptr<State> _oldState;
+	std::unique_ptr<State> _newState;
 };
 
 #endif /* CHANGESTATE_H_ */

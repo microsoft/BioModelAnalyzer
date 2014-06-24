@@ -4,7 +4,7 @@ using std::string;
 using std::pair;
 using std::make_pair;
 
-NeqExp::NeqExp(const string var, const string val)
+NeqExp::NeqExp(const string& var, const string& val)
 	: EqExp(var, val)
 {
 }

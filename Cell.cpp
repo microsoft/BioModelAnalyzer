@@ -7,7 +7,7 @@
 
 #include "Cell.h"
 
-using std::auto_ptr;
+using std::unique_ptr;
 using std::string;
 using std::pair;
 
@@ -18,7 +18,7 @@ Cell::Cell(const CellProgram* prog, State* state) : _alive(true), _state(state),
 }
 
 Cell::~Cell() {
-	// _state is auto_ptr.
+	// _state is unique_ptr.
 	// There is no need to release it
 }
 

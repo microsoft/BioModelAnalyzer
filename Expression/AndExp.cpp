@@ -27,5 +27,5 @@ AndExp::~AndExp()
 }
 
 std::string AndExp::toString() const {
-	return _sub1->evaluate() + "&" + _sub2->evaluate();
+	return _sub1->toString() + "&" + _sub2->toString();
 }

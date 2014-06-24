@@ -22,7 +22,7 @@ Condition::Condition(const string& initializer)
 		_def=true;
 		return;
 	}
-	_conjunction=splitConjunction(initializer);
+	_conjunction=parseBoolExp(initializer);
 }
 
 Condition::~Condition() {

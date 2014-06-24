@@ -8,7 +8,7 @@
 #include <iostream>
 #include "ChangeState.h"
 
-using std::auto_ptr;
+using std::unique_ptr;
 using std::ostream;
 using std::vector;
 using std::string;

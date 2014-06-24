@@ -39,7 +39,7 @@ public:
 	void kill();
 private:
 	bool _alive;
-	std::auto_ptr<State> _state;
+	std::unique_ptr<State> _state;
 	const CellProgram* _program;
 };
 
