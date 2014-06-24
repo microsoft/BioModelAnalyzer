@@ -25,6 +25,24 @@ Event/Division.o : Event/Division.cpp
 Event/Event.o : Event/Event.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c Event/Event.cpp -o Event/Event.o
 
+Expression/AndExp.o : Expression/AndExp.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Expression/AndExp.cpp -o Expression/AndExp.o
+
+Expression/BoolExp.o : Expression/BoolExp.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Expression/BoolExp.cpp -o Expression/BoolExp.o
+
+Expression/BoolVar.o : Expression/BoolVar.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Expression/BoolVar.cpp -o Expression/BoolVar.o
+
+Expression/EqExp.o : Expression/EqExp.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Expression/EqExp.cpp -o Expression/EqExp.o
+
+Expression/Negation.o : Expression/Negation.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Expression/Negation.cpp -o Expression/Negation.o
+
+Expression/NeqExp.o : Expression/NeqExp.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Expression/NeqExp.cpp -o Expression/NeqExp.o
+
 Cell.o : Cell.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c Cell.cpp -o Cell.o
 
@@ -49,6 +67,17 @@ Simulation.o : Simulation.cpp
 State.o : State.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c State.cpp -o State.o
 
+Variable/BoolType.o : Variable/BoolType.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Variable/BoolType.cpp -o Variable/BoolType.o
+
+Variable/EnumType.o : Variable/EnumType.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Variable/EnumType.cpp -o Variable/EnumType.o
+
+Variable/Type.o : Variable/Type.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Variable/Type.cpp -o Variable/Type.o
+
+Variable/Variable.o : Variable/Variable.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c Variable/Variable.cpp -o Variable/Variable.o
 
 ################################################################################
 # Automatically-generated file. Do not edit!
@@ -62,15 +91,21 @@ all: Lineage
 # Tool invocations
 Lineage: Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
 		 Event/ChangeState.o Event/Death.o Event/Division.o Event/Event.o \
+		 Expression/AndExp.o Expression/BoolExp.o Expression/BoolVar.o \
+		 Expression/EqExp.o Expression/Negation.o Expression/NeqExp.o \
 		 Cell.o CellProgram.o Condition.o Happening.o HelperFunctions.o \
-		 main.o Simulation.o State.o  
+		 main.o Simulation.o State.o  \
+		 Variable/BoolType.o Variable/EnumType.o Variable/Type.o Variable/Variable.o
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cygwin C++ Linker'
 	g++ -std=c++0x -o Lineage  \
 		Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
 		Event/ChangeState.o Event/Death.o Event/Division.o Event/Event.o \
+		Expression/AndExp.o Expression/BoolExp.o Expression/BoolVar.o \
+		Expression/EqExp.o Expression/Negation.o Expression/NeqExp.o \
 		Cell.o CellProgram.o Condition.o Happening.o HelperFunctions.o \
-		main.o Simulation.o State.o
+		main.o Simulation.o State.o \
+		Variable/BoolType.o Variable/EnumType.o Variable/Type.o Variable/Variable.o
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -88,10 +88,14 @@ bool State::update(const string& var, bool val) {
 		return false;
 	}
 
-	Variable* temp = _vars.find(var)->second;
 	_vars.find(var)->second->set(val);
 
 	return true;
+}
+
+bool State::update(const string& var, Type::Value& val) {
+  // TODO: implement this!!!
+  return false;
 }
 
 State* State::copyOverwrite(const State* other) const {

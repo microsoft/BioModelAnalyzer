@@ -1,6 +1,7 @@
 #include "EnumType.h"
 
 #include <iostream>
+#include <typeinfo>
 
 using std::string;
 using std::vector;
@@ -84,6 +85,11 @@ bool EnumType::Value::isValid() const {
 const Type& EnumType::Value::type() const {
 	return _myEnum;
 }
+
+Type::Value* EnumType::Value::duplicate() const {
+  return new EnumType::Value(*this);
+}
+  
 
 bool EnumType::Value::operator==(const Type::Value& other) const {
 	if (typeid(*this) != typeid(other)) {

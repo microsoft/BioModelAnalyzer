@@ -26,7 +26,7 @@ pair<bool,unsigned int> BoolVar::evaluate(const State* st, const Simulation* sim
 		return make_pair(false, 0);
 	}
 
-	if (st->value(_var).second->toString == "true") {
+	if (st->value(_var).second->toString() == "true") {
 		return make_pair(true, 1);
 	}
 

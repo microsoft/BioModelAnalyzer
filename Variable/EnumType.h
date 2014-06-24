@@ -8,8 +8,7 @@
 
 #include "Type.h"
 
-class EnumType :
-	public Type
+class EnumType : public Type
 {
 public:
 	EnumType();
@@ -27,7 +26,7 @@ public:
 		Value(const EnumType&, const std::string&);
 
 		virtual ~Value();
-		
+
 		bool isValid() const;
 		std::string value() const;
 		virtual const Type& type() const;
@@ -46,4 +45,4 @@ private:
 	std::vector<std::string> _elements;
 };
 
-#endif /* TYPE_H_ */
+#endif /* ENUMTYPE_H_ */

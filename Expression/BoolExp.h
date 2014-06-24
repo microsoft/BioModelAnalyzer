@@ -1,6 +1,8 @@
 #ifndef BOOLEXP_H_
 #define BOOLEXP_H_
 
+class BoolExp;
+
 #include <string>
 
 #include "../State.h"
