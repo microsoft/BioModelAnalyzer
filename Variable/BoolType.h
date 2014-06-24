@@ -27,6 +27,8 @@ public:
 
 		bool value() const;
 		virtual bool operator==(const Type::Value& other) const;
+		virtual bool operator()() const;
+
 		virtual const Type& type() const;
 		virtual Type::Value* duplicate() const;
 

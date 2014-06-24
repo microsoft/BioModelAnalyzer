@@ -49,6 +49,10 @@ bool BoolType::Value::operator==(const Type::Value& other) const {
 	return bOther._val == this->_val;
 }
 
+bool BoolType::Value::operator()() const {
+	return _val;
+}
+
 string BoolType::Value::toString() const {
 	if (_val) {
 		return "TRUE"; 

@@ -20,6 +20,7 @@ public:
 
 		virtual bool operator==(const Value&) const=0;
 		virtual bool operator!=(const Value&) const;
+		virtual bool operator()() const=0;
 		virtual const Type& type() const=0;
 		virtual Type::Value* duplicate() const = 0;
 

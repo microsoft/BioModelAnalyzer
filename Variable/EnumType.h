@@ -33,6 +33,7 @@ public:
 		virtual Type::Value* duplicate() const;
 
 		virtual bool operator==(const Type::Value& other) const;
+		virtual bool operator()() const;
 
 		virtual std::string toString() const;
 		friend std::ostream& operator<<(std::ostream&, const Value&);

@@ -102,6 +102,10 @@ bool EnumType::Value::operator==(const Type::Value& other) const {
 	return this->_it == eOther._it;
 }
 
+bool EnumType::Value::operator()() const {
+	return false;
+}
+
 ostream& operator<<(ostream& out, const EnumType::Value& val) {
 	if (!val.isValid()) {
 		out << "";
