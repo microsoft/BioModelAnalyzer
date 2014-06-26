@@ -34,7 +34,7 @@ public:
 	// If the variable exists update it and return true
 	// If the variable does not exist add it with this value and return false
 	bool set(const std::string& var, bool val);
-	bool set(const std::string& var, Type::Value&);
+	bool set(const std::string& var, const Type::Value&);
 
 	// Set all the variables in the other state
 	// Return false if at least one did not exist initially
@@ -43,7 +43,7 @@ public:
 	// If the variable exists update it and return true
 	// If the variable does not exist return false
 	bool update(const std::string& var,bool val);
-	bool update(const std::string& var, Type::Value&);
+	bool update(const std::string& var, const Type::Value&);
 
 
 	// Create a fresh copy of this state

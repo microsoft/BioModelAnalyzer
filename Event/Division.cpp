@@ -93,20 +93,20 @@ bool Division::concerns(const string& name) const {
 
 bool Division::expressed(const string& cell, const string& var) const {
 	if (_parent==cell && _stp!=nullptr) {
-		pair<bool,bool> existsVal{_stp->value(var)};
-		if (existsVal.first && existsVal.second) {
+		pair<bool, const Type::Value*> existsVal{ _stp->value(var) };
+		if (existsVal.first && existsVal.second->operator()()) {
 			return true;
 		}
 	}
 	if (_daughter1==cell && _st1!=nullptr) {
-		pair<bool,bool> existsVal{_st1->value(var)};
-		if (existsVal.first && existsVal.second) {
+		pair<bool,const Type::Value*> existsVal{_st1->value(var)};
+		if (existsVal.first && existsVal.second->operator()()) {
 			return true;
 		}
 	}
 	if (_daughter2==cell && _st2!=nullptr) {
-		pair<bool,bool> existsVal{_st2->value(var)};
-		if (existsVal.first && existsVal.second) {
+		pair<bool,const Type::Value*> existsVal{_st2->value(var)};
+		if (existsVal.first && existsVal.second->operator()()) {
 			return true;
 		}
 	}

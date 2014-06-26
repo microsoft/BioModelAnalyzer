@@ -56,7 +56,7 @@ bool State::set(const string& var,bool val) {
 	return false;
 }
 
-bool State::set(const string& var, Type::Value& val) {
+bool State::set(const string& var, const Type::Value& val) {
 	// TODO: add some type checking
 	if (update(var, val)) {
 		return true;
@@ -73,29 +73,32 @@ bool State::set(const State* other) {
 
 	bool ret{ true };
 	for (auto var : other->_vars) {
-		if (!update(var.first, var.second->value())) {
+		if (!update(var.first, *(var.second->value()))) {
 			ret = false;
-			set(var.first, var.second->value());
+			set(var.first, *(var.second->value()));
 		}
 	}
 	return ret;
 }
 
 
-// TODO: add some type checking 
 bool State::update(const string& var, bool val) {
-	if (_vars.find(var) == _vars.end()) {
+	auto varIt=_vars.find(var);
+	if (varIt == _vars.end()) {
 		return false;
 	}
 
-	_vars.find(var)->second->set(val);
-
+	varIt->second->set(val);
 	return true;
 }
 
-bool State::update(const string& var, Type::Value& val) {
-  // TODO: implement this!!!
-  return false;
+bool State::update(const string& var, const Type::Value& val) {
+	auto varIt = _vars.find(var);
+	if (varIt == _vars.end()) {
+		return false;
+	}
+	varIt->second->set(val);
+	return true;
 }
 
 State* State::copyOverwrite(const State* other) const {
@@ -105,7 +108,7 @@ State* State::copyOverwrite(const State* other) const {
 	}
 
 	for (auto varVal : other->_vars) {
-		ret->set(varVal.first,varVal.second->value());
+		ret->set(varVal.first,*(varVal.second->value()));
 	}
 	return ret;
 }
