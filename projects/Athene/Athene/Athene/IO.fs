@@ -74,7 +74,9 @@ let interfaceEventWriteFrame (file:StreamWriter) (register : string list) =
                                 clear_buffer file rest
         | [] -> ()
     //use file = new StreamWriter(filename, true)
-    clear_buffer file register
+    register
+    |> List.rev //Reverse the list order to ensure that backlogged events are correctly ordered. Need to test 150514
+    |> clear_buffer file 
     //file.Close()
     
     
@@ -377,19 +379,19 @@ let xmlTopRead (filename: string) =
                                     let direction = {x=xVector;y=yVector;z=zVector}
                                     match growth with
                                     | "LinearProbabilisticGrowDivideVectorRate" ->
-                                        Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng None false  
+                                        Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng None true  
                                     | "ConfluenceLimitedLinearProbabilisticGrowDivideVectorRate" ->
                                         let limit = try (int) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing limit"
-                                        Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (ConfluenceLimit (limit))) false   
+                                        Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (ConfluenceLimit (limit))) true   
                                     | _ as growth ->
                                             let limit = try (float) (r.Attribute(xn "Limit").Value) with _ -> failwith "Missing limit"
                                             match growth with
                                                 | "PressureLimitedLinearProbabilisticGrowDivideVectorRate" ->
-                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (PressureLimit (limit * 1.<zNewton/um^2>))) false                            
+                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (PressureLimit (limit * 1.<zNewton/um^2>))) true                            
                                                 | "AgeLimitedLinearProbabilisticGrowDivideVectorRate" ->
-                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (AgeLimit (limit * 1.<second>))) false                         
+                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (AgeLimit (limit * 1.<second>))) true                         
                                                 | "ForceLimitedLinearProbabilisticGrowDivideVectorRate" ->
-                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (ForceLimit (limit * 1.<zNewton>))) false   
+                                                    Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng (Some (ForceLimit (limit * 1.<zNewton>))) true   
                                                 | _ -> failwith "Incorrect growth type"                                    
                                 
                                 | "CertainDeath" ->
