@@ -9,7 +9,8 @@ open Automata
 //open Microsoft.FSharp.Quotations.Raw
 type cellDev = Shrink of float<Physics.um> | Growth of float<Physics.um>
 type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>) | Development of string*cellDev*Particle*Map<QN.var,int>
-type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
+type clock = {Input:int; InputThreshold:int; OutputID:int; OutputState:int; TimeLimit:float<Physics.second>}
+type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); clocks:(clock list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
 type protectMetric =    RadiusMin of float<Physics.um>
@@ -414,8 +415,21 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
         match r with
         | head::tail -> regionListSwitch tail p (regionSwitch head p m)
         | [] -> m
-
-
+    let clockUpdate (clock:clock) (pm:Physics.Particle*Map<QN.var,int>) dt =
+        let p,m = pm
+        match (m.[clock.Input] >= clock.InputThreshold) with
+        | false -> pm
+        | true  ->  let time =   match p.variableClock.TryFind(clock.Input) with
+                                | None -> 0.<Physics.second>
+                                | Some(t) -> t + dt
+                    let m = if time > clock.TimeLimit then m.Add(clock.OutputID,clock.OutputState) else m
+                    let p = {p with variableClock=p.variableClock.Add(clock.Input,time)}
+                    (p,m)
+        
+    let rec clockListUpdate (clocks:clock list) (pm:Physics.Particle*Map<QN.var,int>) dt =
+        match clocks with 
+        | topClock::rest -> clockListUpdate rest (clockUpdate topClock pm dt) dt
+        | [] -> pm
     let rec respond (r:  (float<second>->Particle->Map<QN.var,int>->Particle) list) (dT: float<second>) (p: Particle) (m: Map<QN.var,int>) =
         match r with
         | head::tail -> respond tail dT (head dT p m) m
@@ -443,5 +457,22 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
                                     //(forceAcc',machines')
                                     getMotorForces otherMotors system machines' dT forceAcc'
         | [] -> (forceAcc,machines)
+<<<<<<< HEAD
     let (machineForces,nMachineStates) = getMotorForces intTop.randomMotors nSystem nMachineStates dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem)
     (nSystem, nMachineStates, machineForces, birthDeathRegister')
+=======
+    
+    //How do you fix the problem of physicsI update first or machineI update first?
+    //Do I need to pass *both* new and old machines?
+    //No, I'm going to update the physics first. The only way this could change things is by dividing across a region- this is not unreasonable
+    let (pm,birthDeathRegister') = devProcess responses dT (List.zip machineSystem machineStates) birthDeathRegister systemTime
+    //let m' = List.map (fun (p,m) -> regionListSwitch regions p m) pm 
+    //let p' = List.map (fun (p,m) -> p) pm
+    let pm' =   List.map (fun (p,m) -> (p,(regionListSwitch regions p m))) pm 
+                |> List.map (fun pm -> clockListUpdate intTop.clocks pm dT)
+    let p'= List.map (fun (p,m) -> p) pm
+    let m'= List.map (fun (p,m) -> m) pm
+    let (f,m'') = getMotorForces intTop.randomMotors p' m' dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) p')
+
+    (p', m'', f, birthDeathRegister')
+>>>>>>> f4e1491... Initial support for timed interface events ("clocks")

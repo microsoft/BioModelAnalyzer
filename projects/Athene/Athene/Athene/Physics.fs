@@ -117,7 +117,7 @@ let gensym =
     (fun () -> incr x; !x)
 
 [<Serializable>]
-type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool} with
+type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool; variableClock: Map<int,float<second>>} with
     member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
     member this.mass = this.volume * this.density
     member this.frictioncoeff = this.mass / this.Friction
@@ -136,6 +136,7 @@ let defaultParticle = { id=0;
                         forceMag= 0.<zNewton>; //Lazy(fun () -> 0.<zNewton>);
                         confluence= 0; //Lazy(fun () -> 0);
                         gRand=0.;
+                        variableClock=Map.empty;
                         freeze=true}
 (*
 SI: implement Particle as a record. then can write update more concisely.

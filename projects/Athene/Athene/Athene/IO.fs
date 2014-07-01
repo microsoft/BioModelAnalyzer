@@ -256,6 +256,17 @@ let xmlTopRead (filename: string) =
                          let varState = try (int) (r.Element(xn "Var").Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
                          yield ({origin={x=oX*1.<um>;y=oY*1.<um>;z=oZ*1.<um>};dimensions={x=dX*1.<um>;y=dY*1.<um>;z=dZ*1.<um>}},varID,varState)
                          ]
+    let clocks = [for r in xd.Element(xn "Topology").Element(xn "Interface").Elements(xn "Clock") do
+                        let inputId = try (int) (r.Element(xn "Input").Attribute(xn "ID").Value) with _ -> failwith "Missing clock input ID"
+                        let inputThreshold = try (int) (r.Element(xn "Input").Attribute(xn "Threshold").Value) with _ -> failwith "Missing clock threshold"
+                        let inputTime = try (float) (r.Element(xn "Input").Attribute(xn "Time").Value) with _ -> failwith "Missing clock time limit"
+                        
+                        let OutputId = try (int) (r.Element(xn "Output").Attribute(xn "ID").Value) with _ -> failwith "Missing clock output ID"
+                        let OutputState = try (int) (r.Element(xn "Output").Attribute(xn "State").Value) with _ -> failwith "Missing clock output state"
+                        
+                        yield ({Input=inputId;InputThreshold=inputThreshold;OutputID=OutputId;OutputState=OutputState;TimeLimit=inputTime*1.<Physics.second>})
+                        
+                         ]
     let responses = [ for r in xd.Element(xn "Topology").Element(xn "Interface").Elements(xn "Response") do
                         let f = match r.Attribute(xn "Function").Value with
                                 | ("LinearGrow" | "PressureLinearGrow" | "AgeLinearGrow" | "ForceLinearGrow" | "ConfluenceLinearGrow" ) as growth ->
@@ -526,7 +537,7 @@ let xmlTopRead (filename: string) =
     let machI0 = try (xd.Element(xn "Topology").Element(xn "MachineInit").Attribute(xn "State")).Value with _ -> failwith "Missing a machine cell"
     
     //let interfaceTopology = (machName,regions,responses)
-    let intTop = {name=machName;regions=regions;responses=responses;randomMotors=motors}
+    let intTop = {name=machName;regions=regions;clocks=clocks;responses=responses;randomMotors=motors}
     (pTypes,nbTypes,(machName,machI0),intTop,(sOrigin,maxMove),rp,rng)
     
 let bmaRead (filename:string) = 
