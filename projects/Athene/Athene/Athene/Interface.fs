@@ -470,8 +470,8 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     //let p' = List.map (fun (p,m) -> p) pm
     let pm' =   List.map (fun (p,m) -> (p,(regionListSwitch regions p m))) pm 
                 |> List.map (fun pm -> clockListUpdate intTop.clocks pm dT)
-    let p'= List.map (fun (p,m) -> p) pm
-    let m'= List.map (fun (p,m) -> m) pm
+    let p'= List.map (fun (p,m) -> p) pm'
+    let m'= List.map (fun (p,m) -> m) pm'
     let (f,m'') = getMotorForces intTop.randomMotors p' m' dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) p')
 
     (p', m'', f, birthDeathRegister')
