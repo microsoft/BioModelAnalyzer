@@ -72,6 +72,7 @@ type Kelvin
 [<Measure>]
 type zNewton = pg um second^-2 //F=ma zeptonewtons because pg um second^-2 = 10^-15 kg 10^-6 m second^-2
 
+type NonBondedCutOff = Unlimited | Limit of float<um>
 
 //[<Measure>]
 //type FricCoeff = pg second^-1 //Friction coeffs for Brownian dynamics (AMU/ps in gromacs). v = 1/amu * F + noise. AMU is atomic mass unit(!)
@@ -138,6 +139,9 @@ let defaultParticle = { id=0;
                         gRand=0.;
                         variableClock=Map.empty;
                         freeze=true}
+
+type searchType = Grid | Simple
+
 (*
 SI: implement Particle as a record. then can write update more concisely.
 type part = { id:int; Name:string; loc:int } 
@@ -231,11 +235,12 @@ let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle li
                                                 | Some res -> res
                                                 | None -> []  )
 
-let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
-         let rec quickJoin (l1: Particle list) (l2: Particle list) =
+let rec quickJoin (l1: Particle list) (l2: Particle list) =
             match l2 with
             | head::tail -> quickJoin (head::l1) tail
             | [] -> l1
+
+let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
          let rec quickJoinLoL (l: Particle list list) acc =
             match l with
             | head::tail -> quickJoinLoL tail (quickJoin acc head)
@@ -245,7 +250,13 @@ let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (
          let dz = int ((p.location.z-minLoc.z)/cutOff)
          
          quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] 
-         |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))
+         |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
+         |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
+
+let collectSimpleNeighbours (p: Particle) (system: Particle list) (cutOff:float<um>) = 
+    system
+    |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
+    |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
 
 let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
     match mobileSystem with
@@ -270,7 +281,7 @@ type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag:
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) staticGrid sOrigin (externalF: Vector3D<zNewton> list) threads = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) (search:searchType) staticGrid (staticSystem:Particle list) sOrigin (externalF: Vector3D<zNewton> list) threads = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | first_p::other_p -> sumForces p other_p (topology.[p.name].[first_p.name] first_p p) + acc
@@ -306,21 +317,48 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
                                                                         }
 
         | [] -> acc
-    let calculateNonBonded nonBondedGrid (nb: nonBonded) = 
+    let calculateGridNonBonded nonBondedGrid (nb: nonBonded) = 
         if nb.P.freeze then [] else (collectGridNeighbours nb.P nonBondedGrid sOrigin cutOff)   //Get neighbours
+        |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
+        |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
+    let calculateSimpleNonBonded system (nb: nonBonded) =
+        if nb.P.freeze then [] else (collectSimpleNeighbours nb.P system cutOff)                //Get neighbours
         |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
         |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     //add all the mobile particles to the staticGrid
     let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
-    let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
+    
     let nonBondedTerms = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2>  }) externalF
                             |> List.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
-         
-    nonBondedTerms 
-                |> Microsoft.FSharp.Collections.PSeq.ordered    
-                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
-                |> Microsoft.FSharp.Collections.PSeq.map (calculateNonBonded nonBondedGrid)
-                |> List.ofSeq
+    
+    //For testing purposes only- who is different?
+//    let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
+//    let cSystem = quickJoin mobileSystem staticSystem
+//    let p::rest = mobileSystem
+//    let gridN = collectGridNeighbours p nonBondedGrid sOrigin cutOff
+//    let simpleN = collectSimpleNeighbours p cSystem cutOff
+//    let a = if (gridN.Length<>simpleN.Length) then printfn "GridN %A SimpleN %A" gridN.Length simpleN.Length else ()
+//    let gridS = gridN |> Set.ofList
+//    let simpleS = simpleN |> Set.ofList
+//    let a  = if not (gridS=simpleS) then printfn "Sets differ!"
+//    let gridF = populateForceEnvironment p gridN {force = {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> }
+//    let simpleF = populateForceEnvironment p simpleN {force = {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> }
+//    printfn "G: %A S: %A" gridF.force.len simpleF.force.len
+    //End of testing section
+
+    match search with
+    | Grid ->       let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
+                    nonBondedTerms 
+                                |> Microsoft.FSharp.Collections.PSeq.ordered    
+                                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
+                                |> Microsoft.FSharp.Collections.PSeq.map (calculateGridNonBonded nonBondedGrid)
+                                |> Microsoft.FSharp.Collections.PSeq.toList
+    | Simple ->     let cSystem = quickJoin mobileSystem staticSystem
+                    nonBondedTerms 
+                                |> Microsoft.FSharp.Collections.PSeq.ordered    
+                                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
+                                |> Microsoft.FSharp.Collections.PSeq.map (calculateSimpleNonBonded cSystem)
+                                |> Microsoft.FSharp.Collections.PSeq.toList
 
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
@@ -377,11 +415,12 @@ let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um
         //else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
         else {p with location = p.location+(f*modifier)} ]
 
-let rec integrate (system: Particle list) topology staticGrid sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand threads (F: forceEnv list option) = 
+let rec integrate (system: Particle list) topology (searchType: searchType) staticGrid (staticSystem:Particle list) sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand threads (F: forceEnv list option) = 
     //Use previously caclulated forces from failed integration step if available
     let F = match F with
             | Some(F) -> F
-            | None -> forceUpdate topology nbCutOff system staticGrid sOrigin machineForces threads
+            | None -> forceUpdate topology nbCutOff system searchType staticGrid staticSystem sOrigin machineForces threads
+    
     //let F = List.map (fun x -> x.force) Fenv
     //From the update, calculate if the maximum move is broken
     let system' = bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
@@ -390,11 +429,11 @@ let rec integrate (system: Particle list) topology staticGrid sOrigin (machineFo
     //system'
     match ((maxdP < maxMove),(steps=1),(vdt_depth>0)) with
     | (true,true,_)  -> system'
-    | (true,false,_) -> integrate system' topology staticGrid sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand threads None //in a single call we shouldn't exceed maxmove, even if done in parts
+    | (true,false,_) -> integrate system' topology searchType staticGrid staticSystem sOrigin machineForces T dT maxMove vdt_depth nbCutOff (steps-1) rand threads None //in a single call we shouldn't exceed maxmove, even if done in parts
     | (false,_,true) -> //Maximum move is broken, but we have some variable dT depth left. Halve the timestep, double the steps, reduce the depth by 1 and repeat
                         //Avoid costly recalculation of the forces by supplying the forces calculated in the preceeding, too far step
                         //printf "Dropping down... NewDepth = %A " (vdt_depth-1) 
-                        integrate system topology staticGrid sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand threads (Some F)
+                        integrate system topology searchType staticGrid staticSystem sOrigin machineForces T (dT/2.) maxMove (vdt_depth-1) nbCutOff (steps*2) rand threads (Some F)
     | (false,_,false) -> //Maximum move is broken, and we have run out of variable dT depth. Fail and exit
                         printf "Max: %A Limit: %A Depth: %A" maxdP maxMove vdt_depth
                         failwith "Max move violated and run out of variable timestep depth. Reduce the timestep or increase the depth of the variability"

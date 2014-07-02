@@ -420,8 +420,8 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
         match (m.[clock.Input] >= clock.InputThreshold) with
         | false -> pm
         | true  ->  let time =   match p.variableClock.TryFind(clock.Input) with
-                                | None -> 0.<Physics.second>
-                                | Some(t) -> t + dt
+                                    | None -> 0.<Physics.second>
+                                    | Some(t) -> t + dt
                     let m = if time > clock.TimeLimit then m.Add(clock.OutputID,clock.OutputState) else m
                     let p = {p with variableClock=p.variableClock.Add(clock.Input,time)}
                     (p,m)

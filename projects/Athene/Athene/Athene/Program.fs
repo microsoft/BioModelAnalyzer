@@ -14,7 +14,9 @@ type systemDefinition = {   Topology:Map<string,Map<string,Physics.Particle -> P
                             maxMove: float<Physics.um>;
                             systemOrigin: Vector.Vector3D<Physics.um>;
                             machineName: string;
-                            staticGrid: Map<int*int*int,Physics.Particle list>}//{system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName}
+                            staticGrid: Map<int*int*int,Physics.Particle list>;
+                            staticSystem: Physics.Particle list;
+                            }//{system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName}
 [<Serializable>]
 type runningParameters = {  Temperature:            float<Physics.Kelvin>;
                             Steps:                  int;
@@ -28,11 +30,9 @@ type runningParameters = {  Temperature:            float<Physics.Kelvin>;
                             EventLog:               string list;
                             NonBondedCutOff:        float<Physics.um>;
                             Threads:                int;
-<<<<<<< HEAD
-=======
                             CheckPointDisable:      bool;
                             CheckPointFreq:         int;
->>>>>>> 7d3bc2b... Checkpointing, death protection, and minor performance tweak
+                            SearchType:             Physics.searchType;
                             }
 
 let rec listLinePrint l =
@@ -64,21 +64,17 @@ let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runn
                     | 0 ->  output.FrameWriter system'
                             output.StateWriter machineStates'
                             output.EventWriter eventLog'
-<<<<<<< HEAD
-                            ignore (if (steps%(freq*100)=0) then (IO.dumpSystem "Checkpoint.txt" {Physical=system';Formal=machineStates'}) else ())
-=======
                             ignore (if ((not runInfo.CheckPointDisable) && (steps%(runInfo.CheckPointFreq)=0) ) then (IO.dumpSystem "Checkpoint.txt" {Physical=system';Formal=machineStates'}) else ())
->>>>>>> 7d3bc2b... Checkpointing, death protection, and minor performance tweak
                             ()
                     | _ ->  ()
     let eventLog' = if (steps%freq=0) then [] else eventLog'
     let state' = match (steps%mg>0,steps%pg>0) with 
                         | (false,false)  ->    //let p = pUpdate nSystem staticGrid machineForces T dT rand 
-                                               let p = Physics.integrate system' definition.Topology definition.staticGrid definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand runInfo.Threads None
+                                               let p = Physics.integrate system' definition.Topology runInfo.SearchType definition.staticGrid definition.staticSystem definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand runInfo.Threads None
                                                let a = Automata.updateMachines definition.BMA machineStates' runInfo.Threads
                                                {Physical=p;Formal=a}
                         | (true,false)   ->    //let p = pUpdate system' staticGrid machineForces T dT rand 
-                                               let p = Physics.integrate system' definition.Topology definition.staticGrid definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand runInfo.Threads None
+                                               let p = Physics.integrate system' definition.Topology runInfo.SearchType definition.staticGrid definition.staticSystem definition.systemOrigin machineForces runInfo.Temperature (runInfo.TimeStep*(float)pg) definition.maxMove runInfo.VariableTimestepDepth runInfo.NonBondedCutOff 1 rand runInfo.Threads None
                                                {Formal=machineStates';Physical=p}
                         | (false,true)   ->    let a = Automata.updateMachines definition.BMA machineStates' runInfo.Threads
                                                {Formal=a;Physical=system'}
@@ -104,13 +100,13 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
                     | _ -> {Physics.defaultParticle with  Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=(Vector.randomDirectionUnitVector rng);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}  
                     //Particle(cart.id,cart.name,cart.location,cart.velocity,(Vector.randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
                      ]
-    let staticGrid = Physics.gridFill (List.filter (fun (p: Physics.Particle) -> p.freeze) uCart) Map.empty sOrigin 6.<Physics.um> 
+    let staticGrid = Physics.gridFill (List.filter (fun (p: Physics.Particle) -> p.freeze) uCart) Map.empty sOrigin rp.nonBond 
     let qn = IO.bmaRead bmafile
     let machineCount = countCells 0 machName uCart
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
-    let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false; CheckPointFreq=rp.checkpointReport}
+    let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false; CheckPointFreq=rp.checkpointReport;SearchType=rp.searchType}
 
-    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid},runInfo,rng)
+    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid;staticSystem=(List.filter (fun (p: Physics.Particle) -> p.freeze) uCart)},runInfo,rng)
     //(uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, sOrigin, staticGrid, machName)
 
 //let seed = ref 1982
@@ -155,10 +151,10 @@ let rec parse_args args =
     | "-restart" :: tmp :: rest -> restart := tmp  ;  parse_args rest
     | x::rest -> failwith (sprintf "Bad command line args: %s" x)
 
-let rec equilibrate (system: Physics.Particle list) (topology) (steps: int) (maxlength: float<Physics.um>) (staticGrid:Map<int*int*int,Physics.Particle list>) (sOrigin:Vector.Vector3D<Physics.um>) =
+let rec equilibrate (system: Physics.Particle list) (topology) (steps: int) (maxlength: float<Physics.um>) searchType (staticGrid:Map<int*int*int,Physics.Particle list>) staticSystem (sOrigin:Vector.Vector3D<Physics.um>) (cutoff:float<Physics.um>) =
     match steps with
     | 0 -> system
-    | _ -> equilibrate (Physics.steep system (Physics.forceUpdate topology 6.<Physics.um> system staticGrid sOrigin (List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system ) (!threads))  maxlength) topology (steps-1) maxlength staticGrid sOrigin
+    | _ -> equilibrate (Physics.steep system (Physics.forceUpdate topology cutoff system searchType staticGrid staticSystem sOrigin (List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system ) (!threads))  maxlength) topology (steps-1) maxlength searchType staticGrid staticSystem sOrigin cutoff
 
 let standardOptions pdb bma top  = 
     let cart = match !pdb with 
@@ -205,7 +201,7 @@ let main argv =
     //printfn "Static grid: %A" staticGrid
     let (mSystem,sSystem) = List.partition (fun (p:Physics.Particle) -> not p.freeze) state.Physical
     printfn "Performing %A step pseudo steepest descent (max length %Aum)" !equil !equillength
-    let eSystem = equilibrate mSystem definition.Topology !equil !equillength definition.staticGrid definition.systemOrigin
+    let eSystem = equilibrate mSystem definition.Topology !equil !equillength runInfo.SearchType definition.staticGrid definition.staticSystem definition.systemOrigin runInfo.NonBondedCutOff
     printfn "Completed pseudo SD. Running %A seconds of simulation (%A steps)" (runInfo.TimeStep*(float runInfo.Steps)) runInfo.Steps // (!dT*((float) !steps)) !steps
     printfn "Reporting every %A seconds (total frames = %A)" (runInfo.TimeStep*(float runInfo.ReportingFrequency)) (runInfo.Steps/runInfo.ReportingFrequency)//(!dT*((float) !freq)) ((!steps)/(!freq))
     printfn "Physical timestep: %A Machine timestep: %A Interface timestep: %A" (runInfo.TimeStep*(float runInfo.PhysicalGranularity)) (runInfo.TimeStep*(float runInfo.MachineGranularity)) (runInfo.TimeStep * (float runInfo.InterfaceGranularity) )//(!dT*(float)!pg) (!dT*(float)!mg) (!dT*(float)!ig)

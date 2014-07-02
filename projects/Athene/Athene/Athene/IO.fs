@@ -141,6 +141,7 @@ type runParameters = {
                         nonBond:float<Physics.um>
                         vdt:int
                         checkpointReport:int
+                        searchType:searchType
                         }
 
 let getProtection protectType protectValue =
@@ -184,10 +185,14 @@ let xmlTopRead (filename: string) =
     let report = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Report").Value) with _ -> 1
     let checkpoint = try (int) (xd.Element(xn "Topology").Element(xn "System").Element(xn "CheckpointFreq").Value) with _ -> 100 * report
     let nonBond = try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "NonBondedCutoff").Value) with _ -> failwith "Set non bonded cutoff"
+    let searchType =    match (try (xd.Element(xn "Topology").Element(xn "System").Element(xn "SearchType").Value) with _ -> failwith "No defined searchtype") with
+                        | "Simple" -> Simple
+                        | "Grid" -> Grid 
+                        | _ -> failwith "No defined searchtype"
     
     let rng = System.Random(seed)
 
-    let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>);checkpointReport=checkpoint}
+    let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>);checkpointReport=checkpoint;searchType=searchType}
 
     let sOrigin = {x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
 //    let PBC = 
