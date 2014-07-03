@@ -223,12 +223,22 @@ let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (
                             gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
         | [] -> acc
 
+let cube (n:int) = 
+    let rec core (x:int) (y:int) (z:int) (n:int) (acc:(int*int*int) list) =
+        match (x,y,z) with
+        | (0,0,0) -> ((x,y,z)::acc)
+        | (0,0,_) -> core n n (z-1) n ((x,y,z)::acc)
+        | (0,_,_) -> core n (y-1) z n ((x,y,z)::acc)
+        | (_,_,_) -> core (x-1) y z n ((x,y,z)::acc)
+    core (n-1) (n-1) (n-1) (n-1) []
+
 let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
         let (x,y,z) = box
-        [   (0,0,0);(0,0,1);(0,0,2);   (1,0,0);(1,0,1);(1,0,2);   (2,0,0);(2,0,1);(2,0,2);
-            (0,1,0);(0,1,1);(0,1,2);   (1,1,0);(1,1,1);(1,1,2);   (2,1,0);(2,1,1);(2,1,2);
-            (0,2,0);(0,2,1);(0,2,2);   (1,2,0);(1,2,1);(1,2,2);   (2,2,0);(2,2,1);(2,2,2);  ]
-        |> List.map (fun (i:int,j:int,k:int) ->     (x-1+i,y-1+j,z-1+k) )
+//        [   (0,0,0);(0,0,1);(0,0,2);   (1,0,0);(1,0,1);(1,0,2);   (2,0,0);(2,0,1);(2,0,2);
+//            (0,1,0);(0,1,1);(0,1,2);   (1,1,0);(1,1,1);(1,1,2);   (2,1,0);(2,1,1);(2,1,2);
+//            (0,2,0);(0,2,1);(0,2,2);   (1,2,0);(1,2,1);(1,2,2);   (2,2,0);(2,2,1);(2,2,2);  ]
+        cube 5
+        |> List.map (fun (i:int,j:int,k:int) ->     (x-2+i,y-2+j,z-2+k) )
 //        |> List.filter (fun (key:int*int*int) ->    grid.ContainsKey(key) )
 //        |> List.map (fun (key:int*int*int) ->       grid.[key])
         |> List.map (fun (key:int*int*int) ->   match grid.TryFind(key) with
@@ -252,12 +262,12 @@ let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (
          quickJoinLoL (existingNeighbourCells (dx,dy,dz) grid) [] 
          |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
          |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
-
+         //|> List.sortBy (fun (p:Particle)     -> p.id)                                      //Test associativity induced numerical errors
 let collectSimpleNeighbours (p: Particle) (system: Particle list) (cutOff:float<um>) = 
     system
     |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
     |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
-
+    //|> List.sortBy (fun (p:Particle)     -> p.id)                                      //Test associativity induced numerical errors
 let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
     match mobileSystem with
     | head :: tail -> 
@@ -277,7 +287,7 @@ let updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: 
     |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
     //|> List.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
 
-type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> }
+type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> ; interactors: (Particle*float<um>) list }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
@@ -301,6 +311,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
         | first_p::other_p ->   let f = topology.[p.name].[first_p.name] first_p p
                                 let d = (first_p.location - p.location).len
                                 let fMag = f.len
+                                let interactors' = if fMag <> 0.<zNewton> then (first_p,d)::acc.interactors else acc.interactors
                                 let confluence = if (fMag>0.<zNewton> && not first_p.freeze) then 
                                                                                         acc.confluence+1 else 
                                                                                         acc.confluence
@@ -314,6 +325,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
                                                                         absForceMag = fMag' 
                                                                         confluence = confluence;
                                                                         pressure = pressure;
+                                                                        interactors = interactors';
                                                                         }
 
         | [] -> acc
@@ -328,7 +340,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     //add all the mobile particles to the staticGrid
     let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
     
-    let nonBondedTerms = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2>  }) externalF
+    let nonBondedTerms = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> ; interactors = [] }) externalF
                             |> List.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
     
     //For testing purposes only- who is different?
