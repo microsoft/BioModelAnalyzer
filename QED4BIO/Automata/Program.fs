@@ -106,11 +106,43 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison
           override this.initialstates =
             Set.map (fun x -> (x,0)) inner.initialstates
 
-//type CompressedAutomata<'state, 'data>(inner : Automata<'state,'data>) =
+let opt_default d o = match o with | Some x -> x | None -> d
+
+let find_refl m x = Map.tryFind x m |> opt_default x
+
+let compressedMapAutomata 
+    (inner : Automata<'state,'data1>, 
+     f : 'data1 -> 'data2) : SimpleAutomata<'data2> = 
+        //Get initial sample of the data
+        let next_eq eq x = Set.map (find_refl eq) (inner.next x)
+        let canonise eq x = (f (inner.value x), next_eq eq x)
+        let rec inner_loop eq_prev =
+            let mutable reps = Set.empty
+            let mutable canons = Map.empty
+            let mutable eq_new = Map.empty
+            for x in inner.states do
+                 match Map.tryFind (canonise eq_prev x) canons with
+                 | Some y -> 
+                    eq_new <- Map.add x y eq_new
+                 | None -> 
+                    canons <- Map.add (canonise eq_prev x) x canons 
+                    reps <- Set.add x reps
+                    eq_new <- Map.add x x eq_new
+            if eq_new <> eq_prev then inner_loop eq_new
+            else eq_new, reps
+
+        let eq,reps = inner_loop (Map.empty)
         
-
-
-
+        let reps_arr = Set.toArray reps
+        let newAuto = new SimpleAutomata<'data2>(f (inner.value reps_arr.[0]))
+        let mutable reps_map = Map.add reps_arr.[0] 0 Map.empty
+        for i = 1 to reps_arr.Length - 1 do 
+            reps_map <- Map.add reps_arr.[i] i reps_map
+            newAuto.addState(i, f (inner.value reps_arr.[i]))
+        for x in reps_arr do
+            for y in next_eq eq x do 
+                newAuto.addEdge((reps_map.TryFind x).Value,(reps_map.TryFind y).Value)
+        newAuto
 
 [<EntryPoint>]
 let main argv = 
@@ -142,6 +174,16 @@ let main argv =
     gviewer.Graph <- graph
     form.Controls.Add(gviewer)
     do Application.Run(form)
+
+    let b = compressedMapAutomata( b, fun x -> x)
+    let graph = new Microsoft.Msagl.Drawing.Graph()
+    b.Graph(graph) |> ignore
+    let form = new Form(ClientSize=Size(800, 600))
+    let gviewer = new Microsoft.Msagl.GraphViewerGdi.GViewer()
+    gviewer.Graph <- graph
+    form.Controls.Add(gviewer)
+    do Application.Run(form)
+
 
 
     printfn "%A" argv
