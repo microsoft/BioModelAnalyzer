@@ -3,9 +3,11 @@
 
 let set_collect f s = Set.unionMany (Set.map f s) 
 
+ 
 /// Abstract class representing automata
 [<AbstractClass>]
 type Automata<'state , 'data> when 'state : comparison () = 
+   
    abstract member next : 'state -> Set<'state>
    abstract member value : 'state -> 'data
    abstract states : Set<'state> 
@@ -22,20 +24,22 @@ type Automata<'state , 'data> when 'state : comparison () =
      rs_inner a.initialstates a.initialstates
 
     member a.Graph (graph : Microsoft.Msagl.Drawing.Graph) = 
-     let rec rs_inner (workset : Set<'state>) reached = 
+      let add_node x =
+        let node = new Microsoft.Msagl.Drawing.Node(x.ToString())
+        let label = "(" + x.ToString() + "): " + ((a.value x).ToString())
+        node.LabelText <- label
+        if Set.contains x a.initialstates then
+                node.Attr.FillColor <- Microsoft.Msagl.Drawing.Color.Beige
+        graph.AddNode(node) |> ignore
+
+     let rec rs_inner (workset : Set<'state>) reached =
         let nextstates = 
              set_collect 
                 (fun x -> 
                     let n = a.next(x)
-                    let node = new Microsoft.Msagl.Drawing.Node(x.ToString())
-                    let label = x.ToString() + "," + ((a.value x).ToString())
-                    node.LabelText <- label
-                    graph.AddNode(node) |> ignore
+                    add_node x
                     for y in n do 
-                        let node = new Microsoft.Msagl.Drawing.Node(y.ToString())
-                        let label = y.ToString() + "," + ((a.value y).ToString())
-                        node.LabelText <- label
-                        graph.AddNode(node) |> ignore
+                        add_node y
                         graph.AddEdge(x.ToString(),y.ToString()) |> ignore
                     n
                 ) workset
@@ -46,12 +50,12 @@ type Automata<'state , 'data> when 'state : comparison () =
             rs_inner unreached_nextstates (Set.union reached unreached_nextstates)
      rs_inner a.initialstates a.initialstates
    
-type SimpleAutomata<'data> (sd) =
+type SimpleAutomata<'data> () =
     inherit Automata<int, 'data>() with 
-    let start = 0
-    let mutable statesSet = Set.singleton 0
+    let mutable startSet = Set.empty
+    let mutable statesSet = Set.empty
     let mutable nextMap = Map.empty
-    let mutable dataMap = Map.add 0 sd Map.empty
+    let mutable dataMap = Map.empty
 
 
     //The method for the automata
@@ -59,7 +63,7 @@ type SimpleAutomata<'data> (sd) =
         match Map.tryFind s nextMap with
         | Some x -> x
         | None -> Set.empty
-    override this.initialstates = Set.singleton 0
+    override this.initialstates = startSet
     override this.states = statesSet
     override this.value s = Map.find s dataMap
 
@@ -70,7 +74,8 @@ type SimpleAutomata<'data> (sd) =
     member this.addEdge(x,y) =
         //TODO Add some checks 
         nextMap <- Map.add x (Set.add y (this.next x)) nextMap
-
+    member this.addInitialState(x) =
+        startSet <- Set.add x startSet
 
 type BoundedAutomata<'istate, 'data> when 'istate : comparison 
     (bound : int, 
@@ -127,15 +132,21 @@ let compressedMapAutomata
             if eq_new <> eq_prev then inner_loop eq_new
             else eq_new, reps
 
-        let eq,reps = inner_loop (Map.empty)
+        //Make all elements equal initially
+        let first_canon = inner.states.MinimumElement
+        let first_eq = Set.fold (fun m x -> Map.add x first_canon m) Map.empty inner.states
+        let eq,reps = inner_loop first_eq
         
         let reps_arr = Set.toArray reps
-        let newAuto = new SimpleAutomata<'data2>(f (inner.value reps_arr.[0]))
-        let mutable reps_map = Map.add reps_arr.[0] 0 Map.empty
-        for i = 1 to reps_arr.Length - 1 do 
+        let newAuto = new SimpleAutomata<'data2>()
+        let mutable reps_map = Map.empty
+        for i = 0 to reps_arr.Length - 1 do 
             reps_map <- Map.add reps_arr.[i] i reps_map
             newAuto.addState(i, f (inner.value reps_arr.[i]))
         for x in reps_arr do
             for y in next_eq eq x do 
                 newAuto.addEdge((reps_map.TryFind x).Value,(reps_map.TryFind y).Value)
+
+        for x in inner.initialstates do
+            newAuto.addInitialState ((reps_map.TryFind (Map.find x eq)).Value)
         newAuto
