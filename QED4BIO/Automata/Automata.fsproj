@@ -24,9 +24,9 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\Automata.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -111,14 +111,13 @@
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->
   <Target Name="BeforeBuild">
-    <Error Condition="!Exists('$(SolutionDir)\Z3\libz3.dll') Or !Exists('$(SolutionDir)\Z3\Microsoft.Z3.dll')" Text="Download Z3 from `http://z3.codeplex.com/downloads/get/528578' and copy libz3.dll and Microsoft.Z3.dll to the Z3 directory."/>
+    <Error Condition="!Exists('$(SolutionDir)\Z3\libz3.dll') Or !Exists('$(SolutionDir)\Z3\Microsoft.Z3.dll')" Text="Download Z3 from `http://z3.codeplex.com/downloads/get/528578' and copy libz3.dll and Microsoft.Z3.dll to the Z3 directory." />
     <!--  Doesn't work as codeplex doesn't give out the URL 
     <MSBuild.Community.Tasks.WebDownload FileName="$(SolutionDir)/Z3.zip" FileUri="http://z3.codeplex.com/downloads/get/528578#" />
     <MSBuild.Community.Tasks.Unzip ZipFileName="Z3.zip" TargetDirectory="$(SolutionDir)/Z3" />
     -->
   </Target>
-  
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(SolutionDir)\Z3\libz3.dll" DestinationFolder="$(TargetDir)"/>
+    <Copy SourceFiles="$(SolutionDir)\Z3\libz3.dll" DestinationFolder="$(TargetDir)" />
   </Target>
 </Project>
