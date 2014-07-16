@@ -161,24 +161,22 @@ let test_automata2 () =
         rely  
 
 
-let test_automata3 a = 
-    
+let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<interp * 'istate> =     
     sim 
         (interp_form (Map.ofList [("path",1); ("signal",3)]) next_pre)
         (context.MkAnd 
             [|
-            ((var "prev_path" === int 0) ||| (var "prev_path" === int 4)) 
-                ==> (var "prev_path" === var "next_path")
-
-            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" === int 4))
-                ==> (int 0 === (var "next_path"))
+            (* Straight from the paper *)
+            (* Path rules *)
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 0))
+                ==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
 
             ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 1))
                 ==> (int 4 === (var "next_path"))
 
-            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 0))
-                ==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
-
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" === int 4))
+                ==> (int 0 === (var "next_path"))
+            (* Signal rules *)
             ((var "prev_neighbour_path" === int 4)  &&& (int 0 << var "prev_signal"))
                 ==> (var "next_signal" === int 4)
 
@@ -188,12 +186,17 @@ let test_automata3 a =
             ((var "prev_neighbour_path" << int 4)  &&& (var "prev_path" << int 4) &&& (int 0 << var "prev_signal") &&& (var "prev_signal" << int 4))
                 ==> ((var "next_signal" ++ int 1) === var "prev_signal")
 
-            ((var "prev_neighbour_path" << int 4)  &&& (var "prev_path" << int 4) &&& ((int 0 === var "prev_signal") ||| (var "prev_signal" === int 4)))
-                ==> (var "next_signal" === var "prev_signal")
+            (* Rules for dealing with not performing an update*)
+            ((var "prev_neighbour_path" << int 4)  &&& (var "prev_path" << int 4) &&& (var "prev_signal" === int 4))
+                ==> (int 4 === var "prev_signal")
 
             ((var "prev_signal" === int 0)  ==> (var "next_signal" === int 0))
+
+            ((var "prev_path" === int 0) ||| (var "prev_path" === int 4)) 
+                ==> (var "prev_path" === var "next_path")
+
             |]
         )  
-        a
+        
 
 
