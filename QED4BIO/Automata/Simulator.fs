@@ -34,6 +34,9 @@ let get_interp (m : Model) : interp =
     interp
 
 ///Creates the formula representing this variable assignment
+///  interp_form i  s
+/// i is the variable to value map
+/// s is a string to prepend onto each variable
 let interp_form (i : interp) s : formula = 
     let assigns = 
         [| 
@@ -98,29 +101,39 @@ let sim initform stepformula =
                     table.Add(x,r)
                     index := r + 1
                     r
+        //The mutable automata we will return for this execution
         let result = new SimpleAutomata<(interp * 'istate)>()
 
+        //Add the initial states
         for interp in init_interps do
             for index in rely.initialstates do
                 result.addInitialState (normalize (interp,index))
                 result.addState((normalize (interp,index)), (interp,index))
     
+        //Set up work list.
         let work_set = System.Collections.Concurrent.ConcurrentBag()
-
         for v in result.initialstates do 
             work_set.Add (result.value v)
     
+        //Mutable variables for working with the work_set.
+        //The ref param in C# makes this harder to work with
         let mutable more, interp_index = work_set.TryTake()
         while more do
             let index = snd interp_index
             let interp = fst interp_index
+            //Find next states in the rely
             let new_indexs = rely.next(index)
+            //For all interpretations of the new variables
             for new_interp in steps [interp ; rely.value index] do
+                //For all next indexs of the rely
                 for new_index in new_indexs do
+                    //Add an edge for the reduction
                     result.addEdge ((normalize (interp,index)), (normalize (new_interp,new_index)))
+                    //Check if the target is new
                     if Set.contains (normalize (new_interp,new_index)) result.states then
                         ()
                     else
+                        //If it is new, add the state, and add to work set.
                         result.addState ((normalize (new_interp,new_index)), (new_interp,new_index))
                         work_set.Add( (new_interp,new_index) )
             more <- work_set.TryTake(&interp_index)
