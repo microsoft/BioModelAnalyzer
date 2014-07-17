@@ -1,0 +1,1 @@
+Download Z3 from `http://z3.codeplex.com/downloads/get/528578' and copy libz3.dll and Microsoft.Z3.dll to the Z3 directory.
