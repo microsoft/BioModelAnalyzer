@@ -105,7 +105,12 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison
             } |> Set.ofSeq
 
           override this.initialstates =
-            Set.map (fun x -> (x,0)) inner.initialstates
+            let mutable nreach = inner.initialstates
+            let mutable result = Set.empty
+            for i = 0 to bound do
+                result <- Set.union (Set.map (fun x -> (x,i)) nreach) result
+                nreach <- set_collect (fun x -> inner.next(x)) nreach
+            result
 
 let opt_default d o = match o with | Some x -> x | None -> d
 
