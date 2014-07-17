@@ -22,16 +22,18 @@ let show_automata (a : Automata<_,_>) =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    
+    let no_of_cells = 2
+
     //Set input high
-    let b = Map.add "input" 1 Map.empty
+    let b = [| Map.add "input" 1 Map.empty; Map.add "input" 0 Map.empty|]
     
-    let simstep rely = 
+
+    let simstep rely i = 
         //Simulate
-        let sim = Simulator.test_automata4 rely
+        let sim = Simulator.test_automata3 rely
         if show_intermediate_steps then show_automata sim
         //Remove the bits not involved in interference
-        let sim_smaller = compressedMapAutomata(sim, fun m -> Map.add "neighbour_path" (fst m).["path"] b)
+        let sim_smaller = compressedMapAutomata(sim, fun m -> Map.add "neighbour_path" (fst m).["path"] b.[i])
         if show_intermediate_steps then show_automata sim_smaller
         //Introduces Bounded asynchony
         let sim_BA = new BoundedAutomata<int,Simulator.interp> (bound, sim_smaller)
@@ -46,26 +48,38 @@ let main argv =
         compressedMapAutomata(sim, fun m -> Map.add "neighbour_path" ((rely.value (snd m)).["neighbour_path"]) ((fst m).Remove("signal")))
         
     //The universal rely
-    let a = new SimpleAutomata<Simulator.interp>()
-    for i = 1 to 4 do
-        for j = 1 to 4 do
-            a.addInitialState i
-            a.addState(i,Map.add "neighbour_path" i b)
-            a.addEdge(i,j)
+    let a = 
+        [|
+            for c = 0 to no_of_cells - 1 do
+                let a = new SimpleAutomata<Simulator.interp>()
+                for i = 1 to 4 do
+                    for j = 1 to 4 do
+                        a.addInitialState i
+                        a.addState(i,Map.add "neighbour_path" i b.[c])
+                        a.addEdge(i,j)
+                yield a
+        |]
     
-    //show_automata a
+    show_automata a.[0]
+    show_automata a.[1]
 
-    let step1 = simstep a
+    let step1a = simstep a.[1] 0
+    let step1b = simstep a.[0] 1
 
-    show_automata step1
+    show_automata step1a
+    show_automata step1b
 
-    let step2 = simstep step1
+    let step2a = simstep step1b 0
+    let step2b = simstep step1a 1
 
-    show_automata step2
+    show_automata step2a
+    show_automata step2b
 
-    let finalstep = finalsimstep step2
+    let finalstepa = finalsimstep step2b
+    let finalstepb = finalsimstep step2a
 
-    show_automata finalstep
+    show_automata finalstepa
+    show_automata finalstepb
 
 
     (*
