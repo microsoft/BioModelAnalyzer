@@ -66,6 +66,9 @@ let all_smt (f : formula) : interp list -> Set<interp> =
         while solver.Check([||]) = Microsoft.Z3.Status.SATISFIABLE do
             //Evaluate the interpretation
             let next_interp = get_interp solver.Model
+            if Set.contains next_interp new_interps then
+                printfn "Under constained input to Z3 formula"
+                assert false
             new_interps <- Set.add next_interp new_interps
             //Assert negation of interpretation
             solver.Assert(context.MkNot (interp_form next_interp next_pre))
@@ -173,7 +176,7 @@ let test_automata2 () =
         ))  
         rely  
 
-
+///Test automata fro 2008 paper, with floating inputs
 let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<interp * 'istate> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
@@ -222,7 +225,7 @@ let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp>
             |]
         )  
         
-
+///Test automata fro 2008 paper, with Constrained inputs
 let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<interp * 'istate> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
