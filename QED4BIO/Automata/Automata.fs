@@ -50,8 +50,8 @@ type Automata<'state , 'data> when 'state : comparison () =
             rs_inner unreached_nextstates (Set.union reached unreached_nextstates)
      rs_inner a.initialstates a.initialstates
    
-type SimpleAutomata<'data> () =
-    inherit Automata<int, 'data>() with 
+type SimpleAutomata<'state, 'data when 'state : comparison> () =
+    inherit Automata<'state, 'data>() with 
     let mutable startSet = Set.empty
     let mutable statesSet = Set.empty
     let mutable nextMap = Map.empty
@@ -118,7 +118,7 @@ let find_refl m x = Map.tryFind x m |> opt_default x
 
 let compressedMapAutomata 
     (inner : Automata<'state,'data1>, 
-     f : 'data1 -> 'data2) : SimpleAutomata<'data2> = 
+     f : 'data1 -> 'data2) : SimpleAutomata<int, 'data2> = 
         //Get initial sample of the data
         let next_eq eq x = Set.map (find_refl eq) (inner.next x)
         let canonise eq x = (f (inner.value x), next_eq eq x)
@@ -143,7 +143,7 @@ let compressedMapAutomata
         let eq,reps = inner_loop first_eq
         
         let reps_arr = Set.toArray reps
-        let newAuto = new SimpleAutomata<'data2>()
+        let newAuto = new SimpleAutomata<int, 'data2>()
         let mutable reps_map = Map.empty
         for i = 0 to reps_arr.Length - 1 do 
             reps_map <- Map.add reps_arr.[i] i reps_map
@@ -155,3 +155,45 @@ let compressedMapAutomata
         for x in inner.initialstates do
             newAuto.addInitialState ((reps_map.TryFind (Map.find x eq)).Value)
         newAuto
+
+let productFilter 
+    (left : Automata<'lstate, 'ldata>) 
+    (right : Automata<'rstate, 'rdata>)
+    (f : 'ldata -> 'rdata -> 'data option)
+    : SimpleAutomata<'lstate * 'rstate, 'data>
+    =
+    let result = new SimpleAutomata<'lstate * 'rstate, 'data>()
+
+    let work_set = ref Set.empty
+    let reached = ref Set.empty
+    let add_node li ri pred_option =
+        match f (left.value li) (right.value ri) with
+        | None -> ()
+        | Some d -> 
+            result.addState( (li,ri), d)
+
+            if Set.contains (li,ri) !reached then 
+                ()
+            else
+                work_set := (!work_set).Add (li,ri)
+                reached := (!reached).Add (li,ri)
+
+            match pred_option with 
+            | Some lri -> result.addEdge( lri,  (li,ri))
+            | None -> result.addInitialState (li,ri)
+        
+                
+    for li in left.initialstates do
+        for ri in right.initialstates do
+            add_node li ri None
+
+    while not (!work_set).IsEmpty do
+        let li,ri = (!work_set).MaximumElement
+        work_set := (!work_set).Remove ((li,ri))
+        let ln = left.next(li)
+        let rn = right.next(ri)
+        for lni in ln do
+            for rni in rn do
+                add_node lni rni (Some (li,ri))
+    
+    result    

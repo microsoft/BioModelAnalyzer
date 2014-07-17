@@ -105,7 +105,7 @@ let sim initform stepformula =
                     index := r + 1
                     r
         //The mutable automata we will return for this execution
-        let result = new SimpleAutomata<(interp * 'istate)>()
+        let result = new SimpleAutomata<int, (interp * 'istate)>()
 
         //Add the initial states
         for interp in init_interps do
@@ -145,7 +145,7 @@ let sim initform stepformula =
 
 
 let test_automata () = 
-    let rely = new Automata.SimpleAutomata<interp>()
+    let rely = new Automata.SimpleAutomata<int, interp>()
     rely.addInitialState(0);
     rely.addState(0, Map.empty)
     rely.addEdge(0,0)
@@ -158,7 +158,7 @@ let test_automata () =
         rely  
 
 let test_automata2 () = 
-    let rely = new Automata.SimpleAutomata<interp>()
+    let rely = new Automata.SimpleAutomata<int, interp>()
     rely.addInitialState(0);
     rely.addState(0, Map.empty)
     rely.addEdge(0,0)
@@ -177,7 +177,7 @@ let test_automata2 () =
         rely  
 
 ///Test automata fro 2008 paper, with floating inputs
-let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<interp * 'istate> =     
+let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * 'istate> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
@@ -226,7 +226,7 @@ let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp>
         )  
         
 ///Test automata fro 2008 paper, with Constrained inputs
-let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<interp * 'istate> =     
+let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * 'istate> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
@@ -255,6 +255,59 @@ let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp>
 
             (* Rules for dealing with not performing an update*)
             ((var "prev_neighbour_path" << int 4)  &&& (var "prev_path" << int 4) &&& (var "prev_signal" === int 4))
+                ==> (int 4 === var "prev_signal")
+
+            ((var "prev_signal" === int 0)  ==> (var "next_signal" === int 0))
+
+            ((var "prev_path" === int 0) ||| (var "prev_path" === int 4)) 
+                ==> (var "prev_path" === var "next_path")
+
+            ((var "prev_path" << int 5) &&& ((int 0 << var "prev_path") ||| (var "prev_path" === int 0)))
+
+            bound "prev_path" 0 5
+
+            bound "next_path" 0 5
+
+            bound "prev_signal" 0 5
+
+            bound "next_signal" 0 5
+            |]
+        )  
+        
+
+
+
+///Test automata fro 2008 paper, with Constrained inputs
+///Has separate left and right paths
+let test_automata5<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * 'istate> =     
+
+    let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
+    sim 
+        (bound "next_path" 1 2 &&& bound "next_signal" 3 4)
+        (context.MkAnd 
+            [|
+            (* Straight from the paper *)
+            (* Path rules *)
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 0))
+                ==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
+
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 1))
+                ==> (int 4 === (var "next_path"))
+
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" === int 4))
+                ==> (int 0 === (var "next_path"))
+            (* Signal rules *)
+            (((var "prev_left_path" === int 4) ||| (var "prev_right_path" === int 4)) &&& (int 0 << var "prev_signal"))
+                ==> (var "next_signal" === int 4)
+
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (int 4 === var "prev_path"))
+                ==> (var "next_signal" === int 0)
+
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (int 0 << var "prev_signal") &&& (var "prev_signal" << int 4))
+                ==> ((var "next_signal" ++ int 1) === var "prev_signal")
+
+            (* Rules for dealing with not performing an update*)
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (var "prev_signal" === int 4))
                 ==> (int 4 === var "prev_signal")
 
             ((var "prev_signal" === int 0)  ==> (var "next_signal" === int 0))
