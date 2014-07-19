@@ -8,12 +8,13 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <queue>
+#include <stack>
 #include <vector>
-#include <deque>
+#include <queue>
 #include <algorithm>
 #include <memory>
 #include <map>
+#include "Event/Event.h"
 #include "Directive/Divide.h"
 #include "State.h"
 #include "Simulation.h"
@@ -26,6 +27,7 @@ using std::pair;
 using std::make_pair;
 using std::vector;
 using std::deque;
+using std::map;
 using std::ifstream;
 using std::istream;
 using std::ostream;
@@ -269,6 +271,23 @@ string Simulation::toString(unsigned int num) const {
 
 	return temp.str();
 }
+
+string Simulation::toJson() const {
+
+	if (_log.size() == 0) {
+		return "";
+	}
+
+	map<string, string> nameJsonMap;
+	unsigned int id{ 0 };
+	for (auto it = _log.crbegin(); it != _log.crend(); ++it) {
+		Event* ev = *it;
+		nameJsonMap.insert(make_pair(ev->cell()->name(), ev->toJson(id++,nameJsonMap)));
+	}
+	string firstCell = _log.at(0)->cell()->name();
+	return nameJsonMap[firstCell];
+}
+
 ostream& operator<< (ostream& out, const Simulation& sim) {
 //	for (auto prog : sim._programs) {
 //		out << *prog.second << endl;

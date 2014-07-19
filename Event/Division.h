@@ -35,6 +35,7 @@ public:
 	virtual bool expressed(const std::string& call,const std::string& var) const;
 
 	virtual std::string toString() const;
+	virtual std::string toJson(unsigned int it, const std::map<std::string, std::string>&) const;
 
 	friend std::ostream& operator<<(std::ostream&,const Division&);
 private:

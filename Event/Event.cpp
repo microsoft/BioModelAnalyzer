@@ -12,6 +12,7 @@
 using std::ostream;
 using std::string;
 using std::stringstream;
+using std::map;
 
 
 Event::Event(float d, float t, /*Simulation* s,*/ Cell* c)
@@ -65,6 +66,16 @@ string Event::toString() const {
 	temp << _execTime;
 	return temp.str();
 }
+
+string Event::toJson(unsigned int id, const map<string, string>& str2Json) const {
+	stringstream ret;
+	ret << "{id:\\\"node" << id << "\\\", name:\\\"";
+	ret << _cell->name();
+	ret << "\\\", data:{}, children:[]}";
+	return ret.str();
+}
+
+
 ostream& operator<<(ostream& out, const Event& ev) {
 	ev.output(out);
 	return out;

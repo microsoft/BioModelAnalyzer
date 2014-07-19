@@ -13,6 +13,7 @@ class Event;
 #include <vector>
 #include <string>
 #include <iosfwd>
+#include <map>
 #include "../Cell.h"
 #include "../Simulation.h"
 
@@ -38,6 +39,7 @@ public:
 	virtual bool expressed(const std::string& call,const std::string& var) const=0;
 
 	virtual std::string toString() const;
+	virtual std::string toJson(unsigned int id, const std::map<std::string, std::string>&) const;
 	friend std::ostream& operator<<(std::ostream&,const Event&);
 private:
 	float _duration;

@@ -51,6 +51,7 @@ public:
 	bool expressed(const std::string&,float from, float to) const;
 
 	std::string toString(unsigned int num=0) const;
+	std::string toJson() const;
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
 private:

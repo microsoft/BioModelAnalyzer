@@ -6,12 +6,15 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "Division.h"
 
 using std::ostream;
+using std::stringstream;
 using std::string;
 using std::vector;
 using std::pair;
+using std::map;
 
 Division::Division(const std::string& p, State* stp,
 				   const std::string& d1, State* st1,
@@ -132,6 +135,33 @@ string Division::toString() const {
 	}
 	return ret;
 }
+
+string Division::toJson(unsigned int id, const map<string, string>& str2Json) const {
+	stringstream ret;
+	ret << "{id:\\\"node" << id << "\\\", name:\\\"";
+	ret << cell()->name();
+	ret << "\\\", data:{}, children:[";
+	bool addComma = false;
+	{
+		auto ptr = str2Json.find(_daughter1);
+		if (ptr != str2Json.end()) {
+			ret << ptr->second;
+			addComma = true;
+		}
+	}
+	{
+		auto ptr = str2Json.find(_daughter2);
+		if (ptr != str2Json.end()) {
+			if (addComma) {
+				ret << ", ";
+			}
+			ret << ptr->second;
+		}
+	}
+	ret << "]}";
+	return ret.str();
+}
+
 ostream& operator<<(ostream& out, const Division& d) {
 	d.output(out);
 	return out;
