@@ -237,3 +237,11 @@ let productFilter
                 add_node lni rni (Some (li,ri))
     
     result    
+
+let unitAutomata =
+    let a = new SimpleAutomata<unit,unit>()
+    a.addState((),())
+    a.addInitialState ()
+    a.addEdge((), ())
+    a
+    
