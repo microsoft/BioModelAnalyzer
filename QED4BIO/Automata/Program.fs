@@ -17,14 +17,16 @@ let show_automata (a : Automata<_,_>) =
     
     do Application.Run(form)
 
-type summary<'a> =
-    { left_val : 'a
-      right_val : 'a
-      middle_vals : 'a list
+type summary<'a> when 'a : comparison =
+    { left_external_val : 'a
+      right_external_val : 'a
+      left_internal_val : 'a
+      right_internal_val : 'a
+      middle_vals : (Set<'a>) list
       range : int * int  }
     override this.ToString() = 
-        "left_val:\t" + this.left_val.ToString() + 
-          "\nright_val:\t" + this.right_val.ToString() +
+        "left_val:\t" + this.left_external_val.ToString() + 
+          "\nright_val:\t" + this.right_external_val.ToString() +
           "\nrange:\t" + this.range.ToString() +
           "\nmid:\t" + String.Join(",", this.middle_vals)
 
@@ -33,7 +35,7 @@ type summary<'a> =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 1;1;1;1;1|]
+    let inputs = [| 1;1;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -52,13 +54,22 @@ let main argv =
         //Compress
         compressedMapAutomata(sim_BA, fun _ m -> m)
 
+    let rec reach_repeatedly (auto : Automata<_,_>) s seen result =
+        //Quick hack : TODO better 
+        if Set.contains s seen then 
+           Set.add s result 
+        else 
+           set_collect (fun n -> reach_repeatedly auto n (Set.add s seen) result) (auto.next s)
+
     let finalsimstep rely = 
         //Simulate
         let sim = Simulator.test_automata5 rely
         //Remove the bits not involved in interference
-        let auto = compressedMapAutomata(sim, fun _ m -> { left_val = ((rely.value (snd m)).["left_path"])
-                                                           right_val = ((rely.value (snd m)).["right_path"])
-                                                           middle_vals = [(fst m).["path"]]
+        let auto = compressedMapAutomata(sim, fun s m -> { left_external_val = ((rely.value (snd m)).["left_path"])
+                                                           right_external_val = ((rely.value (snd m)).["right_path"])
+                                                           left_internal_val = ((fst m).["path"])
+                                                           right_internal_val = ((fst m).["path"])
+                                                           middle_vals = [Set.map (fun s -> (fst (sim.value s)).["path"]) (reach_repeatedly sim s Set.empty Set.empty)]
                                                            range = (0,0)
                                                          })
         let ba = new BoundedAutomata<_,_>(bound, auto, true)                                  
@@ -151,12 +162,14 @@ let main argv =
                 ( fun x y ->
                     let newrangel = if fst x.range < fst y.range then fst x.range else fst y.range
                     let newranger = if snd x.range > snd y.range then snd x.range else snd y.range
-                    if x.middle_vals.[x.middle_vals.Length - 1] = y.left_val
-                        && y.middle_vals.Head = x.right_val 
+                    if x.left_internal_val = y.left_external_val
+                        && y.right_internal_val = x.right_external_val 
                         && newranger - newrangel <= bound 
                     then 
-                        Some { left_val = x.left_val 
-                               right_val = y.right_val
+                        Some { left_external_val = x.left_external_val 
+                               right_external_val = y.right_external_val
+                               left_internal_val = x.left_internal_val 
+                               right_internal_val = y.right_internal_val
                                range = (newrangel, newranger)
                                middle_vals = x.middle_vals @ y.middle_vals}
                     else 
