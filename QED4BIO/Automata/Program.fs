@@ -33,19 +33,19 @@ let main argv =
         let sim = Simulator.test_automata5 rely
         if show_intermediate_steps then show_automata sim
         //Remove the bits not involved in interference
-        let sim_smaller = compressedMapAutomata(sim, fun m -> Map.add "path" (fst m).["path"] Map.empty)
+        let sim_smaller = compressedMapAutomata(sim, fun _ m -> Map.add "path" (fst m).["path"] Map.empty)
         if show_intermediate_steps then show_automata sim_smaller
         //Introduces Bounded asynchony
         let sim_BA = new BoundedAutomata<int,Simulator.interp> (bound, sim_smaller)
         if show_intermediate_steps then show_automata sim_BA
         //Compress
-        compressedMapAutomata(sim_BA, fun m -> m), sim_BA
+        compressedMapAutomata(sim_BA, fun _ m -> m), sim_BA
 
     let finalsimstep rely = 
         //Simulate
         let sim = Simulator.test_automata3 rely
         //Remove the bits not involved in interference
-        compressedMapAutomata(sim, fun m -> Map.add "neighbour_path" ((rely.value (snd m)).["neighbour_path"]) ((fst m).Remove("signal")))
+        compressedMapAutomata(sim, fun _ m -> Map.add "neighbour_path" ((rely.value (snd m)).["neighbour_path"]) ((fst m).Remove("signal")))
 
     //The universal rely
     let relies = 

@@ -158,10 +158,10 @@ let find_refl m x = Map.tryFind x m |> opt_default x
 
 let compressedMapAutomata 
     (inner : Automata<'state,'data1>, 
-     f : 'data1 -> 'data2) : SimpleAutomata<int, 'data2> = 
+     f : 'state -> 'data1 -> 'data2) : SimpleAutomata<int, 'data2> = 
         //Get initial sample of the data
         let next_eq eq x = Set.map (find_refl eq) (inner.next x)
-        let canonise eq x = (f (inner.value x), next_eq eq x)
+        let canonise eq x = (f x (inner.value x), next_eq eq x)
         let rec inner_loop eq_prev =
             let mutable reps = Set.empty
             let mutable canons = Map.empty
@@ -187,7 +187,7 @@ let compressedMapAutomata
         let mutable reps_map = Map.empty
         for i = 0 to reps_arr.Length - 1 do 
             reps_map <- Map.add reps_arr.[i] i reps_map
-            newAuto.addState(i, f (inner.value reps_arr.[i]))
+            newAuto.addState(i, f reps_arr.[i] (inner.value reps_arr.[i]))
         for x in reps_arr do
             for y in next_eq eq x do 
                 newAuto.addEdge((reps_map.TryFind x).Value,(reps_map.TryFind y).Value)
