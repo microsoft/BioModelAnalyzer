@@ -33,7 +33,7 @@ type summary<'a> =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 1;1 |]
+    let inputs = [| 1;1;1;1;1|]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -61,7 +61,7 @@ let main argv =
                                                            middle_vals = [(fst m).["path"]]
                                                            range = (0,0)
                                                          })
-        let ba = new BoundedAutomata<_,_>(bound, auto, false)                                  
+        let ba = new BoundedAutomata<_,_>(bound, auto, true)                                  
         compressedMapAutomata(ba, fun (_,i) m -> { m with range=(i,i)})
 
     //The universal rely
@@ -133,19 +133,19 @@ let main argv =
       round()
       printfn "Ticks:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    printfn "Build big composition... [TODO]"
+    printfn "Build big composition..."
     
     let mutable auto = finalsimstep (rely 1)
     let normalize = (@)
 
     let mutable auto = productFilter unitAutomata auto (fun _ x -> Some x) (fun _ x -> [x])
 
-    show_automata auto 
+    //show_automata auto 
 
 
     for c = 2 to no_of_cells do
         let right = finalsimstep (rely c)
-        show_automata right
+        //show_automata right
         auto <- 
             productFilter auto right 
                 ( fun x y ->
@@ -153,7 +153,7 @@ let main argv =
                     let newranger = if snd x.range > snd y.range then snd x.range else snd y.range
                     if x.middle_vals.[x.middle_vals.Length - 1] = y.left_val
                         && y.middle_vals.Head = x.right_val 
-                    //    && newranger - newrangel <= bound 
+                        && newranger - newrangel <= bound 
                     then 
                         Some { left_val = x.left_val 
                                right_val = y.right_val
@@ -163,7 +163,7 @@ let main argv =
                         None
                 )         
                 (fun x y -> normalize x [y])
-    show_automata auto
+    //show_automata auto
 
     let tidy_auto = compressedMapAutomata (auto, fun _ x -> String.Join(", ", x.middle_vals))
 

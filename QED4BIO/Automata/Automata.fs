@@ -89,7 +89,8 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
     let mutable statesSet = Set.empty
     let mutable nextMap = System.Collections.Generic.Dictionary<'state, Set<'state>>()
     let mutable dataMap = System.Collections.Generic.Dictionary<'state, 'data>()
-
+    let mutable prevMap = System.Collections.Generic.Dictionary<'state, Set<'state>>()
+    
 
     //The method for the automata
     override this.next(s) = 
@@ -113,9 +114,20 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
             nextMap.[x] <- Set.add y (this.next x) 
         else
             nextMap.Add(x, Set.singleton y)
+        if prevMap.ContainsKey y then 
+            prevMap.[y] <- Set.add x (this.pred y) 
+        else
+            prevMap.Add(y, Set.singleton x)
+
+
 
     member this.addInitialState(x) =
         startSet <- Set.add x startSet
+
+    member this.pred s = 
+        match prevMap.TryGetValue(s) with
+        | true, x -> x
+        | false, _ -> Set.empty
 
 type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
     (bound : int, 
@@ -125,7 +137,7 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equal
           override this.next((s,i)) =
                 seq {
                     //Can produce the same result
-                    if (allow_negative && i > -bound) || i >= 0 then 
+                    if i > -bound then 
                         yield (s, i - 1) 
                     //Produce all results skipping ahead up to the bound
                     let nexts = ref (inner.next(s))
@@ -157,32 +169,38 @@ let opt_default d o = match o with | Some x -> x | None -> d
 
 let find_refl m x = Map.tryFind x m |> opt_default x
 
+let build_eq<'a, 'state3,'data3 when 'a : comparison and 'state3 : comparison and 'data3 : comparison> 
+    (inner : Automata<'state3, 'data3>) 
+    (canonise : Map<'state3,'state3> -> 'state3 -> 'a) 
+    =
+    let rec inner_loop eq_prev =
+        let mutable reps = Set.empty
+        let mutable canons = Map.empty
+        let mutable eq_new = Map.empty
+        for x in inner.states do
+                let v = canonise eq_prev x
+                match Map.tryFind v canons with
+                | Some y -> 
+                    eq_new <- Map.add x y eq_new
+                | None -> 
+                    canons <- Map.add (canonise eq_prev x) x canons 
+                    reps <- Set.add x reps
+                    eq_new <- Map.add x x eq_new
+        if eq_new <> eq_prev then inner_loop eq_new
+        else eq_new, reps
+    //Make all elements equal initially
+    let first_canon = inner.states.MinimumElement
+    let first_eq = Set.fold (fun m x -> Map.add x first_canon m) Map.empty inner.states
+    inner_loop first_eq
+
 let compressedMapAutomata 
     (inner : Automata<'state,'data1>, 
      f : 'state -> 'data1 -> 'data2) : SimpleAutomata<int, 'data2> = 
         //Get initial sample of the data
         let next_eq eq x = Set.map (find_refl eq) (inner.next x)
-        let canonise eq x = (f x (inner.value x), next_eq eq x)
-        let rec inner_loop eq_prev =
-            let mutable reps = Set.empty
-            let mutable canons = Map.empty
-            let mutable eq_new = Map.empty
-            for x in inner.states do
-                 match Map.tryFind (canonise eq_prev x) canons with
-                 | Some y -> 
-                    eq_new <- Map.add x y eq_new
-                 | None -> 
-                    canons <- Map.add (canonise eq_prev x) x canons 
-                    reps <- Set.add x reps
-                    eq_new <- Map.add x x eq_new
-            if eq_new <> eq_prev then inner_loop eq_new
-            else eq_new, reps
+        let canonise eq x = (f x (inner.value x), next_eq eq x)        
+        let eq,reps = build_eq inner canonise
 
-        //Make all elements equal initially
-        let first_canon = inner.states.MinimumElement
-        let first_eq = Set.fold (fun m x -> Map.add x first_canon m) Map.empty inner.states
-        let eq,reps = inner_loop first_eq
-        
         let reps_arr = Set.toArray reps
         let newAuto = new SimpleAutomata<int, 'data2>()
         let mutable reps_map = Map.empty
@@ -195,7 +213,20 @@ let compressedMapAutomata
 
         for x in inner.initialstates do
             newAuto.addInitialState ((reps_map.TryFind (Map.find x eq)).Value)
-        newAuto
+
+        //Do some reverse normalisation now
+        let pred_eq eq x = Set.map (fun x -> Map.find x eq) (newAuto.pred x)
+        let canonise2 eq x = (newAuto.value x, pred_eq eq x, newAuto.initialstates.Contains x)
+        let eq, reps = build_eq newAuto canonise2
+        let newAuto2 = new SimpleAutomata<int, 'data2>()
+        for x in newAuto.states do
+            newAuto2.addState(eq.[x], newAuto.value eq.[x])
+            for y in newAuto.next x do
+                newAuto2.addEdge(eq.[x], eq.[y])
+        for x in newAuto.initialstates do
+            newAuto2.addInitialState eq.[x]
+
+        newAuto2
 
 let productFilter 
     (left : Automata<'lstate, 'ldata>) 
