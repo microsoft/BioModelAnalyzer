@@ -119,12 +119,13 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
 
 type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
     (bound : int, 
-     inner : Automata<'istate,'data>)  = 
+     inner : Automata<'istate,'data>,
+     allow_negative : bool )  = 
        inherit Automata<('istate * int), 'data>() with
           override this.next((s,i)) =
                 seq {
                     //Can produce the same result
-                    if i > -bound then 
+                    if (allow_negative && i > -bound) || i >= 0 then 
                         yield (s, i - 1) 
                     //Produce all results skipping ahead up to the bound
                     let nexts = ref (inner.next(s))
@@ -147,7 +148,7 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equal
           override this.initialstates =
             let mutable nreach = inner.initialstates
             let mutable result = Set.empty
-            for i = 0 to bound do
+            for i = 0 to (if allow_negative then bound else 0) do
                 result <- Set.union (Set.map (fun x -> (x,i)) nreach) result
                 nreach <- set_collect (fun x -> inner.next(x)) nreach
             result
@@ -200,9 +201,10 @@ let productFilter
     (left : Automata<'lstate, 'ldata>) 
     (right : Automata<'rstate, 'rdata>)
     (f : 'ldata -> 'rdata -> 'data option)
-    : SimpleAutomata<'lstate * 'rstate, 'data>
+    (g : 'lstate -> 'rstate -> 'state)
+    : SimpleAutomata<'state, 'data>
     =
-    let result = new SimpleAutomata<'lstate * 'rstate, 'data>()
+    let result = new SimpleAutomata<'state, 'data>()
 
     let work_set = ref Set.empty
     let reached = ref Set.empty
@@ -210,7 +212,7 @@ let productFilter
         match f (left.value li) (right.value ri) with
         | None -> ()
         | Some d -> 
-            result.addState( (li,ri), d)
+            result.addState(g li ri, d)
 
             if Set.contains (li,ri) !reached then 
                 ()
@@ -219,8 +221,8 @@ let productFilter
                 reached := (!reached).Add (li,ri)
 
             match pred_option with 
-            | Some lri -> result.addEdge( lri,  (li,ri))
-            | None -> result.addInitialState (li,ri)
+            | Some lri -> result.addEdge( lri,  g li ri)
+            | None -> result.addInitialState (g li ri)
         
                 
     for li in left.initialstates do
@@ -234,14 +236,14 @@ let productFilter
         let rn = right.next(ri)
         for lni in ln do
             for rni in rn do
-                add_node lni rni (Some (li,ri))
+                add_node lni rni (Some (g li ri))
     
     result    
 
 let unitAutomata =
-    let a = new SimpleAutomata<unit,unit>()
-    a.addState((),())
-    a.addInitialState ()
-    a.addEdge((), ())
+    let a = new SimpleAutomata<string,string>()
+    a.addState("","")
+    a.addInitialState ""
+    a.addEdge("", "")
     a
     

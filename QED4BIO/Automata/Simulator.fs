@@ -56,6 +56,18 @@ let cache (f : 'a -> 'b) =
             cache.Add(x,v)
             v
 
+let normalize_gen () =
+    let table = new System.Collections.Generic.Dictionary<_,_>()
+    let index = ref 0
+    fun x -> 
+        match table.TryGetValue x with
+        | true, y -> y
+        | false, _ -> 
+            let r = !index
+            table.Add(x,r)
+            index := r + 1
+            r
+
 ///Stateful function to provide an all_smt loop given an interpretation of some of the variables
 ///Recommended use
 ///    let foo = all_smt foo_form
@@ -106,17 +118,7 @@ let sim initform stepformula =
 
     fun (rely : Automata<'istate,interp>) ->
         ///Stateful function to normalize the states to integers
-        let normalize =
-            let table = new System.Collections.Generic.Dictionary<interp * 'istate,  int>()
-            let index = ref 0
-            fun x -> 
-                match table.TryGetValue x with
-                | true, y -> y
-                | false, _ -> 
-                    let r = !index
-                    table.Add(x,r)
-                    index := r + 1
-                    r
+        let normalize = normalize_gen ()
         //The mutable automata we will return for this execution
         let result = new SimpleAutomata<int, (interp * 'istate)>()
         
