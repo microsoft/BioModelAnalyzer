@@ -21,8 +21,8 @@ let show_automata (a : Automata<_,_>) =
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 1
-    let inputs = [| 0;1;0;1;0;1;1;0 |]
+    let bound = 10
+    let inputs = [| 1;0;1;0;0;1;0;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -39,7 +39,7 @@ let main argv =
         let sim_BA = new BoundedAutomata<int,Simulator.interp> (bound, sim_smaller)
         if show_intermediate_steps then show_automata sim_BA
         //Compress
-        compressedMapAutomata(sim_BA, fun m -> m)
+        compressedMapAutomata(sim_BA, fun m -> m), sim_BA
 
     let finalsimstep rely = 
         //Simulate
@@ -79,77 +79,35 @@ let main argv =
 
     let round () = 
         for c = 1 to no_of_cells do
-            printfn "Automata %d" c
             if changed.[c-1] || changed.[c+1] then 
-                printfn "Recalculate %d" c
+                printf "Recalculate %d" c
                 let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-                let guar = simstep combine
+                let guar, auto = simstep combine
+                
                 //show_automata combine
                 //show_automata guar
                 if relies.[c].simulates guar then
+                    printfn " - No change"
                     changed.[c] <- false
                 else
-                    printfn "Updated"
+                    printfn " - Updated"
                     relies.[c] <- guar
                     changed.[c] <- true
             else changed.[c] <- false
 
-    let start = System.DateTime.Now.Ticks
+    let start = System.DateTime.Now.Ticks 
   
     printfn "First Round"
     round()
-    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
+    printfn "Ticks:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
     changed.[0] <- false
     changed.[changed.Length - 1] <- false
 
-
-    printfn "Second Round"
-    round()
-    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
-
-    printfn "Third Round"
-    round()
-    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
-
-    printfn "Fourth Round"
-    round()
-    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
-
-
-    printfn "Fifth Round"
-    round()
-    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
-
-
-    printfn "Sixth Round"
-    round()
-    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
-
-
-
-    (*
-    let t1 = Simulator.test_automata3 a
-
-    show_automata t1
-    
-    let t2 = compressedMapAutomata(t1, fun m -> Map.add "neighbour_path" (fst m).["path"] b)
-
-    show_automata t2
-
-    let t2 = new BoundedAutomata<int,Simulator.interp> (1,t2)
-
-    show_automata t2
-
-    let t2 = compressedMapAutomata(t2, fun m -> m)
-
-    show_automata t2
-    
-
-    let t3 = Simulator.test_automata3 t2
-
-    show_automata t3
-    *)
+    while Array.Exists(changed, fun x -> x) do
+      printfn "Next Round"
+      round()
+      printfn "Ticks:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
     printfn "%A" argv
     0 // return an integer exit code
