@@ -6,7 +6,7 @@ let set_collect f s = Set.unionMany (Set.map f s)
  
 /// Abstract class representing automata
 [<AbstractClass>]
-type Automata<'state , 'data> when 'state : comparison () = 
+type Automata<'state , 'data> when 'state : comparison and 'data:equality  () = 
    
    abstract member next : 'state -> Set<'state>
    abstract member value : 'state -> 'data
@@ -32,7 +32,7 @@ type Automata<'state , 'data> when 'state : comparison () =
                 node.Attr.FillColor <- Microsoft.Msagl.Drawing.Color.Beige
         graph.AddNode(node) |> ignore
 
-     let rec rs_inner (workset : Set<'state>) reached =
+      let rec rs_inner (workset : Set<'state>) reached =
         let nextstates = 
              set_collect 
                 (fun x -> 
@@ -48,36 +48,76 @@ type Automata<'state , 'data> when 'state : comparison () =
             reached
         else
             rs_inner unreached_nextstates (Set.union reached unreached_nextstates)
-     rs_inner a.initialstates a.initialstates
+      rs_inner a.initialstates a.initialstates
    
-type SimpleAutomata<'state, 'data when 'state : comparison> () =
+    member a.simulates<'state2 when 'state2 : comparison> (b : Automata<'state2, 'data>) : bool =
+        let relation = new System.Collections.Generic.Dictionary<'state, Set<'state2>>()
+        //initialise relation to relate things with same values.
+        for x in a.states do
+            relation.Add(x, Set.empty)
+            for y in b.states do
+                if a.value x = b.value y then
+                   match relation.TryGetValue x with
+                   | true, vs -> relation.[x] <- Set.add y vs
+                   | false, _ -> relation.Add(x, Set.singleton y)
+        
+        //Build a simulation, by repeated refining
+        let mutable change = true
+        let mutable no_sim = false
+        while change && not no_sim do
+            change <- false
+            for x in Array.ofSeq relation.Keys do
+                for y in relation.[x] do 
+                    if Set.forall (fun nx -> Set.exists (fun ny -> relation.[nx].Contains ny) (b.next y)) (a.next x) then
+                        ()
+                    else
+                        change <- true
+                        relation.[x] <- relation.[x].Remove y 
+                if relation.[x].IsEmpty then no_sim <- true
+        
+        //Check initial states are in relation
+        for ix in a.initialstates do
+            if not (Set.exists  b.initialstates.Contains  (relation.[ix])) then 
+               no_sim <- true
+
+        not no_sim
+
+
+type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality> () =
     inherit Automata<'state, 'data>() with 
     let mutable startSet = Set.empty
     let mutable statesSet = Set.empty
-    let mutable nextMap = Map.empty
-    let mutable dataMap = Map.empty
+    let mutable nextMap = System.Collections.Generic.Dictionary<'state, Set<'state>>()
+    let mutable dataMap = System.Collections.Generic.Dictionary<'state, 'data>()
 
 
     //The method for the automata
     override this.next(s) = 
-        match Map.tryFind s nextMap with
-        | Some x -> x
-        | None -> Set.empty
+        match nextMap.TryGetValue(s) with
+        | true, x -> x
+        | false, _ -> Set.empty
     override this.initialstates = startSet
     override this.states = statesSet
-    override this.value s = Map.find s dataMap
+    override this.value s = dataMap.[s]
 
     member this.addState(x,d) = 
         statesSet <- Set.add x statesSet
-        dataMap <- Map.add x d dataMap
+        if dataMap.ContainsKey x then
+            dataMap.[x] <- d
+        else
+            dataMap.Add(x,d)
 
     member this.addEdge(x,y) =
         //TODO Add some checks 
-        nextMap <- Map.add x (Set.add y (this.next x)) nextMap
+        if nextMap.ContainsKey x then 
+            nextMap.[x] <- Set.add y (this.next x) 
+        else
+            nextMap.Add(x, Set.singleton y)
+
     member this.addInitialState(x) =
         startSet <- Set.add x startSet
 
-type BoundedAutomata<'istate, 'data> when 'istate : comparison 
+type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
     (bound : int, 
      inner : Automata<'istate,'data>)  = 
        inherit Automata<('istate * int), 'data>() with

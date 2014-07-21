@@ -22,7 +22,7 @@ let show_automata (a : Automata<_,_>) =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 0;0;1;1;1;0;0;0 |]
+    let inputs = [| 0;1;0;1;0;1;1;0 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -46,9 +46,9 @@ let main argv =
         let sim = Simulator.test_automata3 rely
         //Remove the bits not involved in interference
         compressedMapAutomata(sim, fun m -> Map.add "neighbour_path" ((rely.value (snd m)).["neighbour_path"]) ((fst m).Remove("signal")))
-        
+
     //The universal rely
-    let mutable relies = 
+    let relies = 
         [|
             let edge = new SimpleAutomata<int,Simulator.interp>()
             edge.addInitialState 0
@@ -72,85 +72,60 @@ let main argv =
             yield edge
         |]
     
-    
+    let changed = Array.map (fun _ -> true) relies
+        
     let add_map s m1 m2 = 
         Map.fold (fun m k v -> Map.add (s + k) v m) m2 m1
 
+    let round () = 
+        for c = 1 to no_of_cells do
+            printfn "Automata %d" c
+            if changed.[c-1] || changed.[c+1] then 
+                printfn "Recalculate %d" c
+                let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
+                let guar = simstep combine
+                //show_automata combine
+                //show_automata guar
+                if relies.[c].simulates guar then
+                    changed.[c] <- false
+                else
+                    printfn "Updated"
+                    relies.[c] <- guar
+                    changed.[c] <- true
+            else changed.[c] <- false
+
+    let start = System.DateTime.Now.Ticks
+  
     printfn "First Round"
-    for c = 1 to no_of_cells do
-        printfn "Automata %d" c
-        let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-        let guar = simstep combine
-        //show_automata combine
-        //show_automata guar
-        relies.[c] <- guar
+    round()
+    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
+
+    changed.[0] <- false
+    changed.[changed.Length - 1] <- false
+
 
     printfn "Second Round"
-    for c = 1 to no_of_cells do
-        printfn "Automata %d" c
-        let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-        let guar = simstep combine
-        //show_automata combine
-        //show_automata guar
-        relies.[c] <- guar
+    round()
+    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
 
     printfn "Third Round"
-    for c = 1 to no_of_cells do
-        printfn "Automata %d" c
-        let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-        let guar = simstep combine
-        //show_automata combine
-        //show_automata guar
-        relies.[c] <- guar
+    round()
+    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
 
     printfn "Fourth Round"
-    for c = 1 to no_of_cells do
-        printfn "Automata %d" c
-        let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-        let guar = simstep combine
-        //show_automata combine
-        //show_automata guar
-        relies.[c] <- guar
+    round()
+    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
 
 
     printfn "Fifth Round"
-    for c = 1 to no_of_cells do
-        printfn "Automata %d" c
-        let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-        let guar = simstep combine
-        //show_automata combine
-        relies.[c] <- guar
+    round()
+    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
 
 
     printfn "Sixth Round"
-    for c = 1 to no_of_cells do
-        printfn "Automata %d" c
-        let combine = Automata.productFilter relies.[c-1] relies.[c+1] (fun ld rd -> Some (add_map "right_" rd (add_map "left_" ld b.[c-1])))
-        let guar = simstep combine
-        //show_automata combine
-        show_automata guar
-        relies.[c] <- guar
+    round()
+    printfn "Ticks:  %d" (System.DateTime.Now.Ticks - start)
 
-//    show_automata a.[0]
-//    show_automata a.[1]
-//
-//    let step1a = simstep a.[1] 0
-//    let step1b = simstep a.[0] 1
-//
-//    show_automata step1a
-//    show_automata step1b
-//
-//    let step2a = simstep step1b 0
-//    let step2b = simstep step1a 1
-//
-//    show_automata step2a
-//    show_automata step2b
-//
-//    let finalstepa = finalsimstep step2b
-//    let finalstepb = finalsimstep step2a
-//
-//    show_automata finalstepa
-//    show_automata finalstepb
 
 
     (*

@@ -1,6 +1,7 @@
 ﻿module Simulator
 open Automata
 open Microsoft.Z3
+open System.Collections.Generic
 
 type formula = Microsoft.Z3.BoolExpr
 type interp = Map<string, int>
@@ -45,6 +46,15 @@ let interp_form (i : interp) s : formula =
         |]
     context.MkAnd(assigns)
 
+let cache (f : 'a -> 'b) =
+    let cache = new System.Collections.Generic.Dictionary<'a, 'b>()
+    fun x -> 
+        match cache.TryGetValue(x) with
+        | true, interps -> interps 
+        | false, _ ->
+            let v = f x 
+            cache.Add(x,v)
+            v
 
 ///Stateful function to provide an all_smt loop given an interpretation of some of the variables
 ///Recommended use
@@ -52,31 +62,34 @@ let interp_form (i : interp) s : formula =
 ///    let r1  = foo i1
 ///    let r2  = foo i2
 ///    ...
-let all_smt (f : formula) : interp list -> Set<interp> =
+let all_smt (f : formula) : interp list -> ICollection<interp> =
     //Construct Z3 context with the formula
     let solver = context.MkSimpleSolver()
     solver.Assert(f)
-    fun base_interps -> 
+    cache (
+      fun base_interps ->
         //Push interpretation of some variables to formula
         solver.Push()
         for i in base_interps do
             solver.Assert(interp_form i prev_pre)
         //Loop finding new interpretations of remaining variables 
-        let mutable new_interps = Set.empty
+        let mutable new_interps = System.Collections.Generic.HashSet<_>() 
         while solver.Check([||]) = Microsoft.Z3.Status.SATISFIABLE do
             //Evaluate the interpretation
             let next_interp = get_interp solver.Model
-            if Set.contains next_interp new_interps then
+            if new_interps.Add next_interp then
+                ()
+            else 
                 printfn "Under constained input to Z3 formula"
                 assert false
-            new_interps <- Set.add next_interp new_interps
             //Assert negation of interpretation
             solver.Assert(context.MkNot (interp_form next_interp next_pre))
 
         //Clear the interpretation
         solver.Pop()
         //Return all the interpretations
-        new_interps
+        new_interps :> ICollection<interp>
+    )
 
 ///Stateful function to simulate stuff.  The first two arguments establish the Z3 context, so recommended use is
 ///  let sim1 = sim initform stepformula
@@ -106,7 +119,7 @@ let sim initform stepformula =
                     r
         //The mutable automata we will return for this execution
         let result = new SimpleAutomata<int, (interp * 'istate)>()
-
+        
         //Add the initial states
         for interp in init_interps do
             for index in rely.initialstates do
