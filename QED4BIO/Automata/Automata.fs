@@ -1,57 +1,63 @@
 ﻿module Automata
+open System.Collections.Generic
 
 
-let set_collect f s = Set.unionMany (Set.map f s) 
-
+let set_collect (f : _ -> HashSet<_> -> unit) (s : IEnumerable<_>) = 
+    let res = new HashSet<_>()
+    for i in s do 
+        f i res
+    res
  
 /// Abstract class representing automata
 [<AbstractClass>]
 type Automata<'state , 'data> when 'state : comparison and 'data:equality  () = 
    
-   abstract member next : 'state -> Set<'state>
+   abstract member next : 'state -> ISet<'state>
    abstract member value : 'state -> 'data
    abstract states : Set<'state> 
-   abstract member initialstates: Set<'state>
+   abstract member initialstates: ISet<'state>
 
-   member a.reachablestates () : Set<_> =
-     let rec rs_inner (workset : Set<_>) reached = 
-        let nextstates = set_collect (fun x -> a.next(x)) workset
-        let unreached_nextstates = Set.difference nextstates reached
-        if Set.isEmpty unreached_nextstates then 
+   member a.reachablestates () : ISet<'state> =
+     let rec rs_inner (workset : ISet<'state>) (reached : ISet<'state>) = 
+        let nextstates = set_collect (fun x rs -> rs.UnionWith (a.next x)) workset
+        nextstates.ExceptWith reached
+        if nextstates.Count = 0 then 
             reached
         else
-            rs_inner unreached_nextstates (Set.union reached unreached_nextstates)
-     rs_inner a.initialstates a.initialstates
+            reached.UnionWith nextstates
+            rs_inner nextstates reached
+     rs_inner (new HashSet<_>(a.initialstates)) (new HashSet<_>(a.initialstates))
 
     member a.Graph (graph : Microsoft.Msagl.Drawing.Graph) = 
       let add_node x =
         let node = new Microsoft.Msagl.Drawing.Node(x.ToString())
         let label = "(" + x.ToString() + "): " + ((a.value x).ToString())
         node.LabelText <- label
-        if Set.contains x a.initialstates then
+        if a.initialstates.Contains x then
                 node.Attr.FillColor <- Microsoft.Msagl.Drawing.Color.Beige
         graph.AddNode(node) |> ignore
 
-      let rec rs_inner (workset : Set<'state>) reached =
+      let rec rs_inner (workset : ISet<'state>) (reached : ISet<'state>) =
         let nextstates = 
              set_collect 
-                (fun x -> 
+                (fun x rs -> 
                     let n = a.next(x)
                     add_node x
                     for y in n do 
                         add_node y
                         graph.AddEdge(x.ToString(),y.ToString()) |> ignore
-                    n
+                    rs.UnionWith n
                 ) workset
-        let unreached_nextstates = Set.difference nextstates reached
-        if Set.isEmpty unreached_nextstates then 
+        nextstates.ExceptWith reached
+        if nextstates.Count = 0 then 
             reached
         else
-            rs_inner unreached_nextstates (Set.union reached unreached_nextstates)
-      rs_inner a.initialstates a.initialstates
+            reached.UnionWith nextstates
+            rs_inner nextstates reached
+      rs_inner (new HashSet<_>(a.initialstates)) (new HashSet<_>(a.initialstates))
    
     member a.simulates<'state2 when 'state2 : comparison> (b : Automata<'state2, 'data>) : bool =
-        let relation = new System.Collections.Generic.Dictionary<'state, Set<'state2>>()
+        let relation = new Dictionary<'state, Set<'state2>>()
         //initialise relation to relate things with same values.
         for x in a.states do
             relation.Add(x, Set.empty)
@@ -68,7 +74,7 @@ type Automata<'state , 'data> when 'state : comparison and 'data:equality  () =
             change <- false
             for x in Array.ofSeq relation.Keys do
                 for y in relation.[x] do 
-                    if Set.forall (fun nx -> Set.exists (fun ny -> relation.[nx].Contains ny) (b.next y)) (a.next x) then
+                    if Seq.forall (fun nx -> Seq.exists (fun ny -> relation.[nx].Contains ny) (b.next y)) (a.next x) then
                         ()
                     else
                         change <- true
@@ -85,19 +91,23 @@ type Automata<'state , 'data> when 'state : comparison and 'data:equality  () =
 
 type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality> () =
     inherit Automata<'state, 'data>() with 
-    let mutable startSet = Set.empty
+    let mutable startSet = new HashSet<_>()
     let mutable statesSet = Set.empty
-    let mutable nextMap = System.Collections.Generic.Dictionary<'state, Set<'state>>()
-    let mutable dataMap = System.Collections.Generic.Dictionary<'state, 'data>()
-    let mutable prevMap = System.Collections.Generic.Dictionary<'state, Set<'state>>()
+    let mutable nextMap = new Dictionary<'state, HashSet<'state>>()
+    let mutable dataMap = new Dictionary<'state, 'data>()
+    let mutable prevMap = new Dictionary<'state, HashSet<'state>>()
     
 
     //The method for the automata
     override this.next(s) = 
         match nextMap.TryGetValue(s) with
-        | true, x -> x
-        | false, _ -> Set.empty
-    override this.initialstates = startSet
+        | true, x -> x :> ISet<_>
+        | false, _ -> 
+            let set = new HashSet<_>()
+            nextMap.Add(s, set) |> ignore
+            set :> ISet<_>
+
+    override this.initialstates = startSet :> ISet<_>
     override this.states = statesSet
     override this.value s = dataMap.[s]
 
@@ -110,24 +120,30 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
 
     member this.addEdge(x,y) =
         //TODO Add some checks 
-        if nextMap.ContainsKey x then 
-            nextMap.[x] <- Set.add y (this.next x) 
-        else
-            nextMap.Add(x, Set.singleton y)
-        if prevMap.ContainsKey y then 
-            prevMap.[y] <- Set.add x (this.pred y) 
-        else
-            prevMap.Add(y, Set.singleton x)
+        match nextMap.TryGetValue x with
+        | true, v ->  
+            v.Add y |> ignore
+        | false, _ ->  
+            let set = new HashSet<_>()
+            set.Add y |> ignore
+            nextMap.Add(x, set) |> ignore
+        match prevMap.TryGetValue y with
+        | true, v -> 
+            v.Add x |> ignore
+        | false, _ -> 
+            let set = new HashSet<_>()
+            set.Add(x) |> ignore
+            prevMap.Add(y, set) |> ignore
 
 
 
     member this.addInitialState(x) =
-        startSet <- Set.add x startSet
+        startSet.Add x |> ignore
 
     member this.pred s = 
         match prevMap.TryGetValue(s) with
         | true, x -> x
-        | false, _ -> Set.empty
+        | false, _ -> new HashSet<_>()
 
 type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
     (bound : int, 
@@ -143,8 +159,8 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equal
                     let nexts = ref (inner.next(s))
                     for j = i to bound do
                        yield! Seq.map (fun (x : 'istate) -> (x, j)) !nexts
-                       nexts := set_collect (fun x -> inner.next(x)) !nexts
-                } |> Set.ofSeq
+                       nexts := set_collect (fun x rs -> rs.UnionWith (inner.next x)) !nexts :> ISet<_>
+                } |> fun x -> new HashSet<_>(x) :> ISet<_>
 
           override this.value((s,i)) = inner.value(s)
 
@@ -158,46 +174,49 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equal
             } |> Set.ofSeq
 
           override this.initialstates =
-            let mutable nreach = inner.initialstates
-            let mutable result = Set.empty
+            let mutable nreach = new HashSet<_>(inner.initialstates)
+            let mutable result = new HashSet<_>()
             for i = 0 to (if allow_negative then bound else 0) do
-                result <- Set.union (Set.map (fun x -> (x,i)) nreach) result
-                nreach <- set_collect (fun x -> inner.next(x)) nreach
-            result
+                result.UnionWith (set_collect (fun x rs -> rs.Add (x,i) |> ignore) nreach)
+                nreach <- set_collect (fun x rs -> rs.UnionWith (inner.next x)) nreach
+            result :> ISet<_>
 
 let opt_default d o = match o with | Some x -> x | None -> d
 
 let find_refl m x = Map.tryFind x m |> opt_default x
 
-let build_eq<'a, 'state3,'data3 when 'a : comparison and 'state3 : comparison and 'data3 : comparison> 
+let build_eq<'a, 'state3,'data3 when 'a : comparison and 'state3 : equality and 'state3 : comparison and 'data3 : comparison> 
     (inner : Automata<'state3, 'data3>) 
-    (canonise : Map<'state3,'state3> -> 'state3 -> 'a) 
+    (canonise : Dictionary<'state3,'state3> -> 'state3 -> 'a) 
     =
-    let rec inner_loop eq_prev =
+    let rec inner_loop eq_prev reps_count =
         let mutable reps = Set.empty
-        let mutable canons = Map.empty
-        let mutable eq_new = Map.empty
+        let canons = new Dictionary<_,'state3>()
+        let eq_new = new Dictionary<'state3,'state3>()
         for x in inner.states do
                 let v = canonise eq_prev x
-                match Map.tryFind v canons with
-                | Some y -> 
-                    eq_new <- Map.add x y eq_new
-                | None -> 
-                    canons <- Map.add (canonise eq_prev x) x canons 
+                match canons.TryGetValue( v) with
+                | true, y -> 
+                    eq_new.Add(x,y)
+                | false, _ -> 
+                    canons.Add ((canonise eq_prev x),x)
                     reps <- Set.add x reps
-                    eq_new <- Map.add x x eq_new
-        if eq_new <> eq_prev then inner_loop eq_new
+                    eq_new.Add(x,x)
+        if reps_count <> reps.Count then inner_loop eq_new reps.Count
         else eq_new, reps
     //Make all elements equal initially
     let first_canon = inner.states.MinimumElement
-    let first_eq = Set.fold (fun m x -> Map.add x first_canon m) Map.empty inner.states
-    inner_loop first_eq
+    let first_eq = new Dictionary<'state3,'state3>()
+    do Set.iter (fun x -> first_eq.Add(x,first_canon)) inner.states
+    inner_loop first_eq inner.states.Count
 
 let compressedMapAutomata 
     (inner : Automata<'state,'data1>, 
      f : 'state -> 'data1 -> 'data2) : SimpleAutomata<int, 'data2> = 
         //Get initial sample of the data
-        let next_eq eq x = Set.map (find_refl eq) (inner.next x)
+        let next_eq (eq : Dictionary<_,_>) x = 
+            Seq.fold (fun res x -> Set.add (eq.[x]) res) Set.empty (inner.next x)
+
         let canonise eq x = (f x (inner.value x), next_eq eq x)        
         let eq,reps = build_eq inner canonise
 
@@ -212,10 +231,10 @@ let compressedMapAutomata
                 newAuto.addEdge((reps_map.TryFind x).Value,(reps_map.TryFind y).Value)
 
         for x in inner.initialstates do
-            newAuto.addInitialState ((reps_map.TryFind (Map.find x eq)).Value)
+            newAuto.addInitialState ((reps_map.TryFind (eq.[x])).Value)
 
         //Do some reverse normalisation now
-        let pred_eq eq x = Set.map (fun x -> Map.find x eq) (newAuto.pred x)
+        let pred_eq (eq : Dictionary<_,_>) x = Seq.fold (fun rs x -> Set.add eq.[x] rs) Set.empty (newAuto.pred x)
         let canonise2 eq x = (newAuto.value x, pred_eq eq x, newAuto.initialstates.Contains x)
         let eq, reps = build_eq newAuto canonise2
         let newAuto2 = new SimpleAutomata<int, 'data2>()

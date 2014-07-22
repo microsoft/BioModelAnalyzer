@@ -52,14 +52,17 @@ let main argv =
         let sim_BA = new BoundedAutomata<int,Simulator.interp> (bound, sim_smaller, true)
         if show_intermediate_steps then show_automata sim_BA
         //Compress
-        compressedMapAutomata(sim_BA, fun _ m -> m)
+        let final = compressedMapAutomata(sim_BA, fun _ m -> m)
+        if show_intermediate_steps then show_automata final
+        //show_automata final
+        final
 
     let rec reach_repeatedly (auto : Automata<_,_>) s seen result =
         //Quick hack : TODO better 
         if Set.contains s seen then 
            Set.add s result 
         else 
-           set_collect (fun n -> reach_repeatedly auto n (Set.add s seen) result) (auto.next s)
+           Seq.fold (fun rs n -> Set.union rs (reach_repeatedly auto n (Set.add s seen) result)) Set.empty (auto.next s)
 
     let finalsimstep rely = 
         //Simulate
@@ -134,7 +137,7 @@ let main argv =
   
     printfn "First Round"
     round()
-    printfn "Ticks:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+    printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
     changed.[0] <- false
     changed.[changed.Length - 1] <- false
@@ -142,47 +145,59 @@ let main argv =
     while Array.Exists(changed, fun x -> x) do
       printfn "Next Round"
       round()
-      printfn "Ticks:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+      printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
     printfn "Build big composition..."
     
-    let mutable auto = finalsimstep (rely 1)
-    let normalize = (@)
+    let normalize = Simulator.normalize_gen ()
 
-    let mutable auto = productFilter unitAutomata auto (fun _ x -> Some x) (fun _ x -> [x])
+    let mutable auto = 
+        [|
+           for i = 1 to no_of_cells do
+              yield productFilter unitAutomata (finalsimstep (rely i)) (fun _ x -> Some x) (fun _ x -> x)
+        |]
 
+    printfn "Begin compositions"
     //show_automata auto 
 
-
-    for c = 2 to no_of_cells do
-        let right = finalsimstep (rely c)
-        //show_automata right
-        auto <- 
-            productFilter auto right 
-                ( fun x y ->
-                    let newrangel = if fst x.range < fst y.range then fst x.range else fst y.range
-                    let newranger = if snd x.range > snd y.range then snd x.range else snd y.range
-                    if x.left_internal_val = y.left_external_val
-                        && y.right_internal_val = x.right_external_val 
-                        && newranger - newrangel <= bound 
-                    then 
-                        Some { left_external_val = x.left_external_val 
-                               right_external_val = y.right_external_val
-                               left_internal_val = x.left_internal_val 
-                               right_internal_val = y.right_internal_val
-                               range = (newrangel, newranger)
-                               middle_vals = x.middle_vals @ y.middle_vals}
-                    else 
-                        None
-                )         
-                (fun x y -> normalize x [y])
+    let mutable steps = no_of_cells
+    while steps > 1 do
+        let carryover = steps % 2 = 1 
+        steps <- (steps >>> 1 ) 
+        for c = 0 to steps - 1 do
+            printfn "Next product: %O"  (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+            auto.[c] <- 
+                productFilter auto.[c*2] auto.[c+1] 
+                    ( fun x y ->
+                        let newrangel = if fst x.range < fst y.range then fst x.range else fst y.range
+                        let newranger = if snd x.range > snd y.range then snd x.range else snd y.range
+                        if x.left_internal_val = y.left_external_val
+                            && y.right_internal_val = x.right_external_val 
+                            && newranger - newrangel <= bound 
+                        then 
+                            Some { left_external_val = x.left_external_val 
+                                   right_external_val = y.right_external_val
+                                   left_internal_val = x.left_internal_val 
+                                   right_internal_val = y.right_internal_val
+                                   range = (newrangel, newranger)
+                                   middle_vals = x.middle_vals @ y.middle_vals}
+                        else 
+                            None
+                    )         
+                    (fun x y -> normalize (x,y))
+            auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
+            //show_automata auto.[c]
+        if carryover then 
+            auto.[steps] <- auto.[steps * 2 ]
+            steps <- steps + 1
+             
     //show_automata auto
 
-    let tidy_auto = compressedMapAutomata (auto, fun _ x -> String.Join(", ", x.middle_vals))
+    let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(", ", x.middle_vals))
 
-    printfn "Ticks:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+    printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    show_automata tidy_auto
+    //show_automata tidy_auto
 
 
     printfn "%A" argv
