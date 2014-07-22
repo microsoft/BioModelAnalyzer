@@ -14,7 +14,7 @@ type Automata<'state , 'data> when 'state : comparison and 'data:equality  () =
    
    abstract member next : 'state -> ISet<'state>
    abstract member value : 'state -> 'data
-   abstract states : Set<'state> 
+   abstract states : ICollection<'state> 
    abstract member initialstates: ISet<'state>
 
    member a.reachablestates () : ISet<'state> =
@@ -92,7 +92,7 @@ type Automata<'state , 'data> when 'state : comparison and 'data:equality  () =
 type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality> () =
     inherit Automata<'state, 'data>() with 
     let mutable startSet = new HashSet<_>()
-    let mutable statesSet = Set.empty
+    let mutable statesSet = new HashSet<_>()
     let mutable nextMap = new Dictionary<'state, HashSet<'state>>()
     let mutable dataMap = new Dictionary<'state, 'data>()
     let mutable prevMap = new Dictionary<'state, HashSet<'state>>()
@@ -108,11 +108,11 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
             set :> ISet<_>
 
     override this.initialstates = startSet :> ISet<_>
-    override this.states = statesSet
+    override this.states = statesSet :> ICollection<_>
     override this.value s = dataMap.[s]
 
     member this.addState(x,d) = 
-        statesSet <- Set.add x statesSet
+        statesSet.Add(x) |> ignore
         if dataMap.ContainsKey x then
             dataMap.[x] <- d
         else
@@ -171,7 +171,7 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equal
                 for s in inner.states do
                     for i = -bound to bound do
                         yield (s,i)
-            } |> Set.ofSeq
+            } |> Set.ofSeq :> ICollection<_>
 
           override this.initialstates =
             let mutable nreach = new HashSet<_>(inner.initialstates)
@@ -190,7 +190,7 @@ let build_eq<'a, 'state3,'data3 when 'a : comparison and 'state3 : equality and 
     (canonise : Dictionary<'state3,'state3> -> 'state3 -> 'a) 
     =
     let rec inner_loop eq_prev reps_count =
-        let mutable reps = Set.empty
+        let reps = new Dictionary<_,_>()
         let canons = new Dictionary<_,'state3>()
         let eq_new = new Dictionary<'state3,'state3>()
         for x in inner.states do
@@ -199,15 +199,17 @@ let build_eq<'a, 'state3,'data3 when 'a : comparison and 'state3 : equality and 
                 | true, y -> 
                     eq_new.Add(x,y)
                 | false, _ -> 
-                    canons.Add ((canonise eq_prev x),x)
-                    reps <- Set.add x reps
+                    canons.Add (v,x)
+                    reps.Add(x,true) |> ignore
                     eq_new.Add(x,x)
         if reps_count <> reps.Count then inner_loop eq_new reps.Count
-        else eq_new, reps
+        else eq_new, reps.Keys
     //Make all elements equal initially
-    let first_canon = inner.states.MinimumElement
+    let enum = inner.states.GetEnumerator()
+    assert (enum.MoveNext())
+    let first_canon = enum.Current
     let first_eq = new Dictionary<'state3,'state3>()
-    do Set.iter (fun x -> first_eq.Add(x,first_canon)) inner.states
+    do Seq.iter (fun x -> first_eq.Add(x,first_canon)) inner.states
     inner_loop first_eq inner.states.Count
 
 let compressedMapAutomata 
@@ -220,7 +222,7 @@ let compressedMapAutomata
         let canonise eq x = (f x (inner.value x), next_eq eq x)        
         let eq,reps = build_eq inner canonise
 
-        let reps_arr = Set.toArray reps
+        let reps_arr = Seq.toArray reps
         let newAuto = new SimpleAutomata<int, 'data2>()
         let mutable reps_map = Map.empty
         for i = 0 to reps_arr.Length - 1 do 
@@ -256,19 +258,18 @@ let productFilter
     =
     let result = new SimpleAutomata<'state, 'data>()
 
-    let work_set = ref Set.empty
-    let reached = ref Set.empty
+    let work_set = System.Collections.Concurrent.ConcurrentBag()
+    
+    let reached = new HashSet<_>()
     let add_node li ri pred_option =
         match f (left.value li) (right.value ri) with
         | None -> ()
         | Some d -> 
             result.addState(g li ri, d)
 
-            if Set.contains (li,ri) !reached then 
-                ()
-            else
-                work_set := (!work_set).Add (li,ri)
-                reached := (!reached).Add (li,ri)
+            if reached.Add( (li,ri) ) then 
+                work_set.Add (li,ri)
+                
 
             match pred_option with 
             | Some lri -> result.addEdge( lri,  g li ri)
@@ -279,15 +280,16 @@ let productFilter
         for ri in right.initialstates do
             add_node li ri None
 
-    while not (!work_set).IsEmpty do
-        let li,ri = (!work_set).MaximumElement
-        work_set := (!work_set).Remove ((li,ri))
+    let mutable more, liri = work_set.TryTake()
+    while more do
+        let li = fst liri
+        let ri = snd liri
         let ln = left.next(li)
         let rn = right.next(ri)
         for lni in ln do
             for rni in rn do
                 add_node lni rni (Some (g li ri))
-    
+        more <- work_set.TryTake(&(liri))
     result    
 
 let unitAutomata =

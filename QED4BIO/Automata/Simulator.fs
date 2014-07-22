@@ -148,7 +148,7 @@ let sim initform stepformula =
                     //Add an edge for the reduction
                     result.addEdge ((normalize (interp,index)), (normalize (new_interp,new_index)))
                     //Check if the target is new
-                    if Set.contains (normalize (new_interp,new_index)) result.states then
+                    if result.states.Contains (normalize (new_interp,new_index))  then
                         ()
                     else
                         //If it is new, add the state, and add to work set.

@@ -35,7 +35,7 @@ type summary<'a> when 'a : comparison =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 1;1;1 |]
+    let inputs = [| 1;1;1;1;1;1;1;1;1;1;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
