@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>FSPowerPack.Linq.Community</id>
+    <version>3.0.0.0</version>
+    <authors>Daniel Mohl (author of this NuGet package) refer to http://fsharppowerpack.codeplex.com/ for the library authors</authors>
+    <owners>Daniel Mohl (author of this NuGet package) refer to http://fsharppowerpack.codeplex.com/ for the library authors</owners>
+    <licenseUrl>http://fsharppowerpack.codeplex.com/license</licenseUrl>
+    <projectUrl>http://fsharppowerpack.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>This package includes FSPowerPack.Core.Community as well as the Linq libraries. The F# PowerPack is a collection of libraries and tools for use with the F# programming languages provided by the F# team at Microsoft.</description>
+    <summary>The additional libraries in the F# PowerPack are functionality which is not part of the core F# release, but enables some development scenarios with F#. The PowerPack include features such as a basic Matrix library and supporting math types, FsLex and FsYacc tools for lexing and parsing, support for using F# with LINQ-based libraries, and a tool for generating HTML documentation from F# libraries. This functionality, which has previously been available in the F# CTP releases, is now available on CodePlex. The F# PowerPack will continue to evolve seperately from the main F# releases, and the features will continue to be improved and iterated upon.</summary>
+    <language>en-US</language>
+    <dependencies>
+      <dependency id="FSPowerPack.Core.Community" />
+    </dependencies>
+    <references>
+      <reference file="FSharp.PowerPack.Linq.dll" />
+    </references>
+  </metadata>
+</package>

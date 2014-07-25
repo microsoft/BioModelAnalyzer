@@ -1,0 +1,41 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:BioCheck_Views="clr-namespace:BioCheck.Views"
+	mc:Ignorable="d"
+	x:Class="BioCheck.Controls.MembraneReceptorSite"
+	d:DesignWidth="50" d:DesignHeight="50">
+
+	<Grid x:Name="LayoutRoot" Width="50" Height="50" Background="Transparent">
+		
+		<VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DropTargetStates">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.1"/>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="NotDropTarget"/>
+                <VisualState x:Name="IsDropTarget">
+                    <Storyboard>
+                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="DropTargetRectangle" d:IsOptimized="True"/>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+		
+		<Rectangle x:Name="DropTargetRectangle" StrokeDashArray="20 20" StrokeThickness="0" Opacity="0">
+			<Rectangle.Fill>
+
+				<RadialGradientBrush>
+					<GradientStop Color="{StaticResource HighlightColor}" Offset="0.335"/>
+					<GradientStop Color="Transparent" Offset="1"/>
+					<GradientStop Color="#99F1F1F2" Offset="0.726"/>
+				</RadialGradientBrush>
+			</Rectangle.Fill>
+		</Rectangle>
+		<ContentControl x:Name="SiteContent" d:LayoutOverrides="Width" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+			<!--<BioCheck_Views:MembranceReceptorView/>-->
+		</ContentControl>
+	</Grid>
+</UserControl>

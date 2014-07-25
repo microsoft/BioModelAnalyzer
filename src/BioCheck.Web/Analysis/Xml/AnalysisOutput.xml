@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisOutput>
+  <Status>Stabilizing</Status>
+  <Errors>
+    <Variable Id="9" Error="Failed to parse the target function" />
+  </Errors>
+  <Variables>
+    <Variable Id="9">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="8">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="7">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="6">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="5">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="4">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="3">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="2">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="12">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="11">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="10">
+      <Value>0</Value>
+    </Variable>
+    <Variable Id="1">
+      <Value>0</Value>
+    </Variable>
+  </Variables>
+</AnalysisOutput>
+

@@ -1,4 +1,0 @@
-﻿
-=== Version 3 Notes ===
-
-- Variables are now positioned relative to their Grid Cell, not to their parent container, so 20 pixels has to be added to v2 Position values

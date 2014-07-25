@@ -1,0 +1,14 @@
+syntax: glob
+
+Thumbs.db
+Build/bin/*
+Unused/*
+*/bin/*
+*/obj/*
+*.user
+*.suo
+*.pyc
+*~
+*.asv
+*.swp
+*.pdb
