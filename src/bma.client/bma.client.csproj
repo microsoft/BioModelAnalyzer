@@ -80,9 +80,11 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="css\bma.css" />
     <Content Include="css\idd.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="DOMPlotSVGSample.html" />
+    <Content Include="html\DrawingSurface.html" />
+    <Content Include="html\SVGPlotSample.html" />
     <Content Include="index.html" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
@@ -118,6 +120,7 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <TypeScriptCompile Include="script\drawingsurface.ts" />
     <Content Include="script\idd.js" />
     <Content Include="script\jquery.svg.min.js" />
     <Content Include="script\jquery.svgdom.min.js" />
@@ -132,6 +135,9 @@
     <TypeScriptCompile Include="legacy\bma.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="script\layout.ts" />
+    <TypeScriptCompile Include="script\master.ts" />
+    <TypeScriptCompile Include="script\model.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-2.1.1.min.map" />

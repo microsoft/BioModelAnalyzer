@@ -1,27 +1,19 @@
-﻿var Greeter = (function () {
-    function Greeter(element) {
-        this.element = element;
-        this.element.innerHTML += "The time is: ";
-        this.span = document.createElement('span');
-        this.element.appendChild(this.span);
-        this.span.innerText = new Date().toUTCString();
-    }
-    Greeter.prototype.start = function () {
-        var _this = this;
-        this.timerToken = setInterval(function () {
-            return _this.span.innerHTML = new Date().toUTCString();
-        }, 500);
-    };
-
-    Greeter.prototype.stop = function () {
-        clearTimeout(this.timerToken);
-    };
-    return Greeter;
-})();
+﻿/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="script\model.ts"/>
+/// <reference path="script\layout.ts"/>
+/// <reference path="script\master.ts"/>
+/// <reference path="script\drawingsurface.ts"/>
+var BMA;
+(function (BMA) {
+    var BMAApplicationHub = (function () {
+        function BMAApplicationHub() {
+        }
+        return BMAApplicationHub;
+    })();
+})(BMA || (BMA = {}));
 
 window.onload = function () {
-    var el = document.getElementById('content');
-    var greeter = new Greeter(el);
-    greeter.start();
+    $("#content").drawingsurface();
 };
 //# sourceMappingURL=app.js.map
