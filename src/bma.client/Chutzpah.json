@@ -1,0 +1,35 @@
+﻿{
+    "Framework": "jasmine",
+    "TestHarnessLocationMode": "TestFileAdjacent",     
+    "TypeScriptCodeGenTarget" : "ES5",
+    "RootReferencePathMode":"SettingsFileDirectory",
+
+     "References": [
+         
+         {"Path": "Scripts/jquery-2.1.1.min.js"},
+         {"Path": "Scripts/typings/jasmine/jasmine.d.ts"},
+         {"Path": "Scripts/jasmine/jasmine-jquery.js"},
+         {"Path": "Scripts/jasmine/jasmine.js"},
+         {"Path": "Scripts/typings/jquery/jquery.d.ts"},
+         
+         {"Path": "script/rx.js"},
+         {"Path": "script/rx.jQuery.js"},
+         {"Path": "script/idd.js"},
+         {"Path": "script/svgplot.js"},
+         {"Path": "script/scalablegridlineplot.js"},
+         {"Path": "script/model.ts"},
+         {"Path": "script/model.js"},
+         {"Path": "script/master.ts"},
+         {"Path": "script/master.js"},
+         {"Path": "script/presenters.ts"},
+         {"Path": "script/presenters.js"},
+         {"Path": "script/uidrivers.ts"},
+         {"Path": "script/uidrivers.js"},
+         {"Path": "script/uidrivers.interfaces.ts"},
+         {"Path": "script/uidrivers.interfaces.js"},
+         {"Path": "test/BMA.TestComponents.ts"},
+         {"Path": "test/BMA.TestComponents.js"}
+
+     ],
+     "Tests":  [{ "Include":  "*/test/*.ts" }]
+}

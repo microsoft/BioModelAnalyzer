@@ -82,6 +82,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
     <Content Include="css\bma.css" />
     <Content Include="css\idd.css" />
+    <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
     <Content Include="html\DrawingSurface.html" />
     <Content Include="html\SVGPlotSample.html" />
@@ -116,10 +117,15 @@
     <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Scripts\jasmine-html.js" />
+    <Content Include="Scripts\jasmine.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="script\drawingsurface.ts" />
     <Content Include="script\idd.js" />
     <Content Include="script\jquery.svg.min.js" />
@@ -129,24 +135,32 @@
     <Content Include="script\scalablegridlinesplot.js" />
     <Content Include="script\svgplot.js" />
     <Content Include="web.config" />
+    <TypeScriptCompile Include="script\presenters.ts" />
+    <TypeScriptCompile Include="script\uidrivers.interfaces.ts" />
+    <TypeScriptCompile Include="script\uidrivers.ts" />
+    <TypeScriptCompile Include="test\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\PresenterTests.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="legacy\bma.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="script\layout.ts" />
     <TypeScriptCompile Include="script\master.ts" />
     <TypeScriptCompile Include="script\model.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <Content Include="Chutzpah.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="web.Release.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

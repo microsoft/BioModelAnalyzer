@@ -1,6 +1,6 @@
-﻿(function (BMA, InteractiveDataDisplay, $, undefined) {
+﻿(function (BMAExt, InteractiveDataDisplay, $, undefined) {
 
-    BMA.GridLinesPlot = function (jqDiv, master) {
+    BMAExt.GridLinesPlot = function (jqDiv, master) {
         this.base = InteractiveDataDisplay.CanvasPlot;
         this.base(jqDiv, master);
 
@@ -140,7 +140,7 @@
             return { dataToScreenX: dataToScreenX, dataToScreenY: dataToScreenY };
         };
     }
-    BMA.GridLinesPlot.prototype = new InteractiveDataDisplay.CanvasPlot;
-    InteractiveDataDisplay.register('scalableGridLines', function (jqDiv, master) { return new BMA.GridLinesPlot(jqDiv, master); });
+    BMAExt.GridLinesPlot.prototype = new InteractiveDataDisplay.CanvasPlot;
+    InteractiveDataDisplay.register('scalableGridLines', function (jqDiv, master) { return new BMAExt.GridLinesPlot(jqDiv, master); });
 
-})(window.BMA = window.BMA || {}, InteractiveDataDisplay || {}, jQuery);
+})(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);

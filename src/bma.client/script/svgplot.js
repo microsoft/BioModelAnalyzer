@@ -1,6 +1,6 @@
-﻿(function (BMA, InteractiveDataDisplay, $, undefined) {
+﻿(function (BMAExt, InteractiveDataDisplay, $, undefined) {
 
-    BMA.SVGPlot = function (jqDiv, master) {
+    BMAExt.SVGPlot = function (jqDiv, master) {
         this.base = InteractiveDataDisplay.Plot;
         this.base(jqDiv, master);
         var that = this;
@@ -124,7 +124,7 @@
             return { screenToDataX: screenToDataX, screenToDataY: screenToDataY };
         };
     };
-    BMA.SVGPlot.prototype = new InteractiveDataDisplay.Plot;
-    InteractiveDataDisplay.register('svgPlot', function (jqDiv, master) { return new BMA.SVGPlot(jqDiv, master); });
+    BMAExt.SVGPlot.prototype = new InteractiveDataDisplay.Plot;
+    InteractiveDataDisplay.register('svgPlot', function (jqDiv, master) { return new BMAExt.SVGPlot(jqDiv, master); });
 
-})(window.BMA = window.BMA || {}, InteractiveDataDisplay || {}, jQuery);
+})(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
