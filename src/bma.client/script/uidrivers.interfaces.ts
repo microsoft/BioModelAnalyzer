@@ -7,7 +7,9 @@ module BMA {
             Draw(svg: SVGSVGElement)
         }
 
-        
+        export interface IElementsPanel {
+
+        }
 
     }
 } 

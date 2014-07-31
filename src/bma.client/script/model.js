@@ -4,23 +4,55 @@ var BMA;
 (function (BMA) {
     (function (Model) {
         var BioModel = (function () {
-            function BioModel() {
-                this.variables = [];
-                this.containers = [];
-                this.relationships = [];
+            function BioModel(containers, variables, relationships) {
+                this.variables = variables;
+                this.containers = containers;
+                this.relationships = relationships;
             }
+            Object.defineProperty(BioModel.prototype, "Variables", {
+                get: function () {
+                    return this.variables;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BioModel.prototype, "Containers", {
+                get: function () {
+                    return this.containers;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BioModel.prototype, "Relationships", {
+                get: function () {
+                    return this.relationships;
+                },
+                enumerable: true,
+                configurable: true
+            });
             return BioModel;
         })();
         Model.BioModel = BioModel;
 
         var Variable = (function () {
-            function Variable(containerId, type, rangeFrom, rangeTo, formula) {
+            function Variable(id, containerId, type, rangeFrom, rangeTo, formula) {
+                this.id = id;
                 this.containerId = containerId;
                 this.type = type;
                 this.rangeFrom = rangeFrom;
                 this.rangeTo = rangeTo;
                 this.formula = formula;
             }
+            Object.defineProperty(Variable.prototype, "Id", {
+                get: function () {
+                    return this.id;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Variable.prototype, "ContainerId", {
                 get: function () {
                     return this.containerId;
@@ -113,11 +145,130 @@ var BMA;
         Model.Relationship = Relationship;
 
         var Layout = (function () {
-            function Layout() {
+            function Layout(containers, varialbes) {
+                this.containers = containers;
+                this.variables = varialbes;
             }
+            Object.defineProperty(Layout.prototype, "Containers", {
+                get: function () {
+                    return this.containers;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Layout.prototype, "Variables", {
+                get: function () {
+                    return this.variables;
+                },
+                enumerable: true,
+                configurable: true
+            });
             return Layout;
         })();
         Model.Layout = Layout;
+
+        var ContainerLayout = (function () {
+            function ContainerLayout(id, size, positionX, positionY) {
+                this.id = id;
+                this.size = size;
+                this.positionX = positionX;
+                this.positionY = positionY;
+            }
+            Object.defineProperty(ContainerLayout.prototype, "Id", {
+                get: function () {
+                    return this.id;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ContainerLayout.prototype, "Size", {
+                get: function () {
+                    return this.size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ContainerLayout.prototype, "PositionX", {
+                get: function () {
+                    return this.positionX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ContainerLayout.prototype, "PositionY", {
+                get: function () {
+                    return this.positionY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return ContainerLayout;
+        })();
+        Model.ContainerLayout = ContainerLayout;
+
+        var VarialbeLayout = (function () {
+            function VarialbeLayout(id, positionX, positionY, cellX, cellY, angle) {
+                this.id = id;
+                this.positionX = positionX;
+                this.positionY = positionY;
+                this.cellX = cellX;
+                this.cellY = cellY;
+                this.angle = angle;
+            }
+            Object.defineProperty(VarialbeLayout.prototype, "Id", {
+                get: function () {
+                    return this.id;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VarialbeLayout.prototype, "PositionX", {
+                get: function () {
+                    return this.positionX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VarialbeLayout.prototype, "PositionY", {
+                get: function () {
+                    return this.positionY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VarialbeLayout.prototype, "CellX", {
+                get: function () {
+                    return this.cellX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VarialbeLayout.prototype, "CellY", {
+                get: function () {
+                    return this.cellY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VarialbeLayout.prototype, "Angle", {
+                get: function () {
+                    return this.angle;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return VarialbeLayout;
+        })();
+        Model.VarialbeLayout = VarialbeLayout;
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));

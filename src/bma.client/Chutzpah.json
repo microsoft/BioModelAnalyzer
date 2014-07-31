@@ -28,8 +28,10 @@
          {"Path": "script/uidrivers.interfaces.ts"},
          {"Path": "script/uidrivers.interfaces.js"},
          {"Path": "test/BMA.TestComponents.ts"},
-         {"Path": "test/BMA.TestComponents.js"}
-
+         {"Path": "test/BMA.TestComponents.js"},
+         {"Path": "script/drawingsurface.js"},
+         {"Path": "script/geometry.ts"},
+         {"Path": "script/geometry.js"}
      ],
      "Tests":  [{ "Include":  "*/test/*.ts" }]
 }

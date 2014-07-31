@@ -5,13 +5,18 @@ $.widget("BMA.drawingsurface", {
     _plot: null,
     _svgPlot: null,
     options: {
-        visualization: undefined
     },
 
     _create: function () {
         var that = this;
 
-        $("<div></div>").css("background-color", "red").width(800).height(600).appendTo(that.element);
+        //$("<div></div>").css("background-color", "red").width(800).height(600).appendTo(that.element);
+
+        var plotDiv = $("<div></div>").width(800).height(600).attr("data-idd-plot", "plot").appendTo(that.element);
+        $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
+        $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+
+        that._plot = InteractiveDataDisplay.asPlot(plotDiv);
 
         $(window).resize(function () { that.resize(); });
         that.resize();
@@ -19,7 +24,7 @@ $.widget("BMA.drawingsurface", {
     },
 
     resize: function () {
-        if (this._plot !== null) {
+        if (this._plot !== null && this._plot !== undefined) {
             this._plot.requestUpdateLayout();
         }
     },
