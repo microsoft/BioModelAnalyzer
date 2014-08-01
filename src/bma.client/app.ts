@@ -1,19 +1,26 @@
 ﻿/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="script\model.ts"/>
-/// <reference path="script\master.ts"/>
+/// <reference path="script\commands.ts"/>
+/// <reference path="script\elementsregistry.ts"/>
+/// <reference path="script\uidrivers.interfaces.ts"/>
+/// <reference path="script\uidrivers.ts"/>
+/// <reference path="script\presenters.ts"/>
+
+/// <reference path="script\drawingsurface.ts"/>
 /// <reference path="script\drawingsurface.ts"/>
 
-module BMA {
-    class BMAApplicationHub {
-        private master: Master;
 
-        constructor() {
-        }
-
-    }
+interface Window {
+    Commands: BMA.CommandRegistry;
 }
 
 window.onload = () => {
+    //Creating CommandRegistry
+    window.Commands = new BMA.CommandRegistry();
+
+    //Creating ElementsRegistry
+    var elemntsRegistry = BMA.Elements.CreateElementsRegistry();
+
     $("#content").drawingsurface();
 };
