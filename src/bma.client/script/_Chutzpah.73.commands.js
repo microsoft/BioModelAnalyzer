@@ -1,27 +1,19 @@
-﻿module BMA {
-    export interface ICommandRegistry {
-        Execute(commandName: string, params: any);
-        On(commandName: string, onExecutedCallback: (params: any) => void);
-        Off(commandName: string, onExecutedCallback: (params: any) => void);
-    }
-
-    export class CommandRegistry implements ICommandRegistry {
-        private registeredCommands: ApplicationCommand[];
-
-        constructor() {
+var BMA;
+(function (BMA) {
+    var CommandRegistry = (function () {
+        function CommandRegistry() {
             this.registeredCommands = [];
         }
-
-        public Execute(commandName: string, params: any) {
+        CommandRegistry.prototype.Execute = function (commandName, params) {
             for (var i = 0; i < this.registeredCommands.length; i++) {
                 if (this.registeredCommands[i].Name == commandName) {
                     this.registeredCommands[i].Execute(params);
                     return;
                 }
             }
-        }
+        };
 
-        public On(commandName: string, onExecutedCallback: (params: any) => void) {
+        CommandRegistry.prototype.On = function (commandName, onExecutedCallback) {
             for (var i = 0; i < this.registeredCommands.length; i++) {
                 if (this.registeredCommands[i].Name == commandName) {
                     this.registeredCommands[i].RegisterCallback(onExecutedCallback);
@@ -31,49 +23,50 @@
 
             var newCommand = new ApplicationCommand(commandName);
             newCommand.RegisterCallback(onExecutedCallback);
-            this.registeredCommands.push(newCommand);
-        }
+        };
 
-        public Off(commandName: string, onExecutedCallback: (params: any) => void) {
+        CommandRegistry.prototype.Off = function (commandName, onExecutedCallback) {
             for (var i = 0; i < this.registeredCommands.length; i++) {
                 if (this.registeredCommands[i].Name == commandName) {
                     this.registeredCommands[i].UnregisterCallback(onExecutedCallback);
                     return;
                 }
             }
+        };
+        return CommandRegistry;
+    })();
+    BMA.CommandRegistry = CommandRegistry;
+
+    var ApplicationCommand = (function () {
+        function ApplicationCommand(name) {
+            this.name = name;
+            this.callbacks = [];
         }
-    }
+        Object.defineProperty(ApplicationCommand.prototype, "Name", {
+            get: function () {
+                return this.name;
+            },
+            enumerable: true,
+            configurable: true
+        });
 
-    export class ApplicationCommand {
-        private name: string;
-        private callbacks: {
-            (params: any): void
-        }[];
-
-        public get Name(): string {
-            return this.name;
-        }
-
-        public RegisterCallback(callback: (params: any) => void): void {
+        ApplicationCommand.prototype.RegisterCallback = function (callback) {
             this.callbacks.push(callback);
-        }
+        };
 
-        public UnregisterCallback(callback: (params: any) => void): void {
+        ApplicationCommand.prototype.UnregisterCallback = function (callback) {
             var index = this.callbacks.indexOf(callback);
             if (index > -1) {
                 this.callbacks.splice(index, 1);
             }
-        }
+        };
 
-        public Execute(params: any) {
+        ApplicationCommand.prototype.Execute = function (params) {
             for (var i = 0; i < this.callbacks.length; i++) {
                 this.callbacks[i](params);
             }
-        }
-
-        constructor(name: string) {
-            this.name = name;
-            this.callbacks = [];
-        }
-    }
-} 
+        };
+        return ApplicationCommand;
+    })();
+    BMA.ApplicationCommand = ApplicationCommand;
+})(BMA || (BMA = {}));
