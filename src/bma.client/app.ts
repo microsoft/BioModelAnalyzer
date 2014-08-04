@@ -22,5 +22,5 @@ window.onload = () => {
     //Creating ElementsRegistry
     var elemntsRegistry = BMA.Elements.CreateElementsRegistry();
 
-    $("#content").drawingsurface();
+    $("#drawingSurface").drawingsurface();
 };

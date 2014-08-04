@@ -12,7 +12,7 @@ $.widget("BMA.drawingsurface", {
 
         //$("<div></div>").css("background-color", "red").width(800).height(600).appendTo(that.element);
 
-        var plotDiv = $("<div></div>").width(800).height(600).attr("data-idd-plot", "plot").appendTo(that.element);
+        var plotDiv = $("<div></div>").width("100%").height("100%").attr("data-idd-plot", "plot").appendTo(that.element);
         $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
         $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
 

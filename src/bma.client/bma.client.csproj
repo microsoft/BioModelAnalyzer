@@ -89,7 +89,14 @@
     <Content Include="images\constant.png" />
     <Content Include="images\container.png" />
     <Content Include="images\inhibit.png" />
+    <Content Include="images\launch-tool-btn.png" />
+    <Content Include="images\logo-crop.png" />
+    <Content Include="images\logo.png" />
+    <Content Include="images\MSR-logo.png" />
     <Content Include="images\receptor.png" />
+    <Content Include="images\title-about.png" />
+    <Content Include="images\title-help.png" />
+    <Content Include="images\title-TOU.png" />
     <Content Include="images\variable.png" />
     <Content Include="index.html" />
     <Content Include="legacy\bma.css" />

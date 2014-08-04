@@ -16,6 +16,6 @@ window.onload = function () {
     //Creating ElementsRegistry
     var elemntsRegistry = BMA.Elements.CreateElementsRegistry();
 
-    $("#content").drawingsurface();
+    $("#drawingSurface").drawingsurface();
 };
 //# sourceMappingURL=app.js.map

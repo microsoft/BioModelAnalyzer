@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Bio Model Analyzer</title>
-    <link rel="stylesheet" href="app.css" type="text/css" />
+    <!--<link rel="stylesheet" href="app.css" type="text/css" />-->
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
@@ -14,6 +14,8 @@
     <script src="script/jquery.svg.min.js"></script>
     <script src="script/rx.js"></script>
     <script src="script/rx.jQuery.js"></script>
+    <script src="script/commands.js"></script>
+    <script src="script/elementsregistry.js"></script>
     <script src="script/idd.js"></script>
     <script src="script/svgplot.js"></script>
     <script src="script/scalablegridlinesplot.js"></script>
@@ -25,6 +27,25 @@
 </head>
 <body>
 
-    <div id="content"></div>
+    <div class="bma-container">
+        <div class="bma-content">
+            <div id="drawingSurface" class="bma-drawingsurface"></div>
+        </div>
+    </div>
+
+    <div class="bma-footer">
+        <div class="bma-pagefooter-msrlogo">
+            <a href="http://research.microsoft.com/en-us/" target="_blank">
+                <img src="images/MSR-logo.png" alt="Logo" />
+            </a>
+        </div>
+        <div class="bma-pagefooter-links">
+            <a href="about.html" target="_blank">About</a> - <a href="help.html" target="_blank">Help</a> - <a href="tou.html" target="_blank">Terms of Use</a>
+        </div>
+        <div class="bma-pagefooter-logo">
+            <img src="images/logo-crop.png" alt="Logo" />
+        </div>
+    </div>
+
 </body>
 </html>
