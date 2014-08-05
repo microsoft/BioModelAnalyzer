@@ -13,6 +13,7 @@
 
 interface Window {
     Commands: BMA.CommandRegistry;
+    Elements: BMA.Elements.ElementsRegistry;
 }
 
 window.onload = () => {
@@ -20,7 +21,14 @@ window.onload = () => {
     window.Commands = new BMA.CommandRegistry();
 
     //Creating ElementsRegistry
-    var elemntsRegistry = BMA.Elements.CreateElementsRegistry();
+    window.Elements = new BMA.Elements.ElementsRegistry();
 
+    //Loading widgets
     $("#drawingSurface").drawingsurface();
+
+    //Loading Drivers
+
+    //Loading presenters
+
+
 };

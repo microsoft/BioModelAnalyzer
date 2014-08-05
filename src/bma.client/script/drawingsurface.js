@@ -9,10 +9,17 @@ $.widget("BMA.drawingsurface", {
 
         //$("<div></div>").css("background-color", "red").width(800).height(600).appendTo(that.element);
         var plotDiv = $("<div></div>").width("100%").height("100%").attr("data-idd-plot", "plot").appendTo(that.element);
-        $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
-        $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+        var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
+        var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
 
         that._plot = InteractiveDataDisplay.asPlot(plotDiv);
+
+        var grid = that._plot.get(gridLinesPlotDiv[0]);
+        grid.xStep = 15;
+        grid.x0 = 5;
+        grid.yStep = 35;
+
+        that._plot.navigation.setVisibleRect({ x: 0, y: 0, width: 100, height: 100 }, false);
 
         $(window).resize(function () {
             that.resize();
