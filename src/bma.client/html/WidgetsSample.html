@@ -34,10 +34,10 @@
                 }
             };
 
-            $("#toggle").ModelToolbar();
-            $("#toggle2").ModelToolbar();
-            $("#visibility").VisibilitySettings();
-            $("#visibility").VisibilitySettings("option", "settingsState", { name: "Icons", toggle: true, increment: 17 });
+            $("#toggle").modeltoolbar();
+            $("#toggle2").modeltoolbar();
+            $("#visibility").visibilitysettings();
+            $("#visibility").visibilitysettings("option", "settingsState", { name: "Icons", toggle: true, increment: 17 });
             
             $("#expandVariablesInProof").click(function () {
                 if ($("#flower").is(":hidden"))
@@ -46,13 +46,13 @@
                     $("#flower").hide();
             });
 
-            $("#cheeze").accordeon({ position: "left"});//, header: $("#toggle2"), context: $("#toggle") });
-            $("#accordeon").accordeon({ header: $("#visButton"), context: $("#visibility") });
+            $("#cheeze").bmaaccordion({ position: "left"});//, header: $("#toggle2"), context: $("#toggle") });
+            $("#accordeon").bmaaccordion({ header: $("#visButton"), context: $("#visibility") });
             //$("#modeltoolbarnew").HyperTabs({ position: "left", collapsible: true });
             //$("#modeltoolbarnew li").removeClass("ui-corner-top").addClass("ui-corner-left");
             //$("#tabs").HyperTabs({ tab1: "tabs-1", tab2: "tabs-2", collapsible: true, position: "right" });//.addClass("ui-tabs-vertical ui-helper-clearfix");
             //$("#tabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
-            $("#tabs").accordeon({ position: "right" });
+            $("#tabs").bmaaccordion({ position: "right" });
         })
 
     </script>

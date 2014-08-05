@@ -7,7 +7,10 @@
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
 /// <reference path="script\drawingsurface.ts"/>
-/// <reference path="script\drawingsurface.ts"/>
+/// <reference path="script\modeltoolbar.ts"/>
+/// <reference path="script\accordeon.ts"/>
+/// <reference path="script\skinmodel.ts"/>
+/// <reference path="script\visibilitysettings.ts"/>
 
 window.onload = function () {
     //Creating CommandRegistry
@@ -18,6 +21,9 @@ window.onload = function () {
 
     //Loading widgets
     $("#drawingSurface").drawingsurface();
+    $("#modelToolbarContent").modeltoolbar();
+    $("#modelToolbarContent").modeltoolbar();
+    $("modelToolbarSlider").bmaaccordion({ header: $("#visButton"), context: $("#visibility") });
     //Loading Drivers
     //Loading presenters
 };

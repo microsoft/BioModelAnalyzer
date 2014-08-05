@@ -8,8 +8,10 @@
 /// <reference path="script\presenters.ts"/>
 
 /// <reference path="script\drawingsurface.ts"/>
-/// <reference path="script\drawingsurface.ts"/>
-
+/// <reference path="script\modeltoolbar.ts"/>
+/// <reference path="script\accordeon.ts"/>
+/// <reference path="script\skinmodel.ts"/>
+/// <reference path="script\visibilitysettings.ts"/>
 
 interface Window {
     Commands: BMA.CommandRegistry;
@@ -25,7 +27,9 @@ window.onload = () => {
 
     //Loading widgets
     $("#drawingSurface").drawingsurface();
-
+    $("#modelToolbarContent").modeltoolbar();
+    $("#modelToolbarContent").modeltoolbar();
+    $("modelToolbarSlider").bmaaccordion({ header: $("#visButton"), context: $("#visibility") });
     //Loading Drivers
 
     //Loading presenters

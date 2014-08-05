@@ -4,14 +4,19 @@
 <head>
     <meta charset="utf-8" />
     <title>Bio Model Analyzer</title>
-    <!--<link rel="stylesheet" href="app.css" type="text/css" />-->
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.css" type="text/css" />
+    <link rel="stylesheet" href="css/bma.widgets.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
 
     <script src="Scripts/jquery-2.1.1.min.js"></script>
     <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
     <script src="script/jquery.svg.min.js"></script>
+    <script src="script/accordeon.js"></script>
+    <script src="script/modeltoolbar.js"></script>
+    <script src="script/skinmodel.js"></script>
+    <script src="script/visibilitysettings.js"></script>
+
     <script src="script/rx.js"></script>
     <script src="script/rx.jQuery.js"></script>
     <script src="script/commands.js"></script>
@@ -46,6 +51,23 @@
         </div>
         <div class="bma-pagefooter-logo">
             <img src="images/logo-crop.png" alt="Logo" />
+        </div>
+    </div>
+
+    <div id="modelToolbarSlider">
+        <div id="modelToolbarHeader" class="skinModelContainer shadow">
+            <ul>
+                <li><button class="skinModel">Skin Model</button></li>
+                <li><button class="saveIcon"></button></li>
+            </ul>
+        </div>
+        <div id="modelToolbarContent" class="toolbarContainer shadow">
+            <ul>
+                <li><span class="modelToolbar newButton" data-command="Commands.New">NEW</span></li>
+                <li><span class="modelToolbar openButton" data-command="open">OPEN</span></li>
+                <li><span class="modelToolbar saveButton" data-command="save">SAVE</span></li>
+                <li><span class="modelToolbar exportButton" data-command="export">EXPORT</span></li>
+            </ul>
         </div>
     </div>
 

@@ -1,40 +1,47 @@
 ﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+
 (function ($) {
     $.widget("demo.visibilitysettings", {
+
         _getList: function () {
-            return this.list || this.element.find("ol,ul").eq(0);
-            ;
+            return this.list || this.element.find("ol,ul").eq(0);;
         },
+
         _create: function () {
+
             var that = this;
             this.list = this._getList();
             this.items = this.list.find("li");
             this.listOptions = [];
+            
 
             this.items.each(function (ind) {
+
                 var item = this;
                 that.listOptions[ind] = {};
-                var children = $(item).children();
-
+                var children = $(item).children();//.find("[data-behavior$=undefined]");
                 //var wanted = $("children[data-behavior$='undefined']");
                 //alert("children.length ="+ wanted.length);
                 children.each(function () {
+
                     var child = this;
                     var text = $(child).text();
                     var behavior = $(child).attr("data-behavior");
-
+                    
                     if (behavior === undefined) {
                         for (var i = 0; i < ind; i++) {
-                            if (that.listOptions[i].name === text)
+                            if (that.listOptions[i].name === text) 
                                 throw ("Options must be different");
                         }
                         that.listOptions[ind].name = text;
-                    } else {
+                    }
+                    else {
                         var command, value = undefined;
-                        try  {
+                        try {
                             command = eval($(child).attr("data-command"));
-                        } catch (ex) {
+                        }
+                        catch (ex) {
                             console.log("Error binding to command: " + ex);
                         }
 
@@ -43,10 +50,8 @@
                                 if (that.listOptions[ind].toggle === undefined) {
                                     value = command !== undefined ? Boolean($(child).attr("data-default")) || true : undefined;
                                     var button = $('<button></button>').appendTo($(child));
-                                    if (value)
-                                        button.addClass("buttonON").text("ON");
-                                    else
-                                        button.addClass("buttonOFF").text("OFF");
+                                    if (value) button.addClass("buttonON").text("ON");
+                                    else button.addClass("buttonOFF").text("OFF");
 
                                     that.listOptions[ind].toggle = value;
                                     that.listOptions[ind].toggleButton = button;
@@ -57,7 +62,8 @@
                                             that.changeButtonONOFFStyle(ind);
                                         });
                                     }
-                                } else
+                                }
+                                else
                                     console.log("Names of options should be different");
                                 break;
 
@@ -74,19 +80,24 @@
                             console.log("Undefind command or invalid value");
                         }
                     }
-                });
+                })
             });
         },
-        changeButtonONOFFStyle: function (ind) {
+
+        changeButtonONOFFStyle: function (ind)
+        {
             var button = this.listOptions[ind].toggleButton;
             if (!this.listOptions[ind].toggle) {
                 button.text("OFF");
                 button.removeClass("buttonON").addClass("buttonOFF");
-            } else {
+            }
+            else {
                 button.text("ON");
                 button.removeClass("buttonOFF").addClass("buttonON");
             }
         },
+
+
         _setOption: function (key, value) {
             switch (key) {
                 case "settingsState":
@@ -96,17 +107,23 @@
                             this.changeButtonONOFFStyle(i);
                             this.listOptions[i].increment = value.increment;
                             return;
-                        } else
-                            console.log("No such option");
+                        }
+                        else console.log("No such option");
                     }
                     break;
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
         },
+
         destroy: function () {
             $.Widget.prototype.destroy.call(this);
         }
+
     });
 }(jQuery));
-//# sourceMappingURL=visibilitysettings.js.map
+
+interface JQuery {
+    visibilitysettings(): JQuery;
+    visibilitysettings(settings: Object): JQuery;
+}
