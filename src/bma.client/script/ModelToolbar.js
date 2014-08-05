@@ -1,6 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.modeltoolbar", {
         _getList: function () {
             return this.buttonlist || this.element.find("ol,ul").eq(0);
@@ -30,4 +28,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=modeltoolbar.js.map

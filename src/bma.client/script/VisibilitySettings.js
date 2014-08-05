@@ -1,6 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.visibilitysettings", {
         _getList: function () {
             return this.list || this.element.find("ol,ul").eq(0);
@@ -17,8 +15,6 @@
                 that.listOptions[ind] = {};
                 var children = $(item).children();
 
-                //var wanted = $("children[data-behavior$='undefined']");
-                //alert("children.length ="+ wanted.length);
                 children.each(function () {
                     var child = this;
                     var text = $(child).text();
@@ -109,4 +105,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=visibilitysettings.js.map

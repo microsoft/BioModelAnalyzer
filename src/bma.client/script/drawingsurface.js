@@ -1,13 +1,10 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-$.widget("BMA.drawingsurface", {
+﻿$.widget("BMA.drawingsurface", {
     _plot: null,
     _svgPlot: null,
     options: {},
     _create: function () {
         var that = this;
 
-        //$("<div></div>").css("background-color", "red").width(800).height(600).appendTo(that.element);
         var plotDiv = $("<div></div>").width("100%").height("100%").attr("data-idd-plot", "plot").appendTo(that.element);
         var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
         var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
@@ -51,4 +48,3 @@ $.widget("BMA.drawingsurface", {
         this.element.empty();
     }
 });
-//# sourceMappingURL=drawingsurface.js.map
