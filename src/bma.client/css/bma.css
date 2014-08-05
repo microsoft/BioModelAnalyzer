@@ -13,10 +13,30 @@ html {
 }
 
 
-.bma-drawingsurface {
-    display: block;
+.bma-drawingsurfacecontainer {
     height: calc(100% - 3em - 100px - 4px);
     margin-top: -4px;
+    position: relative;
+}
+
+.bma-drawingsurface{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.bma-modeltoolbarcontainer {
+    position: absolute; 
+    top: 50px; 
+    width: 100%;
+}
+
+.bma-analyticstoolbarcontainer {
+    position: absolute; 
+    top: 50px; 
+    width: 100%;
 }
 
 .bma-footer {
@@ -72,8 +92,8 @@ html {
     display: inline-block;
     text-align: center;
     clear: both;
-    overflow: hidden;
     height: 100px;
+    overflow:visible;
     background-color: white;
     width: 100%;
 }
@@ -84,7 +104,6 @@ html {
     margin-left: 25px;
     border: 1px solid black;
     padding: 12px;
-    width: 250px;
 }
 
 .bma-elementspanel-elementstoolbar {
@@ -92,14 +111,23 @@ html {
     margin-top: 25px;
     border: 1px solid black;
     padding: 12px;
-    width: 250px;
 }
 
-.bma-elementspanel-visualoptionstoolbar {
+.bma-elementspanel-visibilityoptions {
+    float: right;
+    margin-top: 25px;
+    margin-right: 15px;
+    z-index: 1000000;
+}
+
+.bma-elementspanel-visibilityoptions-zoomslider {
     float: right;
     margin-top: 25px;
     margin-right: 25px;
     border: 1px solid black;
     padding: 12px;
-    width: 250px;
+    width: 200px;
 }
+
+
+

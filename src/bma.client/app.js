@@ -12,19 +12,20 @@
 /// <reference path="script\skinmodel.ts"/>
 /// <reference path="script\visibilitysettings.ts"/>
 
-window.onload = function () {
+$(document).ready(function () {
     //Creating CommandRegistry
-    window.Commands = new BMA.CommandRegistry();
-
+    //window.Commands = new BMA.CommandRegistry();
     //Creating ElementsRegistry
-    window.Elements = new BMA.Elements.ElementsRegistry();
-
+    //window.Elements = new BMA.Elements.ElementsRegistry();
     //Loading widgets
     $("#drawingSurface").drawingsurface();
+    $("#modelToolbarHeader").modeltoolbar();
     $("#modelToolbarContent").modeltoolbar();
-    $("#modelToolbarContent").modeltoolbar();
-    $("modelToolbarSlider").bmaaccordion({ header: $("#visButton"), context: $("#visibility") });
+    $("#modelToolbarSlider").bmaaccordion({ position: "left" });
+    $("#visibilityOptionsContent").visibilitysettings();
+    $("#visibilityOptionsSlider").bmaaccordion({ header: $("#visibilityOptionsHeader"), context: $("#visibilityOptionsContent") });
+    $("#analytics").bmaaccordion({ position: "right" });
     //Loading Drivers
     //Loading presenters
-};
+});
 //# sourceMappingURL=app.js.map

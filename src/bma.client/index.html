@@ -11,6 +11,7 @@
 
     <script src="Scripts/jquery-2.1.1.min.js"></script>
     <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
+
     <script src="script/jquery.svg.min.js"></script>
     <script src="script/accordeon.js"></script>
     <script src="script/modeltoolbar.js"></script>
@@ -26,19 +27,102 @@
     <script src="script/scalablegridlinesplot.js"></script>
     <script src="script/drawingsurface.js"></script>
     <script src="script/model.js"></script>
-    <script src="script/master.js"></script>
 
     <script src="app.js"></script>
 </head>
 <body>
-
     <div class="bma-elementspanel">
-        <div class="bma-elementspanel-undoredotoolbar">Undo/Redo toolbar</div>
-        <div class="bma-elementspanel-elementstoolbar">Elements toolbar</div>
-        <div class="bma-elementspanel-visualoptionstoolbar">Visual options toolbar</div>
+        <div class="bma-elementspanel-undoredotoolbar">Undo/Redo toolbar placeholder</div>
+        <div class="bma-elementspanel-elementstoolbar">Elements toolbar placehoder</div>
+
+        <div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>
+        <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
+            <button id="visibilityOptionsHeader" class="iconVisibility show"></button>
+            <div style="position: relative">
+                <div id="visibilityOptionsContent" class="visSettingsUL visibilityTable">
+                    <ul style="text-align: left;">
+                        <li id="li1">
+                            <div class="optionsNames" style="float: left;">Text Labels</div>
+                            <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true" style="float: left;"></div>
+                            <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10" style="float: left;"></div>
+                        </li>
+                        <li id="li2">
+                            <div class="optionsNames">Icons</div>
+                            <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
+                            <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
+                        </li>
+                        <li id="li3">
+                            <div class="optionsNames">Grid</div>
+                            <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true" style="float: left;"></div>
+                        </li>
+                        <li id="li4">
+                            <div class="optionsNames">Line Width</div>
+                            <div data-behavior="increment" data-command="Commands.LineWidth" data-default="10" style="float: left;"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div id="drawingSurface" class="bma-drawingsurface"></div>
+    <div class="bma-drawingsurfacecontainer" style="position: relative;">
+        <div id="drawingSurface" class="bma-drawingsurface"></div>
+
+        <div class="bma-modeltoolbarcontainer">
+            <div id="modelToolbarSlider">
+                <div id="modelToolbarHeader" class="skinModelContainer shadow">
+                    <ul>
+                        <li>
+                            <button class="skinModel">Model 1</button></li>
+                        <li>
+                            <button class="saveIcon"></button>
+                        </li>
+                    </ul>
+                </div>
+                <div id="modelToolbarContent" class="toolbarContainer shadow">
+                    <ul>
+                        <li><span class="modelToolbar newButton" data-command="Commands.New">NEW</span></li>
+                        <li><span class="modelToolbar openButton" data-command="open">OPEN</span></li>
+                        <li><span class="modelToolbar saveButton" data-command="save">SAVE</span></li>
+                        <li><span class="modelToolbar exportButton" data-command="export">EXPORT</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bma-analyticstoolbarcontainer">
+            <div id="analytics">
+                <div class="icon iconAnalyze shadow "></div>
+                <div id="tabs-1" style="width: 400px">
+                    <h2>Proof Analysis</h2>
+                    <div id="ProofResult"></div>
+                    <div id="Variables" style="height: 50px">
+                        <span>Variables</span>
+                        <button id="expandVariablesInProof" class="expandButton"></button>
+                    </div>
+                    <div id="Proof Propagation" style="height: 50px">
+                        <span>Proof Propagation</span>
+                        <button class="expandButton"></button>
+                    </div>
+                </div>
+                <div class="icon iconGraphic shadow" style="top: 60px"></div>
+                <div id="tabs-2" style="width: 400px">
+                    <h2>Simulation</h2>
+                    <div id="Div1" style="height: 50px">
+                        <span>Variables</span>
+                        <button class="expandButton"></button>
+                    </div>
+                    <div id="Div2" style="height: 50px">
+                        <button class="expandButton"></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 
     <div class="bma-footer">
         <div class="bma-pagefooter-msrlogo">
@@ -51,23 +135,6 @@
         </div>
         <div class="bma-pagefooter-logo">
             <img src="images/logo-crop.png" alt="Logo" />
-        </div>
-    </div>
-
-    <div id="modelToolbarSlider">
-        <div id="modelToolbarHeader" class="skinModelContainer shadow">
-            <ul>
-                <li><button class="skinModel">Skin Model</button></li>
-                <li><button class="saveIcon"></button></li>
-            </ul>
-        </div>
-        <div id="modelToolbarContent" class="toolbarContainer shadow">
-            <ul>
-                <li><span class="modelToolbar newButton" data-command="Commands.New">NEW</span></li>
-                <li><span class="modelToolbar openButton" data-command="open">OPEN</span></li>
-                <li><span class="modelToolbar saveButton" data-command="save">SAVE</span></li>
-                <li><span class="modelToolbar exportButton" data-command="export">EXPORT</span></li>
-            </ul>
         </div>
     </div>
 

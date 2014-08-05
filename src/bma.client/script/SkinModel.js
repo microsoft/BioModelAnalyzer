@@ -1,7 +1,7 @@
 ﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
-    $.widget("demo.skinmodel", {
+    $.widget("BMA.skinmodel", {
         options: {
             text: "SkinModel"
         },

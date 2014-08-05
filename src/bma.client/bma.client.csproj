@@ -177,7 +177,6 @@
     <TypeScriptCompile Include="legacy\bma.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="script\master.ts" />
     <TypeScriptCompile Include="script\model.ts" />
   </ItemGroup>
   <ItemGroup>

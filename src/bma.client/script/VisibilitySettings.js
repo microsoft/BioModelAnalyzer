@@ -1,7 +1,7 @@
 ﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
-    $.widget("demo.visibilitysettings", {
+    $.widget("BMA.visibilitysettings", {
         _getList: function () {
             return this.list || this.element.find("ol,ul").eq(0);
             ;
