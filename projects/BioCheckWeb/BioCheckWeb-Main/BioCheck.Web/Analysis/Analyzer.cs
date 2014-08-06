@@ -156,6 +156,7 @@ namespace BioCheck.Web.Analysis
             {   
                 try
                 {
+                    // LTL processing
                     string formula = inputXml.Descendants("Engine").Elements("Formula").First().Value;
                     string num_of_steps = inputXml.Descendants("Engine").Elements("Number_of_steps").First().Value;
 

@@ -11,11 +11,12 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using BioCheck.ViewModel.Time;
 using MvvmFx.Common.ViewModels.States;
+//using BioCheck.ViewModel.Proof;
 
 using System.Diagnostics;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
-using BioCheck.Controls;
+using BioCheck.Controls; // Or VisualStates becomes a keyword
 using BioCheck.Services;
 using BioCheck.ViewModel;
 using MvvmFx.Common.Helpers;
@@ -26,8 +27,14 @@ using System.Collections.ObjectModel;           // For ObservableCollection
 // Time edit
 namespace BioCheck.Views
 {
+    // Needed eventually!______
+    //[TemplateVisualState(Name = VisStates.SimulationDoesNotExist, GroupName = VisStates.LTLStateGroup)]
+    //[TemplateVisualState(Name = VisStates.SimulationExists, GroupName = VisStates.LTLStateGroup)]
+    //[TemplateVisualState(Name = VisStates.NoTestYet, GroupName = VisStates.LTLStateGroup)]
+
     // Public TimeView classes used in TimeView
     #region Public TimeView classes used in TimeView
+
     public class KeyFrames
     {
         // Keyframe features
@@ -40,7 +47,6 @@ namespace BioCheck.Views
         }       // "var", "cell", "N", "<", "=" or ">". Feeds into the Rule OR allows retrieval of full name from NameContent
         public string[] NameContent { get; set; }   // Stores actual cell and variable names, and ints? Feeds into the Rule
     }
-
 
     public class FormulaType
     {
@@ -72,10 +78,75 @@ namespace BioCheck.Views
 
     public partial class TimeView : UserControl
     {
-        private struct VisualStates
+        // New: visuals by Test-outcome.
+        private struct VisStates
         {
-            public const string TimeStateGroup = "TimeStateGroup";            
+            public const string LTLStateGroup = "LTLStateGroup";
+            public const string NoTestYet = "NoTestYet";
+            public const string SimulationDoesNotExist = "SimulationDoesNotExist";
+            public const string SimulationExists = "SimulationExists";
         }
+
+        private void OnStateChanged(object sender, EventArgs e)
+        {
+            this.State = timeVM.State;
+        }
+
+        /// <summary>
+        /// Gets or sets the value of the <see cref="State"/> property.
+        /// </summary>
+        public LTLViewState State
+        {
+            get { return (LTLViewState)GetValue(StateProperty); }
+            set { SetValue(StateProperty, value); }
+        }
+
+        /// <summary>
+        /// The <see cref="StateProperty" /> dependency property registered with the 
+        /// Microsoft Presentation Foundation (WPF) property system.
+        /// </summary>
+        public static readonly DependencyProperty StateProperty =
+            DependencyProperty.Register("State", typeof(LTLViewState), typeof(TimeView), new PropertyMetadata(LTLViewState.None, OnStateChanged));
+
+        private static void OnStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((TimeView)d).OnStateChanged(e);
+        }
+
+        private void OnStateChanged(DependencyPropertyChangedEventArgs e)
+        {
+            switch (State)
+            {
+                case LTLViewState.NoSimulation:
+                    VisualStateManager.GoToState(this, VisStates.SimulationDoesNotExist, true);
+                    break;
+                case LTLViewState.Simulation:
+                    VisualStateManager.GoToState(this, VisStates.SimulationExists, true);
+                    break;
+                case LTLViewState.None:
+                    VisualStateManager.GoToState(this, VisStates.NoTestYet, true);
+                    break;
+            }
+        }
+
+        private void ManualOnStateChanged(LTLViewState wantedState)
+        {
+            switch (wantedState)
+            {
+                case LTLViewState.NoSimulation:
+                    VisualStateManager.GoToState(this, VisStates.SimulationDoesNotExist, true);
+                    break;
+                case LTLViewState.Simulation:
+                    VisualStateManager.GoToState(this, VisStates.SimulationExists, true);
+                    break;
+                case LTLViewState.None:
+                    VisualStateManager.GoToState(this, VisStates.NoTestYet, true);
+                    break;
+            }
+        }
+
+        // End of new Visuals by Test-outrcome.
+
 
         private TimeViewModel timeVM;
         public ObservableCollection<KeyFrames> allKeyframes;            // Now it's accessible throughout.
@@ -83,6 +154,7 @@ namespace BioCheck.Views
         public List<NonNull_Formula> noNullElements = new List<NonNull_Formula>();     // Create list for parsed Formula consiting of non-null Formula elements only.
         public ObservableCollection<BMAvars> allVariables;
         public ObservableCollection<BMAcells> allCells;
+        private bool tableLoaded = false; // New, to load table if there is none._______
 
         public string textForTempDebug = "";
 
@@ -93,6 +165,8 @@ namespace BioCheck.Views
             InitializeComponent();
 
             this.DataContextChanged += TimeView_DataContextChanged;
+            //this.ProgressionGrid.LoadingRow += ProgressionGrid_RowLoaded; // _____New. Failed. UNCOMMENT TO DEBUG SIM TABLE IN LTL
+
             this.AllowDrop = true;          // Still have not tested this.
             Debug.WriteLine("Opening TimeView window.");
                         
@@ -181,6 +255,10 @@ namespace BioCheck.Views
                 addCells2ComboBox();
                 addVars2ComboBox();
             }
+
+            // Reset Visualization area NB OVERRIDES TIMEVIEWMODEL_____
+            this.State = LTLViewState.None;
+            this.TestOutput.Text = "";
         }
 
         // -----------------------------------------------------------------------------------------------
@@ -2913,17 +2991,79 @@ namespace BioCheck.Views
             this.Opacity = 1;
         }
 
+        public void TimeView_testAccess()
+        {
+            Debug.WriteLine("Accessed the TimeView_testAccess!");
+        }
+
+        // Keep!
         void TimeView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (timeVM != null)
             {
-                //timeVM.RemoveHandler("State", OnStateChanged);
+                timeVM.RemoveHandler("State", OnStateChanged);
             }
             timeVM = (TimeViewModel)this.DataContext;           // Gives me access to the data in the VM.
-            //timeVM.AddHandler("State", OnStateChanged);
-            //this.State = timeVM.State;
-            Debug.WriteLine("this.DataContext changed.");
-           
+            timeVM.AddHandler("State", OnStateChanged);
+            this.State = timeVM.State;
+            ManualOnStateChanged(this.State);
+            Debug.WriteLine(" ---->>>>>  TimeView_DataContextChanged accessed!");
+        }
+
+        // Only for pre-loaded Graph, with Variables already written?
+        // Called every time that the scroller shows new variables.
+        // Instance by a row (a variable)
+        private void ProgressionGrid_RowLoaded(object sender, DataGridRowEventArgs e)
+        {
+            if (!tableLoaded)
+            {
+                TimeView_initializeTable();
+                this.tableLoaded = true; // Change the value so it's not re-called.
+            }
+            var grid = sender as DataGrid;
+
+            // To debug further, uncomment the below:
+            //int rowIndex = e.Row.GetIndex();
+            //timeVM = (TimeViewModel)this.DataContext;           // Gives me access to the data in the VM. Perhaps unnecessary.
+            //var progressionInfo = timeVM.TimeInfos[rowIndex];
+
+            //for (int i = 0; i < progressionInfo.Steps.Count; i++)
+            //{
+            //    var column = grid.Columns[i + 1];
+            //    var cell = column.GetCellContent(e.Row); // fails. e.Row looks unset.  <-- NEEDS FIX IF I WANT SIM WINDOW IN LTL
+            //    cell.DataContext = progressionInfo.Steps[i]; // Fails since above fails.
+            //}
+        }
+
+        // Call this when Simulation found. Works ok.
+        // Writes out the T=0, T=1, T=2 colum headers.
+        public void TimeView_initializeTable()
+        {
+            timeVM = (TimeViewModel)this.DataContext;
+
+            // Create the Progression Info grid columns
+            var progressionInfo = timeVM.TimeInfos.FirstOrDefault();
+            if (progressionInfo == null)
+                return;
+
+            // Remove any previously written T=0, T=1 et.c.
+            // To continue table editing, uncomment below
+            //while (ProgressionGrid.Columns.Count > 1)
+            //{
+            //    ProgressionGrid.Columns.RemoveAt(1);
+            //}
+
+            //var colTemplate = this.Resources["ProgressionInfoColumnTemplate"] as DataTemplate;
+            //foreach (var step in progressionInfo.Steps)
+            //{
+            //    var col = new DataGridTemplateColumn();
+            //    col.IsReadOnly = true;
+            //    col.Header = step.Name;
+            //    col.Width = DataGridLength.Auto;
+            //    col.CellTemplate = colTemplate;
+            //    ProgressionGrid.Columns.Add(col);
+            //    //ProgressionGrid.Columns.Insert(1,col); // Inserts column?
+            //}
         }
 
         void TimeView_MouseMove(object sender, MouseEventArgs e)

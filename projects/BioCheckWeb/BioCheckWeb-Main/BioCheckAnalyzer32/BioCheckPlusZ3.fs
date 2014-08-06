@@ -441,6 +441,49 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
     temp_loop_close, temp_map
     // (!loop_close, !map_of_time_to_map_of_var_to_value)
 
+let print_model_to_string (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) (output_model : bool) = 
+    let (loop_close ,map_time_to_map) = model 
+    if not (sat) 
+    then
+        "Unsatisfiable!"
+    elif (output_model) then 
+        let mutable output=""
+        output <- output + "The model is (csv):\n"
+        // print a line with the names of all the variables
+        let mutable all_vars = "time"
+        for var in network do
+            all_vars <- all_vars + "," + var.name
+
+        output <- output + all_vars
+        output <- output + "\n"
+
+        let i = ref 0
+        while (Map.containsKey !i map_time_to_map) do
+
+            let mutable line = sprintf "%d" !i
+            
+            let map_var_to_value = Map.find !i map_time_to_map
+            for var in network do 
+                if Map.containsKey var.var map_var_to_value
+                then 
+                    let the_value = Map.find var.var map_var_to_value 
+                    let the_value_string = sprintf "%d" the_value
+                    line <- line + "," + the_value_string
+                else
+                    line <- line + ",?"
+
+            if loop_close = !i then
+                line <- line + ",<---"
+                
+            output <- output + line 
+            output <- output + "\n"
+            
+            incr i
+
+        output
+    else
+        "Satisfiable!"
+
 let print_model (model : (int * Map<int, Map<var,int>>)) (sat : bool) (network : QN.node list) (output_model : bool) = 
     let (loop_close ,map_time_to_map) = model 
     if not (sat) 

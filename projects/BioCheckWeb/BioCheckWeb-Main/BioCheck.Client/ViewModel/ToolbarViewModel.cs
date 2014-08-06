@@ -819,7 +819,7 @@ namespace BioCheck.ViewModel
                     if (this.proofVM != null)
                         this.proofVM.ResetOutput();
 
-                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
+                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result); //_________ <--
                     this.analysisOutput.Time = time;
                 }
                 catch (Exception ex)
@@ -867,14 +867,14 @@ namespace BioCheck.ViewModel
                     // Clear the current proof
                     ResetStability(true);
 
-                    // Process the analysis output results
+                    // Process the analysis output results_________-->
                     AnalysisOutputHandler.Handle(analysisOutput);
 
                     ApplicationViewModel.Instance.Container
                         .Resolve<IBusyIndicatorService>()
                         .Close();
 
-                    // Show the Proof view
+                    // Show the Proof view_________-->
                     this.proofVM = ProofViewModelFactory.Create(analysisInputDto, analysisOutput);
 
                     ApplicationViewModel.Instance.Container
@@ -958,7 +958,7 @@ namespace BioCheck.ViewModel
 
             var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
 
-            var timeVM = TimeViewModelFactory.Create(modelVM);              // Sets only the name.
+            var timeVM = TimeViewModelFactory.CreatePopUp(modelVM);              // Sets only the name.
 
             ApplicationViewModel.Instance.Container
                     .Resolve<ITimeWindowService>().Show(timeVM);

@@ -86,7 +86,10 @@ type Analyzer2() =
                     // We should structure the data that res,model,model_checked are.
                     let (res,model) = BMC.BoundedMC formula network range padded_paths
                     let model_checked = BioCheckPlusZ3.check_model model res network
-                    Marshal.xml_of_ltl_result res model
+//                    let string_model = BioCheckPlusZ3.print_model_to_string model res network true
+//                    Marshal.xml_of_ltl_string_result res string_model
+//                    Marshal.xml_of_ltl_result res model
+                    Marshal.xml_of_ltl_result_full res model
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.xml_of_error id msg
 

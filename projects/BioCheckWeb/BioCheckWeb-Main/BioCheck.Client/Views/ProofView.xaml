@@ -159,22 +159,22 @@
             <sdk:DataGrid 
                     SelectedIndex="-1"
                     IsHitTestVisible="True"
-							AutoGenerateColumns="False" 
-							ItemsSource="{Binding VariableInfos}" 
-							Style="{StaticResource PopupDataGridStyle}"
-							BorderBrush="{StaticResource PageBorderBrush}" 
-							BorderThickness="1" 
-							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
-							FontFamily="Verdana" 
-							Foreground="#FF58595B" 
-							FontSize="13.333"
-							RowStyle="{StaticResource DataGridRowStyle}" 
-						   VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Auto"
-                  CanUserReorderColumns="False"
-                            CanUserResizeColumns="True"
-                            CanUserSortColumns="False"   
-                 CellStyle="{StaticResource PopupDataGridCellStyle}"
+					AutoGenerateColumns="False" 
+					ItemsSource="{Binding VariableInfos}" 
+					Style="{StaticResource PopupDataGridStyle}"
+					BorderBrush="{StaticResource PageBorderBrush}" 
+					BorderThickness="1" 
+					ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+					FontFamily="Verdana" 
+					Foreground="#FF58595B" 
+					FontSize="13.333"
+					RowStyle="{StaticResource DataGridRowStyle}" 
+					VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Auto"
+                    CanUserReorderColumns="False"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="False"   
+                    CellStyle="{StaticResource PopupDataGridCellStyle}"                    
                 >
                 <sdk:DataGrid.Columns>
                     <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
@@ -196,22 +196,22 @@
             <sdk:DataGrid 
                     SelectedIndex="-1"
                     IsHitTestVisible="True"
-							AutoGenerateColumns="False" 
-							ItemsSource="{Binding VariableInfos}" 
-							Style="{StaticResource PopupDataGridStyle}"
-							BorderBrush="{StaticResource PageBorderBrush}" 
-							BorderThickness="1" 
-							HorizontalScrollBarVisibility="Auto" 
-							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
-							FontFamily="Verdana" 
-							Foreground="#FF58595B" 
-							FontSize="13.333"
-							RowStyle="{StaticResource DataGridRowStyle}" 
-							VerticalScrollBarVisibility="Auto" 
-                        CanUserReorderColumns="False"
-                            CanUserResizeColumns="True"
-                            CanUserSortColumns="False"
-                 CellStyle="{StaticResource PopupDataGridCellStyle}"
+					AutoGenerateColumns="False" 
+					ItemsSource="{Binding VariableInfos}" 
+					Style="{StaticResource PopupDataGridStyle}"
+					BorderBrush="{StaticResource PageBorderBrush}" 
+					BorderThickness="1" 
+					HorizontalScrollBarVisibility="Auto" 
+					ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+					FontFamily="Verdana" 
+					Foreground="#FF58595B" 
+					FontSize="13.333"
+					RowStyle="{StaticResource DataGridRowStyle}" 
+					VerticalScrollBarVisibility="Auto" 
+                    CanUserReorderColumns="False"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="False"
+                    CellStyle="{StaticResource PopupDataGridCellStyle}"
                     >
 
                 <!-- New -->
@@ -487,9 +487,8 @@
                             </DiscreteObjectKeyFrame>
                         </ObjectAnimationUsingKeyFrames>
 
-
-
-                        <!-- -->
+                        <!-- Because it's not specifically Collapsed, CounterExample stuff is visible! _____________ -->
+                        
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
                             <DiscreteObjectKeyFrame KeyTime="0">
                                 <DiscreteObjectKeyFrame.Value>
@@ -849,7 +848,7 @@
 							RowStyle="{StaticResource DataGridRowStyle}" 
 							VerticalScrollBarVisibility="Auto"
                             Margin="0,0,0,10" 
-                        CellStyle="{StaticResource PopupDataGridCellStyle}"
+                            CellStyle="{StaticResource PopupDataGridCellStyle}"
                             >
 
                         <i:Interaction.Behaviors>
@@ -858,15 +857,9 @@
 
                         <sdk:DataGrid.Columns>
                             <!-- For reference, if extra column wanted:
-                            <sdk:DataGridTextColumn Binding="{Binding CellName}" 
-                                                        IsReadOnly="True" 
-                                                        Header="Cell"/>
+                            <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
                             -->
-                            
-                            <sdk:DataGridTextColumn Binding="{Binding Name}" 
-                                                        IsReadOnly="True" 
-                                                        Header="Name"/>
-
+                            <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
                         </sdk:DataGrid.Columns>
                     </sdk:DataGrid>
 

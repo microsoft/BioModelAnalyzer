@@ -331,6 +331,7 @@
     <Compile Include="ViewModel\Synth\SynthViewModel.cs" />
     <Compile Include="ViewModel\Synth\SynthViewModelFactory.cs" />
     <Compile Include="ViewModel\TimebarViewModel.cs" />
+    <Compile Include="ViewModel\Time\LTLViewState.cs" />
     <Compile Include="ViewModel\Time\TimeOutput.cs" />
     <Compile Include="ViewModel\Time\TimeOutputFactory.cs" />
     <Compile Include="ViewModel\Time\TimeInputDTOFactory.cs" />
