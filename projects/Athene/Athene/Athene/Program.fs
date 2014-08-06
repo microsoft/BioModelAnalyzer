@@ -111,7 +111,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
 
 //let seed = ref 1982
 //let steps = ref 100
-let threads = ref 0
+let threads = ref (System.Environment.ProcessorCount)
 //let dT = ref 1. //Minimum timestep
 let xyz = ref ""
 let pdb = ref ""
@@ -197,6 +197,7 @@ let main argv =
     printfn "Initial system:"
     printfn "Particles: %A" state.Physical.Length //system.Length
     printfn "Machines:  %A" state.Formal.Length //machineStates.Length
+    printfn "Maximum number of threads: %A" runInfo.Threads
     
     //printfn "Static grid: %A" staticGrid
     let (mSystem,sSystem) = List.partition (fun (p:Physics.Particle) -> not p.freeze) state.Physical

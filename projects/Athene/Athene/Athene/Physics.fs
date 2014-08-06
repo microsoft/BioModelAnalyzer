@@ -289,6 +289,45 @@ let updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: 
 
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> ; interactors: (Particle*float<um>) list }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
+
+let rec joinList a b =
+        match a with 
+        | top::rest -> joinList rest (top::b)
+        | [] -> b
+
+let chunk n s = 
+    let rec extractChunk s size lAcc gAcc =
+        match s with
+        | atom::rest -> let lAcc' = atom::lAcc
+                        let gAcc' = if (List.length lAcc') = size then (List.rev lAcc')::gAcc else gAcc //Append to global
+                        let lAcc' = if (List.length lAcc') = size then [] else lAcc'                    //clear buffer
+                        extractChunk rest size lAcc' gAcc'
+        | [] -> match (gAcc,lAcc) with
+                | ([],_) -> []
+                | (_,[]) -> List.rev gAcc
+                | (oldLocalAcc::rest,_) ->  //let oldLocalAcc' = List.rev oldLocalAcc
+                                        let lAcc' = List.rev lAcc
+                                        List.rev (lAcc'::gAcc)
+    let core n s =
+        let l = List.length s
+        let chunkSize = l/n
+                        |> (fun f -> if f*n< l then f+1 else f)
+        let leftovers = chunkSize*n
+        extractChunk s chunkSize [] []
+    if n = 0 then (List.map (fun i -> [i]) s) else core n s 
+
+let unchunk s =
+    let rec rejoin s acc =
+        match s with
+        | [] -> acc
+        | top::rest ->  let acc' = joinList (List.rev top) acc
+                        rejoin rest acc'
+    let s' = List.rev s
+    match s' with
+    | [] -> []
+    | last::first ->    rejoin first last
+                        
+
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
 let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) (search:searchType) staticGrid (staticSystem:Particle list) sOrigin (externalF: Vector3D<zNewton> list) threads = 
@@ -361,17 +400,20 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zN
     match search with
     | Grid ->       let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
                     nonBondedTerms 
+                                |> chunk threads
                                 |> Microsoft.FSharp.Collections.PSeq.ordered    
                                 |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
-                                |> Microsoft.FSharp.Collections.PSeq.map (calculateGridNonBonded nonBondedGrid)
+                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateGridNonBonded nonBondedGrid atom))
                                 |> Microsoft.FSharp.Collections.PSeq.toList
+                                |> unchunk
     | Simple ->     let cSystem = quickJoin mobileSystem staticSystem
                     nonBondedTerms 
+                                |> chunk threads
                                 |> Microsoft.FSharp.Collections.PSeq.ordered    
                                 |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
-                                |> Microsoft.FSharp.Collections.PSeq.map (calculateSimpleNonBonded cSystem)
+                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateSimpleNonBonded cSystem atom) )
                                 |> Microsoft.FSharp.Collections.PSeq.toList
-
+                                |> unchunk
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
