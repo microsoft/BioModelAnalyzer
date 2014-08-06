@@ -1,6 +1,15 @@
 ﻿module Automata
 open System.Collections.Generic
 
+let cache (f : 'a -> 'b) =
+    let cache = new System.Collections.Generic.Dictionary<'a, 'b>()
+    fun x -> 
+        match cache.TryGetValue(x) with
+        | true, interps -> interps 
+        | false, _ ->
+            let v = f x 
+            cache.Add(x,v)
+            v
 
 let set_collect (f : _ -> HashSet<_> -> unit) (s : IEnumerable<_>) = 
     let res = new HashSet<_>()
@@ -291,6 +300,102 @@ let productFilter
                 add_node lni rni (Some (g li ri))
         more <- work_set.TryTake(&(liri))
     result    
+
+let composeFilter 
+    (left : Automata<'lstate, 'ldata>) 
+    (right : Automata<'rstate, 'rdata>)
+    (f : 'ldata -> 'rdata -> 'data option)
+    (left_allowed : 'ldata -> 'rdata -> bool)
+    (right_allowed : 'rdata -> 'ldata -> bool)
+    (g : 'lstate -> 'rstate -> 'state)
+    : SimpleAutomata<'state, 'data>
+    =
+    let result = new SimpleAutomata<'state, 'data>()
+
+    let work_set = System.Collections.Concurrent.ConcurrentBag()
+    
+    let reached = new HashSet<_>()
+    let add_node li ri pred_option =
+        match f (left.value li) (right.value ri) with        
+        | None -> ()
+        | Some d -> 
+            result.addState(g li ri, d)
+
+            if reached.Add( (li,ri) ) then 
+                work_set.Add (li,ri)
+                
+
+            match pred_option with 
+            | Some lri -> result.addEdge( lri,  g li ri)
+            | None -> result.addInitialState (g li ri)
+        
+                
+    for li in left.initialstates do
+        for ri in right.initialstates do
+            add_node li ri None
+
+    let mutable more, liri = work_set.TryTake()
+    while more do
+        let li = fst liri
+        let ri = snd liri
+        let ln = left.next(li)
+        let rn = right.next(ri)
+        for lni in ln do
+            if left_allowed (left.value lni) (right.value ri) then
+                add_node lni ri (Some (g li ri))
+                for rni in rn do
+                    if right_allowed (right.value rni) (left.value li) then
+                        add_node lni rni (Some (g li ri))
+
+        for rni in rn do
+            if right_allowed (right.value rni) (left.value li) then
+                add_node li rni (Some (g li ri))
+        //Add self loop, this will make more things equal later
+        add_node li ri (Some (g li ri))
+        more <- work_set.TryTake(&(liri))
+    result    
+
+type NstepBarrierAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
+    (bound : int, 
+     inner : Automata<'istate,'data>)  = 
+     inherit Automata<('istate * int), ('data * bool)>() with      
+       let InnerNext = 
+        cache (
+            fun  (s, i) ->
+                seq {
+                    yield (s,i)
+                    if i=bound then
+                        yield (s,-1)
+                    elif i = -1 then
+                        yield (s,0)
+                    else 
+                        for n in inner.next s do
+                            yield (n,i+1)
+                } |> fun s -> new HashSet<_>(s) :> ISet<_>
+        )
+
+
+       override this.next x = InnerNext x
+
+       override this.value ((s,i)) = 
+            let v = inner.value s 
+            if i = -1 then (v,true) 
+            else (v,false)
+
+       override this.states = 
+            seq {
+                //All states of the inner automata with all bounds. 
+                //Some states might not be reachable.
+                for s in inner.states do
+                    for i = -1 to bound  do
+                        yield (s,i)
+            } |> Set.ofSeq :> ICollection<_>
+
+       override this.initialstates = 
+        seq {
+            for s in inner.initialstates do
+                yield (s,0)
+        } |> fun s -> new HashSet<_>(s) :> ISet<_>
 
 let unitAutomata =
     let a = new SimpleAutomata<string,string>()

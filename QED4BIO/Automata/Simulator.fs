@@ -46,17 +46,9 @@ let interp_form (i : interp) s : formula =
         |]
     context.MkAnd(assigns)
 
-let cache (f : 'a -> 'b) =
-    let cache = new System.Collections.Generic.Dictionary<'a, 'b>()
-    fun x -> 
-        match cache.TryGetValue(x) with
-        | true, interps -> interps 
-        | false, _ ->
-            let v = f x 
-            cache.Add(x,v)
-            v
+let cache = Automata.cache
 
-let normalize_gen () =
+let inline normalize_gen () =
     let table = new System.Collections.Generic.Dictionary<_,_>()
     let index = ref 0
     fun x -> 

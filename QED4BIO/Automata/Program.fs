@@ -22,20 +22,19 @@ type summary<'a> when 'a : comparison =
       right_external_val : 'a
       left_internal_val : 'a
       right_internal_val : 'a
-      middle_vals : (Set<'a>) list
-      range : int * int  }
+      middle_vals : 'a list
+    }
     override this.ToString() = 
         "left_val:\t" + this.left_external_val.ToString() + 
           "\nright_val:\t" + this.right_external_val.ToString() +
-          "\nrange:\t" + this.range.ToString() +
           "\nmid:\t" + String.Join(",", this.middle_vals)
 
 
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 1
-    let inputs = [| 1;1;1;1;1;1;1;1;1;1;1 |]
+    let bound = 5
+    let inputs = [| 1;1;1;1;1;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -72,12 +71,12 @@ let main argv =
                                                            right_external_val = ((rely.value (snd m)).["right_path"])
                                                            left_internal_val = ((fst m).["path"])
                                                            right_internal_val = ((fst m).["path"])
-                                                           middle_vals = [Set.map (fun s -> (fst (sim.value s)).["path"]) (reach_repeatedly sim s Set.empty Set.empty)]
-                                                           range = (0,0)
+                                                           middle_vals = [(fst m).["path"]]
                                                          })
-        let ba = new BoundedAutomata<_,_>(bound, auto, true)                                  
-        compressedMapAutomata(ba, fun (_,i) m -> { m with range=(i,i)})
-
+        //show_automata auto
+        let ba = new NstepBarrierAutomata<_,_>(bound, auto)
+        let res = compressedMapAutomata(ba, fun _ m -> m)
+        res
     //The universal rely
     //Gets updated in place as we refine the components.
     let relies = 
@@ -154,7 +153,9 @@ let main argv =
     let mutable auto = 
         [|
            for i = 1 to no_of_cells do
-              yield productFilter unitAutomata (finalsimstep (rely i)) (fun _ x -> Some x) (fun _ x -> x)
+              let sim = finalsimstep (rely i)
+              //show_automata sim
+              yield sim
         |]
 
     printfn "Begin compositions"
@@ -165,39 +166,43 @@ let main argv =
         let carryover = steps % 2 = 1 
         steps <- (steps >>> 1 ) 
         for c = 0 to steps - 1 do
-            printfn "Next product: %O"  (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+            printfn "Next product start: %O"  (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+            printfn "Calc (%d,%d) -> %d" (c*2) (c*2+1) c
             auto.[c] <- 
-                productFilter auto.[c*2] auto.[c+1] 
+                composeFilter auto.[c*2] auto.[c*2+1] 
                     ( fun x y ->
-                        let newrangel = if fst x.range < fst y.range then fst x.range else fst y.range
-                        let newranger = if snd x.range > snd y.range then snd x.range else snd y.range
-                        if x.left_internal_val = y.left_external_val
-                            && y.right_internal_val = x.right_external_val 
-                            && newranger - newrangel <= bound 
-                        then 
-                            Some { left_external_val = x.left_external_val 
+                        if (snd x = snd y) then
+                            let b = snd x
+                            let x = fst x
+                            let y = fst y
+                            Some ({left_external_val = x.left_external_val 
                                    right_external_val = y.right_external_val
                                    left_internal_val = x.left_internal_val 
                                    right_internal_val = y.right_internal_val
-                                   range = (newrangel, newranger)
-                                   middle_vals = x.middle_vals @ y.middle_vals}
-                        else 
-                            None
+                                   middle_vals = x.middle_vals @ y.middle_vals}, b)
+                        else None
                     )         
+                    (fun l r -> 
+                        (fst l).right_external_val = (fst r).left_internal_val                        
+                    )
+                    (fun r l -> 
+                        (fst r).left_external_val = (fst l).right_internal_val                        
+                    )
                     (fun x y -> normalize (x,y))
             auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
-            //show_automata auto.[c]
         if carryover then 
+            printfn "Carry over %dd -> %d" (steps*2) steps
             auto.[steps] <- auto.[steps * 2 ]
             steps <- steps + 1
              
     //show_automata auto
+    printfn "Pre tidy Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(", ", x.middle_vals))
+    let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(", ", (fst x).middle_vals))
 
     printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    //show_automata tidy_auto
+    show_automata tidy_auto
 
 
     printfn "%A" argv
