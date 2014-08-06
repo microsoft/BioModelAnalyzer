@@ -1,4 +1,7 @@
-﻿var BMA;
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\script\uidrivers.interfaces.ts"/>
+var BMA;
 (function (BMA) {
     (function (Test) {
         var TestSVGPlotDriver = (function () {
@@ -22,3 +25,4 @@
     })(BMA.Test || (BMA.Test = {}));
     var Test = BMA.Test;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=BMA.TestComponents.js.map

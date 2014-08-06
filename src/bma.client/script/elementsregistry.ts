@@ -53,7 +53,7 @@
 
             }
 
-            public get Element(): Element[] {
+            public get Elements(): Element[] {
                 return this.elements;
             }
 
@@ -69,6 +69,14 @@
 
             constructor() {
                 this.elements = [];
+
+                this.elements.push(new Element(
+                    "Container",
+                    function (model, layout) {
+                        return undefined;
+                    },
+                    "Cell",
+                    "images/container.png"));
 
                 this.elements.push(new Element(
                     "Constant",
@@ -97,14 +105,6 @@
                     },
                     "Membrane Receptor",
                     "images/receptor.png"));
-
-                this.elements.push(new Element(
-                    "Container",
-                    function (model, layout) {
-                        return undefined;
-                    },
-                    "Cell",
-                    "images/container.png"));
 
                 this.elements.push(new Element(
                     "Activator",

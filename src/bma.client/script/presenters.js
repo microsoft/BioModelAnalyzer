@@ -10,3 +10,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=presenters.js.map

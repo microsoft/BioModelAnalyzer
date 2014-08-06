@@ -8,15 +8,12 @@
     <link rel="stylesheet" href="css/bma.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.widgets.css" type="text/css" />
     <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="Content/themes/base/jquery.ui.css" type="text/css" />
+
 
     <script src="Scripts/jquery-2.1.1.min.js"></script>
     <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
-
     <script src="script/jquery.svg.min.js"></script>
-    <script src="script/accordeon.js"></script>
-    <script src="script/modeltoolbar.js"></script>
-    <script src="script/skinmodel.js"></script>
-    <script src="script/visibilitysettings.js"></script>
 
     <script src="script/rx.js"></script>
     <script src="script/rx.jQuery.js"></script>
@@ -25,15 +22,23 @@
     <script src="script/idd.js"></script>
     <script src="script/svgplot.js"></script>
     <script src="script/scalablegridlinesplot.js"></script>
-    <script src="script/drawingsurface.js"></script>
     <script src="script/model.js"></script>
+
+    <script src="script/widgets/accordeon.js"></script>
+    <script src="script/widgets/toolbarpanel.js"></script>
+    <script src="script/widgets/skinmodel.js"></script>
+    <script src="script/widgets/visibilitysettings.js"></script>
+    <script src="script/widgets/drawingsurface.js"></script>
+    <script src="script/widgets/elemettoolbar.js"></script>
 
     <script src="app.js"></script>
 </head>
 <body>
     <div class="bma-elementspanel">
         <div class="bma-elementspanel-undoredotoolbar">Undo/Redo toolbar placeholder</div>
-        <div class="bma-elementspanel-elementstoolbar">Elements toolbar placehoder</div>
+
+        <div id="elemtoolbar" class="bma-elementspanel-elementstoolbar">
+        </div>
 
         <div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>
         <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">

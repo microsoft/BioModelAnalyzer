@@ -7,34 +7,46 @@
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
 
-/// <reference path="script\drawingsurface.ts"/>
-/// <reference path="script\modeltoolbar.ts"/>
-/// <reference path="script\accordeon.ts"/>
-/// <reference path="script\skinmodel.ts"/>
-/// <reference path="script\visibilitysettings.ts"/>
+/// <reference path="script\widgets\drawingsurface.ts"/>
+/// <reference path="script\widgets\toolbarpanel.ts"/>
+/// <reference path="script\widgets\accordeon.ts"/>
+/// <reference path="script\widgets\skinmodel.ts"/>
+/// <reference path="script\widgets\visibilitysettings.ts"/>
+/// <reference path="script\widgets\elementbutton.ts"/>
 
 interface Window {
     Commands: BMA.CommandRegistry;
-    Elements: BMA.Elements.ElementsRegistry;
+    ElementRegistry: BMA.Elements.ElementsRegistry;
 }
 
 $(document).ready(function () {
     //Creating CommandRegistry
-    //window.Commands = new BMA.CommandRegistry();
+    window.Commands = new BMA.CommandRegistry();
 
     //Creating ElementsRegistry
-    //window.Elements = new BMA.Elements.ElementsRegistry();
+    window.ElementRegistry = new BMA.Elements.ElementsRegistry();
 
     //Loading widgets
     $("#drawingSurface").drawingsurface();
-    $("#modelToolbarHeader").modeltoolbar();
-    $("#modelToolbarContent").modeltoolbar();
+    $("#modelToolbarHeader").toolbarpanel();
+    $("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion({ header: $("#visibilityOptionsHeader"), context: $("#visibilityOptionsContent") });
     $("#analytics").bmaaccordion({ position: "right" });
-    
-    
+
+    /*
+    var elementPanel = $("#elemtoolbar");
+    var elements = window.ElementRegistry.Elements;
+    for (var i = 0; i < elements.length; i++) {
+        var elem = elements[i];
+        $("<input></input>").attr("type", elem.Type).attr("id", "btn-" + elem.Type).appendTo(elementPanel);
+        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
+        $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
+    }
+    elementPanel.buttonset();
+    */
+
     //Loading Drivers
 
     //Loading presenters
