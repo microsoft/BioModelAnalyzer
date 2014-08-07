@@ -308,6 +308,7 @@ let composeFilter
     (left_allowed : 'ldata -> 'rdata -> bool)
     (right_allowed : 'rdata -> 'ldata -> bool)
     (g : 'lstate -> 'rstate -> 'state)
+    (display : SimpleAutomata<'state, 'data> -> unit)
     : SimpleAutomata<'state, 'data>
     =
     let result = new SimpleAutomata<'state, 'data>()
@@ -329,6 +330,7 @@ let composeFilter
             | Some lri -> result.addEdge( lri,  g li ri)
             | None -> result.addInitialState (g li ri)
         
+//            display result
                 
     for li in left.initialstates do
         for ri in right.initialstates do

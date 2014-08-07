@@ -33,8 +33,8 @@ type summary<'a> when 'a : comparison =
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 5
-    let inputs = [| 1;1;1;1;1;1 |]
+    let bound = 1
+    let inputs = [| 1;1;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -184,11 +184,14 @@ let main argv =
                     )         
                     (fun l r -> 
                         (fst l).right_external_val = (fst r).left_internal_val                        
+                        || (snd l) || (snd r)
                     )
                     (fun r l -> 
                         (fst r).left_external_val = (fst l).right_internal_val                        
+                        || (snd l) || (snd r)
                     )
                     (fun x y -> normalize (x,y))
+                    show_automata
             auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
         if carryover then 
             printfn "Carry over %dd -> %d" (steps*2) steps

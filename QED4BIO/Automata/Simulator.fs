@@ -133,10 +133,10 @@ let sim initform stepformula =
             let interp = fst interp_index
             //Find next states in the rely
             let new_indexs = rely.next(index)
-            //For all interpretations of the new variables
-            for new_interp in steps [interp ; rely.value index] do
-                //For all next indexs of the rely
-                for new_index in new_indexs do
+            //For all next indexs of the rely
+            for new_index in new_indexs do
+                //For all interpretations of the new variables
+                for new_interp in steps [interp ; rely.value new_index] do
                     //Add an edge for the reduction
                     result.addEdge ((normalize (interp,index)), (normalize (new_interp,new_index)))
                     //Check if the target is new
