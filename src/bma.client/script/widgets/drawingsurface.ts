@@ -19,13 +19,24 @@
 
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
+            this._plot.aspectRatio = 1 / 1.3;
+            var svgPlot = that._plot.get(svgPlotDiv[0]);
+
+            plotDiv.click(function (arg) {
+                var cs = svgPlot.getScreenToDataTransform();
+                window.Commands.Execute("DrawingSurfaceClick",
+                    {
+                        x: cs.screenToDataX(arg.clientX),
+                        y: cs.screenToDataY(arg.clientY)
+                    });
+            });
 
             var grid = that._plot.get(gridLinesPlotDiv[0]);
-            grid.xStep = 15;
-            grid.x0 = 5;
-            grid.yStep = 35;
+            grid.xStep = 300;
+            grid.x0 = 0;
+            grid.yStep = 350;
 
-            that._plot.navigation.setVisibleRect({ x: 0, y: 0, width: 100, height: 100 }, false);
+            that._plot.navigation.setVisibleRect({ x: 0, y: 0, width: 2500, height: 1000 }, false);
 
             $(window).resize(function () { that.resize(); });
             that.resize();

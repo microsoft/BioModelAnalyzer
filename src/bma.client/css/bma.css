@@ -99,11 +99,10 @@ html {
 }
 
 .bma-elementspanel-undoredotoolbar {
+    display: inline-block;
     float: left;
-    margin-top: 25px;
-    margin-left: 25px;
-    border: 1px solid black;
-    padding: 12px;
+    margin-top: 15px;
+    margin-left: 50px;
 }
 
 .bma-elementspanel-elementstoolbar {
@@ -127,16 +126,29 @@ html {
     width: 200px;
 }
 
-.bma-elementtoolbar-element {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    border: 1px solid gray;
-    background-repeat:no-repeat;
-    background-position:center;
-    margin: 5px;
-    float: left;
+#tools .ui-button {
+	width: 50px;
+	height: 50px;
+	margin-left: 0.2em;
+	margin-right: 0.2em;
+	border-radius: 7px;
+    background-color: white;
 }
 
+#tools img {
+	height: 35px;
+}
 
+#tools .ui-button-text {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.bma-verticalline {
+    width: 1px; 
+    background-color: lightgray; 
+    height: 30px; 
+    position: absolute; 
+    top: -20px;
+}
 

@@ -102,12 +102,15 @@
     <Content Include="images\kit_i_kot.jpg" />
     <Content Include="images\new.png" />
     <Content Include="images\open.png" />
+    <Content Include="images\pointer.png" />
     <Content Include="images\receptor.png" />
+    <Content Include="images\redo.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />
     <Content Include="images\title-about.png" />
     <Content Include="images\title-help.png" />
     <Content Include="images\title-TOU.png" />
+    <Content Include="images\undo.png" />
     <Content Include="images\variable.png" />
     <Content Include="images\visicon.png" />
     <Content Include="index.html" />

@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Bio Model Analyzer</title>
+    <link rel="stylesheet" href="Content/themes/base/jquery.ui.all.css" type="text/css" />
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.widgets.css" type="text/css" />
@@ -34,10 +35,27 @@
     <script src="app.js"></script>
 </head>
 <body>
-    <div class="bma-elementspanel">
-        <div class="bma-elementspanel-undoredotoolbar">Undo/Redo toolbar placeholder</div>
+    <div id="tools" class="bma-elementspanel">
+        <div id="undoredotoolbar" class="bma-elementspanel-undoredotoolbar">
+            <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
+            <label for="button-pointer">
+                <img src="images/pointer.png" title="Selection tool" /></label>
 
-        <div id="elemtoolbar" class="bma-elementspanel-elementstoolbar">
+            <div style="display: inline-block;">
+                <div style="position: relative">
+                    <div class="bma-verticalline"></div>
+                </div>
+            </div>
+
+            <button id="button-undo">
+                <img src="images/undo.png" title="Undo" />
+            </button>
+            <button id="button-redo">
+                <img src="images/redo.png" title="Redo" />
+            </button>
+        </div>
+
+        <div id="modelelemtoolbar" class="bma-elementspanel-elementstoolbar">
         </div>
 
         <div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>
