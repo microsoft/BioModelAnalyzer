@@ -37,7 +37,7 @@ type summary<'a> when 'a : comparison =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 1;1;1 |]
+    let inputs = [| 1;1;1;1;1;1;1;1;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -157,7 +157,7 @@ let main argv =
            for i = 1 to no_of_cells do
               let sim = finalsimstep (rely i)
               //show_automata sim
-              let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
+              //let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
               yield sim
         |]
 
@@ -195,10 +195,10 @@ let main argv =
                         || (fst r).left_external_val = dont_care
                         || (snd l) || (snd r)
                     )
-                    (fun x y -> x @ y)
+                    (fun x y -> normalize (x , y))
                     show_automata
             //show_automata auto.[c]
-            //auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
+            auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
         if carryover then 
             printfn "Carry over %d -> %d" (steps*2) steps
             auto.[steps] <- auto.[steps * 2 ]
