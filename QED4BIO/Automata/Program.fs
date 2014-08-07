@@ -218,7 +218,7 @@ let main argv =
 
     printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    show_automata tidy_auto
+    //show_automata tidy_auto
 
 
     printfn "%A" argv
