@@ -355,7 +355,7 @@ let composeFilter
             if right_allowed (right.value rni) (left.value li) then
                 add_node li false rni true (Some (g li ri))
         //Add self loop, this will make more things equal later
-        //add_node li ri (Some (g li ri))
+        //add_node li false ri false (Some (g li ri))
         more <- work_set.TryTake(&(liri))
     result    
 

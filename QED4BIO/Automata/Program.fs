@@ -37,7 +37,7 @@ type summary<'a> when 'a : comparison =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 1;1;1;1;1;1;1;1;1 |]
+    let inputs = [| 0;0;0 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -59,17 +59,21 @@ let main argv =
         //show_automata final
         final
 
-    let rec reach_repeatedly (auto : Automata<_,_>) s seen result =
-        //Quick hack : TODO better 
-        if Set.contains s seen then 
-           Set.add s result 
-        else 
-           Seq.fold (fun rs n -> Set.union rs (reach_repeatedly auto n (Set.add s seen) result)) Set.empty (auto.next s)
+    let reach_repeatedly (auto : Automata<_,_>) =
+        let body f s seen result =
+            //Quick hack : TODO better 
+            if Set.contains s seen then 
+               Set.add s result 
+            else 
+               Seq.fold (fun rs n -> Set.union rs (f n (Set.add s seen) result)) Set.empty (auto.next s)
+        let rec g s seen result = cache (body g) s seen result
+        fun s -> g s Set.empty Set.empty
 
     let finalsimstep rely = 
         //Simulate
         let sim = Simulator.test_automata5 rely
         //Remove the bits not involved in interference
+        let reach_rep = reach_repeatedly sim
         let auto = compressedMapAutomata(sim, fun s m -> { left_external_val =  match snd m with | None -> dont_care | Some m -> ((rely.value m).["left_path"])
                                                            right_external_val = match snd m with | None -> dont_care | Some m -> ((rely.value m).["right_path"])
                                                            left_internal_val = ((fst m).["path"])
@@ -152,7 +156,7 @@ let main argv =
     
     let normalize = Simulator.normalize_gen ()
 
-    let mutable auto = 
+    let auto = 
         [|
            for i = 1 to no_of_cells do
               let sim = finalsimstep (rely i)
@@ -163,6 +167,8 @@ let main argv =
 
     printfn "Begin compositions"
 
+    let set_cartesian op S1 S2 =
+        Set.fold (fun RS y -> Set.fold (fun RS x -> Set.add (op x y) RS) RS S1) Set.empty S2
 
     let mutable steps = no_of_cells
     while steps > 1 do
