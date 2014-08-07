@@ -1,6 +1,8 @@
 ﻿module Automata
 open System.Collections.Generic
 
+let dont_care = -99
+
 let cache (f : 'a -> 'b) =
     let cache = new System.Collections.Generic.Dictionary<'a, 'b>()
     fun x -> 
@@ -304,7 +306,7 @@ let productFilter
 let composeFilter 
     (left : Automata<'lstate, 'ldata>) 
     (right : Automata<'rstate, 'rdata>)
-    (f : 'ldata -> 'rdata -> 'data option)
+    (f : 'ldata -> bool -> 'rdata -> bool -> 'data option)
     (left_allowed : 'ldata -> 'rdata -> bool)
     (right_allowed : 'rdata -> 'ldata -> bool)
     (g : 'lstate -> 'rstate -> 'state)
@@ -316,8 +318,8 @@ let composeFilter
     let work_set = System.Collections.Concurrent.ConcurrentBag()
     
     let reached = new HashSet<_>()
-    let add_node li ri pred_option =
-        match f (left.value li) (right.value ri) with        
+    let add_node li bl ri br pred_option =
+        match f (left.value li) bl (right.value ri) br with        
         | None -> ()
         | Some d -> 
             result.addState(g li ri, d)
@@ -334,7 +336,7 @@ let composeFilter
                 
     for li in left.initialstates do
         for ri in right.initialstates do
-            add_node li ri None
+            add_node li false ri false None
 
     let mutable more, liri = work_set.TryTake()
     while more do
@@ -344,16 +346,16 @@ let composeFilter
         let rn = right.next(ri)
         for lni in ln do
             if left_allowed (left.value lni) (right.value ri) then
-                add_node lni ri (Some (g li ri))
+                add_node lni true ri false (Some (g li ri))
                 for rni in rn do
                     if right_allowed (right.value rni) (left.value li) then
-                        add_node lni rni (Some (g li ri))
+                        add_node lni true rni true (Some (g li ri))
 
         for rni in rn do
             if right_allowed (right.value rni) (left.value li) then
-                add_node li rni (Some (g li ri))
+                add_node li false rni true (Some (g li ri))
         //Add self loop, this will make more things equal later
-        add_node li ri (Some (g li ri))
+        //add_node li ri (Some (g li ri))
         more <- work_set.TryTake(&(liri))
     result    
 
@@ -365,7 +367,7 @@ type NstepBarrierAutomata<'istate, 'data> when 'istate : comparison and 'data : 
         cache (
             fun  (s, i) ->
                 seq {
-                    yield (s,i)
+                    //yield (s,i)
                     if i=bound then
                         yield (s,-1)
                     elif i = -1 then

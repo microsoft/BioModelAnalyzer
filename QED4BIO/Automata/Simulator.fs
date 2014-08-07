@@ -112,13 +112,12 @@ let sim initform stepformula =
         ///Stateful function to normalize the states to integers
         let normalize = normalize_gen ()
         //The mutable automata we will return for this execution
-        let result = new SimpleAutomata<int, (interp * 'istate)>()
+        let result = new SimpleAutomata<int, (interp * ('istate option))>()
         
         //Add the initial states
         for interp in init_interps do
-            for index in rely.initialstates do
-                result.addInitialState (normalize (interp,index))
-                result.addState((normalize (interp,index)), (interp,index))
+            result.addInitialState (normalize (interp,None))
+            result.addState((normalize (interp,None)), (interp,None))
     
         //Set up work list.
         let work_set = System.Collections.Concurrent.ConcurrentBag()
@@ -132,20 +131,20 @@ let sim initform stepformula =
             let index = snd interp_index
             let interp = fst interp_index
             //Find next states in the rely
-            let new_indexs = rely.next(index)
+            let new_indexs = match index with Some index -> rely.next(index) | None -> rely.initialstates
             //For all next indexs of the rely
             for new_index in new_indexs do
                 //For all interpretations of the new variables
                 for new_interp in steps [interp ; rely.value new_index] do
                     //Add an edge for the reduction
-                    result.addEdge ((normalize (interp,index)), (normalize (new_interp,new_index)))
+                    result.addEdge ((normalize (interp,index)), (normalize (new_interp,Some new_index)))
                     //Check if the target is new
-                    if result.states.Contains (normalize (new_interp,new_index))  then
+                    if result.states.Contains (normalize (new_interp,Some new_index))  then
                         ()
                     else
                         //If it is new, add the state, and add to work set.
-                        result.addState ((normalize (new_interp,new_index)), (new_interp,new_index))
-                        work_set.Add( (new_interp,new_index) )
+                        result.addState ((normalize (new_interp,Some new_index)), (new_interp,Some new_index))
+                        work_set.Add( (new_interp,Some new_index) )
             more <- work_set.TryTake(&interp_index)
 
         result
@@ -184,7 +183,7 @@ let test_automata2 () =
         rely  
 
 ///Test automata fro 2008 paper, with floating inputs
-let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * 'istate> =     
+let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
@@ -233,7 +232,7 @@ let test_automata3<'istate when 'istate : comparison> : Automata<'istate,interp>
         )  
         
 ///Test automata fro 2008 paper, with Constrained inputs
-let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * 'istate> =     
+let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
@@ -286,7 +285,7 @@ let test_automata4<'istate when 'istate : comparison> : Automata<'istate,interp>
 
 ///Test automata fro 2008 paper, with Constrained inputs
 ///Has separate left and right paths
-let test_automata5<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * 'istate> =     
+let test_automata5<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 

@@ -15,6 +15,7 @@ let show_automata (a : Automata<_,_>) =
     gviewer.Dock <- DockStyle.Fill
     form.Controls.Add(gviewer)
     
+    //System.Threading.Tasks.Task.Factory.StartNew((fun () -> Application.Run(form))) |> ignore
     do Application.Run(form)
 
 type summary<'a> when 'a : comparison =
@@ -27,6 +28,8 @@ type summary<'a> when 'a : comparison =
     override this.ToString() = 
         "left_val:\t" + this.left_external_val.ToString() + 
           "\nright_val:\t" + this.right_external_val.ToString() +
+          //"\nint_left_val:\t" + this.left_internal_val.ToString() + 
+          //"\nint_right_val:\t" + this.right_internal_val.ToString() +
           "\nmid:\t" + String.Join(",", this.middle_vals)
 
 
@@ -67,8 +70,8 @@ let main argv =
         //Simulate
         let sim = Simulator.test_automata5 rely
         //Remove the bits not involved in interference
-        let auto = compressedMapAutomata(sim, fun s m -> { left_external_val = ((rely.value (snd m)).["left_path"])
-                                                           right_external_val = ((rely.value (snd m)).["right_path"])
+        let auto = compressedMapAutomata(sim, fun s m -> { left_external_val =  match snd m with | None -> dont_care | Some m -> ((rely.value m).["left_path"])
+                                                           right_external_val = match snd m with | None -> dont_care | Some m -> ((rely.value m).["right_path"])
                                                            left_internal_val = ((fst m).["path"])
                                                            right_internal_val = ((fst m).["path"])
                                                            middle_vals = [(fst m).["path"]]
@@ -121,7 +124,6 @@ let main argv =
 
                 let guar = simstep (rely c)
                 
-                //show_automata combine
                 //show_automata guar
                 if relies.[c].simulates guar then
                     printfn " - No change"
@@ -155,11 +157,12 @@ let main argv =
            for i = 1 to no_of_cells do
               let sim = finalsimstep (rely i)
               //show_automata sim
+              let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
               yield sim
         |]
 
     printfn "Begin compositions"
-    //show_automata auto 
+
 
     let mutable steps = no_of_cells
     while steps > 1 do
@@ -170,36 +173,40 @@ let main argv =
             printfn "Calc (%d,%d) -> %d" (c*2) (c*2+1) c
             auto.[c] <- 
                 composeFilter auto.[c*2] auto.[c*2+1] 
-                    ( fun x y ->
+                    ( fun x bx y by ->
                         if (snd x = snd y) then
                             let b = snd x
                             let x = fst x
                             let y = fst y
-                            Some ({left_external_val = x.left_external_val 
-                                   right_external_val = y.right_external_val
+                            Some ({left_external_val = if bx then x.left_external_val else dont_care
+                                   right_external_val = if by then y.right_external_val else dont_care
                                    left_internal_val = x.left_internal_val 
                                    right_internal_val = y.right_internal_val
                                    middle_vals = x.middle_vals @ y.middle_vals}, b)
                         else None
                     )         
                     (fun l r -> 
-                        (fst l).right_external_val = (fst r).left_internal_val                        
+                        (fst l).right_external_val = (fst r).left_internal_val 
+                        || (fst l).right_external_val = dont_care 
                         || (snd l) || (snd r)
                     )
                     (fun r l -> 
                         (fst r).left_external_val = (fst l).right_internal_val                        
+                        || (fst r).left_external_val = dont_care
                         || (snd l) || (snd r)
                     )
-                    (fun x y -> normalize (x,y))
+                    (fun x y -> x @ y)
                     show_automata
-            auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
+            //show_automata auto.[c]
+            //auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
         if carryover then 
-            printfn "Carry over %dd -> %d" (steps*2) steps
+            printfn "Carry over %d -> %d" (steps*2) steps
             auto.[steps] <- auto.[steps * 2 ]
             steps <- steps + 1
              
-    //show_automata auto
+
     printfn "Pre tidy Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+    //show_automata auto.[0]
 
     let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(", ", (fst x).middle_vals))
 
