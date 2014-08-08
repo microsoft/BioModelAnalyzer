@@ -18,6 +18,9 @@ module BMA {
             public Draw(svg: SVGSVGElement) {
                 this.svg.push(svg);
             }
+
+            public TurnNavigation(isOn: boolean) {
+            }
         }
     }
 } 

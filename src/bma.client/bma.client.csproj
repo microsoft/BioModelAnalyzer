@@ -107,6 +107,7 @@
     <Content Include="images\redo.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />
+    <Content Include="images\svgtest.txt" />
     <Content Include="images\title-about.png" />
     <Content Include="images\title-help.png" />
     <Content Include="images\title-TOU.png" />
@@ -160,6 +161,8 @@
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\accordeon.ts" />
     <Content Include="script\idd.js" />
+    <Content Include="script\jquery.browser.min.js" />
+    <Content Include="script\jquery.svg.js" />
     <Content Include="script\jquery.svg.min.js" />
     <Content Include="script\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />

@@ -1,4 +1,8 @@
-﻿module BMA {
+﻿interface Window {
+    Commands: BMA.CommandRegistry;
+}
+
+module BMA {
     export interface ICommandRegistry {
         Execute(commandName: string, params: any);
         On(commandName: string, onExecutedCallback: (params: any) => void);

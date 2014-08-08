@@ -18,3 +18,4 @@ describe("DesignSurfacePresenter", function () {
     it("should create proper SVG for specified model and layout", function () {
     });
 });
+//# sourceMappingURL=PresenterTests.js.map

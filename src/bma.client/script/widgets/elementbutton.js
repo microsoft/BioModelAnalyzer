@@ -1,4 +1,7 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\elementsregistry.ts"/>
+(function ($) {
     $.widget("BMA.elementbutton", {
         options: {
             image: undefined,
@@ -21,6 +24,7 @@
                     window.Commands.Execute(command, this.options.commandparameter);
                 });
             }
+            //elemDiv.attr("title", this.options.description);
         },
         _create: function () {
             var that = this;
@@ -38,3 +42,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=elementbutton.js.map
