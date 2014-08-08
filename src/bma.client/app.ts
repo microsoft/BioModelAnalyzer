@@ -69,6 +69,6 @@ $(document).ready(function () {
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(model, layout, svgPlotDriver);
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(model, layout, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#")), new BMA.UIDrivers.TurnableButtonDriver($("#")));
 
 });

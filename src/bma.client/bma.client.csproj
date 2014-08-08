@@ -144,7 +144,9 @@
     <Content Include="legacy\_images\variable.cur" />
     <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
+    <None Include="bmaclienttest - FTP %282%29.pubxml" />
     <None Include="bmaclienttest - FTP.pubxml" />
+    <None Include="bmaclienttest - Web Deploy %282%29.pubxml" />
     <None Include="bmaclienttest - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jasmine-html.js" />

@@ -11,7 +11,7 @@ describe("DesignSurfacePresenter", function () {
         var layout = new BMA.Model.Layout([], []);
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
 
-        var presenter = new BMA.Presenters.DesignSurfacePresenter(model, layout, svgPlotDriver);
+        var presenter = new BMA.Presenters.DesignSurfacePresenter(model, layout, svgPlotDriver, undefined, undefined);
         expect(presenter).toBeDefined();
     });
 

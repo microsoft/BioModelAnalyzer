@@ -12,5 +12,10 @@ module BMA {
 
         }
 
+
+        export interface ITurnableButton {
+            Turn(isOn: boolean);
+        }
+
     }
 } 

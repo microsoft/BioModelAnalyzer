@@ -19,5 +19,18 @@ module BMA {
                 this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
             }
         }
+
+        export class TurnableButtonDriver implements ITurnableButton {
+            private button: JQuery;
+
+            constructor(button: JQuery) {
+                this.button = button;
+            }
+
+            public Turn(isOn: boolean) {
+                this.button.button("option", "disabled", !isOn);
+            }
+
+        }
     }
 } 

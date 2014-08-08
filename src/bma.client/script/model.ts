@@ -20,6 +20,10 @@ module BMA {
                 return this.relationships;
             }
 
+            public Clone(): BioModel {
+                return new BioModel(this.containers.slice(0), this.variables.slice(0), this.relationships.slice(0));
+            }
+
             constructor(containers: Container[], variables: Variable[], relationships: Relationship[]) {
                 this.variables = variables;
                 this.containers = containers;
@@ -117,6 +121,10 @@ module BMA {
                 return this.variables;
             }
 
+            public Clone(): Layout {
+                return new Layout(this.containers.slice(0), this.variables.slice(0));
+            }
+
             constructor(containers: ContainerLayout[], varialbes: VarialbeLayout[]) {
                 this.containers = containers;
                 this.variables = varialbes;
@@ -192,6 +200,12 @@ module BMA {
                 this.cellX = cellX;
                 this.cellY = cellY;
                 this.angle = angle;
+            }
+        }
+
+        export class BMAModel {
+            constructor() {
+
             }
         }
     }

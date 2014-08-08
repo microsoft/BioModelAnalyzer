@@ -21,7 +21,7 @@
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
-            this._plot.aspectRatio = 1 / 1.3;
+            this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
 
@@ -34,7 +34,7 @@
                 }
             }
 
-            plotDiv.click(function (arg) {
+            plotDiv.bind("click touchstart", function (arg) {
                 if (that.options.isNavigationEnabled !== true) {
                     var cs = svgPlot.getScreenToDataTransform();
                     window.Commands.Execute("DrawingSurfaceClick", {
@@ -72,6 +72,7 @@
         _setOption: function (key, value) {
             switch (key) {
                 case "svg":
+                    this._svgPlot.svg.clear();
                     this._svgPlot.svg.add(value);
                     break;
                 case "isNavigationEnabled":

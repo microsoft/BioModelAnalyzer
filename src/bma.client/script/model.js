@@ -32,6 +32,10 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+
+            BioModel.prototype.Clone = function () {
+                return new BioModel(this.containers.slice(0), this.variables.slice(0), this.relationships.slice(0));
+            };
             return BioModel;
         })();
         Model.BioModel = BioModel;
@@ -164,6 +168,10 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+
+            Layout.prototype.Clone = function () {
+                return new Layout(this.containers.slice(0), this.variables.slice(0));
+            };
             return Layout;
         })();
         Model.Layout = Layout;
@@ -269,6 +277,13 @@ var BMA;
             return VarialbeLayout;
         })();
         Model.VarialbeLayout = VarialbeLayout;
+
+        var BMAModel = (function () {
+            function BMAModel() {
+            }
+            return BMAModel;
+        })();
+        Model.BMAModel = BMAModel;
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));

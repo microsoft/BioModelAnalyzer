@@ -18,6 +18,17 @@ var BMA;
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
+
+        var TurnableButtonDriver = (function () {
+            function TurnableButtonDriver(button) {
+                this.button = button;
+            }
+            TurnableButtonDriver.prototype.Turn = function (isOn) {
+                this.button.button("option", "disabled", !isOn);
+            };
+            return TurnableButtonDriver;
+        })();
+        UIDrivers.TurnableButtonDriver = TurnableButtonDriver;
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));
