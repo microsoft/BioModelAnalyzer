@@ -55,9 +55,6 @@
     <Reference Include="Microsoft.Z3">
       <HintPath>..\Z3\Microsoft.Z3.dll</HintPath>
     </Reference>
-    <Reference Include="MSBuild.Community.Tasks">
-      <HintPath>..\.build\MSBuild.Community.Tasks.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
@@ -96,10 +93,6 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
-  <PropertyGroup>
-    <MSBuildCommunityTasksPath>$(SolutionDir)\.build</MSBuildCommunityTasksPath>
-  </PropertyGroup>
-  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets" />
   <Import Project="$(FSharpTargetsPath)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
