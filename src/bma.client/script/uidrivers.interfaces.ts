@@ -4,11 +4,17 @@
 module BMA {
     export module UIDrivers {
         export interface ISVGPlot {
-            Draw(svg: SVGSVGElement)
+            Draw(svg: SVGElement);
+            TurnNavigation(isOn: boolean);
         }
 
         export interface IElementsPanel {
 
+        }
+
+
+        export interface ITurnableButton {
+            Turn(isOn: boolean);
         }
 
     }

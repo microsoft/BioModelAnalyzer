@@ -14,10 +14,7 @@
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
 
-interface Window {
-    Commands: BMA.CommandRegistry;
-    ElementRegistry: BMA.Elements.ElementsRegistry;
-}
+
 
 $(document).ready(function () {
     //Creating CommandRegistry
@@ -26,8 +23,14 @@ $(document).ready(function () {
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
 
+    //Creating model and layout
+    var model = new BMA.Model.BioModel([],[],[]);
+    var layout = new BMA.Model.Layout([],[]);
+
     //Loading widgets
-    $("#drawingSurface").drawingsurface();
+    var drawingSurface = $("#drawingSurface");
+    drawingSurface.drawingsurface();
+
     $("#modelToolbarHeader").toolbarpanel();
     $("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
@@ -56,11 +59,16 @@ $(document).ready(function () {
     elementPanel.buttonset();
 
     //undo/redo panel
+    $("#button-pointer").click(function () {
+        window.Commands.Execute("AddElementSelect", undefined);
+    });
+
     $("#undoredotoolbar").buttonset();
 
     //Loading Drivers
+    var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
 
     //Loading presenters
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(model, layout, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#")), new BMA.UIDrivers.TurnableButtonDriver($("#")));
 
-   // window.Commands.On("DrawingSurfaceClick", function (arg) {  });
 });

@@ -107,6 +107,7 @@
     <Content Include="images\redo.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />
+    <Content Include="images\svgtest.txt" />
     <Content Include="images\title-about.png" />
     <Content Include="images\title-help.png" />
     <Content Include="images\title-TOU.png" />
@@ -143,7 +144,9 @@
     <Content Include="legacy\_images\variable.cur" />
     <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
+    <None Include="bmaclienttest - FTP %282%29.pubxml" />
     <None Include="bmaclienttest - FTP.pubxml" />
+    <None Include="bmaclienttest - Web Deploy %282%29.pubxml" />
     <None Include="bmaclienttest - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jasmine-html.js" />
@@ -160,6 +163,8 @@
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\accordeon.ts" />
     <Content Include="script\idd.js" />
+    <Content Include="script\jquery.browser.min.js" />
+    <Content Include="script\jquery.svg.js" />
     <Content Include="script\jquery.svg.min.js" />
     <Content Include="script\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />

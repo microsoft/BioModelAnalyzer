@@ -1,4 +1,6 @@
-﻿var BMA;
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+var BMA;
 (function (BMA) {
     (function (Model) {
         var BioModel = (function () {
@@ -30,6 +32,10 @@
                 enumerable: true,
                 configurable: true
             });
+
+            BioModel.prototype.Clone = function () {
+                return new BioModel(this.containers.slice(0), this.variables.slice(0), this.relationships.slice(0));
+            };
             return BioModel;
         })();
         Model.BioModel = BioModel;
@@ -162,6 +168,10 @@
                 enumerable: true,
                 configurable: true
             });
+
+            Layout.prototype.Clone = function () {
+                return new Layout(this.containers.slice(0), this.variables.slice(0));
+            };
             return Layout;
         })();
         Model.Layout = Layout;
@@ -267,6 +277,14 @@
             return VarialbeLayout;
         })();
         Model.VarialbeLayout = VarialbeLayout;
+
+        var BMAModel = (function () {
+            function BMAModel() {
+            }
+            return BMAModel;
+        })();
+        Model.BMAModel = BMAModel;
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=model.js.map
