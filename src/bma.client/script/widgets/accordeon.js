@@ -11,7 +11,8 @@
             position: "center",
             // callbacks
             activate: null,
-            beforeActivate: null
+            beforeActivate: null,
+            showLoading: false
         },
         hideProps: {},
         showProps: {},
@@ -134,13 +135,14 @@
             if (toFocus !== undefined) {
                 $(event.target).attr("tabIndex", -1);
                 $(toFocus).attr("tabIndex", 0);
-                toFocus.focus();
+
+                //toFocus.focus();
                 event.preventDefault();
             }
         },
         _panelKeyDown: function (event) {
             if (event.keyCode === $.ui.keyCode.UP && event.ctrlKey) {
-                $(event.currentTarget).prev().focus();
+                //$(event.currentTarget).prev().focus();
             }
         },
         refresh: function () {
@@ -177,9 +179,14 @@
             var position = that.options.position;
             this.element.css(position, 0);
             this.headers = that.element.children().filter(':even');
-            this.headers.addClass("ui-accordion-header ui-state-default ui-corner-all");
 
+            //this.headers
+            //.addClass("ui-accordion-header ui-state-default ui-corner-all");
+            var loading = that.options.showLoading;
             this.headers.each(function () {
+                if (loading) {
+                    $('<img src="../../images/60x60.gif">').appendTo(this).addClass("invisible");
+                }
                 var child = $(this).next();
 
                 var distantion = 0;
@@ -251,21 +258,23 @@
                 });
             }
 
-            this._off(this.headers.add(this.options.context));
+            //this._off(this.headers.add(this.options.context));
+            this._off(this.headers);
             this._on(this.headers, events);
-            this._on(this.options.context, { keydown: "_panelKeyDown" });
-            this._hoverable(this.headers);
-            this._focusable(this.headers);
+
+            //this._on(this.options.context, { keydown: "_panelKeyDown" });
+            this._on(this.headers.next(), { keydown: "_panelKeyDown" });
+            //this._hoverable(this.headers);
+            //this._focusable(this.headers);
         },
         _eventHandler: function (event) {
             var options = this.options, active = this.active, clicked = $(event.currentTarget), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = active.next(), eventData = {
                 oldHeader: active,
                 oldPanel: toHide,
-                newHeader: collapsing ? $() : clicked,
+                newHeader: clicked,
                 newPanel: toShow
             };
             event.preventDefault();
-
             if ((clickedIsActive && !options.collapsible) || (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
@@ -273,6 +282,15 @@
             // when the call to ._toggle() comes after the class changes
             // it causes a very odd bug in IE 8 (see #6720)
             this.active = clickedIsActive ? $() : clicked;
+
+            if (this.options.showLoading) {
+                if (!collapsing)
+                    this._showLoading(clicked);
+                else
+                    this._hideLoading(clicked);
+                return;
+            }
+
             this._toggle(eventData);
 
             // switch classes
@@ -280,8 +298,9 @@
             active.removeClass("ui-accordion-header-active ui-state-active");
 
             if (!clickedIsActive) {
-                clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active ui-state-active ui-corner-top");
+                clicked.removeClass("ui-corner-all");
 
+                //.addClass("ui-accordion-header-active ui-state-active ui-corner-top");
                 //clicked
                 active.next().addClass("ui-accordion-content-active");
             }
@@ -293,12 +312,15 @@
             this.prevShow.add(this.prevHide).stop(true, true);
             this.prevShow = toShow;
             this.prevHide = toHide;
+
             if (this.options.animate && this.options.position != "center") {
                 this._animate(toShow, toHide, data);
             } else {
                 toHide.hide();
                 toShow.show();
-                if (this.options.context.is(":hidden"))
+
+                //if (this.options.context.is(":hidden"))
+                if (data.newHeader.next().is(":hidden"))
                     this.options.header.removeClass("show").addClass("only");
                 else
                     this.options.header.removeClass("only").addClass("show");
@@ -329,6 +351,14 @@
                 tabIndex: 0,
                 "aria-expanded": "true"
             });
+        },
+        _showLoading: function (clicked) {
+            clicked.animate({ width: "+=60px" });
+            clicked.children().filter(".invisible").show();
+        },
+        _hideLoading: function (clicked) {
+            clicked.animate({ width: "-=60px" });
+            clicked.children().filter(".invisible").hide();
         },
         _animate: function (toShow, toHide, data) {
             var total, easing, duration, that = this, adjust = 0, down = toShow.length && (!toHide.length || (toShow.index() < toHide.index())), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function () {

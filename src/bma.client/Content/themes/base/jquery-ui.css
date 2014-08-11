@@ -874,7 +874,7 @@ body .ui-tooltip {
 .ui-state-active a,
 .ui-state-active a:link,
 .ui-state-active a:visited {
-	color: #212121/*{fcActive}*/;
+	color: #212121/*{fcActive}*//*;*/
 	text-decoration: none;
 }
 

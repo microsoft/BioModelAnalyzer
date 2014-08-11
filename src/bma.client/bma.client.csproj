@@ -87,6 +87,7 @@
     <Content Include="css\jquery.svg.css" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
+    <Content Include="images\60x60.gif" />
     <Content Include="images\activate.png" />
     <Content Include="images\analyze.png" />
     <Content Include="images\constant.png" />
