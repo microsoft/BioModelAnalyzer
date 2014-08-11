@@ -332,9 +332,85 @@ let test_automata5<'istate when 'istate : comparison> : Automata<'istate,interp>
             bound "next_signal" 0 5
             |]
         )  
-        
 
+let nothing_ever_happens<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
+
+    let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
+    sim 
+        (bound "next_path" 1 2 &&& bound "next_signal" 3 4)
+        (context.MkAnd 
+            [|
+            (* Straight from the paper *)
+            (* Path rules *)
+            (((var "prev_path") ) === (var "next_path"))
+
+            (* Signal rules *)
+            ((var "next_signal" ) === var "prev_signal")
+
+            (* Rules for dealing with not performing an update*)
+            bound "prev_path" 0 5
+
+            bound "next_path" 0 5
+
+            bound "prev_signal" 0 5
+
+            bound "next_signal" 0 5
+            |]
+        )  
+        
+        
 let simple_automata_B_0<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
+
+    let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
+    sim 
+        (bound "next_path" 1 2 &&& bound "next_signal" 3 4 &&& bound "next_receptor" 0 1)
+        (context.MkAnd 
+            [|
+            (* Straight from the paper *)
+            (* Receptor rules *)
+            var "prev_input" === int 0 ==> (var "next_receptor" === int 0)
+            var "prev_input" === int 1 ==> (var "next_receptor" === int 1)
+            (* Path rules *)
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_receptor" === int 0))
+                ==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
+
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_receptor" === int 1))
+                ==> (int 4 === (var "next_path"))
+
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" === int 4))
+                ==> (int 0 === (var "next_path"))
+            (* Signal rules *)
+            (((var "prev_left_path" === int 4) ||| (var "prev_right_path" === int 4)) &&& (int 0 << var "prev_signal"))
+                ==> (var "next_signal" === int 4)
+
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (int 4 === var "prev_path"))
+                ==> (var "next_signal" === int 0)
+
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (int 0 << var "prev_signal") &&& (var "prev_signal" << int 4))
+                ==> ((var "next_signal" ++ int 1) === var "prev_signal")
+
+            (* Rules for dealing with not performing an update*)
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (var "prev_signal" === int 4))
+                ==> (int 4 === var "prev_signal")
+
+            ((var "prev_signal" === int 0)  ==> (var "next_signal" === int 0))
+
+            ((var "prev_path" === int 0) ||| (var "prev_path" === int 4)) 
+                ==> (var "prev_path" === var "next_path")
+
+            ((var "prev_path" << int 5) &&& ((int 0 << var "prev_path") ||| (var "prev_path" === int 0)))
+
+            bound "prev_path" 0 5
+
+            bound "next_path" 0 5
+
+            bound "prev_signal" 0 5
+
+            bound "next_signal" 0 5
+            |]
+        )  
+
+let simple_automata_B_1<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
     //Variables are path, input, signal,vul and notch
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
@@ -350,15 +426,15 @@ let simple_automata_B_0<'istate when 'istate : comparison> : Automata<'istate,in
             (var "prev_input" === int 1) ==> (var "next_vul" === int 1)
             (var "prev_input" === int 2) ==> (var "next_vul" === int 2)
             (* MAPK rules *)
-            (var "prev_vul" === int 0) &&& (var "prev_notch" === int 0) ==> (var "next_mapk" === int 0)
-            (var "prev_vul" === int 1) &&& (var "prev_notch" === int 0) ==> (var "next_mapk" === int 1)
-            (var "prev_vul" === int 2) &&& (var "prev_notch" === int 0) ==> (var "next_mapk" === int 2)
-            (var "prev_vul" === int 0) &&& (var "prev_notch" === int 1) ==> (var "next_mapk" === int 0)
-            (var "prev_vul" === int 1) &&& (var "prev_notch" === int 1) ==> (var "next_mapk" === int 1)
-            (var "prev_vul" === int 2) &&& (var "prev_notch" === int 1) ==> (var "next_mapk" === int 2)
-            (var "prev_vul" === int 0) &&& (var "prev_notch" === int 2) ==> (var "next_mapk" === int 0)
-            (var "prev_vul" === int 1) &&& (var "prev_notch" === int 2) ==> (var "next_mapk" === int 0)
-            (var "prev_vul" === int 2) &&& (var "prev_notch" === int 2) ==> (var "next_mapk" === int 0)
+            (var "prev_vul" === int 0) &&& (var "prev_signal" === int 0) ==> (var "next_mapk" === int 0)
+            (var "prev_vul" === int 1) &&& (var "prev_signal" === int 0) ==> (var "next_mapk" === int 1)
+            (var "prev_vul" === int 2) &&& (var "prev_signal" === int 0) ==> (var "next_mapk" === int 2)
+            (var "prev_vul" === int 0) &&& (var "prev_signal" === int 1) ==> (var "next_mapk" === int 0)
+            (var "prev_vul" === int 1) &&& (var "prev_signal" === int 1) ==> (var "next_mapk" === int 1)
+            (var "prev_vul" === int 2) &&& (var "prev_signal" === int 1) ==> (var "next_mapk" === int 2)
+            (var "prev_vul" === int 0) &&& (var "prev_signal" === int 2) ==> (var "next_mapk" === int 0)
+            (var "prev_vul" === int 1) &&& (var "prev_signal" === int 2) ==> (var "next_mapk" === int 0)
+            (var "prev_vul" === int 2) &&& (var "prev_signal" === int 2) ==> (var "next_mapk" === int 0)
             (* Path rules *)
             (var "prev_mapk" === int 0) ==> (var "next_path" === int 0)
             (var "prev_mapk" === int 1) ==> (var "next_path" === int 1)

@@ -36,8 +36,8 @@ type summary<'a> when 'a : comparison =
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 2
-    let inputs = [| 2;2;2;2;2;2 |]
+    let bound = 1
+    let inputs = [| 0 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -45,10 +45,11 @@ let main argv =
 
     let simstep rely = 
         //Simulate
-        let sim = Simulator.simple_automata_B_0 rely
+        let sim = Simulator.nothing_ever_happens rely
         if show_intermediate_steps then show_automata sim
         //Remove the bits not involved in interference
         let sim_smaller = compressedMapAutomata(sim, fun _ m -> Map.add "path" (fst m).["path"] Map.empty)
+        //show_automata sim
         if show_intermediate_steps then show_automata sim_smaller
         //Introduces Bounded asynchony
         let sim_BA = new BoundedAutomata<int,Simulator.interp> (bound, sim_smaller, true)
@@ -96,8 +97,8 @@ let main argv =
             
             for c = 1 to no_of_cells  do
                 let a = new SimpleAutomata<int,Simulator.interp>()
-                for i = 1 to 4 do
-                    for j = 1 to 4 do
+                for i = 0 to 2 do
+                    for j = 0 to 2 do
                         a.addInitialState i
                         a.addState(i,Map.add "path" i Map.empty)
                         a.addEdge(i,j)
@@ -136,6 +137,7 @@ let main argv =
                     printfn " - Updated"
                     relies.[c] <- guar
                     changed.[c] <- true
+                    //show_automata guar
             else changed.[c] <- false
 
     let start = System.DateTime.Now.Ticks 
