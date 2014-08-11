@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-var BMA;
+﻿var BMA;
 (function (BMA) {
     (function (Model) {
         var BioModel = (function () {
@@ -287,4 +285,3 @@ var BMA;
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=biomodel.js.map

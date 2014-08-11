@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.drawingsurface", {
         _plot: null,
         _svgPlot: null,
@@ -10,7 +8,6 @@
         },
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
-                //this._svgPlot.svg.load("../images/svgtest.txt");
             }
         },
         _create: function () {
@@ -99,4 +96,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=drawingsurface.js.map
