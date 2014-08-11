@@ -7,11 +7,10 @@
 
 describe("DesignSurfacePresenter", function () {
     it("should be created from BioModel, Layout and ISVGPlot driver instance", function () {
-        var model = new BMA.Model.BioModel([], [], []);
-        var layout = new BMA.Model.Layout([], []);
+        var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
 
-        var presenter = new BMA.Presenters.DesignSurfacePresenter(model, layout, svgPlotDriver, undefined, undefined);
+        var presenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, undefined);
         expect(presenter).toBeDefined();
     });
 
