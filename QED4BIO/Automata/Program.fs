@@ -36,8 +36,8 @@ type summary<'a> when 'a : comparison =
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 1
-    let inputs = [| 0;0;0 |]
+    let bound = 2
+    let inputs = [| 2;2;2;2;2;2 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -45,7 +45,7 @@ let main argv =
 
     let simstep rely = 
         //Simulate
-        let sim = Simulator.test_automata5 rely
+        let sim = Simulator.simple_automata_B_0 rely
         if show_intermediate_steps then show_automata sim
         //Remove the bits not involved in interference
         let sim_smaller = compressedMapAutomata(sim, fun _ m -> Map.add "path" (fst m).["path"] Map.empty)
@@ -218,7 +218,7 @@ let main argv =
 
     printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    //show_automata tidy_auto
+    show_automata tidy_auto
 
 
     printfn "%A" argv
