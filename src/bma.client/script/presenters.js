@@ -1,6 +1,7 @@
 ﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model.ts"/>
+/// <reference path="model\biomodel.ts"/>
+/// <reference path="model\model.ts"/>
 /// <reference path="uidrivers.ts"/>
 /// <reference path="commands.ts"/>
 
@@ -8,11 +9,14 @@ var BMA;
 (function (BMA) {
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(bioModel, layout, svgPlotDriver, undoButton, redoButton) {
+            function DesignSurfacePresenter(appModel, svgPlotDriver, undoButton, redoButton) {
                 var _this = this;
+                this.currentModelIndex = -1;
                 var that = this;
-                this.model = bioModel;
-                this.layout = layout;
+                this.appModel = appModel;
+                this.undoButton = undoButton;
+                this.redoButton = redoButton;
+
                 this.driver = svgPlotDriver;
                 this.models = [];
 
@@ -23,37 +27,82 @@ var BMA;
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
                     if (that.selectedType !== undefined) {
-                        var variables = that.model.Variables;
-                        var variableLayouts = that.layout.Variables;
+                        var current = that.Current;
+                        var model = current.model;
+                        var layout = current.layout;
 
-                        variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                        variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
-
-                        that.model = new BMA.Model.BioModel([], variables, []);
-                        that.layout = new BMA.Model.Layout([], variableLayouts);
-
-                        var drawingSvg = that.CreateSvg();
-                        that.driver.Draw(drawingSvg);
+                        switch (that.selectedType) {
+                            case "Container":
+                                var containers = model.Containers.slice(0);
+                                var containerLayouts = layout.Containers.slice(0);
+                                containers.push(new BMA.Model.Container(0));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, args.x, args.y));
+                                var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "Constant":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "Default":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "MembraneReceptor":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                        }
                     }
                 });
 
                 window.Commands.On("Undo", function () {
+                    _this.Undo();
                 });
 
                 window.Commands.On("Redo", function () {
+                    _this.Redo();
                 });
 
                 var svgCnt = $("<div></div>");
                 svgCnt.svg({
                     onLoad: function (svg) {
                         _this.svg = svg;
-                        var drawingSvg = _this.CreateSvg();
-                        _this.driver.Draw(drawingSvg);
+
+                        if (_this.Current !== undefined) {
+                            var drawingSvg = _this.CreateSvg();
+                            _this.driver.Draw(drawingSvg);
+                        }
                     }
                 });
+
+                this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
             DesignSurfacePresenter.prototype.OnModelUpdated = function () {
-                //todo: update application model
+                this.undoButton.Turn(this.CanUndo);
+                this.redoButton.Turn(this.CanRedo);
+
+                this.appModel.BioModel = this.Current.model;
+                this.appModel.Layout = this.Current.layout;
+
+                var drawingSvg = this.CreateSvg();
+                this.driver.Draw(drawingSvg);
             };
 
             DesignSurfacePresenter.prototype.Undo = function () {
@@ -74,7 +123,13 @@ var BMA;
                 this.models.length = this.currentModelIndex + 1;
             };
 
-            DesignSurfacePresenter.prototype.Dup = function () {
+            DesignSurfacePresenter.prototype.Dup = function (m, l) {
+                this.Truncate();
+                var current = this.Current;
+                this.models[this.currentModelIndex] = { model: current.model.Clone(), layout: current.layout.Clone() };
+                this.models.push({ model: m, layout: l });
+                ++this.currentModelIndex;
+                this.OnModelUpdated();
             };
 
             Object.defineProperty(DesignSurfacePresenter.prototype, "CanUndo", {
@@ -93,22 +148,55 @@ var BMA;
                 configurable: true
             });
 
+            DesignSurfacePresenter.prototype.Set = function (m, l) {
+                this.models = [{ model: m, layout: l }];
+                this.currentModelIndex = 0;
+                this.OnModelUpdated();
+            };
+
+            Object.defineProperty(DesignSurfacePresenter.prototype, "Current", {
+                get: function () {
+                    return this.models[this.currentModelIndex];
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             DesignSurfacePresenter.prototype.CreateSvg = function () {
                 if (this.svg === undefined)
                     return undefined;
 
+                //Generating svg elements from model and layout
                 this.svg.clear();
+                var svgElements = [];
 
-                var variables = this.model.Variables;
-                var variableLayouts = this.layout.Variables;
+                var containers = this.Current.model.Containers;
+                var containerLayouts = this.Current.layout.Containers;
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    var containerLayout = containerLayouts[i];
+
+                    var element = window.ElementRegistry.GetElementByType("Container");
+                    this.svg.clear();
+                    svgElements.push(element.RenderToSvg(this.svg, containerLayout));
+                }
+
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    this.svg.add(element.RenderToSvg(variableLayout.PositionX, variableLayout.PositionY));
+                    this.svg.clear();
+                    svgElements.push(element.RenderToSvg(this.svg, variableLayout));
                 }
 
+                //constructing final svg image
+                this.svg.clear();
+                for (var i = 0; i < svgElements.length; i++) {
+                    this.svg.add(svgElements[i]);
+                }
                 return $(this.svg.toSVG()).children();
             };
             return DesignSurfacePresenter;
@@ -116,72 +204,5 @@ var BMA;
         Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
-
-    var ModelStack = (function () {
-        function ModelStack() {
-        }
-        Object.defineProperty(ModelStack, "Current", {
-            get: function () {
-                return ModelStack.models[ModelStack.index];
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ModelStack, "HasModel", {
-            get: function () {
-                return ModelStack.index >= 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        Object.defineProperty(ModelStack, "CanUndo", {
-            get: function () {
-                return ModelStack.index > 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(ModelStack, "CanRedo", {
-            get: function () {
-                return ModelStack.index < ModelStack.models.length - 1;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        ModelStack.Undo = function () {
-            if (ModelStack.CanUndo) {
-                --ModelStack.index;
-            }
-        };
-
-        ModelStack.Redo = function () {
-            if (ModelStack.CanRedo) {
-                ++ModelStack.index;
-            }
-        };
-
-        ModelStack.Set = function (m, l) {
-            ModelStack.models = [{ model: m, layout: l }];
-            ModelStack.index = 0;
-        };
-
-        ModelStack.Dup = function () {
-            ModelStack.truncate();
-            var orig = ModelStack.Current;
-            ModelStack.models[ModelStack.index] = { model: orig.model.Clone(), layout: orig.layout.Clone() };
-            ModelStack.models.push(orig);
-            ++ModelStack.index;
-        };
-
-        ModelStack.truncate = function () {
-            ModelStack.models.length = ModelStack.index + 1;
-        };
-        ModelStack.models = [];
-        ModelStack.index = -1;
-        return ModelStack;
-    })();
-    BMA.ModelStack = ModelStack;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=presenters.js.map

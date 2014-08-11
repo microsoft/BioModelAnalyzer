@@ -1,6 +1,7 @@
 ﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model.ts"/>
+/// <reference path="model\biomodel.ts"/>
+/// <reference path="model\model.ts"/>
 /// <reference path="uidrivers.ts"/>
 /// <reference path="commands.ts"/>
 
@@ -12,27 +13,31 @@ interface JQuery {
 module BMA {
     export module Presenters {
         export class DesignSurfacePresenter {
-            private model: BMA.Model.BioModel;
-            private layout: BMA.Model.Layout;
+            private appModel: BMA.Model.AppModel;
 
             private models: { model: BMA.Model.BioModel; layout: BMA.Model.Layout }[];
-            private currentModelIndex: number;
+            private currentModelIndex: number = -1;
 
             private selectedType: string;
             private driver: BMA.UIDrivers.ISVGPlot;
             private svg: any;
 
-            constructor(bioModel: BMA.Model.BioModel,
-                layout: BMA.Model.Layout,
+            private undoButton: BMA.UIDrivers.ITurnableButton;
+            private redoButton: BMA.UIDrivers.ITurnableButton;
+
+            constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 undoButton: BMA.UIDrivers.ITurnableButton,
                 redoButton: BMA.UIDrivers.ITurnableButton) {
 
                 var that = this;
-                this.model = bioModel;
-                this.layout = layout;
+                this.appModel = appModel;
+                this.undoButton = undoButton;
+                this.redoButton = redoButton;
+
                 this.driver = svgPlotDriver;
                 this.models = [];
+
 
                 window.Commands.On("AddElementSelect", (type: string) => {
                     this.selectedType = type;
@@ -42,40 +47,85 @@ module BMA {
                 window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
                     if (that.selectedType !== undefined) {
 
-                        var variables = that.model.Variables;
-                        var variableLayouts = that.layout.Variables;
+                        var current = that.Current;
+                        var model = current.model;
+                        var layout = current.layout;
 
-                        variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                        variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
 
-                        that.model = new BMA.Model.BioModel([], variables, []);
-                        that.layout = new BMA.Model.Layout([], variableLayouts);
+                        switch (that.selectedType) {
+                            case "Container":
+                                var containers = model.Containers.slice(0);
+                                var containerLayouts = layout.Containers.slice(0);
+                                containers.push(new BMA.Model.Container(0));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, args.x, args.y));
+                                var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "Constant":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "Default":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "MembraneReceptor":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
 
-                        var drawingSvg = <SVGElement>that.CreateSvg();
-                        that.driver.Draw(drawingSvg);
+                        }
                     }
                 });
 
                 window.Commands.On("Undo", () => {
-
+                    this.Undo();
                 });
 
                 window.Commands.On("Redo", () => {
-
+                    this.Redo();
                 });
 
                 var svgCnt = $("<div></div>")
                 svgCnt.svg({
                     onLoad: (svg) => {
                         this.svg = svg;
-                        var drawingSvg = <SVGElement>this.CreateSvg();
-                        this.driver.Draw(drawingSvg);
+
+                        if (this.Current !== undefined) {
+                            var drawingSvg = <SVGElement>this.CreateSvg();
+                            this.driver.Draw(drawingSvg);
+                        }
                     }
                 });
+
+                this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
 
             private OnModelUpdated() {
-                //todo: update application model
+                this.undoButton.Turn(this.CanUndo);
+                this.redoButton.Turn(this.CanRedo);
+
+                this.appModel.BioModel = this.Current.model;
+                this.appModel.Layout = this.Current.layout;
+
+                var drawingSvg = <SVGElement>this.CreateSvg();
+                this.driver.Draw(drawingSvg);
             }
 
             private Undo() {
@@ -96,7 +146,13 @@ module BMA {
                 this.models.length = this.currentModelIndex + 1;
             }
 
-            private Dup() {
+            private Dup(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
+                this.Truncate();
+                var current = this.Current;
+                this.models[this.currentModelIndex] = { model: current.model.Clone(), layout: current.layout.Clone() };
+                this.models.push({ model: m, layout: l });
+                ++this.currentModelIndex;
+                this.OnModelUpdated();
             }
 
             private get CanUndo(): boolean {
@@ -104,68 +160,56 @@ module BMA {
             }
 
             private get CanRedo(): boolean {
-                return this.currentModelIndex <this.models.length - 1;
+                return this.currentModelIndex < this.models.length - 1;
+            }
+
+            private Set(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
+                this.models = [{ model: m, layout: l }];
+                this.currentModelIndex = 0;
+                this.OnModelUpdated();
+            }
+
+            private get Current(): { model: BMA.Model.BioModel; layout: BMA.Model.Layout } {
+                return this.models[this.currentModelIndex];
             }
 
             private CreateSvg(): any {
                 if (this.svg === undefined)
                     return undefined;
 
+                //Generating svg elements from model and layout
                 this.svg.clear();
+                var svgElements = [];
 
-                var variables = this.model.Variables;
-                var variableLayouts = this.layout.Variables;
+                var containers = this.Current.model.Containers;
+                var containerLayouts = this.Current.layout.Containers;
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    var containerLayout = containerLayouts[i];
+
+                    var element = window.ElementRegistry.GetElementByType("Container");
+                    this.svg.clear();
+                    svgElements.push(element.RenderToSvg(this.svg, containerLayout));
+                }
+
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    this.svg.add(element.RenderToSvg(variableLayout.PositionX, variableLayout.PositionY));
+                    this.svg.clear();
+                    svgElements.push(element.RenderToSvg(this.svg, variableLayout));
                 }
 
+                //constructing final svg image
+                this.svg.clear();
+                for (var i = 0; i < svgElements.length; i++) {
+                    this.svg.add(svgElements[i]);
+                }
                 return $(this.svg.toSVG()).children();
             }
         }
-    }
-
-    export class ModelStack {
-        private static models: { model: BMA.Model.BioModel; layout: BMA.Model.Layout }[] = [];
-        private static index: number = -1;
-
-        static get Current() { return ModelStack.models[ModelStack.index]; }
-        static get HasModel() { return ModelStack.index >= 0; }
-
-        static get CanUndo() { return ModelStack.index > 0; }
-        static get CanRedo() { return ModelStack.index < ModelStack.models.length - 1; }
-
-        static Undo() {
-            if (ModelStack.CanUndo) {
-                --ModelStack.index;
-            }
-        }
-
-        static Redo() {
-            if (ModelStack.CanRedo) {
-                ++ModelStack.index;
-            }
-        }
-
-        static Set(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
-            ModelStack.models = [{ model: m, layout: l }];
-            ModelStack.index = 0;
-        }
-
-        static Dup() {
-            ModelStack.truncate();
-            var orig = ModelStack.Current;
-            ModelStack.models[ModelStack.index] = { model: orig.model.Clone(), layout: orig.layout.Clone() };
-            ModelStack.models.push(orig);
-            ++ModelStack.index;
-        }
-
-        static truncate() {
-            ModelStack.models.length = ModelStack.index + 1;
-        }
-
     }
 } 

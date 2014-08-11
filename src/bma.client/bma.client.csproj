@@ -145,10 +145,6 @@
     <Content Include="legacy\_images\variable.cur" />
     <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
-    <None Include="bmaclienttest - FTP %282%29.pubxml" />
-    <None Include="bmaclienttest - FTP.pubxml" />
-    <None Include="bmaclienttest - Web Deploy %282%29.pubxml" />
-    <None Include="bmaclienttest - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jasmine-html.js" />
     <Content Include="Scripts\jasmine.js" />
@@ -160,6 +156,7 @@
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="script\commands.ts" />
+    <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\accordeon.ts" />
@@ -190,7 +187,7 @@
     <TypeScriptCompile Include="legacy\bma.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="script\model.ts" />
+    <TypeScriptCompile Include="script\model\biomodel.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-2.1.1.min.map" />
