@@ -51,16 +51,46 @@ module BMA {
                         var model = current.model;
                         var layout = current.layout;
 
-                        var variables = model.Variables.slice(0);
-                        var variableLayouts = layout.Variables.slice(0);
 
-                        variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                        variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                        switch (that.selectedType) {
+                            case "Container":
+                                var containers = model.Containers.slice(0);
+                                var containerLayouts = layout.Containers.slice(0);
+                                containers.push(new BMA.Model.Container(0));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, args.x, args.y));
+                                var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "Constant":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "Default":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
+                            case "MembraneReceptor":
+                                var variables = model.Variables.slice(0);
+                                var variableLayouts = layout.Variables.slice(0);
+                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                                var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
+                                that.Dup(newmodel, newlayout);
+                                break;
 
-                        var newmodel = new BMA.Model.BioModel([], variables, []);
-                        var newlayout = new BMA.Model.Layout([], variableLayouts);
-
-                        that.Dup(newmodel, newlayout);
+                        }
                     }
                 });
 
@@ -76,8 +106,11 @@ module BMA {
                 svgCnt.svg({
                     onLoad: (svg) => {
                         this.svg = svg;
-                        var drawingSvg = <SVGElement>this.CreateSvg();
-                        this.driver.Draw(drawingSvg);
+
+                        if (this.Current !== undefined) {
+                            var drawingSvg = <SVGElement>this.CreateSvg();
+                            this.driver.Draw(drawingSvg);
+                        }
                     }
                 });
 
@@ -144,18 +177,37 @@ module BMA {
                 if (this.svg === undefined)
                     return undefined;
 
+                //Generating svg elements from model and layout
                 this.svg.clear();
+                var svgElements = [];
 
-                var variables = this.appModel.BioModel.Variables;
-                var variableLayouts = this.appModel.Layout.Variables;
+                var containers = this.Current.model.Containers;
+                var containerLayouts = this.Current.layout.Containers;
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    var containerLayout = containerLayouts[i];
+
+                    var element = window.ElementRegistry.GetElementByType("Container");
+                    this.svg.clear();
+                    svgElements.push(element.RenderToSvg(this.svg, containerLayout));
+                }
+
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    this.svg.add(element.RenderToSvg({ x: variableLayout.PositionX, y: variableLayout.PositionY, angle: variableLayout.Angle }));
+                    this.svg.clear();
+                    svgElements.push(element.RenderToSvg(this.svg, variableLayout));
                 }
 
+                //constructing final svg image
+                this.svg.clear();
+                for (var i = 0; i < svgElements.length; i++) {
+                    this.svg.add(svgElements[i]);
+                }
                 return $(this.svg.toSVG()).children();
             }
         }
