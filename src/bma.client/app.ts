@@ -36,7 +36,8 @@ $(document).ready(function () {
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion({ header: $("#visibilityOptionsHeader") });
-    $("#analytics").bmaaccordion({ position: "right", showLoading: "true" });
+    $("#analytics").bmaaccordion({ position: "right" });
+    $("#analytics").bmaaccordion({ contentLoaded: { ind: 0, val: false } });
 
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");

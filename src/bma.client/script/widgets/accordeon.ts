@@ -13,7 +13,7 @@
             // callbacks
             activate: null,
             beforeActivate: null,
-            showLoading: false
+            contentLoaded: {ind:0, val: true},
         },
 
         hideProps: {},
@@ -101,9 +101,14 @@
             this.showProps = {};
             this.hideProps[that.options.position] = "-="+distantion;
             this.showProps[that.options.position] = "+=" + distantion;
+            //context.show().css("z-index",1);
+            context.css("z-index", 1);
+            //this.headers.next().not(context).hide().css("z-index", 0);
+            this.headers.next().not(context).css("z-index", 0);
         },
 
         _setOption: function (key, value) {
+            var that = this;
             if (key === "active") {
                 // _activate() will handle invalid values and update this.options
                 this._activate(value);
@@ -115,6 +120,14 @@
                     this._off(this.headers, this.options.event);
                 }
                 this._setupEvents(value);
+            }
+
+            if (key == "contentLoaded") {
+                that.loadingList[value.ind] = value.val;
+                if (value.val) {
+                    if (that.headers.eq(value.ind) === that.active) {
+                    }
+                }
             }
 
             this._super(key, value);
@@ -217,11 +230,11 @@
             this.headers = that.element.children().filter(':even');
             //this.headers
             //.addClass("ui-accordion-header ui-state-default ui-corner-all");
-            var loading = that.options.showLoading;
-            this.headers.each(function () {
-                if (loading) {
-                    $('<img src="../../images/60x60.gif">').appendTo(this).addClass("invisible");
-                }
+            //var loading = that.options.showLoading;
+            this.loadingList = [];
+            this.headers.each(function (ind) {
+                
+                that.loadingList[ind] = true;
                 var child = $(this).next();
               
                 var distantion = 0;
@@ -238,6 +251,7 @@
                         that.headers
                             .removeClass("show")
                             .addClass("only");
+                        that.headers.next().hide();
                         return;
                 }
                 that.headers.css("position", "absolute");
@@ -280,7 +294,7 @@
                     .attr({
                         "aria-hidden": "true"
                     })
-                .hide();
+                //.hide();
 
             // make sure at least one header is in the tab order
 
@@ -303,7 +317,7 @@
 
 
         _findActive: function (selector) {
-            return typeof selector === "number" ? this.options.header : $();
+            return typeof selector === "number" ? this.headers.eq(selector) : $();
         },
 
         _setupEvents: function (event) {
@@ -328,12 +342,12 @@
         _eventHandler: function (event) {
             var options = this.options,
                 active = this.active,
-                clicked = $(event.currentTarget),
+                clicked = $(event.currentTarget).eq(0),
                 
                 clickedIsActive = clicked[0] === active[0],
                 collapsing = clickedIsActive && options.collapsible,
                 toShow = collapsing ? $() : clicked.next(),
-                toHide = active.next(),
+                toHide = this.loadingList[this.headers.index(this.active)]? active.next() : $(),
                 //toShow = collapsing ? $() : options.context,
                 eventData = {
                     oldHeader: active,
@@ -349,31 +363,44 @@
                     (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
-            
+            eventData.newHeader.css("z-index", 1);
+            this.headers.not(eventData.newHeader).css("z-index", 0);
             // when the call to ._toggle() comes after the class changes
             // it causes a very odd bug in IE 8 (see #6720)
+            
+            //this.active.next().show();
+            
+            
             this.active = clickedIsActive ? $() : clicked;
+            
 
-            if (this.options.showLoading) {
-                if (!collapsing) this._showLoading(clicked);
-                else this._hideLoading(clicked);
+            if (!this.loadingList[this.headers.index(clicked)]) {
+                eventData.newPanel = $();
+                if (!collapsing) {
+                    this._hideLoading(this.headers.not(clicked));
+                    this._toggle(eventData);
+                    this._showLoading(clicked);
+                }
+                else {
+                   this._hideLoading(clicked);
+                }
                 return;
             }
-
-
+            
+            
             this._toggle(eventData);
 
             // switch classes
             // corner classes on the previously active header stay after the animation
             active.removeClass("ui-accordion-header-active ui-state-active");
-
+            
             if (!clickedIsActive) {
                 clicked
                     .removeClass("ui-corner-all")
-                    //.addClass("ui-accordion-header-active ui-state-active ui-corner-top");
+                    .addClass("ui-accordion-header-active  ui-corner-top");
 
-                //clicked
-                active.next()
+                clicked
+                //active.next()
                     .addClass("ui-accordion-content-active");
             }
         },
@@ -439,17 +466,22 @@
 
         _showLoading: function (clicked) {
             clicked.animate({ width: "+=60px" });
-            clicked.children().filter(".invisible").show();
+            $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
+            
+            //clicked.children().filter(".invisible").show();
         },
 
         _hideLoading: function (clicked) {
-            clicked.animate({ width: "-=60px" });
-            clicked.children().filter(".invisible").hide();
+            if (clicked.children().filter(".loading").length > 0) {
+                
+                clicked.children().filter(".loading").detach();
+                clicked.animate({ width: "-=60px" });
+                //clicked.children().filter(".invisible").hide();
+            }
         },
 
 
         _animate: function (toShow, toHide, data) {
-
             var total, easing, duration,
                 that = this,
                 adjust = 0,
@@ -472,29 +504,35 @@
             duration = duration || options.duration || animate.duration;
             var that = this;
 
+            this._hideLoading(this.headers.not(this.active));
+
             if (!toShow.length) {
                 that._processAnimation(toHide);
-                that.element.animate(that.hideProps, duration, easing, function () {
-                    
-                    that._toggleComplete(data, "", "");
-                    toHide.hide();
-                });
+                that.element.animate(that.hideProps, duration, easing, complete);
                 return;
             }
 
             if (!toHide.length) {
-                toShow.show();
                 that._processAnimation(toShow);
-                that.element.animate(that.showProps, duration, easing, that._toggleComplete(data, "", ""));
+                that.element.animate(that.showProps, duration, easing, complete);
                 return ;
             }
-            toHide.hide();
-            toShow.show();
+            //context.show()
+            //this.headers.next().not(context).hide()
+            //toHide.hide().css("z-index", 0);
+            //toShow.show().css("z-index", 1);
+            toHide.css("z-index", 0);
+            toShow.css("z-index", 1);
+            this._toggleComplete(data);
         },
 
-        _toggleComplete: function (data, classadd, classremove) {
-            var toHide = data.oldPanel;
+        _toggleComplete: function (data) {
+            var toHide = data.oldHeader;
+            var toShow = data.newHeader;
 
+            //toHide.hide();
+            //toShow.show();
+            
             toHide
                 .removeClass("ui-accordion-content-active")
                 .prev()
@@ -506,6 +544,7 @@
                 toHide.parent()[0].className = toHide.parent()[0].className;
             }
             this._trigger("activate", null, data);
+            //this.headers.not(this.active).next().hide();
         }
     });
 }(jQuery));

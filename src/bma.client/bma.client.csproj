@@ -175,6 +175,7 @@
     <TypeScriptCompile Include="script\widgets\skinmodel.ts" />
     <Content Include="script\svgplot.js" />
     <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
+    <Content Include="script\widgets\ui-acc.js" />
     <Content Include="web.config" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
     <TypeScriptCompile Include="script\presenters.ts" />
