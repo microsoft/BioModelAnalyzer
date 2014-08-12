@@ -347,7 +347,6 @@ let nothing_ever_happens<'istate when 'istate : comparison> : Automata<'istate,i
             (* Signal rules *)
             ((var "next_signal" ) === var "prev_signal")
 
-            (* Rules for dealing with not performing an update*)
             bound "prev_path" 0 5
 
             bound "next_path" 0 5
@@ -363,21 +362,35 @@ let simple_automata_B_0<'istate when 'istate : comparison> : Automata<'istate,in
 
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
-        (bound "next_path" 1 2 &&& bound "next_signal" 3 4 &&& bound "next_receptor" 0 1)
+        (bound "next_path" 1 2 &&& bound "next_signal" 3 4 &&& bound "next_se" 3 4 &&& bound "next_receptor" 0 1 &&& bound "next_ds1" 0 1 &&& bound "next_ds2" 0 1 &&& bound "next_ds3" 0 1)
         (context.MkAnd 
             [|
             (* Straight from the paper *)
-            (* Receptor rules *)
+            (* Receptor rules (LET23)*)
             var "prev_input" === int 0 ==> (var "next_receptor" === int 0)
             var "prev_input" === int 1 ==> (var "next_receptor" === int 1)
+            (* Downstream effector rules (SEM5, LET60, MAPK) *)
+            var "prev_receptor" === int 0 ==> (var "next_ds1" === int 0)
+            var "prev_receptor" === int 1 ==> (var "next_ds1" === int 1)
+            var "prev_ds1" === int 0 ==> (var "next_ds2" === int 0)
+            var "prev_ds1" === int 1 ==> (var "next_ds2" === int 1)
+            var "prev_ds2" === int 0 ==> (var "next_ds3" === int 0)
+            var "prev_ds2" === int 1 ==> (var "next_ds3" === int 1)
+            (* Signal effector rules (LST) *)
+            var "prev_signal" === int 0 ==> (var "next_se" === int 0)
+            var "prev_signal" === int 1 ==> (var "next_se" === int 1)
+            var "prev_signal" === int 2 ==> (var "next_se" === int 2)
+            var "prev_signal" === int 3 ==> (var "next_se" === int 3)
+            var "prev_signal" === int 4 ==> (var "next_se" === int 4)
             (* Path rules *)
-            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_receptor" === int 0))
-                ==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_se" << int 4) &&& (var "prev_ds3" === int 0))
+                //==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
+                ==> (((var "prev_path") ) === (var "next_path"))
 
-            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_receptor" === int 1))
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_se" << int 4) &&& (var "prev_ds3" === int 1))
                 ==> (int 4 === (var "next_path"))
 
-            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" === int 4))
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_se" === int 4))
                 ==> (int 0 === (var "next_path"))
             (* Signal rules *)
             (((var "prev_left_path" === int 4) ||| (var "prev_right_path" === int 4)) &&& (int 0 << var "prev_signal"))
@@ -387,7 +400,8 @@ let simple_automata_B_0<'istate when 'istate : comparison> : Automata<'istate,in
                 ==> (var "next_signal" === int 0)
 
             ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (int 0 << var "prev_signal") &&& (var "prev_signal" << int 4))
-                ==> ((var "next_signal" ++ int 1) === var "prev_signal")
+                //==> ((var "next_signal" ++ int 1) === var "prev_signal")
+                ==> ((var "next_signal" ) === var "prev_signal")
 
             (* Rules for dealing with not performing an update*)
             ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (var "prev_signal" === int 4))
