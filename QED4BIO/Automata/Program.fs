@@ -37,7 +37,7 @@ type summary<'a> when 'a : comparison =
 let main argv = 
     let show_intermediate_steps = false
     let bound = 1
-    let inputs = [| 0 |]
+    let inputs = [| 0;0 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -45,7 +45,7 @@ let main argv =
 
     let simstep rely = 
         //Simulate
-        let sim = Simulator.nothing_ever_happens rely
+        let sim = Simulator.nothing_ever_happens rely //BH: Hard code a model here
         if show_intermediate_steps then show_automata sim
         //Remove the bits not involved in interference
         let sim_smaller = compressedMapAutomata(sim, fun _ m -> Map.add "path" (fst m).["path"] Map.empty)
@@ -72,7 +72,7 @@ let main argv =
 
     let finalsimstep rely = 
         //Simulate
-        let sim = Simulator.test_automata5 rely
+        let sim = Simulator.nothing_ever_happens rely //BH: Hardcode a different model here
         //Remove the bits not involved in interference
         let reach_rep = reach_repeatedly sim
         let auto = compressedMapAutomata(sim, fun s m -> { left_external_val =  match snd m with | None -> dont_care | Some m -> ((rely.value m).["left_path"])
