@@ -152,3 +152,10 @@ html {
     top: -20px;
 }
 
+#modelToolbarSlider ul {
+    display: table-row-group;
+}
+
+#modelToolbarSlider ul > li {
+    display: table-cell;
+}

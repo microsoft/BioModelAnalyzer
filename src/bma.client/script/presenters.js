@@ -21,8 +21,10 @@ var BMA;
                 this.models = [];
 
                 window.Commands.On("AddElementSelect", function (type) {
-                    _this.selectedType = type;
-                    _this.driver.TurnNavigation(type === undefined);
+                    //this.selectedType = type;
+                    //this.driver.TurnNavigation(type === undefined);
+                    _this.selectedType = _this.selectedType === type ? undefined : type;
+                    _this.driver.TurnNavigation(_this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {

@@ -27,13 +27,21 @@ $(document).ready(function () {
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
 
-    $("#modelToolbarHeader").toolbarpanel();
-    $("#modelToolbarContent").toolbarpanel();
+    //$("#modelToolbarHeader").toolbarpanel();
+    //$("#modelToolbarContent").toolbarpanel();
+    $("#modelToolbarHeader").buttonset();
+    $("#modelToolbarContent").buttonset();
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion({ header: $("#visibilityOptionsHeader") });
     $("#analytics").bmaaccordion({ position: "right" });
-    $("#analytics").bmaaccordion({ contentLoaded: { ind: 0, val: false } });
+    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
+    $("#icon1").click();
+    setTimeout(function () {
+        $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } });
+    }, 2000);
+
+    $(".bma-elementspanel-visibilityoptions-zoomslider").slider();
 
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
@@ -45,7 +53,9 @@ $(document).ready(function () {
         var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
     }
-    $("#modelelemtoolbar input").click(function () {
+    $("#modelelemtoolbar input").click(function (event) {
+        //var clicked = $(event.currentTarget).eq(0);
+        //if (!clicked.button("option", "disabled")) clicked.button("disable");
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
     elementPanel.buttonset();

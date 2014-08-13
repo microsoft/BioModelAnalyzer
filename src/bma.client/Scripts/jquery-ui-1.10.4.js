@@ -2700,8 +2700,9 @@ $.widget( "ui.button", {
 				}
 				$( this ).removeClass( activeClass );
 			})
-			.bind( "click" + this.eventNamespace, function( event ) {
-				if ( options.disabled ) {
+			.bind("click" + this.eventNamespace, function (event) {
+			    
+			    if (options.disabled) {
 					event.preventDefault();
 					event.stopImmediatePropagation();
 				}

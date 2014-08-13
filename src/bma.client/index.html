@@ -68,7 +68,14 @@
         <div id="modelelemtoolbar" class="bma-elementspanel-elementstoolbar">
         </div>
 
-        <div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>
+        <!--<div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>-->
+        <div class="zoomslider-container">
+            
+            <img id="zoom-minus" src="images/zoomminus.png">
+            <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
+            <img id="zoom-plus" src="images/zoomplus.png">
+        </div>
+
         <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
             <button id="visibilityOptionsHeader" class="iconVisibility show"></button>
             <div style="position: relative">
@@ -127,7 +134,7 @@
 
         <div class="bma-analyticstoolbarcontainer">
             <div id="analytics">
-                <div class="icon shadow">
+                <div id="icon1" class="icon shadow">
                     <!--<div class="iconAnalyze"></div>-->
                     <img src="images/analyze.png" class="iconAnalyze">
                 </div>
@@ -143,7 +150,7 @@
                         <button class="expandButton"></button>
                     </div>
                 </div>
-                <div class="icon shadow" style="top: 80px">
+                <div id="icon2" class="icon shadow" style="top: 80px">
                     <img src="images/graphic.png" class="iconAnalyze">
                 </div>
                 <div id="tabs-2" class="tabPanel shadow">

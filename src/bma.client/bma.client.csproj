@@ -115,6 +115,8 @@
     <Content Include="images\undo.png" />
     <Content Include="images\variable.png" />
     <Content Include="images\visicon.png" />
+    <Content Include="images\zoomminus.png" />
+    <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
@@ -175,7 +177,6 @@
     <TypeScriptCompile Include="script\widgets\skinmodel.ts" />
     <Content Include="script\svgplot.js" />
     <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
-    <Content Include="script\widgets\ui-acc.js" />
     <Content Include="web.config" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
     <TypeScriptCompile Include="script\presenters.ts" />

@@ -98,9 +98,18 @@
             }
 
             if (key == "contentLoaded") {
-                that.loadingList[value.ind] = value.val;
+                that.loadingList[that.headers.index($(value.ind))] = value.val;
+
                 if (value.val) {
-                    if (that.headers.eq(value.ind) === that.active) {
+                    if ($(value.ind)[0] === that.active[0]) {
+                        that._hideLoading(that.active);
+                        var eventData = {
+                            oldHeader: $(),
+                            oldPanel: $(),
+                            newHeader: that.active,
+                            newPanel: that.active.next()
+                        };
+                        that._toggle(eventData);
                     }
                 }
             }
@@ -378,12 +387,19 @@
             $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
             //clicked.children().filter(".invisible").show();
         },
-        _hideLoading: function (clicked) {
-            if (clicked.children().filter(".loading").length > 0) {
-                clicked.children().filter(".loading").detach();
-                clicked.animate({ width: "-=60px" });
-                //clicked.children().filter(".invisible").hide();
-            }
+        _hideLoading: function (toHide) {
+            toHide.each(function () {
+                var load = $(this).children().filter(".loading");
+                if (load.length) {
+                    load.detach();
+                    $(this).animate({ width: "-=60px" });
+                }
+            });
+            //if (clicked.children().filter(".loading").length > 0) {
+            //    clicked.children().filter(".loading").detach();
+            //    clicked.animate({ width: "-=60px" });
+            //    //clicked.children().filter(".invisible").hide();
+            //}
         },
         _animate: function (toShow, toHide, data) {
             var total, easing, duration, that = this, adjust = 0, down = toShow.length && (!toHide.length || (toShow.index() < toHide.index())), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function () {
