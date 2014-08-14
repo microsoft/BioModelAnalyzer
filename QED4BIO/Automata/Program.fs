@@ -36,8 +36,8 @@ type summary<'a> when 'a : comparison =
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 3
-    let inputs = [| 1;1 |]
+    let bound = 4
+    let inputs = [| 0;0;0;1;0;0 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
@@ -45,7 +45,7 @@ let main argv =
 
     let simstep rely = 
         //Simulate
-        let sim = Simulator.simple_automata_B_0 rely //BH: Hardcode a model here
+        let sim = Simulator.simple_automata_B_1 rely //BH: Hardcode a model here
         if show_intermediate_steps then show_automata sim
         //Remove the bits not involved in interference
         let sim_smaller = compressedMapAutomata(sim, fun _ m -> Map.add "path" (fst m).["path"] Map.empty)
@@ -72,7 +72,7 @@ let main argv =
 
     let finalsimstep rely = 
         //Simulate
-        let sim = Simulator.simple_automata_B_0 rely //BH: Hardcode a different model here
+        let sim = Simulator.simple_automata_B_1 rely //BH: Hardcode a different model here
         //Remove the bits not involved in interference
         let reach_rep = reach_repeatedly sim
         let auto = compressedMapAutomata(sim, fun s m -> { left_external_val =  match snd m with | None -> dont_care | Some m -> ((rely.value m).["left_path"])
