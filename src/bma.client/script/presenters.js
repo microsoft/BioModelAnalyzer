@@ -83,13 +83,15 @@ var BMA;
                 });
 
                 var svgCnt = $("<div></div>");
+
+                //this.svg = svgCnt;
                 svgCnt.svg({
                     onLoad: function (svg) {
-                        _this.svg = svg;
+                        this.svg = svg;
 
-                        if (_this.Current !== undefined) {
-                            var drawingSvg = _this.CreateSvg();
-                            _this.driver.Draw(drawingSvg);
+                        if (this.Current !== undefined) {
+                            var drawingSvg = this.CreateSvg();
+                            this.driver.Draw(drawingSvg);
                         }
                     }
                 });

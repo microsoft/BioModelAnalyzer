@@ -40,6 +40,7 @@ $(document).ready(function () {
     $("#visibilityOptionsSlider").bmaaccordion({ header: $("#visibilityOptionsHeader") });
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
+    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
     $("#icon1").click();
     setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
 

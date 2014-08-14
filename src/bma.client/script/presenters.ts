@@ -105,9 +105,10 @@ module BMA {
                     this.Redo();
                 });
 
-                var svgCnt = $("<div></div>")
+                var svgCnt = $("<div></div>");
+                //this.svg = svgCnt;
                 svgCnt.svg({
-                    onLoad: (svg) => {
+                    onLoad: function (svg) {
                         this.svg = svg;
 
                         if (this.Current !== undefined) {
