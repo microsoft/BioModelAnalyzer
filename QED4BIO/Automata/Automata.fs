@@ -18,6 +18,50 @@ let set_collect (f : _ -> HashSet<_> -> unit) (s : IEnumerable<_>) =
     for i in s do 
         f i res
     res
+
+let skip = fun _ -> () in
+    
+//Stolen from SLAyer
+let dfs_iter nexts pre post next_start starts =
+        let visited = new HashSet<_>()
+        in
+        let rec dfs_visit u =
+          if visited.Add u then 
+            pre u 
+            for v in nexts u do
+              dfs_visit v
+            post u
+        in
+        Seq.iter (fun start -> dfs_visit start ; next_start()) starts
+        visited
+
+//Stolen from SLAyer
+let scc nexts preds states = 
+    let rev_postorder = ref [] in
+    let add_to rl = fun v -> rl := v :: !rl in
+    (* Get the finished times for each node *)
+    dfs_iter nexts skip
+      (add_to rev_postorder)
+      skip
+      states |> ignore
+    (* Walk backwards in reverse finished time *)
+    let current_scc = ref [] in
+    let scc_map = new Dictionary<_,_>() in
+    dfs_iter preds
+      skip
+      (add_to current_scc)
+      (fun () ->
+        (* Add each vertex in the scc to the map, with the whole SCC *)
+        List.iter
+          (fun v ->
+            scc_map.Add(v, !current_scc)
+          )
+          (!current_scc) ;
+        (* Setup next scc *)
+        current_scc := []
+      ) 
+      !rev_postorder |> ignore
+    scc_map
  
 /// Abstract class representing automata
 [<AbstractClass>]
@@ -28,46 +72,37 @@ type Automata<'state , 'data> when 'state : comparison and 'data:equality  () =
    abstract states : ICollection<'state> 
    abstract member initialstates: ISet<'state>
 
+
    member a.reachablestates () : ISet<'state> =
-     let rec rs_inner (workset : ISet<'state>) (reached : ISet<'state>) = 
-        let nextstates = set_collect (fun x rs -> rs.UnionWith (a.next x)) workset
-        nextstates.ExceptWith reached
-        if nextstates.Count = 0 then 
-            reached
-        else
-            reached.UnionWith nextstates
-            rs_inner nextstates reached
-     rs_inner (new HashSet<_>(a.initialstates)) (new HashSet<_>(a.initialstates))
+     dfs_iter a.next skip skip skip a.initialstates :> ISet<_>
 
-    member a.Graph (graph : Microsoft.Msagl.Drawing.Graph) = 
-      let add_node x =
-        let node = new Microsoft.Msagl.Drawing.Node(x.ToString())
-        let label = "(" + x.ToString() + "): " + ((a.value x).ToString())
-        node.LabelText <- label
-        if a.initialstates.Contains x then
-                node.Attr.FillColor <- Microsoft.Msagl.Drawing.Color.Beige
-        graph.AddNode(node) |> ignore
+   member a.Graph (graph : Microsoft.Msagl.Drawing.Graph) = 
+        let add_node x =
+            let node = new Microsoft.Msagl.Drawing.Node(x.ToString())
+            let label = "(" + x.ToString() + "): " + ((a.value x).ToString())
+            node.LabelText <- label
+            if a.initialstates.Contains x then
+                    node.Attr.FillColor <- Microsoft.Msagl.Drawing.Color.Beige
+            else if (a.next x).Count = 0 then 
+                    //printf "Warning node with no sucessors!\n %s" label
+                    node.Attr.FillColor <- Microsoft.Msagl.Drawing.Color.RosyBrown
+            graph.AddNode(node) |> ignore
+      
+        let add_edges x = 
+            let next = a.next x
+            if next.Count = 0 then 
+                printfn "Warning node with no sucessors! %s" (x.ToString())
+            for y in next do
+                add_node y
+                graph.AddEdge(x.ToString(),y.ToString()) |> ignore
 
-      let rec rs_inner (workset : ISet<'state>) (reached : ISet<'state>) =
-        let nextstates = 
-             set_collect 
-                (fun x rs -> 
-                    let n = a.next(x)
-                    add_node x
-                    for y in n do 
-                        add_node y
-                        graph.AddEdge(x.ToString(),y.ToString()) |> ignore
-                    rs.UnionWith n
-                ) workset
-        nextstates.ExceptWith reached
-        if nextstates.Count = 0 then 
-            reached
-        else
-            reached.UnionWith nextstates
-            rs_inner nextstates reached
-      rs_inner (new HashSet<_>(a.initialstates)) (new HashSet<_>(a.initialstates))
+        for i in a.initialstates do
+            add_node i
+
+        dfs_iter a.next add_edges skip skip a.initialstates
+
    
-    member a.simulates<'state2 when 'state2 : comparison> (b : Automata<'state2, 'data>) : bool =
+   member a.simulates<'state2 when 'state2 : comparison> (b : Automata<'state2, 'data>) : bool =
         let relation = new Dictionary<'state, Set<'state2>>()
         //initialise relation to relate things with same values.
         for x in a.states do
@@ -118,6 +153,14 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
             nextMap.Add(s, set) |> ignore
             set :> ISet<_>
 
+    member this.pred(s) = 
+        match prevMap.TryGetValue(s) with
+        | true, x -> x :> ISet<_>
+        | false, _ -> 
+            let set = new HashSet<_>()
+            prevMap.Add(s, set) |> ignore
+            set :> ISet<_>
+
     override this.initialstates = startSet :> ISet<_>
     override this.states = statesSet :> ICollection<_>
     override this.value s = dataMap.[s]
@@ -150,11 +193,6 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
 
     member this.addInitialState(x) =
         startSet.Add x |> ignore
-
-    member this.pred s = 
-        match prevMap.TryGetValue(s) with
-        | true, x -> x
-        | false, _ -> new HashSet<_>()
 
 type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
     (bound : int, 

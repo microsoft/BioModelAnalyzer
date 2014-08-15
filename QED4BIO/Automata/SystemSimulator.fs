@@ -23,7 +23,7 @@ type summary<'a> when 'a : comparison =
       right_external_val : Map<string, 'a>
       left_internal_val : Map<string, 'a>
       right_internal_val : Map<string, 'a>
-      middle_vals : Map<string, 'a> list
+      middle_vals : Set<Map<string, 'a> list>
     }
     override this.ToString() = 
         "left_val:\t" + this.left_external_val.ToString() + 
@@ -34,7 +34,8 @@ type summary<'a> when 'a : comparison =
 
 
 let show_intermediate_steps = false
-let bound = 1
+let bound = 6
+let no_compress = true 
 
 let run (init_form, trans_form) edge_values comms fates (inputs : int[]) = 
     let comms = Set.ofSeq comms
@@ -72,26 +73,38 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
         //show_automata final
         final
 
-    let reach_repeatedly (auto : Automata<_,_>) =
-        let body f s seen result =
-            //Quick hack : TODO better 
-            if Set.contains s seen then 
-               Set.add s result 
-            else 
-               Seq.fold (fun rs n -> Set.union rs (f n (Set.add s seen) result)) Set.empty (auto.next s)
-        let rec g s seen result = cache (body g) s seen result
-        fun s -> g s Set.empty Set.empty
+
+    let reach_repeatedly (auto : SimpleAutomata<_,_>) =
+        let result = new System.Collections.Generic.Dictionary<_,_>()
+        let scc_map = Automata.scc auto.next auto.pred auto.initialstates
+        Automata.dfs_iter auto.next Automata.skip 
+            (fun x -> 
+                result.Add(x, 
+                    seq {
+                        if (auto.next x).Count = 0 then 
+                            yield x
+                        if scc_map.[x].Length > 1 || (auto.next x).Contains x then 
+                            yield! scc_map.[x]
+                        for n in auto.next x do
+                            match result.TryGetValue n with 
+                            | true, x -> yield! x
+                            | false, _ -> ()
+                    } |> Set.ofSeq)
+            )
+            Automata.skip
+            auto.initialstates |> ignore
+        fun x -> result.[x]
 
     let finalsimstep rely = 
         //Simulate
         let sim = sim rely 
         //Remove the bits not involved in interference
-        let reach_rep = reach_repeatedly sim
+        let reach_rep = if no_compress then fun x -> Set.singleton x else reach_repeatedly sim
         let auto = compressedMapAutomata(sim, fun s m -> { left_external_val =  match snd m with | None -> dont_care | Some m -> map_filter_map (setcontains left_comms) (fun (s : string) -> s.Substring 5) (rely.value m)
                                                            right_external_val = match snd m with | None -> dont_care | Some m -> map_filter_map (setcontains right_comms) (fun (s : string) -> s.Substring 6) (rely.value m)                                                           
                                                            left_internal_val = map_filter (setcontains comms) (fst m)
                                                            right_internal_val = map_filter (setcontains comms) (fst m)
-                                                           middle_vals = [map_filter (setcontains fates) (fst m)]
+                                                           middle_vals = (Set.map (fun x -> [map_filter (setcontains fates) (fst (sim.value x))]) (reach_rep s))
                                                          })
         //show_automata auto
         let ba = new NstepBarrierAutomata<_,_>(bound, auto)
@@ -174,14 +187,14 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
 
     printfn "Build big composition..."
     
-    let normalize = Simulator.normalize_gen ()
+    let normalize = (fun (x,y) -> x @ y) //Simulator.normalize_gen ()
 
     let auto = 
         [|
            for i = 1 to no_of_cells do
               let sim = finalsimstep (rely i)
               //show_automata sim
-              //let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
+              let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
               yield sim
         |]
 
@@ -208,7 +221,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
                                    right_external_val = if by then y.right_external_val else dont_care
                                    left_internal_val = x.left_internal_val 
                                    right_internal_val = y.right_internal_val
-                                   middle_vals = x.middle_vals @ y.middle_vals}, b)
+                                   middle_vals = set_cartesian (@) x.middle_vals y.middle_vals}, b)
                         else None
                     )         
                     (fun l r -> 
@@ -224,7 +237,11 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
                     (fun x y -> normalize (x , y))
                     show_automata
             //show_automata auto.[c]
-            auto.[c] <- compressedMapAutomata(auto.[c], fun x y -> y)
+            let reach_rep = if no_compress then fun x -> Set.singleton x else reach_repeatedly auto.[c]
+            let newauto =  compressedMapAutomata(auto.[c], fun x y -> {fst y with middle_vals = Set.unionMany (Set.map (fun m -> (fst (auto.[c].value m)).middle_vals) (reach_rep x) )}, snd y )
+            let newauto =  productFilter (unitAutomata) newauto (fun _ y -> Some y) (fun _ y -> [y])
+            auto.[c] <- newauto
+            show_automata auto.[c]
         if carryover then 
             printfn "Carry over %d -> %d" (steps*2) steps
             auto.[steps] <- auto.[steps * 2 ]
@@ -234,7 +251,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
     printfn "Pre tidy Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
     //show_automata auto.[0]
 
-    let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(", ", (fst x).middle_vals))
+    let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(",\n ", Set.map (fun (x : Map<_,_> list) -> "[" + (String.Join(";", x)) + "]") ((fst x).middle_vals)))
 
     printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
