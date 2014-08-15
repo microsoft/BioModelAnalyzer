@@ -69,7 +69,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
         //Compress
         let final = compressedMapAutomata(sim_BA, fun _ m -> m)
         if show_intermediate_steps then show_automata final
-        show_automata final
+        //show_automata final
         final
 
     let reach_repeatedly (auto : Automata<_,_>) =
@@ -108,7 +108,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
     let univ_rely_pre = Simulator.sim trans_form trans_form unitAuto
     let univ_rely = Automata.compressedMapAutomata (univ_rely_pre, (fun _ (y,_) -> map_filter (setcontains comms) y))
     
-    show_automata univ_rely
+    //show_automata univ_rely
 
     //Gets updated in place as we refine the components.
     let relies = 
@@ -180,7 +180,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
         [|
            for i = 1 to no_of_cells do
               let sim = finalsimstep (rely i)
-              show_automata sim
+              //show_automata sim
               //let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
               yield sim
         |]

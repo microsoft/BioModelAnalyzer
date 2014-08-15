@@ -4,7 +4,7 @@
 
 [<EntryPoint>]
 let main argv = 
-    let inputs = [| 1;1;1;1 |]
+    let inputs = [| 1;0 |]
     
     SystemSimulator.run Simulator.test_automata5_forms (Map.add "path" 0 Map.empty) ["path"] ["path"] inputs
 
