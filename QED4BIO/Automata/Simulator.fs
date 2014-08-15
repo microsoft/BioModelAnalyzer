@@ -429,7 +429,7 @@ let simple_automata_B_1<'istate when 'istate : comparison> : Automata<'istate,in
     let bound f l h =  ((var f << int h) &&& ((int l << var f) ||| (var f === int l)))
     sim 
         //Initialise everything as off/0
-        (bound "next_path" 0 1 &&& bound "next_signal" 0 1 &&& bound "next_lst" 0 1 &&& bound "next_let23" 0 1 &&& bound "next_sem5" 0 1 &&& bound "next_sur2" 0 1 &&& bound "next_let60" 0 1 &&& bound "next_mapk" 0 1)
+        ( bound "next_path" 0 1 &&& bound "next_signal" 0 1 &&& bound "next_lst" 0 1 &&& bound "next_let23" 0 1 &&& bound "next_sem5" 0 1 &&& bound "next_sur2" 0 1 &&& bound "next_let60" 0 1 &&& bound "next_mapk" 0 1)
         (context.MkAnd 
             [|
             (* Straight from the paper *)
@@ -460,6 +460,7 @@ let simple_automata_B_1<'istate when 'istate : comparison> : Automata<'istate,in
             ((var "prev_left_path" === int 0) &&& (var "prev_right_path" === int 1)) &&& (var "prev_sur2" === int 0) ==> (var "next_signal" === int 1)
             ((var "prev_left_path" === int 1) &&& (var "prev_right_path" === int 0)) &&& (var "prev_sur2" === int 1) &&& (var "prev_signal" === int 0) ==> (var "next_signal" === int 0)
             ((var "prev_left_path" === int 0) &&& (var "prev_right_path" === int 1)) &&& (var "prev_sur2" === int 1) &&& (var "prev_signal" === int 1) ==> (var "next_signal" === int 1)
+            (* Fate  rules *)
 
             bound "prev_path" 0 2
 

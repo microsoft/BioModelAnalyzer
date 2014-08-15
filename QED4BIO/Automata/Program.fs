@@ -36,8 +36,8 @@ type summary<'a> when 'a : comparison =
 [<EntryPoint>]
 let main argv = 
     let show_intermediate_steps = false
-    let bound = 4
-    let inputs = [| 0;0;0;1;0;0 |]
+    let bound = 5
+    let inputs = [| 1;1;1;1 |]
     let no_of_cells = inputs.Length
     //Set input high
     let b = [| for i in inputs do yield Map.add "input" i Map.empty |]
