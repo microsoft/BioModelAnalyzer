@@ -26,5 +26,9 @@ describe("DesignSurfacePresenter", () => {
     it("should create proper SVG for specified model and layout", () => {
 
     });
-     
+
+    it("creates drawingsurface widget", () => {
+        var ds = $("<div id='DRAWINGSURFACE'></div>");
+        ds.drawingsurface();
+    });
 });

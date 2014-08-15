@@ -21,5 +21,10 @@ describe("DesignSurfacePresenter", function () {
 
     it("should create proper SVG for specified model and layout", function () {
     });
+
+    it("creates drawingsurface widget", function () {
+        var ds = $("<div id='DRAWINGSURFACE'></div>");
+        ds.drawingsurface();
+    });
 });
 //# sourceMappingURL=PresenterTests.js.map
