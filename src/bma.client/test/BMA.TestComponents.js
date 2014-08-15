@@ -25,6 +25,15 @@ var BMA;
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;
+
+        var TestUndoRedoButton = (function () {
+            function TestUndoRedoButton() {
+            }
+            TestUndoRedoButton.prototype.Turn = function (isOn) {
+            };
+            return TestUndoRedoButton;
+        })();
+        Test.TestUndoRedoButton = TestUndoRedoButton;
     })(BMA.Test || (BMA.Test = {}));
     var Test = BMA.Test;
 })(BMA || (BMA = {}));

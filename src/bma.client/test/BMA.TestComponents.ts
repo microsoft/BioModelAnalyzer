@@ -22,5 +22,10 @@ module BMA {
             public TurnNavigation(isOn: boolean) {
             }
         }
+
+        export class TestUndoRedoButton implements BMA.UIDrivers.ITurnableButton {
+            public Turn(isOn: boolean) {
+            }
+        }
     }
 } 

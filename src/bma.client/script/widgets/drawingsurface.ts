@@ -1,5 +1,6 @@
 ﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+declare var InteractiveDataDisplay: any;
 
 (function ($) {
     $.widget("BMA.drawingsurface", {
