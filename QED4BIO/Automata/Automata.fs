@@ -1,7 +1,7 @@
 ﻿module Automata
 open System.Collections.Generic
 
-let dont_care = -99
+let dont_care = Map.empty
 
 let cache (f : 'a -> 'b) =
     let cache = new System.Collections.Generic.Dictionary<'a, 'b>()
