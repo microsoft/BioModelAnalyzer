@@ -328,7 +328,7 @@
             if ((clickedIsActive && !options.collapsible) || (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
-            eventData.newHeader.css("z-index", 1);
+            eventData.newHeader.css("z-index", 2);
             this.headers.not(eventData.newHeader).css("z-index", 0);
 
             // when the call to ._toggle() comes after the class changes
@@ -362,24 +362,26 @@
         },
         _toggle: function (data) {
             var toShow = data.newPanel, toHide = this.prevShow.length ? this.prevShow : data.oldPanel;
+            var that = this;
 
             // handle activating a panel during the animation for another activation
             this.prevShow.add(this.prevHide).stop(true, true);
             this.prevShow = toShow;
             this.prevHide = toHide;
 
-            if (this.options.animate && this.options.position != "center") {
-                this._animate(toShow, toHide, data);
+            if (that.options.animate && that.options.position != "center") {
+                that._animate(toShow, toHide, data);
             } else {
                 toHide.hide();
                 toShow.show();
 
                 //if (this.options.context.is(":hidden"))
-                if (data.newHeader.next().is(":hidden"))
-                    this.active.removeClass("show").addClass("only");
-                else
-                    this.active.removeClass("only").addClass("show");
-                this._toggleComplete(data);
+                if (data.newHeader.next().is(":hidden")) {
+                    data.newHeader.removeClass("show").removeClass("shadowVisibility").addClass("only");
+                } else {
+                    data.newHeader.removeClass("only").addClass("show").addClass("shadowVisibility");
+                }
+                that._toggleComplete(data);
             }
 
             toHide.attr({
@@ -465,6 +467,8 @@
 
             //toHide.hide();
             //toShow.show();
+            data.newPanel.css("z-index", 1);
+
             toHide.removeClass("ui-accordion-content-active").prev().removeClass("ui-corner-top").addClass("ui-corner-all");
 
             // Work around for rendering bug in IE (#5421)
