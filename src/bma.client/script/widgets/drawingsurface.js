@@ -75,7 +75,9 @@
             switch (key) {
                 case "svg":
                     this._svgPlot.svg.clear();
-                    this._svgPlot.svg.add(value);
+                    if (value !== undefined) {
+                        this._svgPlot.svg.add(value);
+                    }
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {

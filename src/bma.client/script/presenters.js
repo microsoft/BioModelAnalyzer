@@ -21,10 +21,10 @@ var BMA;
                 this.models = [];
 
                 window.Commands.On("AddElementSelect", function (type) {
-                    //this.selectedType = type;
-                    //this.driver.TurnNavigation(type === undefined);
-                    _this.selectedType = _this.selectedType === type ? undefined : type;
-                    _this.driver.TurnNavigation(_this.selectedType === undefined);
+                    _this.selectedType = type;
+                    _this.driver.TurnNavigation(type === undefined);
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -83,15 +83,13 @@ var BMA;
                 });
 
                 var svgCnt = $("<div></div>");
-
-                //this.svg = svgCnt;
                 svgCnt.svg({
                     onLoad: function (svg) {
-                        this.svg = svg;
+                        _this.svg = svg;
 
-                        if (this.Current !== undefined) {
-                            var drawingSvg = this.CreateSvg();
-                            this.driver.Draw(drawingSvg);
+                        if (_this.Current !== undefined) {
+                            var drawingSvg = _this.CreateSvg();
+                            _this.driver.Draw(drawingSvg);
                         }
                     }
                 });

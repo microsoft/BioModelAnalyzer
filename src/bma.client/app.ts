@@ -54,7 +54,7 @@ $(document).ready(function () {
     for (var i = 0; i < elements.length; i++) {
         var elem = elements[i];
         $("<input></input>")
-            .attr("type", "checkbox")
+            .attr("type", "radio")
             .attr("id", "btn-" + elem.Type)
             .attr("name", "drawing-button")
             .attr("data-type", elem.Type)

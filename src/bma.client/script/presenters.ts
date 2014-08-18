@@ -41,10 +41,10 @@ module BMA {
 
                 window.Commands.On("AddElementSelect", (type: string) => {
                     
-                    //this.selectedType = type;
-                    //this.driver.TurnNavigation(type === undefined);
-                    this.selectedType = this.selectedType === type ? undefined : type;
-                    this.driver.TurnNavigation(this.selectedType === undefined);
+                    this.selectedType = type;
+                    this.driver.TurnNavigation(type === undefined);
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
@@ -106,9 +106,8 @@ module BMA {
                 });
 
                 var svgCnt = $("<div></div>");
-                //this.svg = svgCnt;
                 svgCnt.svg({
-                    onLoad: function (svg) {
+                    onLoad: (svg) => {
                         this.svg = svg;
 
                         if (this.Current !== undefined) {
