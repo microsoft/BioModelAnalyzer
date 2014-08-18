@@ -68,11 +68,16 @@ module BMA {
 
                                 var gridCell = that.GetGridCell(args.x, args.y);
 
-                                containers.push(new BMA.Model.Container(0));
-                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, (gridCell.x + 0.5) * that.xStep, (gridCell.y + 0.5) * that.yStep));
-                                var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
-                                var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
-                                that.Dup(newmodel, newlayout);
+                                if (that.GetContainerFromGridCell(gridCell) === undefined && that.GetConstantsFromGridCell(gridCell).length === 0) {
+
+                                    containers.push(new BMA.Model.Container(0));
+                                    containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, gridCell.x, gridCell.y));
+                                    var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
+                                    var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
+                                    that.Dup(newmodel, newlayout);
+
+                                }
+
                                 break;
                             case "Constant":
                                 var variables = model.Variables.slice(0);
@@ -132,10 +137,25 @@ module BMA {
             private GetGridCell(x: number, y: number): { x: number; y: number } {
                 var cellX = Math.ceil((x - this.xOrigin) / this.xStep) - 1;
                 var cellY = Math.ceil((y - this.yOrigin) / this.yStep) - 1;
-
                 return { x: cellX, y: cellY };
             }
 
+            private GetContainerFromGridCell(gridCell: { x: number; y: number }): { container: BMA.Model.Container; layout: BMA.Model.ContainerLayout } {
+                var current = this.Current;
+
+                var layouts = current.layout.Containers;
+                for (var i = 0; i < layouts.length; i++) {
+                    if (layouts[i].PositionX === gridCell.x && layouts[i].PositionY === gridCell.y) {
+                        return { container: current.model.Containers[i], layout: layouts[i] };
+                    }
+                }
+
+                return undefined;
+            }
+
+            private GetConstantsFromGridCell(gridCell: { x: number; y: number }): { container: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout }[] {
+                return [];
+            }
 
             private OnModelUpdated() {
                 this.undoButton.Turn(this.CanUndo);
@@ -193,6 +213,10 @@ module BMA {
                 return this.models[this.currentModelIndex];
             }
 
+            private get Grid(): { x0: number; y0: number; xStep: number; yStep: number } {
+                return { x0: this.xOrigin, y0: this.yOrigin, xStep: this.xStep, yStep: this.yStep };
+            }
+
             private CreateSvg(): any {
                 if (this.svg === undefined)
                     return undefined;
@@ -209,7 +233,7 @@ module BMA {
 
                     var element = window.ElementRegistry.GetElementByType("Container");
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, containerLayout));
+                    svgElements.push(element.RenderToSvg(this.svg, { layout: containerLayout, grid: this.Grid }));
                 }
 
                 var variables = this.Current.model.Variables;
@@ -220,7 +244,7 @@ module BMA {
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, variableLayout));
+                    svgElements.push(element.RenderToSvg(this.svg, { layout: variableLayout, grid: this.Grid }));
                 }
 
                 //constructing final svg image

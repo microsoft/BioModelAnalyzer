@@ -10,6 +10,8 @@ describe("DesignSurfacePresenter", function () {
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
 
+        //var presenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, undefined);
+        //expect(presenter).toBeDefined();
         window.Commands = new BMA.CommandRegistry();
         window.ElementRegistry = new BMA.Elements.ElementsRegistry();
         var testbutton = new BMA.Test.TestUndoRedoButton();
@@ -25,3 +27,4 @@ describe("DesignSurfacePresenter", function () {
         ds.drawingsurface();
     });
 });
+//# sourceMappingURL=PresenterTests.js.map

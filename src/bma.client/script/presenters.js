@@ -1,4 +1,10 @@
-﻿
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="model\biomodel.ts"/>
+/// <reference path="model\model.ts"/>
+/// <reference path="uidrivers.ts"/>
+/// <reference path="commands.ts"/>
+
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -23,6 +29,8 @@ var BMA;
                 window.Commands.On("AddElementSelect", function (type) {
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -38,11 +46,14 @@ var BMA;
 
                                 var gridCell = that.GetGridCell(args.x, args.y);
 
-                                containers.push(new BMA.Model.Container(0));
-                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, (gridCell.x + 0.5) * that.xStep, (gridCell.y + 0.5) * that.yStep));
-                                var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
-                                var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
-                                that.Dup(newmodel, newlayout);
+                                if (that.GetContainerFromGridCell(gridCell) === undefined && that.GetConstantsFromGridCell(gridCell).length === 0) {
+                                    containers.push(new BMA.Model.Container(0));
+                                    containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, gridCell.x, gridCell.y));
+                                    var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
+                                    var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
+                                    that.Dup(newmodel, newlayout);
+                                }
+
                                 break;
                             case "Constant":
                                 var variables = model.Variables.slice(0);
@@ -100,8 +111,24 @@ var BMA;
             DesignSurfacePresenter.prototype.GetGridCell = function (x, y) {
                 var cellX = Math.ceil((x - this.xOrigin) / this.xStep) - 1;
                 var cellY = Math.ceil((y - this.yOrigin) / this.yStep) - 1;
-
                 return { x: cellX, y: cellY };
+            };
+
+            DesignSurfacePresenter.prototype.GetContainerFromGridCell = function (gridCell) {
+                var current = this.Current;
+
+                var layouts = current.layout.Containers;
+                for (var i = 0; i < layouts.length; i++) {
+                    if (layouts[i].PositionX === gridCell.x && layouts[i].PositionY === gridCell.y) {
+                        return { container: current.model.Containers[i], layout: layouts[i] };
+                    }
+                }
+
+                return undefined;
+            };
+
+            DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
+                return [];
             };
 
             DesignSurfacePresenter.prototype.OnModelUpdated = function () {
@@ -172,10 +199,19 @@ var BMA;
                 configurable: true
             });
 
+            Object.defineProperty(DesignSurfacePresenter.prototype, "Grid", {
+                get: function () {
+                    return { x0: this.xOrigin, y0: this.yOrigin, xStep: this.xStep, yStep: this.yStep };
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             DesignSurfacePresenter.prototype.CreateSvg = function () {
                 if (this.svg === undefined)
                     return undefined;
 
+                //Generating svg elements from model and layout
                 this.svg.clear();
                 var svgElements = [];
 
@@ -187,7 +223,7 @@ var BMA;
 
                     var element = window.ElementRegistry.GetElementByType("Container");
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, containerLayout));
+                    svgElements.push(element.RenderToSvg(this.svg, { layout: containerLayout, grid: this.Grid }));
                 }
 
                 var variables = this.Current.model.Variables;
@@ -198,9 +234,10 @@ var BMA;
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, variableLayout));
+                    svgElements.push(element.RenderToSvg(this.svg, { layout: variableLayout, grid: this.Grid }));
                 }
 
+                //constructing final svg image
                 this.svg.clear();
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
@@ -213,3 +250,4 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=presenters.js.map

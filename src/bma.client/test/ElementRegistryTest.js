@@ -30,10 +30,13 @@
 
         var drawingSvg = $("<div></div>");
 
+        // drawingSvg.clear();
         expect(drawingSvg).toBeDefined();
 
+        //elem.RenderToSvg(drawingSvg, {PositionX: 0, PositionY: 0});
         expect(elem.Type).toEqual(type);
         expect(elem.Description).toEqual(description);
         expect(elem.IconURL).toEqual(url);
     });
 });
+//# sourceMappingURL=ElementRegistryTest.js.map
