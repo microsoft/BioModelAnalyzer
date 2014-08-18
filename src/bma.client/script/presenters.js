@@ -23,6 +23,8 @@ var BMA;
                 window.Commands.On("AddElementSelect", function (type) {
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {

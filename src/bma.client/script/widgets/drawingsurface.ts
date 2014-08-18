@@ -1,5 +1,7 @@
 ﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+declare var BMAExt: any;
+declare var InteractiveDataDisplay: any;
 
 (function ($) {
     $.widget("BMA.drawingsurface", {
@@ -20,6 +22,7 @@
             var that = this;
 
             var plotDiv = $("<div></div>").width("100%").height("100%").attr("data-idd-plot", "plot").appendTo(that.element);
+            console.log(that.element.attr("id"));
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
 
@@ -78,7 +81,9 @@
             switch (key) {
                 case "svg":
                     this._svgPlot.svg.clear();
-                    this._svgPlot.svg.add(value);
+                    if (value !== undefined) {
+                        this._svgPlot.svg.add(value);
+                    }
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {

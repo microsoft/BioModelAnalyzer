@@ -40,8 +40,11 @@ module BMA {
 
 
                 window.Commands.On("AddElementSelect", (type: string) => {
+                    
                     this.selectedType = type;
                     this.driver.TurnNavigation(type === undefined);
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
@@ -102,7 +105,7 @@ module BMA {
                     this.Redo();
                 });
 
-                var svgCnt = $("<div></div>")
+                var svgCnt = $("<div></div>");
                 svgCnt.svg({
                     onLoad: (svg) => {
                         this.svg = svg;

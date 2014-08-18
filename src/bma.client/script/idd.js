@@ -1,4 +1,5 @@
 ﻿///#source 1 1 /script/wrapper_header.txt
+
 function IDD($, Rx) {
 ///#source 1 1 /script/modernizr.custom.js
 /* Modernizr 2.6.2 (Custom Build) | MIT & BSD
@@ -524,6 +525,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         var plotType = jqDiv.attr("data-idd-plot");
         switch (plotType) {
             case "plot":
+                
                 return new InteractiveDataDisplay.Plot(jqDiv, master);
             case "polyline":
                 return new InteractiveDataDisplay.Polyline(jqDiv, master);
@@ -545,7 +547,6 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         if (factory) {
             return factory(jqDiv, master);
         }
-
         throw "Unknown plot type";
     };
 
@@ -554,25 +555,31 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
     // jqDiv is either ID of a DIV element within the HTML page or jQuery to the element to be initialized as a plot.
     // Returns new InteractiveDataDisplay.Plot instance.
     InteractiveDataDisplay.asPlot = function (div) {
+        
         if (!div)
             throw "Plot must be attached to div!";
 
         var jqDiv;
-
+        
         if (div.tagName !== undefined && div.tagName.toLowerCase() === "div") {
+
             jqDiv = $(div);
         } else if (typeof (div) === "string") {
+
             jqDiv = $("#" + div);
             if (jqDiv.length === 0) throw "There is no element with id " + div;
             div = jqDiv[0];
         } else if (div instanceof jQuery && div.is('div')) {
+            
             jqDiv = div;
             div = div[0];
         } else
             throw "Invalid input parameter! It should be div of id of div of jQuery of div";
 
-        if (div.plot !== undefined)
+        if (div.plot !== undefined) {
+            
             return div.plot;
+        }
         else {
             var plot = initializePlot(jqDiv);
             return plot;
@@ -587,10 +594,10 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
 
 
     InteractiveDataDisplay.Plot = function (div, master, myCentralPart) {
-
+        
         if (div && (div.hasClass("idd-plot-master") || div.hasClass("idd-plot-dependant")))
             return;
-
+        
         if (div && (navigator.userAgent.match(/(iPhone|iPod|iPad)/) || navigator.userAgent.match(/Android/))) {
             div.bind('touchstart', function (e) { e.preventDefault(); });
             div.bind('touchmove', function (e) { e.preventDefault(); });
@@ -791,6 +798,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                 },
                 configurable: false
             }
+
         );
 
         this.selfMapRefresh = function () {
@@ -847,7 +855,9 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         // Adds a child to _children, fires the event and requests update.
         // (logical add)
         this.addChild = function (childPlot) {
-            if (!childPlot) throw "Child plot is undefined";
+            if (!childPlot) {
+                throw "Child plot is undefined";
+            }
             if (childPlot.master && (childPlot.master !== childPlot && childPlot.master !== this.master)) throw "Given child plot already added to another plot";
             if (childPlot.master !== this.master)
                 childPlot.onAddedTo(this.master); // changing master 
@@ -1767,6 +1777,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
 
         if (div) {
             if (_isMaster) {
+
                 if (div.attr("data-idd-plot") !== 'figure' && div.attr("data-idd-plot") !== 'chart')
                     this.updateLayout();
                 div.addClass("idd-plot-master");
@@ -1775,6 +1786,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                 div.addClass("idd-plot-dependant");
             }
         }
+
     };
 
     InteractiveDataDisplay.Legend = function (_plot, _jqdiv) {

@@ -1,4 +1,5 @@
-﻿describe("CommandRegistry", () => {
+﻿
+describe("CommandRegistry", () => {
     it("should register new command with its callback", () => {
         var commandRegistry = new BMA.CommandRegistry();
 

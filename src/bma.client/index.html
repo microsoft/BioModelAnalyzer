@@ -5,11 +5,13 @@
     <meta charset="utf-8" />
     <title>Bio Model Analyzer</title>
     <link rel="stylesheet" href="Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="Content/themes/base/jquery.ui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.widgets.css" type="text/css" />
-    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
-    <link rel="stylesheet" href="Content/themes/base/jquery.ui.css" type="text/css" />
+    
+    
 
 
     <script src="Scripts/jquery-2.1.1.min.js"></script>
@@ -66,7 +68,14 @@
         <div id="modelelemtoolbar" class="bma-elementspanel-elementstoolbar">
         </div>
 
-        <div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>
+        <!--<div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>-->
+        <div class="zoomslider-container">
+            
+            <img id="zoom-minus" src="images/zoomminus.png">
+            <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
+            <img id="zoom-plus" src="images/zoomplus.png">
+        </div>
+
         <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
             <button id="visibilityOptionsHeader" class="iconVisibility show"></button>
             <div style="position: relative">
@@ -125,11 +134,11 @@
 
         <div class="bma-analyticstoolbarcontainer">
             <div id="analytics">
-                <div class="icon shadow">
+                <div id="icon1" class="icon shadow">
                     <!--<div class="iconAnalyze"></div>-->
                     <img src="images/analyze.png" class="iconAnalyze">
                 </div>
-                <div id="tabs-1" style="width: 400px">
+                <div id="tabs-1" class="tabPanel shadow">
                     <h2>Proof Analysis</h2>
                     <div id="ProofResult"></div>
                     <div id="Variables" style="height: 50px">
@@ -141,10 +150,10 @@
                         <button class="expandButton"></button>
                     </div>
                 </div>
-                <div class="icon shadow" style="top: 90px">
+                <div id="icon2" class="icon shadow" style="top: 80px">
                     <img src="images/graphic.png" class="iconAnalyze">
                 </div>
-                <div id="tabs-2" style="width: 400px">
+                <div id="tabs-2" class="tabPanel shadow">
                     <h2>Simulation</h2>
                     <div id="Div1" style="height: 50px">
                         <span>Variables</span>

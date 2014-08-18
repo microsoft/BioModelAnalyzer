@@ -12,7 +12,7 @@
             // callbacks
             activate: null,
             beforeActivate: null,
-            showLoading: false
+            contentLoaded: { ind: "", val: true }
         },
         hideProps: {},
         showProps: {},
@@ -75,8 +75,15 @@
             this.showProps = {};
             this.hideProps[that.options.position] = "-=" + distantion;
             this.showProps[that.options.position] = "+=" + distantion;
+
+            //context.show().css("z-index",1);
+            context.css("z-index", 1);
+
+            //this.headers.next().not(context).hide().css("z-index", 0);
+            this.headers.next().not(context).css("z-index", 0);
         },
         _setOption: function (key, value) {
+            var that = this;
             if (key === "active") {
                 // _activate() will handle invalid values and update this.options
                 this._activate(value);
@@ -87,10 +94,50 @@
                 if (this.options.event) {
                     this._off(this.headers, this.options.event);
                 }
+                value.ind;
                 this._setupEvents(value);
             }
 
-            this._super(key, value);
+            if (key == "contentLoaded") {
+                console.log("setting contentLoaded begins");
+                var isthatActive;
+                if (typeof value.ind === "number") {
+                    isthatActive = that.headers[value.ind][0] === that.active[0];
+                    that.loadingList[value.ind] = value.val;
+                } else if (typeof value.ind === "string") {
+                    isthatActive = $(value.ind)[0] === that.active[0];
+                    that.loadingList[that.headers.index($(value.ind))] = value.val;
+                } else if (typeof value.ind === "JQuery") {
+                    isthatActive = value.ind[0] === that.active[0];
+                    that.loadingList[that.headers.index(value.ind)] = value.val;
+                }
+
+                if (value.val) {
+                    if (isthatActive) {
+                        that._hideLoading(that.active);
+                        var eventData = {
+                            oldHeader: $(),
+                            oldPanel: $(),
+                            newHeader: that.active,
+                            newPanel: that.active.next()
+                        };
+                        that._toggle(eventData);
+                    }
+                }
+            }
+
+            if (key == "position") {
+                switch (value) {
+                    case "left":
+                    case "right":
+                    case "top":
+                    case "bottom":
+                    case "center":
+                        that.options.position = value;
+                        console.log(value);
+                }
+                return;
+            }
 
             // setting collapsible: false while collapsed; open first panel
             if (key === "collapsible" && !value && this.options.active === false) {
@@ -103,6 +150,8 @@
                 this.element.toggleClass("ui-state-disabled", !!value).attr("aria-disabled", value);
                 this.headers.add(this.options.context).toggleClass("ui-state-disabled", !!value);
             }
+
+            this._super(key, value);
         },
         _keydown: function (event) {
             if (event.altKey || event.ctrlKey) {
@@ -182,11 +231,10 @@
 
             //this.headers
             //.addClass("ui-accordion-header ui-state-default ui-corner-all");
-            var loading = that.options.showLoading;
-            this.headers.each(function () {
-                if (loading) {
-                    $('<img src="../../images/60x60.gif">').appendTo(this).addClass("invisible");
-                }
+            //var loading = that.options.showLoading;
+            this.loadingList = [];
+            this.headers.each(function (ind) {
+                that.loadingList[ind] = true;
                 var child = $(this).next();
 
                 var distantion = 0;
@@ -201,6 +249,7 @@
                         break;
                     case "center":
                         that.headers.removeClass("show").addClass("only");
+                        that.headers.next().hide();
                         return;
                 }
                 that.headers.css("position", "absolute");
@@ -228,8 +277,9 @@
                 tabIndex: -1
             }).next().attr({
                 "aria-hidden": "true"
-            }).hide();
+            });
 
+            //.hide();
             // make sure at least one header is in the tab order
             if (!this.active.length) {
                 this.headers.eq(0).attr("tabIndex", 0);
@@ -246,7 +296,7 @@
             this._setupEvents(options.event);
         },
         _findActive: function (selector) {
-            return typeof selector === "number" ? this.options.header : $();
+            return typeof selector === "number" ? this.headers.eq(selector) : $();
         },
         _setupEvents: function (event) {
             var events = {
@@ -254,7 +304,7 @@
             };
             if (event) {
                 $.each(event.split(" "), function (index, eventName) {
-                    events[eventName] = "_eventHandler";
+                    events[eventName] = "eventHandler";
                 });
             }
 
@@ -267,8 +317,8 @@
             //this._hoverable(this.headers);
             //this._focusable(this.headers);
         },
-        _eventHandler: function (event) {
-            var options = this.options, active = this.active, clicked = $(event.currentTarget), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = active.next(), eventData = {
+        eventHandler: function (event) {
+            var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), eventData = {
                 oldHeader: active,
                 oldPanel: toHide,
                 newHeader: clicked,
@@ -278,16 +328,23 @@
             if ((clickedIsActive && !options.collapsible) || (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
+            eventData.newHeader.css("z-index", 1);
+            this.headers.not(eventData.newHeader).css("z-index", 0);
 
             // when the call to ._toggle() comes after the class changes
             // it causes a very odd bug in IE 8 (see #6720)
+            //this.active.next().show();
             this.active = clickedIsActive ? $() : clicked;
 
-            if (this.options.showLoading) {
-                if (!collapsing)
+            if (!this.loadingList[this.headers.index(clicked)]) {
+                eventData.newPanel = $();
+                if (!collapsing) {
+                    this._hideLoading(this.headers.not(clicked));
+                    this._toggle(eventData);
                     this._showLoading(clicked);
-                else
+                } else {
                     this._hideLoading(clicked);
+                }
                 return;
             }
 
@@ -298,11 +355,9 @@
             active.removeClass("ui-accordion-header-active ui-state-active");
 
             if (!clickedIsActive) {
-                clicked.removeClass("ui-corner-all");
+                clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active  ui-corner-top");
 
-                //.addClass("ui-accordion-header-active ui-state-active ui-corner-top");
-                //clicked
-                active.next().addClass("ui-accordion-content-active");
+                clicked.addClass("ui-accordion-content-active");
             }
         },
         _toggle: function (data) {
@@ -321,9 +376,9 @@
 
                 //if (this.options.context.is(":hidden"))
                 if (data.newHeader.next().is(":hidden"))
-                    this.options.header.removeClass("show").addClass("only");
+                    this.active.removeClass("show").addClass("only");
                 else
-                    this.options.header.removeClass("only").addClass("show");
+                    this.active.removeClass("only").addClass("show");
                 this._toggleComplete(data);
             }
 
@@ -354,11 +409,16 @@
         },
         _showLoading: function (clicked) {
             clicked.animate({ width: "+=60px" });
-            clicked.children().filter(".invisible").show();
+            $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
-        _hideLoading: function (clicked) {
-            clicked.animate({ width: "-=60px" });
-            clicked.children().filter(".invisible").hide();
+        _hideLoading: function (toHide) {
+            toHide.each(function () {
+                var load = $(this).children().filter(".loading");
+                if (load.length) {
+                    load.detach();
+                    $(this).animate({ width: "-=60px" });
+                }
+            });
         },
         _animate: function (toShow, toHide, data) {
             var total, easing, duration, that = this, adjust = 0, down = toShow.length && (!toHide.length || (toShow.index() < toHide.index())), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function () {
@@ -377,27 +437,34 @@
             duration = duration || options.duration || animate.duration;
             var that = this;
 
+            this._hideLoading(this.headers.not(this.active));
+
             if (!toShow.length) {
                 that._processAnimation(toHide);
-                that.element.animate(that.hideProps, duration, easing, function () {
-                    that._toggleComplete(data, "", "");
-                    toHide.hide();
-                });
+                that.element.animate(that.hideProps, duration, easing, complete);
                 return;
             }
 
             if (!toHide.length) {
-                toShow.show();
                 that._processAnimation(toShow);
-                that.element.animate(that.showProps, duration, easing, that._toggleComplete(data, "", ""));
+                that.element.animate(that.showProps, duration, easing, complete);
                 return;
             }
-            toHide.hide();
-            toShow.show();
-        },
-        _toggleComplete: function (data, classadd, classremove) {
-            var toHide = data.oldPanel;
 
+            //context.show()
+            //this.headers.next().not(context).hide()
+            //toHide.hide().css("z-index", 0);
+            //toShow.show().css("z-index", 1);
+            toHide.css("z-index", 0);
+            toShow.css("z-index", 1);
+            this._toggleComplete(data);
+        },
+        _toggleComplete: function (data) {
+            var toHide = data.oldHeader;
+            var toShow = data.newHeader;
+
+            //toHide.hide();
+            //toShow.show();
             toHide.removeClass("ui-accordion-content-active").prev().removeClass("ui-corner-top").addClass("ui-corner-all");
 
             // Work around for rendering bug in IE (#5421)
@@ -405,6 +472,7 @@
                 toHide.parent()[0].className = toHide.parent()[0].className;
             }
             this._trigger("activate", null, data);
+            //this.headers.not(this.active).next().hide();
         }
     });
 }(jQuery));

@@ -115,6 +115,8 @@
     <Content Include="images\undo.png" />
     <Content Include="images\variable.png" />
     <Content Include="images\visicon.png" />
+    <Content Include="images\zoomminus.png" />
+    <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
@@ -162,6 +164,7 @@
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\accordeon.ts" />
+    <Content Include="script\idd.heatmapworker.js" />
     <Content Include="script\idd.js" />
     <Content Include="script\jquery.browser.min.js" />
     <Content Include="script\jquery.svg.js" />
@@ -180,9 +183,12 @@
     <TypeScriptCompile Include="script\presenters.ts" />
     <TypeScriptCompile Include="script\uidrivers.interfaces.ts" />
     <TypeScriptCompile Include="script\uidrivers.ts" />
+    <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\BMA.TestComponents.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
+    <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
+    <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
@@ -229,6 +235,7 @@
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
+      <UserProperties Chutzpah_1json__JSONSchema="" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
