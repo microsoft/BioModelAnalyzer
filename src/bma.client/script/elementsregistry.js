@@ -169,4 +169,3 @@
     })(BMA.Elements || (BMA.Elements = {}));
     var Elements = BMA.Elements;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=elementsregistry.js.map

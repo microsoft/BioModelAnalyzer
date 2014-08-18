@@ -1,10 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model\biomodel.ts"/>
-/// <reference path="model\model.ts"/>
-/// <reference path="uidrivers.ts"/>
-/// <reference path="commands.ts"/>
-
+﻿
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -12,6 +6,10 @@ var BMA;
             function DesignSurfacePresenter(appModel, svgPlotDriver, undoButton, redoButton) {
                 var _this = this;
                 this.currentModelIndex = -1;
+                this.xOrigin = 0;
+                this.yOrigin = 0;
+                this.xStep = 250;
+                this.yStep = 280;
                 var that = this;
                 this.appModel = appModel;
                 this.undoButton = undoButton;
@@ -20,11 +18,11 @@ var BMA;
                 this.driver = svgPlotDriver;
                 this.models = [];
 
+                svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
+
                 window.Commands.On("AddElementSelect", function (type) {
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
-                    //this.selectedType = this.selectedType === type ? undefined : type;
-                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -37,8 +35,11 @@ var BMA;
                             case "Container":
                                 var containers = model.Containers.slice(0);
                                 var containerLayouts = layout.Containers.slice(0);
+
+                                var gridCell = that.GetGridCell(args.x, args.y);
+
                                 containers.push(new BMA.Model.Container(0));
-                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, args.x, args.y));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, (gridCell.x + 0.5) * that.xStep, (gridCell.y + 0.5) * that.yStep));
                                 var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
                                 that.Dup(newmodel, newlayout);
@@ -96,6 +97,13 @@ var BMA;
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
+            DesignSurfacePresenter.prototype.GetGridCell = function (x, y) {
+                var cellX = Math.ceil((x - this.xOrigin) / this.xStep) - 1;
+                var cellY = Math.ceil((y - this.yOrigin) / this.yStep) - 1;
+
+                return { x: cellX, y: cellY };
+            };
+
             DesignSurfacePresenter.prototype.OnModelUpdated = function () {
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
@@ -168,7 +176,6 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
-                //Generating svg elements from model and layout
                 this.svg.clear();
                 var svgElements = [];
 
@@ -194,7 +201,6 @@ var BMA;
                     svgElements.push(element.RenderToSvg(this.svg, variableLayout));
                 }
 
-                //constructing final svg image
                 this.svg.clear();
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
@@ -207,4 +213,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map

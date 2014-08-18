@@ -6,6 +6,7 @@ module BMA {
         export interface ISVGPlot {
             Draw(svg: SVGElement);
             TurnNavigation(isOn: boolean);
+            SetGrid(x0: number, y0: number, xStep: number, yStep: number);
         }
 
         export interface IElementsPanel {

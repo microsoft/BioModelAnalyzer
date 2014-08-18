@@ -25,6 +25,11 @@ module BMA {
             private undoButton: BMA.UIDrivers.ITurnableButton;
             private redoButton: BMA.UIDrivers.ITurnableButton;
 
+            private xOrigin = 0;
+            private yOrigin = 0;
+            private xStep = 250;
+            private yStep = 280;
+
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 undoButton: BMA.UIDrivers.ITurnableButton,
@@ -38,9 +43,10 @@ module BMA {
                 this.driver = svgPlotDriver;
                 this.models = [];
 
+                svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
 
                 window.Commands.On("AddElementSelect", (type: string) => {
-                    
+
                     this.selectedType = type;
                     this.driver.TurnNavigation(type === undefined);
                     //this.selectedType = this.selectedType === type ? undefined : type;
@@ -59,8 +65,11 @@ module BMA {
                             case "Container":
                                 var containers = model.Containers.slice(0);
                                 var containerLayouts = layout.Containers.slice(0);
+
+                                var gridCell = that.GetGridCell(args.x, args.y);
+
                                 containers.push(new BMA.Model.Container(0));
-                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, args.x, args.y));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(0, 1, (gridCell.x + 0.5) * that.xStep, (gridCell.y + 0.5) * that.yStep));
                                 var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
                                 that.Dup(newmodel, newlayout);
@@ -119,6 +128,14 @@ module BMA {
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
+
+            private GetGridCell(x: number, y: number): { x: number; y: number } {
+                var cellX = Math.ceil((x - this.xOrigin) / this.xStep) - 1;
+                var cellY = Math.ceil((y - this.yOrigin) / this.yStep) - 1;
+
+                return { x: cellX, y: cellY };
+            }
+
 
             private OnModelUpdated() {
                 this.undoButton.Turn(this.CanUndo);
