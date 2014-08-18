@@ -33,7 +33,7 @@
                     } else {
                         var command, value = undefined;
                         try  {
-                            command = eval($(child).attr("data-command"));
+                            command = $(child).attr("data-command");
                         } catch (ex) {
                             console.log("Error binding to command: " + ex);
                         }
@@ -50,9 +50,9 @@
 
                                     that.listOptions[ind].toggle = value;
                                     that.listOptions[ind].toggleButton = button;
-                                    if (command !== undefined && command.Execute !== undefined) {
+                                    if (command !== undefined) {
                                         button.bind("click", function (e) {
-                                            command.Execute();
+                                            window.Commands.Execute(command, { checked: value });
                                             that.listOptions[ind].toggle = !that.listOptions[ind].toggle;
                                             that.changeButtonONOFFStyle(ind);
                                         });

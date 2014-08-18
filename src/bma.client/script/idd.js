@@ -547,8 +547,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         if (factory) {
             return factory(jqDiv, master);
         }
-        console.log("Unknown plot type");
-        //throw "Unknown plot type";
+        throw "Unknown plot type";
     };
 
 
@@ -582,11 +581,9 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
             return div.plot;
         }
         else {
-            console.log("asPlot begins");
             var plot = initializePlot(jqDiv);
             return plot;
         }
-        console.log("asPlot ends");
     };
 
     InteractiveDataDisplay.Event = InteractiveDataDisplay.Event || {};
@@ -858,9 +855,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         // Adds a child to _children, fires the event and requests update.
         // (logical add)
         this.addChild = function (childPlot) {
-            console.log("addChildTrying");
             if (!childPlot) {
-                console.log("Child plot is undefined");
                 throw "Child plot is undefined";
             }
             if (childPlot.master && (childPlot.master !== childPlot && childPlot.master !== this.master)) throw "Given child plot already added to another plot";
@@ -1762,7 +1757,6 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                 .each(function () {
                     var jqElem = $(this); // refers the child DIV
                     if (!jqElem.hasClass("idd-plot-master") && !jqElem.hasClass("idd-plot-dependant") && jqElem.attr("data-idd-plot") !== undefined && jqElem.attr("data-idd-plot") !== "figure" && jqElem.attr("data-idd-plot") !== "chart") { // it shouldn't be initialized and it shouldn't be a master plot (e.g. a figure)
-                        console.log("breaking tests");
                         that.addChild(initializePlot(jqElem, _master)); // here children of the new child will be initialized recursively
                     }
                 });

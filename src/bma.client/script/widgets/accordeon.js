@@ -12,7 +12,7 @@
             // callbacks
             activate: null,
             beforeActivate: null,
-            contentLoaded: { ind: 0, val: true }
+            contentLoaded: { ind: "", val: true }
         },
         hideProps: {},
         showProps: {},
@@ -94,14 +94,26 @@
                 if (this.options.event) {
                     this._off(this.headers, this.options.event);
                 }
+                value.ind;
                 this._setupEvents(value);
             }
 
             if (key == "contentLoaded") {
-                that.loadingList[that.headers.index($(value.ind))] = value.val;
+                console.log("setting contentLoaded begins");
+                var isthatActive;
+                if (typeof value.ind === "number") {
+                    isthatActive = that.headers[value.ind][0] === that.active[0];
+                    that.loadingList[value.ind] = value.val;
+                } else if (typeof value.ind === "string") {
+                    isthatActive = $(value.ind)[0] === that.active[0];
+                    that.loadingList[that.headers.index($(value.ind))] = value.val;
+                } else if (typeof value.ind === "JQuery") {
+                    isthatActive = value.ind[0] === that.active[0];
+                    that.loadingList[that.headers.index(value.ind)] = value.val;
+                }
 
                 if (value.val) {
-                    if ($(value.ind)[0] === that.active[0]) {
+                    if (isthatActive) {
                         that._hideLoading(that.active);
                         var eventData = {
                             oldHeader: $(),
@@ -114,7 +126,18 @@
                 }
             }
 
-            this._super(key, value);
+            if (key == "position") {
+                switch (value) {
+                    case "left":
+                    case "right":
+                    case "top":
+                    case "bottom":
+                    case "center":
+                        that.options.position = value;
+                        console.log(value);
+                }
+                return;
+            }
 
             // setting collapsible: false while collapsed; open first panel
             if (key === "collapsible" && !value && this.options.active === false) {
@@ -127,6 +150,8 @@
                 this.element.toggleClass("ui-state-disabled", !!value).attr("aria-disabled", value);
                 this.headers.add(this.options.context).toggleClass("ui-state-disabled", !!value);
             }
+
+            this._super(key, value);
         },
         _keydown: function (event) {
             if (event.altKey || event.ctrlKey) {
@@ -279,7 +304,7 @@
             };
             if (event) {
                 $.each(event.split(" "), function (index, eventName) {
-                    events[eventName] = "_eventHandler";
+                    events[eventName] = "eventHandler";
                 });
             }
 
@@ -292,7 +317,7 @@
             //this._hoverable(this.headers);
             //this._focusable(this.headers);
         },
-        _eventHandler: function (event) {
+        eventHandler: function (event) {
             var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), eventData = {
                 oldHeader: active,
                 oldPanel: toHide,
@@ -351,9 +376,9 @@
 
                 //if (this.options.context.is(":hidden"))
                 if (data.newHeader.next().is(":hidden"))
-                    this.options.header.removeClass("show").addClass("only");
+                    this.active.removeClass("show").addClass("only");
                 else
-                    this.options.header.removeClass("only").addClass("show");
+                    this.active.removeClass("only").addClass("show");
                 this._toggleComplete(data);
             }
 
@@ -385,7 +410,6 @@
         _showLoading: function (clicked) {
             clicked.animate({ width: "+=60px" });
             $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
-            //clicked.children().filter(".invisible").show();
         },
         _hideLoading: function (toHide) {
             toHide.each(function () {
@@ -395,11 +419,6 @@
                     $(this).animate({ width: "-=60px" });
                 }
             });
-            //if (clicked.children().filter(".loading").length > 0) {
-            //    clicked.children().filter(".loading").detach();
-            //    clicked.animate({ width: "-=60px" });
-            //    //clicked.children().filter(".invisible").hide();
-            //}
         },
         _animate: function (toShow, toHide, data) {
             var total, easing, duration, that = this, adjust = 0, down = toShow.length && (!toHide.length || (toShow.index() < toHide.index())), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function () {

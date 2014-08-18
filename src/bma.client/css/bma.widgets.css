@@ -121,7 +121,6 @@
         }
 
         .modelToolbar {
-            background-color:  gainsboro;
             background-repeat:no-repeat;
             border:hidden;
             width: 55px;
@@ -240,10 +239,13 @@
         }
 
         .skinModelContainer{
+            overflow:hidden;
             display:inline-block;
             height: 60px;
             border-bottom-right-radius: 20px;
             border-top-right-radius: 20px;
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
             margin:0;
             padding:0;
             top:0;
@@ -251,6 +253,7 @@
         }
 
         .toolbarContainer {
+            overflow:hidden;
             display:inline-block;
             border-bottom-right-radius:20px;
             background-color:  gainsboro; 
@@ -271,6 +274,7 @@
             height: 60px;
             width: 150px;
             font-size: 24px;
+            border-radius: 0;
         }
 
         .icon {
