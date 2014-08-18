@@ -14,9 +14,12 @@
          {"Path": "Scripts/typings/jquery/jquery.d.ts"},
          {"Path": "Scripts/typings/jqueryui/jqueryui.d.ts"},
          {"Path": "script/jquery.svg.js"},
+         {"Path": "script/jquery.svgdom.min.js"},
          {"Path": "script/rx.js"},
          {"Path": "script/rx.jQuery.js"},
+         {"Path": "script/idd.heatmapworker.js"},
          {"Path": "script/idd.js"},
+         
          {"Path": "script/svgplot.js"},
          {"Path": "script/scalablegridlineplot.js"},
          {"Path": "script/model/biomodel.ts"},

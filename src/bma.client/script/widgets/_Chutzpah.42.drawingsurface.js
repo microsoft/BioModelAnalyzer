@@ -1,7 +1,5 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-declare var BMAExt: any;
-declare var InteractiveDataDisplay: any;
 
 (function ($) {
     $.widget("BMA.drawingsurface", {
@@ -11,13 +9,11 @@ declare var InteractiveDataDisplay: any;
             isNavigationEnabled: true,
             svg: undefined
         },
-
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
                 //this._svgPlot.svg.load("../images/svgtest.txt");
             }
         },
-
         _create: function () {
             var that = this;
 
@@ -25,7 +21,6 @@ declare var InteractiveDataDisplay: any;
             console.log(that.element.attr("id"));
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
-
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
@@ -44,11 +39,10 @@ declare var InteractiveDataDisplay: any;
             plotDiv.bind("click touchstart", function (arg) {
                 if (that.options.isNavigationEnabled !== true) {
                     var cs = svgPlot.getScreenToDataTransform();
-                    window.Commands.Execute("DrawingSurfaceClick",
-                        {
-                            x: cs.screenToDataX(arg.clientX - plotDiv.offset().left),
-                            y: -cs.screenToDataY(arg.clientY - plotDiv.offset().top)
-                        });
+                    window.Commands.Execute("DrawingSurfaceClick", {
+                        x: cs.screenToDataX(arg.clientX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(arg.clientY - plotDiv.offset().top)
+                    });
                 }
             });
 
@@ -66,17 +60,17 @@ declare var InteractiveDataDisplay: any;
 
             that._plot.navigation.setVisibleRect({ x: 0, y: 0, width: 2500, height: 1000 }, false);
 
-            $(window).resize(function () { that.resize(); });
+            $(window).resize(function () {
+                that.resize();
+            });
             that.resize();
             this.refresh();
         },
-
         resize: function () {
             if (this._plot !== null && this._plot !== undefined) {
                 this._plot.requestUpdateLayout();
             }
         },
-
         _setOption: function (key, value) {
             switch (key) {
                 case "svg":
@@ -93,27 +87,17 @@ declare var InteractiveDataDisplay: any;
             }
             this._super(key, value);
         },
-
         _setOptions: function (options) {
             this._super(options);
             this.refresh();
         },
-
         refresh: function () {
-
         },
-
         _constrain: function (value) {
             return value;
         },
-
         destroy: function () {
             this.element.empty();
         }
     });
-} (jQuery));
-
-interface JQuery {
-    drawingsurface(): JQueryUI.Widget;
-    drawingsurface(settings: Object): JQueryUI.Widget;
-}
+}(jQuery));
