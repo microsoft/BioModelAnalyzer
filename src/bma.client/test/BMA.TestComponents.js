@@ -22,6 +22,9 @@ var BMA;
 
             TestSVGPlotDriver.prototype.TurnNavigation = function (isOn) {
             };
+
+            TestSVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;

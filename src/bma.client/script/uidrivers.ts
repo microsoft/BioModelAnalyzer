@@ -18,6 +18,10 @@ module BMA {
             public TurnNavigation(isOn: boolean) {
                 this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
             }
+
+            public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
+                this.svgPlotDiv.drawingsurface({ grid: { x0: x0, y0: y0, xStep: xStep, yStep: yStep } });
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {

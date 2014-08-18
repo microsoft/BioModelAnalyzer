@@ -50,7 +50,7 @@
 
                 this.elements.push(new Element("Container", function (jqSvg, renderParams) {
                     var g = jqSvg.group({
-                        transform: "translate(" + renderParams.PositionX + ", " + renderParams.PositionY + ") scale(2.5)"
+                        transform: "translate(" + (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + ", " + (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + ") scale(2.5)"
                     });
 
                     var innerCellData = "M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z";
@@ -81,7 +81,7 @@
                         fill: "#BBBDBF",
                         strokeWidth: 8.3333,
                         d: data,
-                        transform: "translate(" + renderParams.PositionX + ", " + renderParams.PositionY + ") scale(0.36)"
+                        transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(0.36)"
                     });
 
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -96,7 +96,7 @@
                         fill: "#EF4137",
                         strokeWidth: 8.3333,
                         d: data,
-                        transform: "translate(" + renderParams.PositionX + ", " + renderParams.PositionY + ") scale(0.36)"
+                        transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(0.36)"
                     });
 
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -111,7 +111,7 @@
                         fill: "#3BB34A",
                         strokeWidth: 8.3333,
                         d: data,
-                        transform: "translate(" + renderParams.PositionX + ", " + renderParams.PositionY + ") scale(1.2)"
+                        transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(1.2)"
                     });
 
                     var svgElem = $(jqSvg.toSVG()).children();

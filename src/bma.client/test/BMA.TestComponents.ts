@@ -21,6 +21,9 @@ module BMA {
 
             public TurnNavigation(isOn: boolean) {
             }
+
+            public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
+            }
         }
 
         export class TestUndoRedoButton implements BMA.UIDrivers.ITurnableButton {
