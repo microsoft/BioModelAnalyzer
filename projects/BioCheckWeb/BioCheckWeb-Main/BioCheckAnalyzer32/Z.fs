@@ -36,17 +36,21 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let v_defn = List.find (fun (n:QN.node) -> n.var = v) qn
             let v_min,v_max = v_defn.range
             // Don't scale/displace constants.
+            //BH- updated to Nirs new conversion rule
+            //(x-x_min)*scale + node_min
             let scale,displacement =
                 if (v_min<>v_max) then
+
                     let t = z.MkRealNumeral(node_max - node_min)
                     let b = z.MkRealNumeral(v_max - v_min)
-                    (z.MkDiv(t,b) , z.MkRealNumeral( (node_min - v_min):int ))
+                    (z.MkDiv(t,b) , z.MkRealNumeral(node_min) )
                 else (z.MkRealNumeral 1, z.MkRealNumeral 0)
 
             let input_var =
                 let v_t = get_z3_int_var_at_time v_defn time
                 z.MkToReal(z.MkConst(z.MkSymbol v_t, z.MkIntSort()))
-            ([], z.MkAdd(z.MkMul(input_var,scale), displacement))
+            //([], z.MkAdd(z.MkMul(input_var,scale), displacement))
+            ([], z.MkAdd(z.MkMul(z.MkSub(input_var,z.MkRealNumeral(v_min)),scale),displacement))
         | Const c -> ([],z.MkRealNumeral c)
         | Plus(e1, e2) ->
             let (a1,z1) = tr e1
@@ -109,7 +113,18 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let floor_assert = z.MkAnd([|x'_lt_m; m_le_x|])
             (floor_assert::a1, m)
         | Abs e1 ->
-            let (a1,x) = tr e1
+            let (a1,x_Real) = tr e1
+            //First convert to int
+            let (a1,x_Real) = tr e1
+            let x_Real' = z.MkSub(x_Real, z.MkRealNumeral(1))
+            let m =
+                let m = gensym "floor"
+                z.MkToReal(z.MkConst(z.MkSymbol m, z.MkIntSort()))
+            let x'_lt_m = z.MkLt(x_Real', m)
+            let m_le_x = z.MkLe(m, x_Real)
+            let floor_assert = z.MkAnd([|x'_lt_m; m_le_x|])
+
+            let x = m
             let zero = z.MkRealNumeral(0)
             let x_neg = z.MkSub(zero,x)
 //            let l = 
@@ -118,7 +133,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 //            let zero_lt_l = z.MkLt(z.MkRealNumeral(0),l)
 //            let both = z.MkOr([|x;x'|]) // Problem -> Or applied to reals
 //            let abs_assert = z.MkAnd([|zero_lt_l;both|])
-            let x_gt_zero = z.MkGt(x,zero)
+            let x_gt_zero = z.MkGe(x,zero)
             let x_lt_zero = z.MkLt(x,zero)
             let abs = z.MkIte(x_gt_zero,x,x_neg)
 
@@ -129,7 +144,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 //            let zero_lt_l = z.MkLt(z.MkRealNumeral(0),l)
 //            let both = z.MkSetAdd(x,x')
 //            let abs_assert = z.MkAnd([|zero_lt_l;both|])
-            (a_eq_abs::a1, a')//broken- need to manipulate a1? BH
+            (floor_assert::a_eq_abs::a1, a')//broken- need to manipulate a1? BH
         | Ave es ->
             let sum = List.fold
                         (fun ast e1 -> match ast with
