@@ -27,6 +27,14 @@ $(document).ready(function () {
     //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
+    $('#drawingSurface').droppable({
+        drop: function (event, ui) {
+            event.originalEvent.pageX = ui.position.left;
+            event.originalEvent.pageY = ui.position.top;
+            event.type = "click";
+            $(this).children().trigger(event);
+        }
+    });
     $("#zoomslider").bmazoomslider();
 
     //$("#modelToolbarHeader").toolbarpanel();
@@ -53,8 +61,19 @@ $(document).ready(function () {
         var elem = elements[i];
         $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
 
-        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
-        $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
+        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel).draggable({
+            helper: function (event, ui) {
+                return $(this).children().clone().appendTo('body');
+            },
+            scroll: false,
+            start: function () {
+                $('#' + $(this).attr("for")).click();
+            }
+        });
+        var img = $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
+        img.css("z-index", 3);
+        //img.css("position", "absolute");
+        //img.css ("margin-left", "-" + $(this).width() + "px")
     }
     $("#modelelemtoolbar input").click(function (event) {
         //var clicked = $(event.currentTarget).eq(0);

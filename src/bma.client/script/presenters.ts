@@ -55,7 +55,6 @@ module BMA {
 
                 window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
                     if (that.selectedType !== undefined) {
-
                         var current = that.Current;
                         var model = current.model;
                         var layout = current.layout;

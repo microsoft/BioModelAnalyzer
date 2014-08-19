@@ -13,6 +13,7 @@ declare var InteractiveDataDisplay: any;
             svg: undefined
         },
 
+
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
                 //this._svgPlot.svg.load("../images/svgtest.txt");
