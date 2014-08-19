@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-
+﻿
 (function ($) {
     $.widget("BMA.drawingsurface", {
         _plot: null,
@@ -12,7 +10,6 @@
         },
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
-                //this._svgPlot.svg.load("../images/svgtest.txt");
             }
         },
         _create: function () {
@@ -61,7 +58,6 @@
 
             this._plot.yDataTransform = yDT;
 
-            //this._gridLinesPlot.yDataTransform = yDT;
             if (this.options.isNavigationEnabled) {
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
                 that._plot.navigation.gestureSource = gestureSource;
@@ -129,4 +125,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=drawingsurface.js.map

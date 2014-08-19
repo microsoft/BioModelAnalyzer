@@ -30,4 +30,3 @@
         expect(t2.text()).toEqual("ON");
     });
 });
-//# sourceMappingURL=VisibilitySettingsTest.js.map

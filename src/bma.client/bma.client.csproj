@@ -115,6 +115,7 @@
     <Content Include="images\undo.png" />
     <Content Include="images\variable.png" />
     <Content Include="images\visicon.png" />
+    <Content Include="images\visicon2.png" />
     <Content Include="images\zoomminus.png" />
     <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />

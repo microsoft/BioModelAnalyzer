@@ -1,10 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model\biomodel.ts"/>
-/// <reference path="model\model.ts"/>
-/// <reference path="uidrivers.ts"/>
-/// <reference path="commands.ts"/>
-
+﻿
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -29,8 +23,6 @@ var BMA;
                 window.Commands.On("AddElementSelect", function (type) {
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
-                    //this.selectedType = this.selectedType === type ? undefined : type;
-                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -211,7 +203,6 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
-                //Generating svg elements from model and layout
                 this.svg.clear();
                 var svgElements = [];
 
@@ -237,7 +228,6 @@ var BMA;
                     svgElements.push(element.RenderToSvg(this.svg, { layout: variableLayout, grid: this.Grid }));
                 }
 
-                //constructing final svg image
                 this.svg.clear();
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
@@ -250,4 +240,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map
