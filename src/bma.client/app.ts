@@ -14,6 +14,7 @@
 /// <reference path="script\widgets\skinmodel.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
+/// <reference path="script\widgets\bmaslider.ts"/>
 
 
 
@@ -30,14 +31,15 @@ $(document).ready(function () {
     //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
-
+    $("#zoomslider").bmazoomslider();
     //$("#modelToolbarHeader").toolbarpanel();
     //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
     $("#modelToolbarContent").buttonset();
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
-    $("#visibilityOptionsSlider").bmaaccordion({ header: $("#visibilityOptionsHeader") });
+    $("#visibilityOptionsSlider").bmaaccordion();
+    
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
@@ -45,7 +47,7 @@ $(document).ready(function () {
     setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
 
 
-    $(".bma-elementspanel-visibilityoptions-zoomslider").slider();
+    //$(".bma-elementspanel-visibilityoptions-zoomslider").slider();
     
 
     //Preparing elements panel
@@ -79,6 +81,8 @@ $(document).ready(function () {
     $("#undoredotoolbar").buttonset();
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
+
+    
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);

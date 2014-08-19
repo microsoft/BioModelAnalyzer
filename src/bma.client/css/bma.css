@@ -89,7 +89,7 @@ html {
 
 
 .bma-elementspanel {
-    display: inline-block;
+    display: block;
     text-align: center;
     clear: both;
     height: 100px;

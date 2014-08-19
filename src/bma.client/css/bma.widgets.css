@@ -414,13 +414,15 @@
     float: none;
     margin-top: 0;
     margin-right: 0px;
-    border-color: gray;
+    /*border-color: gray;
     border-width: 1px;
-    border-bottom: none;
+    border-bottom: none;*/
     border-radius: 0;
     padding: 0px;
     width: 260px;
     height:30px;
+    border:none;
+    background-color:transparent;
 }
 
 .bma-elementspanel-visibilityoptions-zoomslider::after {
@@ -431,6 +433,17 @@
     height: 20px;
     background: gray;
 }
+
+.bma-elementspanel-visibilityoptions-zoomslider::before {
+    content: "";
+    position: absolute;
+    margin-left: -10px;
+    width: 280px;
+    height: 25px;
+    border: 1px solid gray;
+    border-bottom: none;
+}
+
 
 #tools .bma-elementspanel-visibilityoptions-zoomslider .ui-state-default {
     background: transparent;
@@ -492,6 +505,10 @@ height: 10px;
 
 .zoomslider-container > * {
     display: inline-block;
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
+.bma-elementspanel-elementstoolbar {
+    float: left;
+    margin-left: 300px;
+}
