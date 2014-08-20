@@ -30,8 +30,13 @@ module BMA {
             private xStep = 250;
             private yStep = 280;
 
+            private variableIndex = 0;
+
+            private stagingLine = undefined;
+
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
+                dragService: BMA.UIDrivers.IElementsPanel,
                 undoButton: BMA.UIDrivers.ITurnableButton,
                 redoButton: BMA.UIDrivers.ITurnableButton) {
 
@@ -49,6 +54,7 @@ module BMA {
 
                     this.selectedType = type;
                     this.driver.TurnNavigation(type === undefined);
+                    this.stagingLine = undefined;
                     //this.selectedType = this.selectedType === type ? undefined : type;
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
@@ -81,8 +87,8 @@ module BMA {
                             case "Constant":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
-                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                variables.push(new BMA.Model.Variable(this.variableIndex, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                                 that.Dup(newmodel, newlayout);
@@ -90,8 +96,8 @@ module BMA {
                             case "Default":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
-                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+                                variables.push(new BMA.Model.Variable(this.variableIndex, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                                 that.Dup(newmodel, newlayout);
@@ -130,7 +136,113 @@ module BMA {
                     }
                 });
 
+                var dragSubject = dragService.GetDragSubject()
+
+                dragSubject.dragStart.subscribe(
+                    (gesture) => {
+                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
+                            var id = this.GetVariableAtPosition(gesture.x, gesture.y);
+                            if (id !== undefined) {
+                                this.stagingLine = {};
+                                this.stagingLine.id = id;
+                                this.stagingLine.x0 = gesture.x;
+                                this.stagingLine.y0 = gesture.y;
+                                return;
+                            }
+                        }
+                        this.stagingLine = undefined;
+                    });
+
+
+                dragSubject.drag.subscribe(
+                    (gesture) => {
+                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
+                            that.stagingLine.x1 = gesture.x1;
+                            that.stagingLine.y1 = gesture.y1;
+
+                            //Redraw only svg for better performance
+                            if (that.svg !== undefined) {
+
+                                if (that.stagingLine.svg !== undefined) {
+                                    that.svg.remove(that.stagingLine.svg);
+                                }
+
+                                that.stagingLine.svg = that.svg.line(
+                                    that.stagingLine.x0,
+                                    that.stagingLine.y0,
+                                    that.stagingLine.x1,
+                                    that.stagingLine.y1,
+                                    {
+                                        stroke: "black",
+                                        strokeWidth: 2,
+                                        fill: "black",
+                                        "marker-end": "url(#" + that.selectedType + ")",
+                                        id: "stagingLine"
+                                    });
+
+                                that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
+                            }
+
+                            return;
+                        }
+
+                        //this.stagingLine = undefined;
+                    });
+
+                dragSubject.dragEnd.subscribe(
+                    (gesture) => {
+                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
+                            this.TryAddStagingLineAsLink();
+                            this.stagingLine = undefined;
+                            this.OnModelUpdated();
+                        }
+                    });
+
+
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
+            }
+
+            private GetCurrentSVG(svg): any {
+                return $(svg.toSVG()).children();
+            }
+
+            private GetVariableAtPosition(x: number, y: number): number {
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
+                for (var i = 0; i < variables.length; i++) {
+                    var variable = variables[i];
+                    var variableLayout = variableLayouts[i];
+
+                    if (Math.abs(variableLayout.PositionX - x) < 20 &&
+                        Math.abs(variableLayout.PositionY - y) < 20) {
+                        return variable.Id;
+                    }
+                }
+
+                return undefined;
+            }
+
+            private TryAddStagingLineAsLink() {
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
+                for (var i = 0; i < variables.length; i++) {
+                    var variable = variables[i];
+                    var variableLayout = variableLayouts[i];
+
+                    if (Math.abs(variableLayout.PositionX - this.stagingLine.x1) < 20 &&
+                        Math.abs(variableLayout.PositionY - this.stagingLine.y1) < 20) {
+
+                        var current = this.Current;
+                        var model = current.model;
+                        var layout = current.layout;
+                        var relationships = model.Relationships.slice(0);
+                        relationships.push(new BMA.Model.Relationship(this.stagingLine.id, variable.Id, this.selectedType));
+                        var newmodel = new BMA.Model.BioModel(model.Containers, model.Variables, relationships);
+                        this.Dup(newmodel, layout);
+
+                        return;
+                    }
+                }
             }
 
             private GetGridCell(x: number, y: number): { x: number; y: number } {
@@ -216,6 +328,18 @@ module BMA {
                 return { x0: this.xOrigin, y0: this.yOrigin, xStep: this.xStep, yStep: this.yStep };
             }
 
+            private GetVariableById(layout: BMA.Model.Layout, id: number) {
+                var variableLayouts = layout.Variables;
+                for (var i = 0; i < variableLayouts.length; i++) {
+                    var variableLayout = variableLayouts[i];
+                    if (variableLayout.Id === id) {
+                        return variableLayout;
+                    }
+                }
+
+                throw "No such variable in model";
+            }
+
             private CreateSvg(): any {
                 if (this.svg === undefined)
                     return undefined;
@@ -246,11 +370,44 @@ module BMA {
                     svgElements.push(element.RenderToSvg(this.svg, { layout: variableLayout, grid: this.Grid }));
                 }
 
+                var relationships = this.Current.model.Relationships;
+                for (var i = 0; i < relationships.length; i++) {
+                    var relationship = relationships[i];
+                    var element = window.ElementRegistry.GetElementByType(relationship.Type);
+
+                    var start = this.GetVariableById(this.Current.layout, relationship.FromVariableId);
+                    var end = this.GetVariableById(this.Current.layout, relationship.ToVariableId);
+
+                    svgElements.push(element.RenderToSvg(this.svg, {
+                        layout: { start: start, end: end },
+                        grid: this.Grid
+                    }));
+                }
+
                 //constructing final svg image
                 this.svg.clear();
+
+                var defs = this.svg.defs("bmaDefs");
+                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
+                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "black", strokeWidth: "1px" });
+                var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
+                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "black", strokeWidth: "2px" });
+
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
                 }
+
+                /*
+                if (this.stagingLine !== undefined) {
+                    this.svg.line(
+                        this.stagingLine.x0,
+                        this.stagingLine.y0,
+                        this.stagingLine.x1,
+                        this.stagingLine.y1,
+                        { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#" + this.selectedType + ")" });
+                }
+                */
+
                 return $(this.svg.toSVG()).children();
             }
         }

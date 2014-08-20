@@ -119,11 +119,17 @@
                 }, "Membrane Receptor", "images/receptor.png"));
 
                 this.elements.push(new Element("Activator", function (jqSvg, renderParams) {
-                    return undefined;
+                    return jqSvg.line(renderParams.layout.start.PositionX, renderParams.layout.start.PositionY, renderParams.layout.end.PositionX, renderParams.layout.end.PositionY, { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#Activator)" });
+
+                    var svgElem = $(jqSvg.toSVG()).children();
+                    return svgElem;
                 }, "Activating Relationship", "images/activate.png"));
 
                 this.elements.push(new Element("Inhibitor", function (jqSvg, renderParams) {
-                    return undefined;
+                    return jqSvg.line(renderParams.layout.start.PositionX, renderParams.layout.start.PositionY, renderParams.layout.end.PositionX, renderParams.layout.end.PositionY, { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#Inhibitor)" });
+
+                    var svgElem = $(jqSvg.toSVG()).children();
+                    return svgElem;
                 }, "Inhibiting Relationship", "images/inhibit.png"));
             }
             ElementsRegistry.prototype.CreateSvgElement = function (type, renderParams) {

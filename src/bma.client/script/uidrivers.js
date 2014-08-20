@@ -19,6 +19,10 @@ var BMA;
             SVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
                 this.svgPlotDiv.drawingsurface({ grid: { x0: x0, y0: y0, xStep: xStep, yStep: yStep } });
             };
+
+            SVGPlotDriver.prototype.GetDragSubject = function () {
+                return this.svgPlotDiv.drawingsurface("getDragSubject");
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;

@@ -93,7 +93,6 @@ $(document).ready(function () {
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
-    $("*").attr("draggable", "false");
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
 });
 //# sourceMappingURL=app.js.map

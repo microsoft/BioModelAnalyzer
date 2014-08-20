@@ -163,7 +163,15 @@ module BMA {
                 this.elements.push(new Element(
                     "Activator",
                     function (jqSvg: any, renderParams) {
-                        return undefined;
+                        return jqSvg.line(
+                            renderParams.layout.start.PositionX,
+                            renderParams.layout.start.PositionY,
+                            renderParams.layout.end.PositionX,
+                            renderParams.layout.end.PositionY,
+                            { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#Activator)" });
+
+                        var svgElem: any = $(jqSvg.toSVG()).children();
+                        return <SVGElement>svgElem;
                     },
                     "Activating Relationship",
                     "images/activate.png"));
@@ -171,7 +179,15 @@ module BMA {
                 this.elements.push(new Element(
                     "Inhibitor",
                     function (jqSvg: any, renderParams) {
-                        return undefined;
+                        return jqSvg.line(
+                            renderParams.layout.start.PositionX,
+                            renderParams.layout.start.PositionY,
+                            renderParams.layout.end.PositionX,
+                            renderParams.layout.end.PositionY,
+                            { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#Inhibitor)" });
+
+                        var svgElem: any = $(jqSvg.toSVG()).children();
+                        return <SVGElement>svgElem;
                     },
                     "Inhibiting Relationship",
                     "images/inhibit.png"));

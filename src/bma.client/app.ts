@@ -46,8 +46,8 @@ $(document).ready(function () {
     setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
 
     //$(".bma-elementspanel-visibilityoptions-zoomslider").slider();
-    
 
+    
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
@@ -74,13 +74,13 @@ $(document).ready(function () {
 
         start: function () {
             $('#' + $(this).attr("for")).click();
-        }
+    }
     });
 
     $("#modelelemtoolbar input").click(function (event) {
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
-
+        
     elementPanel.buttonset();
 
     //undo/redo panel
@@ -98,6 +98,6 @@ $(document).ready(function () {
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
-    $("*").attr("draggable", "false");
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
+
 });
