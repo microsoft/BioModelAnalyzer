@@ -36,6 +36,19 @@
                 }
             }
 
+            plotDiv.droppable({
+                drop: function (event, ui) {
+                    if (that.options.isNavigationEnabled !== true) {
+                        var cs = svgPlot.getScreenToDataTransform();
+
+                        window.Commands.Execute("DrawingSurfaceClick", {
+                            x: cs.screenToDataX(ui.position.left - plotDiv.offset().left),
+                            y: -cs.screenToDataY(ui.position.top - plotDiv.offset().top)
+                        });
+                    }
+                }
+            });
+
             plotDiv.bind("click touchstart", function (arg) {
                 if (that.options.isNavigationEnabled !== true) {
                     var cs = svgPlot.getScreenToDataTransform();

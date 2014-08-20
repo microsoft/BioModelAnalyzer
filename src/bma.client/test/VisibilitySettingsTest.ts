@@ -17,7 +17,7 @@ describe("VisibilitySettings", () => {
     });
 
     it("should be created correctly", () => {
-        expect(l2.text()).toEqual("OFF");
+        expect(l2.text()).toEqual("ON");
         expect($(l3.children()[0]).text()).toEqual('+');
         expect($(l3.children()[1]).text()).toEqual('-');
     });

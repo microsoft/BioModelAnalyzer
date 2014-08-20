@@ -29,7 +29,7 @@
         expect(data.options.disabled).toEqual(false);
     });
 
-    it("should correctry set event option", function () {
+    it("should correctly set event option", function () {
         var event = "click";
         expect(acc.bmaaccordion("option", "event")).toEqual(event);
         event = "toggle";

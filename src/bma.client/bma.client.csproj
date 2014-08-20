@@ -92,6 +92,8 @@
     <Content Include="images\analyze.png" />
     <Content Include="images\constant.png" />
     <Content Include="images\container.png" />
+    <Content Include="images\editorExpanded.png" />
+    <Content Include="images\editorExpander.png" />
     <Content Include="images\expand.png" />
     <Content Include="images\export.png" />
     <Content Include="images\graphic.png" />
@@ -172,6 +174,7 @@
     <Content Include="script\jquery.svg.js" />
     <Content Include="script\jquery.svg.min.js" />
     <Content Include="script\jquery.svgdom.min.js" />
+    <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
     <TypeScriptCompile Include="script\widgets\toolbarpanel.ts" />
     <Content Include="script\rx.jQuery.js" />

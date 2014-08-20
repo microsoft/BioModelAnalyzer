@@ -15,8 +15,7 @@
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>
-
-
+/// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 
 $(document).ready(function () {
     //Creating CommandRegistry
@@ -31,14 +30,6 @@ $(document).ready(function () {
     //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
-    $('#drawingSurface').droppable({
-        drop: function (event, ui) {
-            event.originalEvent.pageX = ui.position.left;
-            event.originalEvent.pageY = ui.position.top;
-            event.type = "click";
-            $(this).children().trigger(event);
-        }
-    });
     $("#zoomslider").bmazoomslider();
     //$("#modelToolbarHeader").toolbarpanel();
     //$("#modelToolbarContent").toolbarpanel();
@@ -54,7 +45,6 @@ $(document).ready(function () {
     $("#icon1").click();
     setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
 
-
     //$(".bma-elementspanel-visibilityoptions-zoomslider").slider();
     
 
@@ -69,31 +59,28 @@ $(document).ready(function () {
             .attr("name", "drawing-button")
             .attr("data-type", elem.Type)
             .appendTo(elementPanel);
-            
-        
 
-        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel).draggable({
-            helper: function (event, ui) {
-                return $(this).children().clone().appendTo('body');
-            },
-            scroll: false,
-
-            start: function () {
-                $('#' + $(this).attr("for")).click();
-            }
-            
-        });
+        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
-        img.css("z-index", 3);
-        //img.css("position", "absolute");
-        //img.css ("margin-left", "-" + $(this).width() + "px")
     }
-    $("#modelelemtoolbar input").click(function (event) {
-        //var clicked = $(event.currentTarget).eq(0);
-        //if (!clicked.button("option", "disabled")) clicked.button("disable");
-        window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
-        
+
+    elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
+
+        helper: function (event, ui) {
+            return $(this).children().clone().appendTo('body');
+        },
+
+        scroll: false,
+
+        start: function () {
+            $('#' + $(this).attr("for")).click();
+        }
     });
+
+    $("#modelelemtoolbar input").click(function (event) {
+        window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
+    });
+
     elementPanel.buttonset();
 
     //undo/redo panel
@@ -105,12 +92,12 @@ $(document).ready(function () {
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
-    
+    $("#editor").bmaeditor();
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
-
+    $("*").attr("draggable", "false");
 });

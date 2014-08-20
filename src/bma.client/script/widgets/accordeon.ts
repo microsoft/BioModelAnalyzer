@@ -19,9 +19,8 @@
         hideProps: {},
         showProps: {},
 
-
         _create: function () {
-            this.element.addClass("accordion-container");
+            this.element.addClass("bma-accordion-container");
             var options = this.options;
 
             this.prevShow = this.prevHide = $();
@@ -123,7 +122,6 @@
             }
 
             if (key == "contentLoaded") {
-                console.log("setting contentLoaded begins");
                 var isthatActive;
                 if (typeof value.ind === "number") {
                     isthatActive = that.headers[value.ind][0] === that.active[0];
@@ -161,7 +159,6 @@
                     case "bottom":
                     case "center":
                         that.options.position = value;
-                        console.log(value);
                 }
                 return;
             }
@@ -264,8 +261,8 @@
             var position = that.options.position;
             this.element.css(position, 0);
             this.headers = that.element.children().filter(':even');
-            //this.headers
-            //.addClass("ui-accordion-header ui-state-default ui-corner-all");
+            this.headers
+            .addClass("bma-accordion-header");
             //var loading = that.options.showLoading;
             this.loadingList = [];
             this.headers.each(function (ind) {
@@ -285,8 +282,8 @@
                         break;
                     case "center":
                         that.headers
-                            .removeClass("show")
-                            .addClass("only");
+                            .removeClass("visibility-header-with-table-show")
+                            .addClass("visibility-header-only");
                         that.headers.next().hide();
                         return;
                 }
@@ -461,15 +458,15 @@
                 //if (this.options.context.is(":hidden"))
                 if (data.newHeader.next().is(":hidden")) {
                     data.newHeader
-                        .removeClass("show")
-                        .removeClass("shadowVisibility")
-                        .addClass("only");
+                        .removeClass("visibility-header-with-table-show")
+                        .removeClass("visibility-shadow")
+                        .addClass("visibility-header-only");
                 }
                 else {
                     data.newHeader
-                        .removeClass("only")
-                        .addClass("show")
-                        .addClass("shadowVisibility");
+                        .removeClass("visibility-header-only")
+                        .addClass("visibility-header-with-table-show")
+                        .addClass("visibility-shadow");
                 }
                 that._toggleComplete(data);
             }

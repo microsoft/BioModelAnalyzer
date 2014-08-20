@@ -30,7 +30,7 @@
     });
 
 
-    it("should correctry set event option", () => {
+    it("should correctly set event option", () => {
         var event = "click";
         expect(acc.bmaaccordion("option", "event")).toEqual(event);
         event = "toggle";

@@ -49,7 +49,9 @@
                             case "toggle":
                                 if (that.listOptions[ind].toggle === undefined) {
                                     value = command !== undefined ? Boolean($(child).attr("data-default")) || true : undefined;
-                                    var button = $('<button></button>').appendTo($(child));
+                                    var button = $('<button></button>')
+                                        .appendTo($(child))
+                                        .addClass("hoverable");
                                     if (value) button.addClass("buttonON").text("ON");
                                     else button.addClass("buttonOFF").text("OFF");
 
@@ -70,8 +72,12 @@
                             case "increment":
                                 if (that.listOptions[ind].increment === undefined) {
                                     value = command !== undefined ? $(item).attr("data-default") || 10 : undefined;
-                                    var plus = $('<button>+</button>').addClass("plusminus").appendTo($(child));
-                                    var minus = $('<button>-</button>').addClass("plusminus").appendTo($(child));
+                                    var plus = $('<button>+</button>').addClass("plusminus")
+                                        .appendTo($(child))
+                                        .addClass("hoverable");
+                                    var minus = $('<button>-</button>').addClass("plusminus")
+                                        .appendTo($(child))
+                                        .addClass("hoverable");
                                     that.listOptions[ind].increment = value;
                                 }
                                 break;
