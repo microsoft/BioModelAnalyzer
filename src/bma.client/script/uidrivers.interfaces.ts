@@ -10,9 +10,8 @@ module BMA {
         }
 
         export interface IElementsPanel {
-
+            GetDragSubject(): any;
         }
-
 
         export interface ITurnableButton {
             Turn(isOn: boolean);

@@ -4,7 +4,7 @@
 
 module BMA {
     export module UIDrivers {
-        export class SVGPlotDriver implements ISVGPlot {
+        export class SVGPlotDriver implements ISVGPlot, IElementsPanel {
             private svgPlotDiv: JQuery;
 
             constructor(svgPlotDiv: JQuery) {
@@ -21,6 +21,10 @@ module BMA {
 
             public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
                 this.svgPlotDiv.drawingsurface({ grid: { x0: x0, y0: y0, xStep: xStep, yStep: yStep } });
+            }
+
+            public GetDragSubject() {
+                return this.svgPlotDiv.drawingsurface("getDragSubject");
             }
         }
 

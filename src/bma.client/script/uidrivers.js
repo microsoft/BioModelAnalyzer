@@ -1,4 +1,7 @@
-﻿var BMA;
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="widgets\drawingsurface.ts"/>
+var BMA;
 (function (BMA) {
     (function (UIDrivers) {
         var SVGPlotDriver = (function () {
@@ -15,6 +18,10 @@
 
             SVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
                 this.svgPlotDiv.drawingsurface({ grid: { x0: x0, y0: y0, xStep: xStep, yStep: yStep } });
+            };
+
+            SVGPlotDriver.prototype.GetDragSubject = function () {
+                return this.svgPlotDiv.drawingsurface("getDragSubject");
             };
             return SVGPlotDriver;
         })();
@@ -33,3 +40,4 @@
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=uidrivers.js.map

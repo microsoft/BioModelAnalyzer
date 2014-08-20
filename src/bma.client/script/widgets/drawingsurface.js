@@ -1,15 +1,19 @@
-﻿
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+
 (function ($) {
     $.widget("BMA.drawingsurface", {
         _plot: null,
         _gridLinesPlot: null,
         _svgPlot: null,
+        _dragService: null,
         options: {
             isNavigationEnabled: true,
             svg: undefined
         },
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
+                //this._svgPlot.svg.load("../images/svgtest.txt");
             }
         },
         _create: function () {
@@ -48,6 +52,42 @@
                 }
             });
 
+            //Subject that converts input mouse events into Pan gestures
+            var createPanSubject = function (vc) {
+                var _doc = $(document);
+
+                var mouseDown = vc.onAsObservable("mousedown");
+                var mouseMove = vc.onAsObservable("mousemove");
+                var mouseUp = _doc.onAsObservable("mouseup");
+
+                var stopPanning = mouseUp;
+
+                var mouseDrags = mouseDown.selectMany(function (md) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    var x0 = cs.screenToDataX(md.pageX - plotDiv.offset().left);
+                    var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
+
+                    return mouseMove.select(function (mm) {
+                        //var cs = svgPlot.getScreenToDataTransform();
+                        var x1 = cs.screenToDataX(mm.pageX - plotDiv.offset().left);
+                        var y1 = -cs.screenToDataY(mm.pageY - plotDiv.offset().top);
+
+                        return { x0: x0, y0: y0, x1: x1, y1: y1 };
+                    }).takeUntil(stopPanning);
+                });
+
+                return mouseDrags;
+            };
+
+            this._dragService = {
+                dragStart: that._plot.centralPart.onAsObservable("mousedown").select(function (md) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    return { x: cs.screenToDataX(md.pageX - plotDiv.offset().left), y: -cs.screenToDataY(md.pageY - plotDiv.offset().top) };
+                }),
+                drag: createPanSubject(that._plot.centralPart),
+                dragEnd: $(document).onAsObservable("mouseup")
+            };
+
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
 
             var yDT = new InteractiveDataDisplay.DataTransform(function (x) {
@@ -58,6 +98,7 @@
 
             this._plot.yDataTransform = yDT;
 
+            //this._gridLinesPlot.yDataTransform = yDT;
             if (this.options.isNavigationEnabled) {
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
                 that._plot.navigation.gestureSource = gestureSource;
@@ -87,6 +128,7 @@
                     if (this._svgPlot !== undefined && this._svgPlot.svg !== undefined) {
                         this._svgPlot.svg.clear();
                         if (value !== undefined) {
+                            console.log(value);
                             this._svgPlot.svg.add(value);
                         }
                     }
@@ -122,6 +164,10 @@
         },
         destroy: function () {
             this.element.empty();
+        },
+        getDragSubject: function () {
+            return this._dragService;
         }
     });
 }(jQuery));
+//# sourceMappingURL=drawingsurface.js.map
