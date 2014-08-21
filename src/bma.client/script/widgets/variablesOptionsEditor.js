@@ -6,41 +6,50 @@
             //variable: BMA.Model.Variable
             name: "name",
             rangeFrom: 0,
-            rangeTo: 0
+            rangeTo: 0,
+            functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
+            inputs: ["qqq", "www", "eee", "rrr"],
+            formula: "formula"
         },
         _resetElement: function () {
             var that = this;
-
-            //var variable = that.options.variable;
             this.name.val(that.options.name);
             this.rangeFrom.val(that.options.rangeFrom);
             this.rangeTo.val(that.options.rangeTo);
+            this.inputsList.empty();
+            var inputs = this.options.inputs;
+            inputs.forEach(function (val, ind) {
+                $('<option>' + val + '</option>').appendTo(that.inputsList);
+            });
+            this.inputsList.change(function () {
+                var inserting = $(this).children("option:selected").text();
+                that._insert(inserting);
+            });
+            this.textarea.val(this.options.formula);
             //elemDiv.attr("title", this.options.description);
+        },
+        _insert: function (ins) {
+            var text = this.textarea.val() + ins;
+            this.textarea.val(text);
         },
         _create: function () {
             var that = this;
-
-            //if (that.options.variable.Id === undefined) {
-            //    that.options.variable = new BMA.Model.Variable(147, 0, "type", 2, 8, "formula");
-            //}
-            //var variable = this.options.variable;
             this.element.addClass("newWindow");
-            this.labletable = $('<table></table>').appendTo(that.element);
-            var tr = $('<tr></tr>').appendTo(that.labletable);
-            var td1 = $('<td></td>').appendTo(tr);
-            var nameLabel = $('<label></label>').text("Name").appendTo(td1);
-
-            //var td2 = $('<td></tr>').appendTo(labelsdiv);
-            var td2 = $('<td></td>').appendTo(tr);
-            var rangeLabel = $('<label></label>').text("Range").appendTo(td2);
-
-            this._appendRangeInputs();
-
-            //
+            this._appendInputs();
+            this._processExpandingContent();
+            this._bindExpanding();
             this._resetElement();
         },
-        _appendRangeInputs: function () {
+        _appendInputs: function () {
             var that = this;
+            this.labletable = $('<table></table>').appendTo(that.element);
+            var tr0 = $('<tr></tr>').appendTo(that.labletable);
+            var td01 = $('<td></td>').appendTo(tr0);
+            var nameLabel = $('<label></label>').text("Name").appendTo(td01);
+
+            //var td2 = $('<td></tr>').appendTo(labelsdiv);
+            var td02 = $('<td></td>').appendTo(tr0);
+            var rangeLabel = $('<label></label>').text("Range").appendTo(td02);
             var tr = $('<tr></tr>').appendTo(that.labletable);
             var td1 = $('<td></td>').appendTo(tr);
             this.name = $('<input type="text" size="15">').appendTo(td1);
@@ -89,23 +98,61 @@
             });
 
             var td6 = $('<td></td>').appendTo(tr);
-            $('<input class="ui-helper-hidden-accessible"></input>').attr("type", "checkbox").attr("id", "btn-editor-expander").appendTo(td6);
+            this.expandLabel = $('<button class="editorExpander"></button>').appendTo(td6);
+        },
+        _processExpandingContent: function () {
+            var that = this;
+            this.content = $('<div></div>').appendTo(this.element).hide();
+            var table = $('<table></table>').appendTo(that.content);
+            var tr1 = $('<tr></tr>').appendTo(table);
+            var td1 = $('<td></td>').appendTo(tr1);
+            var span = $('<div>Target Function</div>').appendTo(td1);
+            var tr2 = $('<tr></tr>').appendTo(table);
+            var td21 = $('<td></td>').appendTo(tr2);
+            var div = $('<div class="bma-functions-list"></div>').appendTo(td21);
+            var td22 = $('<td></td>').appendTo(tr2);
+            var div22 = $('<div></div>').appendTo(td22);
 
-            var label = $('<label></label>').attr("for", "btn-editor-expander").appendTo(td6);
-            $('<button class="editorExpander"></button>').appendTo(label);
-            label.bind("click", function () {
-                var checkbox = $('#' + label.attr("for"));
-                var ch = checkbox.attr("checked");
-                if (ch === undefined) {
-                    checkbox.attr("checked", "");
-                } else {
-                    checkbox.removeAttr("checked");
-                }
-                label.children().toggleClass("editorExpanderChecked", "editorExpander");
-                //if ($('#' + label.attr("for")).attr("checked"))
-                //    label.children().addClass("editorExpanderChecked");
-                //else
-                //    label.children().addClass("editorExpander");
+            var functions = this.options.functions;
+            functions.forEach(function (val, ind) {
+                var item = $('<div class="label-for-functions">' + val + '</div>').appendTo(div);
+                item.bind("click", function () {
+                    that.selected = $(this).addClass("ui-selected");
+                    div.children().not(that.selected).removeClass("ui-selected");
+                    that._refreshText(div22);
+                });
+            });
+            var insertButton = $('<button>Insert</button>').appendTo(td22);
+            insertButton.bind("click", function () {
+                that._insert(that.selected.text());
+                //alert(that.selected.text());
+            });
+            $(div.children()[0]).click();
+
+            var tr3 = $('<tr></tr>').appendTo(table);
+            var td31 = $('<td></td>').appendTo(tr3);
+            this.inputsList = $('<select></select>').appendTo(td31);
+            var inputs = this.options.inputs;
+            this.textarea = $('<textarea></textarea>').appendTo(that.content);
+            this.textarea.css("width", "80%");
+        },
+        _refreshText: function (div) {
+            div.empty();
+            var text = this.selected.text();
+            $('<h2>' + text + '</h2>').appendTo(div);
+
+            switch (text) {
+            }
+            ;
+        },
+        _bindExpanding: function () {
+            var that = this;
+            this.expandLabel.bind("click", function () {
+                if (that.content.is(':hidden'))
+                    that.content.show();
+                else
+                    that.content.hide();
+                $(this).toggleClass("editorExpanderChecked", "editorExpander");
             });
         },
         _setOption: function (key, value) {
