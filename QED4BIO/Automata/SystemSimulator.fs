@@ -214,70 +214,70 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
         ()
     else
 
-    printfn "Begin compositions"
+        printfn "Begin compositions"
 
-    let set_cartesian op S1 S2 =
-        Set.fold (fun RS y -> Set.fold (fun RS x -> Set.add (op x y) RS) RS S1) Set.empty S2
+        let set_cartesian op S1 S2 =
+            Set.fold (fun RS y -> Set.fold (fun RS x -> Set.add (op x y) RS) RS S1) Set.empty S2
 
-    let calc in1 in2 out1 = 
-        printfn "Next product start: %O"  (new System.TimeSpan (System.DateTime.Now.Ticks - start))
-        printfn "Calc (%d,%d) -> %d" (in1) (in2) out1
-        auto.[out1] <- 
-            composeFilter auto.[in1] auto.[in2] 
-                    ( fun x bx y by ->
-                        if (snd x = snd y) then
-                            let b = snd x
-                            let x = fst x
-                            let y = fst y
-                            Some ({left_external_val = if bx then x.left_external_val else dont_care
-                                   right_external_val = if by then y.right_external_val else dont_care
-                                   left_internal_val = x.left_internal_val 
-                                   right_internal_val = y.right_internal_val
-                                   middle_vals = set_cartesian (@) x.middle_vals y.middle_vals}, b)
-                        else None
-                    )         
-                    (fun l r -> 
-                        (fst l).right_external_val = (fst r).left_internal_val 
-                        || (fst l).right_external_val = dont_care 
-                        || (snd l) || (snd r)
-                    )
-                    (fun r l -> 
-                        (fst r).left_external_val = (fst l).right_internal_val                        
-                        || (fst r).left_external_val = dont_care
-                        || (snd l) || (snd r)
-                    )
-                    (fun x y -> normalize (x , y))
-                    show_automata
-        //show_automata auto.[c]
-        let f = fun m (hs : ISet<_>) -> hs.UnionWith ((fst (auto.[out1].value m)).middle_vals)
-        let reach_rep = if no_compress then let hs = new HashSet<_>() in fun x -> f x hs; hs :> ISet<_> else reach_repeatedly auto.[out1] f
-        let newauto =  compressedMapAutomata(auto.[out1], fun x y -> {fst y with middle_vals = reach_rep x |> Set.ofSeq }, snd y )
-        let newauto =  productFilter (unitAutomata) newauto (fun _ y -> Some y) (fun _ y -> [y])
-        auto.[out1] <- newauto
-        if show_composition_steps then show_automata auto.[out1] 
+        let calc in1 in2 out1 = 
+            printfn "Next product start: %O"  (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+            printfn "Calc (%d,%d) -> %d" (in1) (in2) out1
+            auto.[out1] <- 
+                composeFilter auto.[in1] auto.[in2] 
+                        ( fun x bx y by ->
+                            if (snd x = snd y) then
+                                let b = snd x
+                                let x = fst x
+                                let y = fst y
+                                Some ({left_external_val = if bx then x.left_external_val else dont_care
+                                       right_external_val = if by then y.right_external_val else dont_care
+                                       left_internal_val = x.left_internal_val 
+                                       right_internal_val = y.right_internal_val
+                                       middle_vals = set_cartesian (@) x.middle_vals y.middle_vals}, b)
+                            else None
+                        )         
+                        (fun l r -> 
+                            (fst l).right_external_val = (fst r).left_internal_val 
+                            || (fst l).right_external_val = dont_care 
+                            || (snd l) || (snd r)
+                        )
+                        (fun r l -> 
+                            (fst r).left_external_val = (fst l).right_internal_val                        
+                            || (fst r).left_external_val = dont_care
+                            || (snd l) || (snd r)
+                        )
+                        (fun x y -> normalize (x , y))
+                        show_automata
+            //show_automata auto.[c]
+            let f = fun m (hs : ISet<_>) -> hs.UnionWith ((fst (auto.[out1].value m)).middle_vals)
+            let reach_rep = if no_compress then let hs = new HashSet<_>() in fun x -> f x hs; hs :> ISet<_> else reach_repeatedly auto.[out1] f
+            let newauto =  compressedMapAutomata(auto.[out1], fun x y -> {fst y with middle_vals = reach_rep x |> Set.ofSeq }, snd y )
+            let newauto =  productFilter (unitAutomata) newauto (fun _ y -> Some y) (fun _ y -> [y])
+            auto.[out1] <- newauto
+            if show_composition_steps then show_automata auto.[out1] 
 
-    if binary_combine then
-        let mutable steps = no_of_cells
-        while steps > 1 do
-            let carryover = steps % 2 = 1 
-            steps <- (steps >>> 1 ) 
-            for c = 0 to steps - 1 do
-                calc (c*2) (c*2+1) c
-                //show_automata auto.[c]
-            if carryover then 
-                printfn "Carry over %d -> %d" (steps*2) steps
-                auto.[steps] <- auto.[steps * 2 ]
-                steps <- steps + 1
-    else
-        for c = 1 to no_of_cells - 1 do
-            calc 0 c 0         
+        if binary_combine then
+            let mutable steps = no_of_cells
+            while steps > 1 do
+                let carryover = steps % 2 = 1 
+                steps <- (steps >>> 1 ) 
+                for c = 0 to steps - 1 do
+                    calc (c*2) (c*2+1) c
+                    //show_automata auto.[c]
+                if carryover then 
+                    printfn "Carry over %d -> %d" (steps*2) steps
+                    auto.[steps] <- auto.[steps * 2 ]
+                    steps <- steps + 1
+        else
+            for c = 1 to no_of_cells - 1 do
+                calc 0 c 0         
 
-    printfn "Pre tidy Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
-    //show_automata auto.[0]
+        printfn "Pre tidy Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+        //show_automata auto.[0]
 
-    let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(",\n ", Set.map (fun (x : Map<_,_> list) -> "[" + (String.Join(";", x)) + "]") ((fst x).middle_vals)))
+        let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(",\n ", Set.map (fun (x : Map<_,_> list) -> "[" + (String.Join(";", x)) + "]") ((fst x).middle_vals)))
 
-    printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+        printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    show_automata tidy_auto
+        show_automata tidy_auto
 
