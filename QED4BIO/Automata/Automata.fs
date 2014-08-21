@@ -22,7 +22,7 @@ let set_collect (f : _ -> HashSet<_> -> unit) (s : IEnumerable<_>) =
 let skip = fun _ -> () in
     
 //Stolen from SLAyer
-let dfs_iter nexts pre post next_start starts =
+let inline dfs_iter nexts pre post next_start starts =
         let visited = new HashSet<_>()
         in
         let rec dfs_visit u =
@@ -36,7 +36,7 @@ let dfs_iter nexts pre post next_start starts =
         visited
 
 //Stolen from SLAyer
-let scc nexts preds states = 
+let inline scc f nexts preds states = 
     let rev_postorder = ref [] in
     let add_to rl = fun v -> rl := v :: !rl in
     (* Get the finished times for each node *)
@@ -52,9 +52,10 @@ let scc nexts preds states =
       (add_to current_scc)
       (fun () ->
         (* Add each vertex in the scc to the map, with the whole SCC *)
+        let res = f !current_scc
         List.iter
           (fun v ->
-            scc_map.Add(v, !current_scc)
+            scc_map.Add(v, res)
           )
           (!current_scc) ;
         (* Setup next scc *)
@@ -138,7 +139,6 @@ type Automata<'state , 'data> when 'state : comparison and 'data:equality  () =
 type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality> () =
     inherit Automata<'state, 'data>() with 
     let mutable startSet = new HashSet<_>()
-    let mutable statesSet = new HashSet<_>()
     let mutable nextMap = new Dictionary<'state, HashSet<'state>>()
     let mutable dataMap = new Dictionary<'state, 'data>()
     let mutable prevMap = new Dictionary<'state, HashSet<'state>>()
@@ -162,11 +162,10 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
             set :> ISet<_>
 
     override this.initialstates = startSet :> ISet<_>
-    override this.states = statesSet :> ICollection<_>
+    override this.states = dataMap.Keys :> ICollection<_>
     override this.value s = dataMap.[s]
 
     member this.addState(x,d) = 
-        statesSet.Add(x) |> ignore
         if dataMap.ContainsKey x then
             dataMap.[x] <- d
         else
