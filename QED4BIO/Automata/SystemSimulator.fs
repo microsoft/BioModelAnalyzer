@@ -35,10 +35,10 @@ type summary<'a> when 'a : comparison =
 
 
 let show_intermediate_steps = false
-let show_composition_steps = false
-let bound = 6
+let show_composition_steps = true
+let bound = 1
 let cheap_answer = false
-let no_compress = cheap_answer || false 
+let no_compress = cheap_answer || true 
 let binary_combine = true
 
 let run (init_form, trans_form) edge_values comms fates (inputs : int[]) = 
@@ -250,7 +250,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
                         show_automata
             //show_automata auto.[c]
             let f = fun m (hs : ISet<_>) -> hs.UnionWith ((fst (auto.[out1].value m)).middle_vals)
-            let reach_rep = if no_compress then let hs = new HashSet<_>() in fun x -> f x hs; hs :> ISet<_> else reach_repeatedly auto.[out1] f
+            let reach_rep = if no_compress then fun x -> let hs = new HashSet<_>() in f x hs; hs :> ISet<_> else reach_repeatedly auto.[out1] f
             let newauto =  compressedMapAutomata(auto.[out1], fun x y -> {fst y with middle_vals = reach_rep x |> Set.ofSeq }, snd y )
             let newauto =  productFilter (unitAutomata) newauto (fun _ y -> Some y) (fun _ y -> [y])
             auto.[out1] <- newauto
