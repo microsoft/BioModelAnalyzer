@@ -6,7 +6,7 @@
 let main argv = 
     let inputs = [| 0;1 |]
     
-    SystemSimulator.run Simulator.test_automata5_forms (Map.add "path" 0 Map.empty) ["path"] ["path"] inputs
+    SystemSimulator.run Models.test_automata5_forms (Map.add "path" 0 Map.empty) ["path"] ["path"] inputs
 
     printfn "%A" argv
     0 // return an integer exit code

@@ -34,6 +34,7 @@ type summary<'a> when 'a : comparison =
 
 
 let show_intermediate_steps = false
+let show_composition_steps = false
 let bound = 6
 let no_compress = true 
 
@@ -241,7 +242,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
             let newauto =  compressedMapAutomata(auto.[c], fun x y -> {fst y with middle_vals = Set.unionMany (Set.map (fun m -> (fst (auto.[c].value m)).middle_vals) (reach_rep x) )}, snd y )
             let newauto =  productFilter (unitAutomata) newauto (fun _ y -> Some y) (fun _ y -> [y])
             auto.[c] <- newauto
-            show_automata auto.[c]
+            if show_composition_steps then show_automata auto.[c]
         if carryover then 
             printfn "Carry over %d -> %d" (steps*2) steps
             auto.[steps] <- auto.[steps * 2 ]
