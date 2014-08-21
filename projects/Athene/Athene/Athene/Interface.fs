@@ -457,10 +457,6 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
                                     //(forceAcc',machines')
                                     getMotorForces otherMotors system machines' dT forceAcc'
         | [] -> (forceAcc,machines)
-<<<<<<< HEAD
-    let (machineForces,nMachineStates) = getMotorForces intTop.randomMotors nSystem nMachineStates dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) nSystem)
-    (nSystem, nMachineStates, machineForces, birthDeathRegister')
-=======
     
     //How do you fix the problem of physicsI update first or machineI update first?
     //Do I need to pass *both* new and old machines?
@@ -475,4 +471,3 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     let (f,m'') = getMotorForces intTop.randomMotors p' m' dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) p')
 
     (p', m'', f, birthDeathRegister')
->>>>>>> f4e1491... Initial support for timed interface events ("clocks")
