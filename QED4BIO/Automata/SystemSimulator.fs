@@ -38,7 +38,7 @@ let show_intermediate_steps = false
 let show_composition_steps = false
 let bound = 6
 let cheap_answer = false
-let no_compress = cheap_answer || true 
+let no_compress = cheap_answer || false 
 let binary_combine = true
 
 let run (init_form, trans_form) edge_values comms fates (inputs : int[]) = 

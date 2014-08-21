@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Automata.fs" />
     <Compile Include="Simulator.fs" />
+    <Compile Include="Models.fs" />
     <Compile Include="SystemSimulator.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
