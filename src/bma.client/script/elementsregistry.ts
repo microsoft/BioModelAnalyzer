@@ -275,21 +275,41 @@ module BMA {
                     "Activator",
                     function (jqSvg: any, renderParams) {
 
-                        var dir = {
-                            x: renderParams.layout.end.PositionX - renderParams.layout.start.PositionX,
-                            y: renderParams.layout.end.PositionY - renderParams.layout.start.PositionY
-                        };
-                        var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+                        if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
-                        dir.x /= dirLen;
-                        dir.y /= dirLen;
+                            var x0 = renderParams.layout.start.PositionX;
+                            var y0 = renderParams.layout.start.PositionY;
+                            var w = that.variableWidthConstant * 0.7;
+                            var h = that.variableHeightConstant * 0.7;
 
-                        return jqSvg.line(
-                            renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
-                            renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
-                            renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
-                            renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
-                            { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#Activator)" });
+                            var path = jqSvg.createPath();
+                            jqSvg.path(path.move(x0, y0 - h)
+                                .curveQ(x0 + w / 2, y0 - h * 1.5,
+                                x0 + w, y0 - h)
+                                .curveQ(x0 + w * 1.5, y0,
+                                x0 + w, y0 + h)
+                                .curveQ(x0 + w / 2, y0 + h * 1.5,
+                                x0, y0 + h),
+                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Activator)" });
+
+                        } else {
+
+                            var dir = {
+                                x: renderParams.layout.end.PositionX - renderParams.layout.start.PositionX,
+                                y: renderParams.layout.end.PositionY - renderParams.layout.start.PositionY
+                            };
+                            var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+
+                            dir.x /= dirLen;
+                            dir.y /= dirLen;
+
+                            jqSvg.line(
+                                renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
+                                renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
+                                renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
+                                renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
+                                { stroke: "#808080", strokeWidth: 2, "marker-end": "url(#Activator)" });
+                        }
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
                         return <SVGElement>svgElem;
@@ -305,21 +325,41 @@ module BMA {
                     "Inhibitor",
                     function (jqSvg: any, renderParams) {
 
-                        var dir = {
-                            x: renderParams.layout.end.PositionX - renderParams.layout.start.PositionX,
-                            y: renderParams.layout.end.PositionY - renderParams.layout.start.PositionY
-                        };
-                        var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+                        if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
-                        dir.x /= dirLen;
-                        dir.y /= dirLen;
+                            var x0 = renderParams.layout.start.PositionX;
+                            var y0 = renderParams.layout.start.PositionY;
+                            var w = that.variableWidthConstant * 0.7;
+                            var h = that.variableHeightConstant * 0.7;
 
-                        return jqSvg.line(
-                            renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
-                            renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
-                            renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
-                            renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
-                            { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#Inhibitor)" });
+                            var path = jqSvg.createPath();
+                            jqSvg.path(path.move(x0, y0 - h)
+                                .curveQ(x0 + w / 2, y0 - h * 1.5,
+                                x0 + w, y0 - h)
+                                .curveQ(x0 + w * 1.5, y0,
+                                x0 + w, y0 + h)
+                                .curveQ(x0 + w / 2, y0 + h * 1.5,
+                                x0, y0 + h),
+                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+
+                        } else {
+
+                            var dir = {
+                                x: renderParams.layout.end.PositionX - renderParams.layout.start.PositionX,
+                                y: renderParams.layout.end.PositionY - renderParams.layout.start.PositionY
+                            };
+                            var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+
+                            dir.x /= dirLen;
+                            dir.y /= dirLen;
+
+                            jqSvg.line(
+                                renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
+                                renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
+                                renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
+                                renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
+                                { stroke: "#808080", strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+                        }
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
                         return <SVGElement>svgElem;

@@ -1,4 +1,10 @@
-﻿
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="model\biomodel.ts"/>
+/// <reference path="model\model.ts"/>
+/// <reference path="uidrivers.ts"/>
+/// <reference path="commands.ts"/>
+
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -26,6 +32,8 @@ var BMA;
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
                     _this.stagingLine = undefined;
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -180,15 +188,16 @@ var BMA;
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
 
+                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             if (that.stagingLine.svg !== undefined) {
                                 that.svg.remove(that.stagingLine.svg);
                             }
 
                             that.stagingLine.svg = that.svg.line(that.stagingLine.x0, that.stagingLine.y0, that.stagingLine.x1, that.stagingLine.y1, {
-                                stroke: "black",
+                                stroke: "#808080",
                                 strokeWidth: 2,
-                                fill: "black",
+                                fill: "#808080",
                                 "marker-end": "url(#" + that.selectedType + ")",
                                 id: "stagingLine"
                             });
@@ -198,6 +207,7 @@ var BMA;
 
                         return;
                     }
+                    //this.stagingLine = undefined;
                 });
 
                 dragSubject.dragEnd.subscribe(function (gesture) {
@@ -388,6 +398,7 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
+                //Generating svg elements from model and layout
                 this.svg.clear();
                 var svgElements = [];
 
@@ -427,18 +438,29 @@ var BMA;
                     }));
                 }
 
+                //constructing final svg image
                 this.svg.clear();
 
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
-                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "black", strokeWidth: "1px" });
+                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
                 var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
-                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "black", strokeWidth: "2px" });
+                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
 
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
                 }
 
+                /*
+                if (this.stagingLine !== undefined) {
+                this.svg.line(
+                this.stagingLine.x0,
+                this.stagingLine.y0,
+                this.stagingLine.x1,
+                this.stagingLine.y1,
+                { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#" + this.selectedType + ")" });
+                }
+                */
                 return $(this.svg.toSVG()).children();
             };
             return DesignSurfacePresenter;
@@ -447,3 +469,4 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=presenters.js.map

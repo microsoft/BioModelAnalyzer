@@ -71,3 +71,4 @@
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=Commands.js.map

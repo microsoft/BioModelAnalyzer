@@ -236,9 +236,9 @@ module BMA {
                                     that.stagingLine.x1,
                                     that.stagingLine.y1,
                                     {
-                                        stroke: "black",
+                                        stroke: "#808080",
                                         strokeWidth: 2,
-                                        fill: "black",
+                                        fill: "#808080",
                                         "marker-end": "url(#" + that.selectedType + ")",
                                         id: "stagingLine"
                                     });
@@ -483,9 +483,9 @@ module BMA {
 
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
-                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "black", strokeWidth: "1px" });
+                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
                 var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
-                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "black", strokeWidth: "2px" });
+                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
 
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
