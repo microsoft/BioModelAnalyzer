@@ -87,16 +87,52 @@ module BMA {
                             case "Constant":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
-                                variables.push(new BMA.Model.Variable(this.variableIndex, 0, that.selectedType, 0, 0, ""));
+
+                                var bbox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType("Constant")).GetBoundingBox(args.x, args.y);
+                                var gridCell = that.GetGridCell(args.x, args.y);
+
+                                if (that.GetContainerFromGridCell(gridCell) !== undefined || !this.Contains(gridCell, bbox)) {
+                                    return;
+                                }
+
+                                for (var i = 0; i < variableLayouts.length; i++) {
+                                    var variable = variables[i];
+                                    var variableLayout = variableLayouts[i];
+                                    var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
+                                    if (this.Intersects(bbox, elementBBox))
+                                        return;
+                                }
+
+                                variables.push(new BMA.Model.Variable(this.variableIndex, 0, that.selectedType, "<no name>", 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                                 that.Dup(newmodel, newlayout);
+
                                 break;
                             case "Default":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
-                                variables.push(new BMA.Model.Variable(this.variableIndex, 0, that.selectedType, 0, 0, ""));
+
+                                var bbox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType("Constant")).GetBoundingBox(args.x, args.y);
+                                var gridCell = that.GetGridCell(args.x, args.y);
+                                var container = that.GetContainerFromGridCell(gridCell);
+
+                                if (container === undefined ||
+                                    !(<BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container"))
+                                        .ContainsBBox(bbox, (container.layout.PositionX + 0.5) * this.xStep, (container.layout.PositionY + 0.5) * this.yStep)) {
+                                    return;
+                                }
+
+                                for (var i = 0; i < variableLayouts.length; i++) {
+                                    var variable = variables[i];
+                                    var variableLayout = variableLayouts[i];
+                                    var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
+                                    if (this.Intersects(bbox, elementBBox))
+                                        return;
+                                }
+
+                                variables.push(new BMA.Model.Variable(this.variableIndex, container.container.Id, that.selectedType, "<no name>", 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -105,8 +141,34 @@ module BMA {
                             case "MembraneReceptor":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
-                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+
+                                var bbox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType("Constant")).GetBoundingBox(args.x, args.y);
+                                var gridCell = that.GetGridCell(args.x, args.y);
+                                var container = that.GetContainerFromGridCell(gridCell);
+
+                                if (container === undefined ||
+                                    !(<BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container"))
+                                        .IntersectsBorder(args.x, args.y, (container.layout.PositionX + 0.5) * this.xStep, (container.layout.PositionY + 0.5) * this.yStep)) {
+                                    return;
+                                }
+
+                                for (var i = 0; i < variableLayouts.length; i++) {
+                                    var variable = variables[i];
+                                    var variableLayout = variableLayouts[i];
+                                    var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
+                                    if (this.Intersects(bbox, elementBBox))
+                                        return;
+                                }
+
+                                var v = {
+                                    x: (args.x - ((gridCell.x + 0.5) * this.xStep + this.xOrigin)),
+                                    y: -(args.y - ((gridCell.y + 0.5) * this.yStep + this.yOrigin))
+                                };
+                                var len = Math.sqrt(v.x * v.x + v.y * v.y);
+                                var angle = v.x / Math.abs(v.x) * Math.acos(v.y / len) / Math.PI * 180;
+
+                                variables.push(new BMA.Model.Variable(this.variableIndex, 0, that.selectedType, "<no name>", 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, args.x, args.y, 0, 0, angle));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                                 that.Dup(newmodel, newlayout);
@@ -173,9 +235,9 @@ module BMA {
                                     that.stagingLine.x1,
                                     that.stagingLine.y1,
                                     {
-                                        stroke: "black",
+                                        stroke: "#808080",
                                         strokeWidth: 2,
-                                        fill: "black",
+                                        fill: "#808080",
                                         "marker-end": "url(#" + that.selectedType + ")",
                                         id: "stagingLine"
                                     });
@@ -213,13 +275,31 @@ module BMA {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
-                    if (Math.abs(variableLayout.PositionX - x) < 20 &&
-                        Math.abs(variableLayout.PositionY - y) < 20) {
+                    var element = window.ElementRegistry.GetElementByType(variable.Type);
+                    if (element.Contains(x, y, variableLayout.PositionX, variableLayout.PositionY)) {
                         return variable.Id;
                     }
                 }
 
                 return undefined;
+            }
+
+            private Intersects(
+                a: { x: number; y: number; width: number; height: number },
+                b: { x: number; y: number; width: number; height: number }): boolean {
+
+                return (Math.abs(a.x - b.x) * 2 <= (a.width + b.width)) && (Math.abs(a.y - b.y) * 2 <= (a.height + b.height));
+            }
+
+            private Contains(
+                gridCell: { x: number; y: number },
+                bbox: { x: number; y: number; width: number; height: number }) {
+
+                return bbox.width < this.xStep && bbox.height < this.yStep &&
+                    bbox.x > gridCell.x * this.xStep + this.xOrigin &&
+                    bbox.x + bbox.width < (gridCell.x + 1) * this.xStep + this.xOrigin &&
+                    bbox.y > gridCell.y * this.yStep + this.yOrigin &&
+                    bbox.y + bbox.height < (gridCell.y + 1) * this.yStep + this.yOrigin;
             }
 
             private TryAddStagingLineAsLink() {
@@ -229,8 +309,8 @@ module BMA {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
-                    if (Math.abs(variableLayout.PositionX - this.stagingLine.x1) < 20 &&
-                        Math.abs(variableLayout.PositionY - this.stagingLine.y1) < 20) {
+                    var element = window.ElementRegistry.GetElementByType(variable.Type);
+                    if (element.Contains(this.stagingLine.x1, this.stagingLine.y1, variableLayout.PositionX, variableLayout.PositionY)) {
 
                         var current = this.Current;
                         var model = current.model;
@@ -265,7 +345,20 @@ module BMA {
             }
 
             private GetConstantsFromGridCell(gridCell: { x: number; y: number }): { container: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout }[] {
-                return [];
+                var result = [];
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
+                for (var i = 0; i < variables.length; i++) {
+                    var variable = variables[i];
+                    var variableLayout = variableLayouts[i];
+
+                    var vGridCell = this.GetGridCell(variableLayout.PositionX, variableLayout.PositionY);
+
+                    if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
+                        result.push({ variable: variable, variableLayout: variableLayout });
+                    }
+                }
+                return result;
             }
 
             private OnModelUpdated() {
@@ -356,7 +449,7 @@ module BMA {
 
                     var element = window.ElementRegistry.GetElementByType("Container");
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { layout: containerLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg(this.svg, { model: container, layout: containerLayout, grid: this.Grid }));
                 }
 
                 var variables = this.Current.model.Variables;
@@ -367,7 +460,7 @@ module BMA {
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { layout: variableLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg(this.svg, { model: variable, layout: variableLayout, grid: this.Grid }));
                 }
 
                 var relationships = this.Current.model.Relationships;
@@ -389,9 +482,9 @@ module BMA {
 
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
-                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "black", strokeWidth: "1px" });
+                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
                 var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
-                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "black", strokeWidth: "2px" });
+                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
 
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);

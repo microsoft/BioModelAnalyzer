@@ -38,6 +38,7 @@ module BMA {
             private rangeFrom: number;
             private rangeTo: number;
             private formula: string;
+            private name: string;
 
             public get Id(): number {
                 return this.id;
@@ -63,13 +64,18 @@ module BMA {
                 return this.formula;
             }
 
-            constructor(id: number, containerId: number, type: string, rangeFrom: number, rangeTo: number, formula: string) {
+            public get Name(): string {
+                return this.name;
+            }
+
+            constructor(id: number, containerId: number, type: string, name: string, rangeFrom: number, rangeTo: number, formula: string) {
                 this.id = id;
                 this.containerId = containerId;
                 this.type = type;
                 this.rangeFrom = rangeFrom;
                 this.rangeTo = rangeTo;
                 this.formula = formula;
+                this.name = name;
             }
         }
 
