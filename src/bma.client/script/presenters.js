@@ -61,15 +61,49 @@ var BMA;
                             case "Constant":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
+
+                                var bbox = window.ElementRegistry.GetElementByType("Constant").GetBoundingBox(args.x, args.y);
+                                var gridCell = that.GetGridCell(args.x, args.y);
+
+                                if (that.GetContainerFromGridCell(gridCell) !== undefined || !_this.Contains(gridCell, bbox)) {
+                                    return;
+                                }
+
+                                for (var i = 0; i < variableLayouts.length; i++) {
+                                    var variable = variables[i];
+                                    var variableLayout = variableLayouts[i];
+                                    var elementBBox = window.ElementRegistry.GetElementByType(variable.Type).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
+                                    if (_this.Intersects(bbox, elementBBox))
+                                        return;
+                                }
+
                                 variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(_this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                                 that.Dup(newmodel, newlayout);
+
                                 break;
                             case "Default":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
+
+                                var bbox = window.ElementRegistry.GetElementByType("Constant").GetBoundingBox(args.x, args.y);
+                                var gridCell = that.GetGridCell(args.x, args.y);
+                                var container = that.GetContainerFromGridCell(gridCell);
+
+                                if (container === undefined || !window.ElementRegistry.GetElementByType("Container").ContainsBBox(bbox, (container.layout.PositionX + 0.5) * _this.xStep, (container.layout.PositionY + 0.5) * _this.yStep)) {
+                                    return;
+                                }
+
+                                for (var i = 0; i < variableLayouts.length; i++) {
+                                    var variable = variables[i];
+                                    var variableLayout = variableLayouts[i];
+                                    var elementBBox = window.ElementRegistry.GetElementByType(variable.Type).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
+                                    if (_this.Intersects(bbox, elementBBox))
+                                        return;
+                                }
+
                                 variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(_this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
@@ -79,8 +113,18 @@ var BMA;
                             case "MembraneReceptor":
                                 var variables = model.Variables.slice(0);
                                 var variableLayouts = layout.Variables.slice(0);
-                                variables.push(new BMA.Model.Variable(0, 0, that.selectedType, 0, 0, ""));
-                                variableLayouts.push(new BMA.Model.VarialbeLayout(0, args.x, args.y, 0, 0, 0));
+
+                                var bbox = window.ElementRegistry.GetElementByType("Constant").GetBoundingBox(args.x, args.y);
+                                for (var i = 0; i < variableLayouts.length; i++) {
+                                    var variable = variables[i];
+                                    var variableLayout = variableLayouts[i];
+                                    var elementBBox = window.ElementRegistry.GetElementByType(variable.Type).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
+                                    if (_this.Intersects(bbox, elementBBox))
+                                        return;
+                                }
+
+                                variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, 0, 0, ""));
+                                variableLayouts.push(new BMA.Model.VarialbeLayout(_this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                                 that.Dup(newmodel, newlayout);
@@ -173,12 +217,21 @@ var BMA;
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
-                    if (Math.abs(variableLayout.PositionX - x) < 20 && Math.abs(variableLayout.PositionY - y) < 20) {
+                    var element = window.ElementRegistry.GetElementByType(variable.Type);
+                    if (element.Contains(x, y, variableLayout.PositionX, variableLayout.PositionY)) {
                         return variable.Id;
                     }
                 }
 
                 return undefined;
+            };
+
+            DesignSurfacePresenter.prototype.Intersects = function (a, b) {
+                return (Math.abs(a.x - b.x) * 2 <= (a.width + b.width)) && (Math.abs(a.y - b.y) * 2 <= (a.height + b.height));
+            };
+
+            DesignSurfacePresenter.prototype.Contains = function (gridCell, bbox) {
+                return bbox.width < this.xStep && bbox.height < this.yStep && bbox.x > gridCell.x * this.xStep + this.xOrigin && bbox.x + bbox.width < (gridCell.x + 1) * this.xStep + this.xOrigin && bbox.y > gridCell.y * this.yStep + this.yOrigin && bbox.y + bbox.height < (gridCell.y + 1) * this.yStep + this.yOrigin;
             };
 
             DesignSurfacePresenter.prototype.TryAddStagingLineAsLink = function () {
@@ -188,7 +241,8 @@ var BMA;
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
 
-                    if (Math.abs(variableLayout.PositionX - this.stagingLine.x1) < 20 && Math.abs(variableLayout.PositionY - this.stagingLine.y1) < 20) {
+                    var element = window.ElementRegistry.GetElementByType(variable.Type);
+                    if (element.Contains(this.stagingLine.x1, this.stagingLine.y1, variableLayout.PositionX, variableLayout.PositionY)) {
                         var current = this.Current;
                         var model = current.model;
                         var layout = current.layout;
