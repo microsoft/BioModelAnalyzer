@@ -9,32 +9,50 @@
             rangeTo: 0,
             functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
             inputs: ["qqq", "www", "eee", "rrr"],
-            formula: "formula"
+            formula: ""
         },
         _resetElement: function () {
             var that = this;
             this.name.val(that.options.name);
             this.rangeFrom.val(that.options.rangeFrom);
             this.rangeTo.val(that.options.rangeTo);
-            this.inputsList.empty();
+            this.listOfInputs.empty();
             var inputs = this.options.inputs;
             inputs.forEach(function (val, ind) {
-                $('<option>' + val + '</option>').appendTo(that.inputsList);
+                var item = $('<div>' + val + '</div>').appendTo(that.listOfInputs);
+                item.bind("click", function () {
+                    that.textarea.insertAtCaret($(this).text());
+                    that.listOfInputs.hide();
+                });
             });
-            this.inputsList.change(function () {
-                var inserting = $(this).children("option:selected").text();
-                that._insert(inserting);
-            });
+
             this.textarea.val(this.options.formula);
-            //elemDiv.attr("title", this.options.description);
         },
         _insert: function (ins) {
             var text = this.textarea.val() + ins;
             this.textarea.val(text);
         },
+        getCaretPos: function (jq) {
+            var obj = jq[0];
+            obj.focus();
+
+            if (obj.selectionStart)
+                return obj.selectionStart;
+            else if (document.selection) {
+                var sel = document.selection.createRange();
+                var clone = sel.duplicate();
+                sel.collapse(true);
+                clone.moveToElementText(obj);
+                clone.setEndPoint('EndToEnd', sel);
+                return clone.text.length;
+            }
+
+            return 0;
+        },
         _create: function () {
             var that = this;
             this.element.addClass("newWindow");
+            this.element.draggable({ containment: "parent", scroll: false });
             this._appendInputs();
             this._processExpandingContent();
             this._bindExpanding();
@@ -42,12 +60,15 @@
         },
         _appendInputs: function () {
             var that = this;
-            this.labletable = $('<table></table>').appendTo(that.element);
+            var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
+            closing.bind("click", function () {
+                that.element.hide();
+            });
+            this.labletable = $('<table class="inputs-table"></table>').appendTo(that.element);
             var tr0 = $('<tr></tr>').appendTo(that.labletable);
             var td01 = $('<td></td>').appendTo(tr0);
             var nameLabel = $('<label></label>').text("Name").appendTo(td01);
 
-            //var td2 = $('<td></tr>').appendTo(labelsdiv);
             var td02 = $('<td></td>').appendTo(tr0);
             var rangeLabel = $('<label></label>').text("Range").appendTo(td02);
             var tr = $('<tr></tr>').appendTo(that.labletable);
@@ -63,16 +84,14 @@
             var upfrom = $('<div></div>').addClass("triangle-up").appendTo(divtriangles1);
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
-
-                //if (valu < 100)
-                that.rangeFrom.val(valu + 1);
+                if (valu < 100)
+                    that.rangeFrom.val(valu + 1);
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
-
-                //if (valu > 0)
-                that.rangeFrom.val(valu - 1);
+                if (valu > 0)
+                    that.rangeFrom.val(valu - 1);
             });
 
             var td4 = $('<td></td>').appendTo(tr);
@@ -85,16 +104,14 @@
             var upto = $('<div></div>').addClass("triangle-up").appendTo(divtriangles2);
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
-
-                //if (valu < 100)
-                that.rangeTo.val(valu + 1);
+                if (valu < 100)
+                    that.rangeTo.val(valu + 1);
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
-
-                //if (valu > 0)
-                that.rangeTo.val(valu - 1);
+                if (valu > 0)
+                    that.rangeTo.val(valu - 1);
             });
 
             var td6 = $('<td></td>').appendTo(tr);
@@ -103,47 +120,51 @@
         _processExpandingContent: function () {
             var that = this;
             this.content = $('<div></div>').appendTo(this.element).hide();
-            var table = $('<table></table>').appendTo(that.content);
-            var tr1 = $('<tr></tr>').appendTo(table);
-            var td1 = $('<td></td>').appendTo(tr1);
-            var span = $('<div>Target Function</div>').appendTo(td1);
-            var tr2 = $('<tr></tr>').appendTo(table);
-            var td21 = $('<td></td>').appendTo(tr2);
-            var div = $('<div class="bma-functions-list"></div>').appendTo(td21);
-            var td22 = $('<td></td>').appendTo(tr2);
-            var div22 = $('<div></div>').appendTo(td22);
+            var span = $('<div>Target Function</div>').appendTo(that.content);
+
+            var div = $('<div></div>').appendTo(that.content);
+            var div1 = $('<div class="bma-functions-list"></div>').appendTo(div);
+            var div2 = $('<div class="functions-info"></div>').appendTo(div);
 
             var functions = this.options.functions;
             functions.forEach(function (val, ind) {
-                var item = $('<div class="label-for-functions">' + val + '</div>').appendTo(div);
+                var item = $('<div class="label-for-functions">' + val + '</div>').appendTo(div1);
                 item.bind("click", function () {
                     that.selected = $(this).addClass("ui-selected");
-                    div.children().not(that.selected).removeClass("ui-selected");
-                    that._refreshText(div22);
+                    div1.children().not(that.selected).removeClass("ui-selected");
+                    that._refreshText(div2);
                 });
             });
-            var insertButton = $('<button>Insert</button>').appendTo(td22);
-            insertButton.bind("click", function () {
-                that._insert(that.selected.text());
-                //alert(that.selected.text());
-            });
-            $(div.children()[0]).click();
+            var insertButton = $('<button class="bma-insert-function-button">Insert</button>').appendTo(div);
 
-            var tr3 = $('<tr></tr>').appendTo(table);
-            var td31 = $('<td></td>').appendTo(tr3);
-            this.inputsList = $('<select></select>').appendTo(td31);
+            insertButton.bind("click", function () {
+                var about = that.getAbout(that.selected.text());
+                var caret = that.getCaretPos(that.textarea) + about.offset;
+                that.textarea.insertAtCaret(about.insertText);
+                that.textarea[0].setSelectionRange(caret, caret);
+            });
+            $(div1.children()[0]).click();
+
+            this.inputsList = $('<div class="inputs-list-header">Inputs</div>').appendTo(that.content);
+
+            this.listOfInputs = $('<div class="inputs-list-content"></div>').appendTo(that.content).hide();
+            this.inputsList.bind("click", function () {
+                if (that.listOfInputs.is(":hidden"))
+                    that.listOfInputs.show();
+                else
+                    that.listOfInputs.hide();
+            });
+
             var inputs = this.options.inputs;
             this.textarea = $('<textarea></textarea>').appendTo(that.content);
             this.textarea.css("width", "80%");
         },
         _refreshText: function (div) {
+            var that = this;
             div.empty();
-            var text = this.selected.text();
-            $('<h2>' + text + '</h2>').appendTo(div);
-
-            switch (text) {
-            }
-            ;
+            var text = this.getAbout(that.selected.text());
+            $('<h2>' + text.head + '</h2>').appendTo(div);
+            $('<p>' + text.content + '</p>').appendTo(div);
         },
         _bindExpanding: function () {
             var that = this;
@@ -164,7 +185,60 @@
         },
         destroy: function () {
             $.Widget.prototype.destroy.call(this);
+        },
+        getAbout: function (fun) {
+            switch (fun) {
+                case "var":
+                    return { head: "var(name)", content: "A variable, where name is the name of the variable", offset: 4, insertText: "var()" };
+                case "avg":
+                    return { head: "avg(x,y,z)", content: "The average of a list of expressions. E.g., avg( var(X); var(Y); 22; var(Z)*2 )", offset: 4, insertText: "avg(,)" };
+                case "min":
+                    return { head: "min(x,y)", content: "The minimum of a two expressions. E.g., min( var(X), var(Y)), or min(var(X), 0)", offset: 4, insertText: "min(,)" };
+                case "max":
+                    return { head: "min(x,y)", content: "The maximum of a two expressions. E.g., max( var(X), var(Y))", offset: 4, insertText: "max(,)" };
+                case "const":
+                    return { head: "22 or const(22)", content: "An integer number. E.g., 1234, 42, -9", offset: 6, insertText: "const()" };
+                case "plus":
+                    return { head: "x + y", content: "Usual addition operator. E.g., 2+3, 44 + var(X)", offset: 3, insertText: " + " };
+                case "minus":
+                    return { head: "x - y", content: "Usual subtraction operator. E.g., 2-3, 44 - var(X)", offset: 3, insertText: " - " };
+                case "times":
+                    return { head: "x * y", content: "Usual multiplication operator. E.g., 2*3, 44 * var(X)", offset: 3, insertText: " * " };
+                case "div":
+                    return { head: "x / y", content: "Usual division operator. E.g., 2/3, 44 / var(X)", offset: 3, insertText: " / " };
+                case "ceil":
+                    return { head: "ceil(x)", content: "The ceiling of an expression. E.g., ceil (var(X))", offset: 5, insertText: "ceil()" };
+                case "floor":
+                    return { head: "floor(x)", content: "The floor of an expression. E.g., floor(var(X))", offset: 6, insertText: "floor()" };
+            }
         }
     });
 }(jQuery));
+
+jQuery.fn.extend({
+    insertAtCaret: function (myValue) {
+        return this.each(function (i) {
+            if (document.selection) {
+                // Для браузеров типа Internet Explorer
+                this.focus();
+                var sel = document.selection.createRange();
+                sel.text = myValue;
+                this.focus();
+            } else if (this.selectionStart || this.selectionStart == '0') {
+                // Для браузеров типа Firefox и других Webkit-ов
+                var startPos = this.selectionStart;
+                var endPos = this.selectionEnd;
+                var scrollTop = this.scrollTop;
+                this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
+                this.focus();
+                this.selectionStart = startPos + myValue.length;
+                this.selectionEnd = startPos + myValue.length;
+                this.scrollTop = scrollTop;
+            } else {
+                this.value += myValue;
+                this.focus();
+            }
+        });
+    }
+});
 //# sourceMappingURL=variablesOptionsEditor.js.map

@@ -90,6 +90,7 @@
     <Content Include="images\60x60.gif" />
     <Content Include="images\activate.png" />
     <Content Include="images\analyze.png" />
+    <Content Include="images\close.png" />
     <Content Include="images\constant.png" />
     <Content Include="images\container.png" />
     <Content Include="images\editorExpanded.png" />
@@ -163,6 +164,7 @@
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="script\commands.ts" />
+    <TypeScriptCompile Include="script\functionConverter.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />

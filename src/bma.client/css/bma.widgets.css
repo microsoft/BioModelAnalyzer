@@ -100,13 +100,11 @@
         padding:10px;
         /*background-color: rgba(0,0,0,0.5);*/
         background-color: Window;
-        overflow:hidden;
         position:absolute;
         top:0px;border-radius:5px;
-        margin-top: 10%;
-        margin-left:10%;
         box-shadow: 0px 0px 8px lightgray; /*#000;*/
         font-size: small;
+        z-index:5;
     }
 
 
@@ -576,7 +574,10 @@
         overflow-y:scroll;
         overflow-x:hidden;
         width:60px;
+        float: left;
+        padding: 2px;
     }
+
 
     .ui-selected {
         background-color: gray;
@@ -600,4 +601,95 @@
     .label-for-functions {
         width:50px;
         cursor:default;
+    }
+
+    .functions-info {
+        width: 220px;
+        height: 80px;
+        background-color: lightgray;
+        display: inline-block;
+        margin-left: 10px;
+        padding: 2px;
+    }
+
+    .functions-info > h2, p {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .bma-insert-function-button {
+        position: absolute;
+        right: 20px;
+        border: none;
+        background-color: white;
+        width: 40px;
+        height: 15px;
+        padding: 0;
+        margin: 5px;
+    }
+
+    .bma-insert-function-button:hover{
+        background-color: lightgray;
+    }
+
+    .bma-insert-function-button:active{
+        background-color: gray;
+    }
+
+
+    .inputs-table{
+        margin:0;
+        padding:0;
+    }
+    .inputs-table > *{
+        margin:0;
+        padding:0;
+    }
+
+    .inputs-list-header {
+        border: 1px solid gray;
+        width: 100px;
+        height: 15px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+
+    .inputs-list-header::after{
+        content: "";
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 7px solid gray;
+        margin: 5px;
+        position: absolute;
+        left: 90px;
+    }
+
+    .inputs-list-header:hover{
+        outline: 1px solid darkturquoise;
+    }
+
+    .inputs-list-content {
+        position:absolute;
+        background-color: white;
+        border: 1px solid gray;
+        width: 100px;
+        border-radius: 3px;
+    }
+
+    .inputs-list-content > div {
+        padding-top: 1px;
+        padding-bottom: 1px;
+        padding-left: 3px;
+    }
+
+    .inputs-list-content > div:hover{
+        background-color: cadetblue;        
+    }
+
+    .closing-button {
+        position: absolute;
+        right: 15px;
+        width: 20px;
     }
