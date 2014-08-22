@@ -1,10 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model\biomodel.ts"/>
-/// <reference path="model\model.ts"/>
-/// <reference path="uidrivers.ts"/>
-/// <reference path="commands.ts"/>
-
+﻿
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -32,8 +26,6 @@ var BMA;
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
                     _this.stagingLine = undefined;
-                    //this.selectedType = this.selectedType === type ? undefined : type;
-                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -188,7 +180,6 @@ var BMA;
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
 
-                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             if (that.stagingLine.svg !== undefined) {
                                 that.svg.remove(that.stagingLine.svg);
@@ -207,7 +198,6 @@ var BMA;
 
                         return;
                     }
-                    //this.stagingLine = undefined;
                 });
 
                 dragSubject.dragEnd.subscribe(function (gesture) {
@@ -398,7 +388,6 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
-                //Generating svg elements from model and layout
                 this.svg.clear();
                 var svgElements = [];
 
@@ -438,7 +427,6 @@ var BMA;
                     }));
                 }
 
-                //constructing final svg image
                 this.svg.clear();
 
                 var defs = this.svg.defs("bmaDefs");
@@ -451,16 +439,6 @@ var BMA;
                     this.svg.add(svgElements[i]);
                 }
 
-                /*
-                if (this.stagingLine !== undefined) {
-                this.svg.line(
-                this.stagingLine.x0,
-                this.stagingLine.y0,
-                this.stagingLine.x1,
-                this.stagingLine.y1,
-                { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#" + this.selectedType + ")" });
-                }
-                */
                 return $(this.svg.toSVG()).children();
             };
             return DesignSurfacePresenter;
@@ -469,4 +447,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map

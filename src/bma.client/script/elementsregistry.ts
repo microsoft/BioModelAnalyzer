@@ -163,6 +163,16 @@ module BMA {
                             d: outeCellData,
                         });
 
+                        /*
+                        //Helper bounding ellipses
+                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 8,
+                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
+                            93, 113, { stroke: "red", fill: "none" });
+                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 3,
+                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
+                            113, 125, { stroke: "red", fill: "none" });
+                        */
+
                         var svgElem: any = $(jqSvg.toSVG()).children();
                         return <SVGElement>svgElem;
                     },
@@ -170,14 +180,11 @@ module BMA {
                         return false;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        var focusDst = 20;
-                        var focus1Y = elementY + focusDst;
-                        var focus2Y = elementY - focusDst;
-                        var focusX = elementX;
-
-                        var dst = Math.sqrt(Math.pow(pointerX - focusX, 2) + Math.pow(pointerY - focus1Y, 2)) +
-                            Math.sqrt(Math.pow(pointerX - focusX, 2) + Math.pow(pointerY - focus2Y, 2));
-                        return dst < 260 && dst > 220;
+                        var dstXInner = Math.abs(pointerX - (elementX + 8));
+                        var dstXOuter = Math.abs(pointerX - (elementX + 3));
+                        var dstY = Math.abs(pointerY - elementY);
+                        return Math.pow(dstXOuter / 113, 2) + Math.pow(dstY / 125, 2) < 1 &&
+                            Math.pow(dstXInner / 93, 2) + Math.pow(dstY / 113, 2) > 1;
                     },
                     function (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) {
                         return Math.sqrt(Math.pow(bbox.x - elementX, 2) + Math.pow(bbox.y - elementY, 2)) < that.containerRadius &&
