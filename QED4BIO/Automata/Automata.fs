@@ -188,7 +188,40 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
             set.Add(x) |> ignore
             prevMap.Add(y, set) |> ignore
 
+    ///  Remove nodes that have no edges leaving in a specified direction
+    ///  if direction = true, then remove nodes with no successors
+    ///  if direction = false, then remove nodes with no predecessors
+    member this.RemoveNoEdges direction =
+        let said_error = ref false
+        let worklist = ref []
+        let outs = if direction then this.next else this.pred
+        let prop = if direction then this.pred else this.next
+        let try_remove i =
+            if (outs i).Count = 0 then 
+                if !said_error then 
+                    ()
+                else
+                    //Add this for checking stuff later
+                    //printfn "Warning removing a node with no successors!"
+                    said_error := true
+                dataMap.Remove i |> ignore
+                startSet.Remove i |> ignore
+                for j in prop i do 
+                    assert (j<>i)
+                    if direction then nextMap.[j].Remove(i) |> ignore else prevMap.[j].Remove(i) |> ignore
+                    worklist := j :: !worklist
 
+        for i in this.states |> Array.ofSeq do
+            try_remove i 
+
+        let rec work () = 
+            match !worklist with 
+            | x :: rest -> 
+                worklist := rest
+                try_remove x 
+                work ()               
+            | [] -> ()
+        work () 
 
     member this.addInitialState(x) =
         startSet.Add x |> ignore
