@@ -41,13 +41,14 @@ var BMA;
         Model.BioModel = BioModel;
 
         var Variable = (function () {
-            function Variable(id, containerId, type, rangeFrom, rangeTo, formula) {
+            function Variable(id, containerId, type, name, rangeFrom, rangeTo, formula) {
                 this.id = id;
                 this.containerId = containerId;
                 this.type = type;
                 this.rangeFrom = rangeFrom;
                 this.rangeTo = rangeTo;
                 this.formula = formula;
+                this.name = name;
             }
             Object.defineProperty(Variable.prototype, "Id", {
                 get: function () {
@@ -92,6 +93,14 @@ var BMA;
             Object.defineProperty(Variable.prototype, "Formula", {
                 get: function () {
                     return this.formula;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Variable.prototype, "Name", {
+                get: function () {
+                    return this.name;
                 },
                 enumerable: true,
                 configurable: true

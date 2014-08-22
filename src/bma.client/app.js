@@ -37,11 +37,9 @@ $(document).ready(function () {
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
-    $("#icon1").click();
-    setTimeout(function () {
-        $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } });
-    }, 2000);
 
+    //$("#icon1").click();
+    //setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
     $(".bma-elementspanel-visibilityoptions-zoomslider").slider();
 
     //Preparing elements panel

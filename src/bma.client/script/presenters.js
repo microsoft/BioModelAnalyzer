@@ -77,7 +77,7 @@ var BMA;
                                         return;
                                 }
 
-                                variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, 0, 0, ""));
+                                variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, "<no name>", 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(_this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -104,7 +104,7 @@ var BMA;
                                         return;
                                 }
 
-                                variables.push(new BMA.Model.Variable(_this.variableIndex, container.container.Id, that.selectedType, 0, 0, ""));
+                                variables.push(new BMA.Model.Variable(_this.variableIndex, container.container.Id, that.selectedType, "<no name>", 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(_this.variableIndex++, args.x, args.y, 0, 0, 0));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -137,7 +137,7 @@ var BMA;
                                 var len = Math.sqrt(v.x * v.x + v.y * v.y);
                                 var angle = v.x / Math.abs(v.x) * Math.acos(v.y / len) / Math.PI * 180;
 
-                                variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, 0, 0, ""));
+                                variables.push(new BMA.Model.Variable(_this.variableIndex, 0, that.selectedType, "<no name>", 0, 0, ""));
                                 variableLayouts.push(new BMA.Model.VarialbeLayout(_this.variableIndex++, args.x, args.y, 0, 0, angle));
                                 var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
                                 var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -410,7 +410,7 @@ var BMA;
 
                     var element = window.ElementRegistry.GetElementByType("Container");
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { layout: containerLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg(this.svg, { model: container, layout: containerLayout, grid: this.Grid }));
                 }
 
                 var variables = this.Current.model.Variables;
@@ -421,7 +421,7 @@ var BMA;
 
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { layout: variableLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg(this.svg, { model: variable, layout: variableLayout, grid: this.Grid }));
                 }
 
                 var relationships = this.Current.model.Relationships;
