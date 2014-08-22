@@ -139,7 +139,13 @@ var BMA;
                 }, function (pointerX, pointerY, elementX, elementY) {
                     return false;
                 }, function (pointerX, pointerY, elementX, elementY) {
-                    return false;
+                    var focusDst = 20;
+                    var focus1Y = elementY + focusDst;
+                    var focus2Y = elementY - focusDst;
+                    var focusX = elementX;
+
+                    var dst = Math.sqrt(Math.pow(pointerX - focusX, 2) + Math.pow(pointerY - focus1Y, 2)) + Math.sqrt(Math.pow(pointerX - focusX, 2) + Math.pow(pointerY - focus2Y, 2));
+                    return dst < 260 && dst > 220;
                 }, function (bbox, elementX, elementY) {
                     return Math.sqrt(Math.pow(bbox.x - elementX, 2) + Math.pow(bbox.y - elementY, 2)) < that.containerRadius && Math.sqrt(Math.pow(bbox.x + bbox.width - elementX, 2) + Math.pow(bbox.y - elementY, 2)) < that.containerRadius && Math.sqrt(Math.pow(bbox.x - elementX, 2) + Math.pow(bbox.y + bbox.height - elementY, 2)) < that.containerRadius && Math.sqrt(Math.pow(bbox.x + bbox.width - elementX, 2) + Math.pow(bbox.y + bbox.height - elementY, 2)) < that.containerRadius;
                 }, "Cell", "images/container.png"));
@@ -190,7 +196,7 @@ var BMA;
                         fill: "#3BB34A",
                         strokeWidth: 8.3333,
                         d: data,
-                        transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(1.2)"
+                        transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(1.2) rotate(" + renderParams.layout.Angle + ")"
                     });
 
                     var svgElem = $(jqSvg.toSVG()).children();

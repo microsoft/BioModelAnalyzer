@@ -170,7 +170,14 @@ module BMA {
                         return false;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return false;
+                        var focusDst = 20;
+                        var focus1Y = elementY + focusDst;
+                        var focus2Y = elementY - focusDst;
+                        var focusX = elementX;
+
+                        var dst = Math.sqrt(Math.pow(pointerX - focusX, 2) + Math.pow(pointerY - focus1Y, 2)) +
+                            Math.sqrt(Math.pow(pointerX - focusX, 2) + Math.pow(pointerY - focus2Y, 2));
+                        return dst < 260 && dst > 220;
                     },
                     function (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) {
                         return Math.sqrt(Math.pow(bbox.x - elementX, 2) + Math.pow(bbox.y - elementY, 2)) < that.containerRadius &&
@@ -242,7 +249,7 @@ module BMA {
                             fill: "#3BB34A",
                             strokeWidth: 8.3333,
                             d: data,
-                            transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(1.2)"
+                            transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ") scale(1.2) rotate(" + renderParams.layout.Angle + ")"
                         });
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
