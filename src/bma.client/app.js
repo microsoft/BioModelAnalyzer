@@ -85,6 +85,9 @@ $(document).ready(function () {
     });
 
     $("#editor").bmaeditor();
+    $("#editor").bind("variableeditorchanged", function () {
+        //alert("editor changed");
+    });
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);

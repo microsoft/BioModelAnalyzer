@@ -92,6 +92,9 @@ $(document).ready(function () {
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
     $("#editor").bmaeditor();
+    $("#editor").bind("variableeditorchanged", function () {
+        //alert("editor changed");
+    })
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);

@@ -28,7 +28,7 @@
                 });
             });
 
-            this.textarea.val(this.options.formula);
+            //this.textarea.val(this.options.formula);
         },
 
         _insert: function (ins: string) {
@@ -92,14 +92,14 @@
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 if (valu < 100)
-                that.rangeFrom.val(valu + 1);
+                    that._setOption("rangeFrom", valu + 1);
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
 
                 var valu = Number(that.rangeFrom.val());
                 if (valu > 0) 
-                that.rangeFrom.val(valu - 1);
+                    that._setOption("rangeFrom", valu - 1);
             });
 
             var td4 = $('<td></td>').appendTo(tr); 
@@ -113,13 +113,14 @@
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 if (valu < 100)
-                that.rangeTo.val(valu + 1);
+                //that.rangeTo.val(valu + 1);
+                    that._setOption("rangeTo", valu + 1);
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 if (valu > 0) 
-                that.rangeTo.val(valu - 1);
+                    that._setOption("rangeTo", valu - 1);
             });
 
             var td6 = $('<td></td>').appendTo(tr); 
@@ -180,6 +181,19 @@
 
         _bindExpanding: function () {
             var that = this;
+
+            this.name.bind("input", function () {
+                that._setOption("name", that.name.val());
+            });
+
+            this.rangeFrom.bind("input", function () {
+                that._setOption("rangeFrom", that.rangeFrom.val());
+            });
+
+            this.rangeTo.bind("input", function () {
+                that._setOption("rangeTo", that.rangeTo.val());
+            });
+
             this.expandLabel.bind("click", function () {
                 if (that.content.is(':hidden')) 
                     that.content.show();
@@ -187,14 +201,36 @@
                     that.content.hide();
                 $(this).toggleClass("editorExpanderChecked", "editorExpander");
             });
+
+            this.textarea.bind("input", function () {
+                that._setOption("formula", that.textarea.val());
+            });
         },
 
         _setOption: function (key, value) {
+            var that = this;
+        //if (key === "inputs")
+        //    {
+        //        this.listOfInputs.empty();
+        //        var inputs = this.options.inputs;
+        //        inputs.forEach(function (val, ind) {
+        //            var item = $('<div>' + val + '</div>').appendTo(that.listOfInputs);
+        //            item.bind("click", function () {
+        //                that.textarea.insertAtCaret($(this).text());
+        //                that.listOfInputs.hide();
+        //            });
+        //        });
+        //    }
+
             if (this.options[key] !== value) {
-                this._resetElement();
+                
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
+
+            
+            this._resetElement();
+            that.element.trigger("variableeditorchanged", {});
         },
 
         destroy: function () {
@@ -226,6 +262,7 @@
                 case "floor":
                     return { head: "floor(x)", content: "The floor of an expression. E.g., floor(var(X))", offset: 6, insertText: "floor()" };
             }
+            //return {};
         }
 
     });

@@ -105,6 +105,7 @@
         box-shadow: 0px 0px 8px lightgray; /*#000;*/
         font-size: small;
         z-index:5;
+        width: 300px;
     }
 
 
@@ -495,6 +496,10 @@
         text-align: center;
         background-color: #E4E4E6;
         height: 40px;
+    }
+
+    .bma-pagefooter-msrlogo > a > img {
+        border: none;
     }
 
     #tools .bma-elementspanel-visibilityoptions-zoomslider .ui-state-default {
