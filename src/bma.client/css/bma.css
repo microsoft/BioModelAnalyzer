@@ -5,7 +5,7 @@
     padding-right: 4px;
     margin: 0;
     background-color: #E4E4E6;
-    height: calc(100% - 4px);
+    height: calc(100% - 40px);
 }
 
 html {
@@ -14,8 +14,8 @@ html {
 
 
 .bma-drawingsurfacecontainer {
-    height: calc(100% - 3em - 100px - 4px);
-    margin-top: -4px;
+    height: calc(100% - 100px - 4px);
+    
     position: relative;
 }
 
@@ -88,43 +88,7 @@ html {
     }
 
 
-.bma-elementspanel {
-    display: block;
-    text-align: center;
-    clear: both;
-    height: 100px;
-    overflow:visible;
-    background-color: white;
-    width: 100%;
-}
 
-.bma-elementspanel-undoredotoolbar {
-    display: inline-block;
-    float: left;
-    margin-top: 15px;
-    margin-left: 50px;
-}
-
-.bma-elementspanel-elementstoolbar {
-    display: inline-block;
-    margin-top: 15px;
-}
-
-.bma-elementspanel-visibilityoptions {
-    float: right;
-    margin-top: 15px;
-    margin-right: 15px;
-    z-index: 1000000;
-}
-
-.bma-elementspanel-visibilityoptions-zoomslider {
-    float: right;
-    margin-top: 25px;
-    margin-right: 25px;
-    border: 1px solid black;
-    padding: 12px;
-    width: 200px;
-}
 
 #tools .ui-button {
 	width: 50px;

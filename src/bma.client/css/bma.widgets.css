@@ -344,12 +344,7 @@
 
 
 
-    .bma-footer {
-        clear: both;
-        position: relative;
-        height: 40px;
-        text-align: center;
-    }
+    
 
     .bma-pagefooter-linkcontainer {
         position: absolute;
@@ -384,11 +379,13 @@
         left: 3px;
         bottom: auto;
         top: 0px;
+        height: 40px;
     }
 
     .bma-pagefooter-msrlogo {
         position: absolute;
         right: 10px;
+        bottom: 0;
         /*padding-top: 3px;*/
         height: 40px;
     }
@@ -399,8 +396,7 @@
 
 
     .bma-drawingsurfacecontainer {
-        height: calc(100% - 100px - 40px + 8px);
-        margin-top: -4px;
+        height: calc(100% - 40px);
         position: relative;
     }
 
@@ -416,18 +412,36 @@
         font-size:small;
     }
 
-    .zoomslider-container {
-        width: 400px;
-        position: relative;
-        float: right;
-        margin-top: 15px;
+
+
+    .bma-elementspanel {
+        display: block;
+        text-align: center;
+        clear: both;
+        overflow:visible;
+        background-color: white;
+        width: 100%;
+        padding-top: 15px;
+        padding-bottom: 5px;
     }
 
-    .zoomslider-container > * {
+    .bma-elementspanel-undoredotoolbar {
         display: inline-block;
-        margin-left: 15px;
+        float: left;
+        margin-left: 50px;
     }
 
+    .bma-elementspanel-elementstoolbar {
+        display: inline-block;
+    }
+
+    .bma-elementspanel-visibilityoptions {
+        float: right;
+        margin-right: 15px;
+        z-index: 1000000;
+    }
+
+ 
     .bma-elementspanel-visibilityoptions-zoomslider {
         float: none;
         margin-top: 0;
@@ -441,6 +455,17 @@
         height:35px;
         border:none;
         background-color:transparent;
+    }
+
+    .zoomslider-container {
+        width: 400px;
+        position: relative;
+        float: right;
+    }
+
+    .zoomslider-container > * {
+        display: inline-block;
+        margin-left: 15px;
     }
 
     .bma-elementspanel-visibilityoptions-zoomslider::after {
@@ -462,6 +487,15 @@
         border-bottom: none;
     }
 
+    .bma-footer {
+        width: 100%;
+        clear: both;
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        background-color: #E4E4E6;
+        height: 40px;
+    }
 
     #tools .bma-elementspanel-visibilityoptions-zoomslider .ui-state-default {
         background: transparent;

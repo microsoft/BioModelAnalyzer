@@ -164,7 +164,6 @@
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="script\commands.ts" />
-    <TypeScriptCompile Include="script\functionConverter.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
