@@ -108,6 +108,10 @@
         width: 300px;
     }
 
+    .newWindow > div > * {
+        margin-top: 5px;
+    }
+
 
     .ui-tabs-vertical { width: 55em; }
     .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
@@ -378,8 +382,7 @@
     .bma-pagefooter-logo {
         position: absolute;
         left: 3px;
-        bottom: auto;
-        top: 0px;
+        bottom: 0px;
         height: 40px;
     }
 
@@ -658,7 +661,7 @@
 
     .bma-insert-function-button {
         position: absolute;
-        right: 20px;
+        right: 15px;
         border: none;
         background-color: white;
         width: 40px;
@@ -729,6 +732,6 @@
 
     .closing-button {
         position: absolute;
-        right: 15px;
+        right: 10px;
         width: 20px;
     }

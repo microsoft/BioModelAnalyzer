@@ -4,6 +4,7 @@
 /// <reference path="script\model\model.ts"/>
 /// <reference path="script\commands.ts"/>
 /// <reference path="script\elementsregistry.ts"/>
+/// <reference path="script\functionsregistry.ts"/>
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
@@ -23,6 +24,9 @@ $(document).ready(function () {
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
+
+    //Creating FunctionsRegistry
+    window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
 
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
