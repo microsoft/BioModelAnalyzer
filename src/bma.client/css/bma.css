@@ -6,6 +6,7 @@
     margin: 0;
     background-color: #E4E4E6;
     height: calc(100% - 40px);
+    font-family:'Segoe UI';
 }
 
 html {

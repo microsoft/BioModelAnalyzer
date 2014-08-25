@@ -68,24 +68,23 @@
             closing.bind("click", function () {
                 that.element.hide();
             });
-            this.labletable = $('<table class="inputs-table"></table>').appendTo(that.element);
-            var tr0 = $('<tr></tr>').appendTo(that.labletable);
-            var td01 = $('<td></td>').appendTo(tr0);
-            var nameLabel = $('<label></label>').text("Name").appendTo(td01);
+            var div1 = $('<div style="height:20px"></div>').appendTo(that.element);
+            var nameLabel = $('<div class="labels-in-variables-editor"></div>').text("Name").appendTo(div1);
+            var rangeLabel = $('<div class="labels-in-variables-editor"></div>').text("Range").appendTo(div1);
+            var inputscontainer = $('<div class="inputs-container"></div>').appendTo(that.element);
+            //this.labletable = $('<table class="inputs-table"></table>').appendTo(that.element);
+            //var tr = $('<tr></tr>').appendTo(that.labletable);
+            //var td1 = $('<td></td>').appendTo(tr); 
+            this.expandLabel = $('<button class="editorExpander"></button>').appendTo(inputscontainer);
+            this.name = $('<input type="text" size="15">').appendTo(inputscontainer);
 
-            var td02 = $('<td></td>').appendTo(tr0);
-            var rangeLabel = $('<label></label>').text("Range").appendTo(td02);
-            var tr = $('<tr></tr>').appendTo(that.labletable);
-            var td1 = $('<td></td>').appendTo(tr); 
-            this.name = $('<input type="text" size="15">').appendTo(td1);
+            //var td2 = $('<td></td>').appendTo(tr); 
+            this.rangeFrom = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
 
-            var td2 = $('<td></td>').appendTo(tr); 
-            this.rangeFrom = $('<input type="text" min="0" max="100" size="1">').appendTo(td2);
+            //var td3 = $('<td></td>').appendTo(tr); 
+            var divtriangles1 = $('<div class="div-triangles"></div>').appendTo(inputscontainer);
 
-            var td3 = $('<td></td>').appendTo(tr); 
-            var divtriangles1 = $('<div></div>').appendTo(td3);
-
-            var upfrom = $('<div></div>').addClass("triangle-up").appendTo(divtriangles1);
+            var upfrom = $('<div ></div>').addClass("triangle-up").appendTo(divtriangles1);
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 if (valu < 100)
@@ -99,12 +98,12 @@
                     that._setOption("rangeFrom", valu - 1);
             });
 
-            var td4 = $('<td></td>').appendTo(tr); 
-            this.rangeTo = $('<input type="text" min="0" max="100" size="1">').appendTo(td4);
+            //var td4 = $('<td></td>').appendTo(tr); 
+            this.rangeTo = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
 
-            var td5 = $('<td></td>').appendTo(tr); 
+            //var td5 = $('<td></td>').appendTo(tr); 
 
-            var divtriangles2 = $('<div></div>').appendTo(td5);
+            var divtriangles2 = $('<div class="div-triangles"></div>').appendTo(inputscontainer);
 
             var upto = $('<div></div>').addClass("triangle-up").appendTo(divtriangles2);
             upto.bind("click", function () {
@@ -120,14 +119,14 @@
                     that._setOption("rangeTo", valu - 1);
             });
 
-            var td6 = $('<td></td>').appendTo(tr); 
-            this.expandLabel = $('<button class="editorExpander"></button>').appendTo(td6);
+            //var td6 = $('<td></td>').appendTo(tr); 
+            
             
         },
 
         _processExpandingContent: function () {
             var that = this;
-            this.content = $('<div></div>').appendTo(this.element).hide();
+            this.content = $('<div class="expanding"></div>').appendTo(this.element).hide();
             var span = $('<div>Target Function</div>').appendTo(that.content);
 
             var div = $('<div></div>').appendTo(that.content);
@@ -144,7 +143,7 @@
                         that._refreshText(div2);
                     });
                 });
-            var insertButton = $('<button class="bma-insert-function-button">Insert</button>').appendTo(div);
+            var insertButton = $('<button class="bma-insert-function-button">insert</button>').appendTo(div);
 
             insertButton.bind("click", function () {
                 //var about = that.getAbout(that.selected.text());
@@ -167,6 +166,7 @@
             var inputs = this.options.inputs;
             this.textarea = $('<textarea></textarea>').appendTo(that.content);
             this.textarea.css("width", "80%");
+            this.textarea.css("margin", "0");
         },
 
         _refreshText: function (div: JQuery) {
@@ -231,7 +231,7 @@
             
             this.resetElement();
             //that.element.trigger("variableeditorchanged", {});
-            window.Commands.Execute("variableeditorchanged", undefined);
+            window.Commands.Execute("VariableEditorChanged", undefined);
         },
 
         destroy: function () {

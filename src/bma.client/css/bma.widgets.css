@@ -95,21 +95,30 @@
         float:right;
     }
 
+    .labels-in-variables-editor {
+        width: 130px;
+        margin-right: 5px;
+        float: left;
+    }
+
     .newWindow {
         /*display:none;*/ 
         padding:10px;
         /*background-color: rgba(0,0,0,0.5);*/
         background-color: Window;
         position:absolute;
-        top:0px;border-radius:5px;
+        
+        left: 0;
+        top: 100px;
+        border-radius:5px;
         box-shadow: 0px 0px 8px lightgray; /*#000;*/
         font-size: small;
         z-index:5;
         width: 300px;
     }
 
-    .newWindow > div > * {
-        margin-top: 5px;
+    input {
+        margin: 0;
     }
 
 
@@ -598,16 +607,23 @@
         background-repeat: no-repeat;
         background-position:center;
         background-color: transparent;
+        position: relative;
+        float: right;
+        margin-top: -5px;
     }
 
     .editorExpanderChecked{
         background-image: url("../images/editorExpanded.png");
+        margin-top: 20px;
         width: 30px;
         height: 30px;
         border: none;
+        position: relative;
+        float: right;
         background-repeat: no-repeat;
         background-position:center;
         background-color: transparent;
+        margin-top: -5px;
     }
 
     .bma-functions-list{
@@ -692,8 +708,6 @@
         border: 1px solid gray;
         width: 100px;
         height: 15px;
-        margin-top: 2px;
-        margin-bottom: 2px;
     }
 
     .inputs-list-header::after{
@@ -734,4 +748,25 @@
         position: absolute;
         right: 10px;
         width: 20px;
+    }
+
+    .div-triangles {
+        width: 15px;
+        display: inline-block;
+    }
+
+    .inputs-container{
+        height: 25px;
+        margin-top:5px;
+    }
+
+    .inputs-container > * {
+        margin-right: 3px;
+    }
+
+    .expanding{
+    }
+
+    .expanding > *{
+        margin-bottom: 5px;
     }

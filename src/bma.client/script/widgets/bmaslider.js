@@ -14,11 +14,11 @@
             var zoomminus = $('<img id="zoom-minus" class="hoverable" src="images/zoomminus.png">').appendTo(that.element);
 
             zoomplus.bind("click", function () {
-                zoomslider.slider("option", "value", zoomslider.slider("option", "value") + zoomslider.slider("option", "step"));
+                zoomslider.slider("option", "value", zoomslider.slider("option", "value") - zoomslider.slider("option", "step"));
             });
 
             zoomminus.bind("click", function () {
-                zoomslider.slider("option", "value", zoomslider.slider("option", "value") - zoomslider.slider("option", "step"));
+                zoomslider.slider("option", "value", zoomslider.slider("option", "value") + zoomslider.slider("option", "step"));
             });
         },
         _destroy: function () {

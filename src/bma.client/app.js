@@ -93,8 +93,7 @@ $(document).ready(function () {
     });
 
     $("#editor").bmaeditor();
-    $("#editor").bind("variableeditorchanged", function () {
-        //alert("editor changed");
+    window.Commands.On("VariableEditorChanged", function () {
     });
 
     //Loading Drivers
