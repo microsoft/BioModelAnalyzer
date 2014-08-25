@@ -230,7 +230,8 @@
 
             
             this.resetElement();
-            that.element.trigger("variableeditorchanged", {});
+            //that.element.trigger("variableeditorchanged", {});
+            window.Commands.Execute("variableeditorchanged", undefined);
         },
 
         destroy: function () {

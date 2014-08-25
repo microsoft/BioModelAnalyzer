@@ -43,8 +43,8 @@
                         var cs = svgPlot.getScreenToDataTransform();
 
                         window.Commands.Execute("DrawingSurfaceClick", {
-                            x: cs.screenToDataX(ui.position.left - plotDiv.offset().left),
-                            y: -cs.screenToDataY(ui.position.top - plotDiv.offset().top)
+                            x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
+                            y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
                         });
                     }
                 }

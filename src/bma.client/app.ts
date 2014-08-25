@@ -42,7 +42,7 @@ $(document).ready(function () {
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
-    
+
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
@@ -50,7 +50,7 @@ $(document).ready(function () {
     //$("#icon1").click();
     //setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
 
-    
+
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
@@ -75,9 +75,13 @@ $(document).ready(function () {
 
         scroll: false,
 
-        start: function () {
+        start: function (event, ui) {
+            $(this).draggable("option", "cursorAt", {
+                left: Math.floor(ui.helper.width() / 2),
+                top: Math.floor(ui.helper.height() / 2)
+            });
             $('#' + $(this).attr("for")).click();
-    }
+        }
     });
 
     $("#modelelemtoolbar input").click(function (event) {

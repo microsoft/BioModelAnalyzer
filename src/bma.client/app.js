@@ -64,7 +64,11 @@ $(document).ready(function () {
             return $(this).children().clone().appendTo('body');
         },
         scroll: false,
-        start: function () {
+        start: function (event, ui) {
+            $(this).draggable("option", "cursorAt", {
+                left: Math.floor(ui.helper.width() / 2),
+                top: Math.floor(ui.helper.height() / 2)
+            });
             $('#' + $(this).attr("for")).click();
         }
     });
