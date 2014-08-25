@@ -40,5 +40,41 @@ module BMA {
             }
 
         }
+
+        export class VariableEditorDriver implements IVariableEditor {
+            private variableEditor: JQuery;
+
+            constructor(variableEditor: JQuery) {
+                this.variableEditor = variableEditor;
+                this.variableEditor.bmaeditor();
+                this.variableEditor.hide();
+
+                this.variableEditor.click(function (e) { e.stopPropagation(); });
+            }
+
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number } {
+                return {
+                    name: this.variableEditor.bmaeditor('option', 'name'),
+                    formula: this.variableEditor.bmaeditor('option', 'formula'),
+                    rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                };
+            }
+
+            public Initialize(variable: BMA.Model.Variable) {
+                this.variableEditor.bmaeditor('option', 'name', variable.Name);
+                this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
+                this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
+                this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
+            }
+
+            public Show(x: number, y: number) {
+                this.variableEditor.show();
+            }
+
+            public Hide() {
+                this.variableEditor.hide();
+            }
+        }
     }
 } 

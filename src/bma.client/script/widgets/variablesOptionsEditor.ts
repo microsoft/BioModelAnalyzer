@@ -238,6 +238,8 @@ interface ElementButton extends JQuery {
 interface JQuery {
     bmaeditor(): JQuery;
     bmaeditor(settings: Object): JQuery;
+    bmaeditor(optionLiteral: string, optionName: string): any;
+    bmaeditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }  
 
 jQuery.fn.extend({

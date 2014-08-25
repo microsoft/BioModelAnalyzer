@@ -37,6 +37,43 @@ var BMA;
             return TurnableButtonDriver;
         })();
         UIDrivers.TurnableButtonDriver = TurnableButtonDriver;
+
+        var VariableEditorDriver = (function () {
+            function VariableEditorDriver(variableEditor) {
+                this.variableEditor = variableEditor;
+                this.variableEditor.bmaeditor();
+                this.variableEditor.hide();
+
+                this.variableEditor.click(function (e) {
+                    e.stopPropagation();
+                });
+            }
+            VariableEditorDriver.prototype.GetVariableProperties = function () {
+                return {
+                    name: this.variableEditor.bmaeditor('option', 'name'),
+                    formula: this.variableEditor.bmaeditor('option', 'formula'),
+                    rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                };
+            };
+
+            VariableEditorDriver.prototype.Initialize = function (variable) {
+                this.variableEditor.bmaeditor('option', 'name', variable.Name);
+                this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
+                this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
+                this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
+            };
+
+            VariableEditorDriver.prototype.Show = function (x, y) {
+                this.variableEditor.show();
+            };
+
+            VariableEditorDriver.prototype.Hide = function () {
+                this.variableEditor.hide();
+            };
+            return VariableEditorDriver;
+        })();
+        UIDrivers.VariableEditorDriver = VariableEditorDriver;
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));

@@ -7,6 +7,7 @@
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
+/// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\toolbarpanel.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
@@ -84,12 +85,13 @@ $(document).ready(function () {
         window.Commands.Execute("Redo", undefined);
     });
 
-    $("#editor").bmaeditor();
-
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
+    var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
+    var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
+    var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
 });
 //# sourceMappingURL=app.js.map
