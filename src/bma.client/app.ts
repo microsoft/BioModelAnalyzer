@@ -8,6 +8,7 @@
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
+/// <reference path="script\SVGHelper.ts"/>
 
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\toolbarpanel.ts"/>
@@ -42,7 +43,7 @@ $(document).ready(function () {
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
-
+    
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
@@ -50,7 +51,7 @@ $(document).ready(function () {
     //$("#icon1").click();
     //setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
 
-
+    
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
@@ -81,7 +82,7 @@ $(document).ready(function () {
                 top: Math.floor(ui.helper.height() / 2)
             });
             $('#' + $(this).attr("for")).click();
-        }
+    }
     });
 
     $("#modelelemtoolbar input").click(function (event) {
@@ -106,8 +107,10 @@ $(document).ready(function () {
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
+    var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
+    var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
+    var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, new BMA.UIDrivers.TurnableButtonDriver($("#button-undo")), new BMA.UIDrivers.TurnableButtonDriver($("#button-redo")));
-
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
 });

@@ -231,7 +231,7 @@
             
             this.resetElement();
             //that.element.trigger("variableeditorchanged", {});
-            window.Commands.Execute("VariableEditorChanged", undefined);
+            window.Commands.Execute("variableeditorchanged", undefined);
         },
 
         destroy: function () {
@@ -248,6 +248,8 @@ interface ElementButton extends JQuery {
 interface JQuery {
     bmaeditor(): JQuery;
     bmaeditor(settings: Object): JQuery;
+    bmaeditor(optionLiteral: string, optionName: string): any;
+    bmaeditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }  
 
 jQuery.fn.extend({

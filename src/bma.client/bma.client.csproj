@@ -166,6 +166,7 @@
     <TypeScriptCompile Include="script\commands.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
+    <TypeScriptCompile Include="script\SVGHelper.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\accordeon.ts" />

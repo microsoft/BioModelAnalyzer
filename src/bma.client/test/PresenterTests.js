@@ -20,7 +20,7 @@ describe("DesignSurfacePresenter", function () {
                 this.subscribe = function () {
                 };
             }
-        }, testbutton, testbutton);
+        }, testbutton, testbutton, undefined);
         expect(presenter).toBeDefined();
     });
 

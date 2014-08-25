@@ -124,3 +124,14 @@ html {
 #modelToolbarSlider ul > li {
     display: table-cell;
 }
+
+.modeldesigner-element-cell {
+    stroke-width: 1px;
+    stroke: transparent;
+}
+
+
+.modeldesigner-element-hover {
+    stroke: gray;
+    stroke-width: 2px;
+}
