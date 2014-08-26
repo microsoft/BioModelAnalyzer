@@ -137,15 +137,6 @@ var BMA;
                     $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(op).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
 
-                    /*
-                    //Helper bounding ellipses
-                    jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 8,
-                    (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
-                    93, 113, { stroke: "red", fill: "none" });
-                    jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 3,
-                    (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
-                    113, 125, { stroke: "red", fill: "none" });
-                    */
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
                 }, function (pointerX, pointerY, elementX, elementY) {
@@ -348,4 +339,3 @@ var BMA;
     })(BMA.Elements || (BMA.Elements = {}));
     var Elements = BMA.Elements;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=elementsregistry.js.map

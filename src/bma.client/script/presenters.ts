@@ -170,13 +170,15 @@ module BMA {
                             this.OnModelUpdated();
                         }
 
-                        if (that.selectedType === undefined && that.stagingVariable !== undefined) {
+                        if (that.stagingVariable !== undefined) {
                             var x = that.stagingVariable.layout.PositionX;
                             var y = that.stagingVariable.layout.PositionY;
                             var type = that.stagingVariable.model.Type;
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
-                            that.TryAddVariable(x, y, type, id);
+                            if (!that.TryAddVariable(x, y, type, id)) {
+                                that.OnModelUpdated();
+                            }
                         }
                     });
 
@@ -248,7 +250,7 @@ module BMA {
                 }
             }
 
-            private TryAddVariable(x: number, y: number, type: string, id: number) {
+            private TryAddVariable(x: number, y: number, type: string, id: number): boolean {
                 var that = this;
                 var current = that.Current;
                 var model = current.model;
@@ -276,6 +278,7 @@ module BMA {
                             var newmodel = new BMA.Model.BioModel(model.Variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
                             that.Dup(newmodel, newlayout);
+                            return true;
                         }
 
                         break;
@@ -301,7 +304,7 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, variableLayouts[i].Angle);
+                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, 0);
                                 }
                             }
                         } else {
@@ -312,6 +315,7 @@ module BMA {
                         var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
+                        return true;
                         break;
                     case "Default":
                         var variables = model.Variables.slice(0);
@@ -338,7 +342,7 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, variableLayouts[i].Angle);
+                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, 0);
                                 }
                             }
                         } else {
@@ -349,6 +353,7 @@ module BMA {
                         var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
+                        return true;
                         break;
                     case "MembraneReceptor":
                         var variables = model.Variables.slice(0);
@@ -393,8 +398,11 @@ module BMA {
                         var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
+                        return true;
                         break;
                 }
+
+                return false;
             }
 
             private GetGridCell(x: number, y: number): { x: number; y: number } {
