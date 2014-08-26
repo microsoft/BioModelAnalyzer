@@ -90,3 +90,4 @@
     })(BMA.Functions || (BMA.Functions = {}));
     var Functions = BMA.Functions;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=functionsregistry.js.map

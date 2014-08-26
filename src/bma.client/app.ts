@@ -18,6 +18,7 @@
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
+/// <reference path="script\widgets\proofresultviewer.ts"/>
 
 $(document).ready(function () {
     //Creating CommandRegistry
@@ -101,9 +102,7 @@ $(document).ready(function () {
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
     $("#editor").bmaeditor();
-    window.Commands.On("VariableEditorChanged", () => {
-        
-    });
+    $("#tabs-1").proofresultviewer();
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
