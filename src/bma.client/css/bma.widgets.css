@@ -706,8 +706,10 @@
 
     .inputs-list-header {
         border: 1px solid gray;
-        width: 100px;
+        width: 98px;
         height: 15px;
+        padding-bottom: 2px;
+        padding-left: 2px;
     }
 
     .inputs-list-header::after{
@@ -720,6 +722,7 @@
         margin: 5px;
         position: absolute;
         left: 90px;
+        
     }
 
     .inputs-list-header:hover{
@@ -732,6 +735,7 @@
         border: 1px solid gray;
         width: 100px;
         border-radius: 3px;
+        margin-top: -5px;
     }
 
     .inputs-list-content > div {

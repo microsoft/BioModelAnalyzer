@@ -280,7 +280,7 @@ module BMA {
 
                         var g = jqSvg.group({
                             transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
-                            "pointer-events": "all"
+                            "pointer-events": "none"
                         });
 
                         var data = "M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z";

@@ -17,6 +17,7 @@
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
+/// <reference path="script\widgets\proofresultviewer.ts"/>
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -94,16 +95,17 @@ $(document).ready(function () {
     });
 
     $("#editor").bmaeditor();
-    window.Commands.On("VariableEditorChanged", function () {
-    });
+    $("#tabs-1").proofresultviewer();
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
+    var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), undefined);
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
+    var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer);
 });
 //# sourceMappingURL=app.js.map

@@ -29,9 +29,11 @@
 
     <script src="script/model/biomodel.js"></script>
     <script src="script/model/model.js"></script>
+    <script src="script/model/analytics.js"></script>
 
     <script src="script/uidrivers.js"></script>
     <script src="script/presenters.js"></script>
+    <script src="script/proofpresenter.js"></script>
 
     <script src="script/widgets/accordeon.js"></script>
     <script src="script/widgets/bmaslider.js"></script>
@@ -41,7 +43,7 @@
     <script src="script/widgets/drawingsurface.js"></script>
     <script src="script/widgets/elemettoolbar.js"></script>
     <script src="script/widgets/variablesOptionsEditor.js"></script>
-
+    <script src="script/widgets/proofresultviewer.js"></script>
     <script src="app.js"></script>
 </head>
 <body>
@@ -136,21 +138,21 @@
 
         <div class="bma-analyticstoolbarcontainer">
             <div id="analytics">
-                <div id="icon1" class="analyze-header-icon ">
+                <div id="icon1" data-command="ProofRequested" class="analyze-header-icon ">
                     <!--<div class="iconAnalyze"></div>-->
                     <img src="images/analyze.png" class="iconAnalyze">
                 </div>
                 <div id="tabs-1" class="tabPanel ">
-                    <h2>Proof Analysis</h2>
-                    <div id="ProofResult"></div>
-                    <div id="Variables" style="height: 50px">
-                        <span>Variables</span>
-                        <button id="expandVariablesInProof" class="expandButton"></button>
-                    </div>
-                    <div id="Proof Propagation" style="height: 50px">
-                        <span>Proof Propagation</span>
-                        <button class="expandButton"></button>
-                    </div>
+                        <h2>Proof Analysis</h2>
+                        <div id="ProofResult"></div>
+                        <div id="Variables" style="height: 50px">
+                            <span>Variables</span>
+                            <button id="expandVariablesInProof" class="expandButton"></button>
+                        </div>
+                        <div id="Proof Propagation" style="height: 50px">
+                            <span>Proof Propagation</span>
+                            <button class="expandButton"></button>
+                        </div>
                 </div>
                 <div id="icon2" class="analyze-header-icon " style="top: 80px">
                     <img src="images/graphic.png" class="iconAnalyze">

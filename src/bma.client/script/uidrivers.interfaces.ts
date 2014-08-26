@@ -26,5 +26,14 @@ module BMA {
             Turn(isOn: boolean);
         }
 
+        export interface IProcessLauncher {
+
+        }
+
+        export interface IProofResultViewer {
+            ShowResult(result: BMA.Model.ProofResult);
+            OnProofStarted();
+        }
+
     }
 } 

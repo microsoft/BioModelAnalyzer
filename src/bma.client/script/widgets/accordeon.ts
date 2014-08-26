@@ -327,7 +327,7 @@
                 .attr({
                     "aria-hidden": "true"
                 })
-                //.hide();
+                .hide();
 
             // make sure at least one header is in the tab order
 
@@ -396,6 +396,11 @@
                 (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
+
+            if (toShow.is(":hidden")){// && !this.loadingList[this.headers.index(clicked)]) {
+                window.Commands.Execute(clicked.attr("data-command"), {});
+            }
+
             eventData.newHeader.css("z-index", 2);
             this.headers.not(eventData.newHeader).css("z-index", 0);
             // when the call to ._toggle() comes after the class changes
@@ -473,7 +478,7 @@
 
             toHide.attr({
                 "aria-hidden": "true"
-            });
+            });//.hide();
             toHide.prev().attr("aria-selected", "false");
             // if we're switching panels, remove the old header from the tab order
             // if we're opening from collapsed state, remove the previous header from the tab order
@@ -551,6 +556,7 @@
 
             if (!toHide.length) {
                 that._processAnimation(toShow);
+                toShow.show();
                 that.element.animate(that.showProps, duration, easing, complete);
                 return;
             }
@@ -564,8 +570,8 @@
         },
 
         _toggleComplete: function (data) {
-            var toHide = data.oldHeader;
-            var toShow = data.newHeader;
+            var toHide = data.oldPanel;
+            //var toShow = data.newHeader;
 
             //toHide.hide();
             //toShow.show();
@@ -577,6 +583,7 @@
                 .prev()
                 .removeClass("ui-corner-top")
                 .addClass("ui-corner-all");
+            toHide.hide();
 
             // Work around for rendering bug in IE (#5421)
             if (toHide.length) {

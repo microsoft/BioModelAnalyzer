@@ -4,10 +4,23 @@ var BMA;
 (function (BMA) {
     (function (Model) {
         var BioModel = (function () {
-            function BioModel(variables, relationships) {
+            function BioModel(name, variables, relationships) {
+                this.name = name;
                 this.variables = variables;
                 this.relationships = relationships;
             }
+            Object.defineProperty(BioModel.prototype, "Name", {
+                get: function () {
+                    return this.name;
+                },
+                set: function (value) {
+                    this.name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(BioModel.prototype, "Variables", {
                 get: function () {
                     return this.variables;
@@ -25,7 +38,26 @@ var BMA;
             });
 
             BioModel.prototype.Clone = function () {
-                return new BioModel(this.variables.slice(0), this.relationships.slice(0));
+                return new BioModel(this.Name, this.variables.slice(0), this.relationships.slice(0));
+            };
+
+            BioModel.prototype.GetJSON = function () {
+                var vars = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    vars.push(this.variables[i].GetJSON());
+                }
+
+                var rels = [];
+                for (var i = 0; i < this.relationships.length; i++) {
+                    rels.push(this.relationships[i].GetJSON());
+                }
+
+                return {
+                    ModelName: this.name,
+                    Engine: "VMCAI",
+                    Variables: vars,
+                    Relationships: rels
+                };
             };
             return BioModel;
         })();
@@ -96,6 +128,16 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+
+            Variable.prototype.GetJSON = function () {
+                return {
+                    Id: this.id,
+                    Name: this.name,
+                    RangeFrom: this.rangeFrom,
+                    RangeTo: this.rangeTo,
+                    Formula: this.formula
+                };
+            };
             return Variable;
         })();
         Model.Variable = Variable;
@@ -129,6 +171,15 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+
+            Relationship.prototype.GetJSON = function () {
+                return {
+                    Id: 0,
+                    FromVariableId: this.fromVariableId,
+                    ToVariableId: this.toVariableId,
+                    Type: this.type
+                };
+            };
             return Relationship;
         })();
         Model.Relationship = Relationship;

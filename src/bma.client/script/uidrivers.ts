@@ -76,5 +76,23 @@ module BMA {
                 this.variableEditor.hide();
             }
         }
+
+        export class ProofViewer implements IProofResultViewer {
+            private proofAccordion: JQuery;
+            private proofContentViewer: JQuery;
+
+            constructor(proofAccordion, proofContentViewer) {
+                this.proofAccordion = proofAccordion;
+                this.proofContentViewer = proofContentViewer;
+            }
+
+            public ShowResult(result: BMA.Model.ProofResult) {
+                this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } });
+            }
+
+            public OnProofStarted() {
+                this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
+            }
+        }
     }
 } 

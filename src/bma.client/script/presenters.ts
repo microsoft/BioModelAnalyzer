@@ -97,6 +97,7 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject()
 
+
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
@@ -119,7 +120,6 @@ module BMA {
                         }
                         this.stagingLine = undefined;
                     });
-
 
                 dragSubject.drag.subscribe(
                     (gesture) => {
@@ -171,12 +171,16 @@ module BMA {
                         }
 
                         if (that.stagingVariable !== undefined) {
-                            that.TryAddVariable(that.stagingVariable.layout.PositionX, that.stagingVariable.layout.PositionY, that.stagingVariable.model.Type, that.stagingVariable.model.Id);
+                            var x = that.stagingVariable.layout.PositionX;
+                            var y = that.stagingVariable.layout.PositionY;
+                            var type = that.stagingVariable.model.Type;
+                            var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
-                            that.driver.Draw(that.CreateSvg());
+                            if (!that.TryAddVariable(x, y, type, id)) {
+                                that.OnModelUpdated();
+                            }
                         }
                     });
-
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
@@ -238,7 +242,7 @@ module BMA {
                         var layout = current.layout;
                         var relationships = model.Relationships.slice(0);
                         relationships.push(new BMA.Model.Relationship(this.stagingLine.id, variable.Id, this.selectedType));
-                        var newmodel = new BMA.Model.BioModel(model.Variables, relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, relationships);
                         this.Dup(newmodel, layout);
 
                         return;
@@ -246,7 +250,7 @@ module BMA {
                 }
             }
 
-            private TryAddVariable(x: number, y: number, type: string, id: number) {
+            private TryAddVariable(x: number, y: number, type: string, id: number): boolean {
                 var that = this;
                 var current = that.Current;
                 var model = current.model;
@@ -271,9 +275,10 @@ module BMA {
                                 containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, 1, gridCell.x, gridCell.y));
                             }
 
-                            var newmodel = new BMA.Model.BioModel(model.Variables, model.Relationships);
+                            var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
                             that.Dup(newmodel, newlayout);
+                            return true;
                         }
 
                         break;
@@ -299,7 +304,7 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, variableLayouts[i].Angle);
+                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, 0);
                                 }
                             }
                         } else {
@@ -307,9 +312,10 @@ module BMA {
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
+                        return true;
                         break;
                     case "Default":
                         var variables = model.Variables.slice(0);
@@ -336,7 +342,7 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, variableLayouts[i].Angle);
+                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, 0);
                                 }
                             }
                         } else {
@@ -344,9 +350,10 @@ module BMA {
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
+                        return true;
                         break;
                     case "MembraneReceptor":
                         var variables = model.Variables.slice(0);
@@ -388,11 +395,14 @@ module BMA {
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
+                        return true;
                         break;
                 }
+
+                return false;
             }
 
             private GetGridCell(x: number, y: number): { x: number; y: number } {

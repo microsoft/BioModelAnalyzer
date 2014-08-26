@@ -58,20 +58,17 @@ declare var InteractiveDataDisplay: any;
             });
 
             plotDiv.bind("click touchstart", function (arg) {
-                if (that.options.isNavigationEnabled !== true) {
-                    var cs = svgPlot.getScreenToDataTransform();
+                var cs = svgPlot.getScreenToDataTransform();
 
-                    if (arg.originalEvent !== undefined) {
-                        arg = arg.originalEvent;
-                    }
-                    
-
-                    window.Commands.Execute("DrawingSurfaceClick",
-                        {
-                            x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
-                            y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
-                        });
+                if (arg.originalEvent !== undefined) {
+                    arg = arg.originalEvent;
                 }
+
+                window.Commands.Execute("DrawingSurfaceClick",
+                    {
+                        x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
+                    });
             });
 
             //Subject that converts input mouse events into Pan gestures 
@@ -155,7 +152,6 @@ declare var InteractiveDataDisplay: any;
                     if (this._svgPlot !== undefined && this._svgPlot.svg !== undefined) {
                         this._svgPlot.svg.clear();
                         if (value !== undefined) {
-                            console.log(value);
                             this._svgPlot.svg.add(value);
                         }
                     }

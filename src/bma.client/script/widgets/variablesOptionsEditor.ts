@@ -175,7 +175,7 @@
             //var text = this.getAbout(that.selected.text());
             var fun = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
 
-            $('<h2>' + fun.Head + '</h2>').appendTo(div);
+            $('<p style="font-weight: bold">' + fun.Head + '</p>').appendTo(div);
             $('<p>' + fun.About + '</p>').appendTo(div);
         },
 
