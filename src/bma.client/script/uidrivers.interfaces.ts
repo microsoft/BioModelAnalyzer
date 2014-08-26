@@ -33,6 +33,7 @@ module BMA {
         export interface IProofResultViewer {
             ShowResult(result: BMA.Model.ProofResult);
             OnProofStarted();
+            OnProofFailed();
         }
 
     }

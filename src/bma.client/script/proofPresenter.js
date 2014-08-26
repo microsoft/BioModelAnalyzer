@@ -9,7 +9,7 @@
                     proofResultViewer.OnProofStarted();
                     $.ajax({
                         type: "POST",
-                        url: "api/Analyze",
+                        url: "api/Analyze1",
                         data: appModel.BioModel.GetJSON(),
                         success: function (res) {
                             appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", 0);
@@ -17,6 +17,7 @@
                         },
                         error: function (res) {
                             alert("Error: " + res.statusText);
+                            proofResultViewer.OnProofFailed();
                         }
                     });
                 });
@@ -27,4 +28,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=proofPresenter.js.map
+//# sourceMappingURL=proofpresenter.js.map

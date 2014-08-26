@@ -87,6 +87,10 @@ var BMA;
             ProofViewer.prototype.OnProofStarted = function () {
                 this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
             };
+
+            ProofViewer.prototype.OnProofFailed = function () {
+                $("#icon1").click();
+            };
             return ProofViewer;
         })();
         UIDrivers.ProofViewer = ProofViewer;

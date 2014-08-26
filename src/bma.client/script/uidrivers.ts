@@ -93,6 +93,10 @@ module BMA {
             public OnProofStarted() {
                 this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
             }
+
+            public OnProofFailed() {
+                $("#icon1").click();
+            }
         }
     }
 } 
