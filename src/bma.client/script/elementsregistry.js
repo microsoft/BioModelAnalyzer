@@ -105,6 +105,7 @@ var BMA;
 
         var ElementsRegistry = (function () {
             function ElementsRegistry() {
+                var _this = this;
                 this.variableWidthConstant = 35;
                 this.variableHeightConstant = 30;
                 this.variableSizeConstant = 30;
@@ -113,7 +114,19 @@ var BMA;
                 var that = this;
                 this.elements = [];
 
-                this.elements.push(new BorderContainerElement("Container", function (jqSvg, renderParams) {
+                var svgCnt = $("<div></div>");
+                svgCnt.svg({
+                    onLoad: function (svg) {
+                        _this.svg = svg;
+                    }
+                });
+
+                this.elements.push(new BorderContainerElement("Container", function (renderParams) {
+                    var jqSvg = that.svg;
+                    if (jqSvg === undefined)
+                        return undefined;
+                    jqSvg.clear();
+
                     var g = jqSvg.group({
                         transform: "translate(" + (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + ", " + (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + ") scale(2.5)"
                     });
@@ -165,7 +178,12 @@ var BMA;
                     return iscontaining(bbox.x, bbox.y) && iscontaining(bbox.x + bbox.width, bbox.y) && iscontaining(bbox.x, bbox.y + bbox.height) && iscontaining(bbox.x + bbox.width, bbox.y + bbox.height);
                 }, "Cell", "images/container.png"));
 
-                this.elements.push(new BboxElement("Constant", function (jqSvg, renderParams) {
+                this.elements.push(new BboxElement("Constant", function (renderParams) {
+                    var jqSvg = that.svg;
+                    if (jqSvg === undefined)
+                        return undefined;
+                    jqSvg.clear();
+
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")"
                     });
@@ -192,7 +210,12 @@ var BMA;
                     return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                 }, "Extracellural Protein", "images/constant.png"));
 
-                this.elements.push(new BboxElement("Default", function (jqSvg, renderParams) {
+                this.elements.push(new BboxElement("Default", function (renderParams) {
+                    var jqSvg = that.svg;
+                    if (jqSvg === undefined)
+                        return undefined;
+                    jqSvg.clear();
+
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")"
                     });
@@ -219,7 +242,12 @@ var BMA;
                     return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                 }, "Intracellural Protein", "images/variable.png"));
 
-                this.elements.push(new BboxElement("MembraneReceptor", function (jqSvg, renderParams) {
+                this.elements.push(new BboxElement("MembraneReceptor", function (renderParams) {
+                    var jqSvg = that.svg;
+                    if (jqSvg === undefined)
+                        return undefined;
+                    jqSvg.clear();
+
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")"
                     });
@@ -246,7 +274,12 @@ var BMA;
                     return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                 }, "Membrane Receptor", "images/receptor.png"));
 
-                this.elements.push(new Element("Activator", function (jqSvg, renderParams) {
+                this.elements.push(new Element("Activator", function (renderParams) {
+                    var jqSvg = that.svg;
+                    if (jqSvg === undefined)
+                        return undefined;
+                    jqSvg.clear();
+
                     if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
                         var x0 = renderParams.layout.start.PositionX;
                         var y0 = renderParams.layout.start.PositionY;
@@ -274,7 +307,12 @@ var BMA;
                     return false;
                 }, "Activating Relationship", "images/activate.png"));
 
-                this.elements.push(new Element("Inhibitor", function (jqSvg, renderParams) {
+                this.elements.push(new Element("Inhibitor", function (renderParams) {
+                    var jqSvg = that.svg;
+                    if (jqSvg === undefined)
+                        return undefined;
+                    jqSvg.clear();
+
                     if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
                         var x0 = renderParams.layout.start.PositionX;
                         var y0 = renderParams.layout.start.PositionY;

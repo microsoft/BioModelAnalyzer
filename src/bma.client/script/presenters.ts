@@ -34,7 +34,8 @@ module BMA {
             private variableIndex = 0;
 
             private stagingLine = undefined;
-            private stagingVariable: { model: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout } = undefined;
+            private stagingGroup = undefined;
+            private stagingVariable: { model: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout; } = undefined;
 
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
@@ -113,7 +114,8 @@ module BMA {
                             var id = this.GetVariableAtPosition(gesture.x, gesture.y);
                             if (id !== undefined) {
                                 that.driver.TurnNavigation(false);
-                                that.stagingVariable = that.GetVariableById(that.Current.layout, that.Current.model, id);
+                                var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
+                                that.stagingVariable = { model: vl.model, layout: vl.layout };
                             } else {
                                 that.driver.TurnNavigation(true);
                             }
@@ -151,15 +153,22 @@ module BMA {
                             }
 
                             return;
-                        } else if (this.stagingVariable !== undefined) {
-                            that.stagingVariable = {
-                                model: that.stagingVariable.model,
-                                layout: new BMA.Model.VarialbeLayout(this.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, this.stagingVariable.layout.Angle)
-                            };
-                            that.driver.Draw(that.CreateSvg());
-                        }
+                        } else if (that.stagingVariable !== undefined) {
+                            if (that.svg !== undefined) {
 
-                        //this.stagingLine = undefined;
+                                if (that.stagingGroup !== undefined) {
+                                    that.svg.remove(that.stagingGroup);
+                                }
+
+                                //that.stagingGroup = that.svg.group();
+                                //var element = window.ElementRegistry.GetElementByType(that.stagingVariable.model.Type);
+                                //var vl = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                                //that.svg.add(
+                                //    that.stagingGroup,
+                                //    element.RenderToSvg({ model: that.stagingVariable.model, layout: vl, grid: that.Grid }));
+                                //that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
+                            }
+                        }
                     });
 
                 dragSubject.dragEnd.subscribe(
@@ -170,6 +179,7 @@ module BMA {
                             this.OnModelUpdated();
                         }
 
+                        /*
                         if (that.stagingVariable !== undefined) {
                             var x = that.stagingVariable.layout.PositionX;
                             var y = that.stagingVariable.layout.PositionY;
@@ -177,9 +187,14 @@ module BMA {
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
                             if (!that.TryAddVariable(x, y, type, id)) {
-                                that.OnModelUpdated();
+                                if (that.stagingGroup !== undefined) {
+                                    that.svg.remove(that.stagingGroup);
+                                }
+                                that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
                             }
                         }
+                        */
+
                     });
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
@@ -519,15 +534,13 @@ module BMA {
                     return undefined;
 
                 //Generating svg elements from model and layout
-                this.svg.clear();
                 var svgElements = [];
 
                 var containerLayouts = this.Current.layout.Containers;
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
                     var element = window.ElementRegistry.GetElementByType("Container");
-                    this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { layout: containerLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg({ layout: containerLayout, grid: this.Grid }));
                 }
 
                 var variables = this.Current.model.Variables;
@@ -535,10 +548,8 @@ module BMA {
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
-
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { model: variable, layout: variableLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg({ model: variable, layout: variableLayout, grid: this.Grid }));
                 }
 
                 var relationships = this.Current.model.Relationships;
@@ -549,22 +560,15 @@ module BMA {
                     var start = this.GetVariableById(this.Current.layout, this.Current.model, relationship.FromVariableId).layout;
                     var end = this.GetVariableById(this.Current.layout, this.Current.model, relationship.ToVariableId).layout;
 
-                    svgElements.push(element.RenderToSvg(this.svg, {
+                    svgElements.push(element.RenderToSvg({
                         layout: { start: start, end: end },
                         grid: this.Grid
                     }));
                 }
 
-                if (this.stagingVariable !== undefined) {
-                    var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
-                    this.svg.clear();
-                    console.log(this.stagingVariable.layout.PositionX);
-                    svgElements.push(element.RenderToSvg(this.svg, { model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
-                }
 
                 //constructing final svg image
                 this.svg.clear();
-
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
                 this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
@@ -574,19 +578,6 @@ module BMA {
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
                 }
-
-                /*
-                if (this.stagingLine !== undefined) {
-                    this.svg.line(
-                        this.stagingLine.x0,
-                        this.stagingLine.y0,
-                        this.stagingLine.x1,
-                        this.stagingLine.y1,
-                        { stroke: "black", strokeWidth: 2, fill: "black", "marker-end": "url(#" + this.selectedType + ")" });
-                }
-                */
-
-                //Preapring events
 
                 return $(this.svg.toSVG()).children();
             }
