@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.toolbarpanel", {
         _groups: {},
         _getList: function () {
@@ -48,4 +46,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=toolbarpanel.js.map

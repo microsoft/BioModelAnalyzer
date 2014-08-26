@@ -95,4 +95,3 @@
         expect(testObj.testCallback2).toHaveBeenCalled();
     });
 });
-//# sourceMappingURL=CommandTests.js.map
