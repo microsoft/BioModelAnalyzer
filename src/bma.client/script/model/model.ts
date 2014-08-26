@@ -26,7 +26,7 @@ module BMA {
             }
 
             constructor() {
-                this.model = new BMA.Model.BioModel([], [], []);
+                this.model = new BMA.Model.BioModel([], []);
                 this.layout = new BMA.Model.Layout([], []);
             }
         }

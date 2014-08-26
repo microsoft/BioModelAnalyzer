@@ -4,22 +4,13 @@ var BMA;
 (function (BMA) {
     (function (Model) {
         var BioModel = (function () {
-            function BioModel(containers, variables, relationships) {
+            function BioModel(variables, relationships) {
                 this.variables = variables;
-                this.containers = containers;
                 this.relationships = relationships;
             }
             Object.defineProperty(BioModel.prototype, "Variables", {
                 get: function () {
                     return this.variables;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(BioModel.prototype, "Containers", {
-                get: function () {
-                    return this.containers;
                 },
                 enumerable: true,
                 configurable: true
@@ -34,7 +25,7 @@ var BMA;
             });
 
             BioModel.prototype.Clone = function () {
-                return new BioModel(this.containers.slice(0), this.variables.slice(0), this.relationships.slice(0));
+                return new BioModel(this.variables.slice(0), this.relationships.slice(0));
             };
             return BioModel;
         })();
@@ -108,21 +99,6 @@ var BMA;
             return Variable;
         })();
         Model.Variable = Variable;
-
-        var Container = (function () {
-            function Container(id) {
-                this.id = id;
-            }
-            Object.defineProperty(Container.prototype, "Id", {
-                get: function () {
-                    return this.id;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return Container;
-        })();
-        Model.Container = Container;
 
         var Relationship = (function () {
             function Relationship(fromVariableId, toVariableId, type) {
