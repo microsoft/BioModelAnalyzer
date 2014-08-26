@@ -251,6 +251,20 @@
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
+      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
+      <Name>BioCheckAnalyzer64</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
+      <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
+      <Name>BioCheckAnalyzerCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
+      <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
+      <Name>UIExpr</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
