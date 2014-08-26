@@ -9,6 +9,7 @@
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
+/// <reference path="script\arraytotableconverter.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\toolbarpanel.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
@@ -18,6 +19,7 @@
 /// <reference path="script\widgets\bmaslider.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
+/// <reference path="script\widgets\popupwindow.ts"/>
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();

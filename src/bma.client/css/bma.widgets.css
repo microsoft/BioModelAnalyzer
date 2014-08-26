@@ -115,6 +115,31 @@
         font-size: small;
         z-index:5;
         width: 300px;
+        height: 300px;
+    }
+
+    .popup-window {
+        display:none; 
+        padding-top:15px;
+        padding-left:20px;
+        padding-right:15px;
+        /*background-color: rgba(0,0,0,0.5);*/
+        background-color: Window;
+        position:absolute;
+        
+        left: calc(50% - 400px);
+        top: calc(50% - 300px);
+        border-radius:20px;
+        box-shadow: 0px 0px 8px lightgray; /*#000;*/
+        z-index:5;
+        font-size: x-large;
+        width: 800px;
+        height: 600px;
+    }
+
+    .togglePopUpWindow {
+        position: relative;
+        float:right
     }
 
     input {
@@ -419,6 +444,10 @@
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
         border: none;
+    }
+
+    .tabPanel > * {
+        margin: 10px;
     }
 
     .ui-widget button{

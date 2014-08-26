@@ -27,10 +27,26 @@
                 $('<h3 style="color: red; font-weight:bold">Failed to Stabilize</h3>').appendTo(td2);
                 $('<p style="font-size:small">After stepping through separate interactions in the model, the analisys failed to determine a final stable state</p>').appendTo(that.element);
             }
+
+            var variables = $("<div></div>").appendTo(that.element);
+
+            var arr = [];
+            arr[0] = [];
+            arr[0][0] = 0;
+            arr[0][1] = 1;
+            arr[1] = [];
+            arr[1][0] = 10;
+            arr[1][1] = 11;
+
+            var t = BMA.ArrayToTable(arr);
+            variables.popupwindow({ header: "Variables", mincontent: t });
+            var proofPropagation = $("<div></div>").appendTo(that.element);
+            proofPropagation.popupwindow({ header: "Proof Propagation" });
         },
         _create: function () {
             var that = this;
-            this.element.addClass("zoomslider-container");
+
+            //this.element.addClass("zoomslider-container");
             this.element.height(250);
 
             //var options = this.options;
@@ -38,11 +54,6 @@
         },
         _destroy: function () {
             var contents;
-
-            // clean up main element
-            this.element.removeClass("zoomslider-container");
-
-            this.element.children().filter(".bma-elementspanel-visibilityoptions-zoomslider").removeClass("bma-elementspanel-visibilityoptions-zoomslider").removeUniqueId();
 
             this.element.empty();
         },
