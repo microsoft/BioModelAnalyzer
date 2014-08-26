@@ -5,7 +5,7 @@ var BMA;
     (function (Model) {
         var AppModel = (function () {
             function AppModel() {
-                this.model = new BMA.Model.BioModel([], [], []);
+                this.model = new BMA.Model.BioModel([], []);
                 this.layout = new BMA.Model.Layout([], []);
             }
             Object.defineProperty(AppModel.prototype, "BioModel", {

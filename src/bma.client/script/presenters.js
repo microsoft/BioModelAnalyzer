@@ -189,7 +189,7 @@ var BMA;
                         var layout = current.layout;
                         var relationships = model.Relationships.slice(0);
                         relationships.push(new BMA.Model.Relationship(this.stagingLine.id, variable.Id, this.selectedType));
-                        var newmodel = new BMA.Model.BioModel(model.Containers, model.Variables, relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Variables, relationships);
                         this.Dup(newmodel, layout);
 
                         return;
@@ -205,24 +205,22 @@ var BMA;
 
                 switch (type) {
                     case "Container":
-                        var containers = model.Containers.slice(0);
                         var containerLayouts = layout.Containers.slice(0);
 
                         var gridCell = that.GetGridCell(x, y);
 
                         if (that.GetContainerFromGridCell(gridCell) === undefined && that.GetConstantsFromGridCell(gridCell).length === 0) {
                             if (id !== undefined) {
-                                for (var i = 0; i < containers.length; i++) {
-                                    if (containers[i].Id === id) {
+                                for (var i = 0; i < containerLayouts.length; i++) {
+                                    if (containerLayouts[i].Id === id) {
                                         containerLayouts[i] = new BMA.Model.ContainerLayout(id, containerLayouts[i].Size, gridCell.x, gridCell.y);
                                     }
                                 }
                             } else {
-                                containers.push(new BMA.Model.Container(that.variableIndex));
                                 containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, 1, gridCell.x, gridCell.y));
                             }
 
-                            var newmodel = new BMA.Model.BioModel(containers, model.Variables, model.Relationships);
+                            var newmodel = new BMA.Model.BioModel(model.Variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
                             that.Dup(newmodel, newlayout);
                         }
@@ -258,7 +256,7 @@ var BMA;
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
                         break;
@@ -270,7 +268,7 @@ var BMA;
                         var gridCell = that.GetGridCell(x, y);
                         var container = that.GetContainerFromGridCell(gridCell);
 
-                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").ContainsBBox(bbox, (container.layout.PositionX + 0.5) * this.xStep, (container.layout.PositionY + 0.5) * this.yStep)) {
+                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").ContainsBBox(bbox, (container.PositionX + 0.5) * this.xStep, (container.PositionY + 0.5) * this.yStep)) {
                             return;
                         }
 
@@ -293,7 +291,7 @@ var BMA;
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
                         break;
@@ -305,7 +303,7 @@ var BMA;
                         var gridCell = that.GetGridCell(x, y);
                         var container = that.GetContainerFromGridCell(gridCell);
 
-                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").IntersectsBorder(x, y, (container.layout.PositionX + 0.5) * this.xStep, (container.layout.PositionY + 0.5) * this.yStep)) {
+                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").IntersectsBorder(x, y, (container.PositionX + 0.5) * this.xStep, (container.PositionY + 0.5) * this.yStep)) {
                             return;
                         }
 
@@ -327,15 +325,15 @@ var BMA;
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, variableLayouts[i].Angle);
+                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, angle);
                                 }
                             }
                         } else {
                             variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "<no name>", 0, 0, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
+                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(model.Containers, variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
                         break;
@@ -354,7 +352,7 @@ var BMA;
                 var layouts = current.layout.Containers;
                 for (var i = 0; i < layouts.length; i++) {
                     if (layouts[i].PositionX === gridCell.x && layouts[i].PositionY === gridCell.y) {
-                        return { container: current.model.Containers[i], layout: layouts[i] };
+                        return layouts[i];
                     }
                 }
 
@@ -475,15 +473,12 @@ var BMA;
                 this.svg.clear();
                 var svgElements = [];
 
-                var containers = this.Current.model.Containers;
                 var containerLayouts = this.Current.layout.Containers;
-                for (var i = 0; i < containers.length; i++) {
-                    var container = containers[i];
+                for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
-
                     var element = window.ElementRegistry.GetElementByType("Container");
                     this.svg.clear();
-                    svgElements.push(element.RenderToSvg(this.svg, { model: container, layout: containerLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg(this.svg, { layout: containerLayout, grid: this.Grid }));
                 }
 
                 var variables = this.Current.model.Variables;

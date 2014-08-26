@@ -5,15 +5,10 @@ module BMA {
     export module Model {
         export class BioModel {
             private variables: Variable[];
-            private containers: Container[];
             private relationships: Relationship[];
 
             public get Variables(): Variable[] {
                 return this.variables;
-            }
-
-            public get Containers(): Container[] {
-                return this.containers;
             }
 
             public get Relationships(): Relationship[] {
@@ -21,12 +16,11 @@ module BMA {
             }
 
             public Clone(): BioModel {
-                return new BioModel(this.containers.slice(0), this.variables.slice(0), this.relationships.slice(0));
+                return new BioModel(this.variables.slice(0), this.relationships.slice(0));
             }
 
-            constructor(containers: Container[], variables: Variable[], relationships: Relationship[]) {
+            constructor(variables: Variable[], relationships: Relationship[]) {
                 this.variables = variables;
-                this.containers = containers;
                 this.relationships = relationships;
             }
         }
@@ -76,18 +70,6 @@ module BMA {
                 this.rangeTo = rangeTo;
                 this.formula = formula;
                 this.name = name;
-            }
-        }
-
-        export class Container {
-            private id: number;
-
-            public get Id(): number {
-                return this.id;
-            }
-
-            constructor(id: number) {
-                this.id = id;
             }
         }
 

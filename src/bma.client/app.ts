@@ -4,6 +4,7 @@
 /// <reference path="script\model\model.ts"/>
 /// <reference path="script\commands.ts"/>
 /// <reference path="script\elementsregistry.ts"/>
+/// <reference path="script\functionsregistry.ts"/>
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
@@ -24,6 +25,9 @@ $(document).ready(function () {
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
+
+    //Creating FunctionsRegistry
+    window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
 
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
@@ -72,7 +76,11 @@ $(document).ready(function () {
 
         scroll: false,
 
-        start: function () {
+        start: function (event, ui) {
+            $(this).draggable("option", "cursorAt", {
+                left: Math.floor(ui.helper.width() / 2),
+                top: Math.floor(ui.helper.height() / 2)
+            });
             $('#' + $(this).attr("for")).click();
     }
     });
@@ -91,6 +99,11 @@ $(document).ready(function () {
     $("#undoredotoolbar").buttonset();
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
+
+    $("#editor").bmaeditor();
+    window.Commands.On("VariableEditorChanged", () => {
+        
+    });
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
