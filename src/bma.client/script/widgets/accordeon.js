@@ -324,6 +324,11 @@
             if ((clickedIsActive && !options.collapsible) || (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
+
+            if (toShow.is(":hidden")) {
+                window.Commands.Execute(clicked.attr("data-command"), {});
+            }
+
             eventData.newHeader.css("z-index", 2);
             this.headers.not(eventData.newHeader).css("z-index", 0);
 

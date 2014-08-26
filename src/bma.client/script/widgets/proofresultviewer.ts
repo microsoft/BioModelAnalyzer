@@ -4,14 +4,15 @@
 (function ($) {
     $.widget("BMA.proofresultviewer", {
         options: {
-            issucceeded: undefined,
-            time: undefined
+            issucceeded: true,
+            time: 0
         },
 
         refresh: function () {
             var that = this;
             var options = this.options;
             this.element.empty();
+
             var text = "";
             if (options.issucceeded === undefined)
                 return;
@@ -27,6 +28,7 @@
         _create: function () {
             var that = this;
             this.element.addClass("zoomslider-container");
+            this.element.height(250);
             //var options = this.options;
             this.refresh();
         },

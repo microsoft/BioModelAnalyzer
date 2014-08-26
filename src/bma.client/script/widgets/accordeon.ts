@@ -396,6 +396,11 @@
                 (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
+
+            if (toShow.is(":hidden")){// && !this.loadingList[this.headers.index(clicked)]) {
+                window.Commands.Execute(clicked.attr("data-command"), {});
+            }
+
             eventData.newHeader.css("z-index", 2);
             this.headers.not(eventData.newHeader).css("z-index", 0);
             // when the call to ._toggle() comes after the class changes

@@ -6,6 +6,15 @@ module BMA {
         export class BioModel {
             private variables: Variable[];
             private relationships: Relationship[];
+            private name: string;
+
+            public get Name(): string {
+                return this.name;
+            }
+
+            public set Name(value: string) {
+                this.name = value;
+            }
 
             public get Variables(): Variable[] {
                 return this.variables;
@@ -16,10 +25,30 @@ module BMA {
             }
 
             public Clone(): BioModel {
-                return new BioModel(this.variables.slice(0), this.relationships.slice(0));
+                return new BioModel(this.Name, this.variables.slice(0), this.relationships.slice(0));
             }
 
-            constructor(variables: Variable[], relationships: Relationship[]) {
+            public GetJSON() {
+                var vars = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    vars.push(this.variables[i].GetJSON());
+                }
+
+                var rels = [];
+                for (var i = 0; i < this.relationships.length; i++) {
+                    rels.push(this.relationships[i].GetJSON());
+                }
+
+                return {
+                    ModelName: this.name,
+                    Engine: "VMCAI",
+                    Variables: vars,
+                    Relationships: rels
+                };
+            }
+
+            constructor(name: string, variables: Variable[], relationships: Relationship[]) {
+                this.name = name;
                 this.variables = variables;
                 this.relationships = relationships;
             }
@@ -62,6 +91,16 @@ module BMA {
                 return this.name;
             }
 
+            public GetJSON() {
+                return {
+                    Id: this.id,
+                    Name: this.name,
+                    RangeFrom: this.rangeFrom,
+                    RangeTo: this.rangeTo,
+                    Formula: this.formula
+                };
+            }
+
             constructor(id: number, containerId: number, type: string, name: string, rangeFrom: number, rangeTo: number, formula: string) {
                 this.id = id;
                 this.containerId = containerId;
@@ -88,6 +127,15 @@ module BMA {
 
             public get Type(): string {
                 return this.type;
+            }
+
+            public GetJSON() {
+                return {
+                    Id: 0, //TODO: find out what should be here
+                    FromVariableId: this.fromVariableId,
+                    ToVariableId: this.toVariableId,
+                    Type: this.type
+                };
             }
 
             constructor(fromVariableId: number, toVariableId: number, type: string) {
