@@ -11,7 +11,7 @@
                     proofResultViewer.OnProofStarted();
                     $.ajax({
                         type: "POST",
-                        url: "api/Analyze1",
+                        url: "api/Analyze",
                         data: appModel.BioModel.GetJSON(),
                         success: function (res) {
                             appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", 0);
@@ -20,7 +20,7 @@
                         error: function (res) {
                             alert("Error: " + res.statusText);
                             proofResultViewer.OnProofFailed();
-                        }
+                        } 
                     });
                 });
             }
