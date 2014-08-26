@@ -184,7 +184,7 @@ var BMA;
                         var layout = current.layout;
                         var relationships = model.Relationships.slice(0);
                         relationships.push(new BMA.Model.Relationship(this.stagingLine.id, variable.Id, this.selectedType));
-                        var newmodel = new BMA.Model.BioModel(model.Variables, relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, relationships);
                         this.Dup(newmodel, layout);
 
                         return;
@@ -215,7 +215,7 @@ var BMA;
                                 containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, 1, gridCell.x, gridCell.y));
                             }
 
-                            var newmodel = new BMA.Model.BioModel(model.Variables, model.Relationships);
+                            var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
                             that.Dup(newmodel, newlayout);
                             return true;
@@ -252,7 +252,7 @@ var BMA;
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
                         return true;
@@ -288,7 +288,7 @@ var BMA;
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
                         return true;
@@ -331,7 +331,7 @@ var BMA;
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
                         }
 
-                        var newmodel = new BMA.Model.BioModel(variables, model.Relationships);
+                        var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.Dup(newmodel, newlayout);
                         return true;

@@ -71,6 +71,30 @@
             return VariableEditorDriver;
         })();
         UIDrivers.VariableEditorDriver = VariableEditorDriver;
+
+        var ProofViewer = (function () {
+            function ProofViewer(proofAccordion, proofContentViewer) {
+                this.proofAccordion = proofAccordion;
+                this.proofContentViewer = proofContentViewer;
+
+                $("#icon1").click(function () {
+                    var isHidden = $("#icon1").next().attr("aria-hidden");
+                    console.log(isHidden);
+                    if (isHidden === "true") {
+                        window.Commands.Execute("ProofRequested", undefined);
+                    }
+                });
+            }
+            ProofViewer.prototype.ShowResult = function (result) {
+                this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } });
+            };
+
+            ProofViewer.prototype.OnProofStarted = function () {
+                this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
+            };
+            return ProofViewer;
+        })();
+        UIDrivers.ProofViewer = ProofViewer;
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));

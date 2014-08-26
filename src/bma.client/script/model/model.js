@@ -3,7 +3,7 @@
     (function (Model) {
         var AppModel = (function () {
             function AppModel() {
-                this.model = new BMA.Model.BioModel([], []);
+                this.model = new BMA.Model.BioModel("model 1", [], []);
                 this.layout = new BMA.Model.Layout([], []);
             }
             Object.defineProperty(AppModel.prototype, "BioModel", {
@@ -24,6 +24,18 @@
                 },
                 set: function (value) {
                     this.layout = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AppModel.prototype, "ProofResult", {
+                get: function () {
+                    return this.proofResult;
+                },
+                set: function (value) {
+                    this.proofResult = value;
                 },
                 enumerable: true,
                 configurable: true

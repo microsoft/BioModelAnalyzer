@@ -76,5 +76,31 @@ module BMA {
                 this.variableEditor.hide();
             }
         }
+
+        export class ProofViewer implements IProofResultViewer {
+            private proofAccordion: JQuery;
+            private proofContentViewer: JQuery;
+
+            constructor(proofAccordion, proofContentViewer) {
+                this.proofAccordion = proofAccordion;
+                this.proofContentViewer = proofContentViewer;
+
+                $("#icon1").click(function () {
+                    var isHidden = $("#icon1").next().attr("aria-hidden");
+                    console.log(isHidden);
+                    if (isHidden === "true") {
+                        window.Commands.Execute("ProofRequested", undefined);
+                    }
+                });
+            }
+
+            public ShowResult(result: BMA.Model.ProofResult) {
+                this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } });
+            }
+
+            public OnProofStarted() {
+                this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
+            }
+        }
     }
 } 
