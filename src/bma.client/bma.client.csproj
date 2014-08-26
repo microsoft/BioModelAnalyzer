@@ -113,6 +113,7 @@
     <Content Include="images\redo.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />
+    <Content Include="images\succeeded.png" />
     <Content Include="images\svgtest.txt" />
     <Content Include="images\title-about.png" />
     <Content Include="images\title-help.png" />
