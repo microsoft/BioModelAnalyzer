@@ -134,10 +134,13 @@ var BMA;
                         _this.OnModelUpdated();
                     }
 
-                    if (that.stagingVariable !== undefined) {
-                        that.TryAddVariable(that.stagingVariable.layout.PositionX, that.stagingVariable.layout.PositionY, that.stagingVariable.model.Type, that.stagingVariable.model.Id);
+                    if (that.selectedType === undefined && that.stagingVariable !== undefined) {
+                        var x = that.stagingVariable.layout.PositionX;
+                        var y = that.stagingVariable.layout.PositionY;
+                        var type = that.stagingVariable.model.Type;
+                        var id = that.stagingVariable.model.Id;
                         that.stagingVariable = undefined;
-                        that.driver.Draw(that.CreateSvg());
+                        that.TryAddVariable(x, y, type, id);
                     }
                 });
 
