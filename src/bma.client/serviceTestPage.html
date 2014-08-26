@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Service test page</title>
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+
+        var stableModel = {
+            "ModelName": "ToyModelStable",
+            "Engine": "VMCAI",
+
+            "Variables": [
+              {
+                  "Id": "1",
+                  "Name": "a",
+                  "RangeFrom": "0",
+                  "RangeTo": "4",
+                  "Function": "",
+              },
+              {
+                  "Id": "2",
+                  "Name": "b",
+                  "RangeFrom": "0",
+                  "RangeTo": "4",
+                  "Function": "",
+              },
+              {
+                  "Id": "3",
+                  "Name": "c",
+                  "RangeFrom": "0",
+                  "RangeTo": "4",
+                  "Function": "",
+              }
+            ],
+
+            "Relationships": [
+              {
+                  "Id": "1",
+                  "FromVariableId": "1",
+                  "ToVariableId": "2",
+                  "Type": "Activator"
+              },
+              {
+                  "Id": "2",
+                  "FromVariableId": "2",
+                  "ToVariableId": "3",
+                  "Type": "Activator"
+              },
+              {
+                  "Id": "3",
+                  "FromVariableId": "3",
+                  "ToVariableId": "1",
+                  "Type": "Inhibitor"
+              }
+            ]
+        }
+
+        $(function () {
+            $.ajax({
+                type: "POST",
+                url: "api/Analyze",
+                data: stableModel,
+                success: function (res) {
+                    alert("Success");
+                },
+                error: function (res) {
+                    alert("Error: " + res.statusText);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
