@@ -99,6 +99,8 @@
     <Content Include="images\editorExpander.png" />
     <Content Include="images\expand.png" />
     <Content Include="images\export.png" />
+    <Content Include="images\formula_not_validated.png" />
+    <Content Include="images\formula_validated.png" />
     <Content Include="images\graphic.png" />
     <Content Include="images\inhibit.png" />
     <Content Include="images\launch-tool-btn.png" />

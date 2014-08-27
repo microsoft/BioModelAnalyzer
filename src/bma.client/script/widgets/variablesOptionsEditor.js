@@ -10,7 +10,8 @@
             rangeTo: 0,
             functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
             inputs: ["qqq", "www", "eee", "rrr"],
-            formula: ""
+            formula: "",
+            approved: true
         },
         resetElement: function () {
             var that = this;
@@ -26,7 +27,14 @@
                     that.listOfInputs.hide();
                 });
             });
-            //this.textarea.val(this.options.formula);
+
+            if (this.options.approved) {
+                this.prooficon.removeClass("formula-validated");
+                this.prooficon.addClass("formula-not-validated");
+            } else {
+                this.prooficon.removeClass("formula-not-validated");
+                this.prooficon.addClass("formula-validated");
+            }
         },
         getCaretPos: function (jq) {
             var obj = jq[0];
@@ -152,8 +160,7 @@
 
             var inputs = this.options.inputs;
             this.textarea = $('<textarea></textarea>').appendTo(that.content);
-            this.textarea.css("width", "80%");
-            this.textarea.css("margin", "0");
+            this.prooficon = $('<div><div>').appendTo(that.content);
         },
         _refreshText: function (div) {
             var that = this;

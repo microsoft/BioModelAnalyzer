@@ -115,7 +115,6 @@
         font-size: small;
         z-index:5;
         width: 300px;
-        height: 300px;
     }
 
     .popup-window {
@@ -797,7 +796,10 @@
         margin-right: 3px;
     }
 
-    .expanding{
+    .expanding textarea{
+        display: inline-block;
+        margin: 0;
+        width: 80%;
     }
 
     .expanding > *{
@@ -852,4 +854,20 @@
 
 .bma-prooftable tr:first-child td:last-child{
 	border-width:0px 0px 1px 1px;
+}
+
+.formula-not-validated {
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/formula_not_validated.png");
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.formula-validated {
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/formula_validated.png");
+    display: inline-block;
+    margin-left: 15px;
 }

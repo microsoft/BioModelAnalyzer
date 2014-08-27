@@ -32,8 +32,7 @@
             minbutton.bind("click", function () {
                 that._toggle();
             });
-
-            this.maxiwindow.draggable({ scroll: false, constraint: parent });
+            //this.maxiwindow.draggable({ scroll: false, constraint: parent });
         },
         _toggle: function () {
             var that = this;

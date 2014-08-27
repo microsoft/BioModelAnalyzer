@@ -47,7 +47,7 @@ module BMA {
             constructor(variableEditor: JQuery) {
                 this.variableEditor = variableEditor;
                 this.variableEditor.bmaeditor();
-                this.variableEditor.hide();
+                //this.variableEditor.hide();
 
                 this.variableEditor.click(function (e) { e.stopPropagation(); });
             }
