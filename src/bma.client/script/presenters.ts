@@ -97,90 +97,89 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject()
 
+                //dragSubject.dragStart.subscribe(
+                //    (gesture) => {
+                //        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
+                //            var id = this.GetVariableAtPosition(gesture.x, gesture.y);
+                //            if (id !== undefined) {
+                //                this.stagingLine = {};
+                //                this.stagingLine.id = id;
+                //                this.stagingLine.x0 = gesture.x;
+                //                this.stagingLine.y0 = gesture.y;
+                //                return;
+                //            }
+                //        } else if (that.selectedType === undefined) {
+                //            var id = this.GetVariableAtPosition(gesture.x, gesture.y);
+                //            if (id !== undefined) {
+                //                that.driver.TurnNavigation(false);
+                //                that.stagingVariable = that.GetVariableById(that.Current.layout, that.Current.model, id);
+                //            } else {
+                //                that.driver.TurnNavigation(true);
+                //            }
+                //        }
+                //        this.stagingLine = undefined;
+                //    });
 
-                dragSubject.dragStart.subscribe(
-                    (gesture) => {
-                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
-                            var id = this.GetVariableAtPosition(gesture.x, gesture.y);
-                            if (id !== undefined) {
-                                this.stagingLine = {};
-                                this.stagingLine.id = id;
-                                this.stagingLine.x0 = gesture.x;
-                                this.stagingLine.y0 = gesture.y;
-                                return;
-                            }
-                        } else if (that.selectedType === undefined) {
-                            var id = this.GetVariableAtPosition(gesture.x, gesture.y);
-                            if (id !== undefined) {
-                                that.driver.TurnNavigation(false);
-                                that.stagingVariable = that.GetVariableById(that.Current.layout, that.Current.model, id);
-                            } else {
-                                that.driver.TurnNavigation(true);
-                            }
-                        }
-                        this.stagingLine = undefined;
-                    });
+                //dragSubject.drag.subscribe(
+                //    (gesture) => {
+                //        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
+                //            that.stagingLine.x1 = gesture.x1;
+                //            that.stagingLine.y1 = gesture.y1;
 
-                dragSubject.drag.subscribe(
-                    (gesture) => {
-                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
-                            that.stagingLine.x1 = gesture.x1;
-                            that.stagingLine.y1 = gesture.y1;
+                //            //Redraw only svg for better performance
+                //            if (that.svg !== undefined) {
 
-                            //Redraw only svg for better performance
-                            if (that.svg !== undefined) {
+                //                if (that.stagingLine.svg !== undefined) {
+                //                    that.svg.remove(that.stagingLine.svg);
+                //                }
 
-                                if (that.stagingLine.svg !== undefined) {
-                                    that.svg.remove(that.stagingLine.svg);
-                                }
+                //                that.stagingLine.svg = that.svg.line(
+                //                    that.stagingLine.x0,
+                //                    that.stagingLine.y0,
+                //                    that.stagingLine.x1,
+                //                    that.stagingLine.y1,
+                //                    {
+                //                        stroke: "#808080",
+                //                        strokeWidth: 2,
+                //                        fill: "#808080",
+                //                        "marker-end": "url(#" + that.selectedType + ")",
+                //                        id: "stagingLine"
+                //                    });
 
-                                that.stagingLine.svg = that.svg.line(
-                                    that.stagingLine.x0,
-                                    that.stagingLine.y0,
-                                    that.stagingLine.x1,
-                                    that.stagingLine.y1,
-                                    {
-                                        stroke: "#808080",
-                                        strokeWidth: 2,
-                                        fill: "#808080",
-                                        "marker-end": "url(#" + that.selectedType + ")",
-                                        id: "stagingLine"
-                                    });
+                //                that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
+                //            }
 
-                                that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
-                            }
+                //            return;
+                //        } else if (this.stagingVariable !== undefined) {
+                //            that.stagingVariable = {
+                //                model: that.stagingVariable.model,
+                //                layout: new BMA.Model.VarialbeLayout(this.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, this.stagingVariable.layout.Angle)
+                //            };
+                //            that.driver.Draw(that.CreateSvg());
+                //        }
 
-                            return;
-                        } else if (this.stagingVariable !== undefined) {
-                            that.stagingVariable = {
-                                model: that.stagingVariable.model,
-                                layout: new BMA.Model.VarialbeLayout(this.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, this.stagingVariable.layout.Angle)
-                            };
-                            that.driver.Draw(that.CreateSvg());
-                        }
+                //        //this.stagingLine = undefined;
+                //    });
 
-                        //this.stagingLine = undefined;
-                    });
+                //dragSubject.dragEnd.subscribe(
+                //    (gesture) => {
+                //        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
+                //            this.TryAddStagingLineAsLink();
+                //            this.stagingLine = undefined;
+                //            this.OnModelUpdated();
+                //        }
 
-                dragSubject.dragEnd.subscribe(
-                    (gesture) => {
-                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
-                            this.TryAddStagingLineAsLink();
-                            this.stagingLine = undefined;
-                            this.OnModelUpdated();
-                        }
-
-                        if (that.stagingVariable !== undefined) {
-                            var x = that.stagingVariable.layout.PositionX;
-                            var y = that.stagingVariable.layout.PositionY;
-                            var type = that.stagingVariable.model.Type;
-                            var id = that.stagingVariable.model.Id;
-                            that.stagingVariable = undefined;
-                            if (!that.TryAddVariable(x, y, type, id)) {
-                                that.OnModelUpdated();
-                            }
-                        }
-                    });
+                //        if (that.stagingVariable !== undefined) {
+                //            var x = that.stagingVariable.layout.PositionX;
+                //            var y = that.stagingVariable.layout.PositionY;
+                //            var type = that.stagingVariable.model.Type;
+                //            var id = that.stagingVariable.model.Id;
+                //            that.stagingVariable = undefined;
+                //            if (!that.TryAddVariable(x, y, type, id)) {
+                //                that.OnModelUpdated();
+                //            }
+                //        }
+                //    });
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }

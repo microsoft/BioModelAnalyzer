@@ -2,6 +2,7 @@
     var acc, h1, c1,h2,c2: JQuery;
 
     beforeEach(() => {
+        window.Commands = new BMA.CommandRegistry();
         acc = $("<div></div>");
         h1 = $("<div></div>").appendTo(acc);
         c1 = $("<div></div>").appendTo(acc);
@@ -13,12 +14,14 @@
     afterEach(() => {
         acc.bmaaccordion("destroy");
         acc.children().detach();
+        
     })
 
     it("should inspect button widget", () => {
         var data = $('<button></button>').button();
         data.button("disable");
         data.button("enable");
+        
         expect(data.button("option", "disabled")).toEqual(false);
     });
 
@@ -36,6 +39,7 @@
         event = "toggle";
         acc.bmaaccordion("option", "event", event);
         expect(acc.bmaaccordion("option", "event")).toEqual(event);
+        
         //spyOn(acc, "eventHandler");
         //c1.trigger(event);
         //expect(data.active).toBe(context);
@@ -73,5 +77,17 @@
         //var loading = h2.children();//.filter(".loading");
         //expect(loading.length).toEqual(1);
     });
+
+
+    it("should run the command", () => {
+        spyOn(window.Commands, "Execute");
+        h1.attr("data-command", "testCommand");
+        h1.click();
+        expect(window.Commands.Execute).toHaveBeenCalledWith("testCommand", {});
+        
+        h1.click();
+        //expect("click").toHaveBeenTriggered();
+    });
+
 
 }) 

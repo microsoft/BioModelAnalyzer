@@ -59,5 +59,7 @@
 
 interface JQuery {
     popupwindow (): JQuery;
-    popupwindow (settings: Object): JQuery;
+    popupwindow(settings: Object): JQuery;
+    popupwindow(optionLiteral: string, optionName: string): any;
+    popupwindow(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 } 

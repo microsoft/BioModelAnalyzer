@@ -207,9 +207,11 @@
     <TypeScriptCompile Include="script\uidrivers.ts" />
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\BMASliderTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
+    <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>
   <ItemGroup>

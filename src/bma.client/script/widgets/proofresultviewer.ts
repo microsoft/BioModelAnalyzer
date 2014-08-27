@@ -90,4 +90,6 @@
 interface JQuery {
     proofresultviewer(): JQuery;
     proofresultviewer(settings: Object): JQuery;
+    proofresultviewer(optionLiteral: string, optionName: string): any;
+    proofresultviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }
