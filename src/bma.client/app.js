@@ -10,6 +10,7 @@
 /// <reference path="script\presenters.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\arraytotableconverter.ts"/>
+/// <reference path="script\logictableconverter.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\toolbarpanel.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>

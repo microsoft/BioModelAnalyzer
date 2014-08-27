@@ -34,22 +34,36 @@
             arr[0] = [];
             arr[0][0] = 0;
             arr[0][1] = 1;
+            arr[0][2] = 2;
             arr[1] = [];
             arr[1][0] = 10;
             arr[1][1] = 11;
+            arr[1][2] = 12;
+            arr[2] = [];
+            arr[2][0] = 20;
+            arr[2][1] = 21;
+            arr[2][2] = 22;
 
             var t = BMA.ArrayToTable(arr);
+            t.addClass("bma-prooftable");
             variables.popupwindow({ header: "Variables", mincontent: t });
             var proofPropagation = $("<div></div>").appendTo(that.element);
             proofPropagation.popupwindow({ header: "Proof Propagation" });
+
+            var log = [];
+            log[0] = [];
+            log[0][1] = true;
+            log[0][2] = true;
+            log[1] = [];
+            log[1][0] = false;
+            log[1][2] = true;
+            log[2] = [];
+            log[2][0] = false;
+            log[2][1] = true;
+            BMA.LogicToTable(t, log);
         },
         _create: function () {
             var that = this;
-
-            //this.element.addClass("zoomslider-container");
-            this.element.height(250);
-
-            //var options = this.options;
             this.refresh();
         },
         _destroy: function () {

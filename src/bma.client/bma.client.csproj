@@ -170,6 +170,7 @@
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="script\arraytotableconverter.ts" />
     <TypeScriptCompile Include="script\commands.ts" />
+    <TypeScriptCompile Include="script\logictableconverter.ts" />
     <TypeScriptCompile Include="script\model\analytics.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
