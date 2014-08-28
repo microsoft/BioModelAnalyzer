@@ -6,7 +6,7 @@ module BMA {
     export module Elements {
         export class Element {
             private type: string;
-            private renderToSvg: (jqSvg: any, renderParams: any) => SVGElement;
+            private renderToSvg: (renderParams: any) => SVGElement;
             private contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean;
             private description: string;
             private iconUrl: string;
@@ -15,7 +15,7 @@ module BMA {
                 return this.type;
             }
 
-            public get RenderToSvg(): (jqSvg: any, renderParams: any) => SVGElement {
+            public get RenderToSvg(): (renderParams: any) => SVGElement {
                 return this.renderToSvg;
             }
 
@@ -33,7 +33,7 @@ module BMA {
 
             constructor(
                 type: string,
-                renderToSvg: (jqSvg: any, renderParams: any) => SVGElement,
+                renderToSvg: (renderParams: any) => SVGElement,
                 contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean,
                 description: string,
                 iconUrl: string) {
@@ -56,7 +56,7 @@ module BMA {
 
             constructor(
                 type: string,
-                renderToSvg: (jqSvg: any, renderParams: any) => SVGElement,
+                renderToSvg: (renderParams: any) => SVGElement,
                 contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean,
                 getBbox: (x: number, y: number) => { x: number; y: number; width: number; height: number },
                 description: string,
@@ -82,7 +82,7 @@ module BMA {
 
             constructor(
                 type: string,
-                renderToSvg: (jqSvg: any, renderParams: any) => SVGElement,
+                renderToSvg: (renderParams: any) => SVGElement,
                 contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean,
                 intersectsBorder: (pointerX: number, pointerY: number, elementX: number, elementY: number) => boolean,
                 containsBBox: (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) => boolean,
@@ -103,6 +103,7 @@ module BMA {
             private variableSizeConstant = 30;
             private relationshipBboxOffset = 20;
             private containerRadius = 100;
+            private svg;
 
             private CreateSvgElement(type: string, renderParams: any) {
                 var elem = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", type);
@@ -139,10 +140,24 @@ module BMA {
             constructor() {
                 var that = this;
                 this.elements = [];
+                
+                var svgCnt = $("<div></div>");
+                svgCnt.svg({
+                    onLoad: (svg) => {
+                        this.svg = svg;
+                    }
+                });
+
+
 
                 this.elements.push(new BorderContainerElement(
                     "Container",
-                    function (jqSvg: any, renderParams) {
+                    function (renderParams) {
+                        var jqSvg = that.svg;
+                        if (jqSvg === undefined)
+                            return undefined;
+                        jqSvg.clear();
+
                         var g = jqSvg.group({
                             transform: "translate(" + (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + ", " + (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + ") scale(2.5)"
                         });
@@ -206,7 +221,11 @@ module BMA {
 
                 this.elements.push(new BboxElement(
                     "Constant",
-                    function (jqSvg: any, renderParams) {
+                    function (renderParams) {
+                        var jqSvg = that.svg;
+                        if (jqSvg === undefined)
+                            return undefined;
+                        jqSvg.clear();
 
                         var g = jqSvg.group({
                             transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
@@ -240,7 +259,11 @@ module BMA {
 
                 this.elements.push(new BboxElement(
                     "Default",
-                    function (jqSvg: any, renderParams) {
+                    function (renderParams) {
+                        var jqSvg = that.svg;
+                        if (jqSvg === undefined)
+                            return undefined;
+                        jqSvg.clear();
 
                         var g = jqSvg.group({
                             transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
@@ -274,7 +297,11 @@ module BMA {
 
                 this.elements.push(new BboxElement(
                     "MembraneReceptor",
-                    function (jqSvg: any, renderParams) {
+                    function (renderParams) {
+                        var jqSvg = that.svg;
+                        if (jqSvg === undefined)
+                            return undefined;
+                        jqSvg.clear();
 
                         var g = jqSvg.group({
                             transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
@@ -308,7 +335,11 @@ module BMA {
 
                 this.elements.push(new Element(
                     "Activator",
-                    function (jqSvg: any, renderParams) {
+                    function (renderParams) {
+                        var jqSvg = that.svg;
+                        if (jqSvg === undefined)
+                            return undefined;
+                        jqSvg.clear();
 
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
@@ -358,7 +389,11 @@ module BMA {
 
                 this.elements.push(new Element(
                     "Inhibitor",
-                    function (jqSvg: any, renderParams) {
+                    function (renderParams) {
+                        var jqSvg = that.svg;
+                        if (jqSvg === undefined)
+                            return undefined;
+                        jqSvg.clear();
 
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
