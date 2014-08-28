@@ -57,11 +57,21 @@ var BMA;
                 };
             };
 
-            VariableEditorDriver.prototype.Initialize = function (variable) {
+            VariableEditorDriver.prototype.Initialize = function (variable, model) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
+
+                var options = [];
+                var id = variable.Id;
+                for (var i = 0; i < model.Relationships.length; i++) {
+                    var rel = model.Relationships[i];
+                    if (rel.ToVariableId === id) {
+                        options.push(model.GetVariableById(rel.FromVariableId).Name);
+                    }
+                }
+                this.variableEditor.bmaeditor('option', 'inputs', options);
             };
 
             VariableEditorDriver.prototype.Show = function (x, y) {
