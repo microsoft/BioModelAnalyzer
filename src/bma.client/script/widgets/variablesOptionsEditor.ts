@@ -15,6 +15,15 @@
             approved: true
         },
 
+        initialize: function (data) {
+            this.options.name = data.name;
+            this.options.rangeFrom = data.rangeFrom;
+            this.options.rangeTo = data.rangeTo;
+            this.options.inputs = data.inputs;
+            this.options.formula = data.formula;
+            this.options.approved = data.approved;
+        },
+
         resetElement: function () {
             var that = this;
             this.name.val(that.options.name);
@@ -215,7 +224,7 @@
 
             
             this.resetElement();
-            window.Commands.Execute("variableeditorchanged", undefined);
+            window.Commands.Execute("variableeditorchanged", {});
         },
 
         destroy: function () {
@@ -229,6 +238,7 @@
 interface JQuery {
     bmaeditor(): JQuery;
     bmaeditor(settings: Object): JQuery;
+    bmaeditor(fun: string, param: any): any;
     bmaeditor(optionLiteral: string, optionName: string): any;
     bmaeditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }  

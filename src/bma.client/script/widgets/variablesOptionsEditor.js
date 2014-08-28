@@ -13,6 +13,14 @@
             formula: "",
             approved: true
         },
+        initialize: function (data) {
+            this.options.name = data.name;
+            this.options.rangeFrom = data.rangeFrom;
+            this.options.rangeTo = data.rangeTo;
+            this.options.inputs = data.inputs;
+            this.options.formula = data.formula;
+            this.options.approved = data.approved;
+        },
         resetElement: function () {
             var that = this;
             this.name.val(that.options.name);
@@ -201,7 +209,7 @@
             this._super("_setOption", key, value);
 
             this.resetElement();
-            window.Commands.Execute("variableeditorchanged", undefined);
+            window.Commands.Execute("variableeditorchanged", {});
         },
         destroy: function () {
             $.Widget.prototype.destroy.call(this);

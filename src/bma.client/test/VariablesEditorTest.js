@@ -165,5 +165,26 @@
             expect(inputslist.children().eq(i).text()).toEqual(arr[i]);
         }
     });
+
+    it("should input formula correctly after choosing function and variable from list", function () {
+        var functions = editor.find(".label-for-functions");
+        var inputs = editor.find(".inputs-list-content").children();
+
+        functions.eq(0).click();
+        inputs.eq(1).click();
+        //expect
+    });
+
+    it("should create a variableeditorchanged command", function () {
+        spyOn(window.Commands, "Execute");
+        editor.bmaeditor("option", "name", "test");
+        expect(window.Commands.Execute).toHaveBeenCalledWith("variableeditorchanged", {});
+    });
+
+    it("should not create a variableeditorchanged command", function () {
+        spyOn(window.Commands, "Execute");
+        editor.bmaeditor("initialize", { name: "myname" });
+        expect(window.Commands.Execute).not.toHaveBeenCalled();
+    });
 });
 //# sourceMappingURL=VariablesEditorTest.js.map
