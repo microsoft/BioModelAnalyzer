@@ -80,6 +80,7 @@ module BMA {
                 });
 
                 window.Commands.On("VariableEdited", () => {
+                    var that = this;
                     if (that.editingVariableId !== undefined) {
                         var model = this.Current.model;
                         var variables = model.Variables;
@@ -471,6 +472,10 @@ module BMA {
             private OnModelUpdated() {
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
+
+                if (this.editingVariableId) {
+                    this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
+                }
 
                 this.appModel.BioModel = this.Current.model;
                 this.appModel.Layout = this.Current.layout;

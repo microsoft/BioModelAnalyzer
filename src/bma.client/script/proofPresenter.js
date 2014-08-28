@@ -28,4 +28,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=proofPresenter.js.map
+//# sourceMappingURL=proofpresenter.js.map

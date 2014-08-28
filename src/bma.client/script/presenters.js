@@ -54,6 +54,7 @@ var BMA;
                 });
 
                 window.Commands.On("VariableEdited", function () {
+                    var that = _this;
                     if (that.editingVariableId !== undefined) {
                         var model = _this.Current.model;
                         var variables = model.Variables;
@@ -415,6 +416,10 @@ var BMA;
             DesignSurfacePresenter.prototype.OnModelUpdated = function () {
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
+
+                if (this.editingVariableId) {
+                    this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
+                }
 
                 this.appModel.BioModel = this.Current.model;
                 this.appModel.Layout = this.Current.layout;
