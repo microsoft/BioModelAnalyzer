@@ -488,6 +488,7 @@ module BMA {
                 if (this.CanUndo) {
                     --this.currentModelIndex;
                     this.variableEditor.Hide();
+                    this.editingVariableId = undefined;
                     this.OnModelUpdated();
                 }
             }
@@ -496,6 +497,7 @@ module BMA {
                 if (this.CanRedo) {
                     ++this.currentModelIndex;
                     this.variableEditor.Hide();
+                    this.editingVariableId = undefined;
                     this.OnModelUpdated();
                 }
             }
@@ -525,6 +527,7 @@ module BMA {
                 this.models = [{ model: m, layout: l }];
                 this.currentModelIndex = 0;
                 this.variableEditor.Hide();
+                this.editingVariableId = undefined;
                 this.OnModelUpdated();
             }
 
