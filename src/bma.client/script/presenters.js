@@ -53,7 +53,7 @@ var BMA;
                     }
                 });
 
-                window.Commands.On("variableeditorchanged", function () {
+                window.Commands.On("VariableEdited", function () {
                     if (that.editingVariableId !== undefined) {
                         var model = _this.Current.model;
                         var variables = model.Variables;

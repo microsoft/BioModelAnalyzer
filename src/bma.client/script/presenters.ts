@@ -79,7 +79,7 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("variableeditorchanged", () => {
+                window.Commands.On("VariableEdited", () => {
                     if (that.editingVariableId !== undefined) {
                         var model = this.Current.model;
                         var variables = model.Variables;

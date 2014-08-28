@@ -13,14 +13,6 @@
             formula: "",
             approved: true
         },
-        initialize: function (data) {
-            this.options.name = data.name;
-            this.options.rangeFrom = data.rangeFrom;
-            this.options.rangeTo = data.rangeTo;
-            this.options.inputs = data.inputs;
-            this.options.formula = data.formula;
-            this.options.approved = data.approved;
-        },
         resetElement: function () {
             var that = this;
             this.name.val(that.options.name);
@@ -29,7 +21,7 @@
             this.listOfInputs.empty();
             var inputs = this.options.inputs;
             inputs.forEach(function (val, ind) {
-                var item = $('<div>' + val + '</div>').appendTo(that.listOfInputs);
+                var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                 item.bind("click", function () {
                     that.textarea.insertAtCaret($(this).text());
                     that.listOfInputs.hide();
@@ -167,14 +159,17 @@
 
             this.name.bind("input change", function () {
                 that._setOption("name", that.name.val());
+                window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeFrom.bind("input change", function () {
                 that._setOption("rangeFrom", that.rangeFrom.val());
+                window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeTo.bind("input change", function () {
                 that._setOption("rangeTo", that.rangeTo.val());
+                window.Commands.Execute("VariableEdited", {});
             });
 
             this.expandLabel.bind("click", function () {
@@ -187,6 +182,7 @@
 
             this.textarea.bind("input change", function () {
                 that._setOption("formula", that.textarea.val());
+                window.Commands.Execute("VariableEdited", {});
             });
         },
         _setOption: function (key, value) {
@@ -207,9 +203,7 @@
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
-
             this.resetElement();
-            window.Commands.Execute("variableeditorchanged", {});
         },
         destroy: function () {
             $.Widget.prototype.destroy.call(this);

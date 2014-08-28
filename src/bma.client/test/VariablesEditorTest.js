@@ -178,13 +178,16 @@
     it("should create a variableeditorchanged command", function () {
         spyOn(window.Commands, "Execute");
         editor.bmaeditor("option", "name", "test");
-        expect(window.Commands.Execute).toHaveBeenCalledWith("variableeditorchanged", {});
+        expect(window.Commands.Execute).not.toHaveBeenCalled();
     });
 
     it("should not create a variableeditorchanged command", function () {
         spyOn(window.Commands, "Execute");
-        editor.bmaeditor("initialize", { name: "myname" });
-        expect(window.Commands.Execute).not.toHaveBeenCalled();
+
+        var textarea = editor.find("textarea");
+        textarea.val("testformula").change();
+
+        expect(window.Commands.Execute).toHaveBeenCalledWith("VariableEdited", {});
     });
 });
 //# sourceMappingURL=VariablesEditorTest.js.map

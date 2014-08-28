@@ -76,6 +76,8 @@ module BMA {
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
+
+                //this.variableEditor.bmaeditor('initialize', { inputs: options, name: variable.Name, formula: variable.Formula, rangeFrom: variable.RangeFrom, rangeFrom: variable.RangeTo})
             }
 
             public Show(x: number, y: number) {
