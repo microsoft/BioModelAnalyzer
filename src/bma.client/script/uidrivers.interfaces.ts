@@ -13,7 +13,7 @@ module BMA {
             GetVariableProperties(): {
                 name: string; formula: string; rangeFrom: number; rangeTo: number;
             };
-            Initialize(variable: BMA.Model.Variable);
+            Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel);
             Show(x: number, y: number);
             Hide();
         }

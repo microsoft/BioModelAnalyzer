@@ -41,6 +41,16 @@ var BMA;
                 return new BioModel(this.Name, this.variables.slice(0), this.relationships.slice(0));
             };
 
+            BioModel.prototype.GetVariableById = function (id) {
+                for (var i = 0; i < this.variables.length; i++) {
+                    if (this.variables[i].Id === id) {
+                        return this.variables[i];
+                    }
+                }
+
+                return undefined;
+            };
+
             BioModel.prototype.GetJSON = function () {
                 var vars = [];
                 for (var i = 0; i < this.variables.length; i++) {
