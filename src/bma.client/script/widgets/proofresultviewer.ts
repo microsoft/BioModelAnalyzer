@@ -49,22 +49,36 @@
 
             var t = BMA.ArrayToTable(arr);
             t.addClass("bma-prooftable");
-            variables.popupwindow({ header: "Variables", content: t });
+            variables.compactproofviewer({ header: "Variables", content: t.clone(), icon: "max" });
+            var popup = $('<div class="popup-window"></div>').appendTo('body').hide();
+            
+
             var proofPropagation = $("<div></div>").appendTo(that.element);
-            proofPropagation.popupwindow({ header: "Proof Propagation" });
+            proofPropagation.compactproofviewer({ header: "Proof Propagation", icon: "max"  });
 
             var log = [];
             log[0] = [];
-            log[0][1] = true;
-            log[0][2] = true;
             log[1] = [];
-            log[1][0] = false;
-            log[1][2] = true;
+            log[1][1] = true;
             log[2] = [];
-            log[2][0] = false;
-            log[2][1] = true;
+            log[2][1] = false;
             BMA.LogicToTable(t, log);
 
+
+            popup.compactproofviewer({ header: "Variables", content: t, icon: "min" });
+            var button = variables.compactproofviewer("getbutton");
+            var closepopup = popup.compactproofviewer("getbutton");
+
+            button.bind("click", function () {
+
+                popup.compactproofviewer("toggle");
+                variables.hide();
+            });
+
+            closepopup.bind("click", function () {
+                variables.show();
+                popup.compactproofviewer("toggle");
+            });
         },
 
         _create: function () {

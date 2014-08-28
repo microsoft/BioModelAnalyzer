@@ -2,10 +2,12 @@
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 (function ($) {
-    $.widget("BMA.popupwindow", {
+    $.widget("BMA.compactproofviewer", {
         options: {
             content: $(),
-            header: ""
+            header: "",
+            icon: "",
+            effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {} }
         },
 
         refresh: function () {
@@ -16,8 +18,16 @@
         _create: function () {
             var that = this;
             var options = this.options;
+            var url = "";
             //this.window = $('<div></div>').appendTo(this.element);
-            this.button = $('<img class="togglePopUpWindow" src="../../images/maximize.png">').appendTo(this.element);
+            if (this.options.icon === "max")
+                url = "../../images/maximize.png";
+            else
+                if (this.options.icon === "min")
+                    url = "../../images/minimize.png";
+            else url = this.options.icon;
+            
+            this.button = $('<img class="togglePopUpWindow" src="' +url+ '">').appendTo(this.element);
             $('<div>' + options.header + '</div>').appendTo(this.element);
             this.content = $('<div></div>').appendTo(this.element);
             
@@ -39,13 +49,14 @@
             this.refresh();
         },
 
-        //_toggle: function () { 
-        //    var that = this;
-        //    //this.maxiwindow.toggle('size', { easing: 'easeInExpo' }, 200, function () {  });
-        //    //that.window.toggle();
-        //},
+        toggle: function () { 
+            //var that = this;
+            //this.maxiwindow.toggle('size', { easing: 'easeInExpo' }, 200, function () {  });
+            //that.window.toggle();
+            this.element.toggle(this.options.effects);
+        },
 
-        button: function () {
+        getbutton: function () {
             return this.button;
         },
 
@@ -63,8 +74,8 @@
 } (jQuery));
 
 interface JQuery {
-    popupwindow (): JQuery;
-    popupwindow(settings: Object): JQuery;
-    popupwindow(optionLiteral: string, optionName: string): any;
-    popupwindow(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+    compactproofviewer (): JQuery;
+    compactproofviewer(settings: Object): JQuery;
+    compactproofviewer(optionLiteral: string, optionName: string): any;
+    compactproofviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 } 

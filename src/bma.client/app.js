@@ -20,7 +20,7 @@
 /// <reference path="script\widgets\bmaslider.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
-/// <reference path="script\widgets\popupwindow.ts"/>
+/// <reference path="script\widgets\compactproofviewer.ts"/>
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
