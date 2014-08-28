@@ -9,8 +9,8 @@ open DataLoading
 open FunctionEncoding
 open ShortestPaths
 open FSharpx.Collections
-open FSharp.Data.Csv
-open FSharp.Data.Csv.Extensions
+open FSharp.Data
+open FSharp.Data.CsvExtensions
 
 type NumNonTransitionsEnforced = All | Num of int | DropFraction of int
 
@@ -66,9 +66,9 @@ let private manyNonTransitionsEnforced gene symVars nonCloudExpressionProfilesWi
         askNonTransitions &&. manyEnforced
 
 let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []) maxActivators maxRepressors numNonTransitionsEnforced
-                             (expressionProfilesWithGeneTransitions : RuntimeImplementation.CsvFile<CsvRow>) (nonCloudExpressionProfilesWithoutGeneTransitions : RuntimeImplementation.CsvFile<CsvRow>) =
+                             (expressionProfilesWithGeneTransitions : Runtime.CsvFile<CsvRow>) (nonCloudExpressionProfilesWithoutGeneTransitions : Runtime.CsvFile<CsvRow>) =
     let circuitEncoding, symVars = encodeUpdateFunction gene genes maxActivators maxRepressors geneNames
-    let nonCloudExpressionProfilesWithoutGeneTransitions = Seq.map rowToArray nonCloudExpressionProfilesWithoutGeneTransitions.Data
+    let nonCloudExpressionProfilesWithoutGeneTransitions = Seq.map rowToArray nonCloudExpressionProfilesWithoutGeneTransitions.Rows
 
     let numNonTransitionsEnforced =
         match numNonTransitionsEnforced with
@@ -80,7 +80,7 @@ let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []
     let manyNonTransitionsEnforced = manyNonTransitionsEnforced gene symVars nonCloudExpressionProfilesWithoutGeneTransitions numNonTransitionsEnforced
 
     let encodeTransition (stateA, stateB) =
-        let profile s = expressionProfilesWithGeneTransitions.Filter(fun row -> row.Columns.[0] = s).Data |> Seq.head |> rowToArray // not efficent
+        let profile s = expressionProfilesWithGeneTransitions.Filter(fun row -> row.Columns.[0] = s).Rows |> Seq.head |> rowToArray // not efficent
         let differentA = (let e, v = circuitEvaluatesToDifferent gene symVars (profile stateA) in e &&. v)
 
         differentA
@@ -99,9 +99,9 @@ let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []
               if checkEdge (b, a) then yield (b, a) ]
 
 let private findFunctions (solver : Solver) gene genes (geneNames : string []) maxActivators maxRepressors numNonTransitionsEnforced shortestPaths
-                          (expressionProfilesWithGeneTransitions  : RuntimeImplementation.CsvFile<CsvRow>) (nonCloudExpressionProfilesWithoutGeneTransitions : RuntimeImplementation.CsvFile<CsvRow>) =
+                          (expressionProfilesWithGeneTransitions  : Runtime.CsvFile<CsvRow>) (nonCloudExpressionProfilesWithoutGeneTransitions : Runtime.CsvFile<CsvRow>) =
     let circuitEncoding, symVars = encodeUpdateFunction gene genes maxActivators maxRepressors geneNames
-    let nonCloudExpressionProfilesWithoutGeneTransitions = Seq.map rowToArray nonCloudExpressionProfilesWithoutGeneTransitions.Data
+    let nonCloudExpressionProfilesWithoutGeneTransitions = Seq.map rowToArray nonCloudExpressionProfilesWithoutGeneTransitions.Rows
     let undirectedEdges = geneTransitions geneNames.[gene - 2] |> Set.ofArray // GET RID OF -2 EVERYWHERE
     
     let numNonTransitionsEnforced =
@@ -116,7 +116,7 @@ let private findFunctions (solver : Solver) gene genes (geneNames : string []) m
         then // remove these 4 lines
             True
         else
-        let profile s = expressionProfilesWithGeneTransitions.Filter(fun row -> row.Columns.[0] = s).Data |> Seq.head |> rowToArray // not efficent
+        let profile s = expressionProfilesWithGeneTransitions.Filter(fun row -> row.Columns.[0] = s).Rows |> Seq.head |> rowToArray // not efficent
         let differentA = (let e, v = circuitEvaluatesToDifferent gene symVars (profile stateA) in e &&. v)
 
         differentA
@@ -177,7 +177,8 @@ let synthesise geneIds geneNames statesFilename initialStates targetStates nonTr
     let allowedEdges = geneNames |> Array.map (fun g -> let a, r = Map.find g geneParameters
                                                         let expressionProfilesWithGeneTransitions, nonCloudExpressionProfilesWithoutGeneTransitions = getExpressionProfiles (f g)
                                                         let temp = findAllowedEdges solver (f g) geneIds geneNames a r All expressionProfilesWithGeneTransitions nonCloudExpressionProfilesWithoutGeneTransitions
-                                                        System.IO.File.WriteAllText (HOME_DIR + "Desktop/Cmp/Edges/" + g + ".txt", printEdges temp)
+                                                        // SI: Pass output dir as command line arg. Change literal "\\" to use Dir.Combine
+                                                        System.IO.File.WriteAllText (HOME_DIR + "Desktop\\Cmp\\Edges\\" + g + ".txt", printEdges temp)
                                                         temp) |> Set.unionMany
 
     let reducedStateGraph = buildGraph allowedEdges
@@ -196,4 +197,5 @@ let synthesise geneIds geneNames statesFilename initialStates targetStates nonTr
     geneNames |> Array.iter (fun gene -> let numAct, numRep = Map.find gene geneParameters
                                          let expressionProfilesWithGeneTransitions, nonCloudExpressionProfilesWithoutGeneTransitions = getExpressionProfiles (f gene)
                                          let circuits = findFunctions solver (f gene) geneIds geneNames numAct numRep All invertedPaths expressionProfilesWithGeneTransitions nonCloudExpressionProfilesWithoutGeneTransitions
-                                         System.IO.File.WriteAllLines (HOME_DIR + "Desktop/Cmp/" + gene + ".txt", Seq.map (sprintf "%A") circuits))
+                                         // SI: Pass output dir as command line arg. Change literal "\\" to use Dir.Combine
+                                         System.IO.File.WriteAllLines (HOME_DIR + "Desktop\\Cmp\\" + gene + ".txt", Seq.map (sprintf "%A") circuits))

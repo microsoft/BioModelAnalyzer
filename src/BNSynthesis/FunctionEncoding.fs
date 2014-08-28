@@ -4,7 +4,7 @@ open FSharpx.Prelude
 open Microsoft.Z3.FSharp.Common
 open Microsoft.Z3.FSharp.Bool
 open Microsoft.Z3.FSharp.BitVec
-open FSharp.Data.Csv
+open FSharp.Data
 open DataLoading
 
 // needed?

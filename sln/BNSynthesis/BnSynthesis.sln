@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BnSynthesis", "../../src/BNSynthesis/BnSynthesis.fsproj", "{F1543764-11E9-4A3C-A09B-5E95DC97C1E4}"
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BnSynthesis", "..\..\src\BNSynthesis\BnSynthesis.fsproj", "{F1543764-11E9-4A3C-A09B-5E95DC97C1E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

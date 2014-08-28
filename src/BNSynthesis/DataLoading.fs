@@ -1,10 +1,11 @@
 ﻿module DataLoading
 
 open FSharp.Data
-open FSharp.Data.Csv
-open FSharp.Data.Csv.Extensions
+open FSharp.Data.CsvExtensions
+//open FSharp.Data.Csv.Extensions
 
-let [<Literal>] HOME_DIR = "C:/Users/Steven/" // remove
+//let [<Literal>] HOME_DIR = "C:/Users/Steven/" // remove
+let HOME_DIR = System.Environment.GetEnvironmentVariable("HOMEDRIVE") + "\\" + System.Environment.GetEnvironmentVariable("HOMEPATH") + "\\"
 
 type EdgeChanges = CsvProvider<"cmpNewEdgeChanges.csv">
 
@@ -15,7 +16,7 @@ let private EDGES_FILENAME = System.Environment.GetCommandLineArgs().[2]
 let geneTransitions =
     let csv = EdgeChanges.Load(EDGES_FILENAME)
     fun gene ->
-        let rowsWhereGeneChanges = csv.Filter(fun row -> row.Gene = gene).Data
+        let rowsWhereGeneChanges = csv.Filter(fun row -> row.Gene = gene).Rows
         let seen = System.Collections.Generic.HashSet<string>() // massive hack
 
         [| for row in rowsWhereGeneChanges do
@@ -27,7 +28,7 @@ let statesWithGeneTransitions =
     let csv = EdgeChanges.Load(EDGES_FILENAME)
     fun gene ->
         let rowsWhereGeneChanges = csv.Filter (fun row -> row.Gene = gene)
-        Seq.map (fun (r : EdgeChanges.Row) -> r.StateA) rowsWhereGeneChanges.Data |> Set.ofSeq
+        Seq.map (fun (r : EdgeChanges.Row) -> r.StateA) rowsWhereGeneChanges.Rows |> Set.ofSeq
 
 // all loading should be moved to Program.fs
 
@@ -37,16 +38,13 @@ let getExpressionProfiles (statesFilename : string) nonTransitionEnforcedStates 
     fun gene ->
         let temp = csv.Headers
         let statesWithGeneTransitions = statesWithGeneTransitions geneNames.[gene - 2] // GET RID OF -2 EVERYWHERE
-        let rowsWithTransitions (row : FSharp.Data.Csv.CsvRow) = Set.contains row.Columns.[0] statesWithGeneTransitions
-        let rowsWithoutTransitions (row : FSharp.Data.Csv.CsvRow) =
+        let rowsWithTransitions (row : FSharp.Data.CsvRow) = Set.contains row.Columns.[0] statesWithGeneTransitions
+        let rowsWithoutTransitions (row : FSharp.Data.CsvRow) =
             (not <| Set.contains (row.Columns.[0]) statesWithGeneTransitions) &&
             (Set.contains (row.Columns.[0]) nonTransitionEnforcedStates)
 
-        let expressionProfilesWithGeneTransitions = csv.Filter rowsWithTransitions
-        let expressionProfilesWithoutGeneTransitions = csv.Filter rowsWithoutTransitions
-
-        let temp1 = expressionProfilesWithGeneTransitions.Data |> Seq.length
-        let temp2 = expressionProfilesWithoutGeneTransitions.Data |> Seq.length
+        let expressionProfilesWithGeneTransitions = csv.Filter (System.Func<FSharp.Data.CsvRow,bool>(rowsWithTransitions))
+        let expressionProfilesWithoutGeneTransitions = csv.Filter (System.Func<FSharp.Data.CsvRow,bool>(rowsWithoutTransitions))
 
         expressionProfilesWithGeneTransitions, expressionProfilesWithoutGeneTransitions
 

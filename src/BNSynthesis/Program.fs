@@ -1,7 +1,7 @@
 ﻿module Program
 
 open DataLoading
-open FSharp.Data.Csv
+open FSharp.Data
 open FSharpx.Collections
 
 let synth (statesFilename : string) edgesFilename initialStatesFilename targetStatesFilename nonTransitionsNodesFilename =
