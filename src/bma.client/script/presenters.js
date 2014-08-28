@@ -417,7 +417,7 @@ var BMA;
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
 
-                if (this.editingVariableId) {
+                if (this.editingVariableId !== undefined) {
                     this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
                 }
 
