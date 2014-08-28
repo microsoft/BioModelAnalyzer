@@ -10,8 +10,9 @@
             rangeFrom: 0,
             rangeTo: 0,
             functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
-            inputs: ["qqq", "www","eee","rrr"],
-            formula: ""
+            inputs: ["qqq", "www", "eee", "rrr"],
+            formula: "",
+            approved: true
         },
 
         resetElement: function () {
@@ -22,14 +23,22 @@
             this.listOfInputs.empty();
             var inputs = this.options.inputs;
             inputs.forEach(function (val, ind) {
-                var item = $('<div>' + val + '</div>').appendTo(that.listOfInputs);
+                var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                 item.bind("click", function () {
                     that.textarea.insertAtCaret($(this).text());
                     that.listOfInputs.hide();
                 });
             });
 
-            //this.textarea.val(this.options.formula);
+            if (this.options.approved) {
+                that.prooficon.removeClass("formula-not-validated");
+                that.prooficon.addClass("formula-validated");
+            }
+            else {
+                that.prooficon.removeClass("formula-validated");
+                that.prooficon.addClass("formula-not-validated");
+            };
+            this.textarea.val(that.options.formula);
         },
 
 
@@ -72,56 +81,36 @@
             var nameLabel = $('<div class="labels-in-variables-editor"></div>').text("Name").appendTo(div1);
             var rangeLabel = $('<div class="labels-in-variables-editor"></div>').text("Range").appendTo(div1);
             var inputscontainer = $('<div class="inputs-container"></div>').appendTo(that.element);
-            //this.labletable = $('<table class="inputs-table"></table>').appendTo(that.element);
-            //var tr = $('<tr></tr>').appendTo(that.labletable);
-            //var td1 = $('<td></td>').appendTo(tr); 
             this.expandLabel = $('<button class="editorExpander"></button>').appendTo(inputscontainer);
             this.name = $('<input type="text" size="15">').appendTo(inputscontainer);
 
-            //var td2 = $('<td></td>').appendTo(tr); 
             this.rangeFrom = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
-
-            //var td3 = $('<td></td>').appendTo(tr); 
             var divtriangles1 = $('<div class="div-triangles"></div>').appendTo(inputscontainer);
 
-            var upfrom = $('<div ></div>').addClass("triangle-up").appendTo(divtriangles1);
+            var upfrom = $('<div></div>').addClass("triangle-up").appendTo(divtriangles1);
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
-                if (valu < 100)
-                    that._setOption("rangeFrom", valu + 1);
+                that._setOption("rangeFrom", valu + 1);
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
-
                 var valu = Number(that.rangeFrom.val());
-                if (valu > 0) 
-                    that._setOption("rangeFrom", valu - 1);
+                that._setOption("rangeFrom", valu - 1);
             });
 
-            //var td4 = $('<td></td>').appendTo(tr); 
             this.rangeTo = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
-
-            //var td5 = $('<td></td>').appendTo(tr); 
-
             var divtriangles2 = $('<div class="div-triangles"></div>').appendTo(inputscontainer);
 
             var upto = $('<div></div>').addClass("triangle-up").appendTo(divtriangles2);
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
-                if (valu < 100)
-                //that.rangeTo.val(valu + 1);
-                    that._setOption("rangeTo", valu + 1);
+                that._setOption("rangeTo", valu + 1);
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
-                if (valu > 0) 
-                    that._setOption("rangeTo", valu - 1);
+                that._setOption("rangeTo", valu - 1);
             });
-
-            //var td6 = $('<td></td>').appendTo(tr); 
-            
-            
         },
 
         _processExpandingContent: function () {
@@ -146,7 +135,6 @@
             var insertButton = $('<button class="bma-insert-function-button">insert</button>').appendTo(div);
 
             insertButton.bind("click", function () {
-                //var about = that.getAbout(that.selected.text());
                 var about = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
                 var caret = that.getCaretPos(that.textarea) + about.Offset;
                 that.textarea.insertAtCaret(about.InsertText);
@@ -165,16 +153,13 @@
 
             var inputs = this.options.inputs;
             this.textarea = $('<textarea></textarea>').appendTo(that.content);
-            this.textarea.css("width", "80%");
-            this.textarea.css("margin", "0");
+            this.prooficon = $('<div><div>').appendTo(that.content);
         },
 
         _refreshText: function (div: JQuery) {
             var that = this;
             div.empty();
-            //var text = this.getAbout(that.selected.text());
             var fun = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
-
             $('<p style="font-weight: bold">' + fun.Head + '</p>').appendTo(div);
             $('<p>' + fun.About + '</p>').appendTo(div);
         },
@@ -182,16 +167,19 @@
         _bindExpanding: function () {
             var that = this;
 
-            this.name.bind("input", function () {
+            this.name.bind("input change", function () {
                 that._setOption("name", that.name.val());
+                window.Commands.Execute("VariableEdited", {});
             });
 
-            this.rangeFrom.bind("input", function () {
+            this.rangeFrom.bind("input change", function () {
                 that._setOption("rangeFrom", that.rangeFrom.val());
+                window.Commands.Execute("VariableEdited", {});
             });
 
-            this.rangeTo.bind("input", function () {
+            this.rangeTo.bind("input change", function () {
                 that._setOption("rangeTo", that.rangeTo.val());
+                window.Commands.Execute("VariableEdited", {});
             });
 
             this.expandLabel.bind("click", function () {
@@ -202,36 +190,34 @@
                 $(this).toggleClass("editorExpanderChecked", "editorExpander");
             });
 
-            this.textarea.bind("input", function () {
+            this.textarea.bind("input change", function () {
                 that._setOption("formula", that.textarea.val());
+                window.Commands.Execute("VariableEdited", {});
             });
+
         },
 
         _setOption: function (key, value) {
             var that = this;
-        //if (key === "inputs")
-        //    {
-        //        this.listOfInputs.empty();
-        //        var inputs = this.options.inputs;
-        //        inputs.forEach(function (val, ind) {
-        //            var item = $('<div>' + val + '</div>').appendTo(that.listOfInputs);
-        //            item.bind("click", function () {
-        //                that.textarea.insertAtCaret($(this).text());
-        //                that.listOfInputs.hide();
-        //            });
-        //        });
-        //    }
+            if (key === "rangeFrom" || key === "rangeTo")
+            {
+                if (value > 100) {
+                    that._setOption(key, 100);
+                    return;
+                }
+
+                if (value < 0) {
+                    that._setOption(key, 0);
+                    return;
+                } 
+            }
 
             if (this.options[key] !== value) {
                 
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
-
-            
             this.resetElement();
-            //that.element.trigger("variableeditorchanged", {});
-            window.Commands.Execute("variableeditorchanged", undefined);
         },
 
         destroy: function () {
@@ -241,13 +227,11 @@
     });
 } (jQuery));
 
-interface ElementButton extends JQuery {
-
-}
 
 interface JQuery {
     bmaeditor(): JQuery;
     bmaeditor(settings: Object): JQuery;
+    bmaeditor(fun: string, param: any): any;
     bmaeditor(optionLiteral: string, optionName: string): any;
     bmaeditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }  

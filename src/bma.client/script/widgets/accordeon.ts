@@ -598,4 +598,6 @@
 interface JQuery {
     bmaaccordion(): JQuery;
     bmaaccordion(settings: Object): JQuery;
+    bmaaccordion(optionLiteral: string, optionName: string): any;
+    bmaaccordion(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }

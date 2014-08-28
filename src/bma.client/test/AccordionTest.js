@@ -2,6 +2,7 @@
     var acc, h1, c1, h2, c2;
 
     beforeEach(function () {
+        window.Commands = new BMA.CommandRegistry();
         acc = $("<div></div>");
         h1 = $("<div></div>").appendTo(acc);
         c1 = $("<div></div>").appendTo(acc);
@@ -19,6 +20,7 @@
         var data = $('<button></button>').button();
         data.button("disable");
         data.button("enable");
+
         expect(data.button("option", "disabled")).toEqual(false);
     });
 
@@ -71,6 +73,16 @@
         h2.click();
         //var loading = h2.children();//.filter(".loading");
         //expect(loading.length).toEqual(1);
+    });
+
+    it("should run the command", function () {
+        spyOn(window.Commands, "Execute");
+        h1.attr("data-command", "testCommand");
+        h1.click();
+        expect(window.Commands.Execute).toHaveBeenCalledWith("testCommand", {});
+
+        h1.click();
+        //expect("click").toHaveBeenTriggered();
     });
 });
 //# sourceMappingURL=AccordionTest.js.map

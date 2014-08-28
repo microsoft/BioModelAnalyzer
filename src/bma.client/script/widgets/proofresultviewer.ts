@@ -30,26 +30,64 @@
                 $('<h3 style="color: red; font-weight:bold">Failed to Stabilize</h3>').appendTo(td2);
                 $('<p style="font-size:small">After stepping through separate interactions in the model, the analisys failed to determine a final stable state</p>').appendTo(that.element);
             }
+
+            var variables = $("<div></div>").appendTo(that.element);
+            
+            var arr = [];
+            arr[0] = [];
+            arr[0][0] = 0;
+            arr[0][1] = 1;
+            arr[0][2] = 2;
+            arr[1] = [];
+            arr[1][0] = 10;
+            arr[1][1] = 11;
+            arr[1][2] = 12;
+            arr[2] = [];
+            arr[2][0] = 20;
+            arr[2][1] = 21;
+            arr[2][2] = 22;
+
+            var t = BMA.ArrayToTable(arr);
+            t.addClass("bma-prooftable");
+            variables.compactproofviewer({ header: "Variables", content: t.clone(), icon: "max" });
+            var popup = $('<div class="popup-window"></div>').appendTo('body').hide();
+            
+
+            var proofPropagation = $("<div></div>").appendTo(that.element);
+            proofPropagation.compactproofviewer({ header: "Proof Propagation", icon: "max"  });
+
+            var log = [];
+            log[0] = [];
+            log[1] = [];
+            log[1][1] = true;
+            log[2] = [];
+            log[2][1] = false;
+            BMA.LogicToTable(t, log);
+
+
+            popup.compactproofviewer({ header: "Variables", content: t, icon: "min" });
+            var button = variables.compactproofviewer("getbutton");
+            var closepopup = popup.compactproofviewer("getbutton");
+
+            button.bind("click", function () {
+
+                popup.compactproofviewer("toggle");
+                variables.hide();
+            });
+
+            closepopup.bind("click", function () {
+                variables.show();
+                popup.compactproofviewer("toggle");
+            });
         },
 
         _create: function () {
             var that = this;
-            this.element.addClass("zoomslider-container");
-            this.element.height(250);
-            //var options = this.options;
             this.refresh();
         },
 
         _destroy: function () {
             var contents;
-
-            // clean up main element
-            this.element
-                .removeClass("zoomslider-container");
-
-            this.element.children().filter(".bma-elementspanel-visibilityoptions-zoomslider")
-                .removeClass("bma-elementspanel-visibilityoptions-zoomslider")
-                .removeUniqueId();
 
             this.element.empty();
         },
@@ -66,4 +104,6 @@
 interface JQuery {
     proofresultviewer(): JQuery;
     proofresultviewer(settings: Object): JQuery;
+    proofresultviewer(optionLiteral: string, optionName: string): any;
+    proofresultviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }

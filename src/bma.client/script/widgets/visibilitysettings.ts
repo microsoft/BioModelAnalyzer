@@ -132,4 +132,6 @@
 interface JQuery {
     visibilitysettings(): JQuery;
     visibilitysettings(settings: Object): JQuery;
+    visibilitysettings(optionLiteral: string, optionName: string): any;
+    visibilitysettings(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }

@@ -117,6 +117,30 @@
         width: 300px;
     }
 
+    .popup-window {
+        display:none; 
+        padding-top:15px;
+        padding-left:20px;
+        padding-right:15px;
+        /*background-color: rgba(0,0,0,0.5);*/
+        background-color: Window;
+        position:absolute;
+        
+        left: calc(50% - 400px);
+        top: calc(50% - 300px);
+        border-radius:20px;
+        box-shadow: 0px 0px 8px lightgray; /*#000;*/
+        z-index:5;
+        font-size: x-large;
+        width: 800px;
+        height: 600px;
+    }
+
+    .togglePopUpWindow {
+        position: relative;
+        float:right
+    }
+
     input {
         margin: 0;
     }
@@ -419,6 +443,10 @@
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
         border: none;
+    }
+
+    .tabPanel > * {
+        margin: 10px;
     }
 
     .ui-widget button{
@@ -757,6 +785,7 @@
     .div-triangles {
         width: 15px;
         display: inline-block;
+        margin-bottom: -2px;
     }
 
     .inputs-container{
@@ -768,9 +797,78 @@
         margin-right: 3px;
     }
 
-    .expanding{
+    .expanding textarea{
+        display: inline-block;
+        margin: 0;
+        width: 80%;
     }
 
     .expanding > *{
         margin-bottom: 5px;
     }
+
+
+
+.bma-prooftable {
+	margin:0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding:0px;
+	width:100%;
+	border:1px solid #cccccc;
+    border-collapse:collapse;
+}
+
+.bma-prooftable > tr {
+    height: 15px;
+}
+
+.bma-prooftable tr:nth-child(odd){ background-color:#e3e8ed; }
+
+.bma-prooftable tr:nth-child(even)    { background-color:#ffffff; }
+
+.bma-prooftable td{
+	vertical-align:middle;
+	border:1px solid #cccccc;
+	border-width:0px 1px 1px 0px;
+	text-align:center;
+	padding:0;
+	font-size:14px;
+	color:#000000;
+}
+                                                                      
+
+
+.bma-prooftable tr:first-child td{
+	background-color:#4c4c4c;
+	border:0px solid #cccccc;
+	text-align:center;
+	border-width:0px 0px 1px 1px;
+	font-size:14px;
+	color:#ffffff;
+}
+
+
+.bma-prooftable tr:first-child td:first-child{
+	border-width:0px 0px 1px 0px;
+}
+
+.bma-prooftable tr:first-child td:last-child{
+	border-width:0px 0px 1px 1px;
+}
+
+.formula-not-validated {
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/formula_not_validated.png");
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.formula-validated {
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/formula_validated.png");
+    display: inline-block;
+    margin-left: 15px;
+}

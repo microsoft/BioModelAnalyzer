@@ -28,6 +28,16 @@ module BMA {
                 return new BioModel(this.Name, this.variables.slice(0), this.relationships.slice(0));
             }
 
+            public GetVariableById(id: number) {
+                for (var i = 0; i < this.variables.length; i++) {
+                    if (this.variables[i].Id === id) {
+                        return this.variables[i];
+                    }
+                }
+
+                return undefined;
+            }
+
             public GetJSON() {
                 var vars = [];
                 for (var i = 0; i < this.variables.length; i++) {

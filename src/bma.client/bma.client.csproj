@@ -99,11 +99,15 @@
     <Content Include="images\editorExpander.png" />
     <Content Include="images\expand.png" />
     <Content Include="images\export.png" />
+    <Content Include="images\formula_not_validated.png" />
+    <Content Include="images\formula_validated.png" />
     <Content Include="images\graphic.png" />
     <Content Include="images\inhibit.png" />
     <Content Include="images\launch-tool-btn.png" />
     <Content Include="images\logo-crop.png" />
     <Content Include="images\logo.png" />
+    <Content Include="images\maximize.png" />
+    <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
     <Content Include="images\kit_i_kot.jpg" />
     <Content Include="images\new.png" />
@@ -166,7 +170,9 @@
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
+    <TypeScriptCompile Include="script\arraytotableconverter.ts" />
     <TypeScriptCompile Include="script\commands.ts" />
+    <TypeScriptCompile Include="script\logictableconverter.ts" />
     <TypeScriptCompile Include="script\model\analytics.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
@@ -208,6 +214,7 @@
     <Content Include="script\jquery.svg.min.js" />
     <Content Include="script\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
+    <TypeScriptCompile Include="script\widgets\compactproofviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
@@ -225,9 +232,11 @@
     <TypeScriptCompile Include="script\uidrivers.ts" />
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\BMASliderTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
+    <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>
   <ItemGroup>

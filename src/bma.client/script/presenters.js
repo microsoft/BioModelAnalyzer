@@ -20,6 +20,7 @@ var BMA;
                 this.stagingLine = undefined;
                 this.stagingGroup = undefined;
                 this.stagingVariable = undefined;
+                this.editingVariableId = undefined;
                 var that = this;
                 this.appModel = appModel;
                 this.undoButton = undoButton;
@@ -45,8 +46,28 @@ var BMA;
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
-                            that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model);
+                            that.editingVariableId = id;
+                            that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
                             that.variableEditor.Show(0, 0);
+                        }
+                    }
+                });
+
+                window.Commands.On("VariableEdited", function () {
+                    if (that.editingVariableId !== undefined) {
+                        var model = _this.Current.model;
+                        var variables = model.Variables;
+                        var editingVariableIndex = -1;
+                        for (var i = 0; i < variables.length; i++) {
+                            if (variables[i].Id === that.editingVariableId) {
+                                editingVariableIndex = i;
+                                break;
+                            }
+                        }
+                        if (editingVariableIndex !== -1) {
+                            var params = that.variableEditor.GetVariableProperties();
+                            variables[i] = new BMA.Model.Variable(variables[i].Id, variables[i].ContainerId, variables[i].Type, params.name, params.rangeFrom, params.rangeTo, params.formula);
+                            that.OnModelUpdated();
                         }
                     }
                 });
@@ -405,6 +426,7 @@ var BMA;
             DesignSurfacePresenter.prototype.Undo = function () {
                 if (this.CanUndo) {
                     --this.currentModelIndex;
+                    this.variableEditor.Hide();
                     this.OnModelUpdated();
                 }
             };
@@ -412,6 +434,7 @@ var BMA;
             DesignSurfacePresenter.prototype.Redo = function () {
                 if (this.CanRedo) {
                     ++this.currentModelIndex;
+                    this.variableEditor.Hide();
                     this.OnModelUpdated();
                 }
             };
@@ -448,6 +471,7 @@ var BMA;
             DesignSurfacePresenter.prototype.Set = function (m, l) {
                 this.models = [{ model: m, layout: l }];
                 this.currentModelIndex = 0;
+                this.variableEditor.Hide();
                 this.OnModelUpdated();
             };
 
