@@ -116,26 +116,6 @@ let private fixMaxRepressors max =
     | 3 -> makeCircuitVar (v + "6") =. NOTHING
     | _ -> True
 
-let private notAnActivator (n : int) =
-    [| for i in 1 .. 15 do 
-            yield makeCircuitVar (sprintf "a%i" i) <>. n
-    |] |> And
-      
-let private notARepressor (n : int) =
-    [| for i in 1 .. 7 do
-            yield makeCircuitVar (sprintf "r%i" i) <>. n
-    |] |> And
-      
-let private isAnActivator (n : int) =
-    [| for i in 1 .. 15 do
-            yield makeCircuitVar (sprintf "a%i" i) =. n
-    |] |> Or  
-        
-let private isARepressor (n : int) =
-    [| for i in 1 .. 7 do
-            yield makeCircuitVar (sprintf "r%i" i) =. n
-    |] |> Or
-
 let encodeUpdateFunction gene genes maxActivators maxRepressors (tempGeneNames : string []) =
     if not (Set.contains gene genes && maxActivators > 0 && maxActivators <= 8 && maxRepressors >= 0 && maxRepressors <= 4) then
         failwith "Incorrect arguments to encodeForUpdateFunction"
