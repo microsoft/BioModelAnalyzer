@@ -101,6 +101,9 @@ module BMA {
 
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
+
+                        console.log("dragstart");
+
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                             var id = this.GetVariableAtPosition(gesture.x, gesture.y);
                             if (id !== undefined) {
@@ -154,32 +157,23 @@ module BMA {
 
                             return;
                         } else if (that.stagingVariable !== undefined) {
-                            if (that.svg !== undefined) {
-
-                                if (that.stagingGroup !== undefined) {
-                                    that.svg.remove(that.stagingGroup);
-                                }
-
-                                //that.stagingGroup = that.svg.group();
-                                //var element = window.ElementRegistry.GetElementByType(that.stagingVariable.model.Type);
-                                //var vl = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                                //that.svg.add(
-                                //    that.stagingGroup,
-                                //    element.RenderToSvg({ model: that.stagingVariable.model, layout: vl, grid: that.Grid }));
-                                //that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
-                            }
+                            that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                            var drawingSvg = <SVGElement>that.CreateSvg();
+                            that.driver.Draw(drawingSvg);
                         }
                     });
 
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
+
+                        console.log("dragEnd");
+
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
                             this.TryAddStagingLineAsLink();
                             this.stagingLine = undefined;
                             this.OnModelUpdated();
                         }
 
-                        /*
                         if (that.stagingVariable !== undefined) {
                             var x = that.stagingVariable.layout.PositionX;
                             var y = that.stagingVariable.layout.PositionY;
@@ -187,14 +181,10 @@ module BMA {
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
                             if (!that.TryAddVariable(x, y, type, id)) {
-                                if (that.stagingGroup !== undefined) {
-                                    that.svg.remove(that.stagingGroup);
-                                }
-                                that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
+                                var drawingSvg = <SVGElement>that.CreateSvg();
+                                that.driver.Draw(drawingSvg);
                             }
                         }
-                        */
-
                     });
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
@@ -566,6 +556,10 @@ module BMA {
                     }));
                 }
 
+                if (this.stagingVariable !== undefined) {
+                    var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
+                    svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
+                }
 
                 //constructing final svg image
                 this.svg.clear();

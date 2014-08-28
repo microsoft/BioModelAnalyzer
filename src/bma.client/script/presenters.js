@@ -74,6 +74,8 @@ var BMA;
                 var dragSubject = dragService.GetDragSubject();
 
                 dragSubject.dragStart.subscribe(function (gesture) {
+                    console.log("dragstart");
+
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
@@ -120,42 +122,32 @@ var BMA;
 
                         return;
                     } else if (that.stagingVariable !== undefined) {
-                        if (that.svg !== undefined) {
-                            if (that.stagingGroup !== undefined) {
-                                that.svg.remove(that.stagingGroup);
-                            }
-                            //that.stagingGroup = that.svg.group();
-                            //var element = window.ElementRegistry.GetElementByType(that.stagingVariable.model.Type);
-                            //var vl = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                            //that.svg.add(
-                            //    that.stagingGroup,
-                            //    element.RenderToSvg({ model: that.stagingVariable.model, layout: vl, grid: that.Grid }));
-                            //that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
-                        }
+                        that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                        var drawingSvg = that.CreateSvg();
+                        that.driver.Draw(drawingSvg);
                     }
                 });
 
                 dragSubject.dragEnd.subscribe(function (gesture) {
+                    console.log("dragEnd");
+
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && _this.stagingLine !== undefined) {
                         _this.TryAddStagingLineAsLink();
                         _this.stagingLine = undefined;
                         _this.OnModelUpdated();
                     }
-                    /*
+
                     if (that.stagingVariable !== undefined) {
-                    var x = that.stagingVariable.layout.PositionX;
-                    var y = that.stagingVariable.layout.PositionY;
-                    var type = that.stagingVariable.model.Type;
-                    var id = that.stagingVariable.model.Id;
-                    that.stagingVariable = undefined;
-                    if (!that.TryAddVariable(x, y, type, id)) {
-                    if (that.stagingGroup !== undefined) {
-                    that.svg.remove(that.stagingGroup);
+                        var x = that.stagingVariable.layout.PositionX;
+                        var y = that.stagingVariable.layout.PositionY;
+                        var type = that.stagingVariable.model.Type;
+                        var id = that.stagingVariable.model.Id;
+                        that.stagingVariable = undefined;
+                        if (!that.TryAddVariable(x, y, type, id)) {
+                            var drawingSvg = that.CreateSvg();
+                            that.driver.Draw(drawingSvg);
+                        }
                     }
-                    that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
-                    }
-                    }
-                    */
                 });
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
@@ -523,6 +515,11 @@ var BMA;
                         layout: { start: start, end: end },
                         grid: this.Grid
                     }));
+                }
+
+                if (this.stagingVariable !== undefined) {
+                    var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
+                    svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
                 }
 
                 //constructing final svg image

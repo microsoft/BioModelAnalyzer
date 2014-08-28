@@ -83,7 +83,7 @@ declare var InteractiveDataDisplay: any;
                         x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                         y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
                     });
-            }); 
+            });
 
             //Subject that converts input mouse events into Pan gestures 
             var createPanSubject = function (vc) {
@@ -120,18 +120,36 @@ declare var InteractiveDataDisplay: any;
                 var mouseMove = vc.onAsObservable("mousemove");
                 var mouseUp = _doc.onAsObservable("mouseup");
 
-                var dragStarts = mousedown.zip(mouseMove, function(md, mm) {
+                var stopPanning = mouseUp;
+
+                var dragStarts = mousedown.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
-                    return { x: cs.screenToDataX(md.pageX - plotDiv.offset().left), y: -cs.screenToDataY(md.pageY - plotDiv.offset().top) };
-                });
+                    var x0 = cs.screenToDataX(md.pageX - plotDiv.offset().left);
+                    var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
+
+                    return mouseMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(mouseUp);
+                    });
 
                 return dragStarts;
+            }
+
+            var createDragEndSubject = function (vc) {
+                var _doc = $(document);
+                var mousedown = that._plot.centralPart.onAsObservable("mousedown");
+                var mouseMove = vc.onAsObservable("mousemove");
+                var mouseUp = _doc.onAsObservable("mouseup");
+
+                var stopPanning = mouseUp;
+
+                var dragEndings = stopPanning;//.takeWhile(mouseMove);
+
+                return dragEndings;
             }
 
             this._dragService = {
                 dragStart: createDragStartSubject(that._plot.centralPart),
                 drag: createPanSubject(that._plot.centralPart),
-                dragEnd: $(document).onAsObservable("mouseup")
+                dragEnd: createDragEndSubject(that._plot.centralPart)
             };
 
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
