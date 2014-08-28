@@ -31,12 +31,12 @@
             });
 
             if (this.options.approved) {
-                this.prooficon.removeClass("formula-validated");
-                this.prooficon.addClass("formula-not-validated");
+                that.prooficon.removeClass("formula-not-validated");
+                that.prooficon.addClass("formula-validated");
             }
             else {
-                this.prooficon.removeClass("formula-not-validated");
-                this.prooficon.addClass("formula-validated");
+                that.prooficon.removeClass("formula-validated");
+                that.prooficon.addClass("formula-not-validated");
             };
             this.textarea.val(that.options.formula);
         },
@@ -90,14 +90,12 @@
             var upfrom = $('<div></div>').addClass("triangle-up").appendTo(divtriangles1);
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
-                if (valu < 100)
-                    that._setOption("rangeFrom", valu + 1);
+                that._setOption("rangeFrom", valu + 1);
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
-                if (valu > 0) 
-                    that._setOption("rangeFrom", valu - 1);
+                that._setOption("rangeFrom", valu - 1);
             });
 
             this.rangeTo = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
@@ -106,14 +104,12 @@
             var upto = $('<div></div>').addClass("triangle-up").appendTo(divtriangles2);
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
-                if (valu < 100)
-                    that._setOption("rangeTo", valu + 1);
+                that._setOption("rangeTo", valu + 1);
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
-                if (valu > 0) 
-                    that._setOption("rangeTo", valu - 1);
+                that._setOption("rangeTo", valu - 1);
             });
         },
 
@@ -198,18 +194,18 @@
 
         _setOption: function (key, value) {
             var that = this;
-        //if (key === "inputs")
-        //    {
-        //        this.listOfInputs.empty();
-        //        var inputs = this.options.inputs;
-        //        inputs.forEach(function (val, ind) {
-        //            var item = $('<div>' + val + '</div>').appendTo(that.listOfInputs);
-        //            item.bind("click", function () {
-        //                that.textarea.insertAtCaret($(this).text());
-        //                that.listOfInputs.hide();
-        //            });
-        //        });
-        //    }
+            if (key === "rangeFrom" || key === "rangeTo")
+            {
+                if (value > 100) {
+                    that._setOption(key, 100);
+                    return;
+                }
+
+                if (value < 0) {
+                    that._setOption(key, 0);
+                    return;
+                } 
+            }
 
             if (this.options[key] !== value) {
                 

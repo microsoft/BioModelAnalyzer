@@ -785,6 +785,7 @@
     .div-triangles {
         width: 15px;
         display: inline-block;
+        margin-bottom: -2px;
     }
 
     .inputs-container{

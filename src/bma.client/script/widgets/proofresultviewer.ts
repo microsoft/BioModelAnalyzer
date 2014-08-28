@@ -49,7 +49,7 @@
 
             var t = BMA.ArrayToTable(arr);
             t.addClass("bma-prooftable");
-            variables.popupwindow({ header: "Variables", mincontent: t });
+            variables.popupwindow({ header: "Variables", content: t });
             var proofPropagation = $("<div></div>").appendTo(that.element);
             proofPropagation.popupwindow({ header: "Proof Propagation" });
 
