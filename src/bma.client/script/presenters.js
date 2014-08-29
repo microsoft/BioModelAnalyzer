@@ -1,10 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model\biomodel.ts"/>
-/// <reference path="model\model.ts"/>
-/// <reference path="uidrivers.ts"/>
-/// <reference path="commands.ts"/>
-
+﻿
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -36,8 +30,6 @@ var BMA;
                     _this.selectedType = type;
                     _this.driver.TurnNavigation(type === undefined);
                     _this.stagingLine = undefined;
-                    //this.selectedType = this.selectedType === type ? undefined : type;
-                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -125,7 +117,6 @@ var BMA;
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
 
-                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             if (that.stagingLine.svg !== undefined) {
                                 that.svg.remove(that.stagingLine.svg);
@@ -417,7 +408,7 @@ var BMA;
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
 
-                if (this.editingVariableId) {
+                if (this.editingVariableId !== undefined) {
                     this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
                 }
 
@@ -432,6 +423,7 @@ var BMA;
                 if (this.CanUndo) {
                     --this.currentModelIndex;
                     this.variableEditor.Hide();
+                    this.editingVariableId = undefined;
                     this.OnModelUpdated();
                 }
             };
@@ -440,6 +432,7 @@ var BMA;
                 if (this.CanRedo) {
                     ++this.currentModelIndex;
                     this.variableEditor.Hide();
+                    this.editingVariableId = undefined;
                     this.OnModelUpdated();
                 }
             };
@@ -477,6 +470,7 @@ var BMA;
                 this.models = [{ model: m, layout: l }];
                 this.currentModelIndex = 0;
                 this.variableEditor.Hide();
+                this.editingVariableId = undefined;
                 this.OnModelUpdated();
             };
 
@@ -513,7 +507,6 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
-                //Generating svg elements from model and layout
                 var svgElements = [];
 
                 var containerLayouts = this.Current.layout.Containers;
@@ -551,7 +544,6 @@ var BMA;
                     svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
                 }
 
-                //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
@@ -571,4 +563,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map
