@@ -28,43 +28,43 @@
     
     it("should change a rangeFrom in <input> when widget option changed", () => {
         var value = "17";
-        var nameinput = editor.find("input").eq(1);
+        var rangeFrom = editor.find("input").eq(1);
         editor.bmaeditor("option", "rangeFrom", value);
-        expect(nameinput.val()).toEqual(value);
+        expect(rangeFrom.val()).toEqual(value);
     });
 
     it("should change a rangeFrom option in widget when it was inputed by user", () => {
         var value = "16";
-        var nameinput = editor.find("input").eq(1);
-        nameinput.val(value).change();
+        var rangeFrom = editor.find("input").eq(1);
+        rangeFrom.val(value).change();
         expect(editor.bmaeditor("option", "rangeFrom")).toEqual(value);
     });
 
     it("should change a rangeTo in <input> when widget option changed", () => {
         var value = "17";
-        var nameinput = editor.find("input").eq(2);
+        var rangeTo = editor.find("input").eq(2);
         editor.bmaeditor("option", "rangeTo", value);
-        expect(nameinput.val()).toEqual(value);
+        expect(rangeTo.val()).toEqual(value);
     });
 
     it("should change a rangeTo option in widget when it was inputed by user", () => {
         var value = "16";
-        var nameinput = editor.find("input").eq(2);
-        nameinput.val(value).change();
+        var rangeTo = editor.find("input").eq(2);
+        rangeTo.val(value).change();
         expect(editor.bmaeditor("option", "rangeTo")).toEqual(value);
     });
 
     it("should change a formula in <input> when widget option changed", () => {
         var value = "var(f)*15";
-        var nameinput = editor.find("textarea")
+        var formula = editor.find("textarea")
         editor.bmaeditor("option", "formula", value);
-        expect(nameinput.val()).toEqual(value);
+        expect(formula.val()).toEqual(value);
     });
 
     it("should change a formula option in widget when it was inputed by user", () => {
         var value = "min(4,77)-199";
-        var nameinput = editor.find("textarea")
-        nameinput.val(value).change();
+        var formula = editor.find("textarea")
+        formula.val(value).change();
         expect(editor.bmaeditor("option", "formula")).toEqual(value);
     });
 
@@ -166,20 +166,55 @@
         }
     });
 
-    it("should input formula correctly after choosing function and variable from list", () => {
+    it("should input function in formula correctly after choosing from the list", () => {
+        var functions = editor.find(".label-for-functions");
+        var textarea = editor.find("textarea");
+        var insert = editor.find(".bma-insert-function-button");
+        textarea.bind("input change", function () {
+            console.log("inputed function");
+        });
+        functions.eq(0).click();
+        insert.click();
+        expect(editor.bmaeditor("option", "formula")).toEqual("var()");
+        expect(textarea.val()).toEqual("var()");
+    });
+
+    it("should input vars in formula correctly after choosing from the list", () => {
+        var inputs = editor.find(".inputs-list-content").children();
+        var textarea = editor.find("textarea");
+        textarea.bind("input change", function () {
+            console.log("inputed variable");
+        });
+        inputs.eq(1).click();
+        expect(editor.bmaeditor("option", "formula")).toEqual(inputs.eq(1).text());
+        expect(textarea.val()).toEqual(inputs.eq(1).text());
+    });
+
+    it("should input choosed variables and functions in formula", function () {
         var functions = editor.find(".label-for-functions");
         var inputs = editor.find(".inputs-list-content").children();
-
+        var textarea = editor.find("textarea");
+        textarea.bind("input change", function () {
+            console.log("!!!!!!");
+        });
+        var insert = editor.find(".bma-insert-function-button");
         functions.eq(0).click();
-        inputs.eq(1).click();
+        insert.click();
 
-        //expect
+        expect(editor.bmaeditor("option", "formula")).toEqual("var()");
+        expect(textarea.val()).toEqual("var()");
+
+        inputs.eq(2).click();
+        expect(editor.bmaeditor("option", "formula")).toEqual("var(www)");
+        expect(textarea.val()).toEqual("var(www)");
     });
 
     it("should create a variableeditorchanged command", () => {
         spyOn(window.Commands, "Execute");
+        var nameinput = editor.find("input").eq(0);
         editor.bmaeditor("option", "name", "test");
         expect(window.Commands.Execute).not.toHaveBeenCalled();
+        expect(nameinput.val()).toEqual("test");
     });
 
     it("should not create a variableeditorchanged command", () => {
@@ -189,6 +224,8 @@
         textarea.val("testformula").change()
 
         expect(window.Commands.Execute).toHaveBeenCalledWith("VariableEdited", {});
+        expect(editor.bmaeditor("option", "formula")).toEqual("testformula");
+        expect(textarea.val()).toEqual("testformula");
     });
 
 

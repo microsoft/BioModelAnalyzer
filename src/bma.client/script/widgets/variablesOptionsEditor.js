@@ -1,6 +1,10 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\functionsregistry.ts"/>
+(function ($) {
     $.widget("BMA.bmaeditor", {
         options: {
+            //variable: BMA.Model.Variable
             name: "name",
             rangeFrom: 0,
             rangeTo: 0,
@@ -19,7 +23,7 @@
             inputs.forEach(function (val, ind) {
                 var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                 item.bind("click", function () {
-                    that.textarea.insertAtCaret($(this).text());
+                    that.textarea.insertAtCaret($(this).text()).change();
                     that.listOfInputs.hide();
                 });
             });
@@ -112,7 +116,7 @@
 
             var functions = this.options.functions;
             functions.forEach(function (val, ind) {
-                var item = $('<div class="label-for-functions">' + val + '</div>').appendTo(div1);
+                var item = $('<div class="label-for-functions"></div>').text(val).appendTo(div1);
                 item.bind("click", function () {
                     that.selected = $(this).addClass("ui-selected");
                     div1.children().not(that.selected).removeClass("ui-selected");
@@ -124,7 +128,7 @@
             insertButton.bind("click", function () {
                 var about = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
                 var caret = that.getCaretPos(that.textarea) + about.Offset;
-                that.textarea.insertAtCaret(about.InsertText);
+                that.textarea.insertAtCaret(about.InsertText).change();
                 that.textarea[0].setSelectionRange(caret, caret);
             });
             $(div1.children()[0]).click();
@@ -211,11 +215,13 @@ jQuery.fn.extend({
     insertAtCaret: function (myValue) {
         return this.each(function (i) {
             if (document.selection) {
+                // Для браузеров типа Internet Explorer
                 this.focus();
                 var sel = document.selection.createRange();
                 sel.text = myValue;
                 this.focus();
             } else if (this.selectionStart || this.selectionStart == '0') {
+                // Для браузеров типа Firefox и других Webkit-ов
                 var startPos = this.selectionStart;
                 var endPos = this.selectionEnd;
                 var scrollTop = this.scrollTop;
@@ -231,3 +237,4 @@ jQuery.fn.extend({
         });
     }
 });
+//# sourceMappingURL=variablesOptionsEditor.js.map

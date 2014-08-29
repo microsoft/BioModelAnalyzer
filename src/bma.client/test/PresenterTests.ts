@@ -12,7 +12,7 @@ describe("DesignSurfacePresenter", () => {
     it("should be created from BioModel, Layout and ISVGPlot driver instance", () => {
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
-
+        var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($());
         //var presenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, undefined);
         //expect(presenter).toBeDefined();
 
@@ -23,7 +23,7 @@ describe("DesignSurfacePresenter", () => {
             GetDragSubject: function () {
                 this.subscribe = function () { };
             }
-        }, testbutton, testbutton, undefined);
+        }, testbutton, testbutton, variableEditorDriver);
         expect(presenter).toBeDefined();
     });
 

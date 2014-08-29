@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.proofresultviewer", {
         options: {
             issucceeded: true,
@@ -26,8 +28,6 @@
                 $('<p style="font-size:small">After stepping through separate interactions in the model, the analisys failed to determine a final stable state</p>').appendTo(that.element);
             }
 
-            var variables = $("<div></div>").appendTo(that.element);
-
             var arr = [];
             arr[0] = [];
             arr[0][0] = 0;
@@ -42,34 +42,21 @@
             arr[2][1] = 21;
             arr[2][2] = 22;
 
-            var t = BMA.ArrayToTable(arr);
-            t.addClass("bma-prooftable");
-            variables.compactproofviewer({ header: "Variables", content: t.clone(), icon: "max" });
-            var popup = $('<div class="popup-window"></div>').appendTo('body').hide();
-
-            var proofPropagation = $("<div></div>").appendTo(that.element);
-            proofPropagation.compactproofviewer({ header: "Proof Propagation", icon: "max" });
-
             var log = [];
             log[0] = [];
             log[1] = [];
             log[1][1] = true;
             log[2] = [];
             log[2][1] = false;
-            BMA.LogicToTable(t, log);
 
-            popup.compactproofviewer({ header: "Variables", content: t, icon: "min" });
-            var button = variables.compactproofviewer("getbutton");
-            var closepopup = popup.compactproofviewer("getbutton");
+            var variables = $("<div></div>").coloredtableviewer({ numericData: arr, colorData: log });
+            var compactvariables = $('<div></div>').appendTo(that.element).resultswindowviewer({ header: "Variables", content: variables, icon: "max" });
 
-            button.bind("click", function () {
-                popup.compactproofviewer("toggle");
-                variables.hide();
-            });
+            var proof = $("<div></div>");
+            var proofPropagation = $("<div></div>").appendTo(that.element).resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max" });
 
-            closepopup.bind("click", function () {
-                variables.show();
-                popup.compactproofviewer("toggle");
+            window.Commands.On("Expand", function (param) {
+                alert(param);
             });
         },
         _create: function () {
@@ -77,8 +64,6 @@
             this.refresh();
         },
         _destroy: function () {
-            var contents;
-
             this.element.empty();
         },
         _setOption: function (key, value) {
@@ -88,3 +73,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=proofresultviewer.js.map

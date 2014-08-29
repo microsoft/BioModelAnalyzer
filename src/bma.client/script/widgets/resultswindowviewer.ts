@@ -2,7 +2,7 @@
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 (function ($) {
-    $.widget("BMA.compactproofviewer", {
+    $.widget("BMA.resultswindowviewer", {
         options: {
             content: $(),
             header: "",
@@ -19,7 +19,6 @@
             var that = this;
             var options = this.options;
             var url = "";
-            //this.window = $('<div></div>').appendTo(this.element);
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
             else
@@ -27,32 +26,17 @@
                     url = "../../images/minimize.png";
             else url = this.options.icon;
             
-            this.button = $('<img class="togglePopUpWindow" src="' +url+ '">').appendTo(this.element);
+            this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(this.element);
+            this.button.bind("click", function () {
+                window.Commands.Execute("Expand", that.options.header);
+            });
+
             $('<div>' + options.header + '</div>').appendTo(this.element);
             this.content = $('<div></div>').appendTo(this.element);
-            
-
-            //this.maxiwindow = $('<div></div>').addClass("popup-window").hide();
-            //var minbutton = $('<img class="togglePopUpWindow" src="../../images/minimize.png">').appendTo(this.maxiwindow);
-            //$('<div>' + options.header + '</div>').appendTo(this.maxiwindow);
-            //options.maxcontent.appendTo(this.maxiwindow);
-            //this.maxiwindow.appendTo('body');
-            
-            //this.button.bind("click", function () {
-            //    that._toggle();
-            //});
-            //minbutton.bind("click", function () {
-            //    that._toggle();
-            //});
-
-            //this.maxiwindow.draggable({ scroll: false, constraint: parent });
             this.refresh();
         },
 
         toggle: function () { 
-            //var that = this;
-            //this.maxiwindow.toggle('size', { easing: 'easeInExpo' }, 200, function () {  });
-            //that.window.toggle();
             this.element.toggle(this.options.effects);
         },
 
@@ -74,8 +58,8 @@
 } (jQuery));
 
 interface JQuery {
-    compactproofviewer (): JQuery;
-    compactproofviewer(settings: Object): JQuery;
-    compactproofviewer(optionLiteral: string, optionName: string): any;
-    compactproofviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+    resultswindowviewer (): JQuery;
+    resultswindowviewer(settings: Object): JQuery;
+    resultswindowviewer(optionLiteral: string, optionName: string): any;
+    resultswindowviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 } 

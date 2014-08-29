@@ -1,4 +1,7 @@
-﻿var BMA;
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="widgets\drawingsurface.ts"/>
+var BMA;
 (function (BMA) {
     (function (UIDrivers) {
         var SVGPlotDriver = (function () {
@@ -69,6 +72,7 @@
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
+                //this.variableEditor.bmaeditor('initialize', { inputs: options, name: variable.Name, formula: variable.Formula, rangeFrom: variable.RangeFrom, rangeFrom: variable.RangeTo})
             };
 
             VariableEditorDriver.prototype.Show = function (x, y) {
@@ -101,6 +105,22 @@
             return ProofViewer;
         })();
         UIDrivers.ProofViewer = ProofViewer;
+
+        var PopupDriver = (function () {
+            //private compactlist;
+            function PopupDriver(popuplist) {
+                this.popuplist = popuplist;
+                //this.compactlist = compactlist;
+            }
+            PopupDriver.prototype.Show = function (content) {
+            };
+
+            PopupDriver.prototype.Hide = function () {
+            };
+            return PopupDriver;
+        })();
+        UIDrivers.PopupDriver = PopupDriver;
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=uidrivers.js.map

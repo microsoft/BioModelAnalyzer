@@ -9,8 +9,6 @@
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
-/// <reference path="script\arraytotableconverter.ts"/>
-/// <reference path="script\logictableconverter.ts"/>
 
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\toolbarpanel.ts"/>
@@ -21,7 +19,8 @@
 /// <reference path="script\widgets\bmaslider.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
-/// <reference path="script\widgets\compactproofviewer.ts"/>
+/// <reference path="script\widgets\resultswindowviewer.ts"/>
+/// <reference path="script\widgets\coloredtableviewer.ts"/>
 
 $(document).ready(function () {
     //Creating CommandRegistry

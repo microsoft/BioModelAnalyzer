@@ -29,3 +29,4 @@
         expect(slider.bmazoomslider("option", "value")).toEqual(1);
     });
 });
+//# sourceMappingURL=BMASliderTest.js.map

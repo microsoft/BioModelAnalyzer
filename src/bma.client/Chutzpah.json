@@ -19,9 +19,11 @@
          
          {"Path": "script/jquery.svg.js"},
          {"Path": "script/rx.js"},
-         {"Path": "script/rx.jQuery.js"},
-         {"Path": "script/idd.heatmapworker.js"},
-         {"Path": "script/idd.js"},
+        { "Path": "script/rx.jQuery.js" },
+        
+        {"Path": "script/idd.js"},
+         
+         
          
          {"Path": "script/svgplot.js"},
          {"Path": "script/scalablegridlinesplot.js"},

@@ -110,5 +110,23 @@ module BMA {
                 $("#icon1").click();
             }
         }
+
+        export class PopupDriver implements IPopup {
+            private popuplist;
+            //private compactlist;
+
+            constructor(popuplist: JQuery) {
+                this.popuplist = popuplist;
+                //this.compactlist = compactlist;
+            }
+
+            public Show(content: JQuery) {
+                
+            }
+
+            public Hide() {
+            }
+
+        }
     }
 } 

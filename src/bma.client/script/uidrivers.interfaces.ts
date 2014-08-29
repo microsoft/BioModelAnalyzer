@@ -30,6 +30,11 @@ module BMA {
 
         }
 
+        export interface IPopup {
+            Show(content: JQuery);
+            Hide();
+        }
+
         export interface IProofResultViewer {
             ShowResult(result: BMA.Model.ProofResult);
             OnProofStarted();

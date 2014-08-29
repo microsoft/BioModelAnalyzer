@@ -1,4 +1,6 @@
-﻿var BMA;
+﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+var BMA;
 (function (BMA) {
     function LogicToTable(table, log) {
         for (var i = 0; i < log.length; i++) {
@@ -16,3 +18,4 @@
     }
     BMA.LogicToTable = LogicToTable;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=logictableconverter.js.map

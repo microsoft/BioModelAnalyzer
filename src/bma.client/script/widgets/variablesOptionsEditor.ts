@@ -25,7 +25,7 @@
             inputs.forEach(function (val, ind) {
                 var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                 item.bind("click", function () {
-                    that.textarea.insertAtCaret($(this).text());
+                    that.textarea.insertAtCaret($(this).text()).change();
                     that.listOfInputs.hide();
                 });
             });
@@ -125,7 +125,7 @@
             var functions = this.options.functions;
             functions.forEach(
                 function (val, ind) {
-                    var item = $('<div class="label-for-functions">' + val + '</div>').appendTo(div1);
+                    var item = $('<div class="label-for-functions"></div>').text(val).appendTo(div1);
                     item.bind("click", function () {
                         that.selected = $(this).addClass("ui-selected");
                         div1.children().not(that.selected).removeClass("ui-selected");
@@ -137,7 +137,7 @@
             insertButton.bind("click", function () {
                 var about = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
                 var caret = that.getCaretPos(that.textarea) + about.Offset;
-                that.textarea.insertAtCaret(about.InsertText);
+                that.textarea.insertAtCaret(about.InsertText).change();
                 that.textarea[0].setSelectionRange(caret, caret);
             });
             $(div1.children()[0]).click();

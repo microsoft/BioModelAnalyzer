@@ -1,5 +1,7 @@
-﻿(function ($) {
-    $.widget("BMA.compactproofviewer", {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.resultswindowviewer", {
         options: {
             content: $(),
             header: "",
@@ -15,7 +17,6 @@
             var that = this;
             var options = this.options;
             var url = "";
-
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
             else if (this.options.icon === "min")
@@ -24,9 +25,12 @@
                 url = this.options.icon;
 
             this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(this.element);
+            this.button.bind("click", function () {
+                window.Commands.Execute("Expand", that.options.header);
+            });
+
             $('<div>' + options.header + '</div>').appendTo(this.element);
             this.content = $('<div></div>').appendTo(this.element);
-
             this.refresh();
         },
         toggle: function () {
@@ -45,3 +49,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=compactproofviewer.js.map
