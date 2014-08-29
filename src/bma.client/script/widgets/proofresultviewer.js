@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.proofresultviewer", {
         options: {
             issucceeded: true,
@@ -90,4 +88,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=proofresultviewer.js.map

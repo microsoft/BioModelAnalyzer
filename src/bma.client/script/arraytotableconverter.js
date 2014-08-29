@@ -1,6 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-var BMA;
+﻿var BMA;
 (function (BMA) {
     function ArrayToTable(array) {
         var table = $('<table></table>');
@@ -14,4 +12,3 @@ var BMA;
     }
     BMA.ArrayToTable = ArrayToTable;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=arraytotableconverter.js.map

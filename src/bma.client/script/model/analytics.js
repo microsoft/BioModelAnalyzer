@@ -27,4 +27,3 @@
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=analytics.js.map

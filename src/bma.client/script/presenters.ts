@@ -80,6 +80,7 @@ module BMA {
                 });
 
                 window.Commands.On("VariableEdited", () => {
+                    var that = this;
                     if (that.editingVariableId !== undefined) {
                         var model = this.Current.model;
                         var variables = model.Variables;
@@ -472,6 +473,10 @@ module BMA {
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
 
+                if (this.editingVariableId !== undefined) {
+                    this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
+                }
+
                 this.appModel.BioModel = this.Current.model;
                 this.appModel.Layout = this.Current.layout;
 
@@ -483,6 +488,7 @@ module BMA {
                 if (this.CanUndo) {
                     --this.currentModelIndex;
                     this.variableEditor.Hide();
+                    this.editingVariableId = undefined;
                     this.OnModelUpdated();
                 }
             }
@@ -491,6 +497,7 @@ module BMA {
                 if (this.CanRedo) {
                     ++this.currentModelIndex;
                     this.variableEditor.Hide();
+                    this.editingVariableId = undefined;
                     this.OnModelUpdated();
                 }
             }
@@ -520,6 +527,7 @@ module BMA {
                 this.models = [{ model: m, layout: l }];
                 this.currentModelIndex = 0;
                 this.variableEditor.Hide();
+                this.editingVariableId = undefined;
                 this.OnModelUpdated();
             }
 
