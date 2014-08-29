@@ -89,13 +89,17 @@ module BMA {
             }
         }
 
-        export class ProofViewer implements IProofResultViewer {
+        export class ProofViewer implements IProofResultViewer, IPopup {
             private proofAccordion: JQuery;
             private proofContentViewer: JQuery;
 
             constructor(proofAccordion, proofContentViewer) {
                 this.proofAccordion = proofAccordion;
                 this.proofContentViewer = proofContentViewer;
+            }
+
+            public SetData(params) {
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, numericData: params.numericData, colorData: params.colorData});
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {
@@ -109,6 +113,28 @@ module BMA {
             public OnProofFailed() {
                 $("#icon1").click();
             }
+
+            public Show(data: any, params: any) {
+                if (params.viewMode === "compact") {
+                    this.DataToCompactMode(data);
+                }
+
+                if (params.viewMode === "full") {
+                    this.DataToFullMode(data);
+                }
+
+                this.SetData(data);
+
+                this.proofContentViewer.proofresultviewer("show",params.tab);
+            }
+
+            public Hide(params) {
+                this.proofContentViewer.proofresultviewer("hide", params.tab);
+            }
+
+            private DataToCompactMode(data) { }
+            private DataToFullMode(data) { }
+            
         }
 
         export class PopupDriver implements IPopup {
@@ -120,13 +146,18 @@ module BMA {
                 //this.compactlist = compactlist;
             }
 
-            public Show(content: JQuery) {
-                
+            public Show(content: any, params: any) {
+
             }
 
             public Hide() {
             }
 
+            private createResultView(content, params) {
+                if (params.type === "coloredTable") {
+
+                }
+            }
         }
     }
 } 

@@ -5,7 +5,9 @@
     $.widget("BMA.proofresultviewer", {
         options: {
             issucceeded: true,
-            time: 0
+            time: 0,
+            numericData: undefined,
+            colorData: undefined
         },
 
         refresh: function () {
@@ -31,40 +33,58 @@
                 $('<p style="font-size:small">After stepping through separate interactions in the model, the analisys failed to determine a final stable state</p>').appendTo(that.element);
             }
 
-            var arr = [];
-            arr[0] = [];
-            arr[0][0] = 0;
-            arr[0][1] = 1;
-            arr[0][2] = 2;
-            arr[1] = [];
-            arr[1][0] = 10;
-            arr[1][1] = 11;
-            arr[1][2] = 12;
-            arr[2] = [];
-            arr[2][0] = 20;
-            arr[2][1] = 21;
-            arr[2][2] = 22;
+            //var arr = [];
+            //arr[0] = [];
+            //arr[0][0] = 0;
+            //arr[0][1] = 1;
+            //arr[0][2] = 2;
+            //arr[1] = [];
+            //arr[1][0] = 10;
+            //arr[1][1] = 11;
+            //arr[1][2] = 12;
+            //arr[2] = [];
+            //arr[2][0] = 20;
+            //arr[2][1] = 21;
+            //arr[2][2] = 22;
 
-            var log = [];
-            log[0] = [];
-            log[1] = [];
-            log[1][1] = true;
-            log[2] = [];
-            log[2][1] = false;
+            //var log = [];
+            //log[0] = [];
+            //log[1] = [];
+            //log[1][1] = true;
+            //log[2] = [];
+            //log[2][1] = false;
 
-            var variables = $("<div></div>").coloredtableviewer({ numericData: arr, colorData: log });
-            var compactvariables = $('<div></div>')
+            var variables = $("<div></div>").coloredtableviewer({ numericData: options.variablesData, colorData: options.colorData });
+            this.compactvariables = $('<div></div>')
                 .appendTo(that.element)
                 .resultswindowviewer({ header: "Variables", content: variables, icon: "max" });
             
             var proof = $("<div></div>");
-            var proofPropagation = $("<div></div>")
+            this.proofPropagation = $("<div></div>")
                 .appendTo(that.element)
                 .resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max" });
 
             window.Commands.On("Expand", (param) => {
                 alert(param);
             });
+        },
+
+        show: function (tab) {
+            if (tab === "variables") {
+                this.compactvariables.show();
+            }
+            if (tab === "proof") {
+                this.proofPropagation.show();
+            }
+        },
+
+        hide: function (tab) {
+            if (tab === "variables") {
+                this.compactvariables.hide();
+            }
+            if (tab === "proof") {
+                this.proofPropagation.hide();
+            }
         },
 
         _create: function () {

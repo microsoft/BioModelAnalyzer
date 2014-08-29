@@ -31,12 +31,14 @@ module BMA {
         }
 
         export interface IPopup {
-            Show(content: JQuery);
-            Hide();
+            Show(content, params);
+            Hide(params);
         }
+
 
         export interface IProofResultViewer {
             ShowResult(result: BMA.Model.ProofResult);
+            SetData(params);
             OnProofStarted();
             OnProofFailed();
         }

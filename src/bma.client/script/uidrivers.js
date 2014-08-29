@@ -91,6 +91,10 @@ var BMA;
                 this.proofAccordion = proofAccordion;
                 this.proofContentViewer = proofContentViewer;
             }
+            ProofViewer.prototype.SetData = function (params) {
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, numericData: params.numericData, colorData: params.colorData });
+            };
+
             ProofViewer.prototype.ShowResult = function (result) {
                 this.proofAccordion.bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } });
             };
@@ -102,6 +106,29 @@ var BMA;
             ProofViewer.prototype.OnProofFailed = function () {
                 $("#icon1").click();
             };
+
+            ProofViewer.prototype.Show = function (data, params) {
+                if (params.viewMode === "compact") {
+                    this.DataToCompactMode(data);
+                }
+
+                if (params.viewMode === "full") {
+                    this.DataToFullMode(data);
+                }
+
+                this.SetData(data);
+
+                this.proofContentViewer.proofresultviewer("show", params.tab);
+            };
+
+            ProofViewer.prototype.Hide = function (params) {
+                this.proofContentViewer.proofresultviewer("hide", params.tab);
+            };
+
+            ProofViewer.prototype.DataToCompactMode = function (data) {
+            };
+            ProofViewer.prototype.DataToFullMode = function (data) {
+            };
             return ProofViewer;
         })();
         UIDrivers.ProofViewer = ProofViewer;
@@ -112,10 +139,15 @@ var BMA;
                 this.popuplist = popuplist;
                 //this.compactlist = compactlist;
             }
-            PopupDriver.prototype.Show = function (content) {
+            PopupDriver.prototype.Show = function (content, params) {
             };
 
             PopupDriver.prototype.Hide = function () {
+            };
+
+            PopupDriver.prototype.createResultView = function (content, params) {
+                if (params.type === "coloredTable") {
+                }
             };
             return PopupDriver;
         })();
