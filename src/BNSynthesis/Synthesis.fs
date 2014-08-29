@@ -45,14 +45,14 @@ let private buildGraph edges =
         adjacency <- Map.add u something adjacency
     adjacency
 
-let private askNonTransition node symVars =
-    let counter = ref 0 // hack
+let private askNonTransition gene symVars =
+    let counter = ref 0
         
     fun (profile : bool []) ->
         let nonTransitionEnforced = makeEnforcedVar (sprintf "enforced_%i" !counter)
-        counter := !counter + 1 // hack
+        counter := !counter + 1
 
-        let encoding, same = circuitEvaluatesToSame node symVars profile
+        let encoding, same = circuitEvaluatesToSame gene symVars profile
         (encoding &&. If (same, nonTransitionEnforced =. 1, nonTransitionEnforced =. 0),
             nonTransitionEnforced)
 
@@ -93,7 +93,6 @@ let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []
 
         solver.Check() = Status.SATISFIABLE
 
-    // IMPLEMENT SEEN_EDGES OPTIMISATION
     set [ for (a, b) in undirectedEdges do
               if checkEdge (a, b) then yield (a, b)
               if checkEdge (b, a) then yield (b, a) ]
