@@ -11,7 +11,7 @@ using System.Web.Http;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace bma.client
+namespace bma.client.Controllers
 {
     public class AnalyzeController : ApiController
     {
@@ -28,7 +28,7 @@ namespace bma.client
 
             //var log = new DefaultLogService();
 
-           // var azureLogService = new LogService();
+            // var azureLogService = new LogService();
 
             // SI: Refactor if-clauses into separate methods. 
             if (engineName == "VMCAI")
@@ -41,15 +41,15 @@ namespace bma.client
                     var analyisStartTime = DateTime.Now;
 
                     // Call the Analyzer and get the Output Xml
-                   // if (input.EnableLogging)
-                   // {
-                   //     analyzer.LoggingOn(log);
-                   // }
-                   // else
-                   // {
-                        analyzer.LoggingOff();
+                    // if (input.EnableLogging)
+                    // {
+                    //     analyzer.LoggingOn(log);
+                    // }
+                    // else
+                    // {
+                    analyzer.LoggingOff();
                     //    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
-                   // }
+                    // }
 
                     var outputXml = analyzer.checkStability(inputXml);
 
@@ -78,10 +78,10 @@ namespace bma.client
                 }
                 catch (Exception ex)
                 {
-                  //  azureLogService.Debug("Analyze Exception", ex.ToString());
+                    //  azureLogService.Debug("Analyze Exception", ex.ToString());
 
                     // Return an Unknown if fails
-                    var outputData = new AnalysisOutput 
+                    var outputData = new AnalysisOutput
                     {
                         Status = "unknown"
                         /* StatusTypes.Unknown,
@@ -224,14 +224,15 @@ namespace bma.client
         public Relationship[] Relationships { get; set; }
     }
 
-    public class Variable {
+    public class Variable
+    {
         [XmlAttribute]
         public int Id { get; set; }
 
         public string Name { get; set; }
 
         public double RangeFrom { get; set; }
-        
+
         public double RangeTo { get; set; }
 
         public string Function { get; set; }
@@ -256,14 +257,14 @@ namespace bma.client
 
     public struct StatusTypes
     {
-         public const string Default = "Default";
-         public const string TryingStabilizing = "TryingStabilizing";
-         public const string Bifurcation = "Bifurcation";
-         public const string Cycle = "Cycle";
-         public const string Stabilizing = "Stabilizing";
-         public const string NotStabilizing = "NotStabilizing";
-         public const string Fixpoint = "Fixpoint";
-         public const string Unknown = "Unknown";
-         public const string Error = "Error";
+        public const string Default = "Default";
+        public const string TryingStabilizing = "TryingStabilizing";
+        public const string Bifurcation = "Bifurcation";
+        public const string Cycle = "Cycle";
+        public const string Stabilizing = "Stabilizing";
+        public const string NotStabilizing = "NotStabilizing";
+        public const string Fixpoint = "Fixpoint";
+        public const string Unknown = "Unknown";
+        public const string Error = "Error";
     }
 }
