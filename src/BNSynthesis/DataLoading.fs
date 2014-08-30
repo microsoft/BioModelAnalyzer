@@ -1,7 +1,6 @@
 ﻿module DataLoading
 
 open FSharp.Data
-open FSharp.Data.CsvExtensions
 
 let HOME_DIR = System.Environment.GetEnvironmentVariable("HOMEDRIVE") + "\\" + System.Environment.GetEnvironmentVariable("HOMEPATH") + "\\"
 

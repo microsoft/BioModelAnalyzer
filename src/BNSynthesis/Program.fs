@@ -2,7 +2,6 @@
 
 open DataLoading
 open FSharp.Data
-open FSharpx.Collections
 
 let synth (statesFilename : string) edgesFilename initialStatesFilename targetStatesFilename nonTransitionsNodesFilename =
     let geneNames = CsvFile.Load(statesFilename).Headers |> Option.get |> Seq.skip 1 |> Array.ofSeq

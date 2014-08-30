@@ -1,36 +1,20 @@
 ﻿module Synthesis
 
-open FSharp.Data
 open Microsoft.Z3
 open Microsoft.Z3.FSharp.Common
 open Microsoft.Z3.FSharp.Bool
-open Microsoft.Z3.FSharp.BitVec
 open DataLoading
 open FunctionEncoding
 open ShortestPaths
-open FSharpx.Collections
 open FSharp.Data
-open FSharp.Data.CsvExtensions
 
 type NumNonTransitionsEnforced = All | Num of int | DropFraction of int
-
-let private constraintsBool (m : Model) (d : FuncDecl)  =
-    let x = System.Boolean.Parse(m.[d].ToString())
-    (Bool (d.Name.ToString())) =. not x
-
-let private addConstraintsBool (solver : Solver) (m : Model) (ds : FuncDecl []) =
-    let constraints = Or <| Array.map (constraintsBool m) ds
-    solver.Add(constraints)
 
 let private constraintsBitVec ctor (m : Model) (d : FuncDecl) =
     let x = System.Int32.Parse(m.[d].ToString())
     (ctor (d.Name.ToString())) <>. x
 
-let private addConstraintsEnforcedVar (solver : Solver) (m : Model) (ds : FuncDecl []) =
-    let constraints = Or <| Array.map (constraintsBitVec makeEnforcedVar m) ds
-    solver.Add(constraints)
-
-let addConstraintsCircuitVar (solver : Solver) (m : Model) (ds : FuncDecl []) =
+let private addConstraintsCircuitVar (solver : Solver) (m : Model) (ds : FuncDecl []) =
     let constraints = Or <| Array.map (constraintsBitVec makeCircuitVar m) ds
     solver.Add(constraints)
 
