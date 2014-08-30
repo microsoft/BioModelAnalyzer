@@ -31,7 +31,6 @@ let getExpressionProfiles (statesFilename : string) nonTransitionEnforcedStates 
     let csv = CsvFile.Load(statesFilename).Cache()
 
     fun gene ->
-        let temp = csv.Headers
         let statesWithGeneTransitions = statesWithGeneTransitions geneNames.[gene - 2] // GET RID OF -2 EVERYWHERE
         let rowsWithTransitions (row : FSharp.Data.CsvRow) = Set.contains row.Columns.[0] statesWithGeneTransitions
         let rowsWithoutTransitions (row : FSharp.Data.CsvRow) =

@@ -63,23 +63,23 @@ let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []
     let undirectedEdges = geneTransitions geneNames.[gene - 2] // GET RID OF -2 EVERYWHERE    
     let manyNonTransitionsEnforced = manyNonTransitionsEnforced gene symVars nonCloudExpressionProfilesWithoutGeneTransitions numNonTransitionsEnforced
 
-    let encodeTransition (stateA, stateB) =
+    let encodeTransition stateA =
         let profile s = expressionProfilesWithGeneTransitions.Filter(fun row -> row.Columns.[0] = s).Rows |> Seq.head |> rowToArray // not efficent
         let differentA = (let e, v = circuitEvaluatesToDifferent gene symVars (profile stateA) in e &&. v)
 
         differentA
 
-    let checkEdge (a, b) =
+    let checkTransition a =
         solver.Reset()
         solver.Add (circuitEncoding,
                     manyNonTransitionsEnforced,
-                    encodeTransition (a, b))
+                    encodeTransition a)
 
         solver.Check() = Status.SATISFIABLE
 
     set [ for (a, b) in undirectedEdges do
-              if checkEdge (a, b) then yield (a, b)
-              if checkEdge (b, a) then yield (b, a) ]
+              if checkTransition a then yield (a, b)
+              if checkTransition b then yield (b, a) ]
 
 let private findFunctions (solver : Solver) gene genes (geneNames : string []) maxActivators maxRepressors numNonTransitionsEnforced shortestPaths
                           (expressionProfilesWithGeneTransitions  : Runtime.CsvFile<CsvRow>) (nonCloudExpressionProfilesWithoutGeneTransitions : Runtime.CsvFile<CsvRow>) =
