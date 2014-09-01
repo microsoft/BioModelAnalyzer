@@ -72,7 +72,6 @@ var BMA;
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
-                //this.variableEditor.bmaeditor('initialize', { inputs: options, name: variable.Name, formula: variable.Formula, rangeFrom: variable.RangeFrom, rangeFrom: variable.RangeTo})
             };
 
             VariableEditorDriver.prototype.Show = function (x, y) {
@@ -107,17 +106,7 @@ var BMA;
                 $("#icon1").click();
             };
 
-            ProofViewer.prototype.Show = function (data, params) {
-                if (params.viewMode === "compact") {
-                    this.DataToCompactMode(data);
-                }
-
-                if (params.viewMode === "full") {
-                    this.DataToFullMode(data);
-                }
-
-                this.SetData(data);
-
+            ProofViewer.prototype.Show = function (params) {
                 this.proofContentViewer.proofresultviewer("show", params.tab);
             };
 
@@ -134,18 +123,21 @@ var BMA;
         UIDrivers.ProofViewer = ProofViewer;
 
         var PopupDriver = (function () {
-            //private compactlist;
-            function PopupDriver(popuplist) {
-                this.popuplist = popuplist;
-                //this.compactlist = compactlist;
+            function PopupDriver(popupWindow) {
+                this.popupWindow = popupWindow;
             }
-            PopupDriver.prototype.Show = function (content, params) {
+            PopupDriver.prototype.Show = function (params) {
+                var that = this;
+                this.createResultView(params);
+                this.popupWindow.resultswindowviewer({ header: params.tab });
+                this.popupWindow.show();
             };
 
             PopupDriver.prototype.Hide = function () {
+                this.popupWindow.hide();
             };
 
-            PopupDriver.prototype.createResultView = function (content, params) {
+            PopupDriver.prototype.createResultView = function (params) {
                 if (params.type === "coloredTable") {
                 }
             };

@@ -98,6 +98,7 @@ $(document).ready(function () {
 
     $("#editor").bmaeditor();
     $("#tabs-1").proofresultviewer();
+    var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -105,9 +106,10 @@ $(document).ready(function () {
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
+    var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
-    var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer);
+    var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
 });
 //# sourceMappingURL=app.js.map

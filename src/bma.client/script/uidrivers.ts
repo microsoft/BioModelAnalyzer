@@ -76,8 +76,6 @@ module BMA {
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
-
-                //this.variableEditor.bmaeditor('initialize', { inputs: options, name: variable.Name, formula: variable.Formula, rangeFrom: variable.RangeFrom, rangeFrom: variable.RangeTo})
             }
 
             public Show(x: number, y: number) {
@@ -89,7 +87,7 @@ module BMA {
             }
         }
 
-        export class ProofViewer implements IProofResultViewer, IPopup {
+        export class ProofViewer implements IProofResultViewer {
             private proofAccordion: JQuery;
             private proofContentViewer: JQuery;
 
@@ -114,17 +112,7 @@ module BMA {
                 $("#icon1").click();
             }
 
-            public Show(data: any, params: any) {
-                if (params.viewMode === "compact") {
-                    this.DataToCompactMode(data);
-                }
-
-                if (params.viewMode === "full") {
-                    this.DataToFullMode(data);
-                }
-
-                this.SetData(data);
-
+            public Show(params: any) {
                 this.proofContentViewer.proofresultviewer("show",params.tab);
             }
 
@@ -138,24 +126,24 @@ module BMA {
         }
 
         export class PopupDriver implements IPopup {
-            private popuplist;
-            //private compactlist;
-
-            constructor(popuplist: JQuery) {
-                this.popuplist = popuplist;
-                //this.compactlist = compactlist;
+            private popupWindow;
+            constructor(popupWindow) {
+                this.popupWindow = popupWindow;
             }
 
-            public Show(content: any, params: any) {
-
+            public Show(params: any) {
+                var that = this;
+                this.createResultView(params);
+                this.popupWindow.resultswindowviewer({ header: params.tab });
+                this.popupWindow.show();
             }
 
             public Hide() {
+                this.popupWindow.hide();
             }
 
-            private createResultView(content, params) {
+            private createResultView(params) {
                 if (params.type === "coloredTable") {
-
                 }
             }
         }

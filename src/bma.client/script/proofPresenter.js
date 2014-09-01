@@ -2,7 +2,7 @@
 (function (BMA) {
     (function (Presenters) {
         var ProofPresenter = (function () {
-            function ProofPresenter(appModel, proofResultViewer) {
+            function ProofPresenter(appModel, proofResultViewer, popupViewer) {
                 this.appModel = appModel;
 
                 window.Commands.On("ProofRequested", function (args) {
@@ -21,6 +21,16 @@
                         }
                     });
                 });
+
+                window.Commands.On("Expand", function (param) {
+                    proofResultViewer.Hide({ tab: param });
+                    popupViewer.Show({ tab: param, type: "coloredTable" });
+                });
+
+                window.Commands.On("Collapse", function (param) {
+                    proofResultViewer.Show({ tab: param });
+                    popupViewer.Hide();
+                });
             }
             return ProofPresenter;
         })();
@@ -28,4 +38,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=proofPresenter.js.map
+//# sourceMappingURL=proofpresenter.js.map

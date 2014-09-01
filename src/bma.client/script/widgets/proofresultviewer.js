@@ -54,25 +54,26 @@
 
             var proof = $("<div></div>");
             this.proofPropagation = $("<div></div>").appendTo(that.element).resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max" });
-
-            window.Commands.On("Expand", function (param) {
-                alert(param);
-            });
+            //window.Commands.On("Expand", (param) => {
+            //    alert(param);
+            //});
         },
         show: function (tab) {
-            if (tab === "variables") {
+            if (tab === "Variables") {
                 this.compactvariables.show();
             }
-            if (tab === "proof") {
+            if (tab === "Proof Propagation") {
                 this.proofPropagation.show();
             }
         },
         hide: function (tab) {
-            if (tab === "variables") {
+            if (tab === "Variables") {
                 this.compactvariables.hide();
+                this.proofPropagation.show();
             }
-            if (tab === "proof") {
+            if (tab === "Proof Propagation") {
                 this.proofPropagation.hide();
+                this.compactvariables.show();
             }
         },
         _create: function () {

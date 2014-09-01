@@ -11,7 +11,11 @@
         },
         refresh: function () {
             this.content.empty();
+            this.header.text(this.options.header);
             this.options.content.appendTo(this.content);
+        },
+        _init: function () {
+            this.refresh();
         },
         _create: function () {
             var that = this;
@@ -26,10 +30,13 @@
 
             this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(this.element);
             this.button.bind("click", function () {
-                window.Commands.Execute("Expand", that.options.header);
+                if (options.icon === "max")
+                    window.Commands.Execute("Expand", that.options.header);
+                if (options.icon === "min")
+                    window.Commands.Execute("Collapse", that.options.header);
             });
 
-            $('<div>' + options.header + '</div>').appendTo(this.element);
+            this.header = $('<div></div>').text(options.header).appendTo(this.element);
             this.content = $('<div></div>').appendTo(this.element);
             this.refresh();
         },

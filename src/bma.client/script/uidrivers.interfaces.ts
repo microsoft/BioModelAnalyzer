@@ -31,8 +31,8 @@ module BMA {
         }
 
         export interface IPopup {
-            Show(content, params);
-            Hide(params);
+            Show(params);
+            Hide();
         }
 
 
@@ -41,6 +41,8 @@ module BMA {
             SetData(params);
             OnProofStarted();
             OnProofFailed();
+            Show(params);
+            Hide(params);
         }
 
     }
