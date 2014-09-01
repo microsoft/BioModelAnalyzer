@@ -1,22 +1,18 @@
-﻿declare var BMAExt: any;
-declare var InteractiveDataDisplay: any;
-
-describe("SVGPlot", () => {
-    it("should be succesfully created", () => {
+describe("SVGPlot", function () {
+    it("should be succesfully created", function () {
         var svgPlot = new BMAExt.SVGPlot($("<div></div>"), undefined);
         expect(svgPlot).toBeDefined();
     });
 });
 
-describe("DesignSurfacePresenter", () => {
-
-    beforeEach(() => {
+describe("DesignSurfacePresenter", function () {
+    beforeEach(function () {
         window.Commands = new BMA.CommandRegistry();
         window.ElementRegistry = new BMA.Elements.ElementsRegistry();
         window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
     });
 
-    it("should be created from BioModel, Layout and ISVGPlot driver instance", () => {
+    it("should be created from BioModel, Layout and ISVGPlot driver instance", function () {
         var drawingSurface = $("<div></div>");
         drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
@@ -27,21 +23,21 @@ describe("DesignSurfacePresenter", () => {
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
-    it("should create proper presenter for specified model and layout", () => {
-
+    it("should create proper presenter for specified model and layout", function () {
         var appModel = new BMA.Model.AppModel();
+
         //var drawingSurface = $("<div></div>");
         //drawingSurface.drawingsurface();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
         var elementPanel = new BMA.Test.TestElementsPanel();
-        var variableEditorDriver = new BMA.Test.TestVariableEditor();//UIDrivers.VariableEditorDriver($());
+        var variableEditorDriver = new BMA.Test.TestVariableEditor();
 
         var testbutton = new BMA.Test.TestUndoRedoButton();
         var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, elementPanel, testbutton, testbutton, variableEditorDriver);
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
-    it("turns navigation on executing 'AddElementSelect' command", () => {
+    it("turns navigation on executing 'AddElementSelect' command", function () {
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
         var elementPanel = new BMA.Test.TestElementsPanel();
@@ -56,11 +52,9 @@ describe("DesignSurfacePresenter", () => {
 
         window.Commands.Execute("AddElementSelect", "Container");
         expect(svgPlotDriver.TurnNavigation).toHaveBeenCalledWith(false);
-
     });
 
-
-    it("should initialize the variableEditorDriver", () => {
+    it("should initialize the variableEditorDriver", function () {
         var drawingSurface = $("<div></div>");
         drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
@@ -69,8 +63,8 @@ describe("DesignSurfacePresenter", () => {
         var testbutton = new BMA.Test.TestUndoRedoButton();
         var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver);
 
-        
-        window.Commands.Execute("AddElementSelect", "Constant");
+        window.Commands.Execute("AddElementSelect", "Container");
+
         console.log("first click");
         window.Commands.Execute("DrawingSurfaceClick", { x: 0, y: 0 });
         window.Commands.Execute("AddElementSelect", undefined);
@@ -80,8 +74,7 @@ describe("DesignSurfacePresenter", () => {
         expect(variableEditorDriver.Initialize).toHaveBeenCalled();
     });
 
-
-    it("creates drawingsurface widget", () => {
+    it("creates drawingsurface widget", function () {
         var ds = $("<div id='DRAWINGSURFACE'></div>");
         ds.drawingsurface();
         expect(ds).toBeDefined();

@@ -7,8 +7,11 @@ describe("SVGPlot", function () {
 
 describe("DesignSurfacePresenter", function () {
     it("should be created from BioModel, Layout and ISVGPlot driver instance", function () {
+        var drawingSurface = $("<div></div>");
+        drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
-        var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
+        var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
+        var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($());
 
         //var presenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, undefined);
         //expect(presenter).toBeDefined();
@@ -20,7 +23,8 @@ describe("DesignSurfacePresenter", function () {
                 this.subscribe = function () {
                 };
             }
-        }, testbutton, testbutton, undefined);
+        }, testbutton, testbutton, variableEditorDriver);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver);
         expect(presenter).toBeDefined();
     });
 

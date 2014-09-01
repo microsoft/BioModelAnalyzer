@@ -69,9 +69,12 @@ module BMA {
                 window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
                     if (that.selectedType !== undefined) {
                         that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
+                        console.log("tryAddVariable");
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
-                        if (id !== undefined) {
+                        console.log(id);
+                    if (id !== undefined) {
+                            console.log("id !== undefined");
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
                             that.variableEditor.Show(0, 0);

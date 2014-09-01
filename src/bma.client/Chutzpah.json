@@ -14,17 +14,10 @@
          {"Path": "Scripts/typings/jasmine/jasmine.d.ts"},
          {"Path": "Scripts/jasmine/jasmine-jquery/jasmine-jquery.d.ts"},
          {"Path": "Scripts/jasmine/jasmine-matchers/jasmine-jquery.d.ts"},
-         
-         
-         
          {"Path": "script/jquery.svg.js"},
          {"Path": "script/rx.js"},
-        { "Path": "script/rx.jQuery.js" },
-        
-        {"Path": "script/idd.js"},
-         
-         
-         
+         {"Path": "script/rx.jQuery.js" },
+         {"Path": "script/idd.js"},
          {"Path": "script/svgplot.js"},
          {"Path": "script/scalablegridlinesplot.js"},
          {"Path": "script/model/analytics.ts"},
@@ -55,8 +48,8 @@
          {"Path": "script/widgets/bmaslider.js"},
          {"Path": "script/widgets/elementbutton.ts"},
          {"Path": "script/widgets/elementbutton.js"},
-         {"Path": "script/widgets/popupwindow.ts"},
-         {"Path": "script/widgets/popupwindow.js"},
+         {"Path": "script/widgets/proofresultviewer.ts"},
+         {"Path": "script/widgets/proofresultviewer.js"},
          {"Path": "script/widgets/variablesOptionsEditor.ts"},
          {"Path": "script/widgets/variablesOptionsEditor.js"},
          {"Path": "script/widgets/visibilitysettings.ts"},
