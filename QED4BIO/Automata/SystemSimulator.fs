@@ -33,16 +33,36 @@ type summary<'a> when 'a : comparison =
           //"\nint_right_val:\t" + this.right_internal_val.ToString() +
           "\nmid:\t" + String.Join(",", this.middle_vals)
 
+type Params = {
+        show_intermediate_steps : bool
+        show_composition_steps : bool
+        bound : int
+        cheap_answer : bool
+        really_cheap_answer : bool
+        no_compress : bool
+        binary_combine : bool
+    }
+let default_params b = 
+    {
+        show_intermediate_steps = false
+        show_composition_steps = false
+        bound = b
+        cheap_answer = true
+        really_cheap_answer = true 
+        no_compress = true 
+        binary_combine = false
+    }
 
-let show_intermediate_steps = false
-let show_composition_steps = false
-let bound = 3
-let cheap_answer = true
-let really_cheap_answer = true && cheap_answer
-let no_compress = cheap_answer || true 
-let binary_combine = false
+let run (init_form, trans_form) edge_values comms fates (inputs : int[]) (p : Params) = 
+    let show_intermediate_steps = p.show_intermediate_steps
+    let show_composition_steps = p.show_composition_steps
+    let bound = p.bound
+    let cheap_answer = p.cheap_answer
+    let really_cheap_answer = p.really_cheap_answer && cheap_answer
+    let no_compress = cheap_answer || p.no_compress
+    let binary_combine = p.binary_combine
 
-let run (init_form, trans_form) edge_values comms fates (inputs : int[]) = 
+
 
     let comms = Set.ofSeq comms
     let left_comms = Set.ofSeq (Seq.map (fun x -> "left_" + x) comms)
