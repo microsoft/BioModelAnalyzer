@@ -61,20 +61,22 @@ namespace bma.client.Controllers
                     //log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
 
                     // Convert to the Output Data
-                    var outputData = new AnalysisOutput();
-                    outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;
-                    //if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
+                    var outputStream = new MemoryStream();
+                    outputXml.Save(outputStream);
+                    outputStream.Position = 0;
+                    XmlSerializer outputSerializer = new XmlSerializer(typeof(AnalysisOutput));
+                    var output = (AnalysisOutput)outputSerializer.Deserialize(outputStream);
+                    //if (output.Status != StatusType.Stabilizing && output.Status != StatusType.NotStabilizing)
                     //{
                     //    var error = outputXml.Descendants("Error").FirstOrDefault();
-                    //    outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
+                    //    output.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
                     //}
-
-                    //outputData.Time = time;
+                    output.Time = (int)time;
                     //outputData.ErrorMessages = log.ErrorMessages;
                     //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
                     //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
 
-                    return outputData;
+                    return output;
                 }
                 catch (Exception ex)
                 {
@@ -83,7 +85,7 @@ namespace bma.client.Controllers
                     // Return an Unknown if fails
                     var outputData = new AnalysisOutput
                     {
-                        Status = "unknown"
+                        Status = StatusType.Unknown
                         /* StatusTypes.Unknown,
                         Error = ex.ToString(),
                         ErrorMessages = log.ErrorMessages,
@@ -208,63 +210,7 @@ namespace bma.client.Controllers
                 }
             }
             // Normal proof, LTL or SYN*/
-            return new AnalysisOutput() { Status = "Stabilizing" };
+            return new AnalysisOutput() { Status = StatusType.Unknown };
         }
-    }
-
-    public class AnalysisInput
-    {
-        [XmlAttribute]
-        public string ModelName { get; set; }
-
-        public string Engine { get; set; }
-
-        public Variable[] Variables { get; set; }
-
-        public Relationship[] Relationships { get; set; }
-    }
-
-    public class Variable
-    {
-        [XmlAttribute]
-        public int Id { get; set; }
-
-        public string Name { get; set; }
-
-        public double RangeFrom { get; set; }
-
-        public double RangeTo { get; set; }
-
-        public string Function { get; set; }
-    }
-
-    public class Relationship
-    {
-        [XmlAttribute]
-        public int Id { get; set; }
-
-        public int FromVariableId { get; set; }
-
-        public int ToVariableId { get; set; }
-
-        public string Type { get; set; }
-    }
-
-    public class AnalysisOutput
-    {
-        public string Status { get; set; }
-    }
-
-    public struct StatusTypes
-    {
-        public const string Default = "Default";
-        public const string TryingStabilizing = "TryingStabilizing";
-        public const string Bifurcation = "Bifurcation";
-        public const string Cycle = "Cycle";
-        public const string Stabilizing = "Stabilizing";
-        public const string NotStabilizing = "NotStabilizing";
-        public const string Fixpoint = "Fixpoint";
-        public const string Unknown = "Unknown";
-        public const string Error = "Error";
     }
 }
