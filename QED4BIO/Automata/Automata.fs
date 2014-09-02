@@ -298,9 +298,13 @@ let compressedMapAutomata
      f : 'state -> 'data1 -> 'data2) : SimpleAutomata<int, 'data2> = 
         //Get initial sample of the data
         let next_eq (eq : Dictionary<_,_>) x = 
-            Seq.fold (fun res x -> Set.add (eq.[x]) res) Set.empty (inner.next x)
+            Seq.fold (fun res x -> Set.add eq.[x] res) Set.empty (inner.next x)
 
-        let canonise eq x = (f x (inner.value x), next_eq eq x)        
+        let canonise eq x = 
+            let newv = f x (inner.value x)
+            let newnext =  next_eq eq x
+            (newv, newnext)
+
         let eq,reps = build_eq inner canonise
 
         let reps_arr = Seq.toArray reps
@@ -380,6 +384,7 @@ let composeFilter
     (left_allowed : 'ldata -> 'rdata -> bool)
     (right_allowed : 'rdata -> 'ldata -> bool)
     (g : 'lstate -> 'rstate -> 'state)
+    (sync : bool)
     (display : SimpleAutomata<'state, 'data> -> unit)
     : SimpleAutomata<'state, 'data>
     =
@@ -392,15 +397,16 @@ let composeFilter
         match f (left.value li) bl (right.value ri) br with        
         | None -> ()
         | Some d -> 
-            result.addState(g li ri, d)
+            let s = g li ri
+            result.addState(s, d)
 
             if reached.Add( (li,ri) ) then 
                 work_set.Add (li,ri)
                 
 
             match pred_option with 
-            | Some lri -> result.addEdge( lri,  g li ri)
-            | None -> result.addInitialState (g li ri)
+            | Some lri -> result.addEdge( lri,  s)
+            | None -> result.addInitialState (s)
         
 //            display result
                 
@@ -416,14 +422,15 @@ let composeFilter
         let rn = right.next(ri)
         for lni in ln do
             if left_allowed (left.value lni) (right.value ri) then
-                add_node lni true ri false (Some (g li ri))
+                if not sync then add_node lni true ri false (Some (g li ri))
                 for rni in rn do
                     if right_allowed (right.value rni) (left.value li) then
                         add_node lni true rni true (Some (g li ri))
 
-        for rni in rn do
-            if right_allowed (right.value rni) (left.value li) then
-                add_node li false rni true (Some (g li ri))
+        if not sync then 
+            for rni in rn do
+                if right_allowed (right.value rni) (left.value li) then
+                    add_node li false rni true (Some (g li ri))
         //Add self loop, this will make more things equal later
         //add_node li false ri false (Some (g li ri))
         more <- work_set.TryTake(&(liri))

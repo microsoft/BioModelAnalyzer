@@ -36,7 +36,7 @@ type summary<'a> when 'a : comparison =
 
 let show_intermediate_steps = false
 let show_composition_steps = false
-let bound = 4
+let bound = 0
 let cheap_answer = true
 let no_compress = cheap_answer || true 
 let binary_combine = false
@@ -126,11 +126,8 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
             //Make all states initial as we have lost the various starts of the system
             for s in auto.states do
                 auto.addInitialState s
-            //show_automata auto
-            // Can use bound of one as this is just to ensure they all take a step
-//Warning: Not Sure if this is sound
-            let ba = new NstepBarrierAutomata<_,_>(1, auto)
-            let res = compressedMapAutomata(ba, fun _ m -> m)
+        if bound = 0 then
+            let res = compressedMapAutomata(auto, fun _ m -> (m,true))
             res
         else
             let ba = new NstepBarrierAutomata<_,_>(bound, auto)
@@ -258,6 +255,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
                         || (snd l) || (snd r)
                     )
                     (fun x y -> normalize (x , y))
+                    (bound = 0)
                     show_automata
         //show_automata auto.[out1]
         auto.[out1].RemoveNoEdges true
@@ -282,6 +280,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
                 steps <- steps + 1
     else
         for c = 1 to no_of_cells - 1 do
+            //Use 0 entry as the accumulater
             calc 0 c 0         
 
     printfn "Pre tidy Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
@@ -291,7 +290,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
 
     printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
 
-    show_automata tidy_auto
+    //show_automata tidy_auto
     for s in tidy_auto.states do
         printfn "State: %O" (tidy_auto.value s)
 
