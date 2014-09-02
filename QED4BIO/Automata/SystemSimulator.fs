@@ -36,12 +36,14 @@ type summary<'a> when 'a : comparison =
 
 let show_intermediate_steps = false
 let show_composition_steps = false
-let bound = 0
+let bound = 3
 let cheap_answer = true
+let really_cheap_answer = true && cheap_answer
 let no_compress = cheap_answer || true 
 let binary_combine = false
 
 let run (init_form, trans_form) edge_values comms fates (inputs : int[]) = 
+
     let comms = Set.ofSeq comms
     let left_comms = Set.ofSeq (Seq.map (fun x -> "left_" + x) comms)
     let right_comms = Set.ofSeq (Seq.map (fun x -> "right_" + x) comms)
@@ -126,13 +128,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
             //Make all states initial as we have lost the various starts of the system
             for s in auto.states do
                 auto.addInitialState s
-        if bound = 0 then
-            let res = compressedMapAutomata(auto, fun _ m -> (m,true))
-            res
-        else
-            let ba = new NstepBarrierAutomata<_,_>(bound, auto)
-            let res = compressedMapAutomata(ba, fun _ m -> m)
-            res
+        auto
 
     //The universal rely
     // The rely for context is trivial for calculating the universal rely.
@@ -212,13 +208,35 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
     
     let normalize = (fun (x,y) -> x @ y) //Simulator.normalize_gen ()
 
+    let bound = ref bound
     let auto = 
-        [|
-           for i = 1 to no_of_cells do
-              let sim = finalsimstep (rely i)
-              //show_automata sim
-              let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
-              yield sim
+        let temp_auto = 
+            [|
+               for i = 1 to no_of_cells do
+                  let sim = finalsimstep (rely i)
+                  yield sim
+            |]
+
+        //Calculate if we can fudge the bound as they all have 1 length loops at the end
+        if really_cheap_answer then
+            let bound_orig = !bound
+            bound := 0
+            for sim in temp_auto do
+                scc (fun x -> if x.Length > 1 then bound := bound_orig) sim.next sim.pred sim.states |> ignore
+
+
+        [| 
+            for sim in temp_auto do
+                let sim = 
+                    if !bound = 0 then
+                        let res = compressedMapAutomata(sim, fun _ m -> (m,false))
+                        res
+                    else
+                        let ba = new NstepBarrierAutomata<_,_>(!bound, sim)
+                        let res = compressedMapAutomata(ba, fun _ m -> m)
+                        res
+                let sim = productFilter (unitAutomata) sim (fun _ y -> Some y) (fun _ y -> [y])
+                yield sim
         |]
 
 
@@ -255,7 +273,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) =
                         || (snd l) || (snd r)
                     )
                     (fun x y -> normalize (x , y))
-                    (bound = 0)
+                    (!bound = 0)
                     show_automata
         //show_automata auto.[out1]
         auto.[out1].RemoveNoEdges true
