@@ -164,7 +164,7 @@ let encodeUpdateFunction gene genes maxActivators maxRepressors (tempGeneNames :
     (circuitEncoding, symVars)
  
 let private evaluateUpdateFunction = 
-    let counter = ref 0 // THIS IS LIKELY TO BE A PROBLEM, COUNTER IS INCREASED ACROSS ALL MY Z3 FUNCTIONS
+    let counter = ref 0
     
     fun (symVars : BitVec []) (geneValues : bool []) ->
         let i = !counter
@@ -192,11 +192,10 @@ let private evaluateUpdateFunction =
             Array.mapi f symVars |> And
 
         let circuitValue =
-            If (symVars.[15] =. NOTHING, // if no repressors, evaluate to the activating circuit, else evaluate to activating AND (NOT repressing)
+            let noRepressors = symVars.[15] =. NOTHING
+            If (noRepressors,
                 intermediateValueVariables.[0],
-                And [| intermediateValueVariables.[0] =. True
-                       intermediateValueVariables.[15] =. False
-                    |])
+                intermediateValueVariables.[0] &&. Not intermediateValueVariables.[15])
 
         let circuitVal = Bool <| sprintf "circuit_%i" i
                         

@@ -172,6 +172,7 @@
     <Compile Include="..\BioCheckAnalyzer32\PathFinder.fs">
       <Link>PathFinder.fs</Link>
     </Compile>
+    <None Include="ModelSchema.xsd" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />

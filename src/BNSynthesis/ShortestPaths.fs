@@ -1,14 +1,11 @@
 ﻿module ShortestPaths
 
 open System.Collections.Generic
-open FSharpx.Collections
 
 type private Cursor = {
     Focus: string
     Visited: Set<string>
     Previous: Map<string, string> }
-
-let private previous cursor = cursor.Previous
 
 let private neighbours graph cursor =
     if not <| Map.containsKey cursor.Focus graph then Seq.empty

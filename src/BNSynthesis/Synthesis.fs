@@ -1,36 +1,20 @@
 ﻿module Synthesis
 
-open FSharp.Data
 open Microsoft.Z3
 open Microsoft.Z3.FSharp.Common
 open Microsoft.Z3.FSharp.Bool
-open Microsoft.Z3.FSharp.BitVec
 open DataLoading
 open FunctionEncoding
 open ShortestPaths
-open FSharpx.Collections
 open FSharp.Data
-open FSharp.Data.CsvExtensions
 
 type NumNonTransitionsEnforced = All | Num of int | DropFraction of int
-
-let private constraintsBool (m : Model) (d : FuncDecl)  =
-    let x = System.Boolean.Parse(m.[d].ToString())
-    (Bool (d.Name.ToString())) =. not x
-
-let private addConstraintsBool (solver : Solver) (m : Model) (ds : FuncDecl []) =
-    let constraints = Or <| Array.map (constraintsBool m) ds
-    solver.Add(constraints)
 
 let private constraintsBitVec ctor (m : Model) (d : FuncDecl) =
     let x = System.Int32.Parse(m.[d].ToString())
     (ctor (d.Name.ToString())) <>. x
 
-let private addConstraintsEnforcedVar (solver : Solver) (m : Model) (ds : FuncDecl []) =
-    let constraints = Or <| Array.map (constraintsBitVec makeEnforcedVar m) ds
-    solver.Add(constraints)
-
-let addConstraintsCircuitVar (solver : Solver) (m : Model) (ds : FuncDecl []) =
+let private addConstraintsCircuitVar (solver : Solver) (m : Model) (ds : FuncDecl []) =
     let constraints = Or <| Array.map (constraintsBitVec makeCircuitVar m) ds
     solver.Add(constraints)
 
@@ -45,14 +29,14 @@ let private buildGraph edges =
         adjacency <- Map.add u something adjacency
     adjacency
 
-let private askNonTransition node symVars =
-    let counter = ref 0 // hack
+let private askNonTransition gene symVars =
+    let counter = ref 0
         
     fun (profile : bool []) ->
         let nonTransitionEnforced = makeEnforcedVar (sprintf "enforced_%i" !counter)
-        counter := !counter + 1 // hack
+        counter := !counter + 1
 
-        let encoding, same = circuitEvaluatesToSame node symVars profile
+        let encoding, same = circuitEvaluatesToSame gene symVars profile
         (encoding &&. If (same, nonTransitionEnforced =. 1, nonTransitionEnforced =. 0),
             nonTransitionEnforced)
 
@@ -79,24 +63,23 @@ let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []
     let undirectedEdges = geneTransitions geneNames.[gene - 2] // GET RID OF -2 EVERYWHERE    
     let manyNonTransitionsEnforced = manyNonTransitionsEnforced gene symVars nonCloudExpressionProfilesWithoutGeneTransitions numNonTransitionsEnforced
 
-    let encodeTransition (stateA, stateB) =
+    let encodeTransition stateA =
         let profile s = expressionProfilesWithGeneTransitions.Filter(fun row -> row.Columns.[0] = s).Rows |> Seq.head |> rowToArray // not efficent
         let differentA = (let e, v = circuitEvaluatesToDifferent gene symVars (profile stateA) in e &&. v)
 
         differentA
 
-    let checkEdge (a, b) =
+    let checkTransition a =
         solver.Reset()
         solver.Add (circuitEncoding,
                     manyNonTransitionsEnforced,
-                    encodeTransition (a, b))
+                    encodeTransition a)
 
         solver.Check() = Status.SATISFIABLE
 
-    // IMPLEMENT SEEN_EDGES OPTIMISATION
     set [ for (a, b) in undirectedEdges do
-              if checkEdge (a, b) then yield (a, b)
-              if checkEdge (b, a) then yield (b, a) ]
+              if checkTransition a then yield (a, b)
+              if checkTransition b then yield (b, a) ]
 
 let private findFunctions (solver : Solver) gene genes (geneNames : string []) maxActivators maxRepressors numNonTransitionsEnforced shortestPaths
                           (expressionProfilesWithGeneTransitions  : Runtime.CsvFile<CsvRow>) (nonCloudExpressionProfilesWithoutGeneTransitions : Runtime.CsvFile<CsvRow>) =
