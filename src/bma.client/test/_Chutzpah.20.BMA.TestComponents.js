@@ -37,6 +37,42 @@ var BMA;
             return TestUndoRedoButton;
         })();
         Test.TestUndoRedoButton = TestUndoRedoButton;
+
+        var TestElementsPanel = (function () {
+            function TestElementsPanel() {
+            }
+            TestElementsPanel.prototype.GetDragSubject = function () {
+                return {
+                    dragStart: { subscribe: function () {
+                        } },
+                    drag: { subscribe: function () {
+                        } },
+                    dragEnd: { subscribe: function () {
+                        } }
+                };
+            };
+            return TestElementsPanel;
+        })();
+        Test.TestElementsPanel = TestElementsPanel;
+
+        var TestVariableEditor = (function () {
+            function TestVariableEditor() {
+            }
+            TestVariableEditor.prototype.GetVariableProperties = function () {
+                return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 };
+            };
+
+            TestVariableEditor.prototype.Initialize = function (variable, model) {
+            };
+
+            TestVariableEditor.prototype.Show = function (x, y) {
+            };
+
+            TestVariableEditor.prototype.Hide = function () {
+            };
+            return TestVariableEditor;
+        })();
+        Test.TestVariableEditor = TestVariableEditor;
     })(BMA.Test || (BMA.Test = {}));
     var Test = BMA.Test;
 })(BMA || (BMA = {}));
