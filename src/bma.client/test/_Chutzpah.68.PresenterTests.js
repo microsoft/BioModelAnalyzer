@@ -63,8 +63,7 @@ describe("DesignSurfacePresenter", function () {
         var testbutton = new BMA.Test.TestUndoRedoButton();
         var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver);
 
-        window.Commands.Execute("AddElementSelect", "Container");
-
+        window.Commands.Execute("AddElementSelect", "Constant");
         console.log("first click");
         window.Commands.Execute("DrawingSurfaceClick", { x: 0, y: 0 });
         window.Commands.Execute("AddElementSelect", undefined);

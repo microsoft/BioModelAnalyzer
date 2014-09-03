@@ -45,5 +45,9 @@ module BMA {
             Hide(params);
         }
 
+        export interface IFileLoader {
+            OpenFileDialog() : JQueryPromise<File>;
+        }
+
     }
 } 

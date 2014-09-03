@@ -147,5 +147,35 @@ module BMA {
                 }
             }
         }
+
+        export class ModelFileLoader implements IFileLoader {
+            private fileInput: JQuery;
+            private currentPromise = undefined;
+
+            constructor(fileInput: JQuery) {
+                var that = this;
+                this.fileInput = fileInput;
+
+                fileInput.change(function (arg) {
+                    var e: any = arg;
+                    if (e.target.files !== undefined && e.target.files.length == 1 && that.currentPromise !== undefined) {
+                        that.currentPromise.resolve(e.target.files[0]);
+                        that.currentPromise = undefined;
+                        fileInput.val("");
+                    }
+                });
+            }
+
+            public OpenFileDialog(): JQueryPromise<File> {
+                var deferred = $.Deferred();
+                this.currentPromise = deferred;
+                this.fileInput.click();
+                return deferred.promise();
+            }
+
+            private OnCheckFileSelected() : boolean {
+                return false;
+            }
+        }
     }
 } 

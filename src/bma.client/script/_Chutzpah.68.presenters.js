@@ -1,4 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="model\biomodel.ts"/>
 /// <reference path="model\model.ts"/>
@@ -33,9 +33,9 @@ var BMA;
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
 
                 window.Commands.On("AddElementSelect", function (type) {
-                    that.selectedType = type;
-                    that.driver.TurnNavigation(type === undefined);
-                    that.stagingLine = undefined;
+                    _this.selectedType = type;
+                    _this.driver.TurnNavigation(type === undefined);
+                    _this.stagingLine = undefined;
                     //this.selectedType = this.selectedType === type ? undefined : type;
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
@@ -581,4 +581,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map

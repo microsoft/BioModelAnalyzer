@@ -20,6 +20,7 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
+
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -100,6 +101,18 @@ $(document).ready(function () {
     $("#tabs-1").proofresultviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
 
+    $("#newModelBtn").click(function (args) {
+        window.Commands.Execute("NewModel", undefined);
+    });
+
+    $("#importModelBtn").click(function (args) {
+        window.Commands.Execute("ImportModel", undefined);
+    });
+
+    $("#exportModelBtn").click(function (args) {
+        window.Commands.Execute("ExportModel", undefined);
+    });
+
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
@@ -107,9 +120,11 @@ $(document).ready(function () {
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
+    var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
+    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
 });
 //# sourceMappingURL=app.js.map

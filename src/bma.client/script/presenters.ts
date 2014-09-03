@@ -59,9 +59,9 @@ module BMA {
 
                 window.Commands.On("AddElementSelect", (type: string) => {
 
-                    this.selectedType = type;
-                    this.driver.TurnNavigation(type === undefined);
-                    this.stagingLine = undefined;
+                    that.selectedType = type;
+                    that.driver.TurnNavigation(type === undefined);
+                    that.stagingLine = undefined;
                     //this.selectedType = this.selectedType === type ? undefined : type;
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
@@ -100,6 +100,10 @@ module BMA {
                             that.OnModelUpdated();
                         }
                     }
+                });
+
+                window.Commands.On("ModelReset", () => {
+                    this.Set(this.appModel.BioModel, this.appModel.Layout);
                 });
 
                 window.Commands.On("Undo", () => {

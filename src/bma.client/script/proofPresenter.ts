@@ -7,12 +7,16 @@
             constructor(appModel: BMA.Model.AppModel, proofResultViewer: BMA.UIDrivers.IProofResultViewer, popupViewer: BMA.UIDrivers.IPopup) {
                 this.appModel = appModel;
 
+
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
+
+                    var proofInput = appModel.BioModel.GetJSON()
+
                     $.ajax({
                         type: "POST",
                         url: "api/Analyze",
-                        data: appModel.BioModel.GetJSON(),
+                        data: proofInput,
                         success: function (res) {
                             appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", 0);
                             proofResultViewer.ShowResult(appModel.ProofResult);
