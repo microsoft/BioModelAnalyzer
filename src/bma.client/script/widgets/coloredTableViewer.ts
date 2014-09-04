@@ -4,25 +4,30 @@
 (function ($) {
     $.widget("BMA.coloredtableviewer", {
         options: {
+            header: [],
             numericData: undefined,
             colorData: undefined
         },
 
-        _init: function () {
-            this.element.empty();
+        _create: function () {
             
+            this.refresh();
+        },
+
+        refresh: function () {
+            this.element.empty();
             var that = this;
             var options = this.options;
-            if (options.numericData === undefined) {
-                console.log("numericData undefined");
-                return;
+            this.table = $('<table id="tableInColoredTableViewer"></table>');
+            this.table.appendTo(that.element);
+            this.createHeader(options.header);
+            if (options.numericData !== undefined) {
+                this.arrayToTable(options.numericData);
             }
-            this.table = this.arrayToTable(options.numericData);
             if (options.colorData !== undefined)
                 this.table = this.paintTable(options.colorData);
             this.table
-                .addClass("bma-prooftable")
-                .appendTo(this.element);
+                .addClass("bma-prooftable");
         },
         
         _destroy: function () {
@@ -31,19 +36,31 @@
 
         _setOption: function (key, value) {
             var that = this;
+            if (key === "header") this.options.header = value;
+            if (key === "numericData") this.options.numericData = value;
+            if (key === "colorData") this.options.colorData = value;
+
             this._super(key, value);
-            this.refresh();
+            if (value !== null && value !== undefined)
+                this.refresh();
+        },
+
+        createHeader: function (header) {
+            var that = this;
+            var tr = $('<tr></tr>').appendTo(that.table);
+            for (var i = 0; i < header.length; i++) {
+                $('<td></td>').text(header[i]).appendTo(tr);
+            }
         },
 
         arrayToTable: function (array) {
-            var table = $('<table></table>');
+            var that = this;
             for (var i = 0; i < array.length; i++) {
-                var tr = $('<tr></tr>').appendTo(table);
+                var tr = $('<tr></tr>').appendTo(that.table);
                 for (var j = 0; j < array[i].length; j++) {
-                    $('<td>' + array[i][j] + '</td>').appendTo(tr);
+                    $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
             }
-            return table;
         },
 
         paintTable: function (color) {

@@ -72,11 +72,11 @@ describe("DesignSurfacePresenter", () => {
         
         window.Commands.Execute("AddElementSelect", "Constant");
         console.log("first click");
-        window.Commands.Execute("DrawingSurfaceClick", { x: 0, y: 0 });
+        window.Commands.Execute("DrawingSurfaceClick", { x: 0.5, y: 0.5 });
         window.Commands.Execute("AddElementSelect", undefined);
         spyOn(variableEditorDriver, "Initialize");
         console.log("second click");
-        window.Commands.Execute("DrawingSurfaceClick", { x: 0, y: 0 });
+        window.Commands.Execute("DrawingSurfaceClick", { x: 0.5, y: 0.5 });
         expect(variableEditorDriver.Initialize).toHaveBeenCalled();
     });
 

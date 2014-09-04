@@ -10,13 +10,7 @@
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {} }
         },
 
-        refresh: function () {
-            this.content.empty();
-            this.header.text(this.options.header);
-            this.options.content.appendTo(this.content);
-        },
 
-        _init: function () { this.refresh(); },
 
         _create: function () {
             var that = this;
@@ -38,8 +32,11 @@
             });
 
             this.header = $('<div></div>').text(options.header).appendTo(this.element);
-            this.content = $('<div></div>').appendTo(this.element);
-            this.refresh();
+            //if (options.content !== undefined)
+            //    options.content.appendTo(this.element);
+            this.content = $('<div id="fuckin animal"></div>').appendTo(this.element);
+            if (options.content !== undefined)
+                this.content.html(options.content);
         },
 
         toggle: function () { 
@@ -56,16 +53,24 @@
 
         _setOption: function (key, value) {
             var that = this;
-            this._super(key, value);
-            this.refresh();
-        }
+            if (key === "content") {
+                this.options.content = value;
+                this.content.html(this.options.content);
+            }
 
+            if (key === "header") {
+                this.header.text(value);
+            }
+                
+            this._super(key, value);
+        }
     });
 } (jQuery));
 
 interface JQuery {
     resultswindowviewer (): JQuery;
     resultswindowviewer(settings: Object): JQuery;
+    resultswindowviewer(fun: string): any;
     resultswindowviewer(optionLiteral: string, optionName: string): any;
     resultswindowviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 } 

@@ -91,7 +91,7 @@ var BMA;
                 this.proofContentViewer = proofContentViewer;
             }
             ProofViewer.prototype.SetData = function (params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, numericData: params.numericData, colorData: params.colorData });
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data });
             };
 
             ProofViewer.prototype.ShowResult = function (result) {
@@ -128,8 +128,9 @@ var BMA;
             }
             PopupDriver.prototype.Show = function (params) {
                 var that = this;
-                this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab });
+
+                //this.createResultView(params);
+                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content });
                 this.popupWindow.show();
             };
 
