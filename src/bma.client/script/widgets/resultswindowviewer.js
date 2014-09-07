@@ -22,7 +22,7 @@
             else
                 url = this.options.icon;
 
-            this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(head);
+            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(head);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.header);
@@ -33,7 +33,7 @@
             this.header = $('<div></div>').text(options.header).appendTo(head);
             this.content = $('<div></div>').appendTo(this.element);
             if (options.content !== undefined)
-                this.content.html(options.content);
+                options.content.appendTo(this.content);
         },
         toggle: function () {
             this.element.toggle(this.options.effects);
@@ -48,7 +48,8 @@
             var that = this;
             if (key === "content") {
                 this.options.content = value;
-                this.content.html(this.options.content);
+                this.content.empty();
+                value.appendTo(this.content);
             }
 
             if (key === "header") {

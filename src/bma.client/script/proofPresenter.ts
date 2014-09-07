@@ -34,14 +34,16 @@
                 });
 
                 window.Commands.On("Expand", (param) => {
-                    var full;
-                    if (param === "Proof Propagation")
-                        full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
-                    //if (param === "Variables")
-                    //    full = that.
-                    if (full !== undefined) {
-                        proofResultViewer.Hide({ tab: param });
-                        popupViewer.Show({ tab: param, type: "coloredTable", content: full });
+                    if (this.appModel.BioModel.Variables.length !== 0) {
+                        var full;
+                        if (param === "Proof Propagation")
+                            full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                        if (param === "Variables")
+                            full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(), header: ["Name", "Formula", "Range"] });
+                        if (full !== undefined) {
+                            proofResultViewer.Hide({ tab: param });
+                            popupViewer.Show({ tab: param, type: "coloredTable", content: full });
+                        }
                     }
                 });
 

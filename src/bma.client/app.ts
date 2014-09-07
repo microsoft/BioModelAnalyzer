@@ -11,9 +11,7 @@
 /// <reference path="script\SVGHelper.ts"/>
 
 /// <reference path="script\widgets\drawingsurface.ts"/>
-/// <reference path="script\widgets\toolbarpanel.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
-/// <reference path="script\widgets\skinmodel.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>

@@ -133,7 +133,8 @@
         z-index:5;
         font-size: x-large;
         width: 800px;
-        height: 600px;
+        max-height: 600px;
+        min-height: 400px;
     }
 
     .togglePopUpWindow {
@@ -894,10 +895,11 @@
 }
 
 .bma-color-prooftable td {
-    border-bottom:none;
+    /*border-bottom:none;
     border-top: none;
     border-left:solid white;
-    border-right: solid white;
+    border-right: solid white;*/
+    border: solid white;
 }
 
 .scrollable-results {
