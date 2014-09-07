@@ -248,6 +248,8 @@
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationplotviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
     <Content Include="script\rx.jQuery.js" />
@@ -268,6 +270,7 @@
     <TypeScriptCompile Include="test\PresenterTests.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>

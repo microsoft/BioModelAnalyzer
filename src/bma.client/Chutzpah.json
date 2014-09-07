@@ -54,6 +54,8 @@
          {"Path": "script/widgets/proofresultviewer.js"},
          {"Path": "script/widgets/resultswindowviewer.ts"},
          {"Path": "script/widgets/resultswindowviewer.js"},
+         {"Path": "script/widgets/simulationplotviewer.ts"},
+         {"Path": "script/widgets/simulationplotviewer.js"},
          {"Path": "script/widgets/variablesOptionsEditor.ts"},
          {"Path": "script/widgets/variablesOptionsEditor.js"},
          {"Path": "script/widgets/visibilitysettings.ts"},

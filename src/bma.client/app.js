@@ -10,6 +10,8 @@
 /// <reference path="script\presenters.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
+/// <reference path="script\widgets\simulationplotviewer.ts"/>
+/// <reference path="script\widgets\simulationviewer.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
@@ -45,9 +47,15 @@ $(document).ready(function () {
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
 
+    var data = [];
+    data[0] = [1, 2, 3, 3, 3, 3, 2, 2, 2, 1];
+    data[1] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 0];
+
+    $("#Div2").simulationplotviewer({ data: data });
+
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
-    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
+    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
 
     //$("#icon1").click();
     //setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
@@ -97,6 +105,7 @@ $(document).ready(function () {
 
     $("#editor").bmaeditor();
     $("#tabs-1").proofresultviewer();
+    $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
 
     $("#newModelBtn").click(function (args) {
