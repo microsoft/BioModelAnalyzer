@@ -14,15 +14,33 @@
             this.element.empty();
             var that = this;
             var options = this.options;
-            this.table = $('<table id="tableInColoredTableViewer"></table>');
+            this.table = $('<table></table>');
             this.table.appendTo(that.element);
-            this.createHeader(options.header);
-            if (options.numericData !== undefined) {
+
+            if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                this.createHeader(options.header);
                 this.arrayToTable(options.numericData);
+                if (options.colorData !== undefined)
+                    this.paintTable(options.colorData);
+                this.table.addClass("bma-prooftable");
+            } else if (options.colorData !== undefined && options.colorData.length !== 0) {
+                var that = this;
+                for (var i = 0; i < options.colorData.length; i++) {
+                    var tr = $('<tr></tr>').appendTo(that.table);
+                    for (var j = 0; j < options.colorData[i].length; j++) {
+                        var td = $('<td></td>').appendTo(tr);
+                        if (options.colorData[i][j] !== undefined) {
+                            if (options.colorData[i][j])
+                                td.css("background-color", "#CCFF99");
+                            else
+                                td.css("background-color", "#FFADAD");
+                        }
+                    }
+                }
+
+                //this.paintTable(options.colorData);
+                this.table.addClass("bma-color-prooftable");
             }
-            if (options.colorData !== undefined)
-                this.table = this.paintTable(options.colorData);
-            this.table.addClass("bma-prooftable");
         },
         _destroy: function () {
             this.element.empty();
@@ -58,7 +76,7 @@
         },
         paintTable: function (color) {
             var that = this;
-            var table = that.table.clone();
+            var table = that.table;
             if (color.length > table.find("tr").length) {
                 console.log("Incompatible sizes of numeric and color data");
                 return;
@@ -66,14 +84,14 @@
             ;
 
             for (var i = 0; i < color.length; i++) {
-                if (color[i].length > table.find("tr").eq(i).children().length) {
+                if (color[i].length > table.find("tr").eq(i + 1).children().length) {
                     console.log("Incompatible sizes of numeric and color data");
                     return;
                 }
                 ;
 
                 for (var j = 0; j < color[i].length; j++) {
-                    var td = table.find("tr").eq(i).children("td").eq(j);
+                    var td = table.find("tr").eq(i + 1).children("td").eq(j);
                     if (color[i][j] !== undefined) {
                         if (color[i][j])
                             td.css("background-color", "#CCFF99");

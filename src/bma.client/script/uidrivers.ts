@@ -134,7 +134,7 @@ module BMA {
             public Show(params: any) {
                 var that = this;
                 //this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content });
+                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             }
 

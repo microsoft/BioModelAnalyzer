@@ -29,7 +29,15 @@
                 $('<h3 style="color: red; font-weight:bold">Failed to Stabilize</h3>').appendTo(td2);
                 $('<p style="font-size:small">After stepping through separate interactions in the model, the analisys failed to determine a final stable state</p>').appendTo(that.resultDiv);
             }
-            //var arr = [];
+
+            //this.compactvariables.empty();
+            //this.proofPropagation.empty();
+            if (options.data !== undefined) {
+                var variables = $("<div></div>").addClass("scrollable-results").coloredtableviewer({ numericData: options.data.numericData, header: ["Name", "Formula", "Range"] });
+                var proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData });
+                this.compactvariables.resultswindowviewer({ content: variables });
+                this.proofPropagation.resultswindowviewer({ content: proof });
+            }
             //arr[0] = [];
             //arr[0][0] = 0;
             //arr[0][1] = 1;
@@ -75,11 +83,18 @@
             var options = this.options;
             this.resultDiv = $('<div></div>').appendTo(that.element);
             this.successTable = $('<table></table>').appendTo(this.resultDiv);
-            this.variables = $("<div></div>").coloredtableviewer({ numericData: options.numericData, colorData: options.colorData, header: ["Variables", "Formula", "Range"] });
-            this.compactvariables = $('<div></div>').appendTo(that.element).resultswindowviewer({ header: "Variables", content: that.variables, icon: "max" });
 
-            this.proof = $("<div></div>");
-            this.proofPropagation = $("<div></div>").appendTo(that.element).resultswindowviewer({ header: "Proof Propagation", content: that.proof, icon: "max" });
+            //if (this.options.data !== undefined) {
+            //    this.proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData });
+            //    this.variables = $("<div></div>").coloredtableviewer({ numericData: options.data.numericData, colorData: options.data.colorData, header: ["Variables", "Formula", "Range"] });
+            //}
+            //else {
+            //this.variables = $("<div></div>").coloredtableviewer();
+            //this.proof = $("<div></div>").coloredtableviewer();
+            //}
+            this.compactvariables = $('<div></div>').appendTo(that.element).resultswindowviewer({ header: "Variables", icon: "max" });
+            this.proofPropagation = $("<div></div>").appendTo(that.element).resultswindowviewer({ header: "Proof Propagation", icon: "max" });
+
             this.refresh();
         },
         _destroy: function () {
@@ -89,20 +104,18 @@
             var that = this;
             if (key === "issucceeded") {
                 this.options.issucceeded = value;
-                this.refresh();
             }
 
             if (key === "time") {
                 this.options.time = value;
-                this.refresh();
             }
 
             if (key === "data") {
                 this.options.data = value;
-                this.variables.coloredtableviewer(value);
             }
 
             this._super(key, value);
+            this.refresh();
         }
     });
 }(jQuery));

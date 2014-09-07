@@ -12,6 +12,8 @@
         _create: function () {
             var that = this;
             var options = this.options;
+            var head = $('<div style="height: 28px"></div>').appendTo(this.element);
+
             var url = "";
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
@@ -20,7 +22,7 @@
             else
                 url = this.options.icon;
 
-            this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(this.element);
+            this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(head);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.header);
@@ -28,11 +30,8 @@
                     window.Commands.Execute("Collapse", that.options.header);
             });
 
-            this.header = $('<div></div>').text(options.header).appendTo(this.element);
-
-            //if (options.content !== undefined)
-            //    options.content.appendTo(this.element);
-            this.content = $('<div id="fuckin animal"></div>').appendTo(this.element);
+            this.header = $('<div></div>').text(options.header).appendTo(head);
+            this.content = $('<div></div>').appendTo(this.element);
             if (options.content !== undefined)
                 this.content.html(options.content);
         },
