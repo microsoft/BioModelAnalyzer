@@ -2,9 +2,10 @@
 (function (BMA) {
     (function (Model) {
         var ProofResult = (function () {
-            function ProofResult(isStable, time) {
+            function ProofResult(isStable, time, ticks) {
                 this.isStable = isStable;
                 this.time = time;
+                this.ticks = ticks;
             }
             Object.defineProperty(ProofResult.prototype, "IsStable", {
                 get: function () {
@@ -17,6 +18,14 @@
             Object.defineProperty(ProofResult.prototype, "Time", {
                 get: function () {
                     return this.time;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ProofResult.prototype, "Ticks", {
+                get: function () {
+                    return this.ticks;
                 },
                 enumerable: true,
                 configurable: true

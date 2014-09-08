@@ -248,13 +248,13 @@
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationplotviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
-    <TypeScriptCompile Include="script\widgets\toolbarpanel.ts" />
     <Content Include="script\rx.jQuery.js" />
     <Content Include="script\rx.js" />
     <Content Include="script\scalablegridlinesplot.js" />
-    <TypeScriptCompile Include="script\widgets\skinmodel.ts" />
     <Content Include="script\svgplot.js" />
     <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
@@ -264,9 +264,13 @@
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\BMA.TestComponents.ts" />
     <TypeScriptCompile Include="test\BMASliderTest.ts" />
+    <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
+    <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
+    <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>

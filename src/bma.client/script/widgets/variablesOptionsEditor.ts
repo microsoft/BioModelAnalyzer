@@ -205,15 +205,8 @@
             var that = this;
             if (key === "rangeFrom" || key === "rangeTo")
             {
-                if (value > 100) {
-                    that._setOption(key, 100);
-                    return;
-                }
-
-                if (value < 0) {
-                    that._setOption(key, 0);
-                    return;
-                } 
+                if (value > 100) value = 100;
+                if (value < 0) value = 0;
             }
 
             if (this.options[key] !== value) {

@@ -101,7 +101,7 @@ module BMA {
             }
 
             public SetData(params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, numericData: params.numericData, colorData: params.colorData});
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data});
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {
@@ -137,8 +137,8 @@ module BMA {
 
             public Show(params: any) {
                 var that = this;
-                this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab });
+                //this.createResultView(params);
+                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             }
 

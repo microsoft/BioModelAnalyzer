@@ -9,17 +9,11 @@
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {
                 } }
         },
-        refresh: function () {
-            this.content.empty();
-            this.header.text(this.options.header);
-            this.options.content.appendTo(this.content);
-        },
-        _init: function () {
-            this.refresh();
-        },
         _create: function () {
             var that = this;
             var options = this.options;
+            var head = $('<div style="height: 28px"></div>').appendTo(this.element);
+
             var url = "";
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
@@ -28,7 +22,7 @@
             else
                 url = this.options.icon;
 
-            this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(this.element);
+            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(head);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.header);
@@ -36,9 +30,10 @@
                     window.Commands.Execute("Collapse", that.options.header);
             });
 
-            this.header = $('<div></div>').text(options.header).appendTo(this.element);
+            this.header = $('<div></div>').text(options.header).appendTo(head);
             this.content = $('<div></div>').appendTo(this.element);
-            this.refresh();
+            if (options.content !== undefined)
+                options.content.appendTo(this.content);
         },
         toggle: function () {
             this.element.toggle(this.options.effects);
@@ -51,8 +46,17 @@
         },
         _setOption: function (key, value) {
             var that = this;
+            if (key === "content") {
+                this.options.content = value;
+                this.content.empty();
+                value.appendTo(this.content);
+            }
+
+            if (key === "header") {
+                this.header.text(value);
+            }
+
             this._super(key, value);
-            this.refresh();
         }
     });
 }(jQuery));

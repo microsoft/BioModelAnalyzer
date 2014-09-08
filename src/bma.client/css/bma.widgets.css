@@ -133,7 +133,8 @@
         z-index:5;
         font-size: x-large;
         width: 800px;
-        height: 600px;
+        max-height: 600px;
+        min-height: 400px;
     }
 
     .togglePopUpWindow {
@@ -172,6 +173,10 @@
 
     #modelToolbarSlider > div {
         box-shadow: 5px 0px 8px lightgray;
+    }
+
+    #modelToolbarSlider ul > li {
+        display: inline-block;
     }
 
     /*.toolbarUL > ul
@@ -322,18 +327,25 @@
     .skinModel {
             
         font: caption;
-        text-align:center; 
-        display:inline-block; 
+        display:table-cell; 
         border:none;
         vertical-align: middle;
-        background-image: -moz-linear-gradient(left, gainsboro 0%, white 50%);
-        background-image: -webkit-linear-gradient(left,gainsboro 0%, white 50%);
-        background-image: -ms-linear-gradient(left, gainsboro 0%,  white 50%);
-        background-image: -webkit-gradient(linear,left,gainsboro 0%, white 50%);
+        background-image: -moz-linear-gradient(left, gainsboro 0, white 50%);
+        background-image: -webkit-linear-gradient(left,gainsboro 0, white 50%);
+        background-image: -ms-linear-gradient(left, gainsboro 0,  white 50%);
+        background-image: -webkit-gradient(linear,left,gainsboro 0, white 50%);
         height: 60px;
         width: 150px;
         font-size: 24px;
         border-radius: 0;
+    }
+
+    .skinModel input {
+        width: 150px;
+        text-align:center; 
+        margin-left: 15px;
+        border: none;
+        background-color: transparent;
     }
 
     .analyze-header-icon {
@@ -819,9 +831,6 @@
     border-collapse:collapse;
 }
 
-.bma-prooftable > tr {
-    height: 15px;
-}
 
 .bma-prooftable tr:nth-child(odd){ background-color:#e3e8ed; }
 
@@ -835,6 +844,7 @@
 	padding:0;
 	font-size:14px;
 	color:#000000;
+    height: 20px;
 }
                                                                       
 
@@ -871,4 +881,28 @@
     background-image: url("../images/formula_validated.png");
     display: inline-block;
     margin-left: 15px;
+}
+
+.resultswindowviewer-content {
+    height: 120px;
+    overflow-y:scroll;
+}
+
+.bma-color-prooftable {
+    width: 100%;
+    height: 160px;
+    border-collapse:collapse;
+}
+
+.bma-color-prooftable td {
+    /*border-bottom:none;
+    border-top: none;
+    border-left:solid white;
+    border-right: solid white;*/
+    border: solid white;
+}
+
+.scrollable-results {
+    max-height: 160px;
+    overflow-y:scroll;
 }
