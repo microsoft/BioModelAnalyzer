@@ -121,7 +121,8 @@
         display:none; 
         padding-top:15px;
         padding-left:20px;
-        padding-right:15px;
+        padding-right:20px;
+        padding-bottom: 15px;
         /*background-color: rgba(0,0,0,0.5);*/
         background-color: Window;
         position:absolute;
@@ -130,11 +131,10 @@
         top: calc(50% - 300px);
         border-radius:20px;
         box-shadow: 0px 0px 8px lightgray; /*#000;*/
-        z-index:5;
+        z-index:10;
         font-size: x-large;
         width: 800px;
         max-height: 600px;
-        min-height: 400px;
     }
 
     .togglePopUpWindow {
@@ -455,10 +455,11 @@
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
         border: none;
+        padding:20px;
     }
 
     .tabPanel > * {
-        margin: 10px;
+        margin: 0;
     }
 
     .ui-widget button{
@@ -491,7 +492,6 @@
     .bma-elementspanel-visibilityoptions {
         float: right;
         margin-right: 15px;
-        z-index: 1000000;
     }
 
  
@@ -895,11 +895,7 @@
 }
 
 .bma-color-prooftable td {
-    /*border-bottom:none;
-    border-top: none;
-    border-left:solid white;
-    border-right: solid white;*/
-    border: solid white;
+    border: 1px solid white;
 }
 
 .scrollable-results {

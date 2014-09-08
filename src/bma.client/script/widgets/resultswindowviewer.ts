@@ -15,8 +15,10 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            var head = $('<div style="height: 28px"></div>').appendTo(this.element);
-            
+            var table = $('<table></table>').width("100%").appendTo(this.element);
+            var tr = $('<tr></tr>').appendTo(table);
+            var td1 = $('<td></td>').appendTo(tr);
+            var td2 = $('<td></td>').appendTo(tr);
             var url = "";
             if (this.options.icon === "max") 
                 url = "../../images/maximize.png";
@@ -25,15 +27,15 @@
                     url = "../../images/minimize.png";
             else url = this.options.icon;
             
-            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(head);
+            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(td2);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.header);
                 if (options.icon === "min")
                     window.Commands.Execute("Collapse", that.options.header);
             });
-
-            this.header = $('<div></div>').text(options.header).appendTo(head);
+            
+            this.header = $('<div></div>').text(options.header).appendTo(td1);
             this.content = $('<div></div>').appendTo(this.element);
             if (options.content !== undefined)
                 options.content.appendTo(this.content);
