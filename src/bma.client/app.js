@@ -133,6 +133,10 @@ $(document).ready(function () {
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
 
+    window.Commands.On("ZoomSliderChanged", function (args) {
+        svgPlotDriver.SetZoom(args.value);
+    });
+
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);

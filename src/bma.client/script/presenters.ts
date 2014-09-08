@@ -199,8 +199,6 @@ module BMA {
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
 
-                        console.log("dragEnd");
-
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
                             this.TryAddStagingLineAsLink();
                             this.stagingLine = undefined;

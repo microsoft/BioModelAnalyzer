@@ -28,7 +28,7 @@ module BMA {
             }
 
             public SetZoom(zoom: number) {
-
+                this.svgPlotDiv.drawingsurface({ zoom: zoom });
             }
         }
 
