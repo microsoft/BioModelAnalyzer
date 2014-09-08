@@ -1,4 +1,4 @@
-﻿describe("SimultaionPlotViewer", function () {
+describe("SimultaionPlotViewer", function () {
     var widget = $('<div></div>');
 
     it("creates a widget", function () {
@@ -16,4 +16,3 @@
         expect(widget.children().eq(0).attr("data-idd-plot")).toEqual("polyline");
     });
 });
-//# sourceMappingURL=SimulationPlotViewerTest.js.map

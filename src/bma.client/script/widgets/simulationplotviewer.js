@@ -3,8 +3,7 @@
 (function ($) {
     $.widget("BMA.simulationplotviewer", {
         options: {
-            data: undefined,
-            ticks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            data: undefined
         },
         refresh: function () {
             var that = this;

@@ -22,12 +22,13 @@
             this.table.appendTo(that.element);
             
             if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                this.table.addClass("bma-prooftable");
                 this.createHeader(options.header);
                 this.arrayToTable(options.numericData);
 
                 if (options.colorData !== undefined)
                     this.paintTable(options.colorData);
-                this.table.addClass("bma-prooftable");
+                
             }
             else if (options.colorData !== undefined && options.colorData.length !== 0) {
                 var that = this;
@@ -65,6 +66,9 @@
             for (var i = 0; i < header.length; i++) {
                 $('<td></td>').text(header[i]).appendTo(tr);
             }
+
+            tr.children().eq(0).width(120);
+            tr.children().eq(2).width(120);
         },
 
         arrayToTable: function (array) {
