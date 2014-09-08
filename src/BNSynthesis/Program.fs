@@ -6,6 +6,7 @@ open FSharp.Data
 let synth (statesFilename : string) edgesFilename initialStatesFilename targetStatesFilename nonTransitionsNodesFilename =
     let geneNames = CsvFile.Load(statesFilename).Headers |> Option.get |> Seq.skip 1 |> Array.ofSeq
 
+    // SI: geneNAme->id function?
     let f n = 2 + (Seq.findIndex ((=) n) geneNames) // + 2 BECAUSE OF AND, OR
     let geneIds = geneNames |> Seq.map f |> Set.ofSeq
 
@@ -13,6 +14,7 @@ let synth (statesFilename : string) edgesFilename initialStatesFilename targetSt
     let targetStates = readLines targetStatesFilename
     let nonTransitionEnforcedStates = readLines nonTransitionsNodesFilename |> Set.ofArray
 
+    // SI: read states too, from statesFilename? 
     Synthesis.synthesise geneIds geneNames statesFilename initialStates targetStates nonTransitionEnforcedStates
     
 [<EntryPoint>]
