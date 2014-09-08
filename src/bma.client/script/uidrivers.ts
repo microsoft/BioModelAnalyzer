@@ -4,7 +4,7 @@
 
 module BMA {
     export module UIDrivers {
-        export class SVGPlotDriver implements ISVGPlot, IElementsPanel {
+        export class SVGPlotDriver implements ISVGPlot, IElementsPanel, INavigationPanel {
             private svgPlotDiv: JQuery;
 
             constructor(svgPlotDiv: JQuery) {
@@ -25,6 +25,10 @@ module BMA {
 
             public GetDragSubject() {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
+            }
+
+            public SetZoom(zoom: number) {
+
             }
         }
 

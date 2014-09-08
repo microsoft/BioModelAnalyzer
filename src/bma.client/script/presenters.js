@@ -9,7 +9,7 @@ var BMA;
 (function (BMA) {
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, svgPlotDriver, dragService, undoButton, redoButton, variableEditorDriver) {
+            function DesignSurfacePresenter(appModel, svgPlotDriver, navigationDriver, dragService, undoButton, redoButton, variableEditorDriver) {
                 var _this = this;
                 this.currentModelIndex = -1;
                 this.xOrigin = 0;
@@ -27,6 +27,7 @@ var BMA;
                 this.redoButton = redoButton;
 
                 this.driver = svgPlotDriver;
+                this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.models = [];
 
@@ -34,7 +35,7 @@ var BMA;
 
                 window.Commands.On("AddElementSelect", function (type) {
                     that.selectedType = type;
-                    that.driver.TurnNavigation(type === undefined);
+                    that.navigationDriver.TurnNavigation(type === undefined);
                     that.stagingLine = undefined;
                     //this.selectedType = this.selectedType === type ? undefined : type;
                     //this.driver.TurnNavigation(this.selectedType === undefined);
@@ -117,11 +118,11 @@ var BMA;
                     } else if (that.selectedType === undefined) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
-                            that.driver.TurnNavigation(false);
+                            that.navigationDriver.TurnNavigation(false);
                             var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
                             that.stagingVariable = { model: vl.model, layout: vl.layout };
                         } else {
-                            that.driver.TurnNavigation(true);
+                            that.navigationDriver.TurnNavigation(true);
                         }
                     }
                     _this.stagingLine = undefined;

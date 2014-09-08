@@ -2,6 +2,7 @@
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 declare var BMAExt: any;
 declare var InteractiveDataDisplay: any;
+declare var Rx: any;
 
 (function ($) {
     $.widget("BMA.drawingsurface", {
@@ -9,9 +10,13 @@ declare var InteractiveDataDisplay: any;
         _gridLinesPlot: null,
         _svgPlot: null,
         _dragService: null,
+        _zoomObservable: undefined,
+        _zoomObs: undefined,
+
         options: {
             isNavigationEnabled: true,
-            svg: undefined
+            svg: undefined,
+            zoom: undefined
         },
 
 
@@ -23,6 +28,11 @@ declare var InteractiveDataDisplay: any;
 
         _create: function () {
             var that = this;
+
+            this._zoomObs = undefined;
+            this._zoomObservable = Rx.Observable.create(function (rx) {
+                this._zoomObs = rx;
+            });
 
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
@@ -168,9 +178,9 @@ declare var InteractiveDataDisplay: any;
 
             if (this.options.isNavigationEnabled) {
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
-                that._plot.navigation.gestureSource = gestureSource;
+                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable);
             } else {
-                that._plot.navigation.gestureSource = undefined;
+                that._plot.navigation.gestureSource = this._zoomObservable;
             }
 
             var width = 1600;
@@ -203,6 +213,11 @@ declare var InteractiveDataDisplay: any;
                     if (value === true) {
                         this._plot.navigation.gestureSource = undefined;
                         var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
+
+                        if (this._zoomObservable !== undefined) {
+                            gestureSource = gestureSource.merge(this._zoomObservable);
+                        }
+
                         this._plot.navigation.gestureSource = gestureSource;
                     } else {
                         this._plot.navigation.gestureSource = undefined;
@@ -216,8 +231,17 @@ declare var InteractiveDataDisplay: any;
                         this._gridLinesPlot.yStep = value.yStep;
                     }
                     break;
+                case "zoom":
+                    if (value !== undefined) {
+                        var currentZoom = this._getZoom();
+
+                    }
+                    break;
             }
             this._super(key, value);
+        },
+
+        _getZoom: function () {
         },
 
         _setOptions: function (options) {

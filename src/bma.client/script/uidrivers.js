@@ -23,6 +23,9 @@ var BMA;
             SVGPlotDriver.prototype.GetDragSubject = function () {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             };
+
+            SVGPlotDriver.prototype.SetZoom = function (zoom) {
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
