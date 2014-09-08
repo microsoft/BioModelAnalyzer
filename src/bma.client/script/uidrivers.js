@@ -25,6 +25,7 @@ var BMA;
             };
 
             SVGPlotDriver.prototype.SetZoom = function (zoom) {
+                this.svgPlotDiv.drawingsurface({ zoom: zoom });
             };
             return SVGPlotDriver;
         })();

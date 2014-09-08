@@ -132,6 +132,8 @@ $(document).ready(function () {
         window.Commands.Execute("ExportModel", undefined);
     });
 
+   
+
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
@@ -140,6 +142,11 @@ $(document).ready(function () {
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
+
+
+    window.Commands.On("ZoomSliderChanged", (args) => {
+        svgPlotDriver.SetZoom(args.value);
+    });
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);

@@ -242,6 +242,9 @@ declare var Rx: any;
         },
 
         _getZoom: function () {
+            var plotRect = this._plot.visibleRect;
+            console.log(plotRect.width);
+            return 0;
         },
 
         _setOptions: function (options) {
