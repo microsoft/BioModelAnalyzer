@@ -5,8 +5,12 @@ module BMA {
     export module UIDrivers {
         export interface ISVGPlot {
             Draw(svg: SVGElement);
-            TurnNavigation(isOn: boolean);
             SetGrid(x0: number, y0: number, xStep: number, yStep: number);
+        }
+
+        export interface INavigationPanel {
+            TurnNavigation(isOn: boolean);
+            SetZoom(zoom: number);
         }
 
         export interface IVariableEditor {
@@ -43,6 +47,10 @@ module BMA {
             OnProofFailed();
             Show(params);
             Hide(params);
+        }
+
+        export interface IFileLoader {
+            OpenFileDialog() : JQueryPromise<File>;
         }
 
     }

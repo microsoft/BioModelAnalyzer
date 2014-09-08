@@ -16,6 +16,7 @@
     <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
     <script src="script/jquery.svg.js"></script>
     <!--<script src="script/jquery.svgdom.min.js"></script>-->
+    <script src="script/FileSaver.js"></script>
 
     <script src="script/SVGHelper.js"></script>
     <script src="Scripts/rx.js"></script>
@@ -37,25 +38,30 @@
     <script src="script/uidrivers.js"></script>
     <script src="script/presenters.js"></script>
     <script src="script/proofpresenter.js"></script>
+    <script src="script/modelstoragepresenter.js"></script>
     <script src="script/arraytotableconverter.js"></script>
     <script src="script/logictableconverter.js"></script>
 
     <script src="script/widgets/accordeon.js"></script>
     <script src="script/widgets/bmaslider.js"></script>
-    <script src="script/widgets/toolbarpanel.js"></script>
-    <script src="script/widgets/skinmodel.js"></script>
-    <script src="script/widgets/visibilitysettings.js"></script>
+    <script src="script/widgets/coloredtableviewer.js"></script>
     <script src="script/widgets/drawingsurface.js"></script>
     <script src="script/widgets/elemettoolbar.js"></script>
-    <script src="script/widgets/variablesOptionsEditor.js"></script>
     <script src="script/widgets/proofresultviewer.js"></script>
     <script src="script/widgets/resultswindowviewer.js"></script>
-    <script src="script/widgets/coloredtableviewer.js"></script>
-    
+    <script src="script/widgets/simulationplotviewer.js"></script>
+    <script src="script/widgets/simulationviewer.js"></script>
+    <script src="script/widgets/skinmodel.js"></script>
+    <script src="script/widgets/variablesOptionsEditor.js"></script>
+    <script src="script/widgets/visibilitysettings.js"></script>
+
     <script src="app.js"></script>
 </head>
 <body>
     <div id="tools" class="bma-elementspanel">
+        <a id="downloadLink" style="display: none"></a>
+        <input style="display:none;" type="file" accept="text/csv" id="fileLoader">
+
         <div id="undoredotoolbar" class="bma-elementspanel-undoredotoolbar">
             <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
             <label for="button-pointer">
@@ -76,14 +82,14 @@
             </button>
         </div>
 
-        
+
 
         <!--<div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>-->
-        <div id="zoomslider"></div>
-            <!--<img id="zoom-minus" src="images/zoomminus.png">
-            <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
-            <img id="zoom-plus" src="images/zoomplus.png">-->
-        
+        <div id="zoomslider" data-command="ZoomSliderChanged"></div>
+        <!--<img id="zoom-minus" src="images/zoomminus.png">
+        <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
+        <img id="zoom-plus" src="images/zoomplus.png">-->
+
 
         <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
             <button id="visibilityOptionsHeader" class="visibility-icon"></button>
@@ -126,18 +132,20 @@
                 <div id="modelToolbarHeader" class="skinModelContainer">
                     <ul>
                         <li>
-                            <button class="skinModel">Model 1</button>
+                            <div class="skinModel" id="modelNameEditor">
+                                <input type="text" value="Model 1">
+                            </div>
                         </li>
                         <li>
-                            <button class="saveIcon"></button>
+                            <div class="saveIcon"></div>
                         </li>
                     </ul>
                 </div>
                 <div id="modelToolbarContent" class="toolbarContainer">
                     <ul>
-                        <li><span class="newButton" data-command="Commands.New">NEW</span></li>
-                        <li><span class="saveButton" data-command="save">IMPORT</span></li>
-                        <li><span class="openButton" data-command="open">EXPORT</span></li>
+                        <li><span id="newModelBtn" class="newButton" data-command="NewModel">NEW</span></li>
+                        <li><span id="importModelBtn" class="saveButton" data-command="ImportModel">IMPORT</span></li>
+                        <li><span id="exportModelBtn" class="openButton" data-command="ExportModel">EXPORT</span></li>
                         <!--<li><span class="exportButton" data-command="export">EXPORT</span></li>-->
                     </ul>
                 </div>
@@ -151,37 +159,27 @@
                     <img src="images/analyze.png" class="iconAnalyze">
                 </div>
                 <div id="tabs-1" class="tabPanel ">
-                        <h2>Proof Analysis</h2>
-                        <div id="ProofResult"></div>
-                        <div id="Variables" style="height: 50px">
-                            <span>Variables</span>
-                            <button id="expandVariablesInProof" class="expandButton"></button>
-                        </div>
-                        <div id="Proof Propagation" style="height: 50px">
-                            <span>Proof Propagation</span>
-                            <button class="expandButton"></button>
-                        </div>
+                    <h2>Proof Analysis</h2>
                 </div>
                 <div id="icon2" class="analyze-header-icon " style="top: 80px">
                     <img src="images/graphic.png" class="iconAnalyze">
                 </div>
                 <div id="tabs-2" class="tabPanel ">
                     <h2>Simulation</h2>
-                    <div id="Div1" style="height: 50px">
+                    <!--<div id="Div1" style="height: 50px">
                         <span>Variables</span>
                         <button class="expandButton"></button>
                     </div>
                     <div id="Div2" style="height: 50px">
                         <button class="expandButton"></button>
-                    </div>
+                    </div>-->
                 </div>
             </div>
 
-            
+
         </div>
         <div id="editor"></div>
     </div>
-
 
     <div class="bma-footer">
         <div class="bma-pagefooter-msrlogo">

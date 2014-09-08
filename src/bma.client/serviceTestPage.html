@@ -55,22 +55,46 @@
             ]
         }
 
+        var simulate = {
+            "Model": stableModel,
+            "Variables": [
+                { "Id": 1, "Value": 2 },
+                { "Id": 2, "Value": 2 },
+                { "Id": 3, "Value": 2 },
+            ]
+        }
+
         $(function () {
+            $("#log").append("Invoking api/Analyze...<br/>");
             $.ajax({
                 type: "POST",
                 url: "api/Analyze",
                 data: stableModel,
                 success: function (res) {
-                    alert("Success: " + res.Status);
+                    $("#log").append("Analyze success. Analysis result: " + res.Status + "<br/>");
                 },
                 error: function (res) {
-                    alert("Error: " + res.statusText);
+                    $("#log").append("Analyze error: " + res.statusText + "<br/>");
                 }
             });
+
+            $("#log").append("Invoking api/Simulate...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Simulate",
+                data: simulate,
+                success: function (res) {
+                    $("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Simulate error: " + res.statusText + "<br/>");
+                }
+            });
+
         });
     </script>
 </head>
 <body>
-
+    <div id="log"></div>
 </body>
 </html>

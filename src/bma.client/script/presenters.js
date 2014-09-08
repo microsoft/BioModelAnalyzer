@@ -9,7 +9,7 @@ var BMA;
 (function (BMA) {
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, svgPlotDriver, dragService, undoButton, redoButton, variableEditorDriver) {
+            function DesignSurfacePresenter(appModel, svgPlotDriver, navigationDriver, dragService, undoButton, redoButton, variableEditorDriver) {
                 var _this = this;
                 this.currentModelIndex = -1;
                 this.xOrigin = 0;
@@ -27,15 +27,16 @@ var BMA;
                 this.redoButton = redoButton;
 
                 this.driver = svgPlotDriver;
+                this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.models = [];
 
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
 
                 window.Commands.On("AddElementSelect", function (type) {
-                    _this.selectedType = type;
-                    _this.driver.TurnNavigation(type === undefined);
-                    _this.stagingLine = undefined;
+                    that.selectedType = type;
+                    that.navigationDriver.TurnNavigation(type === undefined);
+                    that.stagingLine = undefined;
                     //this.selectedType = this.selectedType === type ? undefined : type;
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
@@ -76,6 +77,10 @@ var BMA;
                     }
                 });
 
+                window.Commands.On("ModelReset", function () {
+                    _this.Set(_this.appModel.BioModel, _this.appModel.Layout);
+                });
+
                 window.Commands.On("Undo", function () {
                     _this.Undo();
                 });
@@ -113,11 +118,11 @@ var BMA;
                     } else if (that.selectedType === undefined) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
-                            that.driver.TurnNavigation(false);
+                            that.navigationDriver.TurnNavigation(false);
                             var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
                             that.stagingVariable = { model: vl.model, layout: vl.layout };
                         } else {
-                            that.driver.TurnNavigation(true);
+                            that.navigationDriver.TurnNavigation(true);
                         }
                     }
                     _this.stagingLine = undefined;
@@ -154,8 +159,6 @@ var BMA;
                 });
 
                 dragSubject.dragEnd.subscribe(function (gesture) {
-                    console.log("dragEnd");
-
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && _this.stagingLine !== undefined) {
                         _this.TryAddStagingLineAsLink();
                         _this.stagingLine = undefined;

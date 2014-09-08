@@ -10,17 +10,15 @@
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {} }
         },
 
-        refresh: function () {
-            this.content.empty();
-            this.header.text(this.options.header);
-            this.options.content.appendTo(this.content);
-        },
 
-        _init: function () { this.refresh(); },
 
         _create: function () {
             var that = this;
             var options = this.options;
+            var table = $('<table></table>').width("100%").appendTo(this.element);
+            var tr = $('<tr></tr>').appendTo(table);
+            var td1 = $('<td></td>').appendTo(tr);
+            var td2 = $('<td></td>').appendTo(tr);
             var url = "";
             if (this.options.icon === "max") 
                 url = "../../images/maximize.png";
@@ -29,17 +27,18 @@
                     url = "../../images/minimize.png";
             else url = this.options.icon;
             
-            this.button = $('<img class="togglePopUpWindow" src="' + url + '">').appendTo(this.element);
+            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(td2);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.header);
                 if (options.icon === "min")
                     window.Commands.Execute("Collapse", that.options.header);
             });
-
-            this.header = $('<div></div>').text(options.header).appendTo(this.element);
+            
+            this.header = $('<div></div>').text(options.header).appendTo(td1);
             this.content = $('<div></div>').appendTo(this.element);
-            this.refresh();
+            if (options.content !== undefined)
+                options.content.appendTo(this.content);
         },
 
         toggle: function () { 
@@ -56,16 +55,25 @@
 
         _setOption: function (key, value) {
             var that = this;
-            this._super(key, value);
-            this.refresh();
-        }
+            if (key === "content") {
+                this.options.content = value;
+                this.content.empty();
+                value.appendTo(this.content);
+            }
 
+            if (key === "header") {
+                this.header.text(value);
+            }
+                
+            this._super(key, value);
+        }
     });
 } (jQuery));
 
 interface JQuery {
     resultswindowviewer (): JQuery;
     resultswindowviewer(settings: Object): JQuery;
+    resultswindowviewer(fun: string): any;
     resultswindowviewer(optionLiteral: string, optionName: string): any;
     resultswindowviewer(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 } 

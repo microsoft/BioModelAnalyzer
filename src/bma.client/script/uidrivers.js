@@ -23,6 +23,10 @@ var BMA;
             SVGPlotDriver.prototype.GetDragSubject = function () {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             };
+
+            SVGPlotDriver.prototype.SetZoom = function (zoom) {
+                this.svgPlotDiv.drawingsurface({ zoom: zoom });
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
@@ -91,7 +95,7 @@ var BMA;
                 this.proofContentViewer = proofContentViewer;
             }
             ProofViewer.prototype.SetData = function (params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, numericData: params.numericData, colorData: params.colorData });
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data });
             };
 
             ProofViewer.prototype.ShowResult = function (result) {
@@ -128,8 +132,9 @@ var BMA;
             }
             PopupDriver.prototype.Show = function (params) {
                 var that = this;
-                this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab });
+
+                //this.createResultView(params);
+                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             };
 
@@ -144,6 +149,35 @@ var BMA;
             return PopupDriver;
         })();
         UIDrivers.PopupDriver = PopupDriver;
+
+        var ModelFileLoader = (function () {
+            function ModelFileLoader(fileInput) {
+                this.currentPromise = undefined;
+                var that = this;
+                this.fileInput = fileInput;
+
+                fileInput.change(function (arg) {
+                    var e = arg;
+                    if (e.target.files !== undefined && e.target.files.length == 1 && that.currentPromise !== undefined) {
+                        that.currentPromise.resolve(e.target.files[0]);
+                        that.currentPromise = undefined;
+                        fileInput.val("");
+                    }
+                });
+            }
+            ModelFileLoader.prototype.OpenFileDialog = function () {
+                var deferred = $.Deferred();
+                this.currentPromise = deferred;
+                this.fileInput.click();
+                return deferred.promise();
+            };
+
+            ModelFileLoader.prototype.OnCheckFileSelected = function () {
+                return false;
+            };
+            return ModelFileLoader;
+        })();
+        UIDrivers.ModelFileLoader = ModelFileLoader;
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));

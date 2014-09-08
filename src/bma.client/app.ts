@@ -11,9 +11,9 @@
 /// <reference path="script\SVGHelper.ts"/>
 
 /// <reference path="script\widgets\drawingsurface.ts"/>
-/// <reference path="script\widgets\toolbarpanel.ts"/>
+/// <reference path="script\widgets\simulationplotviewer.ts"/>
+/// <reference path="script\widgets\simulationviewer.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
-/// <reference path="script\widgets\skinmodel.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>
@@ -21,6 +21,8 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
+
+declare var saveTextAs: any;
 
 $(document).ready(function () {
     //Creating CommandRegistry
@@ -46,10 +48,20 @@ $(document).ready(function () {
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
-    
+
+    $("#modelNameEditor").click(function (e) {
+        e.stopPropagation();
+    });
+
+    var data = [];
+    data[0] = [1, 2, 3, 3, 3, 3, 2, 2, 2, 1];
+    data[1] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 0];
+
+    $("#Div2").simulationplotviewer({data:data});
+
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
-    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
+    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
 
     //$("#icon1").click();
     //setTimeout(function () { $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: true } }) }, 2000);
@@ -105,8 +117,22 @@ $(document).ready(function () {
 
     $("#editor").bmaeditor();
     $("#tabs-1").proofresultviewer();
+    $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({icon: "min"});
-    
+
+    $("#newModelBtn").click(function (args) {
+        window.Commands.Execute("NewModel", undefined);
+    });
+
+    $("#importModelBtn").click(function (args) {
+        window.Commands.Execute("ImportModel", undefined);
+    });
+
+    $("#exportModelBtn").click(function (args) {
+        window.Commands.Execute("ExportModel", undefined);
+    });
+
+   
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -115,8 +141,15 @@ $(document).ready(function () {
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
+    var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
+
+
+    window.Commands.On("ZoomSliderChanged", (args) => {
+        svgPlotDriver.SetZoom(args.value);
+    });
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
+    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
 });

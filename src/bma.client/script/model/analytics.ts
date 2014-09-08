@@ -3,6 +3,7 @@
         export class ProofResult {
             private isStable: boolean;
             private time: number;
+            private ticks: any;
 
             public get IsStable() {
                 return this.isStable;
@@ -12,9 +13,14 @@
                 return this.time;
             }
 
-            constructor(isStable: boolean, time: number) {
+            public get Ticks() {
+                return this.ticks;
+            }
+
+            constructor(isStable: boolean, time: number, ticks: any) {
                 this.isStable = isStable;
                 this.time = time;
+                this.ticks = ticks;
             }
         }
     }

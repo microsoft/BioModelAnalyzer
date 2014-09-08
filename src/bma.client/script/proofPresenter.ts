@@ -6,15 +6,24 @@
 
             constructor(appModel: BMA.Model.AppModel, proofResultViewer: BMA.UIDrivers.IProofResultViewer, popupViewer: BMA.UIDrivers.IPopup) {
                 this.appModel = appModel;
+                var that = this;
 
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
+
+                    var proofInput = appModel.BioModel.GetJSON()
+
                     $.ajax({
                         type: "POST",
                         url: "api/Analyze",
-                        data: appModel.BioModel.GetJSON(),
+                        data: proofInput,
                         success: function (res) {
-                            appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", 0);
+                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
+                            var numericData = that.CreateTableView();
+                            var colorData = that.CreateColoredTable(res.Ticks);
+                            //var result = appModel.ProofResult;
+                            //var data = { numericData: numericData, colorData: undefined };
+                            proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: {numericData: numericData, colorData: colorData } });
                             proofResultViewer.ShowResult(appModel.ProofResult);
                         },
                         error: function (res) {
@@ -25,8 +34,17 @@
                 });
 
                 window.Commands.On("Expand", (param) => {
-                    proofResultViewer.Hide({ tab: param });
-                    popupViewer.Show({ tab: param, type: "coloredTable" });
+                    if (this.appModel.BioModel.Variables.length !== 0) {
+                        var full;
+                        if (param === "Proof Propagation")
+                            full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                        if (param === "Variables")
+                            full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(), header: ["Name", "Formula", "Range"] });
+                        if (full !== undefined) {
+                            proofResultViewer.Hide({ tab: param });
+                            popupViewer.Show({ tab: param, type: "coloredTable", content: full });
+                        }
+                    }
                 });
 
                 window.Commands.On("Collapse", (param) => {
@@ -34,6 +52,70 @@
                     popupViewer.Hide();
                 });
             }
+
+            public CreateTableView() {
+                var table = [];
+                var variables = this.appModel.BioModel.Variables;
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = variables[i].Name;
+                    table[i][1] = variables[i].Formula;
+                    table[i][2] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
+                }
+                return table;
+            }
+
+            public CreateColoredTable(ticks): any {
+                var that = this;
+                if (ticks === null) return;
+                var color = [];
+                var t = ticks.length;
+                var v = ticks[0].Variables.length;
+                for (var i = 0; i < v; i++) {
+                    color[i] = [];
+                    for (var j = 0; j < t; j++) {
+                        var ij = ticks[j].Variables[v - 1 - i];
+                        color[i][j] = ij.Hi === ij.Lo;
+                    }
+                }
+                return color;
+            }
+
+            public CreateFullResultTable(ticks) {
+                
+                var container = $('<div></div>');
+                if (ticks === null) return container;
+                var that = this;
+                var biomodel = this.appModel.BioModel;
+                var variables = biomodel.Variables;
+                var table = [];
+                var color = [];
+                var header = [];
+                var l = ticks.length;
+                header[0] = "Name";
+                for (var i = 0; i < ticks.length; i++) {
+                    header[i + 1] = "T = " + i;
+                }
+                for (var j = 0; j < variables.length; j++) {
+                    table[j] = [];
+                    color[j] = [];
+                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[variables.length - 1 - j].Id).Name;
+                    for (var i = 0; i < l; i++) {
+                        var ij = ticks[i].Variables[variables.length - 1 - j];
+                        if (ij.Lo === ij.Hi) {
+                            table[j][i + 1] = ij.Lo;
+                            color[j][i + 1] = true;
+                        }
+                        else {
+                            table[j][i + 1] = ij.Lo + ' - ' + ij.Hi;
+                            color[j][i + 1] = false;
+                        }
+                    }
+                }
+
+                container.coloredtableviewer({ header: header, numericData: table, colorData: color});
+                return container;
+            }
         }
     }
-} 
+}

@@ -87,11 +87,11 @@
             switch (position) {
                 case "left":
                 case "right":
-                    distantion = context.width();
+                    distantion = context.outerWidth();
                     break;
                 case "top":
                 case "bottom":
-                    distantion = context.height();
+                    distantion = context.outerHeight();
                     break;
                 case "center":
                     return;
@@ -269,16 +269,15 @@
 
                 that.loadingList[ind] = true;
                 var child = $(this).next();
-
                 var distantion = 0;
                 switch (position) {
                     case "left":
                     case "right":
-                        distantion = child.width();
+                        distantion = child.outerWidth();
                         break;
                     case "top":
                     case "bottom":
-                        distantion = child.height();
+                        distantion = child.outerHeight();
                         break;
                     case "center":
                         that.headers
@@ -397,7 +396,8 @@
                 return;
             }
 
-            if (toShow.is(":hidden")){// && !this.loadingList[this.headers.index(clicked)]) {
+            if (toShow.is(":hidden")) {// && !this.loadingList[this.headers.index(clicked)]) {
+                //toShow.show();
                 window.Commands.Execute(clicked.attr("data-command"), {});
             }
 
@@ -452,8 +452,6 @@
             this.prevShow.add(this.prevHide).stop(true, true);
             this.prevShow = toShow;
             this.prevHide = toHide;
-
-
 
             if (that.options.animate && that.options.position != "center") {
                 that._animate(toShow, toHide, data);
@@ -571,7 +569,7 @@
 
         _toggleComplete: function (data) {
             var toHide = data.oldPanel;
-            //var toShow = data.newHeader;
+            var toShow = data.newPanel;
 
             //toHide.hide();
             //toShow.show();
@@ -584,6 +582,7 @@
                 .removeClass("ui-corner-top")
                 .addClass("ui-corner-all");
             toHide.hide();
+            toShow.show();
 
             // Work around for rendering bug in IE (#5421)
             if (toHide.length) {

@@ -84,11 +84,13 @@
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 that._setOption("rangeFrom", valu + 1);
+                window.Commands.Execute("VariableEdited", {});
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 that._setOption("rangeFrom", valu - 1);
+                window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeTo = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
@@ -98,11 +100,13 @@
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 that._setOption("rangeTo", valu + 1);
+                window.Commands.Execute("VariableEdited", {});
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 that._setOption("rangeTo", valu - 1);
+                window.Commands.Execute("VariableEdited", {});
             });
         },
         _processExpandingContent: function () {
@@ -188,15 +192,10 @@
         _setOption: function (key, value) {
             var that = this;
             if (key === "rangeFrom" || key === "rangeTo") {
-                if (value > 100) {
-                    that._setOption(key, 100);
-                    return;
-                }
-
-                if (value < 0) {
-                    that._setOption(key, 0);
-                    return;
-                }
+                if (value > 100)
+                    value = 100;
+                if (value < 0)
+                    value = 0;
             }
 
             if (this.options[key] !== value) {

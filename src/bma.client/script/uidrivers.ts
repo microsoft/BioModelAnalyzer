@@ -4,7 +4,7 @@
 
 module BMA {
     export module UIDrivers {
-        export class SVGPlotDriver implements ISVGPlot, IElementsPanel {
+        export class SVGPlotDriver implements ISVGPlot, IElementsPanel, INavigationPanel {
             private svgPlotDiv: JQuery;
 
             constructor(svgPlotDiv: JQuery) {
@@ -25,6 +25,10 @@ module BMA {
 
             public GetDragSubject() {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
+            }
+
+            public SetZoom(zoom: number) {
+                this.svgPlotDiv.drawingsurface({ zoom: zoom });
             }
         }
 
@@ -97,7 +101,7 @@ module BMA {
             }
 
             public SetData(params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, numericData: params.numericData, colorData: params.colorData});
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data});
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {
@@ -133,8 +137,8 @@ module BMA {
 
             public Show(params: any) {
                 var that = this;
-                this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab });
+                //this.createResultView(params);
+                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             }
 
@@ -145,6 +149,36 @@ module BMA {
             private createResultView(params) {
                 if (params.type === "coloredTable") {
                 }
+            }
+        }
+
+        export class ModelFileLoader implements IFileLoader {
+            private fileInput: JQuery;
+            private currentPromise = undefined;
+
+            constructor(fileInput: JQuery) {
+                var that = this;
+                this.fileInput = fileInput;
+
+                fileInput.change(function (arg) {
+                    var e: any = arg;
+                    if (e.target.files !== undefined && e.target.files.length == 1 && that.currentPromise !== undefined) {
+                        that.currentPromise.resolve(e.target.files[0]);
+                        that.currentPromise = undefined;
+                        fileInput.val("");
+                    }
+                });
+            }
+
+            public OpenFileDialog(): JQueryPromise<File> {
+                var deferred = $.Deferred();
+                this.currentPromise = deferred;
+                this.fileInput.click();
+                return deferred.promise();
+            }
+
+            private OnCheckFileSelected() : boolean {
+                return false;
             }
         }
     }

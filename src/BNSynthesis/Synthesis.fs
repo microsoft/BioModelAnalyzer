@@ -77,6 +77,9 @@ let private findAllowedEdges (solver : Solver) gene genes (geneNames : string []
 
         solver.Check() = Status.SATISFIABLE
 
+    // SW: implement seenEdges optimisation: once you have found a function for an edge,
+    // evaluate it in F#, outside of Z3, on all the other edges. if it matches an edge
+    // then you do not have to make a SAT query for that edge
     set [ for (a, b) in undirectedEdges do
               if checkTransition a then yield (a, b)
               if checkTransition b then yield (b, a) ]

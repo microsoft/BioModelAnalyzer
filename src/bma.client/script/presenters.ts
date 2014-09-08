@@ -20,6 +20,7 @@ module BMA {
 
             private selectedType: string;
             private driver: BMA.UIDrivers.ISVGPlot;
+            private navigationDriver: BMA.UIDrivers.INavigationPanel;
             private variableEditor: BMA.UIDrivers.IVariableEditor;
             private svg: any;
 
@@ -41,6 +42,7 @@ module BMA {
 
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
+                navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
                 undoButton: BMA.UIDrivers.ITurnableButton,
                 redoButton: BMA.UIDrivers.ITurnableButton,
@@ -52,6 +54,7 @@ module BMA {
                 this.redoButton = redoButton;
 
                 this.driver = svgPlotDriver;
+                this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.models = [];
 
@@ -59,9 +62,9 @@ module BMA {
 
                 window.Commands.On("AddElementSelect", (type: string) => {
 
-                    this.selectedType = type;
-                    this.driver.TurnNavigation(type === undefined);
-                    this.stagingLine = undefined;
+                    that.selectedType = type;
+                    that.navigationDriver.TurnNavigation(type === undefined);
+                    that.stagingLine = undefined;
                     //this.selectedType = this.selectedType === type ? undefined : type;
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
@@ -100,6 +103,10 @@ module BMA {
                             that.OnModelUpdated();
                         }
                     }
+                });
+
+                window.Commands.On("ModelReset", () => {
+                    this.Set(this.appModel.BioModel, this.appModel.Layout);
                 });
 
                 window.Commands.On("Undo", () => {
@@ -142,11 +149,11 @@ module BMA {
                         } else if (that.selectedType === undefined) {
                             var id = this.GetVariableAtPosition(gesture.x, gesture.y);
                             if (id !== undefined) {
-                                that.driver.TurnNavigation(false);
+                                that.navigationDriver.TurnNavigation(false);
                                 var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
                                 that.stagingVariable = { model: vl.model, layout: vl.layout };
                             } else {
-                                that.driver.TurnNavigation(true);
+                                that.navigationDriver.TurnNavigation(true);
                             }
                         }
                         this.stagingLine = undefined;
@@ -191,8 +198,6 @@ module BMA {
 
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
-
-                        console.log("dragEnd");
 
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
                             this.TryAddStagingLineAsLink();
