@@ -159,8 +159,6 @@ var BMA;
                 });
 
                 dragSubject.dragEnd.subscribe(function (gesture) {
-                    console.log("dragEnd");
-
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && _this.stagingLine !== undefined) {
                         _this.TryAddStagingLineAsLink();
                         _this.stagingLine = undefined;

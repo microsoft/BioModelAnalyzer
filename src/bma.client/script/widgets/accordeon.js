@@ -62,11 +62,11 @@
             switch (position) {
                 case "left":
                 case "right":
-                    distantion = context.width();
+                    distantion = context.outerWidth();
                     break;
                 case "top":
                 case "bottom":
-                    distantion = context.height();
+                    distantion = context.outerHeight();
                     break;
                 case "center":
                     return;
@@ -233,16 +233,15 @@
             this.headers.each(function (ind) {
                 that.loadingList[ind] = true;
                 var child = $(this).next();
-
                 var distantion = 0;
                 switch (position) {
                     case "left":
                     case "right":
-                        distantion = child.width();
+                        distantion = child.outerWidth();
                         break;
                     case "top":
                     case "bottom":
-                        distantion = child.height();
+                        distantion = child.outerHeight();
                         break;
                     case "center":
                         that.headers.removeClass("visibility-header-with-table-show").addClass("visibility-header-only");

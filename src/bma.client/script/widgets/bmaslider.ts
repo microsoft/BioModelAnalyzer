@@ -4,8 +4,10 @@
 (function ($) {
     $.widget("BMA.bmazoomslider", {
         options: {
-            step: 1,
-            value: 0
+            step: 10,
+            value: 0,
+            min: 0,
+            max: 100
         },
 
         _create: function () {
@@ -21,7 +23,10 @@
                 .appendTo(that.element);
 
             this.zoomslider.slider({
-                step: that.options.step, value: that.options.value, change: function (event, ui) {
+                min: that.options.min,
+                max: that.options.max,
+                step: that.options.step, value: that.options.value,
+                change: function (event, ui) {
                     that.options.value = ui.value;
 
                     if (command !== undefined && command !== "") {
