@@ -7,7 +7,7 @@
 /// <reference path="script\functionsregistry.ts"/>
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
-/// <reference path="script\presenters.ts"/>
+/// <reference path="script\presenters\presenters.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 
 /// <reference path="script\widgets\drawingsurface.ts"/>

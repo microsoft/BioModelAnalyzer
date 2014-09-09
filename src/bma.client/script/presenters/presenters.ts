@@ -1,9 +1,9 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="model\biomodel.ts"/>
-/// <reference path="model\model.ts"/>
-/// <reference path="uidrivers.ts"/>
-/// <reference path="commands.ts"/>
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\model\biomodel.ts"/>
+/// <reference path="..\model\model.ts"/>
+/// <reference path="..\uidrivers.ts"/>
+/// <reference path="..\commands.ts"/>
 
 interface JQuery {
     svg(): any;

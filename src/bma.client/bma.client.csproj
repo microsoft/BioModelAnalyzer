@@ -198,7 +198,7 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
-    <TypeScriptCompile Include="script\modelstoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
@@ -206,7 +206,7 @@
     <TypeScriptCompile Include="script\model\analytics.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
-    <TypeScriptCompile Include="script\proofpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
     <TypeScriptCompile Include="script\SVGHelper.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
     <TypeScriptCompile Include="script\widgets\coloredtableviewer.ts" />
@@ -258,7 +258,7 @@
     <Content Include="script\svgplot.js" />
     <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
-    <TypeScriptCompile Include="script\presenters.ts" />
+    <TypeScriptCompile Include="script\presenters\presenters.ts" />
     <TypeScriptCompile Include="script\uidrivers.interfaces.ts" />
     <TypeScriptCompile Include="script\uidrivers.ts" />
     <TypeScriptCompile Include="test\AccordionTest.ts" />
