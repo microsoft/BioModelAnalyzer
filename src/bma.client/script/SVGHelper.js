@@ -13,7 +13,6 @@
         function RemoveClass(elem, c) {
             var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
 
-            // TODO - coalesce spaces
             if (s == " ")
                 s = null;
             elem.className.baseVal = s;
@@ -27,4 +26,3 @@
     })(BMA.SVGHelper || (BMA.SVGHelper = {}));
     var SVGHelper = BMA.SVGHelper;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=SVGHelper.js.map

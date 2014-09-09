@@ -71,7 +71,6 @@
     it("should set options", function () {
         var neweditor = $('<div></div>');
 
-        //neweditor.bmaeditor({ functions: ["fight", "rebel", "riot"] });
         neweditor.bmaeditor({ name: "noname", rangeFrom: 6, rangeTo: 10, formula: "123-ceil(x)", approved: false });
         expect(neweditor.bmaeditor("option", "name")).toEqual("noname");
         expect(neweditor.bmaeditor("option", "rangeFrom")).toEqual(6);
@@ -228,4 +227,3 @@
         expect(textarea.val()).toEqual("testformula");
     });
 });
-//# sourceMappingURL=VariablesEditorTest.js.map

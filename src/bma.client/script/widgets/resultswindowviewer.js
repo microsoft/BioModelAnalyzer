@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.resultswindowviewer", {
         options: {
             content: $(),
@@ -62,4 +60,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=resultswindowviewer.js.map

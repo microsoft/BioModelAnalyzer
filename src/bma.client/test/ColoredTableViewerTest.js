@@ -97,4 +97,3 @@
         widget.coloredtableviewer({ header: header, numericData: numericData, colorData: colorData });
     });
 });
-//# sourceMappingURL=ColoredTableViewerTest.js.map

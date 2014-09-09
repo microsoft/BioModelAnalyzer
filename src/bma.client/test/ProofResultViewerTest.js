@@ -102,4 +102,3 @@
         expect(variablesdiv.css("display")).not.toEqual("none");
     });
 });
-//# sourceMappingURL=ProofResultViewerTest.js.map

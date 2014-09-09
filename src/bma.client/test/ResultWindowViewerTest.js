@@ -38,4 +38,3 @@
         expect(window.Commands.Execute).toHaveBeenCalledWith("Collapse", header);
     });
 });
-//# sourceMappingURL=ResultWindowViewerTest.js.map

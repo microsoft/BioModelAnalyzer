@@ -12,4 +12,3 @@
         expect(widget.simulationplotviewer("option", "data")).toEqual(data);
     });
 });
-//# sourceMappingURL=SimulationPlotViewerTest.js.map

@@ -1,7 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="widgets\drawingsurface.ts"/>
-var BMA;
+﻿var BMA;
 (function (BMA) {
     (function (UIDrivers) {
         var SVGPlotDriver = (function () {
@@ -133,7 +130,6 @@ var BMA;
             PopupDriver.prototype.Show = function (params) {
                 var that = this;
 
-                //this.createResultView(params);
                 this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             };
@@ -181,4 +177,3 @@ var BMA;
     })(BMA.UIDrivers || (BMA.UIDrivers = {}));
     var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=uidrivers.js.map
