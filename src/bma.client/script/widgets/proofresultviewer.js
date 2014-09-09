@@ -31,6 +31,10 @@
 
             if (options.data !== undefined) {
                 var variables = $("<div></div>").addClass("scrollable-results").coloredtableviewer({ numericData: options.data.numericData, header: ["Name", "Formula", "Range"] });
+
+                var tr = variables.find("tr").eq(0);
+                tr.children().eq(0).width(120);
+                tr.children().eq(2).width(120);
                 var proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData });
                 this.compactvariables.resultswindowviewer({ content: variables });
                 this.proofPropagation.resultswindowviewer({ content: proof });

@@ -18,7 +18,7 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
-                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
+                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             var numericData = that.CreateTableView();
                             var colorData = that.CreateColoredTable(res.Ticks);
                             //var result = appModel.ProofResult;
@@ -36,10 +36,13 @@
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full;
-                        if (param === "Proof Propagation")
+                        if (param === "Proof Propagation" && this.appModel.ProofResult.Ticks !== null)
                             full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
-                        if (param === "Variables")
+                        if (param === "Variables") {
                             full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(), header: ["Name", "Formula", "Range"] });
+                            full.find("td").eq(0).width(150);
+                            full.find("td").eq(2).width(150);
+                        }
                         if (full !== undefined) {
                             proofResultViewer.Hide({ tab: param });
                             popupViewer.Show({ tab: param, type: "coloredTable", content: full });
@@ -113,7 +116,9 @@
                     }
                 }
 
-                container.coloredtableviewer({ header: header, numericData: table, colorData: color});
+                container.coloredtableviewer({ header: header, numericData: table, colorData: color });
+
+                container.find("td").eq(0).width(150);
                 return container;
             }
         }

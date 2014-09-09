@@ -478,6 +478,9 @@
         padding-top: 15px;
         padding-bottom: 5px;
     }
+    .bma-elementspanel > *{
+        display: inline-block;
+    }
 
     .bma-elementspanel-undoredotoolbar {
         display: inline-block;

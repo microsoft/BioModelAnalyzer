@@ -145,7 +145,7 @@ var BMA;
                     Name: this.name,
                     RangeFrom: this.rangeFrom,
                     RangeTo: this.rangeTo,
-                    Formula: this.formula
+                    Function: this.formula
                 };
             };
             return Variable;

@@ -58,9 +58,6 @@
             for (var i = 0; i < header.length; i++) {
                 $('<td></td>').text(header[i]).appendTo(tr);
             }
-
-            tr.children().eq(0).width(120);
-            tr.children().eq(2).width(120);
         },
         arrayToTable: function (array) {
             var that = this;
