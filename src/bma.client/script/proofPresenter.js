@@ -17,7 +17,7 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
-                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
+                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             var numericData = that.CreateTableView();
                             var colorData = that.CreateColoredTable(res.Ticks);
 
@@ -121,4 +121,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=proofPresenter.js.map
+//# sourceMappingURL=proofpresenter.js.map
