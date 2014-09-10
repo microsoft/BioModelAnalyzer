@@ -9,9 +9,10 @@
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {
                 } }
         },
-        _create: function () {
+        refresh: function () {
             var that = this;
             var options = this.options;
+            this.element.empty();
             var table = $('<table></table>').width("100%").appendTo(this.element);
             var tr = $('<tr></tr>').appendTo(table);
             var td1 = $('<td></td>').appendTo(tr);
@@ -33,9 +34,14 @@
             });
 
             this.header = $('<div></div>').text(options.header).appendTo(td1);
-            this.content = $('<div></div>').appendTo(this.element);
-            if (options.content !== undefined)
-                options.content.appendTo(this.content);
+
+            //this.content = $('<div></div>').appendTo(this.element);
+            if (options.content !== undefined) {
+                options.content.clone().appendTo(this.element);
+            }
+        },
+        _create: function () {
+            this.refresh();
         },
         toggle: function () {
             this.element.toggle(this.options.effects);
@@ -45,20 +51,17 @@
         },
         _destroy: function () {
             this.element.empty();
+            alert("destroy window");
         },
         _setOption: function (key, value) {
             var that = this;
-            if (key === "content") {
+            if (key === "content")
                 this.options.content = value;
-                this.content.empty();
-                value.appendTo(this.content);
-            }
-
-            if (key === "header") {
-                this.header.text(value);
-            }
+            if (key === "header")
+                this.options.header = value;
 
             this._super(key, value);
+            this.refresh();
         }
     });
 }(jQuery));

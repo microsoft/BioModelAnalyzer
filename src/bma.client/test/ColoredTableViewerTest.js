@@ -25,6 +25,52 @@
         expect(widget.find("td").length).toEqual(12);
     });
 
+    it("changes header option", function () {
+        var header = [1, 2, 3];
+        var numericData = [];
+        numericData[0] = [1, 1, 1];
+        numericData[1] = [2, 2, 2];
+        numericData[2] = [3, 3, 3];
+        var colorData = [];
+        colorData[0] = [true, false, true];
+        colorData[1] = [false, false, false];
+        colorData[2] = [true, true, true];
+
+        widget.coloredtableviewer({ header: header, numericData: numericData, colorData: colorData });
+
+        header = [4, 5, 6];
+        widget.coloredtableviewer({
+            header: header
+        });
+        var headertd = widget.find("tr").eq(0).children("td");
+        expect(headertd.each(function (ind, val) {
+            header[ind].toString() === $(val).text();
+        })).toBeTruthy();
+    });
+
+    it("changes numericData option", function () {
+        var header = [1, 2, 3];
+        var numericData = [];
+        numericData[0] = [1, 1, 1];
+        numericData[1] = [2, 2, 2];
+        numericData[2] = [3, 3, 3];
+
+        widget.coloredtableviewer({ header: header, numericData: numericData });
+
+        numericData[0] = [4, 4, 4];
+        numericData[1] = [5, 5, 5];
+        numericData[2] = [6, 6, 6];
+
+        widget.coloredtableviewer({
+            numericData: numericData
+        });
+
+        var datatd0 = widget.find("tr").eq(1).children("td");
+        expect(datatd0.each(function (ind, val) {
+            numericData[0][ind].toString() === $(val).text();
+        })).toBeTruthy();
+    });
+
     it("creates proper table with colored background", function () {
         var header = [1, 2, 3];
         var numericData = [];
@@ -70,7 +116,7 @@
         expect(widget.find("td").length).toEqual(colorData.length * 3);
     });
 
-    xit("creates widget with not compatible data sizes", function () {
+    it("creates widget with not compatible data sizes", function () {
         var header = [1, 2, 3];
         var numericData = [];
         numericData[0] = [1, 1, 1];
@@ -84,7 +130,7 @@
         widget.coloredtableviewer({ header: header, numericData: numericData, colorData: colorData });
     });
 
-    xit("creates widget with not compatible data sizes-2", function () {
+    it("creates widget with not compatible data sizes-2", function () {
         var header = [1, 2, 3];
         var numericData = [];
         numericData[0] = [1, 1, 1];

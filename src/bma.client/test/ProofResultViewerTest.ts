@@ -70,6 +70,17 @@ describe("ProofResultViewer", () => {
         expect(proofdiv.resultswindowviewer("option", "content").coloredtableviewer("option", "colorData")).toEqual(colorData);
     })
 
+    it("should create only variables table without colorData", () => {
+        var numericData = [];
+        numericData[0] = [1, 1, 1];
+        numericData[1] = [2, 2, 2];
+        numericData[2] = [3, 3, 3];
+        var issucceeded = true;
+        var time = 17;
+        widget.proofresultviewer({ issucceeded: issucceeded, time: time, data: { numericData: numericData } });
+        expect(widget.children().eq(3).length).toEqual(0);
+    })
+
     it("should hide tabs", () => {
         var numericData = [];
         numericData[0] = [1, 1, 1];
