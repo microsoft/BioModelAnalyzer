@@ -41,7 +41,7 @@
                 this.compactvariables.resultswindowviewer({ header: "Variables", content: variables, icon: "max" });
 
                 if (options.data.colorData !== undefined && options.data.colorData !== null && options.data.colorData.length !== 0) {
-                    var proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData });
+                    var proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData, type: "color" });
                     this.proofPropagation.resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max" });
                 } else
                     this.proofPropagation.empty();

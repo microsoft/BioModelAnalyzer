@@ -1,4 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.coloredtableviewer", {
@@ -114,7 +114,8 @@
         arrayToTableGraphMax: function (array) {
             var that = this;
             var vars = this.options.variables;
-            for (var i = 0; i < array.length; i++) {
+
+            for (var i = 0; i < that.array.length; i++) {
                 var tr = $('<tr></tr>').appendTo(that.table);
                 var td0 = $('<td></td>').appendTo(tr);
                 var buttontd = $('<td></td>').appendTo(tr);
@@ -123,12 +124,12 @@
                     buttontd.addClass("addVariableToPlot");
                 }
 
+                //if (array[i][1] === true)
                 buttontd.bind("click", function () {
                     buttontd.toggleClass("addVariableToPlot");
                     window.Commands.Execute("ChangePlotVariables", { ind: $(this).index(), check: buttontd.hasClass("addVariableToPlot") });
                 });
-
-                for (var j = 2; j < array[i].length; j++) {
+                for (var j = 2; i < array[i].length; j++) {
                     $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
             }
@@ -175,4 +176,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=coloredtableviewer.js.map

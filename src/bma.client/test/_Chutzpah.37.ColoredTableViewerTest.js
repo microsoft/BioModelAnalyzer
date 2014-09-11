@@ -1,4 +1,4 @@
-﻿describe("ColoredTableViewer", function () {
+describe("ColoredTableViewer", function () {
     var widget = $('<div></div>');
     afterEach(function () {
         widget.coloredtableviewer("destroy");
@@ -132,32 +132,16 @@
     it("creates graph-max table", function () {
         var header = ["Graph", "Name", "Range"];
         var numericData = [];
-        numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
-        numericData[1] = [undefined, "name2", 1, 5];
-        numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+        numericData[0] = ["red", "name1", 0, 1];
+        numericData[1] = ["green", "name2", 1, 5];
+        numericData[2] = ["blue", "name3", 3, 6];
 
         widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
 
-        var trs = widget.find("tr");
-        var tds0 = trs.eq(0).children("td");
-        for (var i = 0; i < tds0.length; i++) {
-            expect(tds0.eq(i).text()).toEqual(header[i].toString());
-        }
-
-        for (var i = 1; i < trs.length; i++) {
-            var tr = trs.eq(i);
-            var tds = tr.children("td");
-            if (numericData[i - 1][0] !== undefined)
-                expect(tds.eq(0).css("background-color")).toEqual(numericData[i - 1][0]);
-            else
-                expect(tds.eq(0).css("background-color")).toEqual('');
-
-            expect(tds.eq(1).hasClass("addVariableToPlot")).toEqual(numericData[i - 1][0] !== undefined);
-
-            for (var j = 2; j < tds.length; j++) {
-                expect(tds.eq(j).text()).toEqual(numericData[i - 1][j].toString());
-            }
-        }
+        var tr0 = widget.find("tr").eq(0);
+        expect(tr0.children("td").each(function (ind, el) {
+            return (el.textContent === header[ind]);
+        })).toBeTruthy();
     });
 
     it("creates widget with not compatible data sizes", function () {
@@ -187,4 +171,3 @@
         widget.coloredtableviewer({ header: header, numericData: numericData, colorData: colorData });
     });
 });
-//# sourceMappingURL=ColoredTableViewerTest.js.map

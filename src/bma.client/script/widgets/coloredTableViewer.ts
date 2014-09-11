@@ -6,7 +6,8 @@
         options: {
             header: [],
             numericData: undefined,
-            colorData: undefined
+            colorData: undefined,
+            type: "standart" // "color","graph-min","graph-max", "simulation-min", "simulation-max"
         },
 
         _create: function () {
@@ -20,29 +21,64 @@
             var options = this.options;
             this.table = $('<table></table>');
             this.table.appendTo(that.element);
-            
-            if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                this.table.addClass("bma-prooftable");
-                this.createHeader(options.header);
-                this.arrayToTable(options.numericData);
 
-                if (options.colorData !== undefined)
-                    this.paintTable(options.colorData);
-                
-            }
-            else if (options.colorData !== undefined && options.colorData.length !== 0) {
-                var that = this;
-                for (var i = 0; i < options.colorData.length; i++) {
-                    var tr = $('<tr></tr>').appendTo(that.table);
-                    for (var j = 0; j < options.colorData[i].length; j++) {
-                        $('<td></td>').appendTo(tr);
+            switch (options.type) {
+
+                case "standart":
+                    if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                        this.table.addClass("bma-prooftable");
+                        this.createHeader(options.header);
+                        this.arrayToTable(options.numericData);
+
+                        if (options.colorData !== undefined)
+                            this.paintTable(options.colorData);
                     }
-                }
-                this.paintTable(options.colorData);
-                this.table.addClass("bma-color-prooftable");
+                    break;
+                case "color":
+                    if (options.colorData !== undefined && options.colorData.length !== 0) {
+                        var that = this;
+                        for (var i = 0; i < options.colorData.length; i++) {
+                            var tr = $('<tr></tr>').appendTo(that.table);
+                            for (var j = 0; j < options.colorData[i].length; j++) {
+                                $('<td></td>').appendTo(tr);
+                            }
+                        }
+                        this.paintTable(options.colorData);
+                        this.table.addClass("bma-color-prooftable");
+                    }
+                    break;
+
+                case "graph-min":
+                    if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                        this.table.addClass("bma-prooftable");
+                        this.createHeader(options.header);
+                        this.arrayToTableGraphMin(options.numericData);
+
+                        if (options.colorData !== undefined)
+                            this.paintTable(options.colorData);
+                    }
+                    break;
+
+                case "graph-max":
+                    if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                        this.table.addClass("bma-prooftable");
+                        this.createHeader(options.header);
+                        var tr0 = (that.table).find("tr").eq(0);
+                        tr0.children("td").eq(0).attr("colspan", "2");
+                        tr0.children("td").eq(2).attr("colspan", "2");
+                        //var td01 = $('<td colspan="2"></td>').text("Graph").appendTo(tr0);
+                        //var td02 = $('<td></td>').text("Name").appendTo(tr0);
+                        //var td03 = $('<td colspan="2"></td>').text("Range").appendTo(tr0);
+                        this.arrayToTableGraphMax(options.numericData);
+
+                        if (options.colorData !== undefined)
+                            this.paintTable(options.colorData);
+                    }
+                    break;
+
+                default:
+                    alert("undefined type of table");
             }
-            
-            
         },
         
         _destroy: function () {
@@ -65,6 +101,43 @@
             var tr = $('<tr></tr>').appendTo(that.table);
             for (var i = 0; i < header.length; i++) {
                 $('<td></td>').text(header[i]).appendTo(tr);
+            }
+        },
+
+        arrayToTableGraphMin: function (array) {
+            var that = this;
+            for (var i = 0; i < array.length; i++) {
+                var tr = $('<tr></tr>').appendTo(that.table);
+                var td0 = $('<td></td>').appendTo(tr);
+                if (array[i][0] !== undefined)
+                    td0.css("background-color", array[i][0]);
+                for (var j = 1; j < array[i].length; j++) {
+                    $('<td></td>').text(array[i][j]).appendTo(tr);
+                }
+            }
+        },
+
+        arrayToTableGraphMax: function (array) {
+            var that = this;
+            var vars = this.options.variables;
+            for (var i = 0; i < array.length; i++) {
+                
+                var tr = $('<tr></tr>').appendTo(that.table);
+                var td0 = $('<td></td>').appendTo(tr);
+                var buttontd = $('<td></td>').appendTo(tr);
+                if (array[i][0] !== undefined) {
+                    td0.css("background-color", array[i][0]);
+                    buttontd.addClass("addVariableToPlot");
+                }
+                    
+                buttontd.bind("click", function () {
+                    buttontd.toggleClass("addVariableToPlot");
+                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).index(), check: buttontd.hasClass("addVariableToPlot") });
+                })
+
+                for (var j = 2; j < array[i].length; j++) {
+                    $('<td></td>').text(array[i][j]).appendTo(tr);
+                }
             }
         },
 

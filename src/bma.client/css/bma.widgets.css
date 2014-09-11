@@ -905,3 +905,7 @@
     max-height: 160px;
     overflow-y:scroll;
 }
+
+.addVariableToPlot{
+    background-image: url("../images/check.png");
+}

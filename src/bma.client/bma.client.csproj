@@ -122,6 +122,7 @@
     <Content Include="images\60x60.gif" />
     <Content Include="images\activate.png" />
     <Content Include="images\analyze.png" />
+    <Content Include="images\check.png" />
     <Content Include="images\close.png" />
     <Content Include="images\constant.png" />
     <Content Include="images\container.png" />
