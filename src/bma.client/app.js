@@ -20,6 +20,7 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
+/// <reference path="script\widgets\containernameeditor.ts"/>
 
 $(document).ready(function () {
     //Creating CommandRegistry

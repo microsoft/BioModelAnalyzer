@@ -38,6 +38,9 @@
          {"Path": "script/presenters/presenters.js"},
          {"Path": "script/presenters/proofpresenter.ts"},
          {"Path": "script/presenters/proofpresenter.js"},
+         
+         {"Path": "script/widgets/containernameeditor.ts"},
+         {"Path": "script/widgets/containernameeditor.js"},
          {"Path": "script/widgets/drawingsurface.ts"},
          {"Path": "script/widgets/drawingsurface.js"},
          {"Path": "script/widgets/coloredtableviewer.ts"},

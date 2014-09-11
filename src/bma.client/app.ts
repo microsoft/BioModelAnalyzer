@@ -21,6 +21,7 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
+/// <reference path="script\widgets\containernameeditor.ts"/>
 
 declare var saveTextAs: any;
 

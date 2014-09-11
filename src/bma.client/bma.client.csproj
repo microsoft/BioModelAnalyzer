@@ -211,6 +211,7 @@
     <TypeScriptCompile Include="script\SVGHelper.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
     <TypeScriptCompile Include="script\widgets\coloredtableviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\accordeon.ts" />
     <Content Include="Scripts\rx.aggregates.js" />
@@ -268,6 +269,7 @@
     <TypeScriptCompile Include="test\BMASliderTest.ts" />
     <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
+    <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
