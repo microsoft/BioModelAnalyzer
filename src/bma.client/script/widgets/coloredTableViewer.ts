@@ -131,15 +131,43 @@
                 }
                     
                 buttontd.bind("click", function () {
-                    buttontd.toggleClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).index(), check: buttontd.hasClass("addVariableToPlot") });
+                    $(this).toggleClass("addVariableToPlot");
+                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index(), check: $(this).hasClass("addVariableToPlot") });
                 })
 
                 for (var j = 2; j < array[i].length; j++) {
                     $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
+                
             }
+            var alltr = $('<tr></tr>').appendTo(that.table);
+            var tdall0 = $('<td></td>').appendTo(alltr);
+            this.allcheck = $('<div></div>').appendTo(tdall0); //.addClass("addVariableToPlot")
+            var tdall1 = $('<td></td>').appendTo(alltr);
+            var alldiv = $('<div></div>').text("ALL").appendTo(tdall1);
+
+            this.allcheck.bind("click", () => {
+                var buttons = that.table.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
+                this.allcheck.toggleClass("addVariableToPlot");
+                if (this.allcheck.hasClass("addVariableToPlot")) {
+                    buttons.addClass("addVariableToPlot");
+                    window.Commands.Execute("ChangePlotVariables", { all: true });
+                }
+                else {
+                    buttons.removeClass("addVariableToPlot");
+                    window.Commands.Execute("ChangePlotVariables", { all: false });
+                }
+
+                
+            })
+           
         },
+
+        getAllButton: function () {
+            if (this.allcheck !== undefined)
+                return this.allcheck;
+        },
+
 
         arrayToTable: function (array) {
             var that = this;

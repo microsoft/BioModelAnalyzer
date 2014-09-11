@@ -1,5 +1,7 @@
 ﻿describe("ColoredTableViewer", function () {
+    window.Commands = new BMA.CommandRegistry();
     var widget = $('<div></div>');
+
     afterEach(function () {
         widget.coloredtableviewer("destroy");
     });
@@ -143,8 +145,8 @@
         for (var i = 0; i < tds0.length; i++) {
             expect(tds0.eq(i).text()).toEqual(header[i].toString());
         }
-
-        for (var i = 1; i < trs.length; i++) {
+        var l = trs.length - 1;
+        for (var i = 1; i < l; i++) {
             var tr = trs.eq(i);
             var tds = tr.children("td");
             if (numericData[i - 1][0] !== undefined)
@@ -158,6 +160,49 @@
                 expect(tds.eq(j).text()).toEqual(numericData[i - 1][j].toString());
             }
         }
+    });
+
+    it("creates graph-max table and clicks all button", function () {
+        spyOn(window.Commands, "Execute");
+
+        var header = ["Graph", "Name", "Range"];
+        var numericData = [];
+        numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
+        numericData[1] = [undefined, "name2", 1, 5];
+        numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+
+        widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
+        var trs = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
+        var all = widget.coloredtableviewer("getAllButton");
+        expect(all.hasClass("addVariableToPlot")).toBeFalsy();
+        all.click();
+        expect(all.hasClass("addVariableToPlot")).toBeTruthy();
+        expect(trs.hasClass("addVariableToPlot")).toBeTruthy();
+        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { all: true });
+        all.click();
+        expect(all.hasClass("addVariableToPlot")).toBeFalsy();
+        expect(trs.hasClass("addVariableToPlot")).toBeFalsy();
+        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { all: false });
+    });
+
+    it("creates graph-max table and clicks one button", function () {
+        spyOn(window.Commands, "Execute");
+
+        var header = ["Graph", "Name", "Range"];
+        var numericData = [];
+        numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
+        numericData[1] = [undefined, "name2", 1, 5];
+        numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+
+        widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
+        var buttons = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
+
+        buttons.eq(0).click();
+        expect(buttons.eq(0).hasClass("addVariableToPlot")).toBeFalsy();
+        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 1, check: false });
+        buttons.eq(1).click();
+        expect(buttons.eq(1).hasClass("addVariableToPlot")).toBeTruthy();
+        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 2, check: true });
     });
 
     it("creates widget with not compatible data sizes", function () {

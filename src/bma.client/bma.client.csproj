@@ -146,6 +146,7 @@
     <Content Include="images\pointer.png" />
     <Content Include="images\receptor.png" />
     <Content Include="images\redo.png" />
+    <Content Include="images\runbutton.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />
     <Content Include="images\succeeded.png" />

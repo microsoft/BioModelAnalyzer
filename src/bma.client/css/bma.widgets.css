@@ -468,25 +468,7 @@
 
 
 
-    .bma-elementspanel {
-        display: block;
-        text-align: center;
-        clear: both;
-        overflow:visible;
-        background-color: white;
-        width: 100%;
-        padding-top: 15px;
-        padding-bottom: 5px;
-    }
-    .bma-elementspanel > *{
-        display: inline-block;
-    }
-
-    .bma-elementspanel-undoredotoolbar {
-        display: inline-block;
-        float: left;
-        margin-left: 50px;
-    }
+   
 
     .bma-elementspanel-elementstoolbar {
         display: inline-block;
@@ -908,4 +890,26 @@
 
 .addVariableToPlot{
     background-image: url("../images/check.png");
+    background-repeat:no-repeat;
+}
+
+ .bma-elementspanel {
+    display: table;
+    text-align: center;
+    clear: both;
+    background-color: white;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 5px;
+    
+    /*white-space: nowrap;*/
+}
+.bma-elementspanel > * {
+    display: inline-block;
+}
+
+.bma-elementspanel-undoredotoolbar {
+    display: inline-block;
+    float: left;
+    margin-left: 50px;
 }
