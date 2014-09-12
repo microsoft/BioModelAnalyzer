@@ -11,6 +11,7 @@
             var that = this;
             var plotDiv = $('<div></div>').width("100%").height(160).attr("data-idd-plot", "polyline").appendTo(that.element);
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
+            that._plot.isAutoFitEnabled = true;
             this.refresh();
         },
 
@@ -18,8 +19,10 @@
             var that = this;
             var options = this.options;
             if (options.data !== undefined) {
-                for (var i = 0; i < options.data.length; i++)
-                    that._plot.draw({ y: options.data[i] });
+                for (var i = 0; i < options.data.length; i++) {
+                    alert(options.data[i].toString());
+                    that._plot.draw({ y: options.data[i], thickness: 4, lineJoin: 'round' });
+                }
             }
         },
 

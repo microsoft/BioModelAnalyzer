@@ -11,7 +11,7 @@
         },
 
         _create: function () {
-            
+
             this.refresh();
         },
 
@@ -35,16 +35,23 @@
                     }
                     break;
                 case "color":
+
                     if (options.colorData !== undefined && options.colorData.length !== 0) {
                         var that = this;
-                        for (var i = 0; i < options.colorData.length; i++) {
+                        var color = options.colorData;
+                        for (var i = 0; i < color.length; i++) {
                             var tr = $('<tr></tr>').appendTo(that.table);
-                            for (var j = 0; j < options.colorData[i].length; j++) {
-                                $('<td></td>').appendTo(tr);
+                            for (var j = 0; j < color[i].length; j++) {
+                                var td = $('<td></td>').appendTo(tr);
+                                if (color[i][j] !== undefined) {
+                                    if (color[i][j]) td.css("background-color", "#CCFF99");
+                                    else td.css("background-color", "#FFADAD");
+                                }
                             }
                         }
-                        this.paintTable(options.colorData);
+
                         this.table.addClass("bma-color-prooftable");
+
                     }
                     break;
 
@@ -75,12 +82,31 @@
                             this.paintTable(options.colorData);
                     }
                     break;
+                case "simulation-min":
+                    this.table.addClass("bma-color-prooftable bma-color-simulationtable");
+                    if (options.colorData !== undefined && options.colorData.length !== 0) {
+                        var that = this;
+                        var color = options.colorData;
+                        for (var i = 0; i < color.length; i++) {
+                            var tr = $('<tr></tr>').appendTo(that.table);
+                            for (var j = 0; j < color[i].length; j++) {
+                                var td = $('<td></td>').appendTo(tr);
+                                if (color[i][j]) {
+                                    td.css("background-color", "#FFF729");
+                                }
+                            }
+                        }
+                        
+                        //this.paintSimulationTable(options.colorData);
+
+                    }
+                    break;
 
                 default:
                     alert("undefined type of table");
             }
         },
-        
+
         _destroy: function () {
             this.element.empty();
         },
@@ -121,7 +147,7 @@
             var that = this;
             var vars = this.options.variables;
             for (var i = 0; i < array.length; i++) {
-                
+
                 var tr = $('<tr></tr>').appendTo(that.table);
                 var td0 = $('<td></td>').appendTo(tr);
                 var buttontd = $('<td></td>').appendTo(tr);
@@ -129,7 +155,7 @@
                     td0.css("background-color", array[i][0]);
                     buttontd.addClass("addVariableToPlot");
                 }
-                    
+
                 buttontd.bind("click", function () {
                     $(this).toggleClass("addVariableToPlot");
                     window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index(), check: $(this).hasClass("addVariableToPlot") });
@@ -138,7 +164,7 @@
                 for (var j = 2; j < array[i].length; j++) {
                     $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
-                
+
             }
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr);
@@ -158,9 +184,9 @@
                     window.Commands.Execute("ChangePlotVariables", { all: false });
                 }
 
-                
+
             })
-           
+
         },
 
         getAllButton: function () {
@@ -178,6 +204,28 @@
                 }
             }
         },
+
+        //paintSimulationTable: function (color) {
+        //    var that = this;
+        //    var table = that.table;//.clone();
+        //    var over = 0;
+        //    if (that.options.header !== undefined && that.options.header.length !== 0) over = 1;
+        //    if (color.length > table.find("tr").length) { console.log("Incompatible sizes of numeric and color data"); return };
+
+        //    for (var i = 0; i < color.length; i++) {
+        //        if (color[i].length > table.find("tr").eq(i + over).children().length) { console.log("Incompatible sizes of numeric and color data-2"); return };
+
+        //        for (var j = 0; j < color[i].length; j++) {
+
+        //            var td = table.find("tr").eq(i + over).children("td").eq(j);
+        //            if (color[i][j] !== undefined) {
+        //                if (color[i][j]) td.css("background-color", "#CCFF99");
+        //                else td.css("background-color", "#FFADAD");
+        //            }
+        //        }
+        //    }
+        //    return table;
+        //},
 
         paintTable: function (color) {
             var that = this;

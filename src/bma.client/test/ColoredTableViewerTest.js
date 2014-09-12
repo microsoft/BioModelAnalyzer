@@ -205,6 +205,28 @@
         expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 2, check: true });
     });
 
+    it("creates simulation-min table", function () {
+        var colorData = [];
+        colorData[0] = [true, false, true];
+        colorData[1] = [false, false, false];
+        colorData[2] = [true, false, false];
+        colorData[3] = [false, true, false];
+        widget.coloredtableviewer({ type: "simulation-min", colorData: colorData });
+
+        var trs = widget.find("tr");
+        expect(trs.length).toEqual(colorData.length);
+        for (var i = 0; i < trs.length; i++) {
+            var tds = trs.eq(i).children("td");
+            expect(tds.length).toEqual(colorData[i].length);
+
+            for (var j = 0; j < tds.length; j++) {
+                if (colorData[i][j]) {
+                    expect(tds.eq(j).css("background-color")).toEqual("rgb(255, 231, 114)");
+                }
+            }
+        }
+    });
+
     it("creates widget with not compatible data sizes", function () {
         var header = [1, 2, 3];
         var numericData = [];

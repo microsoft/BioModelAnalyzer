@@ -1,16 +1,31 @@
 ﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
-    $.widget("BMA.simulationplot", {
+    $.widget("BMA.simulationprogressiontable", {
         options: {
             data: undefined
         },
         _create: function () {
             var that = this;
-            var plotDiv = $('<div></div>').width("100%").height(160).attr("data-idd-plot", "polyline").appendTo(that.element);
-            that._plot = InteractiveDataDisplay.asPlot(plotDiv);
-            that._plot.isAutoFitEnabled = true;
-            this.refresh();
+            var options = that.options;
+
+            //options.data.
+            var header = ["Graph", "Name", "Range"];
+            var numericData = [];
+            numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
+            numericData[1] = [undefined, "name2", 1, 5];
+            numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+            options.data = {
+                variables: numericData
+            };
+
+            if (options.data !== undefined && options.data.variables !== undefined) {
+                var table1 = $('<div></div>').coloredtableviewer({ header: header, type: "graph-max", numericData: that.options.data.variables });
+                table1.addClass("popup-window").appendTo(that.element);
+            }
+
+            that.element.appendTo($('body'));
+            //this.refresh();
         },
         refresh: function () {
             var that = this;
@@ -36,4 +51,4 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=simulationplot.js.map
+//# sourceMappingURL=simulationprogressiontable.js.map

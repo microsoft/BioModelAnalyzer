@@ -883,6 +883,20 @@
     border: 1px solid white;
 }
 
+.bma-color-simulationtable {
+    width: 100%;
+    height: 160px;
+    border-collapse:collapse;
+}
+
+.bma-color-prooftable td {
+    border: 1px solid #d9d9d9;
+}
+
+.bma-color-simulationtable tr:nth-child(even) { background-color:#e3e8ed; }
+
+.bma-color-simulationtable tr:nth-child(odd) { background-color:#ffffff; }
+
 .scrollable-results {
     max-height: 160px;
     overflow-y:scroll;

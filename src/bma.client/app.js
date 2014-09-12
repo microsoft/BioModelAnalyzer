@@ -12,6 +12,7 @@
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>
+/// <reference path="script\widgets\simulationprogressiontable.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
@@ -121,6 +122,7 @@ $(document).ready(function () {
     $("#exportModelBtn").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
+    $('<div id="TestSimulation"></div>').simulationprogressiontable();
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);

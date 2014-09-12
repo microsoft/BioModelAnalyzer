@@ -253,6 +253,7 @@
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
     <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationprogressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
