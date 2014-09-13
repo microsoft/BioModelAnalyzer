@@ -63,12 +63,18 @@
 
                 case "graph-max":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-prooftable");
+                        this.table.addClass("bma-graph-max-table");
                         this.createHeader(options.header);
-                        var tr0 = (that.table).find("tr").eq(0);
+                        var tr0 = that.table.find("tr").eq(0);
                         tr0.children("td").eq(0).attr("colspan", "2");
                         tr0.children("td").eq(2).attr("colspan", "2");
 
+                        //var tr1 = that.table.find("tr").eq(1);
+                        //tr1.children("td").eq(2).bind("click", () => {
+                        //    alert("fuck");
+                        //})
+                        //tr1.children("td").eq(3).attr("display", "none");//.width(35).css("background-color", "green");
+                        //tr1.children("td").eq(4).attr("display", "none");//.width(35).css("background-color", "green");
                         //var td01 = $('<td colspan="2"></td>').text("Graph").appendTo(tr0);
                         //var td02 = $('<td></td>').text("Name").appendTo(tr0);
                         //var td03 = $('<td colspan="2"></td>').text("Range").appendTo(tr0);
@@ -136,11 +142,12 @@
             }
         },
         arrayToTableGraphMax: function (array) {
-            var _this = this;
             var that = this;
             var vars = this.options.variables;
+
             for (var i = 0; i < array.length; i++) {
                 var tr = $('<tr></tr>').appendTo(that.table);
+
                 var td0 = $('<td></td>').appendTo(tr);
                 var buttontd = $('<td></td>').appendTo(tr);
                 if (array[i][0] !== undefined) {
@@ -153,27 +160,47 @@
                     window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index(), check: $(this).hasClass("addVariableToPlot") });
                 });
 
-                for (var j = 2; j < array[i].length; j++) {
+                for (var j = 1; j < array[i].length; j++) {
                     $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
             }
             var alltr = $('<tr></tr>').appendTo(that.table);
-            var tdall0 = $('<td></td>').appendTo(alltr);
-            this.allcheck = $('<div></div>').appendTo(tdall0); //.addClass("addVariableToPlot")
+            var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
+            tdall0.css("background-color", "white");
+            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("addVariableToPlot");
+            this.allcheck.css("border-right", "none");
             var tdall1 = $('<td></td>').appendTo(alltr);
-            var alldiv = $('<div></div>').text("ALL").appendTo(tdall1);
+            var alldiv = $('<div></div>').attr("checked", false).text("ALL").appendTo(tdall1);
+            tdall1.css("border-left", "none");
+            this.buttons = that.table.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
 
             this.allcheck.bind("click", function () {
-                var buttons = that.table.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
-                _this.allcheck.toggleClass("addVariableToPlot");
-                if (_this.allcheck.hasClass("addVariableToPlot")) {
-                    buttons.addClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { all: true });
+                alldiv.attr("checked", !alldiv.attr("checked"));
+
+                if (alldiv.attr("checked")) {
+                    that.buttons.addClass("addVariableToPlot");
+                    window.Commands.Execute("ChangePlotVariables", { check: true });
                 } else {
-                    buttons.removeClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { all: false });
+                    that.buttons.removeClass("addVariableToPlot");
+                    window.Commands.Execute("ChangePlotVariables", { check: false });
                 }
             });
+
+            window.Commands.On("ChangePlotVariables", function (param) {
+                if (!param.check)
+                    alldiv.attr("checked", false);
+                else
+                    alldiv.attr("checked", that.checkAllButtons());
+            });
+        },
+        checkAllButtons: function () {
+            var that = this;
+            var l = that.buttons.length;
+            for (var i = 0; i < l; i++) {
+                if (!that.buttons.eq(i).hasClass("addVariableToPlot"))
+                    return false;
+            }
+            return true;
         },
         getAllButton: function () {
             if (this.allcheck !== undefined)

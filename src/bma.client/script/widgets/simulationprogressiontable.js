@@ -21,7 +21,7 @@
 
             if (options.data !== undefined && options.data.variables !== undefined) {
                 var table1 = $('<div></div>').coloredtableviewer({ header: header, type: "graph-max", numericData: that.options.data.variables });
-                table1.addClass("popup-window").appendTo(that.element);
+                table1.addClass("popup-window").show().appendTo(that.element);
             }
 
             that.element.appendTo($('body'));

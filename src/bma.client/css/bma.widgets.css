@@ -124,7 +124,7 @@
         padding-right:20px;
         padding-bottom: 15px;
         /*background-color: rgba(0,0,0,0.5);*/
-        background-color: Window;
+        background-color: white;
         position:absolute;
         
         left: calc(50% - 400px);
@@ -817,7 +817,7 @@
 }
 
 
-.bma-prooftable tr:nth-child(odd){ background-color:#e3e8ed; }
+.bma-prooftable tr:nth-child(odd){ background-color:#f5f5f5; }
 
 .bma-prooftable tr:nth-child(even)    { background-color:#ffffff; }
 
@@ -835,22 +835,91 @@
 
 
 .bma-prooftable tr:first-child td{
-	background-color:#4c4c4c;
+	background-color:#787878;
 	border:0px solid #cccccc;
 	text-align:center;
-	border-width:0px 0px 1px 1px;
+	/*border-width:0px 0px 1px 1px;*/
 	font-size:14px;
 	color:#ffffff;
 }
 
 
-.bma-prooftable tr:first-child td:first-child{
+/*.bma-prooftable tr:first-child td:first-child{
 	border-width:0px 0px 1px 0px;
 }
 
 .bma-prooftable tr:first-child td:last-child{
 	border-width:0px 0px 1px 1px;
+}*/
+
+.bma-graph-max-table {
+    margin:0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding:0px;
+	width: 40%;
+	border: none;
+    border-collapse:collapse;
 }
+
+.bma-graph-max-table tr:nth-child(odd){ background-color:#f5f5f5; }
+
+.bma-graph-max-table tr:nth-child(even)    { background-color:#ffffff; }
+
+.bma-graph-max-table td{
+	vertical-align:middle;
+	border:1px solid #cccccc;
+	text-align:center;
+	padding:0;
+	font-size:14px;
+	color:#000000;
+    height: 26px;
+}
+
+/*.bma-graph-max-table tr:not(:first-child) td:first-child {
+    width: 15px;
+}*/                                                                   
+
+.bma-graph-max-table tr:first-child td{
+	background-color:#787878;
+	border:1px solid #cccccc;
+	text-align:center;
+	/*border-width:0 0 1px 1px;*/
+	font-size:14px;
+	color:#ffffff;
+}
+
+.bma-graph-max-table tr:first-child td:nth-child(1) {
+    width:20%;
+}
+
+.bma-graph-max-table tr:first-child td:nth-child(3) {
+    width:25%;
+}
+
+.bma-graph-max-table tr:not(:first-child) td:nth-child(1) {
+    width:20px;
+}
+
+
+.bma-graph-max-table tr:not(:first-child) td:nth-child(n+4){
+    text-align:right;
+    padding-right: 3px;
+}
+
+.bma-graph-max-table tr:not(:first-child) td:nth-child(2){
+    width: 50px;
+}
+
+
+/*.bma-graph-max-table tr:first-child td:first-child{
+	border-width:0 0 1px 0;
+}
+
+.bma-graph-max-table tr:first-child td:last-child{
+	border-width:0 0 1px 1px;
+}*/
+
 
 .formula-not-validated {
     width: 30px;
@@ -889,11 +958,7 @@
     border-collapse:collapse;
 }
 
-.bma-color-prooftable td {
-    border: 1px solid #d9d9d9;
-}
-
-.bma-color-simulationtable tr:nth-child(even) { background-color:#e3e8ed; }
+.bma-color-simulationtable tr:nth-child(even) { background-color:#f5f5f5; }
 
 .bma-color-simulationtable tr:nth-child(odd) { background-color:#ffffff; }
 
@@ -905,6 +970,7 @@
 .addVariableToPlot{
     background-image: url("../images/check.png");
     background-repeat:no-repeat;
+    background-position:center;
 }
 
  .bma-elementspanel {
