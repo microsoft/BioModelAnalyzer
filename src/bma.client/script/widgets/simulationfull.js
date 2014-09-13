@@ -1,15 +1,14 @@
 ﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-
 (function ($) {
-    $.widget("BMA.simulationprogressiontable", {
+    $.widget("BMA.simulationfull", {
         options: {
             data: undefined
         },
-
         _create: function () {
             var that = this;
             var options = that.options;
+
             //options.data.
             var header = ["Graph", "Name", "Range"];
             var numericData = [];
@@ -18,17 +17,27 @@
             numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
             options.data = {
                 variables: numericData
-            }
+            };
 
             if (options.data !== undefined && options.data.variables !== undefined) {
                 var table1 = $('<div></div>').coloredtableviewer({ header: header, type: "graph-max", numericData: that.options.data.variables });
-                table1.addClass("popup-window").show().appendTo(that.element);
+                table1.width("40%").appendTo(that.element);
             }
-            
-            that.element.appendTo($('body'))
+
+            var interval = [];
+            interval[0] = [2, 3];
+            interval[1] = [0, 5];
+            interval[2] = [7, 18];
+
+            var data = [2, 3, 5];
+
+            this.progression = $('<div></div>').width("50%").appendTo(that.element);
+            this.progression.progressiontable({ interval: interval, data: data });
+
+            that.element.addClass("popup-window").css("display", "flex").show().appendTo($('body'));
+            that.element.children().css("margin", "10px");
             //this.refresh();
         },
-
         refresh: function () {
             var that = this;
             var options = this.options;
@@ -39,26 +48,18 @@
                 }
             }
         },
-
         _destroy: function () {
             this.element.empty();
         },
-
         _setOption: function (key, value) {
             var that = this;
-            if (key === "data") this.options.data = value;
+            if (key === "data")
+                this.options.data = value;
 
             this._super(key, value);
             if (value !== null && value !== undefined)
                 this.refresh();
         }
     });
-} (jQuery));
-
-interface JQuery {
-    simulationprogressiontable(): JQuery;
-    simulationprogressiontable(settings: Object): JQuery;
-    simulationprogressiontable(settings: string): any;
-    simulationprogressiontable(optionLiteral: string, optionName: string): any;
-    simulationprogressiontable(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-}   
+}(jQuery));
+//# sourceMappingURL=simulationfull.js.map

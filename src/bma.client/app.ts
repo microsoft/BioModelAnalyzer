@@ -13,12 +13,13 @@
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>
-/// <reference path="script\widgets\simulationprogressiontable.ts"/>
+/// <reference path="script\widgets\simulationfull.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
+/// <reference path="script\widgets\progressiontable.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
@@ -131,7 +132,7 @@ $(document).ready(function () {
     $("#exportModelBtn").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
-    $('<div id="TestSimulation"></div>').simulationprogressiontable();
+    $('<div id="TestSimulation"></div>').simulationfull();
    
 
     //Loading Drivers

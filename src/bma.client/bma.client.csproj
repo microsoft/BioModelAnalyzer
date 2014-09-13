@@ -144,6 +144,8 @@
     <Content Include="images\new.png" />
     <Content Include="images\open.png" />
     <Content Include="images\pointer.png" />
+    <Content Include="images\random1.png" />
+    <Content Include="images\random2.png" />
     <Content Include="images\receptor.png" />
     <Content Include="images\redo.png" />
     <Content Include="images\runbutton.png" />
@@ -250,10 +252,11 @@
     <Content Include="script\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\graphnamerangetable.ts" />
+    <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
     <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationprogressiontable.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationfull.ts" />
     <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
@@ -274,9 +277,11 @@
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
+    <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
     <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationFullTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>

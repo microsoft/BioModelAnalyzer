@@ -824,7 +824,6 @@
 .bma-prooftable td{
 	vertical-align:middle;
 	border:1px solid #cccccc;
-	border-width:0px 1px 1px 0px;
 	text-align:center;
 	padding:0;
 	font-size:14px;
@@ -836,13 +835,32 @@
 
 .bma-prooftable tr:first-child td{
 	background-color:#787878;
-	border:0px solid #cccccc;
+	border:1px solid #cccccc;
 	text-align:center;
 	/*border-width:0px 0px 1px 1px;*/
 	font-size:14px;
 	color:#ffffff;
 }
 
+.bma-random-icon1 {
+    background-image: url(../images/random1.png);
+    background-repeat:no-repeat;
+    background-position-x:right;
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    float:right;
+}
+
+.bma-random-icon2 {
+    background-image: url(../images/random2.png);
+    background-repeat:no-repeat;
+    background-position-x:left;
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    float: left;
+}
 
 /*.bma-prooftable tr:first-child td:first-child{
 	border-width:0px 0px 1px 0px;
@@ -857,7 +875,6 @@
     margin-top: 5px;
     margin-bottom: 5px;
     padding:0px;
-	width: 40%;
 	border: none;
     border-collapse:collapse;
 }
@@ -992,4 +1009,9 @@
     display: inline-block;
     float: left;
     margin-left: 50px;
+}
+
+.randomize-button {
+    text-align: center;
+    font-size: 18px;
 }
