@@ -12,8 +12,8 @@
             
             var options = this.options;
             var container = $('<div></div>');
-            this.variables.empty();
-            this.plotDiv.empty();
+            //this.variables.resultswindowviewer("destroy");
+            //this.plotDiv.empty();
             if (options.data === undefined) return;
             if (options.data.variables !== undefined && options.data.variables.length !== 0) {
                 var variablestable = $('<div></div>')
@@ -41,29 +41,30 @@
             var that = this;
             var options = this.options;
 
-        //    var numericData = [];
-        //    numericData[0] = ["rgb(255, 0, 0)", "C1", "name1", "0-1"];
-        //    numericData[1] = [undefined, "C1", "name2", "1-5"];
-        //    numericData[2] = ["rgb(0, 0, 0)", "C2", "name3", "3-6"];
+            //    var numericData = [];
+            //    numericData[0] = ["rgb(255, 0, 0)", "C1", "name1", "0-1"];
+            //    numericData[1] = [undefined, "C1", "name2", "1-5"];
+            //    numericData[2] = ["rgb(0, 0, 0)", "C2", "name3", "3-6"];
 
-        //    var colorData = [];
-        //    colorData[0] = [true, false, true];
-        //    colorData[1] = [false, false, false];
-        //    colorData[2] = [true, true, true];
+            //    var colorData = [];
+            //    colorData[0] = [true, false, true];
+            //    colorData[1] = [false, false, false];
+            //    colorData[2] = [true, true, true];
 
-        //    var data = [];
-        //    data[0] = [1, 0, 3, 5, 4, 2, 0];
-        //    data[1] = [0, 2, 0, 1, 3, 0, 2];
+            //    var data = [];
+            //    data[0] = [1, 0, 3, 5, 4, 2, 0];
+            //    data[1] = [0, 2, 0, 1, 3, 0, 2];
 
-        //    //options.variables = numericData;
-        //    //options.colorData = colorData;
-        //    options.data = {
-        //        plot: data,
-        //        variables: numericData,
-        //        colorData: colorData
-        //};
+            //    //options.variables = numericData;
+            //    //options.colorData = colorData;
+            //    options.data = {
+            //        plot: data,
+            //        variables: numericData,
+            //        colorData: colorData
+            //};
             this.variables = $('<div></div>')
-                .appendTo(that.element);
+                .appendTo(that.element)
+                .resultswindowviewer();
             //this.simulation = $('<div></div>')
             //    .appendTo(that.element);
             

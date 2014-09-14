@@ -32,6 +32,9 @@
         refreshData: function () {
             var that = this;
             var options = this.options;
+            this.compactvariables.resultswindowviewer();
+            this.proofPropagation.resultswindowviewer();
+
             if (options.data !== undefined && options.data.numericData !== undefined && options.data.numericData !== null && options.data.numericData.length !== 0) {
                 var variables = $("<div></div>").addClass("scrollable-results").coloredtableviewer({ numericData: options.data.numericData, header: ["Name", "Formula", "Range"] });
 
@@ -44,10 +47,10 @@
                     var proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData, type: "color" });
                     this.proofPropagation.resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max", tabid: "ProofPropagation" });
                 } else
-                    this.proofPropagation.empty();
+                    this.proofPropagation.resultswindowviewer("destroy");
             } else {
-                this.compactvariables.empty();
-                this.proofPropagation.empty();
+                this.compactvariables.resultswindowviewer("destroy");
+                this.proofPropagation.resultswindowviewer("destroy");
             }
         },
         show: function (tab) {
@@ -73,9 +76,9 @@
             var options = this.options;
             this.resultDiv = $('<div></div>').appendTo(that.element);
             this.successTable = $('<table></table>').appendTo(this.resultDiv);
-            this.compactvariables = $('<div id="ProofVariables"></div>').appendTo(that.element);
+            this.compactvariables = $('<div id="ProofVariables"></div>').appendTo(that.element).resultswindowviewer();
 
-            this.proofPropagation = $('<div id="ProofPropagation"></div>').appendTo(that.element);
+            this.proofPropagation = $('<div id="ProofPropagation"></div>').appendTo(that.element).resultswindowviewer();
 
             this.refreshSuccess();
             this.refreshData();

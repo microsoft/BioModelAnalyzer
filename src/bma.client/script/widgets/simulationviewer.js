@@ -10,8 +10,9 @@
 
             var options = this.options;
             var container = $('<div></div>');
-            this.variables.empty();
-            this.plotDiv.empty();
+
+            //this.variables.resultswindowviewer("destroy");
+            //this.plotDiv.empty();
             if (options.data === undefined)
                 return;
             if (options.data.variables !== undefined && options.data.variables.length !== 0) {
@@ -51,7 +52,7 @@
             //        variables: numericData,
             //        colorData: colorData
             //};
-            this.variables = $('<div></div>').appendTo(that.element);
+            this.variables = $('<div></div>').appendTo(that.element).resultswindowviewer();
 
             //this.simulation = $('<div></div>')
             //    .appendTo(that.element);

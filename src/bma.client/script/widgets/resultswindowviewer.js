@@ -35,7 +35,7 @@
             var options = this.options;
             this.content.empty();
             if (options.content !== undefined) {
-                options.content.clone().appendTo(that.content); // this is a very big mistake
+                options.content.appendTo(that.content); // this is a very big mistake
             }
         },
         _create: function () {
@@ -72,6 +72,7 @@
                     this.refresh();
                     break;
                 case "icon":
+                    this.options.icon = value;
                     this.reseticon();
                     break;
             }
@@ -81,7 +82,7 @@
                 this.header.text(value);
 
             this._super(key, value);
-            this.refresh();
+            //this.refresh();
         }
     });
 }(jQuery));
