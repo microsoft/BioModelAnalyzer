@@ -28,7 +28,6 @@
 
                 that.variables.resultswindowviewer({ header: "Variables", content: container, icon: "max", tabid: "SimulationVariables" });
             }
-            
             //else this.variables.empty();
             if (that.options.data.plot !== undefined) {
                 var plot = $('<div></div>').simulationplot({ data: that.options.data.plot });

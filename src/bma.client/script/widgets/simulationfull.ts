@@ -4,54 +4,46 @@
 (function ($) {
     $.widget("BMA.simulationfull", {
         options: {
-            data: undefined
+            data: undefined,
+            init: undefined
         },
 
         _create: function () {
             var that = this;
             var options = that.options;
-            //options.data.
-            var header = ["Graph", "Name", "Range"];
-            //var numericData = [];
-            //numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
-            //numericData[1] = [undefined, "name2", 1, 5];
-            //numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
-            //options.data = {
-            //    variables: numericData
-            //}
+           
+            var RunButton = $('<div></div>').addClass("bma-run-button").appendTo(that.element);
+            RunButton.bind("click", function () {
+                window.Commands.Execute("RunSimulation", that.progression.progressiontable("getLast"));
+            })
 
+            this.table1 = $('<div></div>').width("40%").appendTo(that.element);
+            this.progression = $('<div></div>').addClass("bma-simulation-table").appendTo(that.element);
             if (options.data !== undefined && options.data.variables !== undefined) {
-                var table1 = $('<div></div>').coloredtableviewer({ header: header, type: "graph-max", numericData: that.options.data.variables });
-                table1.width("40%").appendTo(that.element);
+                this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.data.variables });
+                if (options.data.interval !== undefined && options.data.interval.length !== 0) {
+                    this.progression.progressiontable({ interval: options.data.interval });
+                }
             }
 
-            var RunButton = $('<div></div>').addClass("bma-run-button").appendTo(that.element);
 
-            var interval = [];
-            interval[0] = [2, 3];
-            interval[1] = [0, 5];
-            interval[2] = [7, 18];
 
-            var data = [2, 3, 5];
-
-            this.progression = $('<div></div>').addClass("bma-simulation-table").appendTo(that.element);
-            this.progression.progressiontable({ interval: interval, data: data });
-
-            that.element.css("display", "flex");//.appendTo($('body'));
+            that.element.css("display", "flex");
             that.element.children().css("margin", "10px");
-            //this.refresh();
+            this.refresh();
         },
 
         refresh: function () {
             var that = this;
             var options = this.options;
-            if (options.data !== undefined) {
-                for (var i = 0; i < options.data.length; i++) {
-                    alert(options.data[i].toString());
-                    that._plot.draw({ y: options.data[i], thickness: 4, lineJoin: 'round' });
+            if (options.data !== undefined && options.data.variables !== undefined) {
+                this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.data.variables });
+                if (options.data.interval !== undefined && options.data.interval.length !== 0) {
+                    this.progression.progressiontable({ interval: options.data.interval });
                 }
             }
         },
+
 
         _destroy: function () {
             this.element.empty();
@@ -59,11 +51,20 @@
 
         _setOption: function (key, value) {
             var that = this;
-            if (key === "data") this.options.data = value;
+            switch(key) {
+                case "data":
+                    this.options.data = value;
+                    if (value !== null && value !== undefined)
+                        this.refresh();
+                    break;
+                case "init": 
+                    this.options.init = value;
+                    this.progression.progressiontable({ init: value });
+                    break;
 
+        }
             this._super(key, value);
-            if (value !== null && value !== undefined)
-                this.refresh();
+            
         }
     });
 } (jQuery));

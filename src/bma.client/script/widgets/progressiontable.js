@@ -5,7 +5,8 @@
         options: {
             interval: undefined,
             data: undefined,
-            header: "Initial Value"
+            header: "Initial Value",
+            init: undefined
         },
         _create: function () {
             var that = this;
@@ -19,22 +20,41 @@
 
             //that.element.appendTo($('body'))
             this.refresh();
-            this.addData();
+            this.addData(this.options.data);
             randomise.bind("click", function () {
                 var rands = that.element.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
+            });
+
+            window.Commands.On("AddResult", function (param) {
+                that.addData(param);
             });
         },
         refresh: function () {
             var that = this;
             var options = this.options;
-
+            this.table.empty();
             var tr0 = $('<tr></tr>').appendTo(that.table);
 
             if (that.options.header !== undefined)
                 $('<td></td>').width(120).attr("colspan", "2").text(that.options.header).appendTo(tr0);
 
-            if (that.options.interval !== undefined) {
+            //var init = that.options.init || that.options.interval;
+            if (that.options.init !== undefined) {
+                for (var i = 0; i < that.options.interval.length; i++) {
+                    var tr = $('<tr></tr>').appendTo(that.table);
+
+                    var td = $('<td></td>').text(that.options.init[i]).appendTo(tr);
+
+                    var random = $('<td></td>').addClass("bma-random-icon1").appendTo(tr);
+
+                    random.bind("click", function () {
+                        var index = $(this).parent().index() - 1;
+                        var randomValue = that.getRandomInt(that.options.interval[index][0], that.options.interval[index][1]);
+                        var text = $(this).prev().text(randomValue);
+                    });
+                }
+            } else if (that.options.interval !== undefined) {
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(that.table);
 
@@ -52,9 +72,32 @@
                 }
             }
         },
-        addData: function () {
+        getInit: function () {
+            var init = [];
+
+            var tds = this.element.find("tr:not(:first-child)").children("td:first-child");
+            tds.each(function (ind, val) {
+                init[ind] = parseInt($(this).text());
+            });
+
+            return init;
+        },
+        getLast: function () {
+            var init = [];
+            var tds;
+            if (this.element.find("tr:not(:first-child)").eq(0).children("td").length <= 2)
+                tds = this.element.find("tr:not(:first-child)").children("td:first-child");
+            else
+                tds = this.element.find("tr:not(:first-child)").children("td:last-child");
+            tds.each(function (ind, val) {
+                init[ind] = parseInt($(this).text());
+            });
+            return init;
+        },
+        addData: function (data) {
             var that = this;
-            var data = this.options.data;
+
+            //var data = this.options.data;
             if (data !== undefined) {
                 var trs = that.element.find("tr").not(":first-child");
                 trs.each(function (ind) {
@@ -73,7 +116,7 @@
             switch (key) {
                 case "data":
                     this.options.data = value;
-
+                    this.addData(value);
                     break;
                 case "interval":
                     this.options.interval = value;
@@ -83,11 +126,15 @@
                     this.options.header = value;
                     this.refresh();
                     break;
+                case "init":
+                    this.options.init = value;
+                    this.refresh();
+                    break;
             }
 
             this._super(key, value);
-            if (value !== null && value !== undefined)
-                this.addData();
+            //if (value !== null && value !== undefined)
+            //    this.addData();
         }
     });
 }(jQuery));

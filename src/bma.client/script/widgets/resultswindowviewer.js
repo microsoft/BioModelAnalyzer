@@ -59,7 +59,6 @@
         },
         _destroy: function () {
             this.element.empty();
-            alert("destroy window");
         },
         _setOption: function (key, value) {
             var that = this;

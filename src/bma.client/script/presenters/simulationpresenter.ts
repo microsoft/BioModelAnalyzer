@@ -9,46 +9,37 @@
                 this.viewer = simulationViewer;
                 var that = this;
 
-                
+
+
+                window.Commands.On("RunSimulation", function(param) {
+                    var simulate = that.ConvertModel(param);
+                    
+
+                    $.ajax({
+                        type: "POST",
+                        url: "api/Simulate",
+                        data: simulate,
+                        success: function (res) {
+                            window.Commands.Execute("AddResult", that.ConvertResult(res));
+                            //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                        },
+                        error: function (res) {
+                            //$("#log").append("Simulate error: " + res.statusText + "<br/>");
+                        }
+                    });
+                });
 
                 window.Commands.On("SimulationRequested", function (args) {
                     that.viewer.SetData({ data: { variables: that.CreateVariablesView() } });
                 });
-                //window.Commands.On("ProofRequested", function (args) {
-                //    //simulationViewer.OnProofStarted();
-
-                //    var proofInput = appModel.BioModel.GetJSON()
-
-                //    $.ajax({
-                //        type: "POST",
-                //        url: "api/Analyze",
-                //        data: proofInput,
-                //        success: function (res) {
-                //            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
-                //            var numericData = that.CreateTableView();
-                //            var colorData = that.CreateColoredTable(res.Ticks);
-                //            //var result = appModel.ProofResult;
-                //            //var data = { numericData: numericData, colorData: undefined };
-                //            simulationViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: numericData, colorData: colorData } });
-                //            //simulationViewer.ShowResult(appModel.ProofResult);
-                //        },
-                //        error: function (res) {
-                //            alert("Error: " + res.statusText);
-                //            //simulationViewer.OnProofFailed();
-                //        }
-                //    });
-                //});
 
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full;
                         if (param === "SimulationVariables")
-                            full = $('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable()}});//that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                            full = $('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval()}});//that.CreateFullResultTable(appModel.ProofResult.Ticks);
                         if (param === "SimulationPlot") {
-                            full = $('<div id="SimulationPlot"></div>').text("In Plot We Trust");
-                            //full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(), header: ["Name", "Formula", "Range"] });
-                            //full.find("td").eq(0).width(150);
-                            //full.find("td").eq(2).width(150);
+                            full = $('<div id="SimulationPlot"></div>').text("Plot");
                         }
                         if (full !== undefined) {
                             simulationViewer.Hide({ tab: param });
@@ -61,6 +52,8 @@
                     simulationViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
+
+
             }
 
             public CreateVariablesView() {
@@ -68,36 +61,84 @@
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
-                    table[i][0] = ""//variables[i].Name;
-                    table[i][1] = ""//variables[i].Formula;
+                    table[i][0] = "" // color should be there
+                    table[i][1] = variables[i].ContainerId;
                     table[i][2] = variables[i].Name;
                     table[i][3] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
                 }
                 return table;
             }
+            public CreateInterval() {
+                var table = [];
+                var variables = this.appModel.BioModel.Variables;
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = variables[i].RangeFrom;
+                    table[i][1] = variables[i].RangeTo;
+                }
+                return table;
+            }
 
-            //public CreateColoredTable(ticks): any {
-            //    var that = this;
-            //    if (ticks === null) return;
-            //    var color = [];
-            //    var t = ticks.length;
-            //    var v = ticks[0].Variables.length;
-            //    for (var i = 0; i < v; i++) {
-            //        color[i] = [];
-            //        for (var j = 0; j < t; j++) {
-            //            var ij = ticks[j].Variables[v - 1 - i];
-            //            color[i][j] = ij.Hi === ij.Lo;
-            //        }
-            //    }
-            //    return color;
-            //}
+            public ConvertResult (res) {
+                var data = [];
+                for (var i = 0; i < res.Variables.length; i++)
+                    data[i] = res.Variables[i].Value;
+                return data;
+            }
+
+            public ConvertModel(param) {
+
+                var relationships = this.appModel.BioModel.Relationships;
+                var rel = [];
+                for (var i = 0; i < relationships.length; i++) {
+                    rel[i] = {
+                        "Id": i,
+                        "FromVariableId": relationships[i].FromVariableId,
+                        "ToVariableId": relationships[i].ToVariableId,
+                        "Type": relationships[i].Type
+                    }
+                }
+                var variables = this.appModel.BioModel.Variables;
+                var vars = [];
+                for (var i = 0; i < variables.length; i++) {
+                    vars[i] = {
+                        "Id": variables[i].Id,
+                        "Name": variables[i].Name,
+                        "RangeFrom": variables[i].RangeFrom,
+                        "RangeTo": variables[i].RangeTo,
+                        "Function": variables[i].Formula,
+                    }
+                }
+
+
+                var stableModel = {
+                    "ModelName": this.appModel.BioModel.Name,
+                    "Engine": "VMCAI",
+                    "Variables": vars,
+                    "Relationships": rel
+                }
+
+                var valuespair = [];
+                for (var i = 0; i < param.length; i++) {
+                    valuespair[i] = {
+                        "Id": i,
+                        "Value": param[i]
+                    }
+                }
+
+                var simulate = {
+                    "Model": stableModel,
+                    "Variables": valuespair//this.appModel.BioModel.Variables
+                }
+
+                return simulate;
+            }
 
             public CreateFullTable() {
                 var table = [];
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
-                    table[i][0] = ""//variables[i].Name;
                     table[i][1] = variables[i].Name;
                     table[i][2] = variables[i].RangeFrom
                     table[i][3] = variables[i].RangeTo;
