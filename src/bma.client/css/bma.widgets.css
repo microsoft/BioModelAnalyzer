@@ -842,14 +842,28 @@
 	color:#ffffff;
 }
 
+.bma-simulation-table td {
+    height: 26px;
+}
+
+.bma-simulation-table tr:not(:first-child) td:first-child {
+    width: 40px;
+    border-right: none;
+    text-align: right;
+    padding-right: 25px;
+}
+.bma-simulation-table tr:not(:first-child) td:nth-child(2) {
+    border-left: none;
+}
+.bma-simulation-table tr:not(:first-child) td:nth-child(n+2) {
+    width: 20px;
+}
+
 .bma-random-icon1 {
     background-image: url(../images/random1.png);
     background-repeat:no-repeat;
-    background-position-x:right;
     width: 26px;
     height: 26px;
-    display: inline-block;
-    float:right;
 }
 
 .bma-random-icon2 {
@@ -858,8 +872,7 @@
     background-position-x:left;
     width: 26px;
     height: 26px;
-    display: inline-block;
-    float: left;
+    float:left;
 }
 
 /*.bma-prooftable tr:first-child td:first-child{
@@ -1014,4 +1027,12 @@
 .randomize-button {
     text-align: center;
     font-size: 18px;
+}
+
+.bma-run-button {
+    background-image: url(../images/runbutton.png);
+    width: 78px;
+    height: 38px;
+    position: absolute;
+    right: 120px;
 }

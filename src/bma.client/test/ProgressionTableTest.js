@@ -28,9 +28,11 @@
 
         var trs = widget.find("tr").not(":first-child");
         trs.each(function (ind, val) {
-            var td0 = $(this).children("td").eq(0);
+            var tds = $(this).children("td");
+            var td0 = tds.eq(0);
+            var td1 = tds.eq(1);
             expect(td0.text()).toEqual(interval[ind][0].toString());
-            expect(td0.children("div").hasClass("bma-random-icon1")).toBeTruthy();
+            expect(td1.hasClass("bma-random-icon1")).toBeTruthy();
         });
         expect(trs.length).toEqual(interval.length);
     });
@@ -86,7 +88,7 @@
         widget.progressiontable({ interval: interval, data: data });
         var trs = widget.find("tr").not(":first-child");
         for (var i = 0; i < trs.length; i++) {
-            expect(trs.eq(i).children("td").eq(1).text()).toEqual(data[i].toString());
+            expect(trs.eq(i).children("td").eq(2).text()).toEqual(data[i].toString());
         }
     });
 
@@ -105,8 +107,8 @@
 
         var trs = widget.find("tr").not(":first-child");
         for (var i = 0; i < trs.length; i++) {
-            expect(trs.eq(i).children("td").eq(1).text()).toEqual(data[i].toString());
-            expect(trs.eq(i).children("td").eq(2).text()).toEqual(data2[i].toString());
+            expect(trs.eq(i).children("td").eq(2).text()).toEqual(data[i].toString());
+            expect(trs.eq(i).children("td").eq(3).text()).toEqual(data2[i].toString());
         }
     });
 });

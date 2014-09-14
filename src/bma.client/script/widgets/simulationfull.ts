@@ -25,6 +25,8 @@
                 table1.width("40%").appendTo(that.element);
             }
 
+            var RunButton = $('<div></div>').addClass("bma-run-button").appendTo(that.element);
+
             var interval = [];
             interval[0] = [2, 3];
             interval[1] = [0, 5];
@@ -32,7 +34,7 @@
 
             var data = [2, 3, 5];
 
-            this.progression = $('<div></div>').width("50%").appendTo(that.element);
+            this.progression = $('<div></div>').addClass("bma-simulation-table").appendTo(that.element);
             this.progression.progressiontable({ interval: interval, data: data });
 
             that.element.addClass("popup-window").css("display", "flex").show().appendTo($('body'));

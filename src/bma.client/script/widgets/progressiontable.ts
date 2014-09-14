@@ -26,7 +26,7 @@
             this.refresh();
             this.addData();
             randomise.bind("click", function () {
-                var rands = that.element.find("tr").not(":first-child").children("td:first-child").children("div");
+                var rands = that.element.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
             })
         },
@@ -38,20 +38,22 @@
             var tr0 = $('<tr></tr>').appendTo(that.table);
 
             if (that.options.header !== undefined)
-                $('<td></td>').width(120).text(that.options.header).appendTo(tr0);
+                $('<td></td>').width(120).attr("colspan","2").text(that.options.header).appendTo(tr0);
 
             if (that.options.interval !== undefined) {
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(that.table);
                     
-                    var td = $('<td></td>').appendTo(tr);
-                    var random = $('<div></div>').addClass("bma-random-icon1").appendTo(td);
-                    var text = $('<div></div>').text(that.options.interval[i][0]).appendTo(td);
+                    var td = $('<td></td>').text(that.options.interval[i][0]).appendTo(tr);
+
+                    var random = $('<td></td>').addClass("bma-random-icon1").appendTo(tr);
+                    //var text = $('<div></div>').appendTo(td);
                     
                     random.bind("click", function () {
-                        var index = $(this).parent().parent().index()-1;
+                        var index = $(this).parent().index()-1;
                         var randomValue = that.getRandomInt(that.options.interval[index][0], that.options.interval[index][1]);
-                        $(this).next().text(randomValue);
+                        var text = $(this).prev();
+                        text.text(randomValue);
                     })
                 }
             }
