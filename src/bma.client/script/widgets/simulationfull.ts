@@ -12,13 +12,13 @@
             var options = that.options;
             //options.data.
             var header = ["Graph", "Name", "Range"];
-            var numericData = [];
-            numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
-            numericData[1] = [undefined, "name2", 1, 5];
-            numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
-            options.data = {
-                variables: numericData
-            }
+            //var numericData = [];
+            //numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
+            //numericData[1] = [undefined, "name2", 1, 5];
+            //numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+            //options.data = {
+            //    variables: numericData
+            //}
 
             if (options.data !== undefined && options.data.variables !== undefined) {
                 var table1 = $('<div></div>').coloredtableviewer({ header: header, type: "graph-max", numericData: that.options.data.variables });
@@ -37,7 +37,7 @@
             this.progression = $('<div></div>').addClass("bma-simulation-table").appendTo(that.element);
             this.progression.progressiontable({ interval: interval, data: data });
 
-            that.element.addClass("popup-window").css("display", "flex").show().appendTo($('body'));
+            that.element.css("display", "flex");//.appendTo($('body'));
             that.element.children().css("margin", "10px");
             //this.refresh();
         },

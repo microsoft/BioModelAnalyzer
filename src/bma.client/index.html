@@ -38,6 +38,7 @@
     <script src="script/uidrivers.js"></script>
     <script src="script/presenters/presenters.js"></script>
     <script src="script/presenters/proofpresenter.js"></script>
+    <script src="script/presenters/simulationpresenter.js"></script>
     <script src="script/presenters/modelstoragepresenter.js"></script>
     <script src="script/arraytotableconverter.js"></script>
     <script src="script/logictableconverter.js"></script>
@@ -52,6 +53,7 @@
     <script src="script/widgets/proofresultviewer.js"></script>
     <script src="script/widgets/resultswindowviewer.js"></script>
     <script src="script/widgets/simulationplot.js"></script>
+    
     <script src="script/widgets/simulationfull.js"></script>
     <script src="script/widgets/simulationviewer.js"></script>
     <script src="script/widgets/skinmodel.js"></script>
@@ -164,7 +166,7 @@
                 <div id="tabs-1" class="tabPanel ">
                     <h2>Proof Analysis</h2>
                 </div>
-                <div id="icon2" class="analyze-header-icon " style="top: 80px">
+                <div id="icon2" data-command="SimulationRequested" class="analyze-header-icon " style="top: 80px">
                     <img src="images/graphic.png" class="iconAnalyze">
                 </div>
                 <div id="tabs-2" class="tabPanel ">

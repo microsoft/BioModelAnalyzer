@@ -20,13 +20,14 @@
             var options = this.options;
             if (options.data !== undefined) {
                 for (var i = 0; i < options.data.length; i++) {
-                    //alert(options.data[i].toString());
+                    alert(options.data[i].toString());
                     that._plot.draw({ y: options.data[i], thickness: 4, lineJoin: 'round' });
                 }
             }
         },
 
         _destroy: function () {
+            alert("destroy plot");
             this.element.empty();
         },
 

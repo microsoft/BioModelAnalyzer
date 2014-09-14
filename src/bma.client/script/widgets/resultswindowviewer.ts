@@ -7,18 +7,14 @@
             content: $(),
             header: "",
             icon: "",
-            effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {} }
+            effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () { } },
+            tabid: ""
         },
 
-        refresh: function () {
-            
+        reseticon: function () {
             var that = this;
             var options = this.options;
-            this.element.empty();
-            var table = $('<table></table>').width("100%").appendTo(this.element);
-            var tr = $('<tr></tr>').appendTo(table);
-            var td1 = $('<td></td>').appendTo(tr);
-            var td2 = $('<td></td>').appendTo(tr);
+            that.icontd.empty();
             var url = "";
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
@@ -27,23 +23,36 @@
                     url = "../../images/minimize.png";
                 else url = this.options.icon;
 
-            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(td2);
+            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(that.icontd);
             this.button.bind("click", function () {
                 if (options.icon === "max")
-                    window.Commands.Execute("Expand", that.options.header);
+                    window.Commands.Execute("Expand", that.options.tabid);
                 if (options.icon === "min")
-                    window.Commands.Execute("Collapse", that.options.header);
+                    window.Commands.Execute("Collapse", that.options.tabid);
             });
+        },
 
-            this.header = $('<div></div>').text(options.header).appendTo(td1);
-            //this.content = $('<div></div>').appendTo(this.element);
+        refresh: function () {
+            var that = this;
+            var options = this.options;
+            this.content.empty();
             if (options.content !== undefined) {
-                options.content.clone().appendTo(this.element);
+                options.content.clone().appendTo(that.content); // this is a very big mistake
             }
             
         },
 
+
         _create: function () {
+            var that = this;
+            var options = this.options;
+            var table = $('<table></table>').width("100%").appendTo(this.element);
+            var tr = $('<tr></tr>').appendTo(table);
+            this.header = $('<td></td>').text(options.header).appendTo(tr);
+            this.icontd = $('<td></td>').appendTo(tr);
+            //this.header = $('<div></div>').text(options.header).appendTo(td1);
+            this.content = $('<div></div>').appendTo(this.element);
+            this.reseticon();
             this.refresh();
         },
 
@@ -62,8 +71,20 @@
 
         _setOption: function (key, value) {
             var that = this;
+            switch (key) {
+                case "header":
+                    this.header.text(value);
+                    break;
+                case "content":
+                    this.options.content = value;
+                    this.refresh();
+                    break;
+                case "icon": 
+                    this.reseticon();
+                    break;
+            }
             if (key === "content") this.options.content = value;
-            if (key === "header") this.options.header = value;
+            if (key === "header") this.header.text(value);
                 
             this._super(key, value);
             this.refresh();

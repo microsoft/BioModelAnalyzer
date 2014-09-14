@@ -138,7 +138,19 @@ module BMA {
             public Show(params: any) {
                 var that = this;
                 //this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
+                var header = "";
+                switch (params.tab) {
+                    case "ProofVariables": 
+                        header = "Variables";
+                        break;
+                    case "ProofPropagation":
+                        header = "Proof Progression";
+                        break;
+                    case "SimulationVariables":
+                        header = "Simulation Progression";
+                        break;
+                }
+                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             }
 
@@ -146,9 +158,29 @@ module BMA {
                 this.popupWindow.hide();
             }
 
-            private createResultView(params) {
-                if (params.type === "coloredTable") {
-                }
+            //private createResultView(params) {
+            //    if (params.type === "coloredTable") {
+            //    }
+            //}
+        }
+
+        export class SimulationViewerDriver implements ISimulationViewer {
+            private viewer;
+
+            constructor(viewer) {
+                this.viewer = viewer;
+            }
+
+            public SetData(params) {
+                this.viewer.simulationviewer({ data: params.data });
+            }
+
+            public Show(params: any) {
+                this.viewer.simulationviewer("show", params.tab);
+            }
+
+            public Hide(params) {
+                this.viewer.simulationviewer("hide", params.tab);
             }
         }
 

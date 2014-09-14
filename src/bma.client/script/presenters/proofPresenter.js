@@ -36,16 +36,16 @@
                 window.Commands.On("Expand", function (param) {
                     if (_this.appModel.BioModel.Variables.length !== 0) {
                         var full;
-                        if (param === "Proof Propagation" && _this.appModel.ProofResult.Ticks !== null)
+                        if (param === "ProofPropagation" && _this.appModel.ProofResult.Ticks !== null)
                             full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
-                        if (param === "Variables") {
+                        if (param === "ProofVariables") {
                             full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(), header: ["Name", "Formula", "Range"] });
                             full.find("td").eq(0).width(150);
                             full.find("td").eq(2).width(150);
                         }
                         if (full !== undefined) {
                             proofResultViewer.Hide({ tab: param });
-                            popupViewer.Show({ tab: param, type: "coloredTable", content: full });
+                            popupViewer.Show({ tab: param, content: full });
                         }
                     }
                 });

@@ -49,6 +49,13 @@ module BMA {
             Hide(params);
         }
 
+        export interface ISimulationViewer {
+            SetData(params);
+            Show(params);
+            Hide(params);
+
+        }
+
         export interface IFileLoader {
             OpenFileDialog() : JQueryPromise<File>;
         }

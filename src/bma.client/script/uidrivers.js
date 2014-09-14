@@ -134,21 +134,47 @@ var BMA;
                 var that = this;
 
                 //this.createResultView(params);
-                this.popupWindow.resultswindowviewer({ header: params.tab, content: params.content, icon: "min" });
+                var header = "";
+                switch (params.tab) {
+                    case "ProofVariables":
+                        header = "Variables";
+                        break;
+                    case "ProofPropagation":
+                        header = "Proof Progression";
+                        break;
+                    case "SimulationVariables":
+                        header = "Simulation Progression";
+                        break;
+                }
+                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
             };
 
             PopupDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
             };
-
-            PopupDriver.prototype.createResultView = function (params) {
-                if (params.type === "coloredTable") {
-                }
-            };
             return PopupDriver;
         })();
         UIDrivers.PopupDriver = PopupDriver;
+
+        var SimulationViewerDriver = (function () {
+            function SimulationViewerDriver(viewer) {
+                this.viewer = viewer;
+            }
+            SimulationViewerDriver.prototype.SetData = function (params) {
+                this.viewer.simulationviewer({ data: params.data });
+            };
+
+            SimulationViewerDriver.prototype.Show = function (params) {
+                this.viewer.simulationviewer("show", params.tab);
+            };
+
+            SimulationViewerDriver.prototype.Hide = function (params) {
+                this.viewer.simulationviewer("hide", params.tab);
+            };
+            return SimulationViewerDriver;
+        })();
+        UIDrivers.SimulationViewerDriver = SimulationViewerDriver;
 
         var ModelFileLoader = (function () {
             function ModelFileLoader(fileInput) {

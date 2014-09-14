@@ -44,11 +44,11 @@
                 var tr = variables.find("tr").eq(0);
                 tr.children().eq(0).width(120);
                 tr.children().eq(2).width(120);
-                this.compactvariables.resultswindowviewer({ header: "Variables", content: variables, icon: "max" });
+                this.compactvariables.resultswindowviewer({ header: "Variables", content: variables, icon: "max", tabid: "ProofVariables" });
 
                 if (options.data.colorData !== undefined && options.data.colorData !== null && options.data.colorData.length !== 0) {
                     var proof = $("<div></div>").coloredtableviewer({ colorData: options.data.colorData, type: "color" });
-                    this.proofPropagation.resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max" });
+                    this.proofPropagation.resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max", tabid: "ProofPropagation" });
                 }
                 else 
                     this.proofPropagation.empty();
@@ -60,20 +60,20 @@
         },
 
         show: function (tab) {
-            if (tab === "Variables") {
+            if (tab === "ProofVariables") {
                 this.compactvariables.show();
             }
-            if (tab === "Proof Propagation") {
+            if (tab === "ProofPropagation") {
                 this.proofPropagation.show();
             }
         },
 
         hide: function (tab) {
-            if (tab === "Variables") {
+            if (tab === "ProofVariables") {
                 this.compactvariables.hide();
                 this.element.children().not(this.compactvariables).show();
             }
-            if (tab === "Proof Propagation") {
+            if (tab === "ProofPropagation") {
                 this.proofPropagation.hide();
                 this.element.children().not(this.proofPropagation).show();
             }
@@ -93,6 +93,7 @@
 
             this.refreshSuccess();
             this.refreshData();
+
         },
 
         _destroy: function () {
