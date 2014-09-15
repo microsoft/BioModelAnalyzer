@@ -12,7 +12,7 @@
 
             var RunButton = $('<div></div>').addClass("bma-run-button").appendTo(that.element);
             RunButton.bind("click", function () {
-                window.Commands.Execute("RunSimulation", that.progression.progressiontable("getLast"));
+                window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("getLast"), num: 10 });
             });
 
             this.table1 = $('<div></div>').width("40%").appendTo(that.element);

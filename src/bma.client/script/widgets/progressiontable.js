@@ -101,7 +101,21 @@
             if (data !== undefined) {
                 var trs = that.element.find("tr").not(":first-child");
                 trs.each(function (ind) {
-                    $('<td></td>').text(data[ind]).appendTo($(this));
+                    var td = $('<td></td>').text(data[ind]).appendTo($(this));
+                    var prev = td.prev();
+                    if (td.index() === 1) {
+                        prev = prev.prev();
+                    }
+                    if (td.text() !== prev.text())
+                        td.css("background-color", "#fffcb5");
+                    //if (td.index() > 1) {
+                    //    //if (td.text() !== td.prev().text())
+                    //    //    td.css("background-color", "#fffcb5");
+                    //}
+                    //else {
+                    //    if (td.text() !== td.prev().prev().text())
+                    //        td.css("background-color", "#fffcb5");
+                    //}
                 });
             }
         },

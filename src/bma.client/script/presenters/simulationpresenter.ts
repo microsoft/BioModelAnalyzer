@@ -11,22 +11,10 @@
 
 
 
-                window.Commands.On("RunSimulation", function(param) {
-                    var simulate = that.ConvertModel(param);
-                    
+                window.Commands.On("RunSimulation", function (param) {
+                    var stableModel = that.ConvertModel();
+                    that.StartSimulation({model: stableModel, variables: that.ConvertParam(param.data), num: param.num});
 
-                    $.ajax({
-                        type: "POST",
-                        url: "api/Simulate",
-                        data: simulate,
-                        success: function (res) {
-                            window.Commands.Execute("AddResult", that.ConvertResult(res));
-                            //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
-                        },
-                        error: function (res) {
-                            //$("#log").append("Simulate error: " + res.statusText + "<br/>");
-                        }
-                    });
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
@@ -37,7 +25,7 @@
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full;
                         if (param === "SimulationVariables")
-                            full = $('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval()}});//that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                            full = $('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval() } });//that.CreateFullResultTable(appModel.ProofResult.Ticks);
                         if (param === "SimulationPlot") {
                             full = $('<div id="SimulationPlot"></div>').text("Plot");
                         }
@@ -53,6 +41,32 @@
                     popupViewer.Hide();
                 });
 
+
+            }
+
+            public StartSimulation(param) {
+                var that = this;
+                var simulate = {
+                    "Model": param.model,
+                    "Variables": param.variables
+                }
+                if (param.num === undefined || param.num === 0) return;
+
+                $.ajax({
+                    type: "POST",
+                    url: "api/Simulate",
+                    data: simulate,
+                    success: function (res) {
+                        window.Commands.Execute("AddResult", that.ConvertResult(res));
+                        that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                        //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                    },
+                    error: function (res) {
+                        console.log(res.statusText);
+                        return;
+                        //$("#log").append("Simulate error: " + res.statusText + "<br/>");
+                    }
+                });
 
             }
 
@@ -79,14 +93,25 @@
                 return table;
             }
 
-            public ConvertResult (res) {
+            public ConvertResult(res) {
                 var data = [];
                 for (var i = 0; i < res.Variables.length; i++)
                     data[i] = res.Variables[i].Value;
                 return data;
             }
 
-            public ConvertModel(param) {
+            public ConvertParam(arr) {
+                var res = [];
+                for (var i = 0; i < arr.length; i++) {
+                    res[i] = {
+                        "Id": i,
+                        "Value": arr[i]
+                    }
+                }
+                return res;
+            }
+
+            public ConvertModel() {
 
                 var relationships = this.appModel.BioModel.Relationships;
                 var rel = [];
@@ -118,20 +143,20 @@
                     "Relationships": rel
                 }
 
-                var valuespair = [];
-                for (var i = 0; i < param.length; i++) {
-                    valuespair[i] = {
-                        "Id": i,
-                        "Value": param[i]
-                    }
-                }
+                //var valuespair = [];
+                //for (var i = 0; i < param.length; i++) {
+                //    valuespair[i] = {
+                //        "Id": i,
+                //        "Value": param[i]
+                //    }
+                //}
 
-                var simulate = {
-                    "Model": stableModel,
-                    "Variables": valuespair//this.appModel.BioModel.Variables
-                }
+                //var simulate = {
+                //    "Model": stableModel,
+                //    "Variables": valuespair//this.appModel.BioModel.Variables
+                //}
 
-                return simulate;
+                return stableModel;
             }
 
             public CreateFullTable() {

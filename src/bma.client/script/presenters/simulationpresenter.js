@@ -9,20 +9,8 @@
                 var that = this;
 
                 window.Commands.On("RunSimulation", function (param) {
-                    var simulate = that.ConvertModel(param);
-
-                    $.ajax({
-                        type: "POST",
-                        url: "api/Simulate",
-                        data: simulate,
-                        success: function (res) {
-                            window.Commands.Execute("AddResult", that.ConvertResult(res));
-                            //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
-                        },
-                        error: function (res) {
-                            //$("#log").append("Simulate error: " + res.statusText + "<br/>");
-                        }
-                    });
+                    var stableModel = that.ConvertModel();
+                    that.StartSimulation({ model: stableModel, variables: that.ConvertParam(param.data), num: param.num });
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
@@ -49,6 +37,32 @@
                     popupViewer.Hide();
                 });
             }
+            SimulationPresenter.prototype.StartSimulation = function (param) {
+                var that = this;
+                var simulate = {
+                    "Model": param.model,
+                    "Variables": param.variables
+                };
+                if (param.num === undefined || param.num === 0)
+                    return;
+
+                $.ajax({
+                    type: "POST",
+                    url: "api/Simulate",
+                    data: simulate,
+                    success: function (res) {
+                        window.Commands.Execute("AddResult", that.ConvertResult(res));
+                        that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                        //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                    },
+                    error: function (res) {
+                        console.log(res.statusText);
+                        return;
+                        //$("#log").append("Simulate error: " + res.statusText + "<br/>");
+                    }
+                });
+            };
+
             SimulationPresenter.prototype.CreateVariablesView = function () {
                 var table = [];
                 var variables = this.appModel.BioModel.Variables;
@@ -79,7 +93,18 @@
                 return data;
             };
 
-            SimulationPresenter.prototype.ConvertModel = function (param) {
+            SimulationPresenter.prototype.ConvertParam = function (arr) {
+                var res = [];
+                for (var i = 0; i < arr.length; i++) {
+                    res[i] = {
+                        "Id": i,
+                        "Value": arr[i]
+                    };
+                }
+                return res;
+            };
+
+            SimulationPresenter.prototype.ConvertModel = function () {
                 var relationships = this.appModel.BioModel.Relationships;
                 var rel = [];
                 for (var i = 0; i < relationships.length; i++) {
@@ -109,20 +134,18 @@
                     "Relationships": rel
                 };
 
-                var valuespair = [];
-                for (var i = 0; i < param.length; i++) {
-                    valuespair[i] = {
-                        "Id": i,
-                        "Value": param[i]
-                    };
-                }
-
-                var simulate = {
-                    "Model": stableModel,
-                    "Variables": valuespair
-                };
-
-                return simulate;
+                //var valuespair = [];
+                //for (var i = 0; i < param.length; i++) {
+                //    valuespair[i] = {
+                //        "Id": i,
+                //        "Value": param[i]
+                //    }
+                //}
+                //var simulate = {
+                //    "Model": stableModel,
+                //    "Variables": valuespair//this.appModel.BioModel.Variables
+                //}
+                return stableModel;
             };
 
             SimulationPresenter.prototype.CreateFullTable = function () {
