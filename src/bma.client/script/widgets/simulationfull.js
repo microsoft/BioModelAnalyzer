@@ -12,11 +12,12 @@
 
             var RunButton = $('<div></div>').addClass("bma-run-button").appendTo(that.element);
             RunButton.bind("click", function () {
-                window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("getLast"), num: 10 });
+                that.progression.progressiontable("clearData");
+                window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("getInit"), num: 10 });
             });
 
             this.table1 = $('<div></div>').width("40%").appendTo(that.element);
-            this.progression = $('<div></div>').addClass("bma-simulation-table").appendTo(that.element);
+            this.progression = $('<div></div>').appendTo(that.element); //.addClass("bma-simulation-table")
             if (options.data !== undefined && options.data.variables !== undefined) {
                 this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.data.variables });
                 if (options.data.interval !== undefined && options.data.interval.length !== 0) {
@@ -24,8 +25,8 @@
                 }
             }
 
-            that.element.css("display", "flex");
-            that.element.children().css("margin", "10px");
+            //that.element.css("display", "flex");
+            //that.element.children().css("margin", "10px");
             this.refresh();
         },
         refresh: function () {

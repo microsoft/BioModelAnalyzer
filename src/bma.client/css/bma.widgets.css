@@ -841,6 +841,10 @@
 	font-size:14px;
 	color:#ffffff;
 }
+.bma-simulation-table {
+    float: left;
+    width:auto;
+}
 
 .bma-simulation-table td {
     height: 26px;
@@ -980,6 +984,7 @@
 
 .bma-color-prooftable td {
     border: 1px solid white;
+    
 }
 
 .bma-color-simulationtable {
@@ -992,6 +997,27 @@
 
 .bma-color-simulationtable tr:nth-child(odd) { background-color:#ffffff; }
 
+.bma-progressiontable {
+    border-collapse:collapse;
+    margin-top: 32px;
+
+}
+
+.bma-progressiontable td {
+    border: 1px solid lightgray;
+    text-align:center;
+    width: 20px;
+    height: 26px;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+}
+.bma-progressiontable tr:nth-child(even) { background-color:#f5f5f5; }
+.bma-progressiontable tr:nth-child(odd) { background-color:#ffffff; }
+
+.bma-progressiontable td:first-child {
+    border-left:none;
+}
 .scrollable-results {
     max-height: 160px;
     overflow-y:scroll;
