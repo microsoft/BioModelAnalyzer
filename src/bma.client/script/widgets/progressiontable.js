@@ -13,18 +13,24 @@
             var options = that.options;
 
             var randomise = $('<div></div>').width(120).appendTo(that.element);
+            randomise.css("position", "absolute");
+            randomise.css("top", "-30px");
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
             var randomLabel = $('<div></div>').text("Randomise").addClass("randomize-button").appendTo(randomise);
 
+            //var div = $('<div></div>')
+            //    .appendTo(that.element);
             this.init = $('<div></div>').appendTo(that.element);
+            this.init.css("display", "inline-block");
 
             //that.element.appendTo($('body'))
             this.refreshInit();
-            this.data = $('<div></div>').appendTo(that.element);
+            this.data = $('<div></div>').addClass("bma-simulation-data-table").appendTo(that.element);
 
+            //this.data.css("display", "inline-block");
             //this.addData(this.options.data);
             randomise.bind("click", function () {
-                var rands = that.element.find("tr").not(":first-child").children("td:nth-child(2)");
+                var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
             });
 

@@ -119,10 +119,10 @@
 
     .popup-window {
         display:none; 
-        padding-top:15px;
-        padding-left:20px;
-        padding-right:20px;
-        padding-bottom: 15px;
+        padding-top: 15px;
+        padding-left: 25px;
+        padding-right: 20px;
+        padding-bottom: 50px;
         /*background-color: rgba(0,0,0,0.5);*/
         background-color: white;
         position:absolute;
@@ -667,7 +667,8 @@
     }
 
     ::-webkit-scrollbar {
-        width: 8px;
+        width: 4px;
+        height: 10px; 
     }
  
     /*::-webkit-scrollbar-track {
@@ -842,7 +843,7 @@
 	color:#ffffff;
 }
 .bma-simulation-table {
-    float: left;
+    margin: 0;
     width:auto;
 }
 
@@ -999,14 +1000,12 @@
 
 .bma-progressiontable {
     border-collapse:collapse;
-    margin-top: 32px;
-
 }
 
 .bma-progressiontable td {
     border: 1px solid lightgray;
     text-align:center;
-    width: 20px;
+    min-width: 20px;
     height: 26px;
     margin: 0;
     padding: 0;
@@ -1056,9 +1055,62 @@
 }
 
 .bma-run-button {
-    background-image: url(../images/runbutton.png);
-    width: 78px;
-    height: 38px;
+    /*background-image: url(../images/runbutton.png);*/
+    /*width: 78px;
+    height: 38px;*/
+    background-color:#77b55a;
+	border-radius:8px;
+	/*border:1px solid #4b8f29;*/
     position: absolute;
     right: 70px;
+    top: 50px;
+    color:#ffffff;
+	font-family:Verdana;
+	font-size:20px;
+	padding:5px 20px;
+	text-decoration:none;
+    cursor: pointer;
+}
+
+
+.steps-setting {
+    font-size: large;
+    position: absolute;
+    bottom: 30px;
+    right: 50px;
+    font-family: Verdana;
+}
+
+.steps-setting > *:first-child {
+    margin-right: 5px;
+}
+
+.steps-setting > *:nth-child(2){
+    margin-right: 15px;
+}
+.steps-setting > *:nth-child(3){
+    margin-right: 5px;
+}
+
+
+.steps-setting button {
+	background-color:#808184;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+	border-radius:8px;
+    border:none;
+    display: inline-block;
+    cursor: pointer;
+	color:#ffffff;
+	font-family:Verdana;
+	font-size:17px;
+    padding:4px 15px;
+	text-decoration:none;
+}
+
+.bma-simulation-data-table {
+    display: inline-block;
+    width: 300px;
+    overflow-x: scroll;
+    margin-bottom: -10px;
 }
