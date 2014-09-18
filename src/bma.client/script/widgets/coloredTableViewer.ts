@@ -166,7 +166,7 @@
 
                 buttontd.bind("click", function () {
                     $(this).toggleClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index(), check: $(this).hasClass("addVariableToPlot") });
+                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index()-1, check: $(this).hasClass("addVariableToPlot") });
                 })
 
                 for (var j = 1; j < array[i].length; j++) {

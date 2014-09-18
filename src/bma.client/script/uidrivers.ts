@@ -172,7 +172,7 @@ module BMA {
             }
 
             public SetData(params) {
-                this.viewer.simulationviewer({ data: params.data });
+                this.viewer.simulationviewer({ data: params.data, plot: params.plot });
             }
 
             public Show(params: any) {

@@ -5,6 +5,7 @@
     $.widget("BMA.simulationviewer", {
         options: {
             data: undefined, // data{variables: [][], colorData: [][], plot: [][]}
+            plot: undefined
         },
 
         refresh: function () {
@@ -14,8 +15,8 @@
             var container = $('<div></div>');
             //this.variables.resultswindowviewer("destroy");
             //this.plotDiv.empty();
-            if (options.data === undefined) return;
-            if (options.data.variables !== undefined && options.data.variables.length !== 0) {
+            //if (options.data === undefined) return;
+            if (options.data !== undefined && options.data.variables !== undefined && options.data.variables.length !== 0) {
                 var variablestable = $('<div></div>')
                     .appendTo(container)
                     .addClass("scrollable-results")
@@ -29,8 +30,10 @@
                 that.variables.resultswindowviewer({ header: "Variables", content: container, icon: "max", tabid: "SimulationVariables" });
             }
             //else this.variables.empty();
-            if (that.options.data.plot !== undefined) {
-                var plot = $('<div></div>').simulationplot({ data: that.options.data.plot });
+            //that.options.plot = [];
+            //that.options.plot[0] = [1, 2, 3, 4, 5];
+            if (that.options.plot !== undefined) {
+                var plot = $('<div></div>').simulationplot({ data: that.options.plot });
                 that.plotDiv.resultswindowviewer({ content: plot, icon: "max", tabid: "SimulationPlot" });
             }
         },
@@ -69,6 +72,7 @@
             
             this.plotDiv = $('<div></div>')
                 .appendTo(that.element)
+                .resultswindowviewer();
                 //.simulationplot();
             //$('<div>Plot should be here</div>').appendTo(that.element);
             //that._plot = InteractiveDataDisplay.asPlot(plotDiv);
@@ -85,6 +89,8 @@
 
             if (key === "data") 
                 this.options.data = value;
+            if (key === "plot")
+                this.options.plot = value;
             this._super(key, value);
             this.refresh();
         },

@@ -668,7 +668,7 @@
 
     ::-webkit-scrollbar {
         width: 4px;
-        height: 10px; 
+        height: 17px; 
     }
  
     /*::-webkit-scrollbar-track {
@@ -1112,5 +1112,5 @@
     display: inline-block;
     width: 300px;
     overflow-x: scroll;
-    margin-bottom: -10px;
+    margin-bottom: -17px;
 }

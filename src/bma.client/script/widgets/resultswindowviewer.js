@@ -35,7 +35,7 @@
             var options = this.options;
             this.content.empty();
             if (options.content !== undefined) {
-                options.content.appendTo(that.content); // this is a very big mistake
+                options.content.appendTo(that.content);
             }
         },
         _create: function () {

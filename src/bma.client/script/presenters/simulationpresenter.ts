@@ -3,15 +3,27 @@
         export class SimulationPresenter {
             private appModel: BMA.Model.AppModel;
             private viewer: BMA.UIDrivers.ISimulationViewer;
+            private data;
 
             constructor(appModel: BMA.Model.AppModel, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup) {
                 this.appModel = appModel;
                 this.viewer = simulationViewer;
+                this.data = [];
                 var that = this;
 
+                window.Commands.On("ChangePlotVariables", function (param) {
 
+                    if (param.check) {
+                        var plot = [];
+                        plot[0] = that.data[param.ind];
+                        simulationViewer.SetData({ plot: plot });
+                    }
+                });
 
                 window.Commands.On("RunSimulation", function (param) {
+                    that.data = [];
+                    for (var i = 0; i < param.data.length; i++)
+                        that.data[i] = [];
                     var stableModel = that.ConvertModel();
                     that.StartSimulation({model: stableModel, variables: that.ConvertParam(param.data), num: param.num});
 
@@ -27,7 +39,7 @@
                         if (param === "SimulationVariables")
                             full = $('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval() } });//that.CreateFullResultTable(appModel.ProofResult.Ticks);
                         if (param === "SimulationPlot") {
-                            full = $('<div id="SimulationPlot"></div>').text("Plot");
+                            full = $('<div id="SimulationPlot"></div>').text("Plot will be there");
                         }
                         if (full !== undefined) {
                             simulationViewer.Hide({ tab: param });
@@ -46,11 +58,12 @@
 
             public StartSimulation(param) {
                 var that = this;
+                if (param.num === undefined || param.num === 0) return;
                 var simulate = {
                     "Model": param.model,
                     "Variables": param.variables
                 }
-                if (param.num === undefined || param.num === 0) return;
+                
 
                 $.ajax({
                     type: "POST",
@@ -59,6 +72,8 @@
                     success: function (res) {
                         window.Commands.Execute("AddResult", that.ConvertResult(res));
                         that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                        var d = that.ConvertResult(res);
+                        that.addData(d);
                         //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
                     },
                     error: function (res) {
@@ -68,6 +83,15 @@
                     }
                 });
 
+            }
+
+            public addData(d) {
+                
+                if (this.data.length !== d.length)
+                    alert("Error");
+                for (var i = 0; i < d.length; i++) {
+                    this.data[i][this.data[i].length] = d[i];
+                }
             }
 
             public CreateVariablesView() {
@@ -143,18 +167,6 @@
                     "Relationships": rel
                 }
 
-                //var valuespair = [];
-                //for (var i = 0; i < param.length; i++) {
-                //    valuespair[i] = {
-                //        "Id": i,
-                //        "Value": param[i]
-                //    }
-                //}
-
-                //var simulate = {
-                //    "Model": stableModel,
-                //    "Variables": valuespair//this.appModel.BioModel.Variables
-                //}
 
                 return stableModel;
             }
