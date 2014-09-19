@@ -159,23 +159,16 @@ module BMA {
                         jqSvg.clear();
 
                         var g = jqSvg.group({
-                            transform: "translate(" + (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + ", " + (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + ") scale(2.5)"
+                            transform: "translate(" + (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + ", " + (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + ") scale(0.45) translate(-250, -290)"
                         });
 
-                        var innerCellData = "M3.6-49.9c-26.7,0-48.3,22.4-48.3,50c0,27.6,21.6,50,48.3,50c22.8,0,41.3-22.4,41.3-50C44.9-27.5,26.4-49.9,3.6-49.9z";
-                        var innerPath = jqSvg.createPath();
-                        var op = jqSvg.path(g, innerPath, {
+                        var cellData = "M249,577 C386.518903,577 498,447.83415 498,288.5 C498,129.16585 386.518903,0 249,0 C111.481097,0 0,129.16585 0,288.5 C0,447.83415 111.481097,577 249,577 Z M262,563 C387.368638,563 489,440.102164 489,288.5 C489,136.897836 387.368638,14 262,14 C136.631362,14 35,136.897836 35,288.5 C35,440.102164 136.631362,563 262,563 Z";
+                        var cellPath = jqSvg.createPath();
+                        var op = jqSvg.path(g, cellPath, {
                             stroke: 'transparent',
-                            fill: "#FAAF42",
-                            d: innerCellData,
-                        });
-
-                        var outeCellData = "M3.6,45.5C-16.6,45.5-33,25.1-33,0.1c0-25,16.4-45.3,36.6-45.3c20.2,0,36.6,20.3,36.6,45.3C40.2,25.1,23.8,45.5,3.6,45.5z";
-                        var outerPath = jqSvg.createPath();
-                        jqSvg.path(g, outerPath, {
-                            stroke: 'transparent',
-                            fill: "#FFF",
-                            d: outeCellData,
+                            fill: "#FAAF40",
+                            "fill-rule": "evenodd", 
+                            d: cellData,
                         });
 
                         $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
@@ -183,12 +176,13 @@ module BMA {
 
                         /*
                         //Helper bounding ellipses
-                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 8,
+                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 0,
                             (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
-                            93, 113, { stroke: "red", fill: "none" });
-                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 3,
+                            112, 130, { stroke: "red", fill: "none" });
+                        
+                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 5,
                             (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
-                            113, 125, { stroke: "red", fill: "none" });
+                            102, 124, { stroke: "red", fill: "none" });
                         */
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
@@ -198,17 +192,17 @@ module BMA {
                         return false;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        var dstXInner = Math.abs(pointerX - (elementX + 8));
-                        var dstXOuter = Math.abs(pointerX - (elementX + 3));
+                        var dstXInner = Math.abs(pointerX - (elementX + 0));
+                        var dstXOuter = Math.abs(pointerX - (elementX + 5));
                         var dstY = Math.abs(pointerY - elementY);
-                        return Math.pow(dstXOuter / 113, 2) + Math.pow(dstY / 125, 2) < 1 &&
-                            Math.pow(dstXInner / 93, 2) + Math.pow(dstY / 113, 2) > 1;
+                        return Math.pow(dstXOuter / 112, 2) + Math.pow(dstY / 130, 2) < 1 &&
+                            Math.pow(dstXInner / 102, 2) + Math.pow(dstY / 124, 2) > 1;
                     },
                     function (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) {
                         var iscontaining = function (x, y) {
-                            var dstX = Math.abs(x - (elementX + 8));
+                            var dstX = Math.abs(x - (elementX + 0));
                             var dstY = Math.abs(y - elementY);
-                            return Math.pow(dstX / 93, 2) + Math.pow(dstY / 113, 2) < 1
+                            return Math.pow(dstX / 102, 2) + Math.pow(dstY / 124, 2) < 1
                         }
 
                         return iscontaining(bbox.x, bbox.y) &&

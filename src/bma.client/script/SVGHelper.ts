@@ -19,5 +19,9 @@
         export function StringInString(s: string, find: string) {
             return s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
         }
+
+        export function DoNothing() {
+            return null; 
+        }
     }
 }
