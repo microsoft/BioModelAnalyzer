@@ -155,16 +155,10 @@ $RECYCLE.BIN/
 .DS_Store
 
 # Compiled JS files
-src/bma.client/script/*.js
-src/bma.client/script/*.js.map
-src/bma.client/script/model/*.js
-src/bma.client/script/model/*.js.map
-src/bma.client/script/presenters/*.js
-src/bma.client/script/presenters/*.js.map
-src/bma.client/script/widgets/*.js
-src/bma.client/script/widgets/*.js.map
+src/bma.client/script/**/*.js
+src/bma.client/script/**/*.map
 src/bma.client/test/*.js
-src/bma.client/test/*.js.map
+src/bma.client/test/*.map
 src/bma.client/test/*.html
 
 
