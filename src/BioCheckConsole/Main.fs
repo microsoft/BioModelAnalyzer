@@ -49,13 +49,14 @@ let state' = ref "" // input csv describing destination state
 
 let usage i = 
     Printf.printfn "Usage: BioCheckConsole.exe -model input_analysis_file.xml"
-    Printf.printfn "                            -modelsdir model_directory"
-    Printf.printfn "                            -log "
-    Printf.printfn "                            -loglevel n"
-    Printf.printfn "                          [ -engine VMCAI –prove output_file_name.xml |"
-    Printf.printfn "                            -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
-    Printf.printfn "                            -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
-    Printf.printfn "                            -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
+    Printf.printfn "                           -modelsdir model_directory"
+    Printf.printfn "                           -log "
+    Printf.printfn "                           -loglevel n"
+    Printf.printfn "                         [ -engine [ VMCAI | SCM | SYN ] –prove output_file_name.xml |"
+    Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
+    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
+    Printf.printfn "                           -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
+
 
 let rec parse_args args = 
     match args with 
