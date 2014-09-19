@@ -188,17 +188,11 @@
                         if (!$(this).hasClass("addVariableToPlot"))
                             $(this).click();
                     });
-
-                    //that.buttons.addClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { check: true });
                 } else {
                     that.buttons.each(function () {
                         if ($(this).hasClass("addVariableToPlot"))
                             $(this).click();
                     });
-
-                    //that.buttons.removeClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { check: false });
                 }
             });
 

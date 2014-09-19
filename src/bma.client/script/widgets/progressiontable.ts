@@ -50,7 +50,7 @@
                 var table = $('<table></table>')
                     .addClass("bma-progressiontable")
                     .appendTo(this.data);
-                for (var i = 0; i < data.length; i++) {
+                for (var i = 0; i < data.length && 0 < data[i].length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     $('<td></td>').text(data[i][0]).appendTo(tr);
                     for (var j = 1; j < data[i].length; j++) {

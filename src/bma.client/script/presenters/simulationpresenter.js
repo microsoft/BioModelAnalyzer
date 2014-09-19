@@ -16,6 +16,7 @@
                     //    plot[0] = that.data[param.ind];
                     //    simulationViewer.SetData({ plot: plot });
                     //}
+                    that.colors[param.ind].Seen = param.check;
                 });
 
                 window.Commands.On("RunSimulation", function (param) {
@@ -61,7 +62,8 @@
             SimulationPresenter.prototype.StartSimulation = function (param) {
                 var that = this;
                 if (param.num === undefined || param.num === 0) {
-                    that.viewer.SetData({ data: { variables: that.CreateVariablesView(), colorData: that.CreateProgressionMinTable() } });
+                    //alert(that.data[0].length);
+                    that.viewer.SetData({ data: { variables: that.CreateVariablesView(), colorData: that.CreateProgressionMinTable() }, plot: { data: that.data, colors: that.colors } });
                     return;
                 }
                 var simulate = {
@@ -77,9 +79,9 @@
                         success: function (res) {
                             if (res.Variables !== null) {
                                 window.Commands.Execute("AddResult", that.ConvertResult(res));
-                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                                 var d = that.ConvertResult(res);
                                 that.addData(d);
+                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             } else
                                 alert("No relationships in the model");
                             //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
@@ -102,6 +104,9 @@
                         this.data[i][this.data[i].length] = d[i];
                     }
                 }
+            };
+
+            SimulationPresenter.prototype.CreatePlotView = function () {
             };
 
             SimulationPresenter.prototype.CreateColors = function () {

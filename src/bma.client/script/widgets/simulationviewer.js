@@ -28,7 +28,7 @@
             //that.options.plot = [];
             //that.options.plot[0] = [1, 2, 3, 4, 5];
             if (that.options.plot !== undefined) {
-                var plot = $('<div></div>').simulationplot({ data: that.options.plot });
+                var plot = $('<div></div>').simulationplot(that.options.plot);
                 that.plotDiv.resultswindowviewer({ content: plot, icon: "max", tabid: "SimulationPlot" });
             }
         },
