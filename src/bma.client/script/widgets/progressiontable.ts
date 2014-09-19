@@ -5,7 +5,7 @@
     $.widget("BMA.progressiontable", {
         options: {
             interval: undefined, // table with interval of values
-            //data: undefined, // table with data
+            data: undefined, // table with data
             header: "Initial Value",
             init: undefined
         },
@@ -32,7 +32,7 @@
                 .addClass("bma-simulation-data-table")
                 .appendTo(that.element);
             //this.data.css("display", "inline-block");
-            //this.addData(this.options.data);
+            this.initData();
             randomise.bind("click", function () {
                 var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
@@ -41,6 +41,25 @@
             window.Commands.On("AddResult", function (param) {
                 that.addData(param);
             })
+        },
+
+        initData: function () {
+            this.data.empty();
+            if (this.options.data !== undefined) {
+                var data = this.options.data;
+                var table = $('<table></table>')
+                    .addClass("bma-progressiontable")
+                    .appendTo(this.data);
+                for (var i = 0; i < data.length; i++) {
+                    var tr = $('<tr></tr>').appendTo(table);
+                    $('<td></td>').text(data[i][0]).appendTo(tr);
+                    for (var j = 1; j < data[i].length; j++) {
+                        var td = $('<td></td>').text(data[i][j]).appendTo(tr);
+                        if (data[i][j] !== data[i][j - 1])
+                            td.css("background-color", "#fffcb5");
+                    }
+                }
+            }
         },
 
         refreshInit: function () {

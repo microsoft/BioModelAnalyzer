@@ -150,7 +150,7 @@
 
                 var td0 = $('<td></td>').appendTo(tr);
                 var buttontd = $('<td></td>').appendTo(tr);
-                if (array[i][0] !== undefined) {
+                if (array[i][1] && array[i][0] !== undefined) {
                     td0.css("background-color", array[i][0]);
                     buttontd.addClass("addVariableToPlot");
                 }
@@ -159,34 +159,45 @@
                     $(this).toggleClass("addVariableToPlot");
                     var check = $(this).hasClass("addVariableToPlot");
                     if (check) {
-                        $(this).prev().css("background-color", that.getRandomColor());
+                        $(this).prev().css("background-color", array[$(this).parent().index() - 1][0]);
                     } else
                         $(this).prev().css("background-color", "transparent");
                     window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
                 });
 
-                for (var j = 1; j < array[i].length; j++) {
+                for (var j = 2; j < array[i].length; j++) {
                     $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
             }
+            this.buttons = that.table.find("tr").not(":first-child").find("td:eq(1)");
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
             tdall0.css("background-color", "white");
             this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("addVariableToPlot");
             this.allcheck.css("border-right", "none");
             var tdall1 = $('<td></td>').appendTo(alltr);
-            var alldiv = $('<div></div>').attr("checked", false).text("ALL").appendTo(tdall1);
+            var alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
+
             tdall1.css("border-left", "none");
-            this.buttons = that.table.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
 
             this.allcheck.bind("click", function () {
                 alldiv.attr("checked", !alldiv.attr("checked"));
 
                 if (alldiv.attr("checked")) {
-                    that.buttons.addClass("addVariableToPlot");
+                    that.buttons.each(function () {
+                        if (!$(this).hasClass("addVariableToPlot"))
+                            $(this).click();
+                    });
+
+                    //that.buttons.addClass("addVariableToPlot");
                     window.Commands.Execute("ChangePlotVariables", { check: true });
                 } else {
-                    that.buttons.removeClass("addVariableToPlot");
+                    that.buttons.each(function () {
+                        if ($(this).hasClass("addVariableToPlot"))
+                            $(this).click();
+                    });
+
+                    //that.buttons.removeClass("addVariableToPlot");
                     window.Commands.Execute("ChangePlotVariables", { check: false });
                 }
             });

@@ -162,7 +162,7 @@ var BMA;
                 this.viewer = viewer;
             }
             SimulationViewerDriver.prototype.SetData = function (params) {
-                this.viewer.simulationviewer({ data: params.data, plot: params.plot });
+                this.viewer.simulationviewer(params); //{ data: params.data, plot: params.plot });
             };
 
             SimulationViewerDriver.prototype.Show = function (params) {

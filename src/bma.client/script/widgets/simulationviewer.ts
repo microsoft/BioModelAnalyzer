@@ -13,7 +13,7 @@
             
             var options = this.options;
             var container = $('<div></div>');
-            //this.variables.resultswindowviewer("destroy");
+            this.variables.resultswindowviewer();
             //this.plotDiv.empty();
             //if (options.data === undefined) return;
             if (options.data !== undefined && options.data.variables !== undefined && options.data.variables.length !== 0) {
@@ -22,14 +22,14 @@
                     .addClass("scrollable-results")
                     .coloredtableviewer({ header: ["Graph", "Cell", "Name", "Range"], type: "graph-min", numericData: options.data.variables });
                 if (options.data.colorData !== undefined) {
-                    var colortable = $('<div></div>')
+                    var colortable = $('<div id="Simulation-min-table"></div>')
                         .appendTo(container)
                         .coloredtableviewer({ type: "simulation-min", colorData: options.data.colorData });
                 }
 
                 that.variables.resultswindowviewer({ header: "Variables", content: container, icon: "max", tabid: "SimulationVariables" });
             }
-            //else this.variables.empty();
+            else that.variables.resultswindowviewer("destroy");
             //that.options.plot = [];
             //that.options.plot[0] = [1, 2, 3, 4, 5];
             if (that.options.plot !== undefined) {
@@ -96,12 +96,18 @@
         },
 
         show: function (tab) {
-            if (tab === "SimulationVariables") {
-                this.variables.show();
-            }
-            if (tab === "SimulationPlot") {
-                this.plotDiv.show();
-            }
+            switch (tab) {
+                case undefined:
+                    this.variables.show();
+                    this.plotDiv.show();
+                    break;
+                case "SimulationVariables": 
+                    this.variables.show();
+                    break;
+                case "SimulationPlot":
+                    this.plotDiv.show();
+                    break;
+            } 
         },
 
         hide: function (tab) {

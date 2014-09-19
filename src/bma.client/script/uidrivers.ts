@@ -120,6 +120,7 @@ module BMA {
                 this.proofContentViewer.proofresultviewer("show",params.tab);
             }
 
+
             public Hide(params) {
                 this.proofContentViewer.proofresultviewer("hide", params.tab);
             }
@@ -172,7 +173,7 @@ module BMA {
             }
 
             public SetData(params) {
-                this.viewer.simulationviewer({ data: params.data, plot: params.plot });
+                this.viewer.simulationviewer(params);//{ data: params.data, plot: params.plot });
             }
 
             public Show(params: any) {

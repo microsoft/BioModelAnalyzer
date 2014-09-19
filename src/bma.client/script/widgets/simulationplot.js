@@ -7,10 +7,13 @@
         },
         _create: function () {
             var that = this;
+            var plotDiv = $('<div></div>').height(160).width("100%").attr("data-idd-plot", "plot").appendTo(that.element);
+            for (var i = 0; i < that.options.data.length; i++) {
+                $('<div></div>').attr('data-idd-plot', 'polyline').width("100%").height("100%").appendTo(plotDiv);
+            }
 
             //var chart = $('<div id="chart" data-idd-plot="chart" style="width: 100%; height: 160px;" unselectable="on" class="unselectable idd-plot-master"></div>').appendTo(that.element);
-            var plotDiv = $('<div data-idd-plot="polyline" style="width:100%; height:160px"></div>').appendTo(that.element);
-
+            //var plotDiv = $('<div data-idd-plot="polyline" style="width:100%; height:160px"></div>').appendTo(that.element);
             //var grid = $('<div data-idd-plot="grid" data-idd-placement="center" unselectable="on" class="unselectable idd-plot-dependant" style="width: 100%; height: 160px; top: 0px; left: 40px;"></div>').appendTo(chart);
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             that._plot.isAutoFitEnabled = true;

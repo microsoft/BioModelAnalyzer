@@ -36,7 +36,7 @@
             this.proofPropagation.resultswindowviewer();
 
             if (options.data !== undefined && options.data.numericData !== undefined && options.data.numericData !== null && options.data.numericData.length !== 0) {
-                var variables = $("<div></div>").addClass("scrollable-results").coloredtableviewer({ numericData: options.data.numericData, header: ["Name", "Formula", "Range"] });
+                var variables = $("<div></div>").addClass("scrollable-results").coloredtableviewer({ numericData: options.data.numericData, colorData: options.data.colorVariables, header: ["Name", "Formula", "Range"] });
 
                 var tr = variables.find("tr").eq(0);
                 tr.children().eq(0).width(120);
@@ -54,6 +54,10 @@
             }
         },
         show: function (tab) {
+            if (tab === undefined) {
+                this.compactvariables.show();
+                this.proofPropagation.show();
+            }
             if (tab === "ProofVariables") {
                 this.compactvariables.show();
             }

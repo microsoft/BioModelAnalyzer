@@ -18,12 +18,12 @@
                         data: proofInput,
                         success: function (res) {
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
-                            var numericData = that.CreateTableView(res.Ticks);
+                            var variablesData = that.CreateTableView(res.Ticks);
                             var colorData = that.CreateColoredTable(res.Ticks);
 
                             //var result = appModel.ProofResult;
                             //var data = { numericData: numericData, colorData: undefined };
-                            proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: numericData, colorData: colorData } });
+                            proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
                             proofResultViewer.ShowResult(appModel.ProofResult);
                         },
                         error: function (res) {
@@ -36,12 +36,21 @@
                 window.Commands.On("Expand", function (param) {
                     if (_this.appModel.BioModel.Variables.length !== 0) {
                         var full;
-                        if (param === "ProofPropagation" && _this.appModel.ProofResult.Ticks !== null)
-                            full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
-                        if (param === "ProofVariables") {
-                            full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(appModel.ProofResult.Ticks), header: ["Name", "Formula", "Range"] });
-                            full.find("td").eq(0).width(150);
-                            full.find("td").eq(2).width(150);
+                        switch (param) {
+                            case "ProofPropagation":
+                                if (_this.appModel.ProofResult.Ticks !== null)
+                                    full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                                break;
+                            case "ProofVariables":
+                                var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
+                                full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
+                                full.find("td").eq(0).width(150);
+                                full.find("td").eq(2).width(150);
+                                break;
+                            default:
+                                full = undefined;
+                                proofResultViewer.Show({ tab: undefined });
+                                break;
                         }
                         if (full !== undefined) {
                             proofResultViewer.Hide({ tab: param });
@@ -67,18 +76,19 @@
                     table[i][0] = variables[i].Name;
                     table[i][1] = variables[i].Formula;
                     var range;
-                    var ij = ticks[ticks.length - 1].Variables[i];
+                    var ij = ticks[ticks.length - 1].Variables[variables.length - 1 - i];
                     var c = ij.Lo === ij.Hi;
-                    if (c)
+                    if (c) {
                         range = ij.Lo;
-                    else
+                    } else {
                         range = ij.Lo + ' - ' + ij.Hi;
+                        for (var j = 0; j < 3; j++)
+                            color[i][j] = c;
+                    }
 
                     table[i][2] = range;
-                    for (var j = 0; j < 3; j++)
-                        color[i][j] = c;
                 }
-                return table;
+                return { numericData: table, colorData: color };
             };
 
             ProofPresenter.prototype.CreateColoredTable = function (ticks) {

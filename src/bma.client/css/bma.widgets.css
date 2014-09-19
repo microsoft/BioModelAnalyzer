@@ -133,6 +133,7 @@
         z-index: 10;
         font-size: x-large;
         width: calc(100% - 400px - 450px);
+        min-width:800px;
         max-height: 600px;
     }
 
