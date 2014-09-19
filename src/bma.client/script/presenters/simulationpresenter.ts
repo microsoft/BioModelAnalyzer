@@ -13,7 +13,7 @@
 
                 window.Commands.On("ChangePlotVariables", function (param) {
 
-                    if (param.check) {
+                    if (param.check && param.ind !== undefined) {
                         var plot = [];
                         plot[0] = that.data[param.ind];
                         simulationViewer.SetData({ plot: plot });
@@ -128,7 +128,7 @@
                 var res = [];
                 for (var i = 0; i < arr.length; i++) {
                     res[i] = {
-                        "Id": i,
+                        "Id": this.appModel.BioModel.Variables[i].Id,
                         "Value": arr[i]
                     }
                 }
