@@ -18,7 +18,7 @@
                         data: proofInput,
                         success: function (res) {
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
-                            var numericData = that.CreateTableView();
+                            var numericData = that.CreateTableView(res.Ticks);
                             var colorData = that.CreateColoredTable(res.Ticks);
 
                             //var result = appModel.ProofResult;
@@ -39,7 +39,7 @@
                         if (param === "ProofPropagation" && _this.appModel.ProofResult.Ticks !== null)
                             full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
                         if (param === "ProofVariables") {
-                            full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(), header: ["Name", "Formula", "Range"] });
+                            full = $('<div></div>').coloredtableviewer({ numericData: that.CreateTableView(appModel.ProofResult.Ticks), header: ["Name", "Formula", "Range"] });
                             full.find("td").eq(0).width(150);
                             full.find("td").eq(2).width(150);
                         }
@@ -55,14 +55,28 @@
                     popupViewer.Hide();
                 });
             }
-            ProofPresenter.prototype.CreateTableView = function () {
+            ProofPresenter.prototype.CreateTableView = function (ticks) {
                 var table = [];
+                if (ticks === null)
+                    return;
                 var variables = this.appModel.BioModel.Variables;
+                var color = [];
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
+                    color[i] = [];
                     table[i][0] = variables[i].Name;
                     table[i][1] = variables[i].Formula;
-                    table[i][2] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
+                    var range;
+                    var ij = ticks[ticks.length - 1].Variables[i];
+                    var c = ij.Lo === ij.Hi;
+                    if (c)
+                        range = ij.Lo;
+                    else
+                        range = ij.Lo + ' - ' + ij.Hi;
+
+                    table[i][2] = range;
+                    for (var j = 0; j < 3; j++)
+                        color[i][j] = c;
                 }
                 return table;
             };
