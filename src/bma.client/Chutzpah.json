@@ -14,20 +14,23 @@
          {"Path": "Scripts/typings/jasmine/jasmine.d.ts"},
          {"Path": "Scripts/jasmine/jasmine-jquery/jasmine-jquery.d.ts"},
          {"Path": "Scripts/jasmine/jasmine-matchers/jasmine-jquery.d.ts"},
-         {"Path": "script/jquery.svg.js"},
-         {"Path": "script/rx.js"},
-         {"Path": "script/rx.jQuery.js" },
-         {"Path": "script/idd.js"},
-         {"Path": "script/svgplot.js"},
-         {"Path": "script/scalablegridlinesplot.js"},
+         
+         {"Path": "Scripts/rx.js"},
+         
+         {"Path": "js/jquery.svg.js"},
+         {"Path": "js/rx.jQuery.js" },
+         {"Path": "js/idd.js"},
+         {"Path": "js/svgplot.js"},
+         {"Path": "js/scalablegridlinesplot.js"},
+         {"Path": "js/FileSaver.js"},
+
          {"Path": "script/model/analytics.ts"},
          {"Path": "script/model/analytics.js"},
          {"Path": "script/model/biomodel.ts"},
          {"Path": "script/model/biomodel.js"},
          {"Path": "script/model/model.ts"},
          {"Path": "script/model/model.js"},
-         {"Path": "script/master.ts"},
-         {"Path": "script/master.js"},
+
          {"Path": "script/commands.ts"},
          {"Path": "script/commands.js"},
          {"Path": "script/elementsregistry.ts"},
@@ -38,6 +41,7 @@
          {"Path": "script/presenters.js"},
          {"Path": "script/proofpresenters.ts"},
          {"Path": "script/proofpresenters.js"},
+         
          {"Path": "script/widgets/drawingsurface.ts"},
          {"Path": "script/widgets/drawingsurface.js"},
          {"Path": "script/widgets/coloredtableviewer.ts"},
@@ -60,10 +64,12 @@
          {"Path": "script/widgets/variablesOptionsEditor.js"},
          {"Path": "script/widgets/visibilitysettings.ts"},
          {"Path": "script/widgets/visibilitysettings.js"},
+
          {"Path": "script/uidrivers.interfaces.ts"},
          {"Path": "script/uidrivers.interfaces.js"},
          {"Path": "script/uidrivers.ts"},
          {"Path": "script/uidrivers.js"},
+         
          {"Path": "test/BMA.TestComponents.ts"},
          {"Path": "test/BMA.TestComponents.js"},
          {"Path": "script/geometry.ts"},
