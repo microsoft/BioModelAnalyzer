@@ -157,7 +157,12 @@
 
                 buttontd.bind("click", function () {
                     $(this).toggleClass("addVariableToPlot");
-                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: $(this).hasClass("addVariableToPlot") });
+                    var check = $(this).hasClass("addVariableToPlot");
+                    if (check) {
+                        $(this).prev().css("background-color", that.getRandomColor());
+                    } else
+                        $(this).prev().css("background-color", "transparent");
+                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
                 });
 
                 for (var j = 1; j < array[i].length; j++) {
@@ -192,6 +197,25 @@
                 else
                     alldiv.attr("checked", that.checkAllButtons());
             });
+        },
+        getColors: function () {
+            var that = this;
+            if (this.options.type === "graph-max") {
+                var tds = this.table.find("tr:not(:first-child)").children("td: nth-child(2)");
+                var data = [];
+                tds.each(function (ind, val) {
+                    if ($(this).hasClass("addVariableToPlot"))
+                        data[ind] = that.options.data.variables[ind].color;
+                });
+            }
+        },
+        getRandomColor: function () {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
         },
         checkAllButtons: function () {
             var that = this;

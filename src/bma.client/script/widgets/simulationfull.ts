@@ -64,6 +64,11 @@
         },
 
 
+        getColors: function () {
+            this.table1.coloredtableviewer("getColors");
+        },
+
+
         _destroy: function () {
             this.element.empty();
         },

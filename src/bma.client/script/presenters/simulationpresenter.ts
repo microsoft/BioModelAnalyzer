@@ -13,11 +13,13 @@
 
                 window.Commands.On("ChangePlotVariables", function (param) {
 
-                    if (param.check && param.ind !== undefined) {
-                        var plot = [];
-                        plot[0] = that.data[param.ind];
-                        simulationViewer.SetData({ plot: plot });
-                    }
+                    //if (param.check && param.ind !== undefined) {
+                    //    var plot = [];
+                    //    plot[0] = that.data[param.ind];
+                    //    simulationViewer.SetData({ plot: plot });
+                    //}
+
+
                 });
 
                 window.Commands.On("RunSimulation", function (param) {
