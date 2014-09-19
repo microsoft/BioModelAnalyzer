@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.simulationplotviewer", {
         options: {
             data: undefined,
@@ -10,6 +12,7 @@
             if (that.options.data !== undefined) {
                 for (var i = 0; i < that.options.data.length; i++) {
                     that._plot.draw({ x: that.options.ticks, y: that.options.data[i] });
+                    //InteractiveDataDisplay.PolylinePlot.draw(that.options.data[i]);
                 }
             }
         },
@@ -36,3 +39,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=simulationplotviewer.js.map

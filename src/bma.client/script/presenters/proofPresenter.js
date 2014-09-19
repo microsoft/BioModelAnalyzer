@@ -21,6 +21,8 @@
                             var numericData = that.CreateTableView();
                             var colorData = that.CreateColoredTable(res.Ticks);
 
+                            //var result = appModel.ProofResult;
+                            //var data = { numericData: numericData, colorData: undefined };
                             proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: numericData, colorData: colorData } });
                             proofResultViewer.ShowResult(appModel.ProofResult);
                         },
@@ -119,3 +121,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=proofPresenter.js.map

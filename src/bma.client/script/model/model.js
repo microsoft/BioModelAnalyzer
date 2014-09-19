@@ -1,4 +1,6 @@
-﻿var BMA;
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+var BMA;
 (function (BMA) {
     (function (Model) {
         var AppModel = (function () {
@@ -12,6 +14,7 @@
                 },
                 set: function (value) {
                     this.model = value;
+                    //TODO: update inner components (analytics)
                 },
                 enumerable: true,
                 configurable: true
@@ -24,6 +27,7 @@
                 },
                 set: function (value) {
                     this.layout = value;
+                    //TODO: update inner components (analytics)
                 },
                 enumerable: true,
                 configurable: true
@@ -46,6 +50,7 @@
                 if (serializedModel !== undefined) {
                     var ml = JSON.parse(serializedModel);
 
+                    //TODO: verify model
                     if (ml === undefined || ml.model === undefined || ml.layout === undefined || ml.model.variables === undefined || ml.layout.variables === undefined || ml.model.variables.length !== ml.layout.variables.length || ml.layout.containers === undefined || ml.model.relationships === undefined) {
                         alert("Invalid model");
                         return;
@@ -91,3 +96,4 @@
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=model.js.map

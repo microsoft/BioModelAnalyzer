@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.simulationviewer", {
         options: {
             data: undefined,
@@ -15,6 +17,8 @@
 
             var plotDiv = $('<div></div>').appendTo(that.element).simulationplotviewer({ data: that.options.data, ticks: that.options.ticks });
 
+            //$('<div>Plot should be here</div>').appendTo(that.element);
+            //that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this.refresh();
         },
         _destroy: function () {
@@ -29,3 +33,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=simulationviewer.js.map

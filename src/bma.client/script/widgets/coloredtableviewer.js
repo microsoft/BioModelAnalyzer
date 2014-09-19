@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.coloredtableviewer", {
         options: {
             header: [],
@@ -99,3 +101,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=coloredTableViewer.js.map

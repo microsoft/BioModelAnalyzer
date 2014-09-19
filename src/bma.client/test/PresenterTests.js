@@ -26,6 +26,8 @@ describe("DesignSurfacePresenter", function () {
     it("should create proper presenter for specified model and layout", function () {
         var appModel = new BMA.Model.AppModel();
 
+        //var drawingSurface = $("<div></div>");
+        //drawingSurface.drawingsurface();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
         var elementPanel = new BMA.Test.TestElementsPanel();
         var variableEditorDriver = new BMA.Test.TestVariableEditor();
@@ -77,3 +79,4 @@ describe("DesignSurfacePresenter", function () {
         expect(ds).toBeDefined();
     });
 });
+//# sourceMappingURL=PresenterTests.js.map

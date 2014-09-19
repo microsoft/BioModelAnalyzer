@@ -37,6 +37,10 @@
         event = "toggle";
         acc.bmaaccordion("option", "event", event);
         expect(acc.bmaaccordion("option", "event")).toEqual(event);
+        //spyOn(acc, "eventHandler");
+        //c1.trigger(event);
+        //expect(data.active).toBe(context);
+        //expect(acc.bmaaccordion("eventHandler", )).toHaveBeenCalled();
     });
 
     it("should be collapsible", function () {
@@ -67,6 +71,8 @@
     it("sets a contentLoaded option ", function () {
         acc.bmaaccordion({ contentLoaded: { ind: 1, val: false } });
         h2.click();
+        //var loading = h2.children();//.filter(".loading");
+        //expect(loading.length).toEqual(1);
     });
 
     it("should run the command", function () {
@@ -76,5 +82,7 @@
         expect(window.Commands.Execute).toHaveBeenCalledWith("testCommand", {});
 
         h1.click();
+        //expect("click").toHaveBeenTriggered();
     });
 });
+//# sourceMappingURL=AccordionTest.js.map
