@@ -40,18 +40,24 @@
         },
         initData: function () {
             this.data.empty();
-            if (this.options.data !== undefined) {
+            if (this.options.data !== undefined && this.options.data.length !== 0) {
                 var data = this.options.data;
-                var table = $('<table></table>').addClass("bma-progressiontable").appendTo(this.data);
-                for (var i = 0; i < data.length && 0 < data[i].length; i++) {
-                    var tr = $('<tr></tr>').appendTo(table);
-                    $('<td></td>').text(data[i][0]).appendTo(tr);
-                    for (var j = 1; j < data[i].length; j++) {
-                        var td = $('<td></td>').text(data[i][j]).appendTo(tr);
-                        if (data[i][j] !== data[i][j - 1])
-                            td.css("background-color", "#fffcb5");
+                if (data[0].length === this.options.interval.length)
+                    for (var i = 0; i < data.length && 0 < data[i].length; i++) {
+                        this.addData(data[i]);
                     }
-                }
+                //var table = $('<table></table>')
+                //    .addClass("bma-progressiontable")
+                //    .appendTo(this.data);
+                //for (var i = 0; i < data.length && 0 < data[i].length; i++) {
+                //    var tr = $('<tr></tr>').appendTo(table);
+                //    $('<td></td>').text(data[i][0]).appendTo(tr);
+                //    for (var j = 1; j < data[i].length; j++) {
+                //        var td = $('<td></td>').text(data[i][j]).appendTo(tr);
+                //        if (data[i][j] !== data[i][j - 1])
+                //            td.css("background-color", "#fffcb5");
+                //    }
+                //}
             }
         },
         refreshInit: function () {
@@ -63,15 +69,17 @@
 
             if (that.options.header !== undefined)
                 $('<td></td>').width(120).attr("colspan", "2").text(that.options.header).appendTo(tr0);
-            var init = that.options.init || that.options.interval || undefined;
-            if (init !== undefined) {
+
+            // || undefined;//that.options.init || that.options.interval;
+            if (that.options.interval !== undefined) {
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
-                    if (Array.isArray(init[i]))
-                        td.text(init[i][0]);
+                    var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
+                    if (Array.isArray(init))
+                        td.text(init[0]);
                     else
-                        td.text(init[i]);
+                        td.text(init);
 
                     var random = $('<td></td>').addClass("bma-random-icon1").appendTo(tr);
 

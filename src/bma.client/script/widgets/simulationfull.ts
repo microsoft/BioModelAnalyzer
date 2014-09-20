@@ -71,6 +71,7 @@
 
         _destroy: function () {
             this.element.empty();
+            
         },
 
         _setOption: function (key, value) {

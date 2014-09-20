@@ -169,8 +169,13 @@
                     var check = $(this).hasClass("addVariableToPlot");
                     if (check) {
                         $(this).prev().css("background-color", array[$(this).parent().index() - 1][0]);
+                        that.alldiv.attr("checked", that.checkAllButtons());
+
                     }
-                    else $(this).prev().css("background-color", "transparent");
+                    else {
+                        that.alldiv.attr("checked", false);
+                        $(this).prev().css("background-color", "transparent");
+                    }
                     window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index()-1, check: check });
                 })
 
@@ -185,15 +190,15 @@
             this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("addVariableToPlot")
             this.allcheck.css("border-right", "none");
             var tdall1 = $('<td></td>').appendTo(alltr);
-            var alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
+            this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
 
             tdall1.css("border-left", "none");
             
 
             this.allcheck.bind("click", () => {
-                alldiv.attr("checked", !alldiv.attr("checked"));
+                that.alldiv.attr("checked", !that.alldiv.attr("checked"));
                 
-                if (alldiv.attr("checked")) {
+                if (that.alldiv.attr("checked")) {
                     that.buttons.each( function () {
                         if (!$(this).hasClass("addVariableToPlot"))
                             $(this).click();
@@ -207,13 +212,6 @@
                 }
             })
 
-            window.Commands.On("ChangePlotVariables", (param) => {
-                if (!param.check)
-                    alldiv.attr("checked", false);
-                else
-                    alldiv.attr("checked", that.checkAllButtons());
-
-            })
 
         },
 
