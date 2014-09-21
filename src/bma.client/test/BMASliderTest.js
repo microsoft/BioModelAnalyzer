@@ -24,9 +24,9 @@
         expect(slider.bmazoomslider("option", "value")).toEqual(0);
         slider.children("#zoom-minus").click();
         slider.children("#zoom-minus").click();
-        expect(slider.bmazoomslider("option", "value")).toEqual(2);
+        expect(slider.bmazoomslider("option", "value")).toEqual(20);
         slider.children("#zoom-plus").click();
-        expect(slider.bmazoomslider("option", "value")).toEqual(1);
+        expect(slider.bmazoomslider("option", "value")).toEqual(10);
     });
 });
 //# sourceMappingURL=BMASliderTest.js.map

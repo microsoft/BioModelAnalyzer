@@ -12,10 +12,11 @@
             var options = this.options;
             var container = $('<div></div>');
             this.variables.resultswindowviewer();
-            that.plotDiv.resultswindowviewer();
+
+            //that.plotDiv.resultswindowviewer();
             if (options.data !== undefined && options.data.variables !== undefined && options.data.variables.length !== 0) {
                 var variablestable = $('<div></div>').appendTo(container).addClass("scrollable-results").coloredtableviewer({ header: ["Graph", "Cell", "Name", "Range"], type: "graph-min", numericData: options.data.variables });
-                if (options.data.colorData !== undefined) {
+                if (options.data.colorData !== undefined && options.data.colorData.length !== 0) {
                     var colortable = $('<div id="Simulation-min-table"></div>').appendTo(container).coloredtableviewer({ type: "simulation-min", colorData: options.data.colorData });
                 }
                 that.variables.resultswindowviewer({ header: "Variables", content: container, icon: "max", tabid: "SimulationVariables" });
@@ -23,17 +24,17 @@
                 that.variables.resultswindowviewer("destroy");
 
             if (that.options.plot !== undefined) {
-                var plot = $('<div></div>').simulationplot({ colors: that.options.plot });
-                that.plotDiv.resultswindowviewer({ content: plot, icon: "max", tabid: "SimulationPlot" });
-            } else
-                that.plotDiv.resultswindowviewer("destroy");
+                that.plot.simulationplot({ colors: that.options.plot });
+                //that.plotDiv.resultswindowviewer({ content: plot, icon: "max", tabid: "SimulationPlot" });
+            }
+            //else that.plotDiv.resultswindowviewer("destroy");
         },
         _create: function () {
             var that = this;
             var options = this.options;
             this.variables = $('<div></div>').appendTo(that.element).resultswindowviewer();
-
-            this.plotDiv = $('<div></div>').appendTo(that.element).resultswindowviewer();
+            this.plot = $('<div></div>').simulationplot({ colors: that.options.plot });
+            this.plotDiv = $('<div></div>').appendTo(that.element).resultswindowviewer({ content: this.plot, icon: "max", tabid: "SimulationPlot" });
 
             this.refresh();
         },

@@ -23,8 +23,9 @@
 
                 window.Commands.On("RunSimulation", function (param) {
                     that.data = [];
+                    that.ClearColors();
                     that.initValues = param.data;
-                    var stableModel = that.ConvertModel();
+                    var stableModel = that.appModel.BioModel.GetJSON();
                     that.StartSimulation({model: stableModel, variables: that.ConvertParam(param.data), num: param.num});
                 });
 
@@ -130,6 +131,12 @@
                 }
             }
 
+            public ClearColors() {
+                for (var i = 0; i < this.colors.length; i++) {
+                    this.colors[i].Plot = [];
+                }
+            }
+
             public findColorById(id) {
                 for (var i = 0; i < this.colors.length; i++)
                     if (id === this.colors[i].Id)
@@ -203,41 +210,6 @@
                 return res;
             }
 
-            public ConvertModel() {
-
-                var relationships = this.appModel.BioModel.Relationships;
-                var rel = [];
-                for (var i = 0; i < relationships.length; i++) {
-                    rel[i] = {
-                        "Id": i,
-                        "FromVariableId": relationships[i].FromVariableId,
-                        "ToVariableId": relationships[i].ToVariableId,
-                        "Type": relationships[i].Type
-                    }
-                }
-                var variables = this.appModel.BioModel.Variables;
-                var vars = [];
-                for (var i = 0; i < variables.length; i++) {
-                    vars[i] = {
-                        "Id": variables[i].Id,
-                        "Name": variables[i].Name,
-                        "RangeFrom": variables[i].RangeFrom,
-                        "RangeTo": variables[i].RangeTo,
-                        "Function": variables[i].Formula,
-                    }
-                }
-
-
-                var stableModel = {
-                    "ModelName": this.appModel.BioModel.Name,
-                    "Engine": "VMCAI",
-                    "Variables": vars,
-                    "Relationships": rel
-                }
-
-
-                return stableModel;
-            }
 
             public CreateFullTable() {
                 var table = [];

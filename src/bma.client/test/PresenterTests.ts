@@ -41,7 +41,7 @@ describe("DesignSurfacePresenter", () => {
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
-    it("turns navigation on executing 'AddElementSelect' command", () => {
+    xit("turns navigation on executing 'AddElementSelect' command", () => {
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
         var elementPanel = new BMA.Test.TestElementsPanel();
@@ -60,7 +60,7 @@ describe("DesignSurfacePresenter", () => {
     });
 
 
-    it("should initialize the variableEditorDriver", () => {
+    xit("should initialize the variableEditorDriver", () => {
         var drawingSurface = $("<div></div>");
         drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
@@ -72,11 +72,11 @@ describe("DesignSurfacePresenter", () => {
         
         window.Commands.Execute("AddElementSelect", "Constant");
         console.log("first click");
-        window.Commands.Execute("DrawingSurfaceClick", { x: 0.5, y: 0.5 });
+        window.Commands.Execute("DrawingSurfaceClick", { x: 0.11, y: 0.11 });
         window.Commands.Execute("AddElementSelect", undefined);
         spyOn(variableEditorDriver, "Initialize");
         console.log("second click");
-        window.Commands.Execute("DrawingSurfaceClick", { x: 0.5, y: 0.5 });
+        window.Commands.Execute("DrawingSurfaceClick", { x: 0.11, y: 0.11 });
         expect(variableEditorDriver.Initialize).toHaveBeenCalled();
     });
 

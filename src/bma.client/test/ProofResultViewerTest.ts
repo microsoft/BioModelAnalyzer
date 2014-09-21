@@ -97,21 +97,21 @@ describe("ProofResultViewer", () => {
         var variablesdiv = widget.children().filter("div").eq(1);
         var proofdiv = widget.children().filter("div").eq(2);
 
-        widget.proofresultviewer("hide", "Variables");
+        widget.proofresultviewer("hide", "ProofVariables");
         expect(variablesdiv.css("display")).toEqual("none");
         expect(proofdiv.css("display")).not.toEqual("none");
 
-        widget.proofresultviewer("hide", "Proof Propagation");
+        widget.proofresultviewer("hide", "ProofPropagation");
         expect(proofdiv.css("display")).toEqual("none");
         expect(variablesdiv.css("display")).not.toEqual("none");
 
-        widget.proofresultviewer("show", "Proof Propagation");
+        widget.proofresultviewer("show", "ProofPropagation");
         expect(proofdiv.css("display")).not.toEqual("none");
         expect(variablesdiv.css("display")).not.toEqual("none");
 
         variablesdiv.hide();
 
-        widget.proofresultviewer("show", "Variables");
+        widget.proofresultviewer("show", "ProofVariables");
         expect(proofdiv.css("display")).not.toEqual("none");
         expect(variablesdiv.css("display")).not.toEqual("none");
     });

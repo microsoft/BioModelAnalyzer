@@ -16,6 +16,12 @@ var BMA;
                 configurable: true
             });
 
+            TestSVGPlotDriver.prototype.SetZoom = function (zoom) {
+            };
+
+            TestSVGPlotDriver.prototype.GetDragSubject = function () {
+            };
+
             TestSVGPlotDriver.prototype.Draw = function (svg) {
                 this.svg.push(svg);
             };

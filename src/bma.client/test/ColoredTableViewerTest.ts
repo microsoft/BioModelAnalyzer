@@ -174,22 +174,21 @@ describe("ColoredTableViewer", () => {
 
         var header = ["Graph", "Name", "Range"];
         var numericData = [];
-        numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
-        numericData[1] = [undefined, "name2", 1, 5];
-        numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+        numericData[0] = ["rgb(255, 0, 0)",true, "name1", 0, 1];
+        numericData[1] = [undefined,false, "name2", 1, 5];
+        numericData[2] = ["rgb(0, 0, 0)",true, "name3", 3, 6];
 
         widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
         var trs = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
         var all = widget.coloredtableviewer("getAllButton");
-        expect(all.hasClass("addVariableToPlot")).toBeFalsy();
+        expect(all.hasClass("addVariableToPlot")).toBeTruthy();
         all.click();
         expect(all.hasClass("addVariableToPlot")).toBeTruthy();
         expect(trs.hasClass("addVariableToPlot")).toBeTruthy();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { all: true });
+        expect(window.Commands.Execute).toHaveBeenCalled();
         all.click();
-        expect(all.hasClass("addVariableToPlot")).toBeFalsy();
         expect(trs.hasClass("addVariableToPlot")).toBeFalsy();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { all: false });
+        expect(window.Commands.Execute).toHaveBeenCalled();
     })
 
 
@@ -207,10 +206,10 @@ describe("ColoredTableViewer", () => {
         
         buttons.eq(0).click();
         expect(buttons.eq(0).hasClass("addVariableToPlot")).toBeFalsy();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 1, check: false });
+        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 0, check: false });
         buttons.eq(1).click();
         expect(buttons.eq(1).hasClass("addVariableToPlot")).toBeTruthy();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 2, check: true });
+        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 1, check: true });
     })
 
 
@@ -231,7 +230,7 @@ describe("ColoredTableViewer", () => {
 
             for (var j = 0; j < tds.length; j++) {
                 if (colorData[i][j]) {
-                    expect(tds.eq(j).css("background-color")).toEqual("rgb(255, 231, 114)");
+                    expect(tds.eq(j).css("background-color")).toEqual("rgb(255, 247, 41)");
                 }
             }
         }

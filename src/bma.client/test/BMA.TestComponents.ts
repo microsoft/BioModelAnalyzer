@@ -4,7 +4,7 @@
 
 module BMA {
     export module Test {
-        export class TestSVGPlotDriver implements BMA.UIDrivers.ISVGPlot {
+        export class TestSVGPlotDriver implements BMA.UIDrivers.ISVGPlot, BMA.UIDrivers.IElementsPanel, BMA.UIDrivers.INavigationPanel {
             private svg: SVGElement[];
 
             public get SVGs() {
@@ -13,6 +13,10 @@ module BMA {
 
             constructor() {
                 this.svg = [];
+            }
+            public SetZoom(zoom: number){}
+
+            public GetDragSubject() {
             }
 
             public Draw(svg: SVGSVGElement) {

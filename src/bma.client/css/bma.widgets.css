@@ -673,7 +673,7 @@
 
     ::-webkit-scrollbar {
         width: 4px;
-        height: 17px; 
+        height: 18px; 
     }
  
     /*::-webkit-scrollbar-track {
@@ -869,6 +869,12 @@
     width: 20px;
 }
 
+.bma-simulation-table input {
+    border: none;
+    text-align: center;
+    background-color: transparent;
+}
+
 .bma-random-icon1 {
     background-image: url(../images/random1.png);
     background-repeat:no-repeat;
@@ -1022,6 +1028,8 @@
 .bma-progressiontable td:first-child {
     border-left:none;
 }
+
+
 .scrollable-results {
     max-height: 160px;
     overflow-y:scroll;

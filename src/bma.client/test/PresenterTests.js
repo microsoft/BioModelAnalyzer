@@ -37,7 +37,7 @@ describe("DesignSurfacePresenter", function () {
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
-    it("turns navigation on executing 'AddElementSelect' command", function () {
+    xit("turns navigation on executing 'AddElementSelect' command", function () {
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
         var elementPanel = new BMA.Test.TestElementsPanel();
@@ -54,7 +54,7 @@ describe("DesignSurfacePresenter", function () {
         expect(svgPlotDriver.TurnNavigation).toHaveBeenCalledWith(false);
     });
 
-    it("should initialize the variableEditorDriver", function () {
+    xit("should initialize the variableEditorDriver", function () {
         var drawingSurface = $("<div></div>");
         drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
@@ -65,11 +65,11 @@ describe("DesignSurfacePresenter", function () {
 
         window.Commands.Execute("AddElementSelect", "Constant");
         console.log("first click");
-        window.Commands.Execute("DrawingSurfaceClick", { x: 0.5, y: 0.5 });
+        window.Commands.Execute("DrawingSurfaceClick", { x: 0.11, y: 0.11 });
         window.Commands.Execute("AddElementSelect", undefined);
         spyOn(variableEditorDriver, "Initialize");
         console.log("second click");
-        window.Commands.Execute("DrawingSurfaceClick", { x: 0.5, y: 0.5 });
+        window.Commands.Execute("DrawingSurfaceClick", { x: 0.11, y: 0.11 });
         expect(variableEditorDriver.Initialize).toHaveBeenCalled();
     });
 

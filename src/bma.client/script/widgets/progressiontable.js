@@ -75,14 +75,16 @@
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
+                    var input = $('<input type="text">').attr("size", "1").appendTo(td);
                     var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
                     if (Array.isArray(init))
-                        td.text(init[0]);
+                        input.val(init[0]);
                     else
-                        td.text(init);
+                        input.val(init);
 
                     var random = $('<td></td>').addClass("bma-random-icon1").appendTo(tr);
 
+                    //input.bind ("input change")
                     random.bind("click", function () {
                         var index = $(this).parent().index() - 1;
 
@@ -91,16 +93,16 @@
 
                         //$(this).prev().text('');
                         //
-                        $(this).prev().text(randomValue); //randomValue);
+                        $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
                     });
                 }
             }
         },
         getInit: function () {
             var init = [];
-            var tds = this.init.find("tr:not(:first-child)").children("td:first-child");
-            tds.each(function (ind, val) {
-                init[ind] = parseInt($(this).text());
+            var inputs = this.init.find("tr:not(:first-child)").children("td:first-child").children("input");
+            inputs.each(function (ind) {
+                init[ind] = parseInt($(this).val());
             });
             return init;
         },
@@ -151,7 +153,7 @@
             switch (key) {
                 case "interval":
                     this.options.interval = value;
-
+                    this.refreshInit();
                     break;
                 case "header":
                     this.options.header = value;
