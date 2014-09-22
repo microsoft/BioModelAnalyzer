@@ -53,18 +53,19 @@ $(document).ready(function () {
 
     $("#drawingSurceContainer").contextmenu({
         delegate: ".bma-drawingsurface",
+        preventContextMenuForPopup: true,
+        preventSelect: true,
+        taphold: true,
         menu: [
-            { title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy" },
-            { title: "----" },
-            {
-                title: "More", children: [
-                    { title: "Sub 1", cmd: "sub1" },
-                    { title: "Sub 2", cmd: "sub1" }
-                ]
-            }
+            { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+            { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+            { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true }
         ],
         select: function (event, ui) {
-            alert("select " + ui.cmd + " on " + ui.target.text());
+            var commandName = "DrawingSurface" + ui.cmd;
+            alert(commandName);
+            window.Commands.Execute(commandName, {});
         }
     });
 
