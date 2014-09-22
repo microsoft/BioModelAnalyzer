@@ -195,7 +195,7 @@
         var inputs = editor.find(".inputs-list-content").children();
         var textarea = editor.find("textarea");
         textarea.bind("input change", function () {
-            console.log("!!!!!!");
+            //console.log("!!!!!!");
         });
         var insert = editor.find(".bma-insert-function-button");
         functions.eq(0).click();

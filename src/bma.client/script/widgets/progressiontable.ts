@@ -106,6 +106,41 @@
             }
         },
 
+        findClone: function (column: JQuery): number {
+            var trs = this.data.find("tr");
+            var tr0 = trs.eq(0);
+            for (var i = 0; i < tr0.children("td").length-1; i++) {
+                var tds = trs.children("td:nth-child(" + (i + 1) + ")");
+                if (this.isClone(column, tds)) {
+                    alert()
+                    if (this.repeat === undefined)
+                        this.repeat = tds;
+                    return i;
+                }
+            }
+            return undefined;
+        },
+
+        isClone: function (td1,td2): boolean {
+            if (td1.length !== td2.length)
+                return false;
+            else {
+                var arr = [];
+                for (var i = 0; i < td1.length; i++) {
+                    //console.log(td1.eq(i).text() + ' ' + td2.eq(i).text())
+                    
+                    //for (var i = 0; i < td1.length; i++) {
+                        arr[i] = td1.eq(i).text() + " " + td2.eq(i).text();
+                    //}
+                    
+                    if (td1.eq(i).text() !== td2.eq(i).text())
+                        return false;
+                }
+                //alert(arr);
+                return true;
+            }
+        },
+
         getInit: function () {
             var init = [];
             var inputs = this.init.find("tr:not(:first-child)").children("td:first-child").children("input");
@@ -147,13 +182,45 @@
                         $('<td></td>').text(data[i]).appendTo(tr);
                     }
                 }
-                else 
+                else {
                     trs.each(function (ind) {
                         var td = $('<td></td>').text(data[ind]).appendTo($(this));
                         if (td.text() !== td.prev().text())
                             td.css("background-color", "#fffcb5");
                     })
+                    var last = that.data.find("tr").children("td:last-child");
+                    //var arr = [];
+                    //for (var i = 0; i < last.length; i++) {
+                    //    arr[i] = last.eq(i).text();
+                    //}
+                    //alert(arr);
+                    if (that.repeat !== undefined) {
+                        //var arr = [];
+                        //for (var i = 0; i < that.repeat.length; i++) {
+                        //    arr[i] = that.repeat.eq(i).text();
+                        //}
+                        //alert(arr);
+                        if (that.isClone(that.repeat, last))
+                            that.highlight(that.data.find("tr:first-child").children("td").length);
+                        else;
+                    }
+                    else {
+                        
+                        var cloneInd = that.findClone(last);
+                        //alert(cloneInd);
+                        if (cloneInd !== undefined) {
+                            that.highlight(that.data.find("tr:first-child").children("td").length);
+                            that.highlight(cloneInd);
+                        }
+                    }
+                }
             }
+        },
+
+        highlight: function (ind) {
+            //alert(ind);
+            var tds = this.data.find("tr").children("td:nth-child(" + ind+1 + ")");
+            tds.addClass("bma-highlighting-columns");
         },
 
         getRandomInt: function (min, max) {
@@ -192,6 +259,7 @@ interface JQuery {
     progressiontable(): JQuery;
     progressiontable(settings: Object): JQuery;
     progressiontable(settings: string): any;
+    progressiontable(func: string, param1: any, param2: any ): any;
     progressiontable(optionLiteral: string, optionName: string): any;
     progressiontable(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }   

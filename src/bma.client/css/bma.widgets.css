@@ -1127,3 +1127,7 @@
     overflow-x: scroll;
     margin-bottom: -17px;
 }
+
+.bma-highlighting-columns {
+    background-color: gainsboro;
+}

@@ -25,32 +25,39 @@
             var that = this;
             var options = this.options;
             this.element.empty();
-            this.chartdiv = $('<div id="chart" data-idd-plot="plot" style="width: 100%; height: 160px;"></div>').appendTo(that.element);
+            this.chartdiv = $('<div id="chart" data-idd-plot="figure" style="width: 100%; height: 160px;"></div>').appendTo(that.element);
 
             //var plotDiv = $('<div data-idd-plot="polyline" style="width:100%; height:160px"></div>').appendTo(that.element);
             //var grid = $('<div data-idd-plot="grid" data-idd-placement="center" style="width: 100%; height: 160px; top: 0px; left: 40px;"></div>').appendTo(that.chartdiv);
-            var gridLinesPlotDiv = $("<div></div>").width("100%").height("100%").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
+            var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").attr("data-idd-placement", "center").appendTo(this.chartdiv);
+            $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "left").appendTo(this.chartdiv);
+            $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "bottom").appendTo(this.chartdiv);
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++)
-                    $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").width("100%").height("100%").appendTo(this.chartdiv);
-            }
-            that._chart = InteractiveDataDisplay.asPlot(this.chartdiv);
-            that._chart.isAutoFitEnabled = true;
-            this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
-            this._gridLinesPlot.x0 = 0;
-            this._gridLinesPlot.y0 = 0;
-            this._gridLinesPlot.xStep = 1;
-            this._gridLinesPlot.yStep = 1;
+                    $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").attr("data-idd-placement", "center").width("100%").height("100%").appendTo(this.chartdiv);
 
-            if (options.colors !== undefined) {
-                for (var i = 0; i < options.colors.length; i++) {
-                    var y = options.colors[i].Plot;
-                    var polyline = that._chart.get(that.chartdiv.children().eq(i + 1).attr("id"));
-                    polyline.stroke = options.colors[i].Color;
-                    polyline.isVisible = options.colors[i].Seen;
-                    polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
+                that._chart = InteractiveDataDisplay.asPlot(this.chartdiv);
+                that._chart.isAutoFitEnabled = true;
+
+                this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
+                this._gridLinesPlot.x0 = 0;
+                this._gridLinesPlot.y0 = 0;
+                this._gridLinesPlot.xStep = 1;
+                this._gridLinesPlot.yStep = 1;
+
+                if (options.colors !== undefined) {
+                    for (var i = 0; i < options.colors.length; i++) {
+                        var y = options.colors[i].Plot;
+                        var polyline = that._chart.get(that.chartdiv.children().eq(i + 1).attr("id"));
+                        polyline.stroke = options.colors[i].Color;
+                        polyline.isVisible = options.colors[i].Seen;
+                        polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
+                    }
                 }
+
+                var bounds = that._chart.aggregateBounds();
+                that._chart.navigation.setVisibleRect(bounds.bounds, false);
             }
         },
         getPlot: function () {

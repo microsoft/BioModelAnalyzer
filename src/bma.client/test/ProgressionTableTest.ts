@@ -70,7 +70,7 @@ describe("ProgressionTable", () => {
         }
     })
 
-    it("should randomize value on clicking random-icon", () => {
+    xit("should randomize value on clicking random-icon", () => {
         var interval = [];
         interval[0] = [2, 3];
         interval[1] = [0, 5];
@@ -83,11 +83,11 @@ describe("ProgressionTable", () => {
         expect(td.val()).toEqual('7');
         var rand = td.children("div").eq(0);
         rand.click();
-        console.log(td.text());
+        console.log(td.children("input").val());
         //expect(td.text()).not.toEqual('7');
     })
 
-    it("should randomize all", () => {
+    xit("should randomize all", () => {
         var interval = [];
         interval[0] = [1, 3];
         interval[1] = [3, 7];
@@ -97,15 +97,15 @@ describe("ProgressionTable", () => {
         widget.progressiontable({ interval: interval });
 
         var tds = widget.find("tr").not(":first-child").children("td:first-child");
-        tds.each(function (ind) {
-            td[ind] = $(this).text();
+        tds.children("input").each(function (ind) {
+            td[ind] = $(this).val();
         });
         console.log(td);
         var rand = widget.children("div").eq(0);
         rand.click();
 
-        tds.each(function (ind) {
-            td[ind] = $(this).text();
+        tds.children("input").each(function (ind) {
+            td[ind] = $(this).val();
         });
         console.log(td);
 
@@ -144,6 +144,62 @@ describe("ProgressionTable", () => {
             expect(trs.eq(i).children("td").eq(0).text()).toEqual(data[i].toString());
             expect(trs.eq(i).children("td").eq(1).text()).toEqual(data2[i].toString());
         }
+    })
+
+    it("should compare different columns", () => {
+        var table = $('<table></table>');
+        var tr0 = $('<tr></tr>').appendTo(table);
+        var tr1 = $('<tr></tr>').appendTo(table);
+        var td0 = $('<td></td>').text(1).appendTo(tr0);
+        var td1 = $('<td></td>').text(2).appendTo(tr0);
+        var td2 = $('<td></td>').text(3).appendTo(tr0);
+        var td3 = $('<td></td>').text(4).appendTo(tr1);
+        var td4 = $('<td></td>').text(5).appendTo(tr1);
+        var td5 = $('<td></td>').text(6).appendTo(tr1);
+        var t1 = table.find('tr').children("td:nth-child(2)");
+
+        //console.log("Start ");
+        //for (var i = 0; i < t1.length; i++)
+        //    console.log(t1.eq(i).text());
+        var t2 = table.find("tr").children("td:nth-child(3)");
+        //for (var i = 0; i < t2.length; i++)
+        //    console.log(t2.eq(i).text());
+        widget.progressiontable();
+        expect(widget.progressiontable("isClone", t1, t2)).toBeFalsy();
+    })
+
+    it("should commpare equal columns", () => {
+        var table = $('<table></table>');
+        var tr0 = $('<tr></tr>').appendTo(table);
+        var tr1 = $('<tr></tr>').appendTo(table);
+        var td0 = $('<td></td>').text(1).appendTo(tr0);
+        var td1 = $('<td></td>').text(2).appendTo(tr0);
+        var td2 = $('<td></td>').text(2).appendTo(tr0);
+        var td3 = $('<td></td>').text(4).appendTo(tr1);
+        var td4 = $('<td></td>').text(2).appendTo(tr1);
+        var td5 = $('<td></td>').text(2).appendTo(tr1);
+        var t1 = table.find('tr').children("td:nth-child(2)");
+        var t2 = table.find("tr").children("td:nth-child(3)");
+        
+        widget.progressiontable();
+        expect(widget.progressiontable("isClone", t1, t2)).toBeTruthy();
+    })
+
+    it("should commpare equal columns", () => {
+        var table = $('<table></table>');
+        var tr0 = $('<tr></tr>').appendTo(table);
+        var tr1 = $('<tr></tr>').appendTo(table);
+        var td0 = $('<td></td>').text(1).appendTo(tr0);
+        var td1 = $('<td></td>').text(2).appendTo(tr0);
+        var td2 = $('<td></td>').text(2).appendTo(tr0);
+        var td3 = $('<td></td>').text(4).appendTo(tr1);
+        var td4 = $('<td></td>').text(2).appendTo(tr1);
+        var td5 = $('<td></td>').text(2).appendTo(tr1);
+        var t1 = table.find('tr').children("td:nth-child(2)");
+        var t2 = table.find("tr").children("td:nth-child(3)");
+
+        widget.progressiontable();
+        expect(widget.progressiontable("findClone", t1, t2)).toEqual(1);
     })
 
 })
