@@ -58,8 +58,8 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
-    $("#container").contextmenu({
-        delegate: ".hasmenu",
+    $("#drawingSurceContainer").contextmenu({
+        delegate: ".bma-drawingsurface",
         menu: [
             { title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy" },
             { title: "----" },
