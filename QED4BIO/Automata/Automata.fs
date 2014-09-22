@@ -226,7 +226,7 @@ type SimpleAutomata<'state, 'data when 'state : comparison and 'data : equality>
     member this.addInitialState(x) =
         startSet.Add x |> ignore
 
-type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
+type SlidingWindowBoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
     (bound : int, 
      inner : Automata<'istate,'data>,
      allow_negative : bool )  = 
@@ -261,6 +261,57 @@ type BoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equal
                 result.UnionWith (set_collect (fun x rs -> rs.Add (x,i) |> ignore) nreach)
                 nreach <- set_collect (fun x rs -> rs.UnionWith (inner.next x)) nreach
             result :> ISet<_>
+
+type BarrierBoundedAutomata<'istate, 'data> when 'istate : comparison and 'data : equality
+    (bound : int, 
+     inner : Automata<'istate,'data>,
+     allow_negative : bool )  =    
+       inherit Automata<('istate * int * int), 'data>() with
+          let valid_state (i, t) = 0 <= t && t < bound && 0 <= i + t && i + t <= bound
+          override this.next((s,i,t)) =
+                seq {
+                    let nexts = ref (Seq.singleton s)
+                    let i = ref i
+                    let t = ref t
+                    // check if we are at the barrier
+                    if !t+1 = bound then 
+                        //If we are make, the automata catch up to the barrier. 
+                        for j = !i to 1 do
+                           nexts := set_collect (fun x rs -> rs.UnionWith (inner.next x)) !nexts :> seq<_>
+                        i := 0
+                        t := 0
+                    else 
+                        t := !t + 1
+                         
+                    //Produce all results skipping ahead up to the bound
+                    for j = !i - 1 to bound do
+                       if valid_state (j, !t) then yield! Seq.map (fun (x : 'istate) -> (x, j, !t)) !nexts
+                       nexts := set_collect (fun x rs -> rs.UnionWith (inner.next x)) !nexts :> seq<_>
+                       
+                } |> fun x -> new HashSet<_>(x) :> ISet<_>
+
+          override this.value((s, i, t)) = inner.value(s)
+
+          override this.states = 
+            seq {
+                //All states of the inner automata with all bounds. 
+                //Some states might not be reachable.
+                for s in inner.states do
+                    for i = -bound to bound do
+                        for j = 0 to bound  do
+                            if valid_state (i,j) then yield (s, i, j)
+            } |> Set.ofSeq :> ICollection<_>
+
+          override this.initialstates =
+            let mutable nreach = new HashSet<_>(inner.initialstates)
+            let mutable result = new HashSet<_>()
+            for i = 0 to (if allow_negative then bound else 0) do
+                result.UnionWith (set_collect (fun x rs -> if valid_state (i, 0) then rs.Add (x,i,0) |> ignore) nreach)
+                nreach <- set_collect (fun x rs -> rs.UnionWith (inner.next x)) nreach
+            result :> ISet<_>
+
+
+
 
 let opt_default d o = match o with | Some x -> x | None -> d
 

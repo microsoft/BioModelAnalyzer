@@ -41,6 +41,7 @@ type Params = {
         really_cheap_answer : bool
         no_compress : bool
         binary_combine : bool
+        barrier : bool
     }
 let default_params b = 
     {
@@ -51,6 +52,7 @@ let default_params b =
         really_cheap_answer = true 
         no_compress = true 
         binary_combine = false
+        barrier = true
     }
 
 let run (init_form, trans_form) edge_values comms fates (inputs : int[]) (p : Params) = 
@@ -91,12 +93,20 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) (p : Pa
         //show_automata sim
         if show_intermediate_steps then show_automata sim_smaller
         //Introduces Bounded asynchony
-        let sim_BA = new BoundedAutomata<int,Simulator.interp> (bound, sim_smaller, true)
-        if show_intermediate_steps then show_automata sim_BA
-        //Compress
-        let final = compressedMapAutomata(sim_BA, fun _ m -> m)
+        let final = 
+            if p.barrier then 
+                let sim_BA = new BarrierBoundedAutomata<int,Simulator.interp> (bound, sim_smaller, true) :> Automata<_,_>
+                if show_intermediate_steps then show_automata sim_BA
+                //Compress
+                compressedMapAutomata(sim_BA, fun _ m -> m)
+            else
+                let sim_BA = new SlidingWindowBoundedAutomata<int,Simulator.interp> (bound, sim_smaller, true) :> Automata<_,_>
+                if show_intermediate_steps then show_automata sim_BA
+                //Compress
+                compressedMapAutomata(sim_BA, fun _ m -> m)
+            
         if show_intermediate_steps then show_automata final
-        //show_automata final
+        show_automata final
         final
 
 
@@ -252,6 +262,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) (p : Pa
                         let res = compressedMapAutomata(sim, fun _ m -> (m,false))
                         res
                     else
+                        //TODO need to do something in the case where p.barrier=false
                         let ba = new NstepBarrierAutomata<_,_>(!bound, sim)
                         let res = compressedMapAutomata(ba, fun _ m -> m)
                         res
