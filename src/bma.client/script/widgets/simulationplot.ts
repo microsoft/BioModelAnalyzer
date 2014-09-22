@@ -55,7 +55,7 @@
                     //alert(options.colors.length);
                     for (var i = 0; i < options.colors.length; i++) {
                         var y = options.colors[i].Plot;
-                        var polyline = that._chart.get(that.chartdiv.children().eq(i + 1).attr("id"));
+                        var polyline = that._chart.get("polyline"+i);
                         polyline.stroke = options.colors[i].Color;
                         polyline.isVisible = options.colors[i].Seen;
                         polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
@@ -70,6 +70,12 @@
 
         getPlot: function () {
             return this._chart;
+        },
+
+        ChangeVisibility: function (ind, check) {
+            var polyline = this._chart.get("polyline" + ind);
+            this.options.colors[ind].Seen = check;
+            polyline.isVisible = check;
         },
 
         _destroy: function () {

@@ -10,7 +10,7 @@
 
         refresh: function () {
             var that = this;
-            
+
             var options = this.options;
             var container = $('<div></div>');
             this.variables.resultswindowviewer();
@@ -59,7 +59,7 @@
             var that = this;
             var options = this.options;
 
-            if (key === "data") 
+            if (key === "data")
                 this.options.data = value;
             if (key === "plot")
                 this.options.plot = value;
@@ -73,13 +73,13 @@
                     this.variables.show();
                     this.plotDiv.show();
                     break;
-                case "SimulationVariables": 
+                case "SimulationVariables":
                     this.variables.show();
                     break;
                 case "SimulationPlot":
                     this.plotDiv.show();
                     break;
-            } 
+            }
         },
 
         hide: function (tab) {
@@ -91,6 +91,10 @@
                 this.plotDiv.hide();
                 this.element.children().not(this.plotDiv).show();
             }
+        },
+
+        ChangeVisibility: function (ind, check) {
+            this.plot.simulationplot("ChangeVisibility", ind, check);
         }
 
     });

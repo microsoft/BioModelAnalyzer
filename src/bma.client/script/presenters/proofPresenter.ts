@@ -19,6 +19,7 @@
                         data: proofInput,
                         success: function (res) {
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
+                            //if (res.Ticks !== null)
                             var variablesData = that.CreateTableView(res.Ticks);
                             var colorData = that.CreateColoredTable(res.Ticks);
                             //var result = appModel.ProofResult;
@@ -67,7 +68,7 @@
 
             public CreateTableView(ticks) {
                 var table = [];
-                if (ticks === null) return;
+                if (ticks === null) return { numericData: undefined, colorData: undefined };
                 var variables = this.appModel.BioModel.Variables;
                 var color = [];
                 for (var i = 0; i < variables.length; i++) {

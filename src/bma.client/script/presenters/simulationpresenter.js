@@ -2,19 +2,18 @@
 (function (BMA) {
     (function (Presenters) {
         var SimulationPresenter = (function () {
-            function SimulationPresenter(appModel, simulationViewer, popupViewer) {
+            function SimulationPresenter(appModel, simulationFull, simulationViewer, popupViewer) {
                 var _this = this;
                 this.appModel = appModel;
                 this.viewer = simulationViewer;
+                this.full = simulationFull;
                 this.data = [];
                 this.colors = [];
                 var that = this;
 
                 window.Commands.On("ChangePlotVariables", function (param) {
                     that.colors[param.ind].Seen = param.check;
-                    that.viewer.SetData({
-                        plot: that.colors
-                    });
+                    that.viewer.ChangeVisibility(param);
                 });
 
                 window.Commands.On("RunSimulation", function (param) {
@@ -22,20 +21,27 @@
                     that.ClearColors();
                     that.initValues = param.data;
                     var stableModel = that.appModel.BioModel.GetJSON();
-                    that.StartSimulation({ model: stableModel, variables: that.ConvertParam(param.data), num: param.num });
+                    var variables = that.ConvertParam(param.data);
+                    that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
+                    that.ClearColors();
                     that.CreateColors();
-                    that.viewer.SetData({ data: { variables: that.CreateVariablesView(), colorData: that.CreateProgressionMinTable() } });
+                    var variables = that.CreateVariablesView();
+                    var prmin = that.CreateProgressionMinTable();
+                    that.viewer.SetData({ data: { variables: variables, colorData: prmin } });
                 });
 
                 window.Commands.On("Expand", function (param) {
                     if (_this.appModel.BioModel.Variables.length !== 0) {
                         var full;
+                        var variables = _this.appModel.BioModel.Variables;
                         switch (param) {
                             case "SimulationVariables":
-                                full = $('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
+                                //that.ClearColors();
+                                that.full.Set({ variables: variables, colors: that.colors, init: that.initValues });
+                                full = that.full.GetViewer(); //$('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
                             case "SimulationPlot":
                                 full = $('<div id="SimulationPlot"></div>').simulationplot({ colors: that.colors });
@@ -44,6 +50,7 @@
                                 full = undefined;
                                 simulationViewer.Show({ tab: undefined });
                         }
+
                         if (full !== undefined) {
                             simulationViewer.Hide({ tab: param });
                             popupViewer.Show({ tab: param, content: full });
@@ -59,8 +66,9 @@
             SimulationPresenter.prototype.StartSimulation = function (param) {
                 var that = this;
                 if (param.num === undefined || param.num === 0) {
-                    //alert(that.data[0].length);
-                    that.viewer.SetData({ data: { variables: that.CreateVariablesView(), colorData: that.CreateProgressionMinTable() }, plot: that.colors });
+                    var variables = that.CreateVariablesView();
+                    var colorData = that.CreateProgressionMinTable();
+                    that.viewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.colors });
                     return;
                 }
                 var simulate = {
@@ -75,12 +83,13 @@
                         data: simulate,
                         success: function (res) {
                             if (res.Variables !== null) {
-                                window.Commands.Execute("AddResult", that.ConvertResult(res));
+                                //window.Commands.Execute("AddResult", that.ConvertResult(res));
+                                that.full.AddResult(res);
                                 var d = that.ConvertResult(res);
                                 that.addData(d);
                                 that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             } else
-                                alert("No relationships in the model");
+                                alert(res.ErrorMessages);
                             //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
                         },
                         error: function (res) {
@@ -102,14 +111,6 @@
                         color.Plot[color.Plot.length] = d[i];
                     }
                 }
-            };
-
-            SimulationPresenter.prototype.CreatePlotView = function () {
-                var data = [];
-                for (var i = 0; i < this.colors.length; i++) {
-                    data[i] = this.colors[i].Plot;
-                }
-                return data;
             };
 
             SimulationPresenter.prototype.CreateColors = function () {
@@ -149,14 +150,15 @@
 
             SimulationPresenter.prototype.CreateProgressionMinTable = function () {
                 var table = [];
-                for (var i = 0; i < this.data.length; i++) {
+                if (this.data.length < 1)
+                    return;
+                for (var i = 0; i < this.data[0].length; i++) {
                     table[i] = [];
                     table[i][0] = false;
-                    for (var j = 1; j < this.data[i].length; j++) {
-                        table[i][j] = this.data[i][j] !== this.data[i][j - 1];
+                    for (var j = 1; j < this.data.length; j++) {
+                        table[i][j] = this.data[j][i] !== this.data[j - 1][i];
                     }
                 }
-
                 return table;
             };
 
@@ -172,25 +174,6 @@
                 }
                 return table;
             };
-            SimulationPresenter.prototype.CreateInterval = function () {
-                var table = [];
-                var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    table[i] = [];
-                    table[i][0] = variables[i].RangeFrom;
-                    table[i][1] = variables[i].RangeTo;
-                }
-                return table;
-            };
-
-            SimulationPresenter.prototype.ConvertResult = function (res) {
-                var data = [];
-                if (res.Variables !== undefined && res.Variables !== null)
-                    data = [];
-                for (var i = 0; i < res.Variables.length; i++)
-                    data[i] = res.Variables[i].Value;
-                return data;
-            };
 
             SimulationPresenter.prototype.ConvertParam = function (arr) {
                 var res = [];
@@ -202,19 +185,13 @@
                 }
                 return res;
             };
-
-            SimulationPresenter.prototype.CreateFullTable = function () {
-                var table = [];
-                var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    table[i] = [];
-                    table[i][0] = this.findColorById(variables[i].Id).Color;
-                    table[i][1] = this.findColorById(variables[i].Id).Seen;
-                    table[i][2] = variables[i].Name;
-                    table[i][3] = variables[i].RangeFrom;
-                    table[i][4] = variables[i].RangeTo;
-                }
-                return table;
+            SimulationPresenter.prototype.ConvertResult = function (res) {
+                var data = [];
+                if (res.Variables !== undefined && res.Variables !== null)
+                    data = [];
+                for (var i = 0; i < res.Variables.length; i++)
+                    data[i] = res.Variables[i].Value;
+                return data;
             };
             return SimulationPresenter;
         })();

@@ -54,9 +54,12 @@
             if (options.data !== undefined && options.data.variables !== undefined) {
                 this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.data.variables });
                 if (options.data.interval !== undefined && options.data.interval.length !== 0) {
-                    this.progression.progressiontable({ interval: options.data.interval });
+                    this.progression.progressiontable({ interval: options.data.interval, data: options.data.data });
                 }
             }
+        },
+        AddResult: function (res) {
+            this.progression.progressiontable("addData", res);
         },
         getColors: function () {
             this.table1.coloredtableviewer("getColors");

@@ -75,6 +75,9 @@
                 this.plotDiv.hide();
                 this.element.children().not(this.plotDiv).show();
             }
+        },
+        ChangeVisibility: function (ind, check) {
+            this.plot.simulationplot("ChangeVisibility", ind, check);
         }
     });
 }(jQuery));

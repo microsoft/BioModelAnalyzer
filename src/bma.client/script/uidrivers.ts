@@ -100,6 +100,8 @@ module BMA {
                 this.proofContentViewer = proofContentViewer;
             }
 
+            
+
             public SetData(params) {
                 this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data});
             }
@@ -165,11 +167,91 @@ module BMA {
             //}
         }
 
+        export class SimulationFullDriver implements ISimulationFull {
+            private viewer;
+
+            constructor (view: JQuery) {
+                this.viewer = view;
+            }
+
+            public Set(data: { variables; colors; init }) {
+                var table = this.CreateFullTable(data.variables, data.colors);
+                var interval = this.CreateInterval(data.variables);
+                var add = this.CreatePlotView(data.colors);
+                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: add } });
+            }
+
+            public GetViewer(): JQuery {
+                return this.viewer;
+            }
+
+            public AddResult(res) {
+                var result = this.ConvertResult(res);
+                this.viewer.simulationfull("AddResult", result);
+            }
+
+            public CreatePlotView(colors) {
+                var data = [];
+                for (var i = 0; i < colors[0].Plot.length; i++) {
+                    data[i] = []; //= colors[i].Plot;
+                    for (var j = 0; j < colors.length; j++) {
+                        data[i][j] = colors[j].Plot[i];
+                    }
+                }
+                return data;
+            }
+
+            public CreateInterval(variables) {
+                var table = [];
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = variables[i].RangeFrom;
+                    table[i][1] = variables[i].RangeTo;
+                }
+                return table;
+            }
+
+            public ConvertResult(res) {
+
+                var data = [];
+                if (res.Variables !== undefined && res.Variables !== null)
+                    data = [];
+                for (var i = 0; i < res.Variables.length; i++)
+                    data[i] = res.Variables[i].Value;
+                return data;
+            }
+
+            public findColorById(colors,id) {
+                for (var i = 0; i < colors.length; i++)
+                    if (id === colors[i].Id)
+                        return colors[i];
+                return undefined;
+            }
+
+            public CreateFullTable(variables,colors) {
+                var table = [];
+                //var variables = this.appModel.BioModel.Variables;
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = this.findColorById(colors, variables[i].Id).Color;
+                    table[i][1] = this.findColorById(colors, variables[i].Id).Seen;
+                    table[i][2] = variables[i].Name;
+                    table[i][3] = variables[i].RangeFrom
+                    table[i][4] = variables[i].RangeTo;
+                }
+                return table;
+            }
+        }
+
         export class SimulationViewerDriver implements ISimulationViewer {
             private viewer;
 
             constructor(viewer) {
                 this.viewer = viewer;
+            }
+
+            public ChangeVisibility(param) {
+                this.viewer.simulationviewer("ChangeVisibility", param.ind, param.check);
             }
 
             public SetData(params) {

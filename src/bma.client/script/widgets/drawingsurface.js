@@ -108,12 +108,30 @@
                     }).takeUntil(stopPanning);
                 });
 
-                return mouseDrags;
+                var touchStart = vc.onAsObservable("touchstart");
+                var touchMove = vc.onAsObservable("touchmove");
+                var touchEnd = _doc.onAsObservable("touchend");
+                var touchCancel = _doc.onAsObservable("touchcancel");
+
+                var gestures = touchStart.selectMany(function (md) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
+                    var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
+
+                    return touchMove.takeUntil(touchEnd.merge(touchCancel)).select(function (tm) {
+                        var x1 = cs.screenToDataX(tm.originalEvent.pageX - plotDiv.offset().left);
+                        var y1 = -cs.screenToDataY(tm.originalEvent.pageY - plotDiv.offset().top);
+
+                        return { x0: x0, y0: y0, x1: x1, y1: y1 };
+                    });
+                });
+
+                return mouseDrags.merge(gestures);
             };
 
             var createDragStartSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = that._plot.centralPart.onAsObservable("mousedown");
+                var mousedown = vc.onAsObservable("mousedown");
                 var mouseMove = vc.onAsObservable("mousemove");
                 var mouseUp = _doc.onAsObservable("mouseup");
 
@@ -129,6 +147,21 @@
                     }).first().takeUntil(mouseUp);
                 });
 
+                var touchStart = vc.onAsObservable("touchstart");
+                var touchMove = vc.onAsObservable("touchmove");
+                var touchEnd = _doc.onAsObservable("touchend");
+                var touchCancel = _doc.onAsObservable("touchcancel");
+
+                var touchDragStarts = touchStart.selectMany(function (md) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
+                    var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
+
+                    return touchMove.select(function (mm) {
+                        return { x: x0, y: y0 };
+                    }).first().takeUntil(touchEnd.merge(touchCancel));
+                });
+
                 return dragStarts;
             };
 
@@ -138,7 +171,10 @@
                 var mouseMove = vc.onAsObservable("mousemove");
                 var mouseUp = _doc.onAsObservable("mouseup");
 
-                var stopPanning = mouseUp;
+                var touchEnd = _doc.onAsObservable("touchend");
+                var touchCancel = _doc.onAsObservable("touchcancel");
+
+                var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
 
                 var dragEndings = stopPanning;
 
@@ -197,14 +233,15 @@
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {
-                        this._plot.navigation.gestureSource = undefined;
-                        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
+                        if (this._plot.navigation.gestureSource === undefined) {
+                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
 
-                        if (this._zoomObservable !== undefined) {
-                            gestureSource = gestureSource.merge(this._zoomObservable);
+                            if (this._zoomObservable !== undefined) {
+                                gestureSource = gestureSource.merge(this._zoomObservable);
+                            }
+
+                            this._plot.navigation.gestureSource = gestureSource;
                         }
-
-                        this._plot.navigation.gestureSource = gestureSource;
                     } else {
                         this._plot.navigation.gestureSource = undefined;
                     }
@@ -227,7 +264,8 @@
         },
         _getZoom: function () {
             var plotRect = this._plot.visibleRect;
-            console.log(plotRect.width);
+
+            //console.log(plotRect.width);
             return 0;
         },
         _setOptions: function (options) {

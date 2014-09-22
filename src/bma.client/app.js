@@ -141,6 +141,7 @@ $(document).ready(function () {
     $("#exportModelBtn").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
+    var fullSimulation = $('<div></div>').simulationfull();
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -149,6 +150,8 @@ $(document).ready(function () {
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
     var simulationViewer = new BMA.UIDrivers.SimulationViewerDriver($("#tabs-2"));
+
+    var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(fullSimulation);
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
 
@@ -159,7 +162,7 @@ $(document).ready(function () {
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
-    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, simulationViewer, popupDriver);
+    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
 });
 //# sourceMappingURL=app.js.map

@@ -157,10 +157,88 @@ var BMA;
         })();
         UIDrivers.PopupDriver = PopupDriver;
 
+        var SimulationFullDriver = (function () {
+            function SimulationFullDriver(view) {
+                this.viewer = view;
+            }
+            SimulationFullDriver.prototype.Set = function (data) {
+                var table = this.CreateFullTable(data.variables, data.colors);
+                var interval = this.CreateInterval(data.variables);
+                var add = this.CreatePlotView(data.colors);
+                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: add } });
+            };
+
+            SimulationFullDriver.prototype.GetViewer = function () {
+                return this.viewer;
+            };
+
+            SimulationFullDriver.prototype.AddResult = function (res) {
+                var result = this.ConvertResult(res);
+                this.viewer.simulationfull("AddResult", result);
+            };
+
+            SimulationFullDriver.prototype.CreatePlotView = function (colors) {
+                var data = [];
+                for (var i = 0; i < colors[0].Plot.length; i++) {
+                    data[i] = []; //= colors[i].Plot;
+                    for (var j = 0; j < colors.length; j++) {
+                        data[i][j] = colors[j].Plot[i];
+                    }
+                }
+                return data;
+            };
+
+            SimulationFullDriver.prototype.CreateInterval = function (variables) {
+                var table = [];
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = variables[i].RangeFrom;
+                    table[i][1] = variables[i].RangeTo;
+                }
+                return table;
+            };
+
+            SimulationFullDriver.prototype.ConvertResult = function (res) {
+                var data = [];
+                if (res.Variables !== undefined && res.Variables !== null)
+                    data = [];
+                for (var i = 0; i < res.Variables.length; i++)
+                    data[i] = res.Variables[i].Value;
+                return data;
+            };
+
+            SimulationFullDriver.prototype.findColorById = function (colors, id) {
+                for (var i = 0; i < colors.length; i++)
+                    if (id === colors[i].Id)
+                        return colors[i];
+                return undefined;
+            };
+
+            SimulationFullDriver.prototype.CreateFullTable = function (variables, colors) {
+                var table = [];
+
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = this.findColorById(colors, variables[i].Id).Color;
+                    table[i][1] = this.findColorById(colors, variables[i].Id).Seen;
+                    table[i][2] = variables[i].Name;
+                    table[i][3] = variables[i].RangeFrom;
+                    table[i][4] = variables[i].RangeTo;
+                }
+                return table;
+            };
+            return SimulationFullDriver;
+        })();
+        UIDrivers.SimulationFullDriver = SimulationFullDriver;
+
         var SimulationViewerDriver = (function () {
             function SimulationViewerDriver(viewer) {
                 this.viewer = viewer;
             }
+            SimulationViewerDriver.prototype.ChangeVisibility = function (param) {
+                this.viewer.simulationviewer("ChangeVisibility", param.ind, param.check);
+            };
+
             SimulationViewerDriver.prototype.SetData = function (params) {
                 this.viewer.simulationviewer(params); //{ data: params.data, plot: params.plot });
             };

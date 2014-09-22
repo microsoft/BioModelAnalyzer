@@ -53,7 +53,13 @@ module BMA {
             SetData(params);
             Show(params);
             Hide(params);
+            ChangeVisibility(params);
+        }
 
+        export interface ISimulationFull {
+            AddResult(res);
+            GetViewer();
+            Set(data);
         }
 
         export interface IFileLoader {

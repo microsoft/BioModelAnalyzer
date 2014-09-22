@@ -67,18 +67,16 @@
                     this.header.text(value);
                     break;
                 case "content":
-                    this.options.content = value;
-                    this.refresh();
+                    if (this.options.content !== value) {
+                        this.options.content = value;
+                        this.refresh();
+                    }
                     break;
                 case "icon":
                     this.options.icon = value;
                     this.reseticon();
                     break;
             }
-            if (key === "content")
-                this.options.content = value;
-            if (key === "header")
-                this.header.text(value);
 
             this._super(key, value);
             //this.refresh();

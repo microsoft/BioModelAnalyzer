@@ -44,12 +44,13 @@ var BMA;
                 window.Commands.On("DrawingSurfaceClick", function (args) {
                     if (that.selectedType !== undefined) {
                         that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
-                        console.log("tryAddVariable");
+                        //console.log("tryAddVariable");
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
-                        console.log(id);
+
+                        //console.log(id);
                         if (id !== undefined) {
-                            console.log("id !== undefined");
+                            //console.log("id !== undefined");
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
                             that.variableEditor.Show(0, 0);
@@ -104,8 +105,6 @@ var BMA;
                 var dragSubject = dragService.GetDragSubject();
 
                 dragSubject.dragStart.subscribe(function (gesture) {
-                    console.log("dragstart");
-
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
@@ -117,6 +116,7 @@ var BMA;
                         }
                     } else if (that.selectedType === undefined) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
+                        console.log(id);
                         if (id !== undefined) {
                             that.navigationDriver.TurnNavigation(false);
                             var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
@@ -290,7 +290,7 @@ var BMA;
                                 }
                             }
                         } else {
-                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "<no name>", 0, 0, ""));
+                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
@@ -330,7 +330,7 @@ var BMA;
                                 }
                             }
                         } else {
-                            variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "<no name>", 0, 1, ""));
+                            variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
@@ -373,7 +373,7 @@ var BMA;
                                 }
                             }
                         } else {
-                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "<no name>", 0, 0, ""));
+                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
                         }
 

@@ -18,24 +18,14 @@
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
             var randomLabel = $('<div></div>').text("Randomise").addClass("randomize-button").appendTo(randomise);
 
-            //var div = $('<div></div>')
-            //    .appendTo(that.element);
             this.init = $('<div></div>').appendTo(that.element);
             this.init.css("display", "inline-block");
-
-            //that.element.appendTo($('body'))
             this.refreshInit();
             this.data = $('<div></div>').addClass("bma-simulation-data-table").appendTo(that.element);
-
-            //this.data.css("display", "inline-block");
             this.initData();
             randomise.bind("click", function () {
                 var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
-            });
-
-            window.Commands.On("AddResult", function (param) {
-                that.addData(param);
             });
         },
         initData: function () {
@@ -46,18 +36,6 @@
                     for (var i = 0; i < data.length && 0 < data[i].length; i++) {
                         this.addData(data[i]);
                     }
-                //var table = $('<table></table>')
-                //    .addClass("bma-progressiontable")
-                //    .appendTo(this.data);
-                //for (var i = 0; i < data.length && 0 < data[i].length; i++) {
-                //    var tr = $('<tr></tr>').appendTo(table);
-                //    $('<td></td>').text(data[i][0]).appendTo(tr);
-                //    for (var j = 1; j < data[i].length; j++) {
-                //        var td = $('<td></td>').text(data[i][j]).appendTo(tr);
-                //        if (data[i][j] !== data[i][j - 1])
-                //            td.css("background-color", "#fffcb5");
-                //    }
-                //}
             }
         },
         refreshInit: function () {
@@ -87,12 +65,7 @@
                     //input.bind ("input change")
                     random.bind("click", function () {
                         var index = $(this).parent().index() - 1;
-
-                        //alert(that.options.interval[index][0] + ' ' + that.options.interval[index][1]);
-                        var randomValue = that.getRandomInt(that.options.interval[index][0], that.options.interval[index][1]);
-
-                        //$(this).prev().text('');
-                        //
+                        var randomValue = that.getRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
                         $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
                     });
                 }
@@ -104,7 +77,6 @@
             for (var i = 0; i < tr0.children("td").length - 1; i++) {
                 var tds = trs.children("td:nth-child(" + (i + 1) + ")");
                 if (this.isClone(column, tds)) {
-                    alert();
                     if (this.repeat === undefined)
                         this.repeat = tds;
                     return i;
@@ -118,16 +90,10 @@
             else {
                 var arr = [];
                 for (var i = 0; i < td1.length; i++) {
-                    //console.log(td1.eq(i).text() + ' ' + td2.eq(i).text())
-                    //for (var i = 0; i < td1.length; i++) {
                     arr[i] = td1.eq(i).text() + " " + td2.eq(i).text();
-
-                    //}
                     if (td1.eq(i).text() !== td2.eq(i).text())
                         return false;
                 }
-
-                //alert(arr);
                 return true;
             }
         },
@@ -162,6 +128,7 @@
                 var trs = that.data.find("tr");
 
                 if (trs.length === 0) {
+                    that.repeat = undefined;
                     var table = $('<table></table>').addClass("bma-progressiontable").appendTo(that.data);
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
@@ -174,38 +141,26 @@
                             td.css("background-color", "#fffcb5");
                     });
                     var last = that.data.find("tr").children("td:last-child");
-
-                    //var arr = [];
-                    //for (var i = 0; i < last.length; i++) {
-                    //    arr[i] = last.eq(i).text();
-                    //}
-                    //alert(arr);
                     if (that.repeat !== undefined) {
-                        //var arr = [];
-                        //for (var i = 0; i < that.repeat.length; i++) {
-                        //    arr[i] = that.repeat.eq(i).text();
-                        //}
-                        //alert(arr);
                         if (that.isClone(that.repeat, last))
-                            that.highlight(that.data.find("tr:first-child").children("td").length);
+                            that.highlight(that.data.find("tr:first-child").children("td").length - 1);
                         else
                             ;
                     } else {
                         var cloneInd = that.findClone(last);
-
-                        //alert(cloneInd);
                         if (cloneInd !== undefined) {
-                            that.highlight(that.data.find("tr:first-child").children("td").length);
                             that.highlight(cloneInd);
+                            that.highlight(that.data.find("tr:first-child").children("td").length - 1);
                         }
                     }
                 }
             }
         },
         highlight: function (ind) {
-            //alert(ind);
-            var tds = this.data.find("tr").children("td:nth-child(" + ind + 1 + ")");
-            tds.addClass("bma-highlighting-columns");
+            var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
+            tds.each(function () {
+                $(this).css("background-color", "#dfdff5");
+            });
         },
         getRandomInt: function (min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min);
@@ -222,17 +177,17 @@
                     break;
                 case "header":
                     this.options.header = value;
-
                     break;
                 case "init":
                     this.options.init = value;
                     this.refreshInit();
                     break;
+                case "data":
+                    this.options.data = value;
+                    this.initData();
+                    break;
             }
-
             this._super(key, value);
-            //if (value !== null && value !== undefined)
-            //    this.addData();
         }
     });
 }(jQuery));

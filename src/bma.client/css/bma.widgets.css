@@ -1033,6 +1033,7 @@
 .scrollable-results {
     max-height: 160px;
     overflow-y:scroll;
+    margin-bottom: 15px;
 }
 
 .addVariableToPlot{
