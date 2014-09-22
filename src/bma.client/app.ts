@@ -28,6 +28,11 @@
 
 declare var saveTextAs: any;
 
+interface JQuery {
+    contextmenu(): JQueryUI.Widget;
+    contextmenu(settings: Object): JQueryUI.Widget;
+}
+
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -55,6 +60,23 @@ $(document).ready(function () {
 
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();
+    });
+
+    $("#container").contextmenu({
+        delegate: ".hasmenu",
+        menu: [
+            { title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy" },
+            { title: "----" },
+            {
+                title: "More", children: [
+                { title: "Sub 1", cmd: "sub1" },
+                { title: "Sub 2", cmd: "sub1" }
+            ]
+            }
+        ],
+        select: function (event, ui) {
+            alert("select " + ui.cmd + " on " + ui.target.text());
+        }
     });
 
     var data = [];

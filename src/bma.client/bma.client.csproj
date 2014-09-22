@@ -163,6 +163,9 @@
     <Content Include="images\zoomminus.png" />
     <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />
+    <Content Include="js\jquery.ui-contextmenu.js" />
+    <Content Include="js\jquery.ui-contextmenu.min.js" />
+    <Content Include="js\script\idd.heatmapworker.js" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
     <Content Include="legacy\bma.js" />

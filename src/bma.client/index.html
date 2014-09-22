@@ -15,6 +15,7 @@
     <script src="js/jquery.browser.min.js"></script>
 
     <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="js/jquery.ui-contextmenu.js"></script>
 
     <script src="js/jquery.svg.js"></script>
     <script src="js/FileSaver.js"></script>
@@ -68,6 +69,14 @@
     <div id="tools" class="bma-elementspanel">
         <a id="downloadLink" style="display: none"></a>
         <input style="display:none;" type="file" accept="text/csv" id="fileLoader">
+
+
+        <!--<div id="container" style="width: 200px; height: 200px;">
+            <div class="hasmenu">AAA</div>
+            <div class="hasmenu">BBB</div>
+            <div class="hasmenu">CCC</div>
+        </div>-->
+
 
         <div id="undoredotoolbar" class="bma-elementspanel-undoredotoolbar">
             <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
@@ -132,6 +141,8 @@
     </div>
 
     <div class="bma-drawingsurfacecontainer" style="position: relative;">
+        
+
         <div id="drawingSurface" class="bma-drawingsurface"></div>
 
         <div class="bma-modeltoolbarcontainer">
