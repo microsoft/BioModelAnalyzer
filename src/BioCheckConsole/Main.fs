@@ -143,7 +143,6 @@ let runVMCAIEngine qn (proof_output : string) =
     | (Result.SRNotStabilizing(_), None) -> ()
     | _ -> failwith "Bad result from prover"
 
-
 let runCAVEngine qn length_of_path formula model_check output_proof output_model =
     let ltl_formula_str = 
         if (model_check) then
@@ -192,7 +191,6 @@ let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
                                     printf "%s" (String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) L.safe))
 
 
-
 //type IA = BioCheckAnalyzerCommon.IAnalyzer2
 //let analyzer = UIMain.Analyzer2()
 
@@ -216,24 +214,23 @@ let main args =
         else 
             let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
             
-            let fail_and_print_usage = ref false 
-            match !engine with
-            | Some EnginePath -> 
-                if (!model' <> "" && !state <> "" && !state' <> "") then runPATHEngine qn !modelsdir !model' !state !state'
-                else fail_and_print_usage := true 
-            | Some EngineSYN -> runSYNEngine qn
-            | Some EngineSCM -> runSCMEngine qn
-            | Some EngineVMCAI ->
-                if (!proof_output <> "") then runVMCAIEngine qn !proof_output
-                else fail_and_print_usage := true
-            | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model
-            | Some EngineSimulate ->
-                if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time
-                else fail_and_print_usage := true
-            | none ->
-                fail_and_print_usage := true
+            let parameters_were_ok = 
+                match !engine with
+                | Some EnginePath -> 
+                    if (!model' <> "" && !state <> "" && !state' <> "") then runPATHEngine qn !modelsdir !model' !state !state'; true
+                    else false 
+                | Some EngineSYN -> runSYNEngine qn; true
+                | Some EngineSCM -> runSCMEngine qn; true
+                | Some EngineVMCAI ->
+                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output; true
+                    else false
+                | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model; true
+                | Some EngineSimulate ->
+                    if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time; true
+                    else false
+                | none -> false
 
-            if (!fail_and_print_usage) then
+            if (not parameters_were_ok) then
                 usage 1
                 res := -1
 
