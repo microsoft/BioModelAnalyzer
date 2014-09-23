@@ -44,7 +44,7 @@
                                 full = that.full.GetViewer(); //$('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
                             case "SimulationPlot":
-                                full = $('<div id="SimulationPlot"></div>').simulationplot({ colors: that.colors });
+                                full = $('<div id="SimulationPlot"></div>').height(500).simulationplot({ colors: that.colors });
                                 break;
                             default:
                                 full = undefined;

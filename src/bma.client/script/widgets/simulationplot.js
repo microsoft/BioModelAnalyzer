@@ -25,7 +25,7 @@
             var that = this;
             var options = this.options;
             this.element.empty();
-            this.chartdiv = $('<div id="chart" data-idd-plot="figure" style="width: 100%; height: 160px;"></div>').appendTo(that.element);
+            this.chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("100%").height("100%").appendTo(that.element);
 
             //var plotDiv = $('<div data-idd-plot="polyline" style="width:100%; height:160px"></div>').appendTo(that.element);
             //var grid = $('<div data-idd-plot="grid" data-idd-placement="center" style="width: 100%; height: 160px; top: 0px; left: 40px;"></div>').appendTo(that.chartdiv);
@@ -35,7 +35,7 @@
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++)
-                    $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").attr("data-idd-placement", "center").width("100%").height("100%").appendTo(this.chartdiv);
+                    $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").attr("data-idd-placement", "center").appendTo(this.chartdiv);
 
                 that._chart = InteractiveDataDisplay.asPlot(this.chartdiv);
                 that._chart.isAutoFitEnabled = true;

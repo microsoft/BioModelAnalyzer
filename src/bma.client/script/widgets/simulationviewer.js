@@ -33,7 +33,7 @@
             var that = this;
             var options = this.options;
             this.variables = $('<div></div>').appendTo(that.element).resultswindowviewer();
-            this.plot = $('<div></div>').simulationplot({ colors: that.options.plot });
+            this.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
             this.plotDiv = $('<div></div>').appendTo(that.element).resultswindowviewer({ content: this.plot, icon: "max", tabid: "SimulationPlot" });
 
             this.refresh();

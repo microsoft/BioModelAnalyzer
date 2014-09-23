@@ -14,9 +14,10 @@
             var that = this;
             var options = that.options;
 
-            var randomise = $('<div></div>').width(120).appendTo(that.element);
-            randomise.css("position", "absolute");
-            randomise.css("top", "-30px");
+            var randomise = $('<div></div>')
+                .addClass("bma-progressiontable-randimise")
+                .appendTo(that.element);
+            
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
             var randomLabel = $('<div></div>').text("Randomise").addClass("randomize-button").appendTo(randomise);
 
