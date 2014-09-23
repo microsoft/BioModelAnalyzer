@@ -24,6 +24,11 @@
 
 declare var saveTextAs: any;
 
+interface JQuery {
+    contextmenu(): JQueryUI.Widget;
+    contextmenu(settings: Object): JQueryUI.Widget;
+}
+
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -51,6 +56,24 @@ $(document).ready(function () {
 
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();
+    });
+
+    $("#drawingSurceContainer").contextmenu({
+        delegate: ".bma-drawingsurface",
+        preventContextMenuForPopup: true,
+        preventSelect: true,
+        taphold: true,
+        menu: [
+            { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+            { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+            { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true },
+        ],
+        select: function (event, ui) {
+            var commandName = "DrawingSurface" + ui.cmd;
+            alert(commandName);
+            window.Commands.Execute(commandName, {});
+        }
     });
 
     var data = [];

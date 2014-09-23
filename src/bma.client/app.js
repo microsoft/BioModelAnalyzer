@@ -51,6 +51,24 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
+    $("#drawingSurceContainer").contextmenu({
+        delegate: ".bma-drawingsurface",
+        preventContextMenuForPopup: true,
+        preventSelect: true,
+        taphold: true,
+        menu: [
+            { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+            { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+            { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true }
+        ],
+        select: function (event, ui) {
+            var commandName = "DrawingSurface" + ui.cmd;
+            alert(commandName);
+            window.Commands.Execute(commandName, {});
+        }
+    });
+
     var data = [];
     data[0] = [1, 2, 3, 3, 3, 3, 2, 2, 2, 1];
     data[1] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 0];
