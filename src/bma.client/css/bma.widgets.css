@@ -1151,3 +1151,18 @@
     top:-30px;
     cursor:pointer;
 }
+
+.bma-furthertesting-button {
+    background-color:#d0451b;
+    -moz - border-radius:8px;
+    -webkit - border-radius:8px;
+	border-radius:8px;
+    border:1px solid #942911;
+    display: inline - block;
+    cursor: pointer;
+	color:#ffffff;
+	font-family:Verdana;
+	font-size:15px;
+            padding:8px 15px;
+	text-decoration:none;
+}
