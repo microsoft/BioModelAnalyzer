@@ -34,8 +34,8 @@
                     that.ClearColors();
                     that.CreateColors();
                     var variables = that.CreateVariablesView();
-                    var prmin = that.CreateProgressionMinTable();
-                    that.viewer.SetData({ data: { variables: variables, colorData: prmin } });
+                    //var prmin = that.CreateProgressionMinTable();
+                    that.viewer.SetData({ data: { variables: variables, colorData: undefined } });
                 });
 
                 window.Commands.On("Expand", (param) => {

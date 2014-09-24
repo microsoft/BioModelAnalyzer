@@ -22,13 +22,24 @@
             else
                 url = this.options.icon;
 
-            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(that.icontd);
+            this.button = $('<img src=' + url + '>').addClass('togglePopUpWindow');
+            var img = new Image();
+            img.onload = function () {
+                //alert(this. + 'x' + this.height);
+                that.head.css("min-height", this.height);
+                that.header.css("height", Math.max(this.height, that.header.height()));
+            };
+            img.src = url;
+
+            //alert(this.button.css("height"));
+            this.button.appendTo(that.icontd);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.tabid);
                 if (options.icon === "min")
                     window.Commands.Execute("Collapse", that.options.tabid);
             });
+            //this.head.css("min-height", this.button.height());
         },
         refresh: function () {
             var that = this;
@@ -41,10 +52,14 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            var table = $('<table></table>').width("100%").appendTo(this.element);
-            var tr = $('<tr></tr>').appendTo(table);
-            this.header = $('<td></td>').text(options.header).appendTo(tr);
-            this.icontd = $('<td></td>').appendTo(tr);
+
+            //var table = $('<table></table>').width("100%").appendTo(this.element);
+            //var tr = $('<tr></tr>').appendTo(table);
+            this.head = $('<div></div>').appendTo(this.element);
+            this.head.css("position", "relative");
+            this.head.css("margin-bottom", "10px");
+            this.header = $('<div></div>').text(options.header).addClass('resultswindowviewer-header').appendTo(this.head);
+            this.icontd = $('<div></div>').appendTo(this.head);
 
             //this.header = $('<div></div>').text(options.header).appendTo(td1);
             this.content = $('<div></div>').appendTo(this.element);

@@ -119,9 +119,7 @@
 
     .popup-window {
         display:none; 
-        padding-top: 15px;
-        padding-left: 25px;
-        padding-right: 20px;
+        padding: 25px;
         padding-bottom: 50px;
         /* background-color: rgba(0,0,0,0.5); */
         background-color: white;
@@ -138,8 +136,10 @@
     }
 
     .togglePopUpWindow {
-        position: relative;
-        float:right
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: pointer;
     }
 
     input {
@@ -465,6 +465,8 @@
 
     .tabPanel > * {
         margin: 0;
+        margin-top: 10px;
+        position: relative;
     }
 
     .ui-widget button{
@@ -983,10 +985,17 @@
     margin-left: 15px;
 }
 
+.resultswindowviewer-header {
+    display: table-cell;
+    vertical-align: bottom;
+    font-size: larger;
+}
+
 .resultswindowviewer-content {
     height: 120px;
     overflow-y:scroll;
 }
+
 
 .bma-color-prooftable {
     width: 100%;
@@ -1021,6 +1030,8 @@
     margin: 0;
     padding: 0;
     font-size: 14px;
+    position: relative;
+    
 }
 .bma-progressiontable tr:nth-child(even) { background-color:#f5f5f5; }
 .bma-progressiontable tr:nth-child(odd) { background-color:#ffffff; }
@@ -1076,8 +1087,8 @@
 	border-radius:8px;
 	/*border:1px solid #4b8f29;*/
     position: absolute;
-    right: 70px;
-    top: 50px;
+    right: 50px;
+    top: -20px;
     color:#ffffff;
 	font-family:Verdana;
 	font-size:20px;
@@ -1090,7 +1101,7 @@
 .steps-setting {
     font-size: large;
     position: absolute;
-    bottom: 30px;
+    bottom: -35px;
     right: 50px;
     font-family: Verdana;
 }
@@ -1126,6 +1137,7 @@
     display: inline-block;
     width: 300px;
     overflow-x: scroll;
+    overflow-y: hidden;
     margin-bottom: -17px;
 }
 

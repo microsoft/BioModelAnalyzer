@@ -59,7 +59,7 @@
                     else
                         input.val(init);
 
-                    var random = $('<td></td>').addClass("bma-random-icon1").appendTo(tr);
+                    var random = $('<td></td>').addClass("bma-random-icon1 hoverable").appendTo(tr);
 
                     //input.bind ("input change")
                     random.bind("click", function () {
@@ -74,7 +74,7 @@
             var trs = this.data.find("tr");
             var tr0 = trs.eq(0);
             for (var i = 0; i < tr0.children("td").length - 1; i++) {
-                var tds = trs.children("td:nth-child(" + (i + 1) + ")");
+                var tds = trs.children("td:nth-child(" + (i + 1) + ")").children("span:first-child");
                 if (this.isClone(column, tds)) {
                     if (this.repeat === undefined)
                         this.repeat = tds;
@@ -131,15 +131,17 @@
                     var table = $('<table></table>').addClass("bma-progressiontable").appendTo(that.data);
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
-                        $('<td></td>').text(data[i]).appendTo(tr);
+                        var td = $('<td></td>').appendTo(tr);
+                        $('<span></span>').text(data[i]).appendTo(td);
                     }
                 } else {
                     trs.each(function (ind) {
-                        var td = $('<td></td>').text(data[ind]).appendTo($(this));
-                        if (td.text() !== td.prev().text())
+                        var td = $('<td></td>').appendTo($(this));
+                        $('<span></span>').text(data[ind]).appendTo(td);
+                        if (td.children("span").eq(0).text() !== td.prev().children("span:first-child").text())
                             td.css("background-color", "#fffcb5");
                     });
-                    var last = that.data.find("tr").children("td:last-child");
+                    var last = that.data.find("tr").children("td:last-child").children("span:first-child");
                     if (that.repeat !== undefined) {
                         if (that.isClone(that.repeat, last))
                             that.highlight(that.data.find("tr:first-child").children("td").length - 1);
@@ -156,10 +158,36 @@
             }
         },
         highlight: function (ind) {
+            var that = this;
             var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
-            tds.each(function () {
-                $(this).css("background-color", "#dfdff5");
+            tds.each(function (ind) {
+                var div = $('<div></div>').width($(this).outerWidth()).height($(this).outerHeight()).appendTo($(this));
+                div.css("position", "absolute");
+                div.css("top", 0);
+                div.css("background-color", 'rgb(223, 223, 245, 0.5)');
             });
+        },
+        hexToRGB: function (hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        },
+        colorToRGB: function (color) {
+            alert(color);
+            if (color.substr(0, 1) === '#') {
+                return color;
+            }
+            var digits = /(.*?)rgb\((\d+), (\d+), (\d+)\)/.exec(color);
+
+            var red = parseInt(digits[2]);
+            var green = parseInt(digits[3]);
+            var blue = parseInt(digits[4]);
+
+            var rgb = blue | (green << 8) | (red << 16);
+            return { r: red, g: green, b: blue };
         },
         getRandomInt: function (min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min);

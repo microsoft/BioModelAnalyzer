@@ -152,7 +152,7 @@
                 var buttontd = $('<td></td>').appendTo(tr);
                 if (array[i][1] && array[i][0] !== undefined) {
                     td0.css("background-color", array[i][0]);
-                    buttontd.addClass("addVariableToPlot");
+                    buttontd.addClass("addVariableToPlot hoverable");
                 }
 
                 buttontd.bind("click", function () {
@@ -176,7 +176,7 @@
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
             tdall0.css("background-color", "white");
-            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("addVariableToPlot");
+            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("addVariableToPlot hoverable");
             this.allcheck.css("border-right", "none");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
