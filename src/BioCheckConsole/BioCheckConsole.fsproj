@@ -28,7 +28,7 @@
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model LTLNotchForLTLTesting_analysisinput.xml -engine CAV -path 10 -outputmodel -proof -formula "(And (Always (Eventually (&gt; P7.p.let60 1))) (Always (Eventually (&lt; P7.p.let60 1))))" -log</StartArguments>
+    <StartArguments>-model SmallLTLBug7.xml -engine CAV -path 1 -outputmodel -proof -formula "True" -log</StartArguments>
     <StartWorkingDirectory>
     </StartWorkingDirectory>
   </PropertyGroup>
