@@ -31,8 +31,8 @@
 
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
                 //that.plot.simulationplot({ colors: that.options.plot });
-                var plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
-                that.plotDiv.resultswindowviewer({ content: plot, icon: "max", tabid: "SimulationPlot" });
+                that.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
+                that.plotDiv.resultswindowviewer({ content: that.plot, icon: "max", tabid: "SimulationPlot" });
             }
             else that.plotDiv.resultswindowviewer("destroy");
         },

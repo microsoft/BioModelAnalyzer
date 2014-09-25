@@ -2,7 +2,7 @@
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 (function ($) {
-    $.widget("BMA.simulationfull", {
+    $.widget("BMA.simulationexpanded", {
         options: {
             data: undefined,
             init: undefined,
@@ -104,9 +104,9 @@
 } (jQuery));
 
 interface JQuery {
-    simulationfull(): JQuery;
-    simulationfull(settings: Object): JQuery;
-    simulationfull(settings: string): any;
-    simulationfull(optionLiteral: string, optionName: string): any;
-    simulationfull(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+    simulationexpanded(): JQuery;
+    simulationexpanded(settings: Object): JQuery;
+    simulationexpanded(settings: string): any;
+    simulationexpanded(optionLiteral: string, optionName: string): any;
+    simulationexpanded(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }   

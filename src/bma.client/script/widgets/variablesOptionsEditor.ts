@@ -12,7 +12,7 @@
             functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
             inputs: ["qqq", "www", "eee", "rrr"],
             formula: "",
-            approved: true
+            approved: undefined
         },
 
         resetElement: function () {
@@ -30,14 +30,14 @@
                 });
             });
 
-            if (this.options.approved) {
-                that.prooficon.removeClass("formula-not-validated");
+            that.prooficon.removeClass("formula-failed");
+            that.prooficon.removeClass("formula-validated");
+
+            if (this.options.approved === true) 
                 that.prooficon.addClass("formula-validated");
-            }
-            else {
-                that.prooficon.removeClass("formula-validated");
-                that.prooficon.addClass("formula-not-validated");
-            };
+            else if (this.options.approved === false) 
+                that.prooficon.addClass("formula-failed");
+
             this.textarea.val(that.options.formula);
         },
 
@@ -157,7 +157,9 @@
 
             var inputs = this.options.inputs;
             this.textarea = $('<textarea></textarea>').appendTo(that.content);
-            this.prooficon = $('<div><div>').appendTo(that.content);
+            this.prooficon = $('<div><div>')
+                .addClass("bma-formula-validation")
+                .appendTo(that.content);
         },
 
         _refreshText: function (div: JQuery) {
@@ -203,14 +205,15 @@
 
         _setOption: function (key, value) {
             var that = this;
-            if (key === "rangeFrom" || key === "rangeTo")
-            {
-                if (value > 100) value = 100;
-                if (value < 0) value = 0;
-            }
-
-            if (this.options[key] !== value) {
-                
+            switch (key) {
+                case "rangeFrom":
+                case "rangeTo":
+                    if (value > 100) value = 100;
+                    if (value < 0) value = 0;
+                    break;
+                case "formula":
+                    window.Commands.Execute("FormulaEdited", {});
+                    break;
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);

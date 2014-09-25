@@ -65,6 +65,10 @@ module BMA {
                 };
             }
 
+            public SetValidation(val: boolean) {
+                this.variableEditor.bmaeditor('option', 'approved', val);
+            }
+
             public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
@@ -178,7 +182,7 @@ module BMA {
                 var table = this.CreateFullTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
                 var toAdd = this.CreatePlotView(data.colors);
-                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: toAdd } });
+                this.viewer.simulationexpanded({ data: { variables: table, init: data.init, interval: interval, data: toAdd } });
             }
 
             public GetViewer(): JQuery {
@@ -187,7 +191,7 @@ module BMA {
 
             public AddResult(res) {
                 var result = this.ConvertResult(res);
-                this.viewer.simulationfull("AddResult", result);
+                this.viewer.simulationexpanded("AddResult", result);
             }
 
             public CreatePlotView(colors) {

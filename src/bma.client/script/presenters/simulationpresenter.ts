@@ -46,7 +46,7 @@
                             case "SimulationVariables":
                                 //that.ClearColors();
                                 that.expandedViewer.Set({ variables: variables, colors: that.colors, init: that.initValues });
-                                full = that.expandedViewer.GetViewer();//$('<div id="SimulationFull"></div>').simulationfull({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
+                                full = that.expandedViewer.GetViewer();//$('<div id="SimulationFull"></div>').simulationexpanded({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
                             case "SimulationPlot":
                                 full = $('<div id="SimulationPlot"></div>').height(500).simulationplot({colors: that.colors});

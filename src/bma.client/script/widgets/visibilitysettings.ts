@@ -59,8 +59,8 @@
                                     that.listOptions[ind].toggleButton = button;
                                     if (command !== undefined) {
                                         button.bind("click", function (e) {
-                                            window.Commands.Execute(command, {checked: value});
                                             that.listOptions[ind].toggle = !that.listOptions[ind].toggle;
+                                            window.Commands.Execute(command, that.listOptions[ind].toggle);
                                             that.changeButtonONOFFStyle(ind);
                                         });
                                     }
@@ -79,6 +79,14 @@
                                         .appendTo($(child))
                                         .addClass("hoverable");
                                     that.listOptions[ind].increment = value;
+                                    plus.bind("click", function () {
+                                        that.listOptions[ind].increment++;
+                                        window.Commands.Execute(command, that.listOptions[ind].increment);
+                                    })
+                                    minus.bind("click", function () {
+                                        that.listOptions[ind].increment--;
+                                        window.Commands.Execute(command, that.listOptions[ind].increment);
+                                    })
                                 }
                                 break;
                         }

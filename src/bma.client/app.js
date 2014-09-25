@@ -2,6 +2,7 @@
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="script\model\biomodel.ts"/>
 /// <reference path="script\model\model.ts"/>
+/// <reference path="script\model\visualsettings.ts"/>
 /// <reference path="script\commands.ts"/>
 /// <reference path="script\elementsregistry.ts"/>
 /// <reference path="script\functionsregistry.ts"/>
@@ -12,8 +13,9 @@
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
 /// <reference path="script\presenters\simulationpresenter.ts"/>
+/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>
-/// <reference path="script\widgets\simulationfull.ts"/>
+/// <reference path="script\widgets\simulationexpanded.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
@@ -142,7 +144,29 @@ $(document).ready(function () {
     $("#exportModelBtn").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
-    var fullSimulation = $('<div></div>').simulationfull();
+    var expandedSimulation = $('<div></div>').simulationexpanded();
+
+    //Visual Settings Presenter
+    var visualSettings = new BMA.Model.AppVisualSettings();
+
+    window.Commands.On("Commands.ToggleLabels", function (param) {
+        visualSettings.TextLabelVisibility = param;
+    });
+    window.Commands.On("Commands.LabelsSize", function (param) {
+        visualSettings.TextLabelSize = param;
+    });
+    window.Commands.On("Commands.ToggleIcons", function (param) {
+        visualSettings.IconsVisibility = param;
+    });
+    window.Commands.On("Commands.IconsSize", function (param) {
+        visualSettings.IconsSize = param;
+    });
+    window.Commands.On("Commands.ToggleGrid", function (param) {
+        visualSettings.GridVisibility = param;
+    });
+    window.Commands.On("Commands.LineWidth", function (param) {
+        visualSettings.LineWidth = param;
+    });
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -152,7 +176,7 @@ $(document).ready(function () {
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
     var simulationViewer = new BMA.UIDrivers.SimulationViewerDriver($("#tabs-2"));
 
-    var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(fullSimulation);
+    var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(expandedSimulation);
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
 
@@ -165,5 +189,6 @@ $(document).ready(function () {
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
+    var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver);
 });
 //# sourceMappingURL=app.js.map

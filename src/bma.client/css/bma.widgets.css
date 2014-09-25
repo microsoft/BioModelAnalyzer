@@ -968,21 +968,19 @@
 	border-width:0 0 1px 1px;
 }*/
 
-
-.formula-not-validated {
+.bma-formula-validation {
     width: 30px;
     height: 30px;
-    background-image: url("../images/formula_not_validated.png");
     display: inline-block;
-    margin-left: 15px;
+    float: right;
+    margin-right: 10px;
+}
+.formula-failed {
+    background-image: url("../images/formula_not_validated.png");
 }
 
 .formula-validated {
-    width: 30px;
-    height: 30px;
     background-image: url("../images/formula_validated.png");
-    display: inline-block;
-    margin-left: 15px;
 }
 
 .resultswindowviewer-header {
