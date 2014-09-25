@@ -6,6 +6,8 @@ module BMA {
         export interface ISVGPlot {
             Draw(svg: SVGElement);
             SetGrid(x0: number, y0: number, xStep: number, yStep: number);
+            GetPlotX(left: number);
+            GetPlotY(top: number);
         }
 
         export interface INavigationPanel {
@@ -64,6 +66,10 @@ module BMA {
 
         export interface IFileLoader {
             OpenFileDialog() : JQueryPromise<File>;
+        }
+
+        export interface IContextMenu {
+            SetOptions(options: any) : void;
         }
 
     }

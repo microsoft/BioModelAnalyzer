@@ -73,6 +73,12 @@ $(document).ready(function () {
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
             { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true },
         ],
+        beforeOpen: function (event, ui) {
+            window.Commands.Execute("DrawinfSurfaceContextMenuOpening", {
+                left: event.pageX - $(".bma-drawingsurface").offset().left,
+                top: event.pageY - $(".bma-drawingsurface").offset().top
+            });
+        },
         select: function (event, ui) {
             var commandName = "DrawingSurface" + ui.cmd;
             alert(commandName);

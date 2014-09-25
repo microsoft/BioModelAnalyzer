@@ -31,6 +31,14 @@ var BMA;
 
             TestSVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
             };
+
+            TestSVGPlotDriver.prototype.GetPlotX = function (left) {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.GetPlotY = function (left) {
+                return 0;
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;

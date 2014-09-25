@@ -40,6 +40,8 @@ module BMA {
 
             private editingVariableId = undefined;
 
+            private contextMenu: BMA.UIDrivers.IContextMenu;
+
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
@@ -47,6 +49,7 @@ module BMA {
                 undoButton: BMA.UIDrivers.ITurnableButton,
                 redoButton: BMA.UIDrivers.ITurnableButton,
                 variableEditorDriver: BMA.UIDrivers.IVariableEditor) {
+                //contextMenu: BMA.UIDrivers.IContextMenu) {
 
                 var that = this;
                 this.appModel = appModel;
@@ -56,6 +59,8 @@ module BMA {
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
+                //this.contextMenu = contextMenu;
+
                 this.models = [];
 
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
@@ -72,12 +77,9 @@ module BMA {
                 window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
                     if (that.selectedType !== undefined) {
                         that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
-                        //console.log("tryAddVariable");
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
-                        //console.log(id);
                     if (id !== undefined) {
-                            //console.log("id !== undefined");
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
                             that.variableEditor.Show(0, 0);
@@ -115,6 +117,17 @@ module BMA {
 
                 window.Commands.On("Redo", () => {
                     this.Redo();
+                });
+
+                window.Commands.On("DrawinfSurfaceContextMenuOpening", (args) => {
+                    var x = this.driver.GetPlotX(args.left);
+                    var y = this.driver.GetPlotY(args.top);
+
+                    var id = this.GetVariableAtPosition(x, y);
+                    if (id !== undefined) {
+                        //alert(id);
+                    }
+
                 });
 
                 var svgCnt = $("<div></div>");

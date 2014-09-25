@@ -303,11 +303,23 @@ declare var Rx: any;
 
         getDragSubject: function () {
             return this._dragService;
+        },
+
+        getPlotX: function (left: number) {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return cs.screenToDataX(left);
+        },
+
+        getPlotY: function (top: number) {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return -cs.screenToDataY(top);
         }
+
     });
 } (jQuery));
 
 interface JQuery {
     drawingsurface(): JQueryUI.Widget;
     drawingsurface(settings: Object): JQueryUI.Widget;
+    drawingsurface(methodName: string, arg: any): JQueryUI.Widget;
 }
