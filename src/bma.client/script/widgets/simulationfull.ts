@@ -15,8 +15,8 @@
            
             var RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
             RunButton.bind("click", function () {
-                that.progression.progressiontable("clearData");
-                window.Commands.Execute("RunSimulation", {data: that.progression.progressiontable("getInit"), num: that.options.num });
+                that.progression.progressiontable("ClearData");
+                window.Commands.Execute("RunSimulation", {data: that.progression.progressiontable("GetInit"), num: that.options.num });
             })
 
             var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
@@ -67,11 +67,11 @@
         },
 
         AddResult: function (res) {
-            this.progression.progressiontable("addData", res);
+            this.progression.progressiontable("AddData", res);
         },
 
         getColors: function () {
-            this.table1.coloredtableviewer("getColors");
+            this.table1.coloredtableviewer("GetColors");
         },
 
 

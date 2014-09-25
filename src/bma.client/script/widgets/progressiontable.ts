@@ -24,11 +24,11 @@
             this.init = $('<div></div>')
                 .appendTo(that.element);
             this.init.css("display", "inline-block");
-            this.refreshInit();
+            this.RefreshInit();
             this.data = $('<div></div>')
                 .addClass("bma-simulation-data-table")
                 .appendTo(that.element);
-            this.initData();
+            this.InitData();
             randomise.bind("click", function () {
                 var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
@@ -36,18 +36,18 @@
 
         },
 
-        initData: function () {
-            this.data.empty();
+        InitData: function () {
+            this.ClearData();
             if (this.options.data !== undefined && this.options.data.length !== 0) {
                 var data = this.options.data;
                 if (data[0].length === this.options.interval.length) 
                     for (var i = 0; i < data.length && 0 < data[i].length; i++) {
-                        this.addData(data[i]);
+                        this.AddData(data[i]);
                     }
             }
         },
 
-        refreshInit: function () {
+        RefreshInit: function () {
             var that = this;
             var options = this.options;
             this.init.empty();
@@ -64,7 +64,7 @@
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
-                    var input = $('<input type="text">').attr("size","1").appendTo(td);
+                    var input = $('<input type="text">').height("100%").width("100%").appendTo(td);
                     var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
                     if (Array.isArray(init)) 
                         input.val(init[0]);
@@ -79,19 +79,19 @@
 
                     random.bind("click", function () {
                         var index = $(this).parent().index() - 1;
-                        var randomValue = that.getRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
+                        var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
                         $(this).prev().children("input").eq(0).val(randomValue);//randomValue);
                     })
                 }
             }
         },
 
-        findClone: function (column: JQuery): number {
+        FindClone: function (column: JQuery): number {
             var trs = this.data.find("tr");
             var tr0 = trs.eq(0);
             for (var i = 0; i < tr0.children("td").length-1; i++) {
                 var tds = trs.children("td:nth-child(" + (i + 1) + ")").children("span:first-child");
-                if (this.isClone(column, tds)) {
+                if (this.IsClone(column, tds)) {
                     if (this.repeat === undefined)
                         this.repeat = tds;
                     return i;
@@ -100,7 +100,7 @@
             return undefined;
         },
 
-        isClone: function (td1,td2): boolean {
+        IsClone: function (td1,td2): boolean {
             if (td1.length !== td2.length)
                 return false;
             else {
@@ -114,7 +114,7 @@
             }
         },
 
-        getInit: function () {
+        GetInit: function () {
             var init = [];
             var inputs = this.init.find("tr:not(:first-child)").children("td:first-child").children("input");
             inputs.each(function (ind) {
@@ -136,11 +136,11 @@
         //    return init;
         //},
 
-        clearData: function () {
+        ClearData: function () {
             this.data.empty();
         },
 
-        addData: function (data) {
+        AddData: function (data) {
             var that = this;
             //var data = this.data;
             if (data !== undefined) {
@@ -154,48 +154,50 @@
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
                         var td = $('<td></td>').appendTo(tr);
+                        td.css("min-width", "20");
                         $('<span></span>').text(data[i]).appendTo(td);
                     }
                 }
                 else {
                     trs.each(function (ind) {
                         var td = $('<td></td>').appendTo($(this));
+                        td.css("min-width", "20");
                         $('<span></span>').text(data[ind]).appendTo(td);
                         if (td.children("span").eq(0).text() !== td.prev().children("span:first-child").text())
                             td.css("background-color", "#fffcb5");
                     })
                     var last = that.data.find("tr").children("td:last-child").children("span:first-child");
                     if (that.repeat !== undefined) {
-                        if (that.isClone(that.repeat, last))
-                            that.highlight(that.data.find("tr:first-child").children("td").length-1);
+                        if (that.IsClone(that.repeat, last))
+                            that.Highlight(that.data.find("tr:first-child").children("td").length-1);
                         else;
                     }
                     else {
-                        var cloneInd = that.findClone(last);
+                        var cloneInd = that.FindClone(last);
                         if (cloneInd !== undefined) {
-                            that.highlight(cloneInd);
-                            that.highlight(that.data.find("tr:first-child").children("td").length-1);
+                            that.Highlight(cloneInd);
+                            that.Highlight(that.data.find("tr:first-child").children("td").length-1);
                         }
                     }
                 }
             }
         },
 
-        highlight: function (ind) {
+        Highlight: function (ind) {
             var that = this;
             var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
             tds.each(function (ind) {
                 var div = $('<div></div>')
-                    .width($(this).outerWidth()).height($(this).outerHeight())
                     .appendTo($(this));
-                div.css("position", "absolute");
-                div.css("top", 0);
-                div.css("background-color", 'rgb(223, 223, 245, 0.5)');
-                  
+                div.css("background-color", "rgb(223, 223, 245, 0.5)");
             });
         },
 
-        hexToRGB: function (hex) {
+        GetRandomInt: function (min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        },
+
+        _hexToRGB: function (hex) {
             var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
                 r: parseInt(result[1], 16),
@@ -204,7 +206,7 @@
             } : null;
         },
 
-        colorToRGB: function (color) {
+        _colorToRGB: function (color) {
             alert(color);
             if (color.substr(0, 1) === '#') {
                 return color;
@@ -219,9 +221,7 @@
             return {r: red, g: green, b: blue};//digits[1] + '#' + rgb.toString(16);
         },
 
-        getRandomInt: function (min, max) {
-            return Math.floor(Math.random() * (max - min + 1) + min);
-        },
+        
 
         _destroy: function () {
             this.element.empty();
@@ -232,18 +232,18 @@
             switch (key) {
                 case "interval":
                     this.options.interval = value;
-                    this.refreshInit();
+                    this.RefreshInit();
                     break;
                 case "header":
                     this.options.header = value;
                     break;
                 case "init":
                     this.options.init = value;
-                    this.refreshInit();
+                    this.RefreshInit();
                     break;
                 case "data":
                     this.options.data = value;
-                    this.initData();
+                    this.InitData();
                     break;
             }
             this._super(key, value);

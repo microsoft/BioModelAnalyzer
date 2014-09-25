@@ -177,8 +177,8 @@ module BMA {
             public Set(data: { variables; colors; init }) {
                 var table = this.CreateFullTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
-                var add = this.CreatePlotView(data.colors);
-                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: add } });
+                var toAdd = this.CreatePlotView(data.colors);
+                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: toAdd } });
             }
 
             public GetViewer(): JQuery {
