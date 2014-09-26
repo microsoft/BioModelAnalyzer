@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BioCheckAnalyzer64</RootNamespace>
+    <AssemblyName>BioCheckAnalyzer64</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <Name>BioCheckAnalyzer64</Name>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>bin64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin64\Debug\BioCheckAnalyzer.XML</DocumentationFile>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>bin64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin64\Release\BioCheckAnalyzer.XML</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\BioCheckAnalyzer32\Version.fs">
+      <Link>Version.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Log.fs">
+      <Link>Log.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Util.fs">
+      <Link>Util.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Expr.fs">
+      <Link>Expr.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\ParsecExpr.fs">
+      <Link>ParsecExpr.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\QN.fs">
+      <Link>QN.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Result.fs">
+      <Link>Result.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Marshal.fs">
+      <Link>Marshal.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Z.fs">
+      <Link>Z.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Counterexample.fs">
+      <Link>Counterexample.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\FNewLemmas.fs">
+      <Link>FNewLemmas.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\GenLemmas.fs">
+      <Link>GenLemmas.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Stabilize.fs">
+      <Link>Stabilize.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Simulate.fs">
+      <Link>Simulate.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\ModelToExcel.fs">
+      <Link>ModelToExcel.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\BioCheckZ3.fs">
+      <Link>BioCheckZ3.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\BioCheckPlusZ3.fs">
+      <Link>BioCheckPlusZ3.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Z3rangelist.fs">
+      <Link>Z3rangelist.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\stepZ3rangelist.fs">
+      <Link>stepZ3rangelist.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Paths.fs">
+      <Link>Paths.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\LTL.fs">
+      <Link>LTL.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\LTLParser.fs">
+      <Link>LTLParser.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\EncodingForFormula.fs">
+      <Link>EncodingForFormula.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\EncodingForFormula2.fs">
+      <Link>EncodingForFormula2.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\InitEncodingForSys.fs">
+      <Link>InitEncodingForSys.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\IncEncodingForSys.fs">
+      <Link>IncEncodingForSys.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\BMC.fs">
+      <Link>BMC.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Rangelist.fs">
+      <Link>Rangelist.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\GGraph.fs">
+      <Link>GGraph.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Oracle.fs">
+      <Link>Oracle.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Cut.fs">
+      <Link>Cut.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Shrink.fs">
+      <Link>Shrink.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Prover.fs">
+      <Link>Prover.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Suggest.fs">
+      <Link>Suggest.fs</Link>
+    </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\UIMain.fs">
+      <Link>UIMain.fs</Link>
+    </Compile>
+    <None Include="..\BioCheckAnalyzer32\App.config">
+      <Link>App.config</Link>
+    </None>
+    <None Include="z3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="..\BioCheckAnalyzer32\PathFinder.fs">
+      <Link>PathFinder.fs</Link>
+    </Compile>
+    <None Include="ModelSchema.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+    <Reference Include="Microsoft.Z3">
+      <HintPath>..\..\ext\dotNET\64bit\Microsoft.Z3.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
+      <Name>FParsec (FParsec\FParsec)</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
+      <Name>BioCheckAnalyzerCommon</Name>
+      <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	     Other similar extension points exist, see Microsoft.Common.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

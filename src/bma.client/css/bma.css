@@ -1,0 +1,137 @@
+﻿body {
+    padding-bottom: 0px;
+    padding-top: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin: 0;
+    background-color: #E4E4E6;
+    height: calc(100% - 40px);
+    font-family:'Segoe UI';
+}
+
+html {
+    height: 100%;
+}
+
+
+.bma-drawingsurfacecontainer {
+    height: calc(100% - 100px - 4px);
+    
+    position: relative;
+}
+
+.bma-drawingsurface{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.bma-modeltoolbarcontainer {
+    position: absolute; 
+    top: 50px; 
+    width: 100%;
+}
+
+.bma-analyticstoolbarcontainer {
+    position: absolute; 
+    top: 50px; 
+    width: 100%;
+}
+
+.bma-footer {
+    clear: both;
+    position: relative;
+    height: 3em;
+    text-align: center;
+}
+
+.bma-pagefooter-linkcontainer {
+    position: relative;
+    z-index: 8;
+    background-color: white;
+    color: #82BD82;
+    line-height: 35px;
+    width: 220px;
+    height: 40px;
+    margin: 0 auto 0 auto;
+    -moz-border-radius: 10px 10px 0px 0px;
+    -webkit-border-radius: 10px 10px 0px 0px;
+    -ms-border-radius: 10px 10px 0px 0px;
+    -o-border-radius: 10px 10px 0px 0px;
+    border-radius: 10px 10px 0px 0px;
+    -webkit-box-shadow: 5px 5px 10px #C6C6C6;
+    -moz-box-shadow: 5px 5px 10px #C6C6C6;
+    -ms-box-shadow: 5px 5px 10px #C6C6C6;
+    -o-box-shadow: 5px 5px 10px #C6C6C6;
+    box-shadow: 5px 5px 10px #C6C6C6;
+}
+
+.bma-pagefooter-links {
+    color: #82BD82;
+}
+
+.bma-pagefooter-logo {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+}
+
+.bma-pagefooter-msrlogo {
+    position: absolute;
+    right: 10px;
+    padding-top: 3px;
+}
+
+    .bma-pagefooter-msrlogo img {
+        height: 33px;
+    }
+
+
+
+
+#tools .ui-button {
+	width: 50px;
+	height: 50px;
+	margin-left: 0.2em;
+	margin-right: 0.2em;
+	border-radius: 7px;
+    background-color: white;
+}
+
+#tools img {
+	height: 35px;
+}
+
+#tools .ui-button-text {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.bma-verticalline {
+    width: 1px; 
+    background-color: lightgray; 
+    height: 30px; 
+    position: absolute; 
+    top: -20px;
+}
+
+#modelToolbarSlider ul {
+    display: table-row-group;
+}
+
+#modelToolbarSlider ul > li {
+    display: table-cell;
+}
+
+.modeldesigner-element-cell {
+    stroke-width: 1px;
+    stroke: transparent;
+}
+
+
+.modeldesigner-element-hover {
+    stroke: gray;
+    stroke-width: 2px;
+}

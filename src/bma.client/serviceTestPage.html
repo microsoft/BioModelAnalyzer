@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Service test page</title>
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+
+        var stableModel = {
+            "ModelName": "ToyModelStable",
+            "Engine": "VMCAI",
+
+            "Variables": [
+              {
+                  "Id": 1,
+                  "Name": "a",
+                  "RangeFrom": 0,
+                  "RangeTo": 4,
+                  "Function": "",
+              },
+              {
+                  "Id": 2,
+                  "Name": "b",
+                  "RangeFrom": 0,
+                  "RangeTo": 4,
+                  "Function": "",
+              },
+              {
+                  "Id": 3,
+                  "Name": "c",
+                  "RangeFrom": 0,
+                  "RangeTo": 4,
+                  "Function": "",
+              }
+            ],
+
+            "Relationships": [
+              {
+                  "Id": 1,
+                  "FromVariableId": 1,
+                  "ToVariableId": 2,
+                  "Type": "Activator"
+              },
+              {
+                  "Id": 2,
+                  "FromVariableId": 2,
+                  "ToVariableId": 3,
+                  "Type": "Activator"
+              },
+              {
+                  "Id": 3,
+                  "FromVariableId": 3,
+                  "ToVariableId": 1,
+                  "Type": "Inhibitor"
+              }
+            ]
+        }
+
+        var simulate = {
+            "Model": stableModel,
+            "Variables": [
+                { "Id": 1, "Value": 2 },
+                { "Id": 2, "Value": 2 },
+                { "Id": 3, "Value": 2 },
+            ]
+        }
+
+        $(function () {
+            $("#log").append("Invoking api/Analyze...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Analyze",
+                data: stableModel,
+                success: function (res) {
+                    $("#log").append("Analyze success. Analysis result: " + res.Status + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Analyze error: " + res.statusText + "<br/>");
+                }
+            });
+
+            $("#log").append("Invoking api/Simulate...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Simulate",
+                data: simulate,
+                success: function (res) {
+                    $("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Simulate error: " + res.statusText + "<br/>");
+                }
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

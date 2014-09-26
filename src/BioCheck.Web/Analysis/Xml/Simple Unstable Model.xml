@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LocalData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Model>
+    <AuthorId>1</AuthorId>
+    <Columns xsi:nil="true" />
+    <CreatedDate xsi:nil="true" />
+    <Description>This is the default model.</Description>
+    <Id>0</Id>
+    <ModifiedDate>2011-09-29T16:09:46.7594+01:00</ModifiedDate>
+    <Name>Unstable Model</Name>
+    <Rows xsi:nil="true" />
+  </Model>
+  <Containers>
+    <Container>
+      <Id>1</Id>
+      <ModelId>1</ModelId>
+      <PositionX>2</PositionX>
+      <PositionY>2</PositionY>
+      <TemplateId xsi:nil="true" />
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable>
+      <ContainerId>1</ContainerId>
+      <Formula>var(b)</Formula>
+      <Id>1</Id>
+      <Name>a</Name>
+      <PositionX>154</PositionX>
+      <PositionY>57</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo>1</RangeTo>
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>1</ContainerId>
+      <Formula>var(a)</Formula>
+      <Id>2</Id>
+      <Name>b</Name>
+      <PositionX>154</PositionX>
+      <PositionY>232</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo>1</RangeTo>
+      <Type>Default</Type>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship>
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <Id>1</Id>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <Id>2</Id>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</LocalData>

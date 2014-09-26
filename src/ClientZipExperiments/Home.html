@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Zipped Hello World</title>
+    <script src="scripts/jquery-2.1.1.min.js"></script>
+    <script src="scripts/pako.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            var stableModel = {
+                "Variables": [
+                  {
+                      "Id": 1,
+                      "Name": "a",
+                      "RangeFrom": 0,
+                      "RangeTo": 4,
+                      "Function": "",
+                  },
+                  {
+                      "Id": 2,
+                      "Name": "b",
+                      "RangeFrom": 0,
+                      "RangeTo": 4,
+                      "Function": "",
+                  },
+                  {
+                      "Id": 3,
+                      "Name": "c",
+                      "RangeFrom": 0,
+                      "RangeTo": 4,
+                      "Function": "",
+                  }
+                ],
+
+                "Relationships": [
+                  {
+                      "Id": 1,
+                      "FromVariableId": 1,
+                      "ToVariableId": 2,
+                      "Type": "Activator"
+                  },
+                  {
+                      "Id": 2,
+                      "FromVariableId": 2,
+                      "ToVariableId": 3,
+                      "Type": "Activator"
+                  },
+                  {
+                      "Id": 3,
+                      "FromVariableId": 3,
+                      "ToVariableId": 1,
+                      "Type": "Inhibitor"
+                  }
+                ]
+            }
+
+            // UInt8Array with deflated JSON
+            var output = pako.deflate(JSON.stringify(stableModel));
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.addEventListener("load", function (result) {
+                var model = JSON.parse(xhr.response);
+                window.alert(model.Variables.length);
+            }, false);
+            xhr.addEventListener("error", function () { window.alert("Error!") }, false);
+
+            xhr.open('POST', 'api/Hello', true);
+            xhr.setRequestHeader("Content-Type", "application/binary");
+            xhr.setRequestHeader("Accept", "text/json");
+            xhr.send(output);
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>

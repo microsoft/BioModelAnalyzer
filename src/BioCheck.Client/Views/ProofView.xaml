@@ -1,0 +1,897 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:SampleData="clr-namespace:Expression.Blend.SampleData.ProofData"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:Converters="clr-namespace:BioCheck.Converters" xmlns:MvvmFx_Common_Converters="clr-namespace:MvvmFx.Common.Converters;assembly=MvvmFx.Common"
+    xmlns:States="clr-namespace:MvvmFx.Common.ViewModels.States;assembly=MvvmFx.Common"
+    
+    xmlns:local="clr-namespace:BioCheck.Views"
+    
+    xmlns:behaviors="clr-namespace:BioCheck.Behaviors" x:Class="BioCheck.Views.ProofView"
+    mc:Ignorable="d"
+    Width="400" Height="800">
+
+    <UserControl.Resources>
+        
+        <MvvmFx_Common_Converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter"/>
+
+        <SampleData:ProofData x:Key="ProofData" d:IsDataSource="True"/>
+
+        <!-- Controls the color scheme as a function of stability -->
+        <Converters:BoolToStabilityBrushConverter 
+            x:Key="boolToStabilityBrushConverter"
+            IsStableBrush="{StaticResource StableBackgroundBrush}"
+            NotStableBrush="{StaticResource NotStableBackgroundBrush}" />
+
+        <Converters:VariableProofTypeToStabilityBrushConverter 
+            x:Key="proofTypeToStabilityBrushConverter"
+            IsStableBrush="{StaticResource StableBackgroundBrush}"
+            NotStableBrush="{StaticResource NotStableBackgroundBrush}" 
+			ConstantBrush="{StaticResource ConstantBrush}" 
+			/>
+
+        <DataTemplate x:Key="ProgressionInfoColumnTemplate">
+            <Grid>
+                <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="{Binding IsStable, Converter={StaticResource boolToStabilityBrushConverter}}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding Values}" HorizontalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="RunCounterExampleButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF1F3B53"/>
+            <Setter Property="Foreground" Value="#FF000000"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFA3AEB9" Offset="0"/>
+                        <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                        <GradientStop Color="#FF718597" Offset="0.375"/>
+                        <GradientStop Color="#FF617584" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                    <VisualState x:Name="Disabled"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused"/>
+                                    <VisualState x:Name="Unfocused"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="Background" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="3"/>
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="VariablesDataGridColumnHeaderStyle" TargetType="sdk:DataGridColumnHeader">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="SeparatorBrush" Value="#FFC9CACA"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="sdk:DataGridColumnHeader">
+                        <Grid x:Name="Root" Background="{StaticResource PopupGridHeaderBackground}" Margin="0,0,1,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="SortStates">
+                                    <VisualState x:Name="Unsorted"/>
+                                    <VisualState x:Name="SortAscending">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1.0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SortIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="SortDescending">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1.0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="SortIcon"/>
+                                            <DoubleAnimation Duration="0" To="-.9" Storyboard.TargetProperty="(RenderTransform).ScaleY" Storyboard.TargetName="SortIcon"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                                <Path x:Name="SortIcon" Grid.Column="1" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z " Fill="#FF444444" HorizontalAlignment="Left" Margin="4,0,0,0" Opacity="0" RenderTransformOrigin=".5,.5" Stretch="Uniform" VerticalAlignment="Center" Width="8">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform ScaleY=".9" ScaleX=".9"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+
+        <Style x:Key="PopupStableTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource StableBrush}"/>
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="13.333"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="WordEllipsis"/>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+        </Style>
+
+        <Style x:Key="PopupUnstableTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NotStableBrush}"/>
+            <Setter Property="FontFamily" Value="Verdana"/>
+            <Setter Property="FontSize" Value="13.333"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="WordEllipsis"/>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+        </Style>
+
+        <DataTemplate x:Key="BifurcationTabTemplate">
+
+            <sdk:DataGrid 
+                    SelectedIndex="-1"
+                    IsHitTestVisible="True"
+					AutoGenerateColumns="False" 
+					ItemsSource="{Binding VariableInfos}" 
+					Style="{StaticResource PopupDataGridStyle}"
+					BorderBrush="{StaticResource PageBorderBrush}" 
+					BorderThickness="1" 
+					ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+					FontFamily="Verdana" 
+					Foreground="#FF58595B" 
+					FontSize="13.333"
+					RowStyle="{StaticResource DataGridRowStyle}" 
+					VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Auto"
+                    CanUserReorderColumns="False"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="False"   
+                    CellStyle="{StaticResource PopupDataGridCellStyle}"                    
+                >
+                <sdk:DataGrid.Columns>
+                    <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
+                    <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
+                    <sdk:DataGridTextColumn Binding="{Binding CalculatedBound}" IsReadOnly="True" Header="Bound"/>
+                    <!-- Was  Width="*" -->
+                    <sdk:DataGridTextColumn Binding="{Binding Fix1}" IsReadOnly="True" Header="Fix 1"/>
+                    <!-- Was  Width="0.4*" -->
+                    <sdk:DataGridTextColumn Binding="{Binding Fix2}" IsReadOnly="True" Header="Fix 2"/>
+                    <!-- Was  Width="0.4*" -->
+
+                </sdk:DataGrid.Columns>
+            </sdk:DataGrid>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="OscillationTabTemplate">
+
+            <sdk:DataGrid 
+                    SelectedIndex="-1"
+                    IsHitTestVisible="True"
+					AutoGenerateColumns="False" 
+					ItemsSource="{Binding VariableInfos}" 
+					Style="{StaticResource PopupDataGridStyle}"
+					BorderBrush="{StaticResource PageBorderBrush}" 
+					BorderThickness="1" 
+					HorizontalScrollBarVisibility="Auto" 
+					ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+					FontFamily="Verdana" 
+					Foreground="#FF58595B" 
+					FontSize="13.333"
+					RowStyle="{StaticResource DataGridRowStyle}" 
+					VerticalScrollBarVisibility="Auto" 
+                    CanUserReorderColumns="False"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="False"
+                    CellStyle="{StaticResource PopupDataGridCellStyle}"
+                    >
+
+                <!-- New -->
+                <i:Interaction.Behaviors>
+                    <behaviors:ScrollIntoViewBehavior/>
+                </i:Interaction.Behaviors>
+                <!-- New stops -->
+                
+                <sdk:DataGrid.Columns>
+                    <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell" />
+                    <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name" />
+                    <sdk:DataGridTextColumn Binding="{Binding CalculatedBound}" IsReadOnly="True" Header="Bound" />
+                    <sdk:DataGridTextColumn Binding="{Binding Oscillation}" IsReadOnly="True" Header="Oscillation" />
+
+                </sdk:DataGrid.Columns>
+            </sdk:DataGrid>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="BifurcationHeaderTemplate">
+            <Path Data="M25.424999,12.712008 C25.424999,19.734013 19.733994,25.426001 12.713003,25.426001 C5.6930194,25.426001 5.6843419E-14,19.734013 5.6843419E-14,12.712008 C5.6843419E-14,5.691011 5.6930194,0 12.713003,0 C19.733994,0 25.424999,5.691011 25.424999,12.712008 M13.581006,6.2470183 L8.2530041,11.574042 L0.059006091,11.574042 C0.025009517,11.950018 0.00099218835,12.328039 0.00099218835,12.713018 C0.00099218835,13.097021 0.025009517,13.475012 0.059006091,13.850011 L8.2530041,13.850011 L13.531995,19.132021 L11.197981,21.466036 L17.475994,21.466036 L17.475994,15.188024 L15.14198,17.522038 L10.332991,12.712042 L15.189984,7.8560266 L17.522991,10.19004 L17.522991,3.9130354 L11.246992,3.9130354 z"
+                  Height="25.426" Fill="#FFFFB8B4" Stretch="Fill" Width="25.425" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="OscillationHeaderTemplate">
+            <Path Data="M25.885,12.942992 C25.885,20.089994 20.088982,25.884001 12.941981,25.884001 C5.7940044,25.884001 0,20.089994 0,12.942992 C0,5.7959895 5.7940044,1.1368684E-13 12.941981,1.1368684E-13 C20.088982,1.1368684E-13 25.885,5.7959895 25.885,12.942992 M24.863991,8.3900127 C24.919991,8.3730145 24.966011,8.3400249 25.017006,8.3150311 C24.734993,7.5800152 24.388008,6.8790264 23.983009,6.216032 C22.487007,6.716032 22.043007,9.3550091 21.454992,12.88101 C21.260015,14.049009 20.974005,15.76602 20.666998,16.866026 C20.359015,15.76602 20.073004,14.049009 19.879004,12.882017 C19.225012,8.9580364 18.752996,6.1230145 16.807013,6.1230145 C14.85999,6.1230145 14.386998,8.959013 13.733006,12.885008 C13.539006,14.051023 13.254003,15.763029 12.945989,16.862028 C12.639012,15.763029 12.354009,14.049009 12.160008,12.883024 C11.506992,8.9580364 11.035007,6.1230145 9.0889931,6.1230145 C7.1409945,6.1230145 6.6690097,8.959013 6.0140104,12.885008 C5.8200102,14.052031 5.5339994,15.769011 5.226016,16.86801 C4.9180021,15.768034 4.6319914,14.049009 4.436007,12.88101 C3.8469872,9.3510113 3.4020104,6.7110271 1.9020101,6.2150249 C1.4970112,6.8780193 1.1499957,7.5780315 0.86700612,8.314024 C0.92099172,8.3390179 0.96798885,8.3730145 1.0260028,8.3910198 C1.4530048,9.0780315 1.8859884,11.676023 2.1510031,13.262022 C2.8049948,17.188017 3.2789941,20.024015 5.2269926,20.024015 C7.1740146,20.024015 7.6449924,17.190031 8.2999916,13.26602 C8.4939919,12.099028 8.7800026,10.382017 9.0880165,9.2840252 C9.3949928,10.382017 9.6799965,12.097013 9.8750038,13.264036 C10.527988,17.189024 11.000004,20.024015 12.945989,20.024015 C14.892003,20.024015 15.363988,17.190031 16.018011,13.26602 C16.213018,12.099028 16.498999,10.382017 16.806005,9.2840252 C17.113989,10.382017 17.398993,12.096037 17.592993,13.263029 C18.247015,17.188017 18.719,20.024015 20.665991,20.024015 C22.613014,20.024015 23.086006,17.188017 23.739998,13.262022 C24.005013,11.676023 24.437019,9.0780315 24.863991,8.3900127"
+                  Fill="#FFFFB8B4" Stretch="Fill" Height="25.884" Width="25.885" />
+        </DataTemplate>
+
+        <Converters:CounterExamplesToTabItemsConverter 
+            x:Key="counterExamplesToTabItemsConverter" 
+
+            BifurcationTabTemplate="{StaticResource BifurcationTabTemplate}"
+            OscillationTabTemplate="{StaticResource OscillationTabTemplate}"
+            
+            BifurcationHeaderTemplate="{StaticResource BifurcationHeaderTemplate}"
+            OscillationHeaderTemplate="{StaticResource OscillationHeaderTemplate}"
+            />
+
+    </UserControl.Resources>
+
+    <Grid x:Name="grid" d:DataContext="{Binding Source={StaticResource ProofData}}" >
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ProofStateGroup">
+
+                <!-- StableByExclusion -->
+                <VisualState x:Name="StableByExclusionState">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProgressionGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExampleTabs">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesPanel">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProofProgressionHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <!-- StableByExclusion ends -->
+                
+                <VisualState x:Name="StableState">
+                    <Storyboard>
+                        <!-- StableByExclusion -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProgressionGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <!-- -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExampleTabs">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesPanel">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="NotStableState">
+                    <Storyboard>
+                        <!-- StableByExclusion -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProgressionGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <!-- -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExampleTabs">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                
+                <VisualState x:Name="CounterExamplesState">
+                    <Storyboard>
+                        <!-- StableByExclusion -->
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGridByExclusion">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <!-- Because it's not specifically Collapsed, CounterExample stuff is visible! _____________ -->
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid1">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="VariablesGrid2">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NotStableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="StableGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="CounterExamplesPanel">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProofProgressionHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProgressionGrid">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Border BorderBrush="#FFBABCBE" BorderThickness="2" CornerRadius="8" d:LayoutOverrides="HorizontalMargin">
+            <Border.Effect>
+                <DropShadowEffect Direction="331" BlurRadius="8" ShadowDepth="3"/>
+            </Border.Effect>
+        </Border>
+        <Border BorderBrush="#FFBBBDBF" BorderThickness="2,5,2,2" CornerRadius="8" Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Rectangle Fill="{StaticResource PopupBorders}" Cursor="Hand" Margin="0,-1,0,0"/>
+                <Path Cursor="Hand" Data="M31.667,7.2360039E-05 C33.876141,-0.013075233 35.667,1.7671272 35.667,3.9762654 L35.667,8.9762659 L35.666985,8.9769392 L35.666985,11.976406 L35.666988,18.976406 L31.666985,18.976406 L27.66699,18.976406 L9.6669884,18.976406 C7.457849,18.976406 5.6669884,17.185545 5.6669884,14.976406 L5.6669884,9.9760742 L5.6617923,9.7705717 C5.5546594,7.6570921 3.8070998,5.9764109 1.6669962,5.9764104 L0,5.9764104 L0,4.1885428 C4.7683716E-07,1.9794044 1.7908611,0.17788482 3.9999998,0.16473651 z" Fill="{StaticResource PopupBorders}" HorizontalAlignment="Right" Height="18.976" Margin="0,-5.976,0,0" Grid.Row="1" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Top" Width="35.667"/>
+                <TextBlock TextWrapping="NoWrap" TextTrimming="WordEllipsis" Text="{Binding ModelName}" VerticalAlignment="Center" Margin="10,8,38,0" Grid.Row="1" Style="{StaticResource TitleTextStyle}" FontSize="21.333"/>
+                <Button 
+					TabIndex="3" 
+					Command="{Binding CloseCommand}"
+					Style="{StaticResource PathButtonStyle}" HorizontalAlignment="Right" Margin="0,-1,4,-9">
+                    <Path Data="M4.6969919,3.9939952 L10.498491,9.7945509 L16.29999,3.9939954 L17.00699,4.7009959 L11.205549,10.501494 L17.00699,16.301996 L16.29999,17.008997 L10.498491,11.208438 L4.696991,17.008997 L3.9899905,16.301996 L9.7914324,10.501494 L3.9899912,4.7009959 z M0.99999994,1.0000002 L0.99999994,20.000008 L20,20.000008 L20,1.0000002 z M0,0 L21,0 L21,21 L0,21 z" Fill="White" Height="21" Stretch="Fill" Width="21" UseLayoutRounding="False"/>
+                </Button>
+                <Grid Grid.Row="2" Margin="10,0" Grid.RowSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="0.5*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="0.5*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid x:Name="StableGrid" d:LayoutOverrides="Height">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Analysis" HorizontalAlignment="Left" Width="118" Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Bottom" FontWeight="Bold" Foreground="#FF292929" FontSize="16" Margin="0,0,0,2"/>
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="BMA" Style="{StaticResource PopupTextStyle}"/>
+                            <TextBlock x:Name="succeededText" Text="succeeded" Margin="5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock Text="in checking every possible state of the " Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="model in" Style="{StaticResource PopupTextStyle}"/>
+                            <TextBlock x:Name="timeText" Text="{Binding Time}" Margin="5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Text="seconds. After stepping through" Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock x:Name="stepsText" Text="{Binding Steps}" Style="{StaticResource PopupStableTextStyle}" Margin="0,0,5,0"/>
+                            <!-- was: Text="{Binding NumberOfSteps}" -->
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}"><Run Text="separate interactions, the model eventual"/><Run Text="ly"/></TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="reached a single stable state." Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Steps}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <!-- was: Text="{Binding NumberOfSteps}" -->
+                        <TextBlock TextWrapping="Wrap" Text="steps" Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/>
+                        <Path x:Name="ValidPath" Data="M421.9858,569.6992L428.3078,576.0212L441.8538,562.4742" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource StableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False" Margin="0" HorizontalAlignment="Left" Width="24" Height="18" VerticalAlignment="Center" Grid.RowSpan="2"/>
+                        <TextBlock TextWrapping="Wrap" Text="Stabilizes" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource StableBrush}" Grid.RowSpan="2"/>
+                    </Grid>
+                    
+                    <!-- Stable by Exclusion -->
+                    <Grid x:Name="StableGridByExclusion" d:LayoutOverrides="Height">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text=" " Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text=" " Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/>
+
+
+                        <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Analysis" HorizontalAlignment="Left" Width="118" Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Bottom" FontWeight="Bold" Foreground="#FF292929" FontSize="16" Margin="0,0,0,2"/>
+                        
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="No bifurcations or cycles were found in your model." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="Therefore, by exclusion, " />
+                            <TextBlock Text="your model stabilizes" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="," />
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="but the stable state is not found by verification." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="To determine the final stable state, run a simulation." />
+                        </StackPanel>
+                        
+                        
+                        <Path x:Name="ValidPath2" Data="M421.9858,569.6992L428.3078,576.0212L441.8538,562.4742" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource StableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False" Margin="0" HorizontalAlignment="Left" Width="24" Height="18" VerticalAlignment="Center" Grid.RowSpan="2"/>                        
+                        <TextBlock TextWrapping="Wrap" Text="Stabilizes" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource StableBrush}" Grid.RowSpan="2"/>
+                    </Grid>
+                    <!-- -->
+                   
+                    
+                    <!--  Kept for future reference, if additional features requested.
+                    
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="BMA" Style="{StaticResource PopupTextStyle}"/>
+                            <TextBlock x:Name="succeededText" Text="succeeded" Margin="5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock Text="in checking every possible state of the " Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="model in" Style="{StaticResource PopupTextStyle}"/>
+                            <TextBlock x:Name="timeText" Text="{Binding Time}" Margin="5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                            <TextBlock TextWrapping="Wrap" Text="seconds. After stepping through" Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock x:Name="stepsText" Text="{Binding NumberOfSteps}" Style="{StaticResource PopupStableTextStyle}" Margin="0,0,5,0"/>
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}"><Run Text="separate interactions, the model eventual"/><Run Text="ly"/></TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="6" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="reached a single stable state." Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding NumberOfSteps}" Foreground="{StaticResource StableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupStableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="steps" Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/> 
+                    -->
+
+                    <!-- Stable by Exclusion ends-->
+
+                    <!-- Visibility="{Binding IsStable, Converter={StaticResource InvertedBoolToVisibilityConverter}, FallbackValue=True}" -->
+                    <Grid x:Name="NotStableGrid" VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Analysis" HorizontalAlignment="Left" Width="118" Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF292929" FontSize="16"/>
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Style="{StaticResource PopupTextStyle}" Text="After stepping through"/>
+                            <TextBlock x:Name="unstableSteps" Text="{Binding Steps}" Margin="5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                            <!-- was: Text="{Binding NumberOfSteps}" -->
+                            <TextBlock TextWrapping="Wrap" Text="separate interactions in" Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="the model, the analysis failed to determine a final" Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="5" Orientation="Horizontal" Grid.ColumnSpan="3">
+                            <TextBlock TextWrapping="Wrap" Text="stable state." Style="{StaticResource PopupTextStyle}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Time}" Foreground="{StaticResource NotStableBrush}" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="seconds" d:LayoutOverrides="Width" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource PopupTextStyle}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Steps}" Foreground="{StaticResource NotStableBrush}" Grid.Column="1" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,5,0" Style="{StaticResource PopupUnstableTextStyle}"/>
+                        <!-- was: Text="{Binding NumberOfSteps}" -->
+                        <TextBlock TextWrapping="Wrap" Text="steps" Grid.Column="2" VerticalAlignment="Center" d:LayoutOverrides="Width" Grid.Row="1" Style="{StaticResource PopupTextStyle}"/>
+                        <Path x:Name="InvalidPath1" 
+							Data="M2,2 L17,17 M2,17 L17,2" StrokeStartLineCap="Flat" Stretch="Fill" StrokeEndLineCap="Flat" Stroke="{StaticResource NotStableBrush}" StrokeThickness="4" StrokeMiterLimit="4" StrokeLineJoin="Miter" UseLayoutRounding="False"
+							 HorizontalAlignment="Left" Width="19" Grid.RowSpan="2" Height="19" VerticalAlignment="Center" 
+                          />
+                        <TextBlock TextWrapping="Wrap" Text="Failed to Stabilise" VerticalAlignment="Center" Margin="30,0,0,0" Style="{StaticResource TitleTextStyle}" d:LayoutOverrides="Height" Foreground="{StaticResource NotStableBrush}" Grid.RowSpan="2"/>
+                    </Grid>
+
+                    <sdk:DataGrid x:Name="VariablesGrid1" 
+                                      Grid.Row="1"
+							AutoGenerateColumns="False" 
+							ItemsSource="{Binding Variables}" 
+                            SelectedItem="{Binding Path=SelectedProofVariable, Mode=TwoWay}"
+							Style="{StaticResource PopupDataGridStyle}"
+							BorderBrush="{StaticResource PageBorderBrush}" 
+							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+							Foreground="#FF58595B" 
+							BorderThickness="1" 
+							HorizontalScrollBarVisibility="Auto" 
+							    CanUserReorderColumns="False"
+                            CanUserResizeColumns="True"
+                            CanUserSortColumns="False"
+                                      FontFamily="Verdana" 
+							FontSize="13.333"
+							RowStyle="{StaticResource DataGridRowStyle}" 
+							VerticalScrollBarVisibility="Auto" 
+                            CellStyle="{StaticResource PopupDataGridCellStyle}"
+                            Margin="0,5,0,0"
+                            >
+
+                        <i:Interaction.Behaviors>
+                            <behaviors:ScrollIntoViewBehavior/>
+                        </i:Interaction.Behaviors>
+
+                        <sdk:DataGrid.Columns>
+                            <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
+                            <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
+
+                            <!-- Below had Width="*" -->
+                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True">
+                                <sdk:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding TargetFunction}" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </sdk:DataGridTemplateColumn.CellTemplate>
+                            </sdk:DataGridTemplateColumn>                            
+                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Fixpoint"/>
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
+
+                    <!-- Verbose but working bugfix. 
+                    Binding the column header value to a string that's a function of state would be more elegant. 
+                    Coming up. -->
+                    
+                    <sdk:DataGrid x:Name="VariablesGrid2" 
+                                      Grid.Row="1"
+							AutoGenerateColumns="False" 
+							ItemsSource="{Binding Variables}" 
+                            SelectedItem="{Binding Path=SelectedProofVariable, Mode=TwoWay}"
+							Style="{StaticResource PopupDataGridStyle}"
+							BorderBrush="{StaticResource PageBorderBrush}" 
+							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+							Foreground="#FF58595B" 
+							BorderThickness="1" 
+							HorizontalScrollBarVisibility="Auto" 
+							    CanUserReorderColumns="False"
+                            CanUserResizeColumns="True"
+                            CanUserSortColumns="False"
+                                      FontFamily="Verdana" 
+							FontSize="13.333"
+							RowStyle="{StaticResource DataGridRowStyle}" 
+							VerticalScrollBarVisibility="Auto" 
+                            CellStyle="{StaticResource PopupDataGridCellStyle}"
+                            Margin="0,5,0,0"
+                            >
+
+                        <i:Interaction.Behaviors>
+                            <behaviors:ScrollIntoViewBehavior/>
+                        </i:Interaction.Behaviors>
+
+                        <sdk:DataGrid.Columns>
+
+                            <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
+                            <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
+
+                            <sdk:DataGridTemplateColumn Header="TargetFunction"	IsReadOnly="True" >
+                                <sdk:DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{Binding TargetFunction}" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </sdk:DataGridTemplateColumn.CellTemplate>
+                            </sdk:DataGridTemplateColumn>
+                            <sdk:DataGridTextColumn Binding="{Binding Range}" IsReadOnly="True" Header="Bound"/> <!-- Was "Final range"-->
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
+
+                    <TextBlock x:Name="ProofProgressionHeader" TextWrapping="Wrap" Text="Proof Progression" Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF292929" HorizontalAlignment="Left" Grid.Row="2" Margin="0,5" FontSize="16"/>
+                    
+                    <sdk:DataGrid 
+                            x:Name="ProgressionGrid" 
+                            FrozenColumnCount = "1"
+                            Grid.Row="3"
+							AutoGenerateColumns="False" 
+							ItemsSource="{Binding ProgressionInfos}" 
+                            SelectedItem="{Binding Path=SelectedProgressionInfo, Mode=TwoWay}"
+						    Style="{StaticResource PopupDataGridStyle}"
+							BorderBrush="{StaticResource PageBorderBrush}" 
+							ColumnHeaderStyle="{StaticResource VariablesDataGridColumnHeaderStyle}" 
+							Foreground="#FF58595B" 
+							BorderThickness="1" 
+							HorizontalScrollBarVisibility="Auto" 
+							FontFamily="Verdana" 
+							FontSize="13.333"
+                            CanUserReorderColumns="False"
+                            CanUserResizeColumns="False"
+                            CanUserSortColumns="False"
+							RowStyle="{StaticResource DataGridRowStyle}" 
+							VerticalScrollBarVisibility="Auto"
+                            Margin="0,0,0,10" 
+                            CellStyle="{StaticResource PopupDataGridCellStyle}"
+                            >
+
+                        <i:Interaction.Behaviors>
+                            <behaviors:ScrollIntoViewBehavior/>
+                        </i:Interaction.Behaviors>
+
+                        <sdk:DataGrid.Columns>
+                            <!-- For reference, if extra column wanted:
+                            <sdk:DataGridTextColumn Binding="{Binding CellName}" IsReadOnly="True" Header="Cell"/>
+                            -->
+                            <sdk:DataGridTextColumn Binding="{Binding Name}" IsReadOnly="True" Header="Name"/>
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
+
+                    <TextBlock x:Name="CounterExamplesHeader" TextWrapping="Wrap" 
+                               Text="Error Trace" 
+                               Style="{StaticResource SubLabelTextStyle}" VerticalAlignment="Center" FontWeight="Bold" Foreground="#FF292929" HorizontalAlignment="Left" Grid.Row="2" Margin="0,5" FontSize="16"/>
+
+                    <sdk:TabControl x:Name="CounterExampleTabs" Grid.Row="4" Margin="0,5,0,5" BorderThickness="0,1,0,0"
+
+                        ItemsSource="{Binding CounterExampleInfos, Converter={StaticResource counterExamplesToTabItemsConverter}}" Padding="0, 5, 0, 0" Width="Auto" >
+
+                    </sdk:TabControl>
+                </Grid>
+
+                <Grid x:Name="CounterExamplesPanel" Grid.Row="4">
+                    <Rectangle RadiusX="8" RadiusY="8" Margin="0" Fill="#FFE6E6E6"/>
+                    <Rectangle Fill="#FFE6E6E6" Margin="0" Height="10" VerticalAlignment="Top"/>
+
+                    <!--<Button x:Name="SaveButton" 
+					Style="{StaticResource ToolbarButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,5,5" Command="{Binding SaveCommand}" ToolTipService.ToolTip="Save Model" Width="44" Height="44" Grid.Row="4" Background="White">
+                    <Path Data="F1M182.1255,150.4204L175.6765,156.8684L169.2285,150.4204L173.0255,150.4204L173.0255,140.4524L178.3275,140.4524L178.3275,150.4204z M165.2395,160.4794L165.2395,129.2414L177.7065,129.2414L177.7065,137.7254L186.6145,137.7254L186.6145,160.4794z M178.7065,129.9084L185.8645,136.7254L178.7065,136.7254z M178.4065,128.2414L164.2395,128.2414L164.2395,161.4794L187.6145,161.4794L187.6145,137.0114z" Fill="#FF58595B" Height="33.238" Stretch="Fill" Width="23.375" UseLayoutRounding="False"/>
+                </Button>-->
+
+                    <StackPanel  Margin="10,5,10,0" >
+                        <TextBlock TextWrapping="Wrap" Text="Seek bifurcations and cycles" VerticalAlignment="Center" Margin="0" Style="{StaticResource PopupTextStyle}"/>
+                        <Button 
+						HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,2,0,5" Command="{Binding GetCounterExamplesCommand}" Background="#FFD7706C" Content="Further Testing" Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
+                    </StackPanel>
+                </Grid>
+
+            </Grid>
+        </Border>
+    </Grid>
+
+</UserControl>

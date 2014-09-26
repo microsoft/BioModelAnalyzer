@@ -1,0 +1,19 @@
+﻿<UserControl
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:BioCheck_Views="clr-namespace:BioCheck.Views"
+	xmlns:BioCheck_Controls="clr-namespace:BioCheck.Controls"
+	mc:Ignorable="d"
+	x:Class="BioCheck.ViewSamples"
+	d:DesignWidth="1280" d:DesignHeight="800">
+
+	<Canvas x:Name="LayoutRoot" Background="White">
+		<BioCheck_Views:ContainerView Width="326" Height="364" Canvas.Left="71" Canvas.Top="20"/>
+		<BioCheck_Views:VariableView Height="50" Style="{StaticResource ConstantVariableViewStyle}" Width="50" Canvas.Left="450" Canvas.Top="42" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<BioCheck_Controls:VariablePropertyBox Canvas.Left="422" Canvas.Top="209" Width="442"/>
+		<BioCheck_Views:VariableView Canvas.Left="575" Canvas.Top="53" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32"/>
+		<BioCheck_Controls:ContextBar Height="136" Canvas.Left="184" Canvas.Top="422" Width="253" Style="{StaticResource ContainerContextBarStyle}"/>
+	</Canvas>
+</UserControl>
