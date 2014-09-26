@@ -877,10 +877,10 @@ namespace BioCheck.ViewModel
 
             var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
 
-            var timeVM = TimeViewModelFactory.Create(modelVM);              // Sets only the name.
-
-            ApplicationViewModel.Instance.Container
-                    .Resolve<ITimeWindowService>().Show(timeVM);
+            // Not needed, right? ______
+            //var timeVM = TimeViewModelFactory.Create(modelVM);              // Sets only the name.
+            //ApplicationViewModel.Instance.Container
+            //        .Resolve<ITimeWindowService>().Show(timeVM);
 
             ApplicationViewModel.Instance.Container
                .Resolve<IBusyIndicatorService>()
