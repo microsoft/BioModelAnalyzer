@@ -179,7 +179,7 @@ $(document).ready(function () {
     var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#Proof-Analysis"));
     var furtherTestingDriver = new BMA.UIDrivers.FurtherTestingDriver($("#Further-Testing"), undefined);
     var simulationViewer = new BMA.UIDrivers.SimulationViewerDriver($("#tabs-2"));
-    var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(expandedSimulation);
+    var fullSimulationViewer = new BMA.UIDrivers.SimulationExpandedDriver(expandedSimulation);
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
 

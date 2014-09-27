@@ -39,8 +39,9 @@
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 //alert(that.options.colors.length);
-                for (var i = 0; i < that.options.colors.length; i++)
+                for (var i = 0; i < that.options.colors.length; i++) 
                     $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").appendTo(this.chartdiv);
+                
 
 
                 that._chart = InteractiveDataDisplay.asPlot(this.chartdiv);

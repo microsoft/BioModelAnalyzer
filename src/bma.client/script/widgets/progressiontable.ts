@@ -41,7 +41,7 @@
             if (this.options.data !== undefined && this.options.data.length !== 0) {
                 var data = this.options.data;
                 if (data[0].length === this.options.interval.length) 
-                    for (var i = 0; i < data.length && 0 < data[i].length; i++) {
+                    for (var i = 0; i < data.length; i++) { //&& 0 < data[i].length; i++) {
                         this.AddData(data[i]);
                     }
             }

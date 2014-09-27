@@ -3,15 +3,15 @@
         export class SimulationPresenter {
             private appModel: BMA.Model.AppModel;
             private compactViewer: BMA.UIDrivers.ISimulationViewer;
-            private expandedViewer: BMA.UIDrivers.ISimulationFull;
+            private expandedViewer: BMA.UIDrivers.ISimulationExpanded;
             private data;
             private colors;
             private initValues;
 
-            constructor(appModel: BMA.Model.AppModel, simulationFull: BMA.UIDrivers.ISimulationFull, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup) {
+            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup) {
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
-                this.expandedViewer = simulationFull;
+                this.expandedViewer = simulationExpanded;
                 this.data = [];
                 this.colors = [];
                 var that = this;
@@ -46,7 +46,7 @@
                             case "SimulationVariables":
                                 //that.ClearColors();
                                 that.expandedViewer.Set({ variables: variables, colors: that.colors, init: that.initValues });
-                                full = that.expandedViewer.GetViewer();//$('<div id="SimulationFull"></div>').simulationexpanded({ data: { variables: that.CreateFullTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
+                                full = that.expandedViewer.GetViewer();//$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
                             case "SimulationPlot":
                                 full = $('<div id="SimulationPlot"></div>').height(500).simulationplot({colors: that.colors});

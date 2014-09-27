@@ -65,7 +65,7 @@ module BMA {
             ChangeVisibility(params);
         }
 
-        export interface ISimulationFull {
+        export interface ISimulationExpanded {
             AddResult(res);
             GetViewer();
             Set(data);

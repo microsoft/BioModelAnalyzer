@@ -48,7 +48,7 @@
                         switch (behavior) {
                             case "toggle":
                                 if (that.listOptions[ind].toggle === undefined) {
-                                    value = command !== undefined ? Boolean($(child).attr("data-default")) || true : undefined;
+                                    value = command !== undefined ? ($(child).attr("data-default")==="true") : undefined;
                                     var button = $('<button></button>')
                                         .appendTo($(child))
                                         .addClass("hoverable");
@@ -71,7 +71,7 @@
 
                             case "increment":
                                 if (that.listOptions[ind].increment === undefined) {
-                                    value = command !== undefined ? $(item).attr("data-default") || 10 : undefined;
+                                    value = command !== undefined ? parseInt($(child).attr("data-default")) || 10 : undefined;
                                     var plus = $('<button>+</button>').addClass("plusminus")
                                         .appendTo($(child))
                                         .addClass("hoverable");
@@ -91,7 +91,7 @@
                                 break;
                         }
                         if (value === undefined) {
-                            console.log("Undefind command or invalid value");
+                            console.log(behavior + ' ' + command + ' ' + value);
                         }
                     }
                 })

@@ -42,7 +42,7 @@
                         switch (param) {
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null)
-                                    full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                                    full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
                                 break;
                             case "ProofVariables":
                                 var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
@@ -113,7 +113,7 @@
                 return color;
             }
 
-            public CreateFullResultTable(ticks) {
+            public CreateExpandedResultTable(ticks) {
                 
                 var container = $('<div></div>');
                 if (ticks === null) return container;

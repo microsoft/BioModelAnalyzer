@@ -204,7 +204,7 @@ module BMA {
             //}
         }
 
-        export class SimulationFullDriver implements ISimulationFull {
+        export class SimulationExpandedDriver implements ISimulationExpanded {
             private viewer;
 
             constructor (view: JQuery) {
@@ -212,10 +212,10 @@ module BMA {
             }
 
             public Set(data: { variables; colors; init }) {
-                var table = this.CreateFullTable(data.variables, data.colors);
+                var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
                 var toAdd = this.CreatePlotView(data.colors);
-                this.viewer.simulationexpanded({ data: { variables: table, init: data.init, interval: interval, data: toAdd } });
+                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: toAdd });
             }
 
             public GetViewer(): JQuery {
@@ -265,7 +265,7 @@ module BMA {
                 return undefined;
             }
 
-            public CreateFullTable(variables,colors) {
+            public CreateExpandedTable(variables,colors) {
                 var table = [];
                 //var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {

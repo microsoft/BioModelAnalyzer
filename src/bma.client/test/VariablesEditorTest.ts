@@ -77,7 +77,7 @@
         expect(neweditor.bmaeditor("option", "rangeTo")).toEqual(10);
         expect(neweditor.bmaeditor("option", "formula")).toEqual("123-ceil(x)");
         expect(neweditor.bmaeditor("option", "approved")).toBeFalsy();
-        var funs = neweditor.find(".formula-not-validated");
+        var funs = neweditor.find(".formula-failed");
         expect(funs.length).toEqual(1);
 
         neweditor.bmaeditor("option", "approved", true);
@@ -86,7 +86,7 @@
 
 
         neweditor.bmaeditor({ approved: false });
-        funs = neweditor.find(".formula-not-validated");
+        funs = neweditor.find(".formula-failed");
         expect(funs.length).toEqual(1);
     });
 
@@ -205,8 +205,8 @@
         expect(textarea.val()).toEqual("var()");
 
         inputs.eq(2).click();
-        expect(editor.bmaeditor("option", "formula")).toEqual("var(www)");
-        expect(textarea.val()).toEqual("var(www)");
+        expect(editor.bmaeditor("option", "formula")).toEqual("var(" + inputs.eq(2).text() +")");
+        expect(textarea.val()).toEqual("var(" + inputs.eq(2).text()+")");
     });
 
     it("should create a variableeditorchanged command", () => {

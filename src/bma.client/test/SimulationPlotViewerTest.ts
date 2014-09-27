@@ -1,6 +1,6 @@
 ﻿declare var InteractiveDataDisplay: any;
 
-describe("SimultaionPlotViewer", () => {
+describe("SimulationPlotViewer", () => {
 
     var widget = $('<div></div>');
 
@@ -26,17 +26,20 @@ describe("SimultaionPlotViewer", () => {
 
     it("creates div with plot", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).attr("data-idd-plot")).toEqual("plot");
+        expect(widget.children().eq(0).attr("data-idd-plot")).toEqual("figure");
     })
 
     it("creates gridline plot", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).children().eq(0).attr("data-idd-plot")).toEqual("scalableGridLines");
+        expect(widget.children().eq(0).children().eq(0).attr("data-idd-axis")).toEqual("numeric");
+        expect(widget.children().eq(0).children().eq(1).attr("data-idd-axis")).toEqual("numeric");
+        expect(widget.children().eq(0).children().eq(2).attr("data-idd-plot")).toEqual("scalableGridLines");
+        expect(widget.children().eq(0).children().length).toEqual(3);
     })
 
     it("don't creates polylines without data", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).children().length).toEqual(1);
+        expect(widget.children().eq(0).children().length).toEqual(3);
     })
 
     it("should add polylines", () => {
@@ -54,10 +57,10 @@ describe("SimultaionPlotViewer", () => {
             Plot: [3, 5, 9]
         };
         widget.simulationplot({ colors: data });
-        expect(widget.children().eq(0).children().length).toEqual(1 + data.length);
+        expect(widget.children().eq(0).children().length).toEqual(4 + data.length);
     })
 
-    it("should updata polylines after setting another data", () => {
+    it("should update polylines after setting another data", () => {
         var data = [];
         data[0] = {
             Id: 3,
@@ -81,7 +84,7 @@ describe("SimultaionPlotViewer", () => {
             Plot: [3, 5, 9]
         };
         widget.simulationplot({ colors: data2 });
-        expect(widget.children().eq(0).children().length).toEqual(1 + data2.length);
+        expect(widget.children().eq(0).children().length).toEqual(4 + data2.length);
     })
 
     it("should set proper options for polylines", () => {
