@@ -9,11 +9,12 @@
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters\presenters.ts"/>
+/// <reference path="script\presenters\furthertestingpresenter.ts"/>
+/// <reference path="script\presenters\simulationpresenter.ts"/>
+/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
-/// <reference path="script\presenters\simulationpresenter.ts"/>
-/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>
 /// <reference path="script\widgets\simulationexpanded.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
@@ -23,6 +24,7 @@
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 /// <reference path="script\widgets\progressiontable.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
+/// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -129,7 +131,8 @@ $(document).ready(function () {
     });
 
     $("#editor").bmaeditor();
-    $("#tabs-1").proofresultviewer();
+    $("#Proof-Analysis").proofresultviewer();
+    $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
 
@@ -173,9 +176,9 @@ $(document).ready(function () {
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
-    var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
+    var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#Proof-Analysis"));
+    var furtherTestingDriver = new BMA.UIDrivers.FurtherTestingDriver($("#Further-Testing"), undefined);
     var simulationViewer = new BMA.UIDrivers.SimulationViewerDriver($("#tabs-2"));
-
     var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(expandedSimulation);
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
@@ -187,6 +190,7 @@ $(document).ready(function () {
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
+    var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(furtherTestingDriver, popupDriver);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver);

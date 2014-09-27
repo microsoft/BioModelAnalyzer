@@ -456,6 +456,7 @@
 
     .tabPanel {
         width: 400px;
+        min-height: 150px;
         background-color: Window;
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
@@ -467,6 +468,10 @@
         margin: 0;
         margin-top: 10px;
         position: relative;
+    }
+
+    .tabPanel h2 {
+        margin: 0;
     }
 
     .ui-widget button{

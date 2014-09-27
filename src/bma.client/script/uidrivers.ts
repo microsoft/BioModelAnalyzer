@@ -104,8 +104,6 @@ module BMA {
                 this.proofContentViewer = proofContentViewer;
             }
 
-            
-
             public SetData(params) {
                 this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data});
             }
@@ -131,10 +129,42 @@ module BMA {
                 this.proofContentViewer.proofresultviewer("hide", params.tab);
             }
 
-            private DataToCompactMode(data) { }
-            private DataToFullMode(data) { }
-            
         }
+
+        export class FurtherTestingDriver implements IFurtherTesting {
+
+            private viewer: JQuery;
+
+            constructor(viewer: JQuery, toggler: JQuery) {
+                this.viewer = viewer;
+            }
+
+            public GetViewer() {
+                return this.viewer;
+            }
+
+            public ShowStartToggler() {
+                this.viewer.furthertesting("ShowStartToggler");
+            }
+
+            public HideStartToggler() {
+                this.viewer.furthertesting("HideStartToggler");
+            }
+
+            public ShowResults(data) {
+                this.viewer.furthertesting({ data: data });
+                //var content = $('<div></div>')
+                //    .addClass("scrollable-results")
+                //    .coloredtableviewer({ numericData: data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
+                //this.results.resultswindowviewer({header: "Further Testing", content: content, icon: "max"})
+            }
+
+            public HideResults() {
+                this.viewer.furthertesting({data: undefined});
+                //this.results.resultswindowviewer("destroy");
+            }
+        }
+
 
         export class PopupDriver implements IPopup {
             private popupWindow;
@@ -155,6 +185,9 @@ module BMA {
                         break;
                     case "SimulationVariables":
                         header = "Simulation Progression";
+                        break;
+                    case "FurtherTesting": 
+                        header = "Further Testing";
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });

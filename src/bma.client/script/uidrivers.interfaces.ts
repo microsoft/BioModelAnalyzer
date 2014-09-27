@@ -50,6 +50,14 @@ module BMA {
             Hide(params);
         }
 
+        export interface IFurtherTesting {
+            ShowStartToggler();
+            HideStartToggler();
+            ShowResults(data);
+            HideResults();
+            GetViewer();
+        }
+
         export interface ISimulationViewer {
             SetData(params);
             Show(params);

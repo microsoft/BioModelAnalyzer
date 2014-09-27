@@ -207,6 +207,7 @@
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
@@ -257,6 +258,7 @@
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
+    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
     <TypeScriptCompile Include="script\widgets\graphnamerangetable.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
