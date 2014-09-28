@@ -283,12 +283,14 @@
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
+    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
     <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
     <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
     <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
+    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>

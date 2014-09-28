@@ -787,6 +787,7 @@
     }
 
     .closing-button {
+        cursor:pointer;
         position: absolute;
         right: 10px;
         width: 20px;
@@ -1176,4 +1177,25 @@
 	font-size:15px;
             padding:8px 15px;
 	text-decoration:none;
+}
+
+.containernameeditor {
+    padding:10px;
+    background-color: Window;
+    position:absolute;
+    left: 100px;
+    top: 100px;
+    border-radius:5px;
+    box-shadow: 0 0 8px lightgray; /*#000;*/
+    font-family:Verdana;
+	font-size: 17px;
+    z-index:5;
+    width: 170px;
+}
+.containernameeditor div {
+    cursor:default;
+}
+
+.containernameeditor input {
+    margin-top: 10px;
 }
