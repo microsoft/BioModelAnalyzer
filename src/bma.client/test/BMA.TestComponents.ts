@@ -28,6 +28,14 @@ module BMA {
 
             public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
             }
+
+            public GetPlotX(left) {
+                return 0;
+            }
+
+            public GetPlotY(left) {
+                return 0;
+            }
         }
 
         export class TestUndoRedoButton implements BMA.UIDrivers.ITurnableButton {

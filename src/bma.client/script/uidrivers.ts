@@ -30,6 +30,14 @@ module BMA {
             public SetZoom(zoom: number) {
                 this.svgPlotDiv.drawingsurface({ zoom: zoom });
             }
+
+            public GetPlotX(left: number) {
+                return this.svgPlotDiv.drawingsurface("getPlotX", left);
+            }
+
+            public GetPlotY(top: number) {
+                return this.svgPlotDiv.drawingsurface("getPlotY", top);
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {
