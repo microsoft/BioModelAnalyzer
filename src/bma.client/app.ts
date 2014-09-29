@@ -107,17 +107,9 @@ $(document).ready(function () {
         }
     });
 
-    var data = [];
-    data[0] = [1, 2, 3, 3, 3, 3, 2, 2, 2, 1];
-    data[1] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 0];
-
-    //$("#Div2").simulationplot({data:data});
-
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
-
-
     
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
@@ -196,7 +188,6 @@ $(document).ready(function () {
     window.Commands.On("Commands.IconsSize", function (param) { visualSettings.IconsSize = param });
     window.Commands.On("Commands.ToggleGrid", function (param) { visualSettings.GridVisibility = param });
     window.Commands.On("Commands.LineWidth", function (param) { visualSettings.LineWidth = param });
-
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);

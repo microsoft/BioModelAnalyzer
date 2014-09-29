@@ -98,11 +98,6 @@ $(document).ready(function () {
         }
     });
 
-    var data = [];
-    data[0] = [1, 2, 3, 3, 3, 3, 2, 2, 2, 1];
-    data[1] = [2, 2, 2, 2, 2, 2, 1, 1, 1, 0];
-
-    //$("#Div2").simulationplot({data:data});
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
