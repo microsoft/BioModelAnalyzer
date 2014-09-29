@@ -8,6 +8,7 @@ module BMA {
             SetGrid(x0: number, y0: number, xStep: number, yStep: number);
             GetPlotX(left: number);
             GetPlotY(top: number);
+            GetPixelWidth();
         }
 
         export interface INavigationPanel {
@@ -65,11 +66,12 @@ module BMA {
         }
 
         export interface IFileLoader {
-            OpenFileDialog() : JQueryPromise<File>;
+            OpenFileDialog(): JQueryPromise<File>;
         }
 
         export interface IContextMenu {
-            SetOptions(options: any) : void;
+            GetMenuItems(): string[];
+            EnableMenuItems(optionsVisibility: { name: string; isVisible: boolean}[]) : void ;
         }
 
     }

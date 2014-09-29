@@ -76,6 +76,7 @@ module BMA {
                     var relationships = [];
                     for (var i = 0; i < ml.model.relationships.length; i++) {
                         relationships.push(new BMA.Model.Relationship(
+                            ml.model.relationships[i].Id,
                             ml.model.relationships[i].fromVariableId,
                             ml.model.relationships[i].toVariableId,
                             ml.model.relationships[i].type));

@@ -39,6 +39,10 @@ var BMA;
             TestSVGPlotDriver.prototype.GetPlotY = function (left) {
                 return 0;
             };
+
+            TestSVGPlotDriver.prototype.GetPixelWidth = function () {
+                return 0;
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;

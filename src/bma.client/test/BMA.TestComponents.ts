@@ -36,6 +36,10 @@ module BMA {
             public GetPlotY(left) {
                 return 0;
             }
+
+            public GetPixelWidth() {
+                return 0;
+            }
         }
 
         export class TestUndoRedoButton implements BMA.UIDrivers.ITurnableButton {

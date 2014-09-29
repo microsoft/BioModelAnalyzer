@@ -41,6 +41,7 @@ module BMA {
             private editingVariableId = undefined;
 
             private contextMenu: BMA.UIDrivers.IContextMenu;
+            private contextElement;
 
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
@@ -48,8 +49,8 @@ module BMA {
                 dragService: BMA.UIDrivers.IElementsPanel,
                 undoButton: BMA.UIDrivers.ITurnableButton,
                 redoButton: BMA.UIDrivers.ITurnableButton,
-                variableEditorDriver: BMA.UIDrivers.IVariableEditor) {
-                //contextMenu: BMA.UIDrivers.IContextMenu) {
+                variableEditorDriver: BMA.UIDrivers.IVariableEditor,
+                contextMenu: BMA.UIDrivers.IContextMenu) {
 
                 var that = this;
                 this.appModel = appModel;
@@ -59,7 +60,7 @@ module BMA {
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
-                //this.contextMenu = contextMenu;
+                this.contextMenu = contextMenu;
 
                 this.models = [];
 
@@ -120,14 +121,52 @@ module BMA {
                 });
 
                 window.Commands.On("DrawinfSurfaceContextMenuOpening", (args) => {
-                    var x = this.driver.GetPlotX(args.left);
-                    var y = this.driver.GetPlotY(args.top);
+                    var x = that.driver.GetPlotX(args.left);
+                    var y = that.driver.GetPlotY(args.top);
 
-                    var id = this.GetVariableAtPosition(x, y);
-                    if (id !== undefined) {
-                        //alert(id);
+                    var id = that.GetVariableAtPosition(x, y);
+                    var containerId = that.GetContainerAtPosition(x, y);
+                    var relationshipId = that.GetRelationshipAtPosition(x, y, that.driver.GetPixelWidth());
+
+                    if (id !== undefined || containerId !== undefined || relationshipId !== undefined) {
+
+                        that.contextMenu.EnableMenuItems([
+                            { name: "Copy", isVisible: true },
+                            { name: "Paste", isVisible: false },
+                            { name: "Cut", isVisible: true },
+                            { name: "Delete", isVisible: true },
+                        ]);
+
+                    } else {
+
+                        that.contextMenu.EnableMenuItems([
+                            { name: "Copy", isVisible: false },
+                            { name: "Paste", isVisible: true },
+                            { name: "Cut", isVisible: false },
+                            { name: "Delete", isVisible: false },
+                        ]);
+
                     }
 
+                    if (id !== undefined) {
+                        that.contextElement = { id: id, type: "variable" };
+                    } else if (containerId !== undefined) {
+                        that.contextElement = { id: containerId, type: "container" };
+                    } else if (relationshipId !== undefined) {
+                        that.contextElement = { id: relationshipId, type: "relationship" };
+                    }
+
+                });
+
+                window.Commands.On("DrawingSurfaceDelete", (args) => {
+                    if (that.contextElement !== undefined) {
+                        if (that.contextElement.type === "variable") {
+                            that.RemoveVariable(this.contextElement.id);
+                        }
+
+
+                        that.contextElement = undefined;
+                    }
                 });
 
                 var svgCnt = $("<div></div>");
@@ -142,7 +181,7 @@ module BMA {
                     }
                 });
 
-                var dragSubject = dragService.GetDragSubject()
+                var dragSubject = dragService.GetDragSubject();
 
                 
                 dragSubject.dragStart.subscribe(
@@ -237,6 +276,49 @@ module BMA {
                 return $(svg.toSVG()).children();
             }
 
+            private RemoveVariable(id: number) {
+                var wasRemoved = false;
+
+                var model = this.Current.model;
+                var layout = this.Current.layout;
+
+                var variables = this.Current.model.Variables;
+                var variableLayouts = this.Current.layout.Variables;
+
+                var newVars = [];
+                var newVarLs = [];
+
+                for (var i = 0; i < variables.length; i++) {
+                    if (variables[i].Id !== id) {
+                        newVars.push(variables[i]);
+                        newVarLs.push(variableLayouts[i]);
+                        wasRemoved = true;
+                    }
+                }
+
+                var relationships = this.Current.model.Relationships;
+
+                var newRels = [];
+
+                for (var i = 0; i < relationships.length; i++) {
+                    if (relationships[i].FromVariableId !== id &&
+                        relationships[i].ToVariableId !== id) {
+                        newRels.push(relationships[i]);
+                    }
+                }
+
+
+                if (wasRemoved === true) {
+                    var newmodel = new BMA.Model.BioModel(model.Name, newVars, newRels);
+                    var newlayout = new BMA.Model.Layout(layout.Containers, newVarLs);
+                    this.Dup(newmodel, newlayout);
+                }
+            }
+
+            private RemoveContainer(id: number) {
+
+            }
+
             private GetVariableAtPosition(x: number, y: number): number {
                 var variables = this.Current.model.Variables;
                 var variableLayouts = this.Current.layout.Variables;
@@ -254,6 +336,37 @@ module BMA {
             }
 
             private GetContainerAtPosition(x: number, y: number): number {
+                var containers = this.Current.layout.Containers;
+                var element = <BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container");
+                var grid = this.Grid;
+                for (var i = 0; i < containers.length; i++) {
+                    var containerLayout = containers[i];
+                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0)) {
+                        return containerLayout.Id;
+                    }
+                }
+
+                return undefined;
+            }
+
+            private GetRelationshipAtPosition(x: number, y: number, pixelWidth: number): number {
+                var relationships = this.Current.model.Relationships;
+                var layout = this.Current.layout;
+
+                for (var i = 0; i < relationships.length; i++) {
+                    var relationship = relationships[i];
+                    var var1 = layout.GetVariableById(relationship.FromVariableId);
+                    var var2 = layout.GetVariableById(relationship.ToVariableId);
+
+                    var elx = { x: var1.PositionX, y: var1.PositionY, pixelWidth: pixelWidth };
+                    var ely = { x: var2.PositionX, y: var2.PositionY };
+
+                    var elem = window.ElementRegistry.GetElementByType(relationship.Type);
+                    if (elem.Contains(x, y, elx, ely)) {
+                        return relationship.Id;
+                    }
+                }
+
                 return undefined;
             }
 
@@ -289,7 +402,7 @@ module BMA {
                         var model = current.model;
                         var layout = current.layout;
                         var relationships = model.Relationships.slice(0);
-                        relationships.push(new BMA.Model.Relationship(this.stagingLine.id, variable.Id, this.selectedType));
+                        relationships.push(new BMA.Model.Relationship(this.variableIndex++, this.stagingLine.id, variable.Id, this.selectedType));
                         var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, relationships);
                         this.Dup(newmodel, layout);
 
@@ -561,6 +674,12 @@ module BMA {
                 for (var i = 0; i < l.Containers.length; i++) {
                     if (l.Containers[i].Id >= this.variableIndex) {
                         this.variableIndex = l.Containers[i].Id + 1;
+                    }
+                }
+
+                for (var i = 0; i < m.Relationships.length; i++) {
+                    if (m.Relationships[i].Id >= this.variableIndex) {
+                        this.variableIndex = m.Relationships[i].Id + 1;
                     }
                 }
             }

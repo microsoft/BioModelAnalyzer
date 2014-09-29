@@ -38,6 +38,10 @@ module BMA {
             public GetPlotY(top: number) {
                 return this.svgPlotDiv.drawingsurface("getPlotY", top);
             }
+
+            public GetPixelWidth() {
+                return this.svgPlotDiv.drawingsurface("getPixelWidth");
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {
@@ -108,10 +112,10 @@ module BMA {
                 this.proofContentViewer = proofContentViewer;
             }
 
-            
+
 
             public SetData(params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data});
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data });
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {
@@ -127,7 +131,7 @@ module BMA {
             }
 
             public Show(params: any) {
-                this.proofContentViewer.proofresultviewer("show",params.tab);
+                this.proofContentViewer.proofresultviewer("show", params.tab);
             }
 
 
@@ -137,7 +141,7 @@ module BMA {
 
             private DataToCompactMode(data) { }
             private DataToFullMode(data) { }
-            
+
         }
 
         export class PopupDriver implements IPopup {
@@ -151,7 +155,7 @@ module BMA {
                 //this.createResultView(params);
                 var header = "";
                 switch (params.tab) {
-                    case "ProofVariables": 
+                    case "ProofVariables":
                         header = "Variables";
                         break;
                     case "ProofPropagation":
@@ -178,7 +182,7 @@ module BMA {
         export class SimulationFullDriver implements ISimulationFull {
             private viewer;
 
-            constructor (view: JQuery) {
+            constructor(view: JQuery) {
                 this.viewer = view;
             }
 
@@ -229,14 +233,14 @@ module BMA {
                 return data;
             }
 
-            public findColorById(colors,id) {
+            public findColorById(colors, id) {
                 for (var i = 0; i < colors.length; i++)
                     if (id === colors[i].Id)
                         return colors[i];
                 return undefined;
             }
 
-            public CreateFullTable(variables,colors) {
+            public CreateFullTable(variables, colors) {
                 var table = [];
                 //var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
@@ -300,8 +304,26 @@ module BMA {
                 return deferred.promise();
             }
 
-            private OnCheckFileSelected() : boolean {
+            private OnCheckFileSelected(): boolean {
                 return false;
+            }
+        }
+
+        export class ContextMenuDriver implements IContextMenu {
+            private contextMenu: JQuery;
+
+            constructor(contextMenu: JQuery) {
+                this.contextMenu = contextMenu;
+            }
+
+            public EnableMenuItems(optionVisibilities: { name: string; isVisible: boolean }[]) {
+                for (var i = 0; i < optionVisibilities.length; i++) {
+                    this.contextMenu.contextmenu("enableEntry", optionVisibilities[i].name, optionVisibilities[i].isVisible);
+                }
+            }
+
+            public GetMenuItems() {
+                return [];
             }
         }
     }

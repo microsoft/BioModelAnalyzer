@@ -31,6 +31,8 @@ declare var saveTextAs: any;
 interface JQuery {
     contextmenu(): JQueryUI.Widget;
     contextmenu(settings: Object): JQueryUI.Widget;
+    contextmenu(optionLiteral: string, optionName: string): any;
+    contextmenu(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }
 
 $(document).ready(function () {
@@ -74,15 +76,30 @@ $(document).ready(function () {
             { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true },
         ],
         beforeOpen: function (event, ui) {
+            var left = event.pageX - $(".bma-drawingsurface").offset().left;
+            var top = event.pageY - $(".bma-drawingsurface").offset().top;
+
+            console.log("top " + top);
+            console.log("left " + left);
+
             window.Commands.Execute("DrawinfSurfaceContextMenuOpening", {
-                left: event.pageX - $(".bma-drawingsurface").offset().left,
-                top: event.pageY - $(".bma-drawingsurface").offset().top
+                left: left,
+                top: top
             });
         },
         select: function (event, ui) {
             var commandName = "DrawingSurface" + ui.cmd;
-            alert(commandName);
-            window.Commands.Execute(commandName, {});
+            
+            var left = event.pageX - $(".bma-drawingsurface").offset().left;
+            var top = event.pageY - $(".bma-drawingsurface").offset().top;
+
+            console.log("top " + top);
+            console.log("left " + left);
+
+            window.Commands.Execute(commandName, {
+                left: left,
+                top: top
+            });
         }
     });
 
@@ -177,7 +194,7 @@ $(document).ready(function () {
     var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(fullSimulation);
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
-    
+    var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
 
 
     window.Commands.On("ZoomSliderChanged", (args) => {
@@ -185,7 +202,7 @@ $(document).ready(function () {
     });
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver);
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);

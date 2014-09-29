@@ -313,6 +313,11 @@ declare var Rx: any;
         getPlotY: function (top: number) {
             var cs = this._svgPlot.getScreenToDataTransform();
             return -cs.screenToDataY(top);
+        },
+
+        getPixelWidth: function () {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return cs.screenToDataX(1) - cs.screenToDataX(0);
         }
 
     });
