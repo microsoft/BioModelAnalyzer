@@ -61,6 +61,10 @@ module BMA {
                 return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 }
             }
 
+            SetValidation(v: boolean) {
+                return v;
+            }
+
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) { }
 
             Show(x: number, y: number) { }

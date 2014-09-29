@@ -32,14 +32,16 @@
             this.chartdiv = $('<div id="chart"></div>').attr("data-idd-plot","figure").width("100%").height("100%").appendTo(that.element);
             //var plotDiv = $('<div data-idd-plot="polyline" style="width:100%; height:160px"></div>').appendTo(that.element);
             //var grid = $('<div data-idd-plot="grid" data-idd-placement="center" style="width: 100%; height: 160px; top: 0px; left: 40px;"></div>').appendTo(that.chartdiv);
-            var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").attr("data-idd-placement","center").appendTo(this.chartdiv);
-            $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement","left").appendTo(this.chartdiv);
+            $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "left").appendTo(this.chartdiv);
             $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "bottom").appendTo(this.chartdiv);
+            var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
+            
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 //alert(that.options.colors.length);
-                for (var i = 0; i < that.options.colors.length; i++)
-                    $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").attr("data-idd-placement", "center").appendTo(this.chartdiv);
+                for (var i = 0; i < that.options.colors.length; i++) 
+                    $('<div></div>').attr("id", "polyline" + i).attr("data-idd-plot", "polyline").appendTo(this.chartdiv);
+                
 
 
                 that._chart = InteractiveDataDisplay.asPlot(this.chartdiv);

@@ -205,6 +205,9 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <TypeScriptCompile Include="script\model\visualsettings.ts" />
+    <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
@@ -255,12 +258,12 @@
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
-    <TypeScriptCompile Include="script\widgets\graphnamerangetable.ts" />
+    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
     <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationfull.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
     <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
@@ -280,12 +283,14 @@
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
+    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
     <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
     <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
-    <TypeScriptCompile Include="test\SimulationFullTest.ts" />
+    <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
+    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>

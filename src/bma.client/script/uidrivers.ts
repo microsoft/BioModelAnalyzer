@@ -41,7 +41,7 @@ module BMA {
 
             public GetPixelWidth() {
                 return this.svgPlotDiv.drawingsurface("getPixelWidth");
-            }
+        }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {
@@ -75,6 +75,10 @@ module BMA {
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
                     rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
                 };
+            }
+
+            public SetValidation(val: boolean) {
+                this.variableEditor.bmaeditor('option', 'approved', val);
             }
 
             public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
@@ -112,8 +116,6 @@ module BMA {
                 this.proofContentViewer = proofContentViewer;
             }
 
-
-
             public SetData(params) {
                 this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data });
             }
@@ -139,10 +141,42 @@ module BMA {
                 this.proofContentViewer.proofresultviewer("hide", params.tab);
             }
 
-            private DataToCompactMode(data) { }
-            private DataToFullMode(data) { }
-
         }
+
+        export class FurtherTestingDriver implements IFurtherTesting {
+
+            private viewer: JQuery;
+
+            constructor(viewer: JQuery, toggler: JQuery) {
+                this.viewer = viewer;
+            }
+
+            public GetViewer() {
+                return this.viewer;
+            }
+
+            public ShowStartToggler() {
+                this.viewer.furthertesting("ShowStartToggler");
+            }
+
+            public HideStartToggler() {
+                this.viewer.furthertesting("HideStartToggler");
+            }
+
+            public ShowResults(data) {
+                this.viewer.furthertesting({ data: data });
+                //var content = $('<div></div>')
+                //    .addClass("scrollable-results")
+                //    .coloredtableviewer({ numericData: data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
+                //this.results.resultswindowviewer({header: "Further Testing", content: content, icon: "max"})
+            }
+            
+            public HideResults() {
+                this.viewer.furthertesting({data: undefined});
+                //this.results.resultswindowviewer("destroy");
+            }
+        }
+
 
         export class PopupDriver implements IPopup {
             private popupWindow;
@@ -155,7 +189,7 @@ module BMA {
                 //this.createResultView(params);
                 var header = "";
                 switch (params.tab) {
-                    case "ProofVariables":
+                    case "ProofVariables": 
                         header = "Variables";
                         break;
                     case "ProofPropagation":
@@ -163,6 +197,9 @@ module BMA {
                         break;
                     case "SimulationVariables":
                         header = "Simulation Progression";
+                        break;
+                    case "FurtherTesting": 
+                        header = "Further Testing";
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
@@ -179,7 +216,7 @@ module BMA {
             //}
         }
 
-        export class SimulationFullDriver implements ISimulationFull {
+        export class SimulationExpandedDriver implements ISimulationExpanded {
             private viewer;
 
             constructor(view: JQuery) {
@@ -187,10 +224,10 @@ module BMA {
             }
 
             public Set(data: { variables; colors; init }) {
-                var table = this.CreateFullTable(data.variables, data.colors);
+                var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
-                var add = this.CreatePlotView(data.colors);
-                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: add } });
+                var toAdd = this.CreatePlotView(data.colors);
+                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: toAdd });
             }
 
             public GetViewer(): JQuery {
@@ -199,7 +236,7 @@ module BMA {
 
             public AddResult(res) {
                 var result = this.ConvertResult(res);
-                this.viewer.simulationfull("AddResult", result);
+                this.viewer.simulationexpanded("AddResult", result);
             }
 
             public CreatePlotView(colors) {
@@ -240,7 +277,7 @@ module BMA {
                 return undefined;
             }
 
-            public CreateFullTable(variables, colors) {
+            public CreateExpandedTable(variables,colors) {
                 var table = [];
                 //var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {

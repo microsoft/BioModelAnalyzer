@@ -18,6 +18,8 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
+                            if (res.Status !== 4) window.Commands.Execute("ProofFailed", that.appModel.BioModel.Variables);
+                            //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             //if (res.Ticks !== null)
                             var variablesData = that.CreateTableView(res.Ticks);
@@ -40,7 +42,7 @@
                         switch (param) {
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null)
-                                    full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                                    full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
                                 break;
                             case "ProofVariables":
                                 var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
@@ -111,7 +113,7 @@
                 return color;
             }
 
-            public CreateFullResultTable(ticks) {
+            public CreateExpandedResultTable(ticks) {
                 
                 var container = $('<div></div>');
                 if (ticks === null) return container;

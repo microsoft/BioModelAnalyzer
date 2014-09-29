@@ -16,23 +16,25 @@ describe("ResultsWindowViewer", () => {
         var header = "header";
         var content = $('<div id="Test"></div>');
         widget.resultswindowviewer({ header: header, content: content, icon: "max" });
-        expect(widget.find("td").eq(0).text()).toEqual(header);
-        expect(widget.children().eq(1).children().eq(0).attr("id")).toEqual("Test");
+        var headerdiv = widget.children('div').eq(0).children('div').eq(0);
+        expect(headerdiv.text()).toEqual(header);
+        var contentdiv = widget.children().eq(1).children().eq(0);
+        expect(contentdiv.attr("id")).toEqual("Test");
     })
 
     it("changes a header", () => {
         var header = "header";
         var content = $('<div id="Test"></div>');
         widget.resultswindowviewer({ header: header, content: content, icon: "max" });
-        var headerDiv = widget.find("td").eq(0);
-        expect(headerDiv.text()).toEqual(header);
+        var headerdiv = widget.children('div').eq(0).children('div').eq(0);
+        expect(headerdiv.text()).toEqual(header);
 
         header = "newHeader";
         widget.resultswindowviewer({
             header: header
         });
-        headerDiv = widget.find("td").eq(0);
-        expect(headerDiv.text()).toEqual(header);
+        headerdiv = widget.children('div').eq(0).children('div').eq(0);
+        expect(headerdiv.text()).toEqual(header);
     })
 
     it("changes a content", () => {

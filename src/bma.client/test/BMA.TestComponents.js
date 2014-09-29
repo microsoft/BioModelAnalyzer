@@ -80,6 +80,10 @@ var BMA;
                 return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 };
             };
 
+            TestVariableEditor.prototype.SetValidation = function (v) {
+                return v;
+            };
+
             TestVariableEditor.prototype.Initialize = function (variable, model) {
             };
 

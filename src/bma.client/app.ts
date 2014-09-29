@@ -2,19 +2,22 @@
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="script\model\biomodel.ts"/>
 /// <reference path="script\model\model.ts"/>
+/// <reference path="script\model\visualsettings.ts"/>
 /// <reference path="script\commands.ts"/>
 /// <reference path="script\elementsregistry.ts"/>
 /// <reference path="script\functionsregistry.ts"/>
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters\presenters.ts"/>
+/// <reference path="script\presenters\furthertestingpresenter.ts"/>
+/// <reference path="script\presenters\simulationpresenter.ts"/>
+/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
-/// <reference path="script\presenters\simulationpresenter.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>
-/// <reference path="script\widgets\simulationfull.ts"/>
+/// <reference path="script\widgets\simulationexpanded.ts"/>
 /// <reference path="script\widgets\accordeon.ts"/>
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
@@ -22,6 +25,7 @@
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 /// <reference path="script\widgets\progressiontable.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
+/// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -164,7 +168,8 @@ $(document).ready(function () {
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
     $("#editor").bmaeditor();
-    $("#tabs-1").proofresultviewer();
+    $("#Proof-Analysis").proofresultviewer();
+    $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({icon: "min"});
 
@@ -179,19 +184,29 @@ $(document).ready(function () {
     $("#exportModelBtn").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
-    var fullSimulation = $('<div></div>').simulationfull();
-    
-   
+    var expandedSimulation = $('<div></div>').simulationexpanded();
+
+
+    //Visual Settings Presenter
+    var visualSettings = new BMA.Model.AppVisualSettings(); 
+
+    window.Commands.On("Commands.ToggleLabels", function (param) { visualSettings.TextLabelVisibility = param });
+    window.Commands.On("Commands.LabelsSize", function (param) { visualSettings.TextLabelSize = param });
+    window.Commands.On("Commands.ToggleIcons", function (param) { visualSettings.IconsVisibility = param });
+    window.Commands.On("Commands.IconsSize", function (param) { visualSettings.IconsSize = param });
+    window.Commands.On("Commands.ToggleGrid", function (param) { visualSettings.GridVisibility = param });
+    window.Commands.On("Commands.LineWidth", function (param) { visualSettings.LineWidth = param });
+
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
     var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
-    var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#tabs-1"));
+    var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#Proof-Analysis"));
+    var furtherTestingDriver = new BMA.UIDrivers.FurtherTestingDriver($("#Further-Testing"), undefined);
     var simulationViewer = new BMA.UIDrivers.SimulationViewerDriver($("#tabs-2"));
-    
-    var fullSimulationViewer = new BMA.UIDrivers.SimulationFullDriver(fullSimulation);
+    var fullSimulationViewer = new BMA.UIDrivers.SimulationExpandedDriver(expandedSimulation);
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
@@ -204,6 +219,8 @@ $(document).ready(function () {
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
+    var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(furtherTestingDriver, popupDriver);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
+    var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver);
 });

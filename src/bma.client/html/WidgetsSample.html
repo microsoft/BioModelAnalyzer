@@ -10,13 +10,13 @@
     <script type="text/javascript" src="../script/modeltoolbar.js"></script>
     <script type="text/javascript" src="../script/skinmodel.js"></script>
     <script type="text/javascript" src="../script/visibilitysettings.js"></script>
-    
+    <script type="text/javascript" src="../script/widgets/containernameeditor.js"></script>
 
     <script>
 
         //var sh = true;
         $(document).ready(function () {
-
+            $("#nameeditor").containernameeditor();
             /*
             var toggleLabels = true;
             window.Commands = {};
@@ -65,7 +65,7 @@
     </script>
 </head>
 <body>
-
+    <div id="nameeditor"></div>>
     <div id="modelToolbarSlider">
         <div id="modelToolbarHeader" class="skinModelContainer shadow">
             <ul>

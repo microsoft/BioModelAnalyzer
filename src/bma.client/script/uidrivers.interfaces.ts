@@ -23,6 +23,7 @@ module BMA {
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel);
             Show(x: number, y: number);
             Hide();
+            SetValidation(val: boolean);
         }
 
         export interface IElementsPanel {
@@ -52,6 +53,14 @@ module BMA {
             Hide(params);
         }
 
+        export interface IFurtherTesting {
+            ShowStartToggler();
+            HideStartToggler();
+            ShowResults(data);
+            HideResults();
+            GetViewer();
+        }
+
         export interface ISimulationViewer {
             SetData(params);
             Show(params);
@@ -59,7 +68,7 @@ module BMA {
             ChangeVisibility(params);
         }
 
-        export interface ISimulationFull {
+        export interface ISimulationExpanded {
             AddResult(res);
             GetViewer();
             Set(data);

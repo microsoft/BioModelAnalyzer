@@ -78,7 +78,7 @@ describe("ProofResultViewer", () => {
         var issucceeded = true;
         var time = 17;
         widget.proofresultviewer({ issucceeded: issucceeded, time: time, data: { numericData: numericData } });
-        expect(widget.children().eq(3).length).toEqual(0);
+        expect(widget.children().eq(3).length).toEqual(1);
     })
 
     it("should hide tabs", () => {
