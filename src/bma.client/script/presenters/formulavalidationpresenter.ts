@@ -8,13 +8,13 @@
                 this.editorDriver = editor;
 
                 window.Commands.On("FormulaEdited", function () {
-                    var v = that.RandomValidation() === 1;
-                    that.editorDriver.SetValidation(v);
+                    var r = that.RandomValidation();
+                    that.editorDriver.SetValidation(r.res === 1, r.error);
                 })
             }
 
-            public RandomValidation() {
-                return Math.round(Math.random());
+            public RandomValidation(): { res; error} {
+                return { res: Math.round(Math.random()), error: (Math.random()*100).toString() };
             }
 
         }

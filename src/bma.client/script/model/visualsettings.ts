@@ -22,6 +22,7 @@
             }
             public set LineWidth(lineWidth: number) {
                 this.lineWidth = lineWidth;
+                window.Commands.Execute("AppCommands.ChangeLineWidth", this.lineWidth);
             }
 
             public get TextLabelSize(): number {
@@ -30,6 +31,7 @@
 
             public set TextLabelSize(textLabelSize: number) {
                 this.textLabelSize = textLabelSize;
+                window.Commands.Execute("AppCommands.ChangeTextLabelSize", this.textLabelSize);
             }
 
             public get GridVisibility(): boolean {
@@ -38,6 +40,7 @@
 
             public set GridVisibility(gridVisibility: boolean) {
                 this.gridVisibility = gridVisibility;
+                window.Commands.Execute("AppCommands.ToggleGridVisibility", this.gridVisibility);
             }
 
             public get TextLabelVisibility(): boolean {
@@ -46,6 +49,7 @@
 
             public set TextLabelVisibility(textLabelVisibility: boolean) {
                 this.textLabelVisibility = textLabelVisibility;
+                window.Commands.Execute("AppCommands.ToggleTextLabelVisibility", this.textLabelVisibility);
             }
 
             public get IconsVisibility(): boolean {
@@ -53,6 +57,7 @@
             }
             public set IconsVisibility(iconsVisibility: boolean) {
                 this.iconsVisibility = iconsVisibility;
+                window.Commands.Execute("AppCommands.ToggleIconsVisibility", this.iconsVisibility);
             }
 
             public get IconsSize(): number {
@@ -60,6 +65,7 @@
             }
             public set IconsSize(iconsSize: number) {
                 this.iconsSize = iconsSize;
+                window.Commands.Execute("AppCommands.ChangeIconsSize", this.iconsSize);
             }
 
         }

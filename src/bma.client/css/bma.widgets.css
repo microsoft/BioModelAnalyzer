@@ -974,13 +974,19 @@
 	border-width:0 0 1px 1px;
 }*/
 
-.bma-formula-validation {
+.bma-formula-validation-icon {
     width: 30px;
     height: 30px;
     display: inline-block;
     float: right;
     margin-right: 10px;
 }
+
+bma-formula-validation-message {
+    color:red;
+    margin-top: 10px;
+}
+
 .formula-failed {
     background-image: url("../images/formula_not_validated.png");
 }

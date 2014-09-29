@@ -41,9 +41,9 @@
 
                 that.zoomslider.slider("option", "value", val);
 
-                if (command !== undefined && command !== "") {
-                    window.Commands.Execute(command, { value: val });
-                }
+                //if (command !== undefined && command !== "") {
+                //    window.Commands.Execute(command, { value: val });
+                //}
             });
 
             zoomminus.bind("click", function () {
@@ -51,9 +51,9 @@
 
                 that.zoomslider.slider("option", "value", val);
 
-                if (command !== undefined && command !== "") {
-                    window.Commands.Execute(command, { value: val });
-                }
+                //if (command !== undefined && command !== "") {
+                //    window.Commands.Execute(command, { value: val });
+                //}
             });
         },
 

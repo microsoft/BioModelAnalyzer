@@ -77,8 +77,8 @@ module BMA {
                 };
             }
 
-            public SetValidation(val: boolean) {
-                this.variableEditor.bmaeditor('option', 'approved', val);
+            public SetValidation(val: boolean, message: string) {
+                this.variableEditor.bmaeditor("SetValidation", val, message);
             }
 
             public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {

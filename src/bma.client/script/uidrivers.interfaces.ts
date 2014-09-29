@@ -23,7 +23,7 @@ module BMA {
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel);
             Show(x: number, y: number);
             Hide();
-            SetValidation(val: boolean);
+            SetValidation(val: boolean, message: string);
         }
 
         export interface IElementsPanel {

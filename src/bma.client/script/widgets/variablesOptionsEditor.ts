@@ -30,15 +30,21 @@
                 });
             });
 
+            this.textarea.val(that.options.formula);
+            window.Commands.Execute("FormulaEdited", {});
+        },
+
+        SetValidation: function (result: boolean, message: string) {
+            this.options.approved = result;
+            var that = this;
             that.prooficon.removeClass("formula-failed");
             that.prooficon.removeClass("formula-validated");
 
-            if (this.options.approved === true) 
+            if (this.options.approved === true)
                 that.prooficon.addClass("formula-validated");
-            else if (this.options.approved === false) 
+            else if (this.options.approved === false)
                 that.prooficon.addClass("formula-failed");
-
-            this.textarea.val(that.options.formula);
+            that.errorMessage.text(message);
         },
 
 
@@ -158,7 +164,10 @@
             var inputs = this.options.inputs;
             this.textarea = $('<textarea></textarea>').appendTo(that.content);
             this.prooficon = $('<div><div>')
-                .addClass("bma-formula-validation")
+                .addClass("bma-formula-validation-icon")
+                .appendTo(that.content);
+            this.errorMessage = $('<div></div>')
+                .addClass("bma-formula-validation-message")
                 .appendTo(that.content);
         },
 
@@ -206,18 +215,42 @@
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
+                case "name":
+                    that.options.name = value;
+                    this.name.val(that.options.name);
+                    break;
                 case "rangeFrom":
+                    if (value > 100) value = 100;
+                    if (value < 0) value = 0;
+                    that.options.rangeFrom = value;
+                    this.rangeFrom.val(that.options.rangeFrom);
+                    break;
                 case "rangeTo":
                     if (value > 100) value = 100;
                     if (value < 0) value = 0;
+                    that.options.rangeTo = value;
+                    this.rangeTo.val(that.options.rangeTo); 
                     break;
                 case "formula":
+                    that.options.formula = value;
+                    this.textarea.val(that.options.formula);
                     window.Commands.Execute("FormulaEdited", {});
+                    break;
+                case "inputs": 
+                    this.listOfInputs.empty();
+                    var inputs = this.options.inputs;
+                    inputs.forEach(function (val, ind) {
+                        var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
+                        item.bind("click", function () {
+                            that.textarea.insertAtCaret($(this).text()).change();
+                            that.listOfInputs.hide();
+                        });
+                    });
                     break;
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
-            this.resetElement();
+            //this.resetElement();
         },
 
         destroy: function () {
@@ -231,7 +264,7 @@
 interface JQuery {
     bmaeditor(): JQuery;
     bmaeditor(settings: Object): JQuery;
-    bmaeditor(fun: string, param: any): any;
+    bmaeditor(fun: string, param: any, param2: any): any;
     bmaeditor(optionLiteral: string, optionName: string): any;
     bmaeditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }  

@@ -16,7 +16,7 @@ declare var Rx: any;
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: undefined
+            zoom: 0
         },
 
 
@@ -31,7 +31,7 @@ declare var Rx: any;
 
             this._zoomObs = undefined;
             this._zoomObservable = Rx.Observable.create(function (rx) {
-                this._zoomObs = rx;
+                that._zoomObs = rx;
             });
 
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
@@ -271,7 +271,9 @@ declare var Rx: any;
                 case "zoom":
                     if (value !== undefined) {
                         var currentZoom = this._getZoom();
-
+                        var zoom = Math.pow(currentZoom, (value - this.options.zoom) / 10);
+                        this._zoomObs.onNext(new InteractiveDataDisplay.Gestures.ZoomGesture(this._gridLinesPlot.centralPart.width() / 2, this._gridLinesPlot.centralPart.height() / 2, zoom, "Mouse"));
+                        this.options.zoom = value;
                     }
                     break;
             }
@@ -279,9 +281,16 @@ declare var Rx: any;
         },
 
         _getZoom: function () {
-            var plotRect = this._plot.visibleRect;
-            //console.log(plotRect.width);
-            return 0;
+            //var plotRect = this._plot.visibleRect;
+            ////console.log(plotRect.width);
+            //return 0;
+            if (this._gridLinesPlot.mapControl === undefined)
+
+                return InteractiveDataDisplay.Gestures.zoomLevelFactor;
+
+            else
+
+                return 3.0;
         },
 
         _setOptions: function (options) {
