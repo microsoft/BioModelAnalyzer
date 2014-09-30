@@ -64,6 +64,8 @@
             ]
         }
 
+        var correctFormula = "max( (avg(var(x),var(y),var(z),var(w),var(v),var(u)) - avg(var(a),var(b),var(c),var(d))), 0)";
+     
         $(function () {
             $("#log").append("Invoking api/Analyze...<br/>");
             $.ajax({
@@ -84,13 +86,42 @@
                 url: "api/Simulate",
                 data: simulate,
                 success: function (res) {
-                    $("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                    $("#log").append("Simulate success. Result variable count: " + res.Variables.length + "<br/>");
                 },
                 error: function (res) {
                     $("#log").append("Simulate error: " + res.statusText + "<br/>");
                 }
             });
 
+            $("#log").append("Invoking api/Validate (for correct formula)...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Validate",
+                data: {
+                    Formula: correctFormula
+                },
+                success: function (res) {
+                    $("#log").append("Validate success. IsValid: " + res.IsValid + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Validate error: " + res.statusText + "<br/>");
+                }
+            });
+
+            $("#log").append("Invoking api/Validate (for incorrect formula)...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Validate",
+                data: {
+                    Formula: "foobar"
+                },
+                success: function (res) {
+                    $("#log").append("Validate success. IsValid: " + res.IsValid + "; Message: " + res.Message + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Validate error: " + res.statusText + "<br/>");
+                }
+            });
         });
     </script>
 </head>
