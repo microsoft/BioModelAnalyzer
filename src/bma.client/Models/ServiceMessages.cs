@@ -1,7 +1,6 @@
 ﻿using System.Xml.Serialization;
 namespace bma.client
 {
-
     public class AnalysisOutput : ModelAnalysis
     {
         public int Time { get; set; }
