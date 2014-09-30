@@ -6,16 +6,20 @@
             private popupViewer: BMA.UIDrivers.IPopup;
             private num: number = 0;
             private data;
+            private model;
+            private result;
 
             constructor(driver: BMA.UIDrivers.IFurtherTesting, popupViewer: BMA.UIDrivers.IPopup) {
                 var that = this;
                 this.driver = driver;
                 this.popupViewer = popupViewer;
 
-                window.Commands.On("ProofFailed", function (variables) {
+                window.Commands.On("ProofFailed", function (param: { Model; Res }) {
                     that.driver.ShowStartToggler();
+                    that.model = param.Model;
+                    that.result = param.Res;
                     //that.driver.HideResults();
-                    that.num = variables.length;
+                    //that.num = variables.length;
                 })
 
                 window.Commands.On("ProofRequested", function () {
@@ -24,11 +28,24 @@
                 })
 
                 window.Commands.On("FurtherTestingRequested", function () {
-                    if (that.num !== 0) {
+                    if (that.result.length !== 0) {
                         that.driver.HideStartToggler();
-                        var data = that.FurtherTestingImitation(that.num);
-                        that.driver.ShowResults(data);
-                        that.data = data;
+                        //$.ajax({
+                        //    type: "POST",
+                        //    url: "api/FurtherTesting",
+                        //    data: {
+                        //        Model: that.model,
+                        //        Analysis: that.result,
+                        //    },
+                        //    success: function (res2) {
+                        //        $("#log").append("FurtherTesting success. " + res2.Status + "<br/>");
+                        //    },
+                        //    error: function (res2) {
+                        //        //$("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
+                        //    }
+                        //});
+                        //that.driver.ShowResults(data);
+                        //that.data = data;
                     }
                     else alert("No Variables");
                 })

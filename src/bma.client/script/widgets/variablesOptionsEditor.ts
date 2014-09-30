@@ -205,7 +205,7 @@
                 $(this).toggleClass("editorExpanderChecked", "editorExpander");
             });
 
-            this.textarea.bind("input change", function () {
+            this.textarea.bind("input change propertychange", function () {
                 that._setOption("formula", that.textarea.val());
                 window.Commands.Execute("VariableEdited", {});
             });
@@ -234,9 +234,11 @@
                 case "formula":
                     that.options.formula = value;
                     this.textarea.val(that.options.formula);
-                    window.Commands.Execute("FormulaEdited", {});
+                    window.Commands.Execute("FormulaEdited", that.options.formula);
+                    
                     break;
                 case "inputs": 
+                    this.options.inputs = value;
                     this.listOfInputs.empty();
                     var inputs = this.options.inputs;
                     inputs.forEach(function (val, ind) {
@@ -250,6 +252,7 @@
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
+            //window.Commands.Execute("VariableEdited", {})
             //this.resetElement();
         },
 

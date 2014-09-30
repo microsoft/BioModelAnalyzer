@@ -18,7 +18,7 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
-                            if (res.Status !== 4) window.Commands.Execute("ProofFailed", that.appModel.BioModel.Variables);
+                            if (res.Status !== 4) window.Commands.Execute("ProofFailed", { Model: that.appModel, Res: res });
                             //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             //if (res.Ticks !== null)

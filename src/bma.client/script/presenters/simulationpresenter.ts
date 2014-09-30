@@ -31,6 +31,7 @@
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
+                    that.initValues = [];
                     that.ClearColors();
                     that.CreateColors();
                     var variables = that.CreateVariablesView();
