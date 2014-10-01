@@ -183,7 +183,11 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject();
 
-                
+                var zoomSubject = navigationDriver.GetZoomSubject();
+                zoomSubject.subscribe((gesture) => {
+                    window.Commands.Execute("ZoomSliderBind", gesture);
+                })
+
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
 
@@ -271,6 +275,9 @@ module BMA {
 
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
+
+
+
 
             private GetCurrentSVG(svg): any {
                 return $(svg.toSVG()).children();

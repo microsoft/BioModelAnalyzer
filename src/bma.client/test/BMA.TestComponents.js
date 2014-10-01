@@ -21,6 +21,8 @@ var BMA;
 
             TestSVGPlotDriver.prototype.GetDragSubject = function () {
             };
+            TestSVGPlotDriver.prototype.GetZoomSubject = function () {
+            };
 
             TestSVGPlotDriver.prototype.Draw = function (svg) {
                 this.svg.push(svg);

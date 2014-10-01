@@ -27,6 +27,10 @@ module BMA {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             }
 
+            public GetZoomSubject() {
+                return this.svgPlotDiv.drawingsurface("getZoomSubject");
+            }
+
             public SetZoom(zoom: number) {
                 this.svgPlotDiv.drawingsurface({ zoom: zoom });
             }

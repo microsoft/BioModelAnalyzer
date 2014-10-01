@@ -13,6 +13,7 @@ module BMA {
 
         export interface INavigationPanel {
             TurnNavigation(isOn: boolean);
+            GetZoomSubject(): any;
             SetZoom(zoom: number);
         }
 

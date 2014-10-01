@@ -206,6 +206,15 @@ $(document).ready(function () {
     window.Commands.On("ZoomSliderChanged", (args) => {
         svgPlotDriver.SetZoom(args.value);
     });
+    window.Commands.On("ZoomSliderBind", (args) => {
+        var value = Math.round((args.scaleFactor - 1) * 10) *10 + $("#zoomslider").bmazoomslider('option', 'value');
+        if (value < 0) value = 0;
+        if (value > 100) value = 100;
+        $("#zoomslider").bmazoomslider({ value: value });
+        svgPlotDriver.SetZoom(value);
+    });
+
+
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);

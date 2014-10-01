@@ -18,6 +18,8 @@ module BMA {
 
             public GetDragSubject() {
             }
+            public GetZoomSubject() {
+            }
 
             public Draw(svg: SVGSVGElement) {
                 this.svg.push(svg);

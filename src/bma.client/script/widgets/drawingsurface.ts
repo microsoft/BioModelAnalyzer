@@ -197,6 +197,8 @@ declare var Rx: any;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+            
+            this._zoomService = InteractiveDataDisplay.Gestures.createZoomSubject(that._plot.centralPart);
 
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
 
@@ -327,6 +329,10 @@ declare var Rx: any;
         getPixelWidth: function () {
             var cs = this._svgPlot.getScreenToDataTransform();
             return cs.screenToDataX(1) - cs.screenToDataX(0);
+        },
+
+        getZoomSubject: function () {
+            return this._zoomService;
         }
 
     });
