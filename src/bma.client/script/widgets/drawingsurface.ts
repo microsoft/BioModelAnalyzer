@@ -266,13 +266,17 @@ declare var Rx: any;
                         this._gridLinesPlot.y0 = value.y0;
                         this._gridLinesPlot.xStep = value.xStep;
                         this._gridLinesPlot.yStep = value.yStep;
+                        this._plot.requestUpdateLayout();
                     }
                     break;
                 case "zoom":
                     if (value !== undefined) {
                         var currentZoom = this._getZoom();
-
                     }
+                    break;
+                case "gridVisibility":
+                    this._gridLinesPlot.isVisible = value;
+                    this._plot.requestUpdateLayout();
                     break;
             }
             this._super(key, value);

@@ -9,6 +9,7 @@ module BMA {
             GetPlotX(left: number);
             GetPlotY(top: number);
             GetPixelWidth();
+            SetGridVisibility(isOn: boolean);
         }
 
         export interface INavigationPanel {
