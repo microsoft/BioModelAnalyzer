@@ -70,6 +70,17 @@ describe("ProofResultViewer", () => {
         expect(proofdiv.resultswindowviewer("option", "content").coloredtableviewer("option", "colorData")).toEqual(colorData);
     })
 
+    it("should create only variables table without colorData", () => {
+        var numericData = [];
+        numericData[0] = [1, 1, 1];
+        numericData[1] = [2, 2, 2];
+        numericData[2] = [3, 3, 3];
+        var issucceeded = true;
+        var time = 17;
+        widget.proofresultviewer({ issucceeded: issucceeded, time: time, data: { numericData: numericData } });
+        expect(widget.children().eq(3).length).toEqual(1);
+    })
+
     it("should hide tabs", () => {
         var numericData = [];
         numericData[0] = [1, 1, 1];
@@ -86,21 +97,21 @@ describe("ProofResultViewer", () => {
         var variablesdiv = widget.children().filter("div").eq(1);
         var proofdiv = widget.children().filter("div").eq(2);
 
-        widget.proofresultviewer("hide", "Variables");
+        widget.proofresultviewer("hide", "ProofVariables");
         expect(variablesdiv.css("display")).toEqual("none");
         expect(proofdiv.css("display")).not.toEqual("none");
 
-        widget.proofresultviewer("hide", "Proof Propagation");
+        widget.proofresultviewer("hide", "ProofPropagation");
         expect(proofdiv.css("display")).toEqual("none");
         expect(variablesdiv.css("display")).not.toEqual("none");
 
-        widget.proofresultviewer("show", "Proof Propagation");
+        widget.proofresultviewer("show", "ProofPropagation");
         expect(proofdiv.css("display")).not.toEqual("none");
         expect(variablesdiv.css("display")).not.toEqual("none");
 
         variablesdiv.hide();
 
-        widget.proofresultviewer("show", "Variables");
+        widget.proofresultviewer("show", "ProofVariables");
         expect(proofdiv.css("display")).not.toEqual("none");
         expect(variablesdiv.css("display")).not.toEqual("none");
     });

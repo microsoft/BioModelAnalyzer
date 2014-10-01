@@ -4,29 +4,51 @@
 (function ($) {
     $.widget("BMA.simulationviewer", {
         options: {
-            data: undefined,
-            ticks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            data: undefined, // data{variables: [][], colorData: [][], plot: [][]}
+            plot: undefined
         },
 
         refresh: function () {
             var that = this;
+
             var options = this.options;
-            
+            var container = $('<div></div>');
+            this.variables.resultswindowviewer();
+            that.plotDiv.resultswindowviewer();
+            if (options.data !== undefined && options.data.variables !== undefined && options.data.variables.length !== 0) {
+                var variablestable = $('<div></div>')
+                    .appendTo(container)
+                    .addClass("scrollable-results")
+                    .coloredtableviewer({ header: ["Graph", "Cell", "Name", "Range"], type: "graph-min", numericData: options.data.variables });
+                if (options.data.colorData !== undefined && options.data.colorData.length !== 0) {
+                    var colortable = $('<div id="Simulation-min-table"></div>')
+                        .appendTo(container)
+                        .coloredtableviewer({ type: "simulation-min", colorData: options.data.colorData });
+                }
+                that.variables.resultswindowviewer({ header: "Variables", content: container, icon: "max", tabid: "SimulationVariables" });
+            }
+            else that.variables.resultswindowviewer("destroy");
+
+            if (that.options.plot !== undefined && that.options.plot.length !== 0) {
+                //that.plot.simulationplot({ colors: that.options.plot });
+                that.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
+                that.plotDiv.resultswindowviewer({ content: that.plot, icon: "max", tabid: "SimulationPlot" });
+            }
+            else that.plotDiv.resultswindowviewer("destroy");
         },
 
 
         _create: function () {
             var that = this;
             var options = this.options;
-            var variables = $('<div></div>')
+            this.variables = $('<div></div>')
                 .appendTo(that.element)
-                .resultswindowviewer({ header: "Variables", icon: "max" });
-            
-            var plotDiv = $('<div></div>')
+                .resultswindowviewer();
+            //this.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
+            this.plotDiv = $('<div></div>')
                 .appendTo(that.element)
-                .simulationplotviewer({ data: that.options.data, ticks: that.options.ticks});
-            //$('<div>Plot should be here</div>').appendTo(that.element);
-            //that._plot = InteractiveDataDisplay.asPlot(plotDiv);
+                .resultswindowviewer();//{ content: this.plot, icon: "max", tabid: "SimulationPlot" });
+
             this.refresh();
         },
 
@@ -36,9 +58,44 @@
 
         _setOption: function (key, value) {
             var that = this;
-            if (key === "data") this.options.data = value;
+            var options = this.options;
+
+            if (key === "data")
+                this.options.data = value;
+            if (key === "plot")
+                this.options.plot = value;
             this._super(key, value);
             this.refresh();
+        },
+
+        show: function (tab) {
+            switch (tab) {
+                case undefined:
+                    this.variables.show();
+                    this.plotDiv.show();
+                    break;
+                case "SimulationVariables":
+                    this.variables.show();
+                    break;
+                case "SimulationPlot":
+                    this.plotDiv.show();
+                    break;
+            }
+        },
+
+        hide: function (tab) {
+            if (tab === "SimulationVariables") {
+                this.variables.hide();
+                this.element.children().not(this.variables).show();
+            }
+            if (tab === "SimulationPlot") {
+                this.plotDiv.hide();
+                this.element.children().not(this.plotDiv).show();
+            }
+        },
+
+        ChangeVisibility: function (ind, check) {
+            this.plot.simulationplot("ChangeVisibility", ind, check);
         }
 
     });

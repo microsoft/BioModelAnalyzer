@@ -14,11 +14,11 @@ open Expr
 open QN
 
 // Naming convension for Z3 variables
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "%s^%d" node.name time
+let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
 
-let get_z3_bool_var_at_time_in_val (node : QN.node) time value = sprintf "%s^%d^%d" node.name time value 
+let get_z3_bool_var_at_time_in_val (node : QN.node) time value = sprintf "v%d^%d^%d" node.var time value 
 
-// let get_z3_bool_var_trans_of_var_at_time (node : QN.node) time = sprintf "t%s^%d" node.name time
+// let get_z3_bool_var_trans_of_var_at_time (node : QN.node) time = sprintf "tv%d^%d" node.var time
 
 let get_z3_bool_var_formula_in_location_at_time (location : int list) time =
     let f_with_location = List.fold (fun name value -> sprintf "%s^%d" name value) "f" location
@@ -26,7 +26,7 @@ let get_z3_bool_var_formula_in_location_at_time (location : int list) time =
 
 let get_z3_bool_var_loop_at_time time = sprintf "l^%d" time
 
-let get_z3_bool_var_trans_of_var_from_time_to_time_in_val (node : QN.node) from_time to_time value = sprintf "t%s^%d^%d^%d" node.name from_time to_time value
+let get_z3_bool_var_trans_of_var_from_time_to_time_in_val (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%d" node.var from_time to_time value
 
 let make_z3_bool_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkBoolSort())
 

@@ -28,6 +28,9 @@
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
+    <StartArguments>-model SmallLTLBug7.xml -engine CAV -path 1 -outputmodel -proof -formula "True" -log</StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>

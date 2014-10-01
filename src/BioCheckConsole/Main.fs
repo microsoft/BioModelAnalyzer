@@ -47,10 +47,21 @@ let model' = ref "" // input model filename for destination qn
 let state  = ref "" // input csv describing starting state
 let state' = ref "" // input csv describing destination state 
 
+let usage i = 
+    Printf.printfn "Usage: BioCheckConsole.exe -model input_analysis_file.xml"
+    Printf.printfn "                           -modelsdir model_directory"
+    Printf.printfn "                           -log "
+    Printf.printfn "                           -loglevel n"
+    Printf.printfn "                         [ -engine [ VMCAI | SCM | SYN ] –prove output_file_name.xml |"
+    Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
+    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
+    Printf.printfn "                           -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
+
+
 let rec parse_args args = 
     match args with 
     | [] -> ()
-    | "-model" :: m :: rest -> model := m; parse_args rest
+    | "-model" :: m :: rest -> model := m; parse_args rest  
     | "-model2" :: m :: rest -> model' := m; parse_args rest
     | "-state" :: s :: rest -> state := s; parse_args rest
     | "-state2" :: s :: rest -> state' := s; parse_args rest
@@ -70,156 +81,170 @@ let rec parse_args args =
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
     | _ -> failwith "Bad command line args" 
 
+let runSCMEngine qn = 
+    Log.log_debug "Running the proof"
+    Log.log_debug (sprintf "Num of nodes %d" (List.length qn))
+    for node in qn do
+        Log.log_debug (QN.str_of_node node)
+    let (stablePoint, cex) = Prover.ProveStability qn
+    match (stablePoint, cex) with
+    | (Some p, None) -> 
+        //Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
+        printf "Single Stable Point %s" (Expr.str_of_env p)
+        //let stable_res_xml = Marshal.xml_of_smap p
+        //stable_res_xml.Save(!proof_output)
+    | (None, Some (Prover.Bifurcation(p1, p2))) -> printf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2)//Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
+    | (None, Some (Prover.Cycle(p, len))) -> printf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len //Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
+    | _ -> failwith "Bad results from prover"
+
+let runSYNEngine qn =
+    Log.log_debug "Running Stability Suggestion Engine"
+    let sug = Suggest.SuggestLoop qn
+    match sug with
+    | Suggest.Stable(p) -> Log.log_debug(sprintf "Single Stable Point \n %s" (Expr.str_of_env p))
+    | Suggest.NoSuggestion(b) -> Log.log_debug(sprintf "No Suggestion Found \n %s" (QN.str_of_range qn b))
+    | Suggest.Edges(edges, nature) -> 
+            Log.log_debug(sprintf "Suggested edges: %s Nature: %A" (Suggest.edgelist_to_str edges) nature)
+
+let runSimulateEngine qn (simul_output : string) start_state_file simulation_time  =
+    Log.log_debug "Running the simulation"
+    // Format of init.csv: Each line is a var_id,value pair. So there will be as many lines as there are variables.
+    let init_values = 
+        if (start_state_file <> "" && System.IO.File.Exists start_state_file) then 
+            let csv = System.IO.File.ReadAllLines start_state_file
+            Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty csv
+        else List.fold (fun m (n:QN.node) -> Map.add n.var 0 m) Map.empty qn
+    Log.log_debug (sprintf "time:%d init_values:[%s]" simulation_time (QN.str_of_env init_values))
+    // SI: should check that dom(init_values) is complete wrt qn. 
+    assert (QN.env_complete_wrt_qn qn init_values) 
+    let final_values = Seq.toList (Simulate.simulate_many qn init_values simulation_time )
+    Log.log_debug "Writing simulation log"
+    let everything = String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) final_values)
+    System.IO.File.WriteAllText(simul_output, everything)
+    // SI: check why the xlsx is sometimes corrupted ? 
+    let (app,sheet) = ModelToExcel.model_to_excel qn simulation_time init_values
+    Log.log_debug "Writing excel spreadsheet"
+    ModelToExcel.saveSpreadsheet app sheet (simul_output + ".xlsx")
+
+let runVMCAIEngine qn (proof_output : string) =
+    Log.log_debug "Running the proof"
+//        Log.log_debug (sprintf "Num of nodes %d" (List.length qn))
+    let (sr,cex_o) = Stabilize.stabilization_prover qn
+    match (sr,cex_o) with 
+    | (Result.SRStabilizing(_), None) -> 
+        let stable_res_xml = Marshal.xml_of_stability_result sr
+        stable_res_xml.Save(proof_output)
+    | (Result.SRNotStabilizing(_), Some(cex)) -> 
+        let unstable_res_xml = Marshal.xml_of_stability_result sr
+        unstable_res_xml.Save(proof_output)
+        let cex_xml = Marshal.xml_of_cex_result cex
+        let filename,ext = System.IO.Path.GetFileNameWithoutExtension proof_output, System.IO.Path.GetExtension proof_output
+        cex_xml.Save(filename + "_cex." + ext)
+    | (Result.SRNotStabilizing(_), None) -> ()
+    | _ -> failwith "Bad result from prover"
+
+let runCAVEngine qn length_of_path formula model_check output_proof output_model =
+    let ltl_formula_str = 
+        if (model_check) then
+            sprintf "(Not %s)" formula
+        else
+            formula
+
+    let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str qn 
+
+    LTL.print_in_order ltl_formula
+    if (ltl_formula = LTL.Error) then
+        ignore(LTL.unable_to_parse_formula)
+    else             
+        // Convert the interval based range to a list based range
+        let nuRangel = Rangelist.nuRangel qn
+
+        // find out the path with decreasing size, 
+        // and the initial value of steps to be unrolled
+        // Paths is the list of ranges
+        // initK = the length of prefix + the length of loop, which is used as the initial value of K when doing BMC
+        let paths = Paths.output_paths qn nuRangel
+
+        if (output_proof) then
+            Paths.print_paths qn paths
+
+        // Extend/truncate the list of paths to the required length
+        // If the list of paths is shorter than needed repeat the last element 
+        // If the list of paths is longer than needed remove the prefix of the list
+        let correct_length_paths = Paths.change_list_to_length paths length_of_path
+    
+        // given the # of steps and the path, do BMC   
+        let (res,model) =
+            BMC.BoundedMC ltl_formula qn nuRangel correct_length_paths
+
+        BioCheckPlusZ3.check_model model res qn
+        BioCheckPlusZ3.print_model model res qn output_model
+
+let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
+    Log.log_debug "Running path search"
+    let qnY = XDocument.Load(modelsdir + "\\" + other_model_name) |> Marshal.model_of_xml
+    let X   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines start_state)
+    let Y   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines dest_state)
+    match (PathFinder.routes qnX qnY X Y) with
+    | PathFinder.Failure(a,b) ->    Log.log_debug (sprintf "Found a way to escape one of the attractors. %A leads to %A" a b)
+    | PathFinder.Success L    ->    Log.log_debug (sprintf "There are no escape routes between the attractors. %d states explored" L.safe.Length)
+                                    printf "%s" (String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) L.safe))
+
+
 //type IA = BioCheckAnalyzerCommon.IAnalyzer2
 //let analyzer = UIMain.Analyzer2()
 
 [<EntryPoint>]
 let main args = 
     let res = ref 0
-    
-    parse_args (List.ofArray args)
 
-    if !logging then Log.register_log_service (Log.AnalyzerLogService())
+    try
+        parse_args (List.ofArray args)
 
-    //Run PATH engine
-    if (!model <> "" && !model' <> "" && !state <> "" && !state' <> "" && !engine = Some EnginePath) then
-        Log.log_debug "Running path search"
-        let qnX = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-        let qnY = XDocument.Load(!modelsdir + "\\" + !model') |> Marshal.model_of_xml
-        let X   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines !state)
-        let Y   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines !state')
-        match (PathFinder.routes qnX qnY X Y) with
-        | PathFinder.Failure(a,b) ->    Log.log_debug (sprintf "Found a way to escape one of the attractors. %A leads to %A" a b)
-        | PathFinder.Success L    ->    Log.log_debug (sprintf "There are no escape routes between the attractors. %d states explored" L.safe.Length)
-                                        printf "%s" (String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) L.safe))
+        if !logging then Log.register_log_service (Log.AnalyzerLogService())
 
-
-    //Run SYN engine
-    if (!model <> ""  && !engine = Some EngineSYN) then
-        Log.log_debug "Running Stability Suggestion Engine"
-        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-        let sug = Suggest.SuggestLoop model
-        match sug with
-        | Suggest.Stable(p) -> Log.log_debug(sprintf "Single Stable Point \n %s" (Expr.str_of_env p))
-        | Suggest.NoSuggestion(b) -> Log.log_debug(sprintf "No Suggestion Found \n %s" (QN.str_of_range model b))
-        | Suggest.Edges(edges, nature) -> 
-                Log.log_debug(sprintf "Suggested edges: %s Nature: %A" (Suggest.edgelist_to_str edges) nature)
-
-    //Run SCM engine
-    if (!model <> "" && !engine = Some EngineSCM) then    
-        Log.log_debug "Running the proof"
-        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-        Log.log_debug (sprintf "Num of nodes %d" (List.length model))
-        for node in model do
-            Log.log_debug (QN.str_of_node node)
-        let (stablePoint, cex) = Prover.ProveStability model
-        match (stablePoint, cex) with
-        | (Some p, None) -> 
-            //Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
-            printf "Single Stable Point %s" (Expr.str_of_env p)
-            //let stable_res_xml = Marshal.xml_of_smap p
-            //stable_res_xml.Save(!proof_output)
-        | (None, Some (Prover.Bifurcation(p1, p2))) -> printf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2)//Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
-        | (None, Some (Prover.Cycle(p, len))) -> printf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len //Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
-        | _ -> failwith "Bad results from prover"
+        if (!run_tests) then 
+            UnitTests.register_tests ()
+            Test.run_tests ()
         
+        elif (!model =  "") then 
+            usage 1
+            res := -1
 
-    // Run VMCAI engine
-    if (!model <> "" && !engine = Some EngineVMCAI &&
-        !proof_output <> "") then    
-        Log.log_debug "Running the proof"
-        let model = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-//        Log.log_debug (sprintf "Num of nodes %d" (List.length model))
-        let (sr,cex_o) = Stabilize.stabilization_prover model
-        match (sr,cex_o) with 
-        | (Result.SRStabilizing(_), None) -> 
-            let stable_res_xml = Marshal.xml_of_stability_result sr
-            stable_res_xml.Save(!proof_output)
-        | (Result.SRNotStabilizing(_), Some(cex)) -> 
-            let unstable_res_xml = Marshal.xml_of_stability_result sr
-            unstable_res_xml.Save(!proof_output)
-            let cex_xml = Marshal.xml_of_cex_result cex
-            let filename,ext = System.IO.Path.GetFileNameWithoutExtension !proof_output, System.IO.Path.GetExtension !proof_output
-            cex_xml.Save(filename + "_cex." + ext)
-        | (Result.SRNotStabilizing(_), None) -> ()
-        | _ -> failwith "Bad result from prover"
+        else 
+            let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+            
+            let parameters_were_ok = 
+                match !engine with
+                | Some EnginePath -> 
+                    if (!model' <> "" && !state <> "" && !state' <> "") then runPATHEngine qn !modelsdir !model' !state !state'; true
+                    else false 
+                | Some EngineSYN -> runSYNEngine qn; true
+                | Some EngineSCM -> runSCMEngine qn; true
+                | Some EngineVMCAI ->
+                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output; true
+                    else false
+                | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model; true
+                | Some EngineSimulate ->
+                    if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time; true
+                    else false
+                | none -> false
 
-    // Run CAV engine
-    elif (!model <> "" && !engine = Some EngineCAV) then 
-            // Negate the formula if needed
-            let ltl_formula_str = 
-                if (!model_check) then
-                    sprintf "(Not %s)" !formula
-                else
-                    !formula
-            let length_of_path = !number_of_steps // SI: only used once, just use !num_of_steps in change_list below? 
+            if (not parameters_were_ok) then
+                usage 1
+                res := -1
 
-            let network = Marshal.model_of_xml(XDocument.Load(!modelsdir + "\\" + !model))
-        
-            let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str network 
+        !res
+    with
+        | Failure(msg) -> 
+            if (msg = "Bad command line args")
+            then
+              usage 1
+            else
+              Printf.printfn "Error: %s" msg
+            -1
 
-            LTL.print_in_order ltl_formula
-            if (ltl_formula = LTL.Error) then
-                ignore(LTL.unable_to_parse_formula)
-            else             
-                // Convert the interval based range to a list based range
-                let nuRangel = Rangelist.nuRangel network
 
-                // find out the path with decreasing size, 
-                // and the initial value of steps to be unrolled
-                // Paths is the list of ranges
-                // initK = the length of prefix + the length of loop, which is used as the initial value of K when doing BMC
-                let paths = Paths.output_paths network nuRangel
-
-                if (!output_proof) then
-                    Paths.print_paths network paths
-
-                // Extend/truncate the list of paths to the required length
-                // If the list of paths is shorter than needed repeat the last element 
-                // If the list of paths is longer than needed remove the prefix of the list
-                let correct_length_paths = Paths.change_list_to_length paths length_of_path
-    
-                // given the # of steps and the path, do BMC   
-                let (res,model) =
-                    BMC.BoundedMC ltl_formula network nuRangel correct_length_paths
-
-                BioCheckPlusZ3.check_model model res network
-                BioCheckPlusZ3.print_model model res network !output_model
-
-    // Run Simulation engine
-    elif (!model <> "" && !engine = Some EngineSimulate &&
-          !simul_output <> "") then 
-        Log.log_debug "Running the simulation"
-        let qn = Marshal.model_of_xml (XDocument.Load !model)
-        // Format of init.csv: Each line is a var_id,value pair. So there will be as many lines as there are variables.
-        let init_values = 
-            if (!simul_v0 <> "" && System.IO.File.Exists !simul_v0) then 
-                let csv = System.IO.File.ReadAllLines !simul_v0 
-                Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty csv
-            else List.fold (fun m (n:QN.node) -> Map.add n.var 0 m) Map.empty qn
-        Log.log_debug (sprintf "time:%d init_values:[%s]" !simul_time (QN.str_of_env init_values))
-        // SI: should check that dom(init_values) is complete wrt qn. 
-        assert (QN.env_complete_wrt_qn qn init_values) 
-        let final_values = Seq.toList (Simulate.simulate_many qn init_values !simul_time )
-        Log.log_debug "Writing simulation log"
-        let everything = String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) final_values)
-        System.IO.File.WriteAllText(!simul_output, everything)
-        // SI: check why the xlsx is sometimes corrupted ? 
-        let (app,sheet) = ModelToExcel.model_to_excel qn !simul_time init_values
-        Log.log_debug "Writing excel spreadsheet"
-        ModelToExcel.saveSpreadsheet app sheet (!simul_output + ".xlsx")
-
-    // Run tests.     
-    elif (!run_tests) then 
-        UnitTests.register_tests ()
-        Test.run_tests ()
-
-    // Incorrect flags. 
-    if ((!model = "" && !engine = None) && !run_tests = false) then  
-        Printf.printfn "Please provide an input model, and prove or simulate output."
-        res := -1
-
-    !res
 
 
 

@@ -4,7 +4,7 @@
 
 module BMA {
     export module Test {
-        export class TestSVGPlotDriver implements BMA.UIDrivers.ISVGPlot {
+        export class TestSVGPlotDriver implements BMA.UIDrivers.ISVGPlot, BMA.UIDrivers.IElementsPanel, BMA.UIDrivers.INavigationPanel {
             private svg: SVGElement[];
 
             public get SVGs() {
@@ -13,6 +13,12 @@ module BMA {
 
             constructor() {
                 this.svg = [];
+            }
+            public SetZoom(zoom: number){}
+
+            public GetDragSubject() {
+            }
+            public GetZoomSubject() {
             }
 
             public Draw(svg: SVGSVGElement) {
@@ -23,6 +29,22 @@ module BMA {
             }
 
             public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
+            }
+
+            public GetPlotX(left) {
+                return 0;
+            }
+
+            public GetPlotY(left) {
+                return 0;
+            }
+
+            public GetPixelWidth() {
+                return 0;
+            }
+
+            public SetGridVisibility(isOn: boolean) {
+
             }
         }
 
@@ -43,6 +65,10 @@ module BMA {
 
             GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; } {
                 return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 }
+            }
+
+            SetValidation(v: boolean) {
+                return v;
             }
 
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) { }

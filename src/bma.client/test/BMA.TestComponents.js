@@ -16,6 +16,14 @@ var BMA;
                 configurable: true
             });
 
+            TestSVGPlotDriver.prototype.SetZoom = function (zoom) {
+            };
+
+            TestSVGPlotDriver.prototype.GetDragSubject = function () {
+            };
+            TestSVGPlotDriver.prototype.GetZoomSubject = function () {
+            };
+
             TestSVGPlotDriver.prototype.Draw = function (svg) {
                 this.svg.push(svg);
             };
@@ -24,6 +32,21 @@ var BMA;
             };
 
             TestSVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
+            };
+
+            TestSVGPlotDriver.prototype.GetPlotX = function (left) {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.GetPlotY = function (left) {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.GetPixelWidth = function () {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.SetGridVisibility = function (isOn) {
             };
             return TestSVGPlotDriver;
         })();
@@ -60,6 +83,10 @@ var BMA;
             }
             TestVariableEditor.prototype.GetVariableProperties = function () {
                 return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 };
+            };
+
+            TestVariableEditor.prototype.SetValidation = function (v) {
+                return v;
             };
 
             TestVariableEditor.prototype.Initialize = function (variable, model) {

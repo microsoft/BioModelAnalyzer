@@ -16,7 +16,7 @@ declare var Rx: any;
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: undefined
+            zoom: 50
         },
 
 
@@ -31,7 +31,7 @@ declare var Rx: any;
 
             this._zoomObs = undefined;
             this._zoomObservable = Rx.Observable.create(function (rx) {
-                this._zoomObs = rx;
+                that._zoomObs = rx;
             });
 
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
@@ -121,12 +121,31 @@ declare var Rx: any;
                     }).takeUntil(stopPanning);
                 });
 
-                return mouseDrags;
+
+                var touchStart = vc.onAsObservable("touchstart");
+                var touchMove = vc.onAsObservable("touchmove");
+                var touchEnd = _doc.onAsObservable("touchend");
+                var touchCancel = _doc.onAsObservable("touchcancel");
+
+                var gestures = touchStart.selectMany(function (md) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
+                    var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
+
+                    return touchMove.takeUntil(touchEnd.merge(touchCancel)).select(function (tm) {
+                        var x1 = cs.screenToDataX(tm.originalEvent.pageX - plotDiv.offset().left);
+                        var y1 = -cs.screenToDataY(tm.originalEvent.pageY - plotDiv.offset().top);
+
+                        return { x0: x0, y0: y0, x1: x1, y1: y1 };
+                    });
+                });
+
+                return mouseDrags.merge(gestures);
             }
 
             var createDragStartSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = that._plot.centralPart.onAsObservable("mousedown");
+                var mousedown = vc.onAsObservable("mousedown");
                 var mouseMove = vc.onAsObservable("mousemove");
                 var mouseUp = _doc.onAsObservable("mouseup");
 
@@ -138,7 +157,21 @@ declare var Rx: any;
                     var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
 
                     return mouseMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(mouseUp);
-                    });
+                });
+
+
+                var touchStart = vc.onAsObservable("touchstart");
+                var touchMove = vc.onAsObservable("touchmove");
+                var touchEnd = _doc.onAsObservable("touchend");
+                var touchCancel = _doc.onAsObservable("touchcancel");
+
+                var touchDragStarts = touchStart.selectMany(function (md) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
+                    var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
+
+                    return touchMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(touchEnd.merge(touchCancel));
+                });
 
                 return dragStarts;
             }
@@ -149,7 +182,10 @@ declare var Rx: any;
                 var mouseMove = vc.onAsObservable("mousemove");
                 var mouseUp = _doc.onAsObservable("mouseup");
 
-                var stopPanning = mouseUp;
+                var touchEnd = _doc.onAsObservable("touchend");
+                var touchCancel = _doc.onAsObservable("touchcancel");
+
+                var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
 
                 var dragEndings = stopPanning;//.takeWhile(mouseMove);
 
@@ -161,6 +197,7 @@ declare var Rx: any;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+
 
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
 
@@ -176,14 +213,19 @@ declare var Rx: any;
             this._plot.yDataTransform = yDT;
             //this._gridLinesPlot.yDataTransform = yDT;
 
+            var width = 1600;
+
             if (this.options.isNavigationEnabled) {
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
-                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable);
+                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable).where(function (g) {
+                    console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
+                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
+                });
+                this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
             } else {
                 that._plot.navigation.gestureSource = this._zoomObservable;
             }
 
-            var width = 1600;
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
 
             $(window).resize(function () { that.resize(); });
@@ -211,14 +253,17 @@ declare var Rx: any;
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {
-                        this._plot.navigation.gestureSource = undefined;
-                        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
+                        if (this._plot.navigation.gestureSource === undefined) {
+                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
 
-                        if (this._zoomObservable !== undefined) {
-                            gestureSource = gestureSource.merge(this._zoomObservable);
+                            if (this._zoomObservable !== undefined) {
+                                gestureSource = gestureSource.merge(this._zoomObservable);
+                            }
+
+                            this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
+
+                            this._plot.navigation.gestureSource = gestureSource;
                         }
-
-                        this._plot.navigation.gestureSource = gestureSource;
                     } else {
                         this._plot.navigation.gestureSource = undefined;
                     }
@@ -229,22 +274,38 @@ declare var Rx: any;
                         this._gridLinesPlot.y0 = value.y0;
                         this._gridLinesPlot.xStep = value.xStep;
                         this._gridLinesPlot.yStep = value.yStep;
+                        this._plot.requestUpdateLayout();
                     }
                     break;
                 case "zoom":
                     if (value !== undefined) {
+                        console.log(value);
                         var currentZoom = this._getZoom();
-
+                        var zoom = Math.pow(currentZoom, (value - this.options.zoom) / 10);
+                        this._zoomObs.onNext(new InteractiveDataDisplay.Gestures.ZoomGesture(this._gridLinesPlot.centralPart.width() / 2, this._gridLinesPlot.centralPart.height() / 2, zoom, "Mouse"));
+                        this.options.zoom = value;
+                        //alert(this._plot.visibleRect.width);
                     }
+                    break;
+                case "gridVisibility":
+                    this._gridLinesPlot.isVisible = value;
+                    this._plot.requestUpdateLayout();
                     break;
             }
             this._super(key, value);
         },
 
         _getZoom: function () {
-            var plotRect = this._plot.visibleRect;
-            console.log(plotRect.width);
-            return 0;
+            //var plotRect = this._plot.visibleRect;
+            ////console.log(plotRect.width);
+            //return 0;
+            if (this._gridLinesPlot.mapControl === undefined)
+
+                return InteractiveDataDisplay.Gestures.zoomLevelFactor;
+
+            else
+
+                return 3.0;
         },
 
         _setOptions: function (options) {
@@ -266,11 +327,32 @@ declare var Rx: any;
 
         getDragSubject: function () {
             return this._dragService;
+        },
+
+        getPlotX: function (left: number) {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return cs.screenToDataX(left);
+        },
+
+        getPlotY: function (top: number) {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return -cs.screenToDataY(top);
+        },
+
+        getPixelWidth: function () {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return cs.screenToDataX(1) - cs.screenToDataX(0);
+        },
+
+        getZoomSubject: function () {
+            return this._zoomService;
         }
+
     });
 } (jQuery));
 
 interface JQuery {
     drawingsurface(): JQueryUI.Widget;
     drawingsurface(settings: Object): JQueryUI.Widget;
+    drawingsurface(methodName: string, arg: any): JQueryUI.Widget;
 }

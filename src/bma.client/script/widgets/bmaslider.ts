@@ -25,7 +25,8 @@
             this.zoomslider.slider({
                 min: that.options.min,
                 max: that.options.max,
-                step: that.options.step, value: that.options.value,
+                //step: that.options.step,
+                value: that.options.value,
                 change: function (event, ui) {
                     that.options.value = ui.value;
 
@@ -37,23 +38,23 @@
             var zoomminus = $('<img id="zoom-minus" class="hoverable" src="images/zoomminus.png">').appendTo(that.element);
 
             zoomplus.bind("click", function () {
-                var val = that.zoomslider.slider("option", "value") - that.zoomslider.slider("option", "step");
+                var val = that.zoomslider.slider("option", "value") - that.options.step;//that.zoomslider.slider("option", "step");
 
                 that.zoomslider.slider("option", "value", val);
 
-                if (command !== undefined && command !== "") {
-                    window.Commands.Execute(command, { value: val });
-                }
+                //if (command !== undefined && command !== "") {
+                //    window.Commands.Execute(command, { value: val });
+                //}
             });
 
             zoomminus.bind("click", function () {
-                var val = that.zoomslider.slider("option", "value") + that.zoomslider.slider("option", "step");
+                var val = that.zoomslider.slider("option", "value") + that.options.step;//that.zoomslider.slider("option", "step");
 
                 that.zoomslider.slider("option", "value", val);
 
-                if (command !== undefined && command !== "") {
-                    window.Commands.Execute(command, { value: val });
-                }
+                //if (command !== undefined && command !== "") {
+                //    window.Commands.Execute(command, { value: val });
+                //}
             });
         },
 
@@ -73,7 +74,14 @@
 
         _setOption: function (key, value) {
             var that = this;
-            this.zoomslider.slider("option", "value", that.options.value);
+            switch (key) {
+                case "value": 
+                    this.options.value = value;
+                    this.zoomslider.slider("option", "value", that.options.value);
+                    //alert(value);
+                    break;
+            }
+            
             this._super(key, value);
         }
 

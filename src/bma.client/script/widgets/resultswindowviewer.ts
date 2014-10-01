@@ -7,38 +7,69 @@
             content: $(),
             header: "",
             icon: "",
-            effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {} }
+            effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () { } },
+            tabid: ""
         },
 
+        reseticon: function () {
+            var that = this;
+            var options = this.options;
+            that.icontd.empty();
+            var url = "";
+            if (this.options.icon === "max")
+                url = "../../images/maximize.png";
+            else
+                if (this.options.icon === "min")
+                    url = "../../images/minimize.png";
+                else url = this.options.icon;
+
+            this.button = $('<img src=' + url + '>').addClass('togglePopUpWindow');
+            var img = new Image();
+            img.onload = function () {
+                //alert(this. + 'x' + this.height);
+                that.head.css("min-height", this.height);
+                that.header.css("height", Math.max(this.height,that.header.height()));
+            }
+            img.src = url;
+            //alert(this.button.css("height"));
+            this.button.appendTo(that.icontd);
+            this.button.bind("click", function () {
+                if (options.icon === "max")
+                    window.Commands.Execute("Expand", that.options.tabid);
+                if (options.icon === "min")
+                    window.Commands.Execute("Collapse", that.options.tabid);
+            });
+            //this.head.css("min-height", this.button.height());
+        },
+
+        refresh: function () {
+            var that = this;
+            var options = this.options;
+            this.content.empty();
+            if (options.content !== undefined) {
+                options.content.appendTo(that.content); 
+            }
+            
+        },
 
 
         _create: function () {
             var that = this;
             var options = this.options;
-            var table = $('<table></table>').width("100%").appendTo(this.element);
-            var tr = $('<tr></tr>').appendTo(table);
-            var td1 = $('<td></td>').appendTo(tr);
-            var td2 = $('<td></td>').appendTo(tr);
-            var url = "";
-            if (this.options.icon === "max") 
-                url = "../../images/maximize.png";
-            else
-                if (this.options.icon === "min")
-                    url = "../../images/minimize.png";
-            else url = this.options.icon;
-            
-            this.button = $('<img>').attr("src", url).addClass('togglePopUpWindow').appendTo(td2);
-            this.button.bind("click", function () {
-                if (options.icon === "max")
-                    window.Commands.Execute("Expand", that.options.header);
-                if (options.icon === "min")
-                    window.Commands.Execute("Collapse", that.options.header);
-            });
-            
-            this.header = $('<div></div>').text(options.header).appendTo(td1);
+            //var table = $('<table></table>').width("100%").appendTo(this.element);
+            //var tr = $('<tr></tr>').appendTo(table);
+            this.head = $('<div></div>').appendTo(this.element);
+            this.head.css("position", "relative");
+            this.head.css("margin-bottom", "10px");
+            this.header = $('<div></div>')
+                .text(options.header)
+                .addClass('resultswindowviewer-header')
+                .appendTo(this.head);
+            this.icontd = $('<div></div>').appendTo(this.head);
+            //this.header = $('<div></div>').text(options.header).appendTo(td1);
             this.content = $('<div></div>').appendTo(this.element);
-            if (options.content !== undefined)
-                options.content.appendTo(this.content);
+            this.reseticon();
+            this.refresh();
         },
 
         toggle: function () { 
@@ -55,17 +86,25 @@
 
         _setOption: function (key, value) {
             var that = this;
-            if (key === "content") {
-                this.options.content = value;
-                this.content.empty();
-                value.appendTo(this.content);
+            switch (key) {
+                case "header":
+                    this.header.text(value);
+                    break;
+                case "content":
+                    if (this.options.content !== value) {
+                        this.options.content = value
+                        this.refresh();
+                    }
+                    break;
+                case "icon": 
+                    this.options.icon = value;
+                    this.reseticon();
+                    break;
             }
 
-            if (key === "header") {
-                this.header.text(value);
-            }
                 
             this._super(key, value);
+            //this.refresh();
         }
     });
 } (jQuery));
