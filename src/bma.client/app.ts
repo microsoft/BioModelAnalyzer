@@ -202,7 +202,6 @@ $(document).ready(function () {
     //    visualSettings.IconsSize = param;
     //});
 
-    
 
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
@@ -230,6 +229,10 @@ $(document).ready(function () {
 
     window.Commands.On("ZoomSliderChanged", (args) => {
         svgPlotDriver.SetZoom(args.value);
+    });
+
+    window.Commands.On("AppModelChanged", () => {
+        popupDriver.Hide();
     });
 
     //Loading presenters

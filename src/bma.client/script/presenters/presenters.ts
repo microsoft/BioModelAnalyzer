@@ -128,7 +128,7 @@ module BMA {
                     var containerId = that.GetContainerAtPosition(x, y);
                     var relationshipId = that.GetRelationshipAtPosition(x, y, that.driver.GetPixelWidth());
 
-                    if (id !== undefined || relationshipId !== undefined) {
+                    if (id !== undefined || containerId !== undefined || relationshipId !== undefined) {
 
                         that.contextMenu.EnableMenuItems([
                             { name: "Copy", isVisible: false },
@@ -164,6 +164,8 @@ module BMA {
                             that.RemoveVariable(that.contextElement.id);
                         } else if (that.contextElement.type === "relationship") {
                             that.RemoveRelationship(that.contextElement.id);
+                        } else if (that.contextElement.type === "container") {
+                            that.RemoveContainer(that.contextElement.id);
                         }
 
                         that.contextElement = undefined;
@@ -329,7 +331,62 @@ module BMA {
             }
 
             private RemoveContainer(id: number) {
+                var wasRemoved = false;
 
+                var model = this.Current.model;
+                var layout = this.Current.layout;
+
+                var containers = layout.Containers;
+                var newCnt = [];
+
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    if (container.Id !== i) {
+                        newCnt.push(container);
+                    } else {
+                        wasRemoved = true;
+                    }
+                }
+
+                if (wasRemoved === true) {
+                    var variables = model.Variables;
+                    var variableLayouts = layout.Variables;
+
+                    var newV = [];
+                    var newVL = [];
+                    var removed = [];
+
+                    for (var i = 0; i < variables.length; i++) {
+                        if (variables[i].ContainerId !== id) {
+                            newV.push(variables[i]);
+                            newVL.push(variableLayouts[i]);
+                        } else {
+                            removed.push(variables[i].Id);
+                        }
+                    }
+
+                    var relationships = model.Relationships;
+                    var newRels = [];
+
+                    for (var i = 0; i < relationships.length; i++) {
+                        var r = relationships[i];
+                        var shouldBeRemoved = false;
+                        for (var j = 0; j < removed.length; j++) {
+                            if (r.FromVariableId === removed[i] || r.ToVariableId === removed[i]) {
+                                shouldBeRemoved = true;
+                                break;
+                            }
+                        }
+
+                        if (shouldBeRemoved === false) {
+                            newRels.push(r);
+                        }
+                    }
+
+                    var newmodel = new BMA.Model.BioModel(model.Name, newV, newRels);
+                    var newlayout = new BMA.Model.Layout(newCnt, newVL);
+                    this.Dup(newmodel, newlayout);
+                }
             }
 
             private RemoveRelationship(id: number) {

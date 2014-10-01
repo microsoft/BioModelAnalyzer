@@ -214,6 +214,10 @@ $(document).ready(function () {
         svgPlotDriver.SetZoom(args.value);
     });
 
+    window.Commands.On("AppModelChanged", function () {
+        popupDriver.Hide();
+    });
+
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
