@@ -216,17 +216,18 @@ declare var Rx: any;
             var width = 1600;
 
             if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
-                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable).where(function (g) {
+                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).merge(this._zoomObservable).where(function (g) {
                     console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
-                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
+                    return g.Type !== "Zoom" ;//|| g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
                 });
+                that._plot.navigation.gestureSource = gestureSource;
                 this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
             } else {
                 that._plot.navigation.gestureSource = this._zoomObservable;
             }
 
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
+            that._plot.host.bind("visibleRectChanged", function () { window.Commands.Execute("VisibleRectChanged", that._plot.visibleRect.width)} )
 
             $(window).resize(function () { that.resize(); });
             that.resize();
@@ -242,6 +243,7 @@ declare var Rx: any;
         },
 
         _setOption: function (key, value) {
+            var that = this;
             switch (key) {
                 case "svg":
                     if (this._svgPlot !== undefined && this._svgPlot.svg !== undefined) {
@@ -253,19 +255,24 @@ declare var Rx: any;
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {
-                        if (this._plot.navigation.gestureSource === undefined) {
+                        if (this._plot.navigation.gestureSource === this._zoomObservable) {
                             var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
 
                             if (this._zoomObservable !== undefined) {
                                 gestureSource = gestureSource.merge(this._zoomObservable);
                             }
 
+                            //gestureSource = gestureSource.where(function (g) {
+                            //    //console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
+                            //    return g.Type !== "Zoom";// || g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
+                            //});
+
                             this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
 
                             this._plot.navigation.gestureSource = gestureSource;
                         }
                     } else {
-                        this._plot.navigation.gestureSource = undefined;
+                        this._plot.navigation.gestureSource = this._zoomObservable;
                     }
                     break;
                 case "grid":

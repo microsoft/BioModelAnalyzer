@@ -193,9 +193,18 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject();
 
-                var zoomSubject = navigationDriver.GetZoomSubject();
-                zoomSubject.subscribe((gesture) => {
-                    window.Commands.Execute("ZoomSliderBind", gesture);
+                //var zoomSubject = navigationDriver.GetZoomSubject();
+                //zoomSubject.subscribe((gesture) => {
+                //    window.Commands.Execute("ZoomSliderBind", gesture);
+                //})
+
+                window.Commands.On("VisibleRectChanged", function (param) {
+                    if (param < 923) 
+                        param = 923;
+                    if (param > 923)
+                        param = 923;
+
+                    window.Commands.Execute("ZoomSliderBind", param);
                 })
                 
                 dragSubject.dragStart.subscribe(
