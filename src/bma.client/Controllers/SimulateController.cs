@@ -18,6 +18,8 @@ namespace bma.client.Controllers
         // POST api/Analyze
         public SimulationOutput Post([FromBody]SimulationInput input)
         {
+            input.Model.ReplaceVariableNamesWithIDs();
+
             try {
                 var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));
                 var ai = new AnalysisInput
