@@ -80,7 +80,7 @@ module BMA {
                         that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
-                    if (id !== undefined) {
+                        if (id !== undefined) {
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
                             that.variableEditor.Show(0, 0);
@@ -191,7 +191,7 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject();
 
-                
+
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
 
@@ -217,7 +217,7 @@ module BMA {
                         }
                         this.stagingLine = undefined;
                     });
-                
+
                 dragSubject.drag.subscribe(
                     (gesture) => {
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
@@ -285,6 +285,10 @@ module BMA {
             }
 
             private RemoveVariable(id: number) {
+                if (this.editingVariableId === this.contextElement.id) {
+                    this.editingVariableId = undefined;
+                }
+
                 var wasRemoved = false;
 
                 var model = this.Current.model;
