@@ -105,6 +105,35 @@ module BMA {
             private containerRadius = 100;
             private svg;
 
+            private lineWidth = 1;
+            private labelSize = 10;
+            private labelVisibility = true;
+
+            public get LineWidth(): number {
+                return this.lineWidth;
+            }
+
+            public set LineWidth(value: number) {
+                this.lineWidth = value;
+                console.log(this.lineWidth);
+            }
+
+            public get LabelSize(): number {
+                return this.labelSize;
+            }
+
+            public set LabelSize(value: number) {
+                this.labelSize = value;
+            }
+
+            public get LabelVisibility(): boolean {
+                return this.labelVisibility;
+            }
+
+            public set LabelVisibility(value: boolean) {
+                this.labelVisibility = value;
+            }
+
             private CreateSvgElement(type: string, renderParams: any) {
                 var elem = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", type);
                 var transform = "";
@@ -140,7 +169,7 @@ module BMA {
             constructor() {
                 var that = this;
                 this.elements = [];
-                
+
                 var svgCnt = $("<div></div>");
                 svgCnt.svg({
                     onLoad: (svg) => {
@@ -167,7 +196,7 @@ module BMA {
                         var op = jqSvg.path(g, cellPath, {
                             stroke: 'transparent',
                             fill: "#FAAF40",
-                            "fill-rule": "evenodd", 
+                            "fill-rule": "evenodd",
                             d: cellData,
                         });
 
@@ -230,11 +259,17 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#BBBDBF",
-                            strokeWidth: 8.3333,
+                            "stroke-width": 8,
                             d: data,
                             transform: "scale(0.36)"
                         });
-                        jqSvg.text(g, -that.variableWidthConstant / 2, 50, renderParams.model.Name, { transform: "scale(0.4)" });
+
+                        if (that.labelVisibility === true) {
+                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                "font-size": that.labelSize
+                            });
+                        }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -268,11 +303,17 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#EF4137",
-                            strokeWidth: 8.3333,
+                            strokeWidth: 8,
                             d: data,
                             transform: "scale(0.36)"
                         });
-                        jqSvg.text(g, -that.variableWidthConstant / 2, 50, renderParams.model.Name, { transform: "scale(0.4)" });
+
+                        if (that.labelVisibility === true) {
+                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                "font-size": that.labelSize
+                            });
+                        }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -306,11 +347,17 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#3BB34A",
-                            strokeWidth: 8.3333,
+                            strokeWidth: 8,
                             d: data,
                             transform: "scale(1.2) rotate(" + renderParams.layout.Angle + ")"
                         });
-                        jqSvg.text(g, -that.variableWidthConstant / 2, 50, renderParams.model.Name, { transform: "scale(0.4)" });
+
+                        if (that.labelVisibility === true) {
+                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                "font-size": that.labelSize
+                            });
+                        }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -350,7 +397,7 @@ module BMA {
                                 x0 + w, y0 + h)
                                 .curveQ(x0 + w / 2, y0 + h * 1.5,
                                 x0, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Activator)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
 
                         } else {
 
@@ -408,7 +455,7 @@ module BMA {
                                 x0 + w, y0 + h)
                                 .curveQ(x0 + w / 2, y0 + h * 1.5,
                                 x0, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
 
                         } else {
 

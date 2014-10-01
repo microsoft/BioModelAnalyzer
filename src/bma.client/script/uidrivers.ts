@@ -45,7 +45,11 @@ module BMA {
 
             public GetPixelWidth() {
                 return this.svgPlotDiv.drawingsurface("getPixelWidth");
-        }
+            }
+
+            public SetGridVisibility(isOn: boolean) {
+                this.svgPlotDiv.drawingsurface({ gridVisibility: isOn });
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {

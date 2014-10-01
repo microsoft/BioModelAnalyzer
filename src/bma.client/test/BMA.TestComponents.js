@@ -45,6 +45,9 @@ var BMA;
             TestSVGPlotDriver.prototype.GetPixelWidth = function () {
                 return 0;
             };
+
+            TestSVGPlotDriver.prototype.SetGridVisibility = function (isOn) {
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;

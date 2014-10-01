@@ -197,7 +197,7 @@ declare var Rx: any;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
-            
+
             this._zoomService = InteractiveDataDisplay.Gestures.createZoomSubject(that._plot.centralPart);
 
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
@@ -268,6 +268,7 @@ declare var Rx: any;
                         this._gridLinesPlot.y0 = value.y0;
                         this._gridLinesPlot.xStep = value.xStep;
                         this._gridLinesPlot.yStep = value.yStep;
+                        this._plot.requestUpdateLayout();
                     }
                     break;
                 case "zoom":
@@ -277,6 +278,10 @@ declare var Rx: any;
                         this._zoomObs.onNext(new InteractiveDataDisplay.Gestures.ZoomGesture(this._gridLinesPlot.centralPart.width() / 2, this._gridLinesPlot.centralPart.height() / 2, zoom, "Mouse"));
                         this.options.zoom = value;
                     }
+                    break;
+                case "gridVisibility":
+                    this._gridLinesPlot.isVisible = value;
+                    this._plot.requestUpdateLayout();
                     break;
             }
             this._super(key, value);

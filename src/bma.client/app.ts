@@ -86,7 +86,7 @@ $(document).ready(function () {
             console.log("top " + top);
             console.log("left " + left);
 
-            window.Commands.Execute("DrawinfSurfaceContextMenuOpening", {
+            window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
                 left: left,
                 top: top
             });
@@ -182,12 +182,33 @@ $(document).ready(function () {
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings(); 
 
-    window.Commands.On("Commands.ToggleLabels", function (param) { visualSettings.TextLabelVisibility = param });
-    window.Commands.On("Commands.LabelsSize", function (param) { visualSettings.TextLabelSize = param });
-    window.Commands.On("Commands.ToggleIcons", function (param) { visualSettings.IconsVisibility = param });
-    window.Commands.On("Commands.IconsSize", function (param) { visualSettings.IconsSize = param });
-    window.Commands.On("Commands.ToggleGrid", function (param) { visualSettings.GridVisibility = param });
-    window.Commands.On("Commands.LineWidth", function (param) { visualSettings.LineWidth = param });
+    window.Commands.On("Commands.ToggleLabels", function (param) {
+        visualSettings.TextLabelVisibility = param;
+        window.ElementRegistry.LabelVisibility = param;
+        window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
+    });
+
+    window.Commands.On("Commands.LabelsSize", function (param) {
+        visualSettings.TextLabelSize = param;
+        window.ElementRegistry.LabelSize = param;
+        window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
+    });
+
+    //window.Commands.On("Commands.ToggleIcons", function (param) {
+    //    visualSettings.IconsVisibility = param;
+    //});
+
+    //window.Commands.On("Commands.IconsSize", function (param) {
+    //    visualSettings.IconsSize = param;
+    //});
+
+    
+
+    window.Commands.On("Commands.LineWidth", function (param) {
+        visualSettings.LineWidth = param;
+        window.ElementRegistry.LineWidth = param;
+        window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
+    });
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -202,6 +223,10 @@ $(document).ready(function () {
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
 
+    window.Commands.On("Commands.ToggleGrid", function (param) {
+        visualSettings.GridVisibility = param;
+        svgPlotDriver.SetGridVisibility(param);
+    });
 
     window.Commands.On("ZoomSliderChanged", (args) => {
         svgPlotDriver.SetZoom(args.value);

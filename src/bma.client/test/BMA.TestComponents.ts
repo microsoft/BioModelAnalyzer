@@ -42,6 +42,10 @@ module BMA {
             public GetPixelWidth() {
                 return 0;
             }
+
+            public SetGridVisibility(isOn: boolean) {
+
+            }
         }
 
         export class TestUndoRedoButton implements BMA.UIDrivers.ITurnableButton {

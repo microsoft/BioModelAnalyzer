@@ -120,7 +120,7 @@ module BMA {
                     this.Redo();
                 });
 
-                window.Commands.On("DrawinfSurfaceContextMenuOpening", (args) => {
+                window.Commands.On("DrawingSurfaceContextMenuOpening", (args) => {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
 
@@ -128,12 +128,12 @@ module BMA {
                     var containerId = that.GetContainerAtPosition(x, y);
                     var relationshipId = that.GetRelationshipAtPosition(x, y, that.driver.GetPixelWidth());
 
-                    if (id !== undefined || containerId !== undefined || relationshipId !== undefined) {
+                    if (id !== undefined || relationshipId !== undefined) {
 
                         that.contextMenu.EnableMenuItems([
-                            { name: "Copy", isVisible: true },
+                            { name: "Copy", isVisible: false },
                             { name: "Paste", isVisible: false },
-                            { name: "Cut", isVisible: true },
+                            { name: "Cut", isVisible: false },
                             { name: "Delete", isVisible: true },
                         ]);
 
@@ -161,11 +161,19 @@ module BMA {
                 window.Commands.On("DrawingSurfaceDelete", (args) => {
                     if (that.contextElement !== undefined) {
                         if (that.contextElement.type === "variable") {
-                            that.RemoveVariable(this.contextElement.id);
+                            that.RemoveVariable(that.contextElement.id);
+                        } else if (that.contextElement.type === "relationship") {
+                            that.RemoveRelationship(that.contextElement.id);
                         }
 
-
                         that.contextElement = undefined;
+                    }
+                });
+
+                window.Commands.On("DrawingSurfaceRefreshOutput", () => {
+                    if (this.Current !== undefined) {
+                        var drawingSvg = <SVGElement>this.CreateSvg();
+                        this.driver.Draw(drawingSvg);
                     }
                 });
 
@@ -299,6 +307,7 @@ module BMA {
                     if (variables[i].Id !== id) {
                         newVars.push(variables[i]);
                         newVarLs.push(variableLayouts[i]);
+                    } else {
                         wasRemoved = true;
                     }
                 }
@@ -324,6 +333,31 @@ module BMA {
 
             private RemoveContainer(id: number) {
 
+            }
+
+            private RemoveRelationship(id: number) {
+                var wasRemoved = false;
+
+                var model = this.Current.model;
+                var layout = this.Current.layout;
+
+                var relationships = this.Current.model.Relationships;
+
+                var newRels = [];
+
+                for (var i = 0; i < relationships.length; i++) {
+                    if (relationships[i].Id !== id) {
+                        newRels.push(relationships[i]);
+                    } else {
+                        wasRemoved = true;
+                    }
+                }
+
+                if (wasRemoved === true) {
+                    var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, newRels);
+                    var newlayout = new BMA.Model.Layout(layout.Containers, layout.Variables);
+                    this.Dup(newmodel, newlayout);
+                }
             }
 
             private GetVariableAtPosition(x: number, y: number): number {
