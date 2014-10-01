@@ -503,7 +503,7 @@ module BMA {
                                 }
                             }
                         } else {
-                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "testName", 0, 1, ""));
+                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 

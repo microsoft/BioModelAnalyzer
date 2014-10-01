@@ -115,6 +115,7 @@ module BMA {
 
             public set LineWidth(value: number) {
                 this.lineWidth = value;
+                console.log(this.lineWidth);
             }
 
             public get LabelSize(): number {
@@ -258,7 +259,7 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#BBBDBF",
-                            strokeWidth: 8.3333,
+                            "stroke-width": 8,
                             d: data,
                             transform: "scale(0.36)"
                         });
@@ -302,7 +303,7 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#EF4137",
-                            strokeWidth: 8.3333,
+                            strokeWidth: 8,
                             d: data,
                             transform: "scale(0.36)"
                         });
@@ -346,7 +347,7 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#3BB34A",
-                            strokeWidth: 8.3333,
+                            strokeWidth: 8,
                             d: data,
                             transform: "scale(1.2) rotate(" + renderParams.layout.Angle + ")"
                         });
@@ -396,7 +397,7 @@ module BMA {
                                 x0 + w, y0 + h)
                                 .curveQ(x0 + w / 2, y0 + h * 1.5,
                                 x0, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Activator)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
 
                         } else {
 
@@ -454,7 +455,7 @@ module BMA {
                                 x0 + w, y0 + h)
                                 .curveQ(x0 + w / 2, y0 + h * 1.5,
                                 x0, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
 
                         } else {
 
