@@ -54,6 +54,15 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
         Log.log_debug "No bifurcation..."
 
         // No bifurcation - let's try to find a cycle...
+
+
+        // TODO:
+        // Try to find one fixpoint. 
+        // If there is no fixpoint - just run a simulation from an arbitrary point
+        //                           this simulation will return a cycle and this cycle
+        //                           can be returned as the counter example.
+        // If there is a fixpoint continue to finding a cycle as before.
+
         Log.log_debug "CEx(2): check whether the model cycles."
         // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
         let diameter =
