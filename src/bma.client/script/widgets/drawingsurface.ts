@@ -10,7 +10,7 @@ declare var Rx: any;
         _gridLinesPlot: null,
         _svgPlot: null,
         _dragService: null,
-        _zoomObservable: undefined,
+        //_zoomObservable: undefined,
         _zoomObs: undefined,
 
         options: {
@@ -29,10 +29,10 @@ declare var Rx: any;
         _create: function () {
             var that = this;
 
-            this._zoomObs = undefined;
-            this._zoomObservable = Rx.Observable.create(function (rx) {
-                that._zoomObs = rx;
-            });
+            //this._zoomObs = undefined;
+            //this._zoomObservable = Rx.Observable.create(function (rx) {
+            //    that._zoomObs = rx;
+            //});
 
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
@@ -214,20 +214,25 @@ declare var Rx: any;
             //this._gridLinesPlot.yDataTransform = yDT;
 
             var width = 1600;
+            that.options.zoom = width;
 
             if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).merge(this._zoomObservable).where(function (g) {
-                    console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
-                    return g.Type !== "Zoom" ;//|| g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
-                });
+                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);//.where(function (g) {//.merge(this._zoomObservable)
+                    //console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
+                    //return g.Type !== "Zoom" ;//|| g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
+                //});
                 that._plot.navigation.gestureSource = gestureSource;
-                this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
+                //this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
             } else {
-                that._plot.navigation.gestureSource = this._zoomObservable;
+                that._plot.navigation.gestureSource = undefined//this._zoomObservable;
             }
 
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
-            that._plot.host.bind("visibleRectChanged", function () { window.Commands.Execute("VisibleRectChanged", that._plot.visibleRect.width)} )
+            that._plot.host.bind("visibleRectChanged", function (args) {
+                if (Math.round(that._plot.visibleRect.width) !== that.options.zoom) {
+                    window.Commands.Execute("VisibleRectChanged", that._plot.visibleRect.width);
+                }
+            })
 
             $(window).resize(function () { that.resize(); });
             that.resize();
@@ -255,24 +260,24 @@ declare var Rx: any;
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {
-                        if (this._plot.navigation.gestureSource === this._zoomObservable) {
+                        if (this._plot.navigation.gestureSource === undefined) {
                             var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
 
-                            if (this._zoomObservable !== undefined) {
-                                gestureSource = gestureSource.merge(this._zoomObservable);
-                            }
+                            //if (this._zoomObservable !== undefined) {
+                            //    gestureSource = gestureSource.merge(this._zoomObservable);
+                            //}
 
                             //gestureSource = gestureSource.where(function (g) {
                             //    //console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
                             //    return g.Type !== "Zoom";// || g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
                             //});
 
-                            this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
+                            //this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
 
                             this._plot.navigation.gestureSource = gestureSource;
                         }
                     } else {
-                        this._plot.navigation.gestureSource = this._zoomObservable;
+                        this._plot.navigation.gestureSource = undefined;//this._zoomObservable;
                     }
                     break;
                 case "grid":
@@ -287,11 +292,13 @@ declare var Rx: any;
                 case "zoom":
                     if (value !== undefined) {
                         console.log(value);
-                        var currentZoom = this._getZoom();
-                        var zoom = Math.pow(currentZoom, (value - this.options.zoom) / 10);
-                        this._zoomObs.onNext(new InteractiveDataDisplay.Gestures.ZoomGesture(this._gridLinesPlot.centralPart.width() / 2, this._gridLinesPlot.centralPart.height() / 2, zoom, "Mouse"));
-                        this.options.zoom = value;
-                        //alert(this._plot.visibleRect.width);
+                        if (that._plot.visibleRect.width !== value) {
+                            var x = that._plot.visibleRect.x;
+                            var y = that._plot.visibleRect.y;
+                            //alert(x + '  ' + y);
+                            that._plot.navigation.setVisibleRect({ x: x, y: y, width: value, height: value / 2.5 }, false);
+                            that.options.zoom = value;
+                        }
                     }
                     break;
                 case "gridVisibility":

@@ -198,13 +198,22 @@ module BMA {
                 //    window.Commands.Execute("ZoomSliderBind", gesture);
                 //})
 
-                window.Commands.On("VisibleRectChanged", function (param) {
-                    if (param < 923) 
-                        param = 923;
-                    if (param > 923)
-                        param = 923;
+                window.Commands.On("ZoomSliderChanged", (args) => {
+                    var value = args * 24 + 800;
+                    navigationDriver.SetZoom(value);
+                });
 
-                    window.Commands.Execute("ZoomSliderBind", param);
+                window.Commands.On("VisibleRectChanged", function (param) {
+                    if (param < 800) {
+                        param = 800;
+                        navigationDriver.SetZoom(param);
+                    }
+                    if (param > 3200) {
+                        param = 3200;
+                        navigationDriver.SetZoom(param);
+                    }
+                    var zoom = (param - 800) / 24;
+                    window.Commands.Execute("ZoomSliderBind", zoom);
                 })
                 
                 dragSubject.dragStart.subscribe(
