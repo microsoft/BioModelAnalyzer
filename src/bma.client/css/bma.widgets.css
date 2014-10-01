@@ -982,9 +982,10 @@
     margin-right: 10px;
 }
 
-bma-formula-validation-message {
+.bma-formula-validation-message {
     color:red;
-    margin-top: 10px;
+    max-height: 40px;
+    overflow-y:auto;
 }
 
 .formula-failed {

@@ -216,6 +216,11 @@ module BMA {
 
             public Hide() {
                 this.popupWindow.hide();
+                //window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
+            }
+
+            public Collapse() {
+                window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
             }
 
             //private createResultView(params) {
@@ -369,6 +374,18 @@ module BMA {
 
             public GetMenuItems() {
                 return [];
+            }
+        }
+
+        export class AccordionHider implements IHider {
+            private acc: JQuery;
+
+            constructor(acc: JQuery) {
+                this.acc = acc;
+            }
+
+            public Hide() {
+                var coll = this.acc.children().filter('[aria-selected="true"]').trigger("click");
             }
         }
     }

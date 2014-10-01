@@ -16,7 +16,7 @@ declare var Rx: any;
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: 0
+            zoom: 50
         },
 
 
@@ -198,7 +198,6 @@ declare var Rx: any;
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
 
-            this._zoomService = InteractiveDataDisplay.Gestures.createZoomSubject(that._plot.centralPart);
 
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
 
@@ -214,14 +213,19 @@ declare var Rx: any;
             this._plot.yDataTransform = yDT;
             //this._gridLinesPlot.yDataTransform = yDT;
 
+            var width = 1600;
+
             if (this.options.isNavigationEnabled) {
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
-                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable);
+                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable).where(function (g) {
+                    console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
+                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
+                });
+                this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
             } else {
                 that._plot.navigation.gestureSource = this._zoomObservable;
             }
 
-            var width = 1600;
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
 
             $(window).resize(function () { that.resize(); });
@@ -256,6 +260,8 @@ declare var Rx: any;
                                 gestureSource = gestureSource.merge(this._zoomObservable);
                             }
 
+                            this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
+
                             this._plot.navigation.gestureSource = gestureSource;
                         }
                     } else {
@@ -273,10 +279,12 @@ declare var Rx: any;
                     break;
                 case "zoom":
                     if (value !== undefined) {
+                        console.log(value);
                         var currentZoom = this._getZoom();
                         var zoom = Math.pow(currentZoom, (value - this.options.zoom) / 10);
                         this._zoomObs.onNext(new InteractiveDataDisplay.Gestures.ZoomGesture(this._gridLinesPlot.centralPart.width() / 2, this._gridLinesPlot.centralPart.height() / 2, zoom, "Mouse"));
                         this.options.zoom = value;
+                        //alert(this._plot.visibleRect.width);
                     }
                     break;
                 case "gridVisibility":

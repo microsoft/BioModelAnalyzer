@@ -45,7 +45,7 @@ $(document).ready(function () {
     //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
-    $("#zoomslider").bmazoomslider();
+    $("#zoomslider").bmazoomslider({ value: 50 });
 
     //$("#modelToolbarHeader").toolbarpanel();
     //$("#modelToolbarContent").toolbarpanel();
@@ -204,6 +204,7 @@ $(document).ready(function () {
     var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
+    var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
 
     window.Commands.On("Commands.ToggleGrid", function (param) {
         visualSettings.GridVisibility = param;
@@ -214,13 +215,15 @@ $(document).ready(function () {
         svgPlotDriver.SetZoom(args.value);
     });
     window.Commands.On("ZoomSliderBind", function (args) {
-        var value = Math.round((args.scaleFactor - 1) * 10) * 10 + $("#zoomslider").bmazoomslider('option', 'value');
+        var value = Math.round((args.scaleFactor - 1) * 5) * 10 + $("#zoomslider").bmazoomslider('option', 'value');
         if (value < 0)
             value = 0;
         if (value > 100)
             value = 100;
         $("#zoomslider").bmazoomslider({ value: value });
-        svgPlotDriver.SetZoom(value);
+
+        //svgPlotDriver.SetZoom(value);
+        console.log(value);
     });
 
     //Loading presenters

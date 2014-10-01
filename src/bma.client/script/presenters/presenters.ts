@@ -195,7 +195,7 @@ module BMA {
                 zoomSubject.subscribe((gesture) => {
                     window.Commands.Execute("ZoomSliderBind", gesture);
                 })
-
+                
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
 
@@ -292,6 +292,10 @@ module BMA {
             }
 
             private RemoveVariable(id: number) {
+                if (this.editingVariableId === this.contextElement.id) {
+                    this.editingVariableId = undefined;
+                }
+
                 var wasRemoved = false;
 
                 var model = this.Current.model;

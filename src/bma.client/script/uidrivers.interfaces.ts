@@ -12,6 +12,10 @@ module BMA {
             SetGridVisibility(isOn: boolean);
         }
 
+        export interface IHider {
+            Hide();
+        }
+
         export interface INavigationPanel {
             TurnNavigation(isOn: boolean);
             GetZoomSubject(): any;
