@@ -16,6 +16,8 @@ namespace bma.client.Controllers
         // POST api/Validate
         public FurtherTestingOutput Post([FromBody]FurtherTestingInput input)
         {
+            input.Model.ReplaceVariableNamesWithIDs();
+
             // Hack: create XDocuments to interop with old code
             var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));
             var stream = new MemoryStream();

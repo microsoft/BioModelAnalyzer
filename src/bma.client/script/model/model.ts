@@ -14,6 +14,8 @@ module BMA {
 
             public set BioModel(value: BMA.Model.BioModel) {
                 this.model = value;
+
+                window.Commands.Execute("AppModelChanged", {});
                 //TODO: update inner components (analytics)
             }
 

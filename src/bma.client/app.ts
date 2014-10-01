@@ -202,7 +202,6 @@ $(document).ready(function () {
     //    visualSettings.IconsSize = param;
     //});
 
-    
 
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
@@ -242,6 +241,10 @@ $(document).ready(function () {
     });
 
     
+
+    window.Commands.On("AppModelChanged", () => {
+        popupDriver.Hide();
+    });
 
     //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);
