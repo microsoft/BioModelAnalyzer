@@ -28,10 +28,14 @@
                 //step: that.options.step,
                 value: that.options.value,
                 change: function (event, ui) {
+                    var isExternal = Math.abs(that.options.value - ui.value) < 1 ||
+                        that.options.value > that.options.max ||
+                        that.options.value < that.options.min;
+
                     that.options.value = ui.value;
 
                     if (command !== undefined && command !== "") {
-                        window.Commands.Execute(command,  ui.value );
+                        window.Commands.Execute(command, { value: ui.value, isExternal: isExternal });
                     }
             }
             });
@@ -77,8 +81,8 @@
             switch (key) {
                 case "value": 
                     if (this.options.value !== value) {
-                        this.zoomslider.slider("option", "value", value);
                         this.options.value = value;
+                        this.zoomslider.slider("option", "value", value);
                     }
                     break;
             }

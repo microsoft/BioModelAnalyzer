@@ -19,6 +19,11 @@ declare var Rx: any;
             zoom: 50
         },
 
+        _plotSettings: {
+            MinWidth: 0.01,
+            MaxWidth: 1e5
+        },
+
 
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
@@ -28,6 +33,10 @@ declare var Rx: any;
 
         _create: function () {
             var that = this;
+
+            if (window.PlotSettings !== undefined) {
+                this._plotSettings = window.PlotSettings;
+            }
 
             //this._zoomObs = undefined;
             //this._zoomObservable = Rx.Observable.create(function (rx) {
@@ -217,14 +226,12 @@ declare var Rx: any;
             that.options.zoom = width;
 
             if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);//.where(function (g) {//.merge(this._zoomObservable)
-                    //console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
-                    //return g.Type !== "Zoom" ;//|| g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
-                //});
+                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).where(function (g) {
+                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                });
                 that._plot.navigation.gestureSource = gestureSource;
-                //this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
             } else {
-                that._plot.navigation.gestureSource = undefined//this._zoomObservable;
+                that._plot.navigation.gestureSource = undefined;
             }
 
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
@@ -261,19 +268,9 @@ declare var Rx: any;
                 case "isNavigationEnabled":
                     if (value === true) {
                         if (this._plot.navigation.gestureSource === undefined) {
-                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
-
-                            //if (this._zoomObservable !== undefined) {
-                            //    gestureSource = gestureSource.merge(this._zoomObservable);
-                            //}
-
-                            //gestureSource = gestureSource.where(function (g) {
-                            //    //console.log(g.scaleFactor + "   " + that._plot.visibleRect.width + "   ");
-                            //    return g.Type !== "Zoom";// || g.scaleFactor > 1 && that._plot.visibleRect.width < 2665 || g.scaleFactor < 1 && that._plot.visibleRect.width > 923;
-                            //});
-
-                            //this._zoomService = gestureSource.where(function (g) { return g.Type === "Zoom"; });
-
+                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                                return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                            });
                             this._plot.navigation.gestureSource = gestureSource;
                         }
                     } else {
@@ -293,9 +290,19 @@ declare var Rx: any;
                     if (value !== undefined) {
                         console.log(value);
                         if (that._plot.visibleRect.width !== value) {
-                            var x = that._plot.visibleRect.x;
-                            var y = that._plot.visibleRect.y;
-                            that._plot.navigation.setVisibleRect({ x: x, y: y, width: value, height: value / 2.5 }, false);
+
+                            var oldPlotRect = that._plot.visibleRect;
+                            var xCenter = oldPlotRect.x + oldPlotRect.width / 2;
+                            var yCenter = oldPlotRect.y + oldPlotRect.height / 2;
+                            var scale = oldPlotRect.width / value;
+                            var newHeight = oldPlotRect.height / scale;
+
+                            that._plot.navigation.setVisibleRect({
+                                x: xCenter - value / 2,
+                                y: yCenter - newHeight / 2,
+                                width: value,
+                                height: newHeight
+                            }, false);
                             that.options.zoom = value;
                         }
                     }

@@ -117,8 +117,10 @@
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
     <Content Include="Global.asax" />
+    <Content Include="html\chartSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
+    <Content Include="images\20x20.gif" />
     <Content Include="images\60x60.gif" />
     <Content Include="images\activate.png" />
     <Content Include="images\analyze.png" />
@@ -140,7 +142,6 @@
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
-    <Content Include="images\kit_i_kot.jpg" />
     <Content Include="images\new.png" />
     <Content Include="images\open.png" />
     <Content Include="images\pointer.png" />
@@ -306,7 +307,9 @@
     <Content Include="Chutzpah.json" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ext\FSharp 3.0\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />

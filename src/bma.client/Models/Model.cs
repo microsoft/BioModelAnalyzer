@@ -55,6 +55,8 @@ namespace bma.client {
         [XmlAttribute]
         public int Id { get; set; }
 
+        [DefaultValue((string)null)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Name { get; set; }
 
         public double RangeFrom { get; set; }

@@ -42,6 +42,11 @@ $(document).ready(function () {
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 
+    window.PlotSettings = {
+        MaxWidth: 3200,
+        MinWidth: 800
+    };
+
     //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
@@ -212,16 +217,12 @@ $(document).ready(function () {
     });
 
     window.Commands.On("ZoomSliderBind", function (value) {
-        //var value = Math.round((args.scaleFactor - 1) * 5) *10 + $("#zoomslider").bmazoomslider('option', 'value');
-        //if (value < 0) value = 0;
-        //if (value > 100) value = 100;
         $("#zoomslider").bmazoomslider({ value: value });
-        //svgPlotDriver.SetZoom(value);
-        //console.log(value);
     });
 
     window.Commands.On("AppModelChanged", function () {
         popupDriver.Hide();
+        accordionHider.Hide();
     });
 
     //Loading presenters

@@ -412,3 +412,34 @@ let find_cycle_steps network diameter bounds =
     cycle
 
 
+let find_cycle_steps_optimized network bounds = 
+
+    let rec find_cycle_of_length length (ctx : Context) =
+        let mutable cycle = None
+        let model = ref null
+
+        // TODO:
+        // add to ctx the constratints to increase the path to length length
+        let sat = ctx.CheckAndGetModel (model)
+        match sat with
+        | LBool.False -> cycle
+        | LBool.True -> 
+            ctx.Push()
+            // TODO:
+            // add to ctx the constraints to close a loop
+            let sat = ctx.CheckAndGetModel (model)
+            match sat with
+            | LBool.False ->
+                ctx.Pop()
+                find_cycle_of_length (length+1) ctx
+            | LBool.True ->                
+                // TODO:
+                // update cycle with the information from model
+                cycle
+
+    let cfg = new Config()
+    cfg.SetParamValue("MODEL", "true")
+    let ctx = new Context(cfg)
+    let length=1
+    find_cycle_of_length length ctx
+

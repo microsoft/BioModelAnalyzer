@@ -1,29 +1,24 @@
-﻿module BMA {
-    export module Presenters {
-        export class FurtherTestingPresenter {
-
-            private driver: BMA.UIDrivers.IFurtherTesting;
-            private popupViewer: BMA.UIDrivers.IPopup;
-            private num: number = 0;
-            private data;
-            private model;
-            private result;
-
-            constructor(driver: BMA.UIDrivers.IFurtherTesting, popupViewer: BMA.UIDrivers.IPopup) {
+﻿var BMA;
+(function (BMA) {
+    (function (Presenters) {
+        var FurtherTestingPresenter = (function () {
+            function FurtherTestingPresenter(driver, popupViewer) {
+                var _this = this;
+                this.num = 0;
                 var that = this;
                 this.driver = driver;
                 this.popupViewer = popupViewer;
 
-                window.Commands.On("ProofFailed", function (param: { Model; Res }) {
+                window.Commands.On("ProofFailed", function (param) {
                     //that.driver.ShowStartToggler();
                     that.model = param.Model;
                     that.result = param.Res;
-                })
+                });
 
                 window.Commands.On("ProofRequested", function () {
                     that.driver.HideStartToggler();
                     that.driver.HideResults();
-                })
+                });
 
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0) {
@@ -44,32 +39,31 @@
                         //});
                         //that.driver.ShowResults(data);
                         //that.data = data;
+                    } else
+                        alert("No Variables");
+                });
+
+                window.Commands.On("Expand", function (param) {
+                    switch (param) {
+                        case "FurtherTesting":
+                            that.driver.HideStartToggler();
+                            that.driver.HideResults();
+                            var content = $('<div></div>').coloredtableviewer({ numericData: that.data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
+                            _this.popupViewer.Show({ tab: param, content: content });
+                            break;
                     }
-                    else alert("No Variables");
-                })
+                });
 
-                window.Commands.On("Expand", (param) => {
-                        switch (param) {
-                            case "FurtherTesting":
-                                that.driver.HideStartToggler();
-                                that.driver.HideResults();
-                                var content = $('<div></div>').coloredtableviewer({ numericData: that.data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
-                                this.popupViewer.Show({ tab: param, content: content });
-                                break;
-                        }
-                })
-
-                window.Commands.On("Collapse", (param) => {
+                window.Commands.On("Collapse", function (param) {
                     switch (param) {
                         case "FurtherTesting":
                             that.driver.ShowResults(that.data);
-                            this.popupViewer.Hide();
+                            _this.popupViewer.Hide();
                             break;
                     }
-                })
+                });
             }
-
-            private FurtherTestingImitation(num) {
+            FurtherTestingPresenter.prototype.FurtherTestingImitation = function (num) {
                 var data = [];
                 for (var i = 0; i < num; i++) {
                     data[i] = [];
@@ -81,7 +75,11 @@
                         data[i][3] += Math.round(Math.random()) + ' ';
                 }
                 return data;
-            }
-        }
-    }
-}
+            };
+            return FurtherTestingPresenter;
+        })();
+        Presenters.FurtherTestingPresenter = FurtherTestingPresenter;
+    })(BMA.Presenters || (BMA.Presenters = {}));
+    var Presenters = BMA.Presenters;
+})(BMA || (BMA = {}));
+//# sourceMappingURL=furthertestingpresenter.js.map

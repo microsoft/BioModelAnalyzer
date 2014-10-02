@@ -1102,9 +1102,30 @@
     /*background-image: url(../images/runbutton.png);*/
     /*width: 78px;
     height: 38px;*/
+    width: 40px;
+    height: 25px;
     background-color:#77b55a;
 	border-radius:8px;
 	/*border:1px solid #4b8f29;*/
+    position: absolute;
+    right: 50px;
+    top: -20px;
+    color:#ffffff;
+	font-family:Verdana;
+	font-size:20px;
+	padding:5px 20px;
+	text-decoration:none;
+    cursor: pointer;
+}
+
+.bma-run-button-waiting {
+    width: 40px;
+    height: 25px;
+    background-color:  #77b55a;
+    background-image: url(../images/20x20.gif);
+    background-repeat: no-repeat;
+    background-position:center;
+	border-radius:8px;
     position: absolute;
     right: 50px;
     top: -20px;
