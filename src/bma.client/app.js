@@ -211,19 +211,13 @@ $(document).ready(function () {
         svgPlotDriver.SetGridVisibility(param);
     });
 
-    window.Commands.On("ZoomSliderChanged", function (args) {
-        svgPlotDriver.SetZoom(args.value);
-    });
-    window.Commands.On("ZoomSliderBind", function (args) {
-        var value = Math.round((args.scaleFactor - 1) * 5) * 10 + $("#zoomslider").bmazoomslider('option', 'value');
-        if (value < 0)
-            value = 0;
-        if (value > 100)
-            value = 100;
+    window.Commands.On("ZoomSliderBind", function (value) {
+        //var value = Math.round((args.scaleFactor - 1) * 5) *10 + $("#zoomslider").bmazoomslider('option', 'value');
+        //if (value < 0) value = 0;
+        //if (value > 100) value = 100;
         $("#zoomslider").bmazoomslider({ value: value });
-
         //svgPlotDriver.SetZoom(value);
-        console.log(value);
+        //console.log(value);
     });
 
     window.Commands.On("AppModelChanged", function () {

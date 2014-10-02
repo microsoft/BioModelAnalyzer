@@ -31,7 +31,7 @@
                     that.options.value = ui.value;
 
                     if (command !== undefined && command !== "") {
-                        window.Commands.Execute(command, { value: ui.value });
+                        window.Commands.Execute(command,  ui.value );
                     }
             }
             });
@@ -76,12 +76,12 @@
             var that = this;
             switch (key) {
                 case "value": 
-                    this.options.value = value;
-                    this.zoomslider.slider("option", "value", that.options.value);
-                    //alert(value);
+                    if (this.options.value !== value) {
+                        this.zoomslider.slider("option", "value", value);
+                        this.options.value = value;
+                    }
                     break;
             }
-            
             this._super(key, value);
         }
 
