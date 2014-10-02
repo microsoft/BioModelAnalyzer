@@ -81,7 +81,6 @@
         var rand = td.children("div").eq(0);
         rand.click();
         console.log(td.children("input").val());
-        //expect(td.text()).not.toEqual('7');
     });
 
     xit("should randomize all", function () {
@@ -154,13 +153,8 @@
         var td5 = $('<td></td>').text(6).appendTo(tr1);
         var t1 = table.find('tr').children("td:nth-child(2)");
 
-        //console.log("Start ");
-        //for (var i = 0; i < t1.length; i++)
-        //    console.log(t1.eq(i).text());
         var t2 = table.find("tr").children("td:nth-child(3)");
 
-        //for (var i = 0; i < t2.length; i++)
-        //    console.log(t2.eq(i).text());
         widget.progressiontable();
         expect(widget.progressiontable("IsClone", t1, t2)).toBeFalsy();
     });
@@ -182,4 +176,3 @@
         expect(widget.progressiontable("IsClone", t1, t2)).toBeTruthy();
     });
 });
-//# sourceMappingURL=ProgressionTableTest.js.map

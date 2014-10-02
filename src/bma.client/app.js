@@ -1,54 +1,22 @@
-﻿/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="script\model\biomodel.ts"/>
-/// <reference path="script\model\model.ts"/>
-/// <reference path="script\model\visualsettings.ts"/>
-/// <reference path="script\commands.ts"/>
-/// <reference path="script\elementsregistry.ts"/>
-/// <reference path="script\functionsregistry.ts"/>
-/// <reference path="script\uidrivers.interfaces.ts"/>
-/// <reference path="script\uidrivers.ts"/>
-/// <reference path="script\presenters\presenters.ts"/>
-/// <reference path="script\presenters\furthertestingpresenter.ts"/>
-/// <reference path="script\presenters\simulationpresenter.ts"/>
-/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
-/// <reference path="script\SVGHelper.ts"/>
-/// <reference path="script\widgets\drawingsurface.ts"/>
-/// <reference path="script\widgets\simulationplot.ts"/>
-/// <reference path="script\widgets\simulationviewer.ts"/>
-/// <reference path="script\widgets\simulationexpanded.ts"/>
-/// <reference path="script\widgets\accordeon.ts"/>
-/// <reference path="script\widgets\visibilitysettings.ts"/>
-/// <reference path="script\widgets\elementbutton.ts"/>
-/// <reference path="script\widgets\bmaslider.ts"/>
-/// <reference path="script\widgets\variablesOptionsEditor.ts"/>
-/// <reference path="script\widgets\progressiontable.ts"/>
-/// <reference path="script\widgets\proofresultviewer.ts"/>
-/// <reference path="script\widgets\furthertestingviewer.ts"/>
-/// <reference path="script\widgets\resultswindowviewer.ts"/>
-/// <reference path="script\widgets\coloredtableviewer.ts"/>
-/// <reference path="script\widgets\containernameeditor.ts"/>
-
+﻿
 $(document).ready(function () {
-    //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
 
-    //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
 
-    //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
 
-    //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 
-    //Loading widgets
+    window.PlotSettings = {
+        MaxWidth: 3200,
+        MinWidth: 800
+    };
+
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
 
-    //$("#modelToolbarHeader").toolbarpanel();
-    //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
     $("#modelToolbarContent").buttonset();
     $("#modelToolbarSlider").bmaaccordion({ position: "left" });
@@ -102,7 +70,6 @@ $(document).ready(function () {
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
 
-    //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
@@ -133,7 +100,6 @@ $(document).ready(function () {
 
     elementPanel.buttonset();
 
-    //undo/redo panel
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
@@ -165,7 +131,6 @@ $(document).ready(function () {
     });
     var expandedSimulation = $('<div></div>').simulationexpanded();
 
-    //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
 
     window.Commands.On("Commands.ToggleLabels", function (param) {
@@ -180,19 +145,12 @@ $(document).ready(function () {
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
 
-    //window.Commands.On("Commands.ToggleIcons", function (param) {
-    //    visualSettings.IconsVisibility = param;
-    //});
-    //window.Commands.On("Commands.IconsSize", function (param) {
-    //    visualSettings.IconsSize = param;
-    //});
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
         window.ElementRegistry.LineWidth = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
 
-    //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
@@ -212,19 +170,14 @@ $(document).ready(function () {
     });
 
     window.Commands.On("ZoomSliderBind", function (value) {
-        //var value = Math.round((args.scaleFactor - 1) * 5) *10 + $("#zoomslider").bmazoomslider('option', 'value');
-        //if (value < 0) value = 0;
-        //if (value > 100) value = 100;
         $("#zoomslider").bmazoomslider({ value: value });
-        //svgPlotDriver.SetZoom(value);
-        //console.log(value);
     });
 
     window.Commands.On("AppModelChanged", function () {
         popupDriver.Hide();
+        accordionHider.Hide();
     });
 
-    //Loading presenters
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(furtherTestingDriver, popupDriver);
@@ -232,4 +185,3 @@ $(document).ready(function () {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver);
 });
-//# sourceMappingURL=app.js.map

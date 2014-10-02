@@ -1,10 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\model\biomodel.ts"/>
-/// <reference path="..\model\model.ts"/>
-/// <reference path="..\uidrivers.ts"/>
-/// <reference path="..\commands.ts"/>
-
+﻿
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -39,8 +33,6 @@ var BMA;
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
                     that.stagingLine = undefined;
-                    //this.selectedType = this.selectedType === type ? undefined : type;
-                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -156,25 +148,23 @@ var BMA;
 
                 var dragSubject = dragService.GetDragSubject();
 
-                //var zoomSubject = navigationDriver.GetZoomSubject();
-                //zoomSubject.subscribe((gesture) => {
-                //    window.Commands.Execute("ZoomSliderBind", gesture);
-                //})
                 window.Commands.On("ZoomSliderChanged", function (args) {
-                    var value = args * 24 + 800;
-                    navigationDriver.SetZoom(value);
+                    if (args.isExternal !== true) {
+                        var value = args.value * 24 + 800;
+                        navigationDriver.SetZoom(value);
+                    }
                 });
 
                 window.Commands.On("VisibleRectChanged", function (param) {
-                    if (param < 800) {
-                        param = 800;
+                    if (param < window.PlotSettings.MinWidth) {
+                        param = window.PlotSettings.MinWidth;
                         navigationDriver.SetZoom(param);
                     }
-                    if (param > 3200) {
-                        param = 3200;
+                    if (param > window.PlotSettings.MaxWidth) {
+                        param = window.PlotSettings.MaxWidth;
                         navigationDriver.SetZoom(param);
                     }
-                    var zoom = (param - 800) / 24;
+                    var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
 
@@ -207,7 +197,6 @@ var BMA;
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
 
-                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             if (that.stagingLine.svg !== undefined) {
                                 that.svg.remove(that.stagingLine.svg);
@@ -782,7 +771,6 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
-                //Generating svg elements from model and layout
                 var svgElements = [];
 
                 var containerLayouts = this.Current.layout.Containers;
@@ -820,7 +808,6 @@ var BMA;
                     svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
                 }
 
-                //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
@@ -840,4 +827,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map

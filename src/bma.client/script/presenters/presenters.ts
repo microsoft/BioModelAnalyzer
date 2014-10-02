@@ -193,28 +193,25 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject();
 
-                //var zoomSubject = navigationDriver.GetZoomSubject();
-                //zoomSubject.subscribe((gesture) => {
-                //    window.Commands.Execute("ZoomSliderBind", gesture);
-                //})
-
                 window.Commands.On("ZoomSliderChanged", (args) => {
-                    var value = args * 24 + 800;
-                    navigationDriver.SetZoom(value);
+                    if (args.isExternal !== true) {
+                        var value = args.value * 24 + 800;
+                        navigationDriver.SetZoom(value);
+                    }
                 });
 
                 window.Commands.On("VisibleRectChanged", function (param) {
-                    if (param < 800) {
-                        param = 800;
+                    if (param < window.PlotSettings.MinWidth) {
+                        param = window.PlotSettings.MinWidth;
                         navigationDriver.SetZoom(param);
                     }
-                    if (param > 3200) {
-                        param = 3200;
+                    if (param > window.PlotSettings.MaxWidth) {
+                        param = window.PlotSettings.MaxWidth;
                         navigationDriver.SetZoom(param);
                     }
-                    var zoom = (param - 800) / 24;
+                    var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
-                })
+                });
                 
                 dragSubject.dragStart.subscribe(
                     (gesture) => {

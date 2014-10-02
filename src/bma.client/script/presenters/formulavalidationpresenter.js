@@ -7,10 +7,8 @@
                 this.editorDriver = editor;
 
                 window.Commands.On("FormulaEdited", function (formula) {
-                    //alert("validation");
                     var r = that.RandomValidation();
 
-                    //$("#log").append("Invoking api/Validate (for correct formula)...<br/>");
                     if (formula !== "")
                         $.ajax({
                             type: "POST",
@@ -20,10 +18,8 @@
                             },
                             success: function (res) {
                                 that.editorDriver.SetValidation(res.IsValid, res.Message);
-                                //$("#log").append("Validate success (for correct). IsValid: " + res.IsValid + "<br/>");
                             },
                             error: function (res) {
-                                //$("#log").append("Validate error: " + res.statusText + "<br/>");
                             }
                         });
                     else {
@@ -40,4 +36,3 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=formulavalidationpresenter.js.map
