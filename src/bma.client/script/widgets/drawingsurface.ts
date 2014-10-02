@@ -295,7 +295,6 @@ declare var Rx: any;
                         if (that._plot.visibleRect.width !== value) {
                             var x = that._plot.visibleRect.x;
                             var y = that._plot.visibleRect.y;
-                            //alert(x + '  ' + y);
                             that._plot.navigation.setVisibleRect({ x: x, y: y, width: value, height: value / 2.5 }, false);
                             that.options.zoom = value;
                         }
