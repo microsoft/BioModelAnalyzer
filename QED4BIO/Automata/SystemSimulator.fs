@@ -106,7 +106,7 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) (p : Pa
                 compressedMapAutomata(sim_BA, fun _ m -> m)
             
         if show_intermediate_steps then show_automata final
-        show_automata final
+        //show_automata final
         final
 
 
@@ -337,9 +337,12 @@ let run (init_form, trans_form) edge_values comms fates (inputs : int[]) (p : Pa
 
     let tidy_auto = compressedMapAutomata (auto.[0], fun _ x -> String.Join(",\n ", Set.map (fun (x : Map<_,_> list) -> "[" + (String.Join(";", x)) + "]") ((fst x).middle_vals)))
 
-    printfn "Time:  %O" (new System.TimeSpan (System.DateTime.Now.Ticks - start))
-
+    let total_time = (new System.TimeSpan (System.DateTime.Now.Ticks - start))
+    
     //show_automata tidy_auto
     for s in tidy_auto.states do
         printfn "State: %O" (tidy_auto.value s)
+    
+    printfn "Number of states: %O" tidy_auto.states.Count
 
+    printfn "Time:  %O" total_time
