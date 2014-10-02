@@ -156,9 +156,26 @@ var BMA;
 
                 var dragSubject = dragService.GetDragSubject();
 
-                var zoomSubject = navigationDriver.GetZoomSubject();
-                zoomSubject.subscribe(function (gesture) {
-                    window.Commands.Execute("ZoomSliderBind", gesture);
+                //var zoomSubject = navigationDriver.GetZoomSubject();
+                //zoomSubject.subscribe((gesture) => {
+                //    window.Commands.Execute("ZoomSliderBind", gesture);
+                //})
+                window.Commands.On("ZoomSliderChanged", function (args) {
+                    var value = args * 24 + 800;
+                    navigationDriver.SetZoom(value);
+                });
+
+                window.Commands.On("VisibleRectChanged", function (param) {
+                    if (param < 800) {
+                        param = 800;
+                        navigationDriver.SetZoom(param);
+                    }
+                    if (param > 3200) {
+                        param = 3200;
+                        navigationDriver.SetZoom(param);
+                    }
+                    var zoom = (param - 800) / 24;
+                    window.Commands.Execute("ZoomSliderBind", zoom);
                 });
 
                 dragSubject.dragStart.subscribe(function (gesture) {
