@@ -182,6 +182,71 @@ let test_automata5<'istate when 'istate : comparison> : Automata<'istate,interp>
             |]
         )  
 
+let test_automata5_fate_clock = 
+        (bound "next_path" 1 2 &&& bound "next_signal" 3 4 &&& bound "next_fate" 0 1 &&& bound "next_clock" 0 1),
+        (context.MkAnd 
+            [|
+            (* Straight from the paper *)
+            (* Path rules *)
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 0))
+                ==> (((var "prev_path") ++ (int 1)) === (var "next_path"))
+
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" << int 4) &&& (var "prev_input" === int 1))
+                ==> (int 4 === (var "next_path"))
+
+            ((var "prev_path" << int 4) &&& (int 0 << var "prev_path") &&& (var "next_signal" === int 4))
+                ==> (int 0 === (var "next_path"))
+            (* Signal rules *)
+            (((var "prev_left_path" === int 4) ||| (var "prev_right_path" === int 4)) &&& (int 0 << var "prev_signal"))
+                ==> (var "next_signal" === int 4)
+
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (int 4 === var "prev_path"))
+                ==> (var "next_signal" === int 0)
+
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (int 0 << var "prev_signal") &&& (var "prev_signal" << int 4))
+                ==> ((var "next_signal" ++ int 1) === var "prev_signal")
+
+            (* Rules for dealing with not performing an update*)
+            ((var "prev_left_path" << int 4)  &&& (var "prev_right_path" << int 4)  &&& (var "prev_path" << int 4) &&& (var "prev_signal" === int 4))
+                ==> (int 4 === var "prev_signal")
+
+            ((var "prev_signal" === int 0)  ==> (var "next_signal" === int 0))
+
+            ((var "prev_path" === int 0) ||| (var "prev_path" === int 4)) 
+                ==> (var "prev_path" === var "next_path")
+
+            ((var "prev_path" << int 5) &&& ((int 0 << var "prev_path") ||| (var "prev_path" === int 0)))
+
+            (*clock updates*)
+
+            var "prev_clock" << int 10 ==> (var "next_clock" === var "prev_clock" ++ int 1)
+
+            var "prev_clock" === int 10 ==> (var "next_clock" === var "prev_clock")
+
+            (*fate updates*)
+
+            var "next_clock" << int 10 ==> (var "next_fate" === int 0)
+
+            (var "next_clock" === int 10) &&& (var "next_path" === int 4) ==> (var "next_fate" === int 1)
+
+            (var "next_clock" === int 10) &&& (var "next_path" === int 0) ==> (var "next_fate" === int 2)
+
+            (var "next_clock" === int 10) &&& (int 0 << var "next_path") &&& (var "next_path" << int 4) ==> (var "next_fate" === int 0)
+
+            bound "prev_path" 0 5
+
+            bound "next_path" 0 5
+
+            bound "prev_signal" 0 5
+
+            bound "next_signal" 0 5
+
+            bound "next_fate" 0 3
+
+            bound "next_clock" 0 11
+            |]
+        )  
+
 let test_automata5_forms = 
         (bound "next_path" 1 2 &&& bound "next_signal" 3 4),
         (context.MkAnd 
@@ -225,7 +290,7 @@ let test_automata5_forms =
 
             bound "next_signal" 0 5
             |]
-        )  
+        )
 
 let nothing_ever_happens<'istate when 'istate : comparison> : Automata<'istate,interp> -> SimpleAutomata<int, interp * ('istate option)> =     
     sim 
