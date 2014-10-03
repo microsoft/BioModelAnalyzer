@@ -13,7 +13,8 @@ using BioCheck.Helpers;
 using BioCheck.Services;
 using BioCheck.ViewModel.Simulation;
 using BioCheck.ViewModel.Time;                  //Time edit
-using BioCheck.ViewModel.Synth;                  
+using BioCheck.ViewModel.Synth;
+using BioCheck.ViewModel.SCM;                 
 using BioCheck.ViewModel.XML;
 using BioCheck.ViewModel.Models;
 using BioCheck.ViewModel.Proof;
@@ -37,6 +38,7 @@ namespace BioCheck.ViewModel
         private readonly DelegateCommand runProofCommand;
         private readonly DelegateCommand runTimeCommand;    //Time edit
         private readonly DelegateCommand runSynthCommand;
+        private readonly DelegateCommand runSCMCommand;
         private readonly DelegateCommand runSimulationCommand;
         private readonly DelegateCommand clearProofCommand;
         private readonly DelegateCommand cancelProofCommand;
@@ -62,6 +64,7 @@ namespace BioCheck.ViewModel
         private AnalysisServiceClient analyzerClient;
         private ProofViewModel proofVM;
         private SynthViewModel synthVM;
+        private SCMViewModel scmVM;
 
         public ToolbarViewModel()
         {
@@ -71,6 +74,7 @@ namespace BioCheck.ViewModel
             this.runProofCommand = new DelegateCommand(OnRunProofExecuted);
             this.runTimeCommand = new DelegateCommand(OnRunTimeExecuted);       // Time edit
             this.runSynthCommand = new DelegateCommand(OnRunSynthExecuted);
+            this.runSCMCommand = new DelegateCommand(OnRunSCMExecuted);
             this.runSimulationCommand = new DelegateCommand(OnRunSimulationExecuted);
             this.clearProofCommand = new DelegateCommand(OnClearProofExecuted);
             this.cancelProofCommand = new DelegateCommand(OnCancelProofExecuted);
@@ -575,11 +579,19 @@ namespace BioCheck.ViewModel
         }
 
         /// <summary>
-        /// Gets the value of the <see cref="RunTimeCommand"/> property.
+        /// Gets the value of the <see cref="RunSynthCommand"/> property.
         /// </summary>
         public DelegateCommand RunSynthCommand
         {
             get { return this.runSynthCommand; }     // Synth edit
+        }
+
+        /// <summary>
+        /// Gets the value of the <see cref="RunSCMCommand"/> property.
+        /// </summary>
+        public DelegateCommand RunSCMCommand
+        {
+            get { return this.runSCMCommand; }
         }
 
         public DelegateCommand RunSimulationCommand
@@ -711,8 +723,25 @@ namespace BioCheck.ViewModel
             */
             timer = DateTime.Now;
             OnSynthCompleted();
+
         }
 
+        private void OnRunSCMExecuted()
+        {
+            // Sanity check: Check that the model is active (early on at startup, it's not active)
+            // And that there is a model loaded at all.
+            if (!ApplicationViewModel.Instance.HasActiveModel)
+            {
+                // New
+                ApplicationViewModel.Instance.Container
+                 .Resolve<IMessageWindowService>()
+                 .Show("There is no active model to test stability on. Please load a model to continue.");
+                return;
+            }
+
+            // Invoke the async Analyze method on the service
+            OnSCMCompleted();       // Maybe.
+        }
 
         private void OnCancelProofExecuted()
         {
@@ -791,6 +820,7 @@ namespace BioCheck.ViewModel
                         this.proofVM.ResetOutput();
 
                     this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
+                    this.analysisOutput.Time = time;
                 }
                 catch (Exception ex)
                 {
@@ -954,6 +984,28 @@ namespace BioCheck.ViewModel
 
             ApplicationViewModel.Instance.Container
                     .Resolve<ISynthWindowService>().Show(synthVM);
+
+            ApplicationViewModel.Instance.Container
+               .Resolve<IBusyIndicatorService>()
+               .Close();
+        }
+
+        private void OnSCMCompleted()
+        {
+            if (!ApplicationViewModel.Instance.HasActiveModel)
+            {
+                return;
+            }
+
+            var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
+
+            if (scmVM == null)
+            {
+                scmVM = SCMViewModelFactory.Create(modelVM);              // Sets only the name.
+            }
+
+            ApplicationViewModel.Instance.Container
+                    .Resolve<ISCMWindowService>().Show(scmVM);             // Show the popup!
 
             ApplicationViewModel.Instance.Container
                .Resolve<IBusyIndicatorService>()
