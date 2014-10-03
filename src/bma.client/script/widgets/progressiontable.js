@@ -1,6 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.progressiontable", {
         options: {
             interval: undefined,
@@ -47,7 +45,6 @@
             if (that.options.header !== undefined)
                 $('<td></td>').width(120).attr("colspan", "2").text(that.options.header).appendTo(tr0);
 
-            // || undefined;//that.options.init || that.options.interval;
             if (that.options.interval !== undefined) {
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
@@ -61,11 +58,10 @@
 
                     var random = $('<td></td>').addClass("bma-random-icon1 hoverable").appendTo(tr);
 
-                    //input.bind ("input change")
                     random.bind("click", function () {
                         var index = $(this).parent().index() - 1;
                         var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
-                        $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
+                        $(this).prev().children("input").eq(0).val(randomValue);
                     });
                 }
             }
@@ -104,25 +100,12 @@
             });
             return init;
         },
-        //getLast: function () {
-        //    var init = [];
-        //    var tds;
-        //    if (this.element.find("tr:not(:first-child)").eq(0).children("td").length <= 2)
-        //        tds = this.element.find("tr:not(:first-child)").children("td:first-child")
-        //    else
-        //        tds = this.element.find("tr:not(:first-child)").children("td:last-child");
-        //    tds.each(function (ind, val) {
-        //        init[ind] = parseInt($(this).text());
-        //    })
-        //    return init;
-        //},
         ClearData: function () {
             this.data.empty();
         },
         AddData: function (data) {
             var that = this;
 
-            //var data = this.data;
             if (data !== undefined) {
                 var trs = that.data.find("tr");
 
@@ -218,4 +201,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=progressiontable.js.map

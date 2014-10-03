@@ -90,4 +90,3 @@
     })(BMA.Model || (BMA.Model = {}));
     var Model = BMA.Model;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=visualsettings.js.map

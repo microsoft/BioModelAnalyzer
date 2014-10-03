@@ -1,10 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\model\biomodel.ts"/>
-/// <reference path="..\model\model.ts"/>
-/// <reference path="..\uidrivers.ts"/>
-/// <reference path="..\commands.ts"/>
-
+﻿
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -39,8 +33,6 @@ var BMA;
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
                     that.stagingLine = undefined;
-                    //this.selectedType = this.selectedType === type ? undefined : type;
-                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -255,7 +247,6 @@ var BMA;
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
 
-                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             if (that.stagingLine.svg !== undefined) {
                                 that.svg.remove(that.stagingLine.svg);
@@ -695,16 +686,6 @@ var BMA;
                 return undefined;
             };
 
-            //private GetContainerGridCells(containerLayout: BMA.Model.ContainerLayout): { x: number; y: number }[] {
-            //    var result = [];
-            //    var size = containerLayout.Size;
-            //    for (var i = 0; i < size; i++) {
-            //        for (var j = 0; j < size; j++) {
-            //            result.push({ x: i + containerLayout.PositionX, y: j + containerLayout.PositionY });
-            //        }
-            //    }
-            //    return result;
-            //}
             DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
                 var result = [];
                 var variables = this.Current.model.Variables;
@@ -850,7 +831,6 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
-                //Generating svg elements from model and layout
                 var svgElements = [];
 
                 var containerLayouts = this.Current.layout.Containers;
@@ -888,7 +868,6 @@ var BMA;
                     svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
                 }
 
-                //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
@@ -908,4 +887,3 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=presenters.js.map

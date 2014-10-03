@@ -1,9 +1,6 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-(function ($) {
+﻿(function ($) {
     $.widget("BMA.simulationplot", {
         options: {
-            //data: undefined,
             colors: undefined
         },
         _create: function () {
@@ -68,22 +65,12 @@
         _destroy: function () {
             var that = this;
 
-            //alert("destroy");
-            //window.Commands.Off("ChangePlotVariables", function (param) {
-            //    var polyline = that._chart.get(that.chartdiv.children().eq(param.ind).attr("id"));
-            //    polyline.isVisible = param.check;
-            //})
             this.element.empty();
         },
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
                 case "colors":
-                    //for (var i = 0; i < value.length; i++)
-                    //    if (this.options.color[i].Seen !== value[i].Seen) {
-                    //        var polyline = that._chart.get(that.chartdiv.children().eq(i+1).attr("id"));
-                    //        polyline.isVisible = value[i].Seen;
-                    //    }
                     this.options.colors = value;
                     break;
             }
@@ -93,4 +80,3 @@
         }
     });
 }(jQuery));
-//# sourceMappingURL=simulationplot.js.map
