@@ -95,22 +95,20 @@ var BMA;
                     var id = that.GetVariableAtPosition(x, y);
                     var containerId = that.GetContainerAtPosition(x, y);
                     var relationshipId = that.GetRelationshipAtPosition(x, y, that.driver.GetPixelWidth());
+                    var cntSize = containerId !== undefined ? that.Current.layout.GetContainerById(containerId).Size : undefined;
 
-                    if (id !== undefined || containerId !== undefined || relationshipId !== undefined) {
-                        that.contextMenu.EnableMenuItems([
-                            { name: "Copy", isVisible: false },
-                            { name: "Paste", isVisible: false },
-                            { name: "Cut", isVisible: false },
-                            { name: "Delete", isVisible: true }
-                        ]);
-                    } else {
-                        that.contextMenu.EnableMenuItems([
-                            { name: "Copy", isVisible: false },
-                            { name: "Paste", isVisible: true },
-                            { name: "Cut", isVisible: false },
-                            { name: "Delete", isVisible: false }
-                        ]);
-                    }
+                    var canPaste = id === undefined && containerId === undefined && that.clipboard !== undefined;
+
+                    that.contextMenu.EnableMenuItems([
+                        { name: "Copy", isVisible: id !== undefined || containerId !== undefined },
+                        { name: "Paste", isVisible: canPaste },
+                        { name: "Cut", isVisible: id !== undefined || containerId !== undefined },
+                        { name: "Delete", isVisible: id !== undefined || containerId !== undefined || relationshipId !== undefined },
+                        { name: "Size", isVisible: containerId !== undefined },
+                        { name: "ResizeCellTo1x1", isVisible: false },
+                        { name: "ResizeCellTo2x2", isVisible: cntSize < 2 },
+                        { name: "ResizeCellTo3x3", isVisible: cntSize < 3 }
+                    ]);
 
                     if (id !== undefined) {
                         that.contextElement = { id: id, type: "variable" };
@@ -132,6 +130,58 @@ var BMA;
                         }
 
                         that.contextElement = undefined;
+                    }
+                });
+
+                window.Commands.On("DrawingSurfaceCopy", function (args) {
+                    if (that.contextElement !== undefined) {
+                        if (that.contextElement.type === "variable") {
+                            that.clipboard = that.contextElement;
+                            that.RemoveVariable(that.contextElement.id);
+                        } else if (that.contextElement.type === "container") {
+                            that.RemoveContainer(that.contextElement.id);
+                        }
+
+                        that.contextElement = undefined;
+                    }
+                });
+
+                window.Commands.On("DrawingSurfaceResizeCell", function (args) {
+                    if (that.contextElement !== undefined && that.contextElement.type === "container") {
+                        var container = that.Current.layout.GetContainerById(that.contextElement.id);
+                        if (container !== undefined && container.Size < args.size) {
+                            var sizeDiff = args.size - container.Size;
+
+                            var containerLayouts = that.Current.layout.Containers;
+                            var variables = that.Current.model.Variables;
+                            var variableLayouts = that.Current.layout.Variables;
+
+                            var newCnt = [];
+                            for (var i = 0; i < containerLayouts.length; i++) {
+                                var cnt = containerLayouts[i];
+                                if (cnt.Id === container.Id) {
+                                    newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, args.size, cnt.PositionX, cnt.PositionY));
+                                } else if (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY) {
+                                    newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX, cnt.PositionY > container.PositionY ? cnt.PositionY + sizeDiff : cnt.PositionY));
+                                } else
+                                    newCnt.push(cnt);
+                            }
+
+                            var cntX = container.PositionX * that.xStep + that.xOrigin;
+                            var cntY = container.PositionY * that.yStep + that.yOrigin;
+                            var newVL = [];
+                            for (var i = 0; i < variableLayouts.length; i++) {
+                                var vl = variableLayouts[i];
+                                if (variables[i].ContainerId === container.Id) {
+                                    newVL.push(new BMA.Model.VarialbeLayout(vl.Id, cntX + (vl.PositionX - cntX) * args.size / container.Size, cntY + (vl.PositionY - cntY) * args.size / container.Size, 0, 0, vl.Angle));
+                                } else {
+                                    newVL.push(new BMA.Model.VarialbeLayout(vl.Id, vl.PositionX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX, vl.PositionY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY, 0, 0, vl.Angle));
+                                }
+                            }
+
+                            var newlayout = new BMA.Model.Layout(newCnt, newVL);
+                            _this.Dup(new BMA.Model.BioModel(that.Current.model.Name, that.Current.model.Variables, that.Current.model.Relationships), newlayout);
+                        }
                     }
                 });
 
@@ -330,6 +380,9 @@ var BMA;
                             newVL.push(variableLayouts[i]);
                         } else {
                             removed.push(variables[i].Id);
+                            if (this.editingVariableId === variables[i].Id) {
+                                this.editingVariableId = undefined;
+                            }
                         }
                     }
 
@@ -404,7 +457,7 @@ var BMA;
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
                     var containerLayout = containers[i];
-                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0)) {
+                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: this.Grid.xStep / 2, yStep: this.Grid.yStep / 2 })) {
                         return containerLayout.Id;
                     }
                 }
@@ -536,7 +589,7 @@ var BMA;
                         var gridCell = that.GetGridCell(x, y);
                         var container = that.GetContainerFromGridCell(gridCell);
 
-                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").ContainsBBox(bbox, (container.PositionX + 0.5) * this.xStep, (container.PositionY + 0.5) * this.yStep)) {
+                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").ContainsBBox(bbox, (container.PositionX + 0.5) * this.xStep, (container.PositionY + 0.5) * this.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
                             return;
                         }
 
@@ -576,7 +629,7 @@ var BMA;
                         var gridCell = that.GetGridCell(x, y);
                         var container = that.GetContainerFromGridCell(gridCell);
 
-                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").IntersectsBorder(x, y, (container.PositionX + 0.5) * this.xStep, (container.PositionY + 0.5) * this.yStep)) {
+                        if (container === undefined || !window.ElementRegistry.GetElementByType("Container").IntersectsBorder(x, y, (container.PositionX + 0.5) * this.xStep, (container.PositionY + 0.5) * this.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
                             return;
                         }
 
@@ -588,12 +641,19 @@ var BMA;
                                 return;
                         }
 
+                        var containerX = (gridCell.x + 0.5) * this.xStep + this.xOrigin + (container.Size - 1) * this.xStep / 2;
+                        var containerY = (gridCell.y + 0.5) * this.yStep + this.yOrigin + (container.Size - 1) * this.yStep / 2;
+
                         var v = {
-                            x: (x - ((gridCell.x + 0.5) * this.xStep + this.xOrigin)),
-                            y: -(y - ((gridCell.y + 0.5) * this.yStep + this.yOrigin))
+                            x: x - containerX,
+                            y: -(y - containerY)
                         };
                         var len = Math.sqrt(v.x * v.x + v.y * v.y);
-                        var angle = v.x / Math.abs(v.x) * Math.acos(v.y / len) / Math.PI * 180;
+
+                        var acos = Math.acos(v.y / len);
+                        var angle = acos * v.x / Math.abs(v.x);
+
+                        angle = angle * 180 / Math.PI;
 
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
@@ -602,7 +662,7 @@ var BMA;
                                 }
                             }
                         } else {
-                            variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "", 0, 1, ""));
+                            variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
                         }
 
@@ -627,7 +687,7 @@ var BMA;
 
                 var layouts = current.layout.Containers;
                 for (var i = 0; i < layouts.length; i++) {
-                    if (layouts[i].PositionX === gridCell.x && layouts[i].PositionY === gridCell.y) {
+                    if (layouts[i].PositionX <= gridCell.x && layouts[i].PositionX + layouts[i].Size > gridCell.x && layouts[i].PositionY <= gridCell.y && layouts[i].PositionY + layouts[i].Size > gridCell.y) {
                         return layouts[i];
                     }
                 }
@@ -635,6 +695,16 @@ var BMA;
                 return undefined;
             };
 
+            //private GetContainerGridCells(containerLayout: BMA.Model.ContainerLayout): { x: number; y: number }[] {
+            //    var result = [];
+            //    var size = containerLayout.Size;
+            //    for (var i = 0; i < size; i++) {
+            //        for (var j = 0; j < size; j++) {
+            //            result.push({ x: i + containerLayout.PositionX, y: j + containerLayout.PositionY });
+            //        }
+            //    }
+            //    return result;
+            //}
             DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
                 var result = [];
                 var variables = this.Current.model.Variables;

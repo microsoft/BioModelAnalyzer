@@ -187,6 +187,17 @@ module BMA {
                 return undefined;
             }
 
+            public GetContainerById(id: number) {
+                for (var i = 0; i < this.containers.length; i++) {
+                    if (this.containers[i].Id === id) {
+                        return this.containers[i];
+                    }
+                }
+
+                return undefined;
+            }
+
+
             constructor(containers: ContainerLayout[], varialbes: VarialbeLayout[]) {
                 this.containers = containers;
                 this.variables = varialbes;

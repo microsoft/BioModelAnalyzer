@@ -83,10 +83,18 @@ $(document).ready(function () {
         preventSelect: true,
         taphold: true,
         menu: [
-            { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-            { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-            { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
-            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true },
+            //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors", disabled: true },
+            //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy", disabled: true },
+            //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true  },
+            {
+                title: "Size", cmd: "Size", children: [
+                    { title: "1x1", cmd: "ResizeCellTo1x1" },
+                    { title: "2x2", cmd: "ResizeCellTo2x2" },
+                    { title: "3x3", cmd: "ResizeCellTo3x3" },
+                ],
+                uiIcon: "ui-icon-arrow-4-diag", disabled: true
+            }
         ],
         beforeOpen: function (event, ui) {
             var left = event.pageX - $(".bma-drawingsurface").offset().left;
@@ -101,18 +109,25 @@ $(document).ready(function () {
             });
         },
         select: function (event, ui) {
-            var commandName = "DrawingSurface" + ui.cmd;
-            
-            var left = event.pageX - $(".bma-drawingsurface").offset().left;
-            var top = event.pageY - $(".bma-drawingsurface").offset().top;
+            var args: any = {};
+            var commandName = "DrawingSurface";
+            if (ui.cmd === "ResizeCellTo1x1") {
+                args.size = 1;
+                commandName += "ResizeCell";
+            } else if (ui.cmd === "ResizeCellTo2x2") {
+                args.size = 2;
+                commandName += "ResizeCell";
+            } else if (ui.cmd === "ResizeCellTo3x3") {
+                args.size = 3;
+                commandName += "ResizeCell";
+            } else {
+                commandName += ui.cmd;
+            }
 
-            console.log("top " + top);
-            console.log("left " + left);
+            args.left = event.pageX - $(".bma-drawingsurface").offset().left;
+            args.top = event.pageY - $(".bma-drawingsurface").offset().top;
 
-            window.Commands.Execute(commandName, {
-                left: left,
-                top: top
-            });
+            window.Commands.Execute(commandName, args);
         }
     });
 
