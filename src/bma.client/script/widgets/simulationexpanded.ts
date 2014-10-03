@@ -8,14 +8,15 @@
             init: undefined,
             interval: undefined,
             variables: undefined,
-            num: 10
+            num: 10,
+            buttonMode: "ActiveMode"
         },
 
         _create: function () {
             var that = this;
             var options = that.options;
            
-            var RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
+            this.RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
             
 
             var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
@@ -45,7 +46,7 @@
                 }
             }
 
-            RunButton.bind("click", function () {
+            this.RunButton.bind("click", function () {
                 that.progression.progressiontable("ClearData");
                 window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("GetInit"), num: that.options.num });
             })
@@ -57,6 +58,22 @@
             this.refresh();
         },
 
+        ChangeMode: function () {
+            var toAddClass = "", toRemoveClass = "", text = "";
+            switch (this.options.buttonMode) {
+                case "ActiveMode":
+                    toAddClass = "bma-run-button";
+                    toRemoveClass = "bma-run-button-waiting";
+                    text = "Run";
+                    break;
+                case "StandbyMode":
+                    toAddClass = "bma-run-button-waiting";
+                    toRemoveClass = "bma-run-button";
+                    break;
+            }
+            this.RunButton.removeClass(toRemoveClass).addClass(toAddClass).text(text);
+        },
+
         refresh: function () {
             var that = this;
             var options = this.options;
@@ -66,6 +83,7 @@
                     this.progression.progressiontable({ interval: options.interval, data: options.data });
                 }
             }
+            this.ChangeMode();
         },
 
         AddResult: function (res) {
@@ -106,6 +124,10 @@
                 case "interval":
                     this.options.interval = value;
                     this.progression.progressiontable({ interval: value });
+                    break;
+                case "buttonMode":
+                    this.options.buttonMode = value;
+                    this.ChangeMode();
                     break;
         }
             this._super(key, value);

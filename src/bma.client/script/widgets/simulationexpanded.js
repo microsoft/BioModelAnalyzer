@@ -1,17 +1,20 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.simulationexpanded", {
         options: {
             data: undefined,
             init: undefined,
             interval: undefined,
             variables: undefined,
-            num: 10
+            num: 10,
+            buttonMode: "ActiveMode"
         },
         _create: function () {
             var that = this;
             var options = that.options;
 
-            var RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
+            this.RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
 
             var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
             this.num = $('<span></span>').text(that.options.num).appendTo(steps);
@@ -27,7 +30,8 @@
 
             this.table1 = $('<div></div>').width("40%").appendTo(that.element);
 
-            this.progression = $('<div></div>').appendTo(that.element).progressiontable();
+            //this.table1.css("position", "relative");
+            this.progression = $('<div></div>').appendTo(that.element).progressiontable(); //.addClass("bma-simulation-table")
             this.progression.css("position", "absolute");
             this.progression.css("left", "45%");
             this.progression.css("top", 0);
@@ -38,7 +42,7 @@
                 }
             }
 
-            RunButton.bind("click", function () {
+            this.RunButton.bind("click", function () {
                 that.progression.progressiontable("ClearData");
                 window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("GetInit"), num: that.options.num });
             });
@@ -47,7 +51,23 @@
             that.element.css("margin-bottom", "40px");
             that.element.css("position", "relative");
 
+            //that.element.children().css("margin", "10px");
             this.refresh();
+        },
+        ChangeMode: function () {
+            var toAddClass = "", toRemoveClass = "", text = "";
+            switch (this.options.buttonMode) {
+                case "ActiveMode":
+                    toAddClass = "bma-run-button";
+                    toRemoveClass = "bma-run-button-waiting";
+                    text = "Run";
+                    break;
+                case "StandbyMode":
+                    toAddClass = "bma-run-button-waiting";
+                    toRemoveClass = "bma-run-button";
+                    break;
+            }
+            this.RunButton.removeClass(toRemoveClass).addClass(toAddClass).text(text);
         },
         refresh: function () {
             var that = this;
@@ -58,6 +78,7 @@
                     this.progression.progressiontable({ interval: options.interval, data: options.data });
                 }
             }
+            this.ChangeMode();
         },
         AddResult: function (res) {
             this.progression.progressiontable("AddData", res);
@@ -94,8 +115,13 @@
                     this.options.interval = value;
                     this.progression.progressiontable({ interval: value });
                     break;
+                case "buttonMode":
+                    this.options.buttonMode = value;
+                    this.ChangeMode();
+                    break;
             }
             this._super(key, value);
         }
     });
 }(jQuery));
+//# sourceMappingURL=simulationexpanded.js.map

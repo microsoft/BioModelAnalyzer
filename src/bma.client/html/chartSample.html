@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>DOM Markers Sample</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/rx.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "chart").attr("data-idd-style", "isLegendVisible:false").width("300").height("300");
+            chartdiv.appendTo('body');
+
+            $('<div></div>').attr("id", "polyline").attr("data-idd-plot", "polyline").attr("data-idd-placement", "center").appendTo(chartdiv);
+            $('<div></div>').attr("id", "polyline2").attr("data-idd-plot", "polyline").appendTo(chartdiv);
+            var _chart = InteractiveDataDisplay.asPlot(chartdiv);
+            var polyline = _chart.get("polyline");
+            polyline.stroke = "#ACDFEC";
+            polyline.isVisible = true;
+            polyline.draw({ y: [2, 3, 7, 2, 5, 4, 0], thickness: 4, lineJoin: 'round' });
+
+            var polyline2 = _chart.get("polyline2");
+            polyline2.stroke = "#AFFFFC";
+            polyline2.isVisible = true;
+            polyline2.draw({ y: [1, 4,8,8,1,4,8,8], thickness: 4, lineJoin: 'round' });
+            var bounds = _chart.aggregateBounds();
+            _chart.navigation.setVisibleRect(bounds.bounds, false);
+        });
+    </script>
+    <style>
+    </style>
+</head>
+<body style="font-family: 'Segoe UI Light'">
+    
+</body>
+</html>
+

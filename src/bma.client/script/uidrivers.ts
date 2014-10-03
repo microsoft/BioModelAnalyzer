@@ -247,6 +247,14 @@ module BMA {
                 return this.viewer;
             }
 
+            public StandbyMode() {
+                this.viewer.simulationexpanded({buttonMode: "StandbyMode"});
+            }
+
+            public ActiveMode() {
+                this.viewer.simulationexpanded({buttonMode: "ActiveMode"});
+            }
+
             public AddResult(res) {
                 var result = this.ConvertResult(res);
                 this.viewer.simulationexpanded("AddResult", result);

@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.furthertesting", {
         options: {
             header: "Further Testing",
@@ -57,6 +59,8 @@
             }
 
             this._super(key, value);
+            //this.refresh();
         }
     });
 }(jQuery));
+//# sourceMappingURL=furthertestingviewer.js.map

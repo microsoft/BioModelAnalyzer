@@ -78,6 +78,8 @@ module BMA {
             AddResult(res);
             GetViewer();
             Set(data);
+            StandbyMode();
+            ActiveMode();
         }
 
         export interface IFileLoader {

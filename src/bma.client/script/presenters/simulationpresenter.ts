@@ -22,6 +22,7 @@
                 });
 
                 window.Commands.On("RunSimulation", function (param) {
+                    that.expandedViewer.StandbyMode();
                     that.data = [];
                     that.ClearColors();
                     that.initValues = param.data;
@@ -79,6 +80,7 @@
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.colors });
+                    that.expandedViewer.ActiveMode();
                     return;
                 }
                 var simulate = {

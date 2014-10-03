@@ -20,11 +20,15 @@
                             if (res.Status !== 4)
                                 window.Commands.Execute("ProofFailed", { Model: that.appModel, Res: res });
 
+                            //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
 
+                            //if (res.Ticks !== null)
                             var variablesData = that.CreateTableView(res.Ticks);
                             var colorData = that.CreateColoredTable(res.Ticks);
 
+                            //var result = appModel.ProofResult;
+                            //var data = { numericData: numericData, colorData: undefined };
                             proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
                             proofResultViewer.ShowResult(appModel.ProofResult);
                         },
@@ -152,3 +156,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=proofpresenter.js.map

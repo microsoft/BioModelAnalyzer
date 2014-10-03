@@ -10,7 +10,7 @@
                 this.popupViewer = popupViewer;
 
                 window.Commands.On("ProofFailed", function (param) {
-                    that.driver.ShowStartToggler();
+                    //that.driver.ShowStartToggler();
                     that.model = param.Model;
                     that.result = param.Res;
                 });
@@ -23,6 +23,22 @@
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0) {
                         that.driver.HideStartToggler();
+                        //$.ajax({
+                        //    type: "POST",
+                        //    url: "api/FurtherTesting",
+                        //    data: {
+                        //        Model: that.model,
+                        //        Analysis: that.result,
+                        //    },
+                        //    success: function (res2) {
+                        //        $("#log").append("FurtherTesting success. " + res2.Status + "<br/>");
+                        //    },
+                        //    error: function (res2) {
+                        //        //$("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
+                        //    }
+                        //});
+                        //that.driver.ShowResults(data);
+                        //that.data = data;
                     } else
                         alert("No Variables");
                 });
@@ -66,3 +82,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=furthertestingpresenter.js.map

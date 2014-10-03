@@ -17,6 +17,7 @@
                 });
 
                 window.Commands.On("RunSimulation", function (param) {
+                    that.expandedViewer.StandbyMode();
                     that.data = [];
                     that.ClearColors();
                     that.initValues = param.data;
@@ -31,6 +32,7 @@
                     that.CreateColors();
                     var variables = that.CreateVariablesView();
 
+                    //var prmin = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
                 });
 
@@ -40,8 +42,9 @@
                         var variables = _this.appModel.BioModel.Variables;
                         switch (param) {
                             case "SimulationVariables":
+                                //that.ClearColors();
                                 that.expandedViewer.Set({ variables: variables, colors: that.colors, init: that.initValues });
-                                full = that.expandedViewer.GetViewer();
+                                full = that.expandedViewer.GetViewer(); //$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
                             case "SimulationPlot":
                                 full = $('<div id="SimulationPlot"></div>').height(500).simulationplot({ colors: that.colors });
@@ -69,6 +72,7 @@
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.colors });
+                    that.expandedViewer.ActiveMode();
                     return;
                 }
                 var simulate = {
@@ -83,16 +87,19 @@
                         data: simulate,
                         success: function (res) {
                             if (res.Variables !== null) {
+                                //window.Commands.Execute("AddResult", that.ConvertResult(res));
                                 that.expandedViewer.AddResult(res);
                                 var d = that.ConvertResult(res);
                                 that.AddData(d);
                                 that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             } else
                                 alert(res.ErrorMessages);
+                            //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
                         },
                         error: function (res) {
                             console.log(res.statusText);
                             return;
+                            //$("#log").append("Simulate error: " + res.statusText + "<br/>");
                         }
                     });
                 else
@@ -166,7 +173,7 @@
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
-                    table[i][0] = this.GetColorById(variables[i].Id).Color;
+                    table[i][0] = this.GetColorById(variables[i].Id).Color; // color should be there
                     table[i][1] = variables[i].ContainerId;
                     table[i][2] = variables[i].Name;
                     table[i][3] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
@@ -198,3 +205,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=simulationpresenter.js.map

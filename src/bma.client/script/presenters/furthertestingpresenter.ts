@@ -15,11 +15,9 @@
                 this.popupViewer = popupViewer;
 
                 window.Commands.On("ProofFailed", function (param: { Model; Res }) {
-                    that.driver.ShowStartToggler();
+                    //that.driver.ShowStartToggler();
                     that.model = param.Model;
                     that.result = param.Res;
-                    //that.driver.HideResults();
-                    //that.num = variables.length;
                 })
 
                 window.Commands.On("ProofRequested", function () {
