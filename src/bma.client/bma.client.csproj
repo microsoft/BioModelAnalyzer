@@ -164,6 +164,7 @@
     <Content Include="images\zoomminus.png" />
     <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />
+    <Content Include="js\idd.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
@@ -253,7 +254,6 @@
     <Content Include="Scripts\x.min.js" />
     <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
-    <Content Include="js\idd.js" />
     <Content Include="js\jquery.browser.min.js" />
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
