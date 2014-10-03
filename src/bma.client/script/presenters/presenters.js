@@ -340,7 +340,7 @@ var BMA;
                         var r = relationships[i];
                         var shouldBeRemoved = false;
                         for (var j = 0; j < removed.length; j++) {
-                            if (r.FromVariableId === removed[i] || r.ToVariableId === removed[i]) {
+                            if (r.FromVariableId === removed[j] || r.ToVariableId === removed[j]) {
                                 shouldBeRemoved = true;
                                 break;
                             }
@@ -715,7 +715,7 @@ var BMA;
             });
 
             DesignSurfacePresenter.prototype.ResetVariableIdIndex = function () {
-                this.variableIndex = 0;
+                this.variableIndex = 1;
 
                 var m = this.Current.model;
                 var l = this.Current.layout;
