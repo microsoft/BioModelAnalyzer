@@ -46,10 +46,7 @@
                 }
             }
 
-            this.RunButton.bind("click", function () {
-                that.progression.progressiontable("ClearData");
-                window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("GetInit"), num: that.options.num });
-            })
+            
 
             that.element.css("margin-top", "30px");
             that.element.css("margin-bottom", "40px");
@@ -59,16 +56,22 @@
         },
 
         ChangeMode: function () {
+            var that = this;
             var toAddClass = "", toRemoveClass = "", text = "";
             switch (this.options.buttonMode) {
                 case "ActiveMode":
                     toAddClass = "bma-run-button";
                     toRemoveClass = "bma-run-button-waiting";
                     text = "Run";
+                    this.RunButton.bind("click", function () {
+                        that.progression.progressiontable("ClearData");
+                        window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("GetInit"), num: that.options.num });
+                    })
                     break;
                 case "StandbyMode":
                     toAddClass = "bma-run-button-waiting";
                     toRemoveClass = "bma-run-button";
+                    this.RunButton.unbind("click");
                     break;
             }
             this.RunButton.removeClass(toRemoveClass).addClass(toAddClass).text(text);
@@ -115,6 +118,7 @@
                     this.progression.progressiontable({ init: value });
                     break;
                 case "num":
+                    if (value < 0) value = 0;
                     this.options.num = value;
                     this.num.text(value);
                     break;

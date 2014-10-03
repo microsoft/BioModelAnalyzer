@@ -1116,6 +1116,7 @@
 	padding:5px 20px;
 	text-decoration:none;
     cursor: pointer;
+    z-index: 3;
 }
 
 .bma-run-button-waiting {
@@ -1193,9 +1194,31 @@
 }
 
 .bma-furthertesting-button {
+    width:140px;
+    height: 35px;
     background-color:#d0451b;
     -moz - border-radius:8px;
     -webkit - border-radius:8px;
+	border-radius:8px;
+    border:1px solid #942911;
+    display: inline - block;
+    cursor: pointer;
+	color:#ffffff;
+	font-family:Verdana;
+	font-size:15px;
+            padding:8px 15px;
+	text-decoration:none;
+}
+
+.bma-furthertesting-button-waiting {
+    width:140px;
+    height: 35px;
+    background-color:#d0451b;
+    -moz - border-radius:8px;
+    -webkit - border-radius:8px;
+    background-image: url(../images/20x20.gif);
+    background-repeat: no-repeat;
+    background-position:center;
 	border-radius:8px;
     border:1px solid #942911;
     display: inline - block;

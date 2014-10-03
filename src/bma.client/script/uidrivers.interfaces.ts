@@ -65,6 +65,8 @@ module BMA {
             ShowResults(data);
             HideResults();
             GetViewer();
+            StandbyMode();
+            ActiveMode();
         }
 
         export interface ISimulationViewer {
