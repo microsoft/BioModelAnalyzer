@@ -13,7 +13,7 @@ using BioCheck.Helpers;
 using BioCheck.Services;
 using BioCheck.ViewModel.Simulation;
 using BioCheck.ViewModel.Time;                  //Time edit
-using BioCheck.ViewModel.Synth;
+using BioCheck.ViewModel.Synth;                  
 using BioCheck.ViewModel.SCM;                 
 using BioCheck.ViewModel.XML;
 using BioCheck.ViewModel.Models;
@@ -737,7 +737,7 @@ namespace BioCheck.ViewModel
                  .Resolve<IMessageWindowService>()
                  .Show("There is no active model to test stability on. Please load a model to continue.");
                 return;
-            }
+        }
 
             // Invoke the async Analyze method on the service
             OnSCMCompleted();       // Maybe.
@@ -867,14 +867,14 @@ namespace BioCheck.ViewModel
                     // Clear the current proof
                     ResetStability(true);
 
-                    // Process the analysis output results
+                    // Process the analysis output results_________-->
                     AnalysisOutputHandler.Handle(analysisOutput);
 
                     ApplicationViewModel.Instance.Container
                         .Resolve<IBusyIndicatorService>()
                         .Close();
 
-                    // Show the Proof view
+                    // Show the Proof view_________-->
                     this.proofVM = ProofViewModelFactory.Create(analysisInputDto, analysisOutput);
 
                     ApplicationViewModel.Instance.Container
@@ -958,7 +958,7 @@ namespace BioCheck.ViewModel
 
             var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
 
-            var timeVM = TimeViewModelFactory.Create(modelVM);              // Sets only the name.
+            var timeVM = TimeViewModelFactory.CreatePopUp(modelVM);              // Sets only the name.
 
             ApplicationViewModel.Instance.Container
                     .Resolve<ITimeWindowService>().Show(timeVM);

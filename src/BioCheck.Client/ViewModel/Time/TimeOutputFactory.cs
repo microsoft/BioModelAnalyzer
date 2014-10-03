@@ -29,10 +29,36 @@ namespace BioCheck.ViewModel.Proof
 
             output.Status = xdoc.Descendants("Status").FirstOrDefault().Value;
 
-            if (output.Status == StatusTypes.True || output.Status == StatusTypes.False)
+            if (output.Status == StatusTypes.True)
             {
+                // Simulation
+                // All the variables are stable
+                // The value returned with each variable is the Value and should be displayed
+
+                output.Ticks = (from t in xdoc.Descendants("Tick")
+                                select new AnalysisTick
+                                {
+                                    Time = t.ElementInt("Time"),
+                                    Variables = (from v in t.Descendants("Variable")
+                                                 let lo = v.AttributeInt("Lo")
+                                                 let hi = v.AttributeInt("Hi")
+                                                 select new VariableOutput
+                                                 {
+                                                     Id = ParseId(v.AttributeString("Id")),
+                                                     Low = lo,
+                                                     High = hi,
+                                                     IsStable = lo == hi
+                                                 }).ToList()
+                                })
+                                .OrderBy(t => t.Time).ToList();
+
+
                 // Not populated if Error.
-                output.Model = xdoc.Descendants("Model").Attributes().ElementAt(0).Value;          
+                // output.Model = xdoc.Descendants("Model").Attributes().ElementAt(0).Value;          
+            }
+            else if (output.Status == StatusTypes.False)
+            {
+                // To do? Nothing associated a.t.m.
             }
             else
             {
@@ -43,17 +69,17 @@ namespace BioCheck.ViewModel.Proof
             return output;
         }
 
-        //private static int ParseId(string value)
-        //{
-        //    int timeIndex = value.IndexOf('^');
-        //    if (timeIndex > -1)
-        //    {
-        //        // The output is from Z3, which is in “variable-id ^ time" format. You can ignore the time after the “^". 
-        //        string substring = value.Substring(0, timeIndex);
-        //        return Int32.Parse(substring);
-        //    }
+        private static int ParseId(string value)
+        {
+            int timeIndex = value.IndexOf('^');
+            if (timeIndex > -1)
+            {
+                // The output is from Z3, which is in “variable-id ^ time" format. You can ignore the time after the “^". 
+                string substring = value.Substring(0, timeIndex);
+                return Int32.Parse(substring);
+            }
 
-        //    return Int32.Parse(value);
-        //}
+            return Int32.Parse(value);
+        }
     }
 }

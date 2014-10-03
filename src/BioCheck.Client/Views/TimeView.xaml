@@ -1424,7 +1424,114 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
 
     </UserControl.Resources>
 
+    <!-- StaticResource ProofData -->
     <Grid x:Name="Topgrid" d:DataContext="{Binding Source={StaticResource ProofData}}" >
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="LTLStateGroup">
+                
+                <!-- No data exists yet -->
+                <VisualState x:Name="NoTestYet">
+                    <Storyboard>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProofProgressionHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NoSimulationHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RunSimulationButton">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        
+                    </Storyboard>
+                </VisualState>
+                
+                
+                <!-- No Simulation -->
+                <VisualState x:Name="SimulationDoesNotExist">
+                    <Storyboard>
+
+                        
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProofProgressionHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NoSimulationHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RunSimulationButton">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+
+                <!-- Simulation -->
+                <VisualState x:Name="SimulationExists">
+                    <Storyboard>
+
+                        
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ProofProgressionHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NoSimulationHeader">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="RunSimulationButton">
+                            <DiscreteObjectKeyFrame KeyTime="0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+
+                    </Storyboard>
+                </VisualState>
+
+                <!-- No simulation ends -->
+
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
 
         <!-- Surrounding border -->
         <Border BorderBrush="#FFBABCBE" BorderThickness="2" CornerRadius="8" d:LayoutOverrides="HorizontalMargin">
@@ -1459,25 +1566,25 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                 <!-- Shadows & Movers! -->
 
                 <Rectangle x:Name="Keyframe_shadow"  
-                    ToolTipService.ToolTip="Keyframe"
-                    Fill="#FF58595B" Height="20" Stretch="Fill" Width="20" UseLayoutRounding="False" Margin="5"
-                    Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+            ToolTipService.ToolTip="Keyframe"
+            Fill="#FF58595B" Height="20" Stretch="Fill" Width="20" UseLayoutRounding="False" Margin="5"
+            Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <Path x:Name="Equals_shadow"  
-                    Data="F1 M 0,-2.09808e-005L 54,-2.09808e-005L 54,49L 0,49L 0,-2.09808e-005 Z M 11.56,20.4L 43.56,20.4L 43.56,12.7201L 11.56,12.7201L 11.56,20.4 Z M 11.5599,33.8401L 43.5599,33.8401L 43.5599,26.1601L 11.5599,26.1601L 11.5599,33.8401 Z " 
-                    ToolTipService.ToolTip="Equals"
-                    Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"
-                    Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+            Data="F1 M 0,-2.09808e-005L 54,-2.09808e-005L 54,49L 0,49L 0,-2.09808e-005 Z M 11.56,20.4L 43.56,20.4L 43.56,12.7201L 11.56,12.7201L 11.56,20.4 Z M 11.5599,33.8401L 43.5599,33.8401L 43.5599,26.1601L 11.5599,26.1601L 11.5599,33.8401 Z " 
+            ToolTipService.ToolTip="Equals"
+            Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"
+            Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <Path x:Name="LessThan_shadow" Data="F1 M 1.52588e-005,0L 54,0L 54,49L 1.52588e-005,49L 1.52588e-005,0 Z M 42.3333,42.6667L 42.3333,34.6667L 18.6666,24.4792L 42.3333,14.6667L 42.3333,6.66672L 9.66664,20.7292L 9.66664,28.5417L 42.3333,42.6667 Z " 
-                    ToolTipService.ToolTip="Less than"
-                    Fill="#FF231F20" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"
-                    Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+            ToolTipService.ToolTip="Less than"
+            Fill="#FF231F20" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"
+            Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <Path x:Name="MoreThan_shadow" Data="F1 M 0,0L 54,0L 54,49L 0,49L 0,0 Z M 12.6667,43.5L 45.3333,29.3333L 45.3333,21.5729L 12.6667,7.5L 12.6667,15.5L 36.3333,25.4479L 12.6667,35.5L 12.6667,43.5 Z " 
-                    ToolTipService.ToolTip="More than"
-                    Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"
-                    Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+            ToolTipService.ToolTip="More than"
+            Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"
+            Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <Path x:Name="LessThanEq_shadow" Data="F1 M 0.5,0.5L 63.5,0.5L 63.5,63.5L 0.5,63.5L 0.5,0.5 Z M 50.3935,43.8152L 50.3935,35.0153L 24.3602,23.809L 50.3935,13.0153L 50.3935,4.21527L 14.4602,19.684L 14.4602,28.2778L 50.3935,43.8152 Z M 14.3247,56.4155L 50.3956,56.4155L 50.3956,47.6155L 14.3247,47.6155L 14.3247,56.4155 Z " 
                     ToolTipService.ToolTip="Less than or equals"
@@ -1490,15 +1597,15 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                     Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <Path x:Name="Variable_shadow" 
-                    ToolTipService.ToolTip="Variable"
-                    Data="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.6785000000001,120.3439,43.9215000000001C122.4599,42.0115000000001,122.7899,40.1125000000001,122.0229,39.2245000000001C121.0549,38.1045000000001,118.2619,38.3715000000001,114.9939,41.0715000000001C113.4509,42.3435000000001,112.2749,43.7205000000001,111.5029,45.1035000000001 M116.6689,54.7685000000001C118.6539,54.9895,121.0509,54.6675000000001,123.7519,53.5355000000001C126.2129,52.5025000000001,127.1019,50.8015000000001,126.8679,50.2165000000001C126.6809,49.7485000000001,124.9339,49.2295000000001,120.9629,50.7375000000001C118.6519,51.6155000000001,117.2919,53.1255000000001,116.6689,54.7685000000001 M121.8639,63.3585C122.8819,63.5125000000001,124.0289,63.4795000000001,125.2989,63.2065000000001C129.5669,62.2915000000001,130.9839,60.6835000000001,131.1369,59.9605000000001C131.1729,59.7885000000001,131.1539,59.6595000000001,130.9459,59.5075000000001C130.3119,59.0475000000001,128.1579,58.7255000000001,124.5479,60.8055000000001C123.2829,61.5345000000001,122.3749,62.4055000000001,121.8639,63.3585 M128.7569,75.0725L127.7779,74.7165000000001C122.3369,72.7425,119.0319,69.4905000000001,118.7089,65.7945000000001C118.6909,65.5885000000001,118.6829,65.3825000000001,118.6839,65.1785000000001C116.2199,63.9885000000001,114.5869,61.8515000000001,113.9249,59.6085000000001C113.6609,58.7155000000001,113.5299,57.7545000000001,113.5529,56.7775000000001C111.4289,55.9865,109.8249,54.6375000000001,108.8809,53.0755000000001C107.9399,51.5175000000001,107.4509,49.3985000000001,107.9159,47.0325000000001C104.9019,46.2045000000001,102.2419,45.1035000000001,100.7079,44.4145000000001L97.3499,53.4135000000001L109.4439,56.9835000000001L108.6809,59.5705000000001L93.8109,55.1805000000001L99.2199,40.6885000000001L100.5639,41.3655000000001C102.3099,42.2445000000001,105.4369,43.5705000000001,108.7729,44.4765000000001C109.6279,42.6805000000001,111.0679,40.8125000000001,113.2759,38.9905000000001C118.1589,34.9585000000001,122.2119,35.3175000000001,124.0649,37.4615000000001C125.6389,39.2845000000001,125.7109,42.7095000000001,122.1519,45.9225000000001C119.3179,48.4825000000001,114.8069,48.4955000000001,110.5389,47.6545000000001C110.2609,49.0975000000001,110.4629,50.4785000000001,111.1899,51.6805000000001C111.7779,52.6535000000001,112.7429,53.5025000000001,114.0249,54.0735000000001C114.8339,51.6765000000001,116.7159,49.4655000000001,120.0049,48.2155000000001C127.2289,45.4715000000001,129.0009,48.2875000000001,129.3729,49.2155000000001C130.3099,51.5615000000001,128.2999,54.5515000000001,124.7949,56.0225000000001C121.5989,57.3615,118.7089,57.7225000000001,116.2649,57.4285000000001C116.2949,57.9165000000001,116.3779,58.3935000000001,116.5119,58.8445000000001C116.9339,60.2735000000001,117.8789,61.5985000000001,119.3039,62.4565000000001C120.0239,60.9105000000001,121.3529,59.5325000000001,123.2019,58.4675000000001C127.6869,55.8865000000001,130.9619,56.1855000000001,132.5319,57.3265000000001C133.5739,58.0835000000001,134.0389,59.2775000000001,133.7759,60.5195000000001C133.2719,62.8995000000001,130.3149,64.8905000000001,125.8649,65.8445000000001C124.2549,66.1885000000001,122.7839,66.2275,121.4649,66.0285000000001C121.9199,68.2315000000001,124.1989,70.3305000000001,127.7329,71.8055000000001L131.0779,66.9545000000001L138.9509,71.5505000000001L137.5919,73.8795000000001L131.8789,70.5455000000001z" 
-                    Fill="#FFEE4036" Height="39.184" Stretch="Fill" UseLayoutRounding="False" Width="45.14" Margin="5"
-                    Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+            ToolTipService.ToolTip="Variable"
+              Data="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.6785000000001,120.3439,43.9215000000001C122.4599,42.0115000000001,122.7899,40.1125000000001,122.0229,39.2245000000001C121.0549,38.1045000000001,118.2619,38.3715000000001,114.9939,41.0715000000001C113.4509,42.3435000000001,112.2749,43.7205000000001,111.5029,45.1035000000001 M116.6689,54.7685000000001C118.6539,54.9895,121.0509,54.6675000000001,123.7519,53.5355000000001C126.2129,52.5025000000001,127.1019,50.8015000000001,126.8679,50.2165000000001C126.6809,49.7485000000001,124.9339,49.2295000000001,120.9629,50.7375000000001C118.6519,51.6155000000001,117.2919,53.1255000000001,116.6689,54.7685000000001 M121.8639,63.3585C122.8819,63.5125000000001,124.0289,63.4795000000001,125.2989,63.2065000000001C129.5669,62.2915000000001,130.9839,60.6835000000001,131.1369,59.9605000000001C131.1729,59.7885000000001,131.1539,59.6595000000001,130.9459,59.5075000000001C130.3119,59.0475000000001,128.1579,58.7255000000001,124.5479,60.8055000000001C123.2829,61.5345000000001,122.3749,62.4055000000001,121.8639,63.3585 M128.7569,75.0725L127.7779,74.7165000000001C122.3369,72.7425,119.0319,69.4905000000001,118.7089,65.7945000000001C118.6909,65.5885000000001,118.6829,65.3825000000001,118.6839,65.1785000000001C116.2199,63.9885000000001,114.5869,61.8515000000001,113.9249,59.6085000000001C113.6609,58.7155000000001,113.5299,57.7545000000001,113.5529,56.7775000000001C111.4289,55.9865,109.8249,54.6375000000001,108.8809,53.0755000000001C107.9399,51.5175000000001,107.4509,49.3985000000001,107.9159,47.0325000000001C104.9019,46.2045000000001,102.2419,45.1035000000001,100.7079,44.4145000000001L97.3499,53.4135000000001L109.4439,56.9835000000001L108.6809,59.5705000000001L93.8109,55.1805000000001L99.2199,40.6885000000001L100.5639,41.3655000000001C102.3099,42.2445000000001,105.4369,43.5705000000001,108.7729,44.4765000000001C109.6279,42.6805000000001,111.0679,40.8125000000001,113.2759,38.9905000000001C118.1589,34.9585000000001,122.2119,35.3175000000001,124.0649,37.4615000000001C125.6389,39.2845000000001,125.7109,42.7095000000001,122.1519,45.9225000000001C119.3179,48.4825000000001,114.8069,48.4955000000001,110.5389,47.6545000000001C110.2609,49.0975000000001,110.4629,50.4785000000001,111.1899,51.6805000000001C111.7779,52.6535000000001,112.7429,53.5025000000001,114.0249,54.0735000000001C114.8339,51.6765000000001,116.7159,49.4655000000001,120.0049,48.2155000000001C127.2289,45.4715000000001,129.0009,48.2875000000001,129.3729,49.2155000000001C130.3099,51.5615000000001,128.2999,54.5515000000001,124.7949,56.0225000000001C121.5989,57.3615,118.7089,57.7225000000001,116.2649,57.4285000000001C116.2949,57.9165000000001,116.3779,58.3935000000001,116.5119,58.8445000000001C116.9339,60.2735000000001,117.8789,61.5985000000001,119.3039,62.4565000000001C120.0239,60.9105000000001,121.3529,59.5325000000001,123.2019,58.4675000000001C127.6869,55.8865000000001,130.9619,56.1855000000001,132.5319,57.3265000000001C133.5739,58.0835000000001,134.0389,59.2775000000001,133.7759,60.5195000000001C133.2719,62.8995000000001,130.3149,64.8905000000001,125.8649,65.8445000000001C124.2549,66.1885000000001,122.7839,66.2275,121.4649,66.0285000000001C121.9199,68.2315000000001,124.1989,70.3305000000001,127.7329,71.8055000000001L131.0779,66.9545000000001L138.9509,71.5505000000001L137.5919,73.8795000000001L131.8789,70.5455000000001z" 
+            Fill="#FFEE4036" Height="39.184" Stretch="Fill" UseLayoutRounding="False" Width="45.14" Margin="5"
+            Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <Path x:Name="Cell_shadow" Data="F1M51.834,75.582C43.225,75.582,36.221,66.91,36.221,56.251C36.221,45.591,43.225,36.919,51.834,36.919C60.442,36.919,67.445,45.591,67.445,56.251C67.445,66.91,60.442,75.582,51.834,75.582 M51.834,34.919C40.461,34.919,31.244,44.471,31.244,56.251C31.244,68.031,40.461,77.582,51.834,77.582C61.559,77.582,69.445,68.031,69.445,56.251C69.445,44.471,61.559,34.919,51.834,34.919" 
-                    ToolTipService.ToolTip="Cell"
-                    Fill="#FFFAAF40" Height="42.663" Stretch="Fill" Width="38.201" UseLayoutRounding="False" Margin="5"
-                    Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
+            ToolTipService.ToolTip="Cell"
+            Fill="#FFFAAF40" Height="42.663" Stretch="Fill" Width="38.201" UseLayoutRounding="False" Margin="5"
+            Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.6" Canvas.ZIndex="100" Grid.RowSpan="7"/>
 
                 <!--
                 <Path x:Name="Number_shadow" Data="F1M56.707,149.7656L54.707,149.7656L54.707,141.2066C54.707,138.6506,56.304,136.9236,57.849,135.2536C59.367,133.6126,60.801,132.0616,60.801,129.7446L60.801,107.4766C60.801,106.4676,59.98,105.6476,58.971,105.6476C57.963,105.6476,57.143,106.4676,57.143,107.4766L57.143,125.2476L55.143,125.2476L55.143,107.4766C55.143,106.4676,54.322,105.6476,53.313,105.6476C52.305,105.6476,51.484,106.4676,51.484,107.4766L51.484,125.2476L49.484,125.2476L49.484,107.4766C49.484,106.4676,48.664,105.6476,47.656,105.6476C46.647,105.6476,45.826,106.4676,45.826,107.4766L45.826,125.2476L43.826,125.2476L43.826,107.4766C43.826,106.4676,43.006,105.6476,41.998,105.6476C40.989,105.6476,40.168,106.4676,40.168,107.4766L40.168,127.2796L38.168,127.2796L38.168,119.6626C38.168,118.6536,37.348,117.8326,36.341,117.8326C35.332,117.8326,34.511,118.6536,34.511,119.6626L34.511,129.7446C34.511,131.7866,36.134,133.0946,38.013,134.6086C40.043,136.2436,42.345,138.0976,42.345,141.2066L42.345,149.7656L40.345,149.7656L40.345,141.2066C40.345,139.0546,38.603,137.6516,36.759,136.1656C34.768,134.5616,32.511,132.7436,32.511,129.7446L32.511,119.6626C32.511,117.5516,34.229,115.8326,36.341,115.8326C37.002,115.8326,37.624,116.0016,38.168,116.2986L38.168,107.4766C38.168,105.3656,39.886,103.6476,41.998,103.6476C43.117,103.6476,44.126,104.1306,44.827,104.8986C45.527,104.1306,46.537,103.6476,47.656,103.6476C48.775,103.6476,49.784,104.1306,50.484,104.8986C51.185,104.1306,52.194,103.6476,53.313,103.6476C54.433,103.6476,55.442,104.1306,56.143,104.8986C56.843,104.1306,57.852,103.6476,58.971,103.6476C61.082,103.6476,62.801,105.3656,62.801,107.4766L62.801,129.7446C62.801,132.8456,60.95,134.8466,59.317,136.6116C57.916,138.1256,56.707,139.4336,56.707,141.2066z" 
@@ -1574,14 +1681,14 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                         Cursor="Hand" 
                         Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
                     
-                    <!-- Right-hand corner Test button -->
+                <!-- Right-hand corner Test button -->
                     <Button Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,10,40,0" HorizontalAlignment="Right" d:LayoutOverrides="HorizontalAlignment"
                         Command="{Binding RunCommand}" 
                         Background="#FF82BD82" 
                         Content="TEST" 
                         Cursor="Hand" 
                         Style="{StaticResource RunCounterExampleButtonStyle}" Foreground="White" Padding="10,3" FontSize="13.333"/>
-                    
+
                 </StackPanel>
 
                 <!-- UNCOMMENT____ once TEST -> evaluates KF rules and LTL formula, and updates the Terminal field. -->
@@ -1616,7 +1723,6 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                 <!-- Keyframes -->
                 <StackPanel Margin="15,10,10,0" Orientation="Horizontal" VerticalAlignment="Top" Grid.Column="0" Grid.Row="3" AllowDrop="True">
                     <ListBox x:Name="KeyFrames" BorderBrush="White" Grid.Row="0"
-                             MouseLeftButtonUp="KeyFrames_MouseLeftButtonUp" 
                              MouseLeftButtonDown="KeyFrames_MouseLeftButtonDown"
                              SelectionChanged="KeyFrames_SelectionChanged" 
                              
@@ -1661,7 +1767,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
 
                 </StackPanel>
 
-                <!-- Operators -->
+                <!-- To counter hard-to-select objects -->
                 <StackPanel Margin="15,0,10,43.25" Orientation="Horizontal" VerticalAlignment="Bottom" Grid.Column="0" Grid.Row="3" Grid.RowSpan="2">
                     <Path x:Name="Variable" 
                   ToolTipService.ToolTip="Variable" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
@@ -1675,15 +1781,15 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                     <Path x:Name="Equals"  
                     Data="F1 M 0,-2.09808e-005L 54,-2.09808e-005L 54,49L 0,49L 0,-2.09808e-005 Z M 11.56,20.4L 43.56,20.4L 43.56,12.7201L 11.56,12.7201L 11.56,20.4 Z M 11.5599,33.8401L 43.5599,33.8401L 43.5599,26.1601L 11.5599,26.1601L 11.5599,33.8401 Z " 
                     ToolTipService.ToolTip="Equals" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
-                    Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"/>
+                    Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="2"/>
 
                     <Path x:Name="LessThan" Data="F1 M 1.52588e-005,0L 54,0L 54,49L 1.52588e-005,49L 1.52588e-005,0 Z M 42.3333,42.6667L 42.3333,34.6667L 18.6666,24.4792L 42.3333,14.6667L 42.3333,6.66672L 9.66664,20.7292L 9.66664,28.5417L 42.3333,42.6667 Z " 
                   ToolTipService.ToolTip="Less than" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
-                  Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"/>
+                  Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="2"/>
 
                     <Path x:Name="MoreThan" Data="F1 M 0,0L 54,0L 54,49L 0,49L 0,0 Z M 12.6667,43.5L 45.3333,29.3333L 45.3333,21.5729L 12.6667,7.5L 12.6667,15.5L 36.3333,25.4479L 12.6667,35.5L 12.6667,43.5 Z " 
                   ToolTipService.ToolTip="More than" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
-                  Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"/>
+                  Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="2"/>
 
                     <Path x:Name="LessThanEq" Data="F1 M 0.5,0.5L 63.5,0.5L 63.5,63.5L 0.5,63.5L 0.5,0.5 Z M 50.3935,43.8152L 50.3935,35.0153L 24.3602,23.809L 50.3935,13.0153L 50.3935,4.21527L 14.4602,19.684L 14.4602,28.2778L 50.3935,43.8152 Z M 14.3247,56.4155L 50.3956,56.4155L 50.3956,47.6155L 14.3247,47.6155L 14.3247,56.4155 Z " 
                   ToolTipService.ToolTip="Less than or equals" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
@@ -1694,6 +1800,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                   Fill="#FF58595B" Height="30" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5"/>
 
                 </StackPanel>
+
 
                 <TextBlock TextWrapping="Wrap" Text="Rules" Style="{StaticResource PopupTextStyle}" HorizontalAlignment="Left" Margin="15,5,0,0" Grid.Row="4" Foreground="Black" Grid.Column="0">
                 </TextBlock>
@@ -1830,47 +1937,47 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                  GotFocus="N_GotFocus" MouseRightButtonDown="textbox_MouseRightButtonDown" TextChanged="N_TextChanged" 
                                  />
 
-                        
+
                         <!-- Row 1 NEEDS PATHS! -->
                         <Rectangle x:Name="rect5" Tag="5" Grid.Column="0" Grid.Row="1" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text5" Tag="5" Grid.Column="0" Grid.Row="1" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect6" Tag="6" Grid.Column="1" Grid.Row="1" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text6" Tag="6" Grid.Column="1" Grid.Row="1" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect7" Tag="7" Grid.Column="2" Grid.Row="1" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text7" Tag="7" Grid.Column="2" Grid.Row="1" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect8" Tag="8" Grid.Column="3" Grid.Row="1" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text8" Tag="8" Grid.Column="3" Grid.Row="1" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect9" Tag="9" Grid.Column="4" Grid.Row="1" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text9" Tag="9" Grid.Column="4" Grid.Row="1" Style="{StaticResource textForGrid}"/>
 
                         <!-- Row 2 -->
                         <Rectangle x:Name="rect10" Tag="10" Grid.Column="0" Grid.Row="2" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text10" Tag="10" Grid.Column="0" Grid.Row="2" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect11" Tag="11" Grid.Column="1" Grid.Row="2" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text11" Tag="11" Grid.Column="1" Grid.Row="2" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect12" Tag="12" Grid.Column="2" Grid.Row="2" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text12" Tag="12" Grid.Column="2" Grid.Row="2" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect13" Tag="13" Grid.Column="3" Grid.Row="2" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text13" Tag="13" Grid.Column="3" Grid.Row="2" Style="{StaticResource textForGrid}"/>
 
                         <Rectangle x:Name="rect14" Tag="14" Grid.Column="4" Grid.Row="2" Style="{StaticResource rectForGrid}"
-                        MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
+                        MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave" MouseLeftButtonUp="Rect_MouseLeftButtonUp"/>
                         <TextBlock x:Name="text14" Tag="14" Grid.Column="4" Grid.Row="2" Style="{StaticResource textForGrid}"/>
 
 
@@ -2126,6 +2233,27 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
+                        <!-- To counter hard-to-select objects -->
+                        <StackPanel Margin="5,0,0,2" Orientation="Horizontal" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Canvas.ZIndex="40">
+                            <Path x:Name="UntilSelector" Height="28.303" Stretch="Fill" Width="45.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"                                
+                               ToolTipService.ToolTip="Until" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="ImpliesSelector" Height="28.303" Stretch="Fill" Width="55.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"
+                               ToolTipService.ToolTip="Implies" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="EventuallySelector" Height="28.303" Stretch="Fill" Width="55.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"                               
+                               ToolTipService.ToolTip="Eventually" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="AlwaysSelector" Height="28.303" Stretch="Fill" Width="45.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"                              
+                               ToolTipService.ToolTip="Always" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="NotSelector" Height="28.303" Stretch="Fill" Width="28.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"
+                               ToolTipService.ToolTip="Not" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="AndSelector" Height="28.303" Stretch="Fill" Width="37.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"
+                               ToolTipService.ToolTip="And" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="obSelector" Height="28" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"
+                               ToolTipService.ToolTip="Open bracket" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                            <Path x:Name="cbSelector" Height="28" Stretch="Fill" Width="30" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" Stroke="#FFFEFEFE" Fill="#FFFEFEFE"
+                               ToolTipService.ToolTip="Closing bracket" MouseLeftButtonDown="Operator_MouseLeftButtonDown" Data="M 0,0L 133.359,0L 133.359,56.7174L 0,56.7174L 0,0 Z M 129.359,3.46735C 128.953,3.37518 128.528,4.05878 128.609,4.46735C 128.677,4.80426 129.403,4.99219 129.609,4.71735C 129.864,4.37744 129.774,3.56134 129.359,3.46735 Z "/>
+                        </StackPanel>
+
+
                         <!-- Formula symbols -->
                         <StackPanel Margin="5,0,0,2" Orientation="Horizontal" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Canvas.ZIndex="40">
 
@@ -2159,7 +2287,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                     ToolTipService.ToolTip="If" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
                     Fill="#FF58595B" Stroke="#FF58595B" Height="28.303" Stretch="Fill" Width="28.303" UseLayoutRounding="False" Margin="5" Canvas.ZIndex="90" />
                             -->
-                            
+
                             <Path x:Name="And"  
                     Data="M 0.5,0.499969L 88.7009,0.499969L 88.7009,57.6666L 0.5,57.6666L 0.5,0.499969 Z M 3.63511,4.06314L 3.63511,52.864L 84.9387,52.864L 84.9387,4.06314L 3.63511,4.06314 Z M 33.3009,43.4165L 26.4259,43.4165L 24.6259,37.8165L 14.3196,37.8165L 12.5383,43.4165L 5.70085,43.4165L 15.8821,15.4165L 23.3508,15.4165L 33.3009,43.4165 Z M 22.9446,32.2166L 20.0071,22.9353C 19.7779,22.2311 19.6196,21.3916 19.5321,20.4165L 19.3759,20.4165C 19.3258,21.2374 19.1613,22.0499 18.8821,22.854L 15.8883,32.2166L 22.9446,32.2166 Z M 55.7008,43.4165L 49.7008,43.4165L 49.7008,32.4165C 49.7008,29.3499 48.5613,27.8165 46.2821,27.8165C 45.1821,27.8165 44.2769,28.2228 43.5665,29.0353C 42.8561,29.8478 42.5009,30.879 42.5009,32.129L 42.5009,43.4165L 36.5009,43.4165L 36.5009,23.4165L 42.5009,23.4165L 42.5009,26.7415L 42.5821,26.7415C 44.0571,24.2582 46.2071,23.0166 49.0321,23.0166C 53.4779,23.0166 55.7008,25.752 55.7008,31.2228L 55.7008,43.4165 Z M 80.1009,43.4165L 73.7009,43.4165L 73.7009,40.4978L 73.6259,40.4978C 72.2383,42.7103 70.2009,43.8165 67.5134,43.8165C 65.0467,43.8165 63.0613,42.9415 61.5571,41.1915C 60.0529,39.4415 59.3008,36.9978 59.3008,33.8603C 59.3008,30.5811 60.13,27.9541 61.7883,25.979C 63.4467,24.004 65.6175,23.0166 68.3008,23.0166C 70.8467,23.0166 72.6217,23.9666 73.6259,25.8665L 73.7009,25.8665L 73.7009,13.8165L 80.1009,13.8165L 80.1009,43.4165 Z M 73.8196,33.6853L 73.8196,32.2228C 73.8196,30.9561 73.4561,29.9051 72.729,29.0697C 72.0019,28.2343 71.0571,27.8165 69.8946,27.8165C 68.5779,27.8165 67.5498,28.3384 66.8102,29.3822C 66.0706,30.4259 65.7009,31.8603 65.7009,33.6853C 65.7009,35.3936 66.0581,36.7093 66.7727,37.6322C 67.4873,38.5551 68.4759,39.0166 69.7384,39.0166C 70.9425,39.0166 71.9238,38.5291 72.6821,37.554C 73.4404,36.5791 73.8196,35.2895 73.8196,33.6853 Z " 
                     ToolTipService.ToolTip="And" MouseLeftButtonDown="Operator_MouseLeftButtonDown"
@@ -2280,7 +2408,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
                                    MouseRightButtonDown="f_path_MouseRightButtonDown"/>
                             <TextBox x:Name="f_N4" Tag="4" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" Background="Transparent" 
-                                 Style="{StaticResource ReadOnlyStyle}"
+                                 Style="{StaticResource ReadOnlyStyle}" MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave"
                                  GotFocus="N_GotFocus"
                                  MouseRightButtonDown="f_textbox_MouseRightButtonDown"/>
 
@@ -2319,7 +2447,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
                                    MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
-                            <TextBox x:Name="f_N6" Tag="6" Grid.Column="6" Grid.Row="0" 
+                            <TextBox x:Name="f_N6" Tag="6" Grid.Column="6" Grid.Row="0" MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave"
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
@@ -2363,7 +2491,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
                                    MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
-                            <TextBox x:Name="f_N8" Tag="8" Grid.Column="8" Grid.Row="0" 
+                            <TextBox x:Name="f_N8" Tag="8" Grid.Column="8" Grid.Row="0" MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave"
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
@@ -2385,7 +2513,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
                                    MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
-                            <TextBox x:Name="f_N9" Tag="9" Grid.Column="9" Grid.Row="0" 
+                            <TextBox x:Name="f_N9" Tag="9" Grid.Column="9" Grid.Row="0" MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave"
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
@@ -2407,7 +2535,7 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
                                    MouseRightButtonDown="f_path_MouseRightButtonDown"/>
 
-                            <TextBox x:Name="f_N10" Tag="10" Grid.Column="10" Grid.Row="0" 
+                            <TextBox x:Name="f_N10" Tag="10" Grid.Column="10" Grid.Row="0" MouseEnter="grayed_MouseEnter" MouseLeave="grayed_MouseLeave"
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
                                  Canvas.ZIndex="10" FontSize="20" BorderBrush="White" TextAlignment="Center" 
                                  TextChanged="N_TextChanged" AcceptsReturn="False" AllowDrop="False" BorderThickness="0" FontStretch="Expanded" IsEnabled="True" MaxLength="3" TextWrapping="NoWrap" Background="Transparent"                                  
@@ -2421,13 +2549,13 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                                    Grid.Column="11" Grid.Row="0" 
                                    Style="{StaticResource rectForGrid}"
                                    MouseEnter="Rect_MouseEnter" MouseLeave="Rect_MouseLeave" MouseLeftButtonDown="Rect_MouseLeftButtonUp"
-                                   MouseRightButtonDown="rect_MouseRightButtonDown"
+                                   MouseRightButtonDown="Grid_MouseRightButtonDown"
                                    />
-                            <TextBlock x:Name="f_text11" Tag="11" Grid.Column="11" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="textblock_MouseRightButtonDown"/>
+                            <TextBlock x:Name="f_text11" Tag="11" Grid.Column="11" Grid.Row="0" Style="{StaticResource textForGrid}" MouseRightButtonDown="Grid_MouseRightButtonDown"/>
                             <Path      x:Name="f_path11" Tag="11" 
                                    Grid.Row="0" Grid.Column="11" Canvas.ZIndex="15"
                                    ToolTipService.ToolTip="" AllowDrop="False" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-                                   MouseRightButtonDown="path_MouseRightButtonDown"/>
+                                   MouseRightButtonDown="Grid_MouseRightButtonDown"/>
 
                             <TextBox x:Name="f_N11" Tag="11" Grid.Column="11" Grid.Row="0" 
                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" 
@@ -2524,9 +2652,9 @@ Value="F1M111.5029,45.1035000000001C115.0089,45.7465000000001,118.3989,45.678500
                               Grid.Column="10" Grid.Row="0" VerticalAlignment="Bottom" StrokeDashArray="8 8"/>
                             <Path Data="M25.833334,4 L26.5,85.833336" Style="{StaticResource DottedVertical}"
                               Grid.Column="11" Grid.Row="0" HorizontalAlignment="Left" StrokeDashArray="8 8"/>
-                            
+
                             <!--<Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"
-                              Grid.Column="11" Grid.Row="0" VerticalAlignment="Top" StrokeDashArray="8 8"/>                            
+                              Grid.Column="11" Grid.Row="0" VerticalAlignment="Top" StrokeDashArray="8 8"/>
                             <Path Data="M25.833334,4 L26.5,85.833336" Style="{StaticResource DottedVertical}"
                               Grid.Column="11" Grid.Row="0" HorizontalAlignment="Right" StrokeDashArray="8 8" Margin="0,0,2,0"/>
                             <Path Data="M36.666668,7.9999995 L349.37881,7.9999995" Style="{StaticResource DottedHorizontal}"

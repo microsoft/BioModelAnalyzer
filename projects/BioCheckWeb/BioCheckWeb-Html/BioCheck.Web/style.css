@@ -1,0 +1,405 @@
+
+
+html,body{
+background-color:#E4E4E6;
+background-image:url(_images/background.png);
+background-repeat:no-repeat;
+background-position:50% 30%;
+background-attachment:fixed;
+margin:0px;
+padding:0px;
+text-align:center;
+
+font-family:Verdana;
+font-size:12px;
+
+}
+
+
+
+/* ---  Links  --- */
+
+a {
+color:#82BD82;
+text-decoration:none;
+}
+
+a:hover{
+text-decoration:underline;
+cursor: pointer;
+}
+
+/* New class to enable link style change by hover*/
+.hoverEnabled a {
+color:#82BD82;
+text-decoration:none;
+display: block;
+padding: 10px 0px 10px 0px;     /* Top right bottom left */
+white-space:nowrap;             /* No wrapping: hyperlink forced onto one line */
+}
+
+.hoverEnabled a:hover{
+color:white;
+text-decoration:none;
+cursor: pointer;     
+}
+/* New class ends */
+
+#btn-block{
+position:relative;
+
+background-color:white;
+/*padding:10px 10px 10px 10px;*/        /* No spill-over, unclickable space.  */
+margin:0 15px 15px 0; 
+width:110px;
+text-align:center;
+color:#82BD82;
+float:left;
+
+border-radius:10px;
+-moz-border-radius:10px; /* Firefox 3.6 and earlier */
+-webkit-border-radius:10px;
+-ms-border-radius:10px;
+-o-border-radius:10px;
+
+box-shadow: 5px 5px 10px #C6C6C6;
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+
+}
+
+#btn-block:hover{
+background-color:#82BD82;
+color:white;
+text-decoration: none;
+cursor: pointer;
+}
+
+#btn{
+position:absolute;
+height:100%;
+width:100%;
+}
+
+
+img {
+border:0;
+
+}
+
+
+
+/* ---  Typography  --- */
+
+
+
+.heading{
+color:#82BD82;
+font-weight:bold;
+}
+
+.bold{
+color:#555;
+font-weight:bold;
+}
+
+
+
+/* ---  Site-Wide header  --- */
+
+#MSR-logo{
+position:fixed;
+width:150px;
+right:10px;
+top:5px;
+z-index:1;
+}
+
+#MSR-logo img{
+width:150px;
+}
+
+#header{
+width:100%;
+position:fixed;
+}
+
+#site-wide-nav{
+position:relative;
+z-index:5;
+background-color:white;
+width:220px;
+height:35px;
+margin:0 auto;
+color:#82BD82;
+line-height:30px;
+
+border-radius:0px 0px 10px 10px;
+-moz-border-radius:0px 0px 10px 10px; /* Firefox 3.6 and earlier */
+-webkit-border-radius:0px 0px 10px 10px;
+-ms-border-radius:0px 0px 10px 10px;
+-o-border-radius:0px 0px 10px 10px;
+
+box-shadow: 5px 5px 10px #C6C6C6;
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+}
+
+#logo{
+position:relative;
+
+}
+
+
+#launch-btn{
+position:relative;
+background-color:#82BD82;
+color:white;
+width:150px;
+height:35px;
+line-height:2px;
+z-index:5;
+padding-top:10px;                       /* Prevents 'Enter tool' from being squeezed up against the page top*/
+margin:-30px 0 0 -340px;                /* wrt the page */
+
+
+border-radius:0px 0px 10px 10px;       /* Top right bottom left: Causes rounded corner */
+-moz-border-radius:0px 0px 10px 10px;  /* Firefox 3.6 and earlier */
+-webkit-border-radius:0px 0px 10px 10px;
+-ms-border-radius:0px 0px 10px 10px;
+-o-border-radius:0px 0px 10px 10px;
+
+box-shadow: 5px 5px 10px #C6C6C6;
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+}
+
+
+
+
+
+/* ---  Home page  --- */
+
+#home-logo{
+
+width:450px;
+height:450px;
+margin:30px auto;
+
+
+}
+
+#home-launch{
+position:relative;
+background-color:#82BD82;
+width:140px;
+height:50px;
+margin:0 auto 0 50%;
+
+-moz-border-radius:10px; /* Firefox 3.6 and earlier */
+-webkit-border-radius:10px;
+-ms-border-radius:10px;
+-o-border-radius:10px;
+border-radius:10px;
+
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+box-shadow: 5px 5px 10px #C6C6C6;
+
+}
+
+
+#home-launch img{
+margin-top:14px;
+
+}
+
+#home-launch-btn{
+position:absolute; 
+width:100%;
+height:100%;
+top:0;
+left: 0;
+z-index:1;
+}
+
+
+/* ---  Content pages  --- */
+
+
+#content-wrapper{
+position:relative;
+width:900px;
+margin:-30px auto;
+text-align:left;
+z-index:3;
+}
+
+#content-title{
+background-color:white;
+width:110px;
+height:50px;
+margin-bottom:15px;
+
+border-radius:10px;
+-moz-border-radius:10px; /* Firefox 3.6 and earlier */
+-webkit-border-radius:10px;
+-ms-border-radius:10px;
+-o-border-radius:10px;
+
+box-shadow: 5px 5px 10px #C6C6C6;
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+}
+
+#content-title img{
+padding:10px 
+}
+
+#col-wide{
+width:520px;
+float:left;
+}
+
+
+#col-side{
+width:350px;
+float:right;
+
+}
+
+
+#block {
+background-color:white;
+padding:10px 20px 15px 10px;
+margin:0 0 15px 0;
+line-height:16px;
+
+border-radius:10px;
+-moz-border-radius:10px; /* Firefox 3.6 and earlier */
+-webkit-border-radius:10px;
+-ms-border-radius:10px;
+-o-border-radius:10px;
+
+box-shadow: 5px 5px 10px #C6C6C6;
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+}
+
+
+.Team_Member{
+margin-bottom:15px;
+
+}
+
+
+.Team_Member p{
+margin:5px 0px 5px 0px;
+
+}
+
+
+.FAQ_question{
+margin-bottom:10px;
+
+}
+
+
+.FAQ_question p{
+margin:5px 10px 20px 25px;
+
+}
+
+
+
+
+/* ---  TOOL  --- */
+
+#tool-container{
+/*position:absolute;*/
+background-color:#E4E4E6;
+width:100%;
+height:100%;
+}
+
+#tool{
+/*position:absolute;*/
+background-color:white;
+top: 5px;
+left: 5px;
+right: 5px;
+bottom: 40px;
+
+
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+box-shadow: 5px 5px 10px #C6C6C6;
+
+z-index:7;
+}
+
+
+#tool-footer{
+/*position:absolute;*/
+width:100%;
+bottom:0px;
+height:40px;
+text-align:center;
+}
+
+#tool-site-wide-nav{
+position:relative;
+z-index:8;
+background-color:white;
+width:220px;
+height:35px;
+margin:5px auto 0px auto;
+color:#82BD82;
+line-height:35px;
+
+-moz-border-radius:10px 10px 0px 0px; /* Firefox 3.6 and earlier */
+-webkit-border-radius:10px 10px 0px 0px;
+-ms-border-radius:10px 10px 0px 0px;
+-o-border-radius:10px 10px 0px 0px;
+border-radius:10px 10px 0px 0px;
+
+-webkit-box-shadow: 5px 5px 10px #C6C6C6;
+-moz-box-shadow: 5px 5px 10px #C6C6C6;
+-ms-box-shadow: 5px 5px 10px #C6C6C6;
+-o-box-shadow: 5px 5px 10px #C6C6C6;
+box-shadow: 5px 5px 10px #C6C6C6;
+}
+
+#tool-logo{
+position:absolute;
+left:-3px;
+bottom:-2px;
+
+}
+
+#tool-MSR-logo{
+position:absolute;
+right:10px;
+padding-top:3px;
+}
+
+#tool-MSR-logo img{
+height:33px;
+}
+
+
+

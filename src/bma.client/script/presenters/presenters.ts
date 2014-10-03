@@ -534,9 +534,28 @@ module BMA {
                 return this.currentModelIndex < this.models.length - 1;
             }
 
+            private ResetVariableIdIndex() {
+                this.variableIndex = 0;
+
+                var m = this.Current.model;
+                var l = this.Current.layout;
+
+                for (var i = 0; i < m.Variables.length; i++) {
+                    if (m.Variables[i].Id >= this.variableIndex)
+                        this.variableIndex = m.Variables[i].Id + 1;
+                }
+
+                for (var i = 0; i < l.Containers.length; i++) {
+                    if (l.Containers[i].Id >= this.variableIndex) {
+                        this.variableIndex = l.Containers[i].Id + 1;
+                    }
+                }
+            }
+
             private Set(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
                 this.models = [{ model: m, layout: l }];
                 this.currentModelIndex = 0;
+                this.ResetVariableIdIndex();
                 this.variableEditor.Hide();
                 this.editingVariableId = undefined;
                 this.OnModelUpdated();

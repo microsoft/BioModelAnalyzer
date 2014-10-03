@@ -10,6 +10,76 @@ namespace BioCheck.ViewModel.Simulation
 {
     public static class SimulationViewModelFactory
     {
+        public static SimulationViewModel Create(ModelViewModel modelVM, TimeOutput ltlOutput)
+        {
+            var simulationVM = new SimulationViewModel();
+
+            simulationVM.ModelName = modelVM.Name;
+            simulationVM.NumberOfSteps = 20;
+            int NCells = modelVM.ContainerViewModels.Count();
+
+            var allVariables = (from v in
+                                    (from extVvm in modelVM.VariableViewModels select extVvm)
+                                    .Concat(
+                                        (from cvm in modelVM.ContainerViewModels
+                                         from intVvm in cvm.VariableViewModels
+                                         select intVvm))
+                                select v).ToList();
+
+
+            // Create the list of Variables
+
+            foreach (var variableVM in allVariables)
+            {
+                var varSimVM = new VariableSimViewModel
+                {
+                    Id = variableVM.Id,
+                    Name = variableVM.Name,
+                    RangeFrom = variableVM.RangeFrom,
+                    RangeTo = variableVM.RangeTo,
+                    Range = string.Format("{0} - {1}", variableVM.RangeFrom, variableVM.RangeTo),
+                };
+
+
+                if (NCells > 0)
+                {
+                    if (variableVM.ContainerViewModel != null)
+                    {
+                        varSimVM.CellName = variableVM.ContainerViewModel.Name;
+                    }
+                    else
+                    {
+                        // Could be either extracellular or no name provided
+                        varSimVM.CellName = "";
+                    }
+                }
+                else
+                {
+                    // No cells present in the model
+                    varSimVM.CellName = "Extracellular";
+                }
+
+                // Edit Initial values according to LTL output.
+                bool foundIt = false;
+                for (int i = 0; i < ltlOutput.Ticks[0].Variables.Count; i++)
+                {
+                    if (!foundIt && ltlOutput.Ticks[0].Variables[i].Id == varSimVM.Id)
+                    {
+                        varSimVM.InitialValue = ltlOutput.Ticks[0].Variables[i].High;
+                        foundIt = true;
+                    }
+                }
+
+                if (!foundIt)
+                { 
+                    //Error! Ids do not correspond. This should never be hit.
+                    varSimVM.RandomiseValue();
+                }
+                simulationVM.Variables.Add(varSimVM);
+            }
+            return simulationVM;
+        }
+
         public static SimulationViewModel Create(ModelViewModel modelVM)
         {
             var simulationVM = new SimulationViewModel();     

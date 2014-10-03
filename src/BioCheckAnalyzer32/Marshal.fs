@@ -322,6 +322,67 @@ let xml_of_cex_result (r:Result.cex_result) =
         root.Add(status)
     doc
 
+let xml_of_ltl_string_result (result : bool) (model : string) =
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)
+
+    match result with 
+    | true -> 
+        let status = new XElement(xn "Status", "True")
+        root.Add(status)
+    | false -> 
+        let status = new XElement(xn "Status", "False")
+        root.Add(status)
+    
+    let xml_model = new XElement(xn "Model", new XAttribute(xn "Id",model))
+    root.Add(xml_model)
+
+    doc
+
+let xml_of_ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
+    let (loop,model_map) = model
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)
+    
+    match result with 
+    | true -> 
+        let status = new XElement(xn "Status", "True")
+        root.Add(status)
+    | false -> 
+        let status = new XElement(xn "Status", "False")
+        root.Add(status)
+    
+    let loopElem = new XElement(xn "Loop", loop)
+    root.Add(loopElem)
+    
+    let i = ref 0
+    while (Map.containsKey !i model_map) do
+
+            let tick = new XElement(xn "Tick")
+            let timeS = sprintf "%d" !i
+            let time = new XElement(xn "Time", timeS)
+            tick.Add(time)
+
+            let variables = new XElement(xn "Variables")
+            let map_var_to_value = Map.find !i model_map
+            for entry in map_var_to_value do 
+                let var = entry.Key
+                let value = entry.Value
+                let varXML = new XElement(xn "Variable")
+                varXML.SetAttributeValue(xn "Id", var)
+                varXML.SetAttributeValue(xn "Lo", value)
+                varXML.SetAttributeValue(xn "Hi", value)
+                variables.Add(varXML)
+            
+            tick.Add(variables)
+            root.Add(tick)
+
+            incr i
+    doc
+
+    
 let xml_of_ltl_result (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
     let doc = new XDocument()
     let root = new XElement(xn "AnalysisOutput")
@@ -360,6 +421,20 @@ let xml_of_synth_result (result:string) (moreResult:string) (model:XDocument) =
     
     doc
 // done
+
+
+let xml_of_SCMResult (result:string) (details:string) = 
+    let doc = new XDocument()
+    let root = new XElement(xn "AnalysisOutput")
+    doc.AddFirst(root)
+
+    let output = new XElement(xn "Status", result)
+    root.Add(output)
+
+    let output2 = new XElement(xn "Details", details)
+    root.Add(output2)
+    
+    doc
 
 
 // Result parsers

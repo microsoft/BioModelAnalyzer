@@ -1,0 +1,138 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckConsole", "BioCheckConsole.fsproj", "{0F088352-D63F-48AD-A000-AFD456157B7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "..\..\BioCheckWeb\BioCheckWeb-Main\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FParsecCS", "..\..\BioCheckWeb\BioCheckWeb-Main\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj", "{501423C3-8EA5-4E54-8D9C-EF60272B57FA}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "..\..\BioCheckWeb\BioCheckWeb-Main\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj", "{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer64", "..\..\BioCheckWeb\BioCheckWeb-Main\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj", "{2975B5B6-78DE-4C9C-9D0C-584864CA590A}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
+		SccProjectUniqueName0 = BioCheckConsole.fsproj
+		SccProjectName0 = .
+		SccAuxPath0 = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
+		SccLocalPath0 = .
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\BioCheckAnalyzerCommon\\BioCheckAnalyzerCommon.csproj
+		SccProjectName1 = ../../BioCheckWeb/BioCheckWeb-Main/BioCheckAnalyzerCommon
+		SccAuxPath1 = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
+		SccLocalPath1 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\BioCheckAnalyzerCommon
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName2 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\FParsec\\fparsec-main-c234349e7b73\\Build\\VS11\\FParsecCS.csproj
+		SccProjectName2 = ../../BioCheckWeb/BioCheckWeb-Main/FParsec/fparsec-main-c234349e7b73/Build/VS11
+		SccAuxPath2 = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
+		SccLocalPath2 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\FParsec\\fparsec-main-c234349e7b73\\Build\\VS11
+		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName3 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\FParsec\\fparsec-main-c234349e7b73\\Build\\VS11\\FParsec.fsproj
+		SccProjectName3 = ../../BioCheckWeb/BioCheckWeb-Main/FParsec/fparsec-main-c234349e7b73/Build/VS11
+		SccAuxPath3 = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
+		SccLocalPath3 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\FParsec\\fparsec-main-c234349e7b73\\Build\\VS11
+		SccProvider3 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName4 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\BioCheckAnalyzer64\\BioCheckAnalyzer64.fsproj
+		SccProjectName4 = ../../BioCheckWeb/BioCheckWeb-Main/BioCheckAnalyzer64
+		SccAuxPath4 = https://vstf-eu-dub-01.partners.extranet.microsoft.com:8443/tfs/ext04_consol_tpc1
+		SccLocalPath4 = ..\\..\\BioCheckWeb\\BioCheckWeb-Main\\BioCheckAnalyzer64
+		SccProvider4 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		nuget|Any CPU = nuget|Any CPU
+		nuget|Mixed Platforms = nuget|Mixed Platforms
+		nuget|x86 = nuget|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Debug|x86.ActiveCfg = Debug|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Debug|x86.Build.0 = Debug|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|Any CPU.ActiveCfg = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|Mixed Platforms.ActiveCfg = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|Mixed Platforms.Build.0 = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|x86.ActiveCfg = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|x86.Build.0 = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Any CPU.ActiveCfg = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Mixed Platforms.Build.0 = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|x86.ActiveCfg = Release|x86
+		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|x86.Build.0 = Release|x86
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.nuget|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.nuget|Mixed Platforms.Build.0 = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.nuget|x86.ActiveCfg = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.nuget|Any CPU.ActiveCfg = nuget|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.nuget|Any CPU.Build.0 = nuget|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.nuget|Mixed Platforms.ActiveCfg = nuget|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.nuget|Mixed Platforms.Build.0 = nuget|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.nuget|x86.ActiveCfg = nuget|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{501423C3-8EA5-4E54-8D9C-EF60272B57FA}.Release|x86.ActiveCfg = Release|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.nuget|Any CPU.ActiveCfg = nuget|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.nuget|Any CPU.Build.0 = nuget|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.nuget|Mixed Platforms.ActiveCfg = nuget|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.nuget|Mixed Platforms.Build.0 = nuget|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.nuget|x86.ActiveCfg = nuget|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}.Release|x86.ActiveCfg = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.nuget|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.nuget|Mixed Platforms.Build.0 = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.nuget|x86.ActiveCfg = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2975B5B6-78DE-4C9C-9D0C-584864CA590A}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

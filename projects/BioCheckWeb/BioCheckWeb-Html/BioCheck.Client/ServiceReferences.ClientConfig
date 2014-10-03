@@ -1,0 +1,33 @@
+﻿<configuration>
+  <system.serviceModel>
+    <bindings>
+      <customBinding>
+        
+        <binding name="LogServiceCustom">
+          <binaryMessageEncoding />
+          <httpTransport maxReceivedMessageSize="2147483647" maxBufferSize="2147483647" />
+        </binding>
+        
+        <binding name="AnalysisServiceCustom"
+                   receiveTimeout="00:10:00" 
+                   sendTimeout="00:10:00"
+                   openTimeout="01:00:00"
+                   closeTimeout="01:00:00"
+                 >
+          <binaryMessageEncoding />
+          <httpTransport maxReceivedMessageSize="2147483647" maxBufferSize="2147483647" />
+        </binding>
+      </customBinding>
+    </bindings>
+    
+    <client>
+      <endpoint address="http://localhost:4807/Services/LogService.svc"
+        binding="customBinding" bindingConfiguration="LogServiceCustom"
+        contract="LogService.LogService" name="LogServiceCustom" />
+      
+      <endpoint address="http://localhost:4807/Services/AnalysisService.svc"
+        binding="customBinding" bindingConfiguration="AnalysisServiceCustom"
+        contract="AnalysisService.AnalysisService" name="AnalysisServiceCustom" />
+    </client>
+  </system.serviceModel>
+</configuration>

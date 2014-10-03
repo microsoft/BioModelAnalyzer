@@ -1,0 +1,666 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8FDDC20D-182F-435F-B7E6-09E52A7E087A}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BioCheck</RootNamespace>
+    <AssemblyName>BioCheck</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>BioCheck.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>BioCheck.App</SilverlightAppEntry>
+    <TestPageFileName>BioCheckTestPage.html</TestPageFileName>
+    <CreateTestPage>true</CreateTestPage>
+    <ValidateXaml>true</ValidateXaml>
+    <EnableOutOfBrowser>false</EnableOutOfBrowser>
+    <OutOfBrowserSettingsFile>Properties\OutOfBrowserSettings.xml</OutOfBrowserSettingsFile>
+    <UsePlatformExtensions>false</UsePlatformExtensions>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <LinkedServerProject>
+    </LinkedServerProject>
+    <TargetFrameworkProfile />
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>4.1.20321.0</ExpressionBlendVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Expression.Interactions, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Libs\Silverlight\Expression Blend\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Silverlight">
+      <HintPath>..\packages\Unity.2.1.505.2\lib\SL30\Microsoft.Practices.Unity.Silverlight.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="MvvmFx.Common">
+      <HintPath>..\Libs\Silverlight\MvvmFx\MvvmFx.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpZipLib.Silverlight4">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\SL4\SharpZipLib.Silverlight4.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Windows.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Data, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Windows.Controls.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Data.DataForm.Toolkit">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.Data.DataForm.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Data.Toolkit">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.Data.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Input.Toolkit">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Navigation, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Windows.Controls.Navigation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Toolkit">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Toolkit.Internals">
+      <HintPath>..\Libs\Silverlight\Silverlight Toolkit\System.Windows.Controls.Toolkit.Internals.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\Libs\Silverlight\Expression Blend\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Xml.Linq, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Xml.Linq.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\CustomStylesSamples.xaml.cs">
+      <DependentUpon>CustomStylesSamples.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\Resources\ApplicationResources.cs" />
+    <Compile Include="Assets\Resources\ApplicationStrings.Designer.cs" />
+    <Compile Include="Assets\Resources\ErrorResources.Designer.cs" />
+    <Compile Include="Behaviors\CloseContextBarBehavior.cs" />
+    <Compile Include="Behaviors\ScrollIntoViewBehavior.cs" />
+    <Compile Include="Behaviors\DoubleClickBehavior.cs" />
+    <Compile Include="ChildWindows\AnalysisErrorWindow.xaml.cs">
+      <DependentUpon>AnalysisErrorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChildWindows\ErrorWindow.xaml.cs">
+      <DependentUpon>ErrorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChildWindows\ImportErrorWindow.xaml.cs">
+      <DependentUpon>ImportErrorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChildWindows\InvalidModelWindow.xaml.cs">
+      <DependentUpon>InvalidModelWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChildWindows\LogWindow.xaml.cs">
+      <DependentUpon>LogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChildWindows\MessageWindow.xaml.cs">
+      <DependentUpon>MessageWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Arrows\ArrowEnds.cs" />
+    <Compile Include="Controls\Arrows\ArrowLine.cs" />
+    <Compile Include="Controls\Arrows\ArrowLineBase.cs" />
+    <Compile Include="Controls\Arrows\ArrowPolyLine.cs" />
+    <Compile Include="Controls\Arrows\LoopingArrowLine.cs" />
+    <Compile Include="Controls\Arrows\Math2D.cs" />
+    <Compile Include="Controls\BusyIndicator.cs" />
+    <Compile Include="Controls\BusyWindow.xaml.cs">
+      <DependentUpon>BusyWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ContainerGrid.xaml.cs">
+      <DependentUpon>ContainerGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ContainerPropertyBox.xaml.cs">
+      <DependentUpon>ContainerPropertyBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ContainerSite.xaml.cs">
+      <DependentUpon>ContainerSite.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ContextBar.cs" />
+    <Compile Include="Controls\ContainerSiteContextBarViewModel.cs" />
+    <Compile Include="Controls\RelationshipContextBarViewModel.cs" />
+    <Compile Include="Controls\GridSizeBox.xaml.cs">
+      <DependentUpon>GridSizeBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LibraryControl.xaml.cs">
+      <DependentUpon>LibraryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MembraneReceptorSite.xaml.cs">
+      <DependentUpon>MembraneReceptorSite.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TimebarControl.xaml.cs">
+      <DependentUpon>TimebarControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TimebarItem.cs" />
+    <Compile Include="Controls\TimebarTypes.cs" />
+    <Compile Include="Controls\ToolbarTypes.cs" />
+    <Compile Include="Controls\ToolbarControl.xaml.cs">
+      <DependentUpon>ToolbarControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ToolbarItem.cs" />
+    <Compile Include="Controls\UniformGrid.cs" />
+    <Compile Include="Controls\VariablePropertyBox.xaml.cs">
+      <DependentUpon>VariablePropertyBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VisualStates.cs" />
+    <Compile Include="Controls\ZoomControl.xaml.cs">
+      <DependentUpon>ZoomControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\BoolToStabilityBrushConverter.cs" />
+    <Compile Include="Converters\BoolToBrushConverter.cs" />
+    <Compile Include="Converters\CounterExamplesToTabItemsConverter.cs" />
+    <Compile Include="Converters\VariableProofTypeToStabilityBrushConverter.cs" />
+    <Compile Include="Helpers\DataFieldExtensions.cs" />
+    <Compile Include="Helpers\NotOperatorValueConverter.cs" />
+    <Compile Include="Helpers\RandomHelper.cs" />
+    <Compile Include="Helpers\TargetNullValueConverter.cs" />
+    <Compile Include="Helpers\VectorHelper.cs" />
+    <Compile Include="Helpers\VisualTreeEnumeration.cs" />
+    <Compile Include="Helpers\VisualTreeVisualizer.cs" />
+    <Compile Include="Helpers\ZipHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleData\ProofData\ProofData.xaml.cs">
+      <DependentUpon>ProofData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SampleData\SampleGraphData\SampleGraphData.xaml.cs">
+      <DependentUpon>SampleGraphData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\AnalysisService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\LogService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Services\BusyIndicatorService.cs" />
+    <Compile Include="Services\SynthWindowService.cs" />
+    <Compile Include="Services\SCMWindowService.cs" />
+    <Compile Include="Services\TimeWindowService.cs" />
+    <Compile Include="Services\ContextBarService.cs" />
+    <Compile Include="Services\GraphWindowService.cs" />
+    <Compile Include="Services\SimulationWindowService.cs" />
+    <Compile Include="Services\ProofWindowService.cs" />
+    <Compile Include="Services\DragDropService.cs" />
+    <Compile Include="Services\ErrorWindowService.cs" />
+    <Compile Include="Services\InvalidModelWindowService.cs" />
+    <Compile Include="Services\LogWindowService.cs" />
+    <Compile Include="Services\MessageWindowService.cs" />
+    <Compile Include="Shell.xaml.cs">
+      <DependentUpon>Shell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="States\ApplicationContext.cs" />
+    <Compile Include="States\DefaultState.cs" />
+    <Compile Include="States\DrawingRelationshipState.cs" />
+    <Compile Include="States\MouseContext.cs" />
+    <Compile Include="States\PaintingVariableState.cs" />
+    <Compile Include="States\SelectedRelationshipState.cs" />
+    <Compile Include="States\UIState.cs" />
+    <Compile Include="Version.cs" />
+    <Compile Include="ViewModel\ApplicationLog.cs" />
+    <Compile Include="ViewModel\ApplicationSettings.cs" />
+    <Compile Include="ViewModel\ApplicationUser.cs" />
+    <Compile Include="ViewModel\ApplicationViewModel.cs" />
+    <Compile Include="ViewModel\SCM\SCMInputDTOFactory.cs" />
+    <Compile Include="ViewModel\SCM\SCMViewModel.cs" />
+    <Compile Include="ViewModel\SCM\SCMViewModelFactory.cs" />
+    <Compile Include="ViewModel\SCM\SCMViewModelFactory_ServerOutput.cs" />
+    <Compile Include="ViewModel\Cells\ContainerViewModel.cs" />
+    <Compile Include="ViewModel\Cells\ContainerViewModels.cs" />
+    <Compile Include="ViewModel\Cells\ContainerSizeTypes.cs" />
+    <Compile Include="ViewModel\Cells\EditContainerViewModel.cs" />
+    <Compile Include="ViewModel\Cells\EditingViewModelBase.cs" />
+    <Compile Include="ViewModel\Cells\EditVariableViewModel.cs" />
+    <Compile Include="ViewModel\Proof\AnalysisOutput.cs" />
+    <Compile Include="ViewModel\Proof\BifurcatingVariableInfo.cs" />
+    <Compile Include="ViewModel\Proof\BifurcationCounterExample.cs" />
+    <Compile Include="ViewModel\Proof\AnalysisOutputFactory.cs" />
+    <Compile Include="ViewModel\Proof\AnalysisInputDTOFactory.cs" />
+    <Compile Include="ViewModel\Proof\FurtherTestingFactory.cs" />
+    <Compile Include="ViewModel\Proof\CounterExampleInfo.cs" />
+    <Compile Include="ViewModel\Proof\CounterExampleTypes.cs" />
+    <Compile Include="ViewModel\Proof\OscillatingVariableInfo.cs" />
+    <Compile Include="ViewModel\Proof\OscillationCounterExample.cs" />
+    <Compile Include="ViewModel\Proof\ProgressionInfo.cs" />
+    <Compile Include="ViewModel\Proof\ProgressionStepInfo.cs" />
+    <Compile Include="ViewModel\Proof\FurtherTestingOutput.cs" />
+    <Compile Include="ViewModel\Proof\ProofOutputFactory.cs" />
+    <Compile Include="ViewModel\Proof\FormulaKeyword.cs" />
+    <Compile Include="ViewModel\Cells\RelationshipTypes.cs" />
+    <Compile Include="ViewModel\Cells\RelationshipViewModel.cs" />
+    <Compile Include="ViewModel\Cells\VariableTypes.cs" />
+    <Compile Include="ViewModel\Cells\VariableViewModel.cs" />
+    <Compile Include="ViewModel\Editing\CopyAttribute.cs" />
+    <Compile Include="ViewModel\Editing\CopyPasteManager.cs" />
+    <Compile Include="ViewModel\Editing\ICopyable.cs" />
+    <Compile Include="ViewModel\Factories\DefaultModelFactory.cs" />
+    <Compile Include="ViewModel\Factories\IdFactory.cs" />
+    <Compile Include="ViewModel\Factories\LibraryLocalFactory.cs" />
+    <Compile Include="ViewModel\Factories\ModelLocalFactory.cs" />
+    <Compile Include="ViewModel\Factories\ModelLocalSaver.cs" />
+    <Compile Include="ViewModel\Factories\NameFactory.cs" />
+    <Compile Include="ViewModel\Factories\NewModelFactory.cs" />
+    <Compile Include="ViewModel\Models\LibraryViewModel.cs" />
+    <Compile Include="ViewModel\Models\ModelViewModel.cs" />
+    <Compile Include="ViewModel\Proof\AnalysisOutputHandler.cs" />
+    <Compile Include="ViewModel\Proof\FormulaFactory.cs" />
+    <Compile Include="ViewModel\Proof\FormulaValidator.cs" />
+    <Compile Include="ViewModel\Proof\ProofViewModel.cs" />
+    <Compile Include="ViewModel\Proof\ProofViewModelFactory.cs" />
+    <Compile Include="ViewModel\Proof\ProofViewState.cs" />
+    <Compile Include="ViewModel\Proof\StatusTypes.cs" />
+    <Compile Include="ViewModel\Proof\VariableOutput.cs" />
+    <Compile Include="ViewModel\Proof\VariableProofType.cs" />
+    <Compile Include="ViewModel\Proof\VariableProofViewModel.cs" />
+    <Compile Include="ViewModel\Simulation\SimulationInputFactory.cs" />
+    <Compile Include="ViewModel\Simulation\GraphColours.cs" />
+    <Compile Include="ViewModel\Simulation\GraphFactory.cs" />
+    <Compile Include="ViewModel\Simulation\GraphViewModel.cs" />
+    <Compile Include="ViewModel\Simulation\SimStepInfo.cs" />
+    <Compile Include="ViewModel\Simulation\SimulationViewModel.cs" />
+    <Compile Include="ViewModel\Simulation\SimulationViewModelFactory.cs" />
+    <Compile Include="ViewModel\Simulation\VariableSimViewModel.cs" />
+    <Compile Include="ViewModel\Synth\SynthInputDTOFactory.cs" />
+    <Compile Include="ViewModel\Synth\SynthOutput.cs" />
+    <Compile Include="ViewModel\Synth\SynthOutputFactory.cs" />
+    <Compile Include="ViewModel\Synth\SynthViewModel.cs" />
+    <Compile Include="ViewModel\Synth\SynthViewModelFactory.cs" />
+    <Compile Include="ViewModel\TimebarViewModel.cs" />
+    <Compile Include="ViewModel\Time\TimeOutput.cs" />
+    <Compile Include="ViewModel\Time\TimeOutputFactory.cs" />
+    <Compile Include="ViewModel\Time\TimeInputDTOFactory.cs" />
+    <Compile Include="ViewModel\Time\TimeViewModelFactory.cs" />
+    <Compile Include="ViewModel\Time\TimeViewModel.cs" />
+    <Compile Include="ViewModel\ToolbarViewModel.cs" />
+    <Compile Include="ViewModel\XML\InvalidModelXmlException.cs" />
+    <Compile Include="ViewModel\XML\ModelXmlFactory.cs" />
+    <Compile Include="ViewModel\XML\ModelXmlSaver.cs" />
+    <Compile Include="ViewModel\XML\v1\V1Factory.cs" />
+    <Compile Include="ViewModel\XML\v2\V2Factory.cs" />
+    <Compile Include="ViewModel\XML\v3\V3Factory.cs" />
+    <Compile Include="ViewModel\ZoomViewModel.cs" />
+    <Compile Include="Views\ContainerView.cs" />
+    <Compile Include="Views\GraphView.xaml.cs">
+      <DependentUpon>GraphView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SCMView.xaml.cs">
+      <DependentUpon>SCMView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SynthView.xaml.cs">
+      <DependentUpon>SynthView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TimeView.xaml.cs">
+      <DependentUpon>TimeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SimulationView.xaml.cs">
+      <DependentUpon>SimulationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\IVariableHost.cs" />
+    <Compile Include="Views\MembranceReceptorView.cs" />
+    <Compile Include="Views\MembraneReceptors\MembraneReceptorFactory.cs" />
+    <Compile Include="Views\MembraneReceptors\MembraneReceptorSitesItemsControl.cs" />
+    <Compile Include="Views\ProofView.xaml.cs">
+      <DependentUpon>ProofView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Relationships\CancelRelationshipMessage.cs" />
+    <Compile Include="Views\Relationships\RelationshipService.cs" />
+    <Compile Include="Views\Relationships\IRelationshipTarget.cs" />
+    <Compile Include="Views\Relationships\RelationshipClient.cs" />
+    <Compile Include="Views\Relationships\RelationshipEventArgs.cs" />
+    <Compile Include="Views\Relationships\StartRelationshipMessage.cs" />
+    <Compile Include="Views\RelationshipView.cs" />
+    <Compile Include="Views\VariableView.cs" />
+    <Compile Include="Views\ViewSamples.xaml.cs">
+      <DependentUpon>ViewSamples.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="Assets\Brushes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Assets\Buttons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Assets\CustomStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Assets\CustomStylesSamples.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Assets\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Assets\TextStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChildWindows\AnalysisErrorWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChildWindows\ErrorWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChildWindows\ImportErrorWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChildWindows\InvalidModelWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChildWindows\LogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ChildWindows\MessageWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\BusyIndicator.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\BusyWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ChildWindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ContainerGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ContainerPropertyBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ContainerSite.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ContextBarStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\GridSizeBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LibraryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MembraneReceptorSite.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TimebarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TimebarItemStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ToolbarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ToolbarItemStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\VariablePropertyBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ZoomControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SampleData\ProofData\ProofData.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <DesignTimeOnly Include="SampleData\SampleGraphData\SampleGraphData.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </DesignTimeOnly>
+    <Page Include="Shell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ContainerViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\GraphView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SCMView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SynthView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TimeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SimulationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\GridStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MembraneReceptorViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProofView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VariableViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ViewSamples.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <DesignTimeOnly Include="SampleData\ProofData\ProofData.xsd" />
+    <DesignTimeOnly Include="SampleData\SampleGraphData\SampleGraphData.xsd" />
+    <None Include="Service References\AnalysisService\AnalysisService.wsdl" />
+    <None Include="Service References\AnalysisService\AnalysisService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\AnalysisService\AnalysisService1.wsdl" />
+    <None Include="Service References\AnalysisService\AnalysisService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\AnalysisService\AnalysisService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\AnalysisService\AnalysisService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\AnalysisService\BioCheck.AnalysisService.AnalysisOutputDTO.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AnalysisService\BioCheck.AnalysisService.FurtherTestingOutputDTO.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AnalysisService\BioCheck.AnalysisService.SimulationOutputDTO.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AnalysisService\BioCheck.AnalysisService.ValidationOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\LogService\BioCheck.LogService.UsuageDataModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\LogService\LogService.disco" />
+    <None Include="Service References\LogService\configuration91.svcinfo" />
+    <None Include="Service References\LogService\configuration.svcinfo" />
+    <None Include="Service References\LogService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\AnalysisService\AnalysisService.disco" />
+    <None Include="Service References\AnalysisService\configuration91.svcinfo" />
+    <None Include="Service References\AnalysisService\configuration.svcinfo" />
+    <None Include="Service References\AnalysisService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="ViewModel\XML\v3\Modelv2.xml" />
+    <None Include="Service References\LogService\LogService.wsdl" />
+    <None Include="Service References\LogService\LogService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\LogService\LogService1.wsdl" />
+    <None Include="Service References\LogService\LogService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\LogService\LogService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\LogService\LogService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ViewModel\XML\v3\VersionNotes.txt" />
+    <None Include="packages.config" />
+    <None Include="Properties\AppManifest.xml" />
+    <Content Include="ServiceReferences.ClientConfig" />
+    <None Include="ViewModel\ViewModelDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\Copy.png" />
+    <Resource Include="Assets\Images\Cut.png" />
+    <Resource Include="Assets\Images\Delete.png" />
+    <Resource Include="Assets\Images\Paste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ViewModel\XML\v1\Modelv1.xml" />
+    <Content Include="ViewModel\XML\v2\Modelv2.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Resources\ApplicationStrings.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Resources\ErrorResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\AnalysisService\" />
+    <WCFMetadataStorage Include="Service References\LogService\" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

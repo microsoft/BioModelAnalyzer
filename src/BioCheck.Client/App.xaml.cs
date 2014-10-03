@@ -103,6 +103,7 @@ namespace BioCheck
             // Time edit
             container.RegisterInstance(typeof(ITimeWindowService), new TimeWindowService(mainPage), new ContainerControlledLifetimeManager());
             container.RegisterInstance(typeof(ISynthWindowService), new SynthWindowService(mainPage), new ContainerControlledLifetimeManager());
+            container.RegisterInstance(typeof(ISCMWindowService), new SCMWindowService(mainPage), new ContainerControlledLifetimeManager());
 
             var busyIndicator = new BioCheck.Controls.BusyIndicator();
             busyIndicator.Content = mainPage;

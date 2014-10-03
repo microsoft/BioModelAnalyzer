@@ -115,11 +115,15 @@ let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<
                 else if (c < node_min) then float(node_min)
                 else failwith("bug in scaling constant")
             else
-                let scale = (node_max - node_min) / (v_max - v_min)
-                let displacement = node_min - v_min
+                //BH: This is where the range conversion happens
+                //From Nir- this is the new eqn for range conversion
+                //(x-x_min)*scale + node_min
+                //If the input range is bigger than the node range then the value is always going to be 0
+                let scale = float(node_max - node_min) / float(v_max - v_min) //(node_max - node_min) / (v_max - v_min)
+                //let displacement = node_min - v_min
                 match Map.tryFind v env with
                 | Some x ->
-                    float( (x + displacement) * scale ) //float(x)
+                    float(x - v_min)*scale + float(node_min) //float( (x + displacement) * scale ) //float(x)
                 | None ->
                     float(node_min) // 0.0
 

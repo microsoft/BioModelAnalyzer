@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Relationships>
+    <RelationshipInput>
+      <FromVariableId>1</FromVariableId>
+      <Id>1</Id>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </RelationshipInput>
+    <RelationshipInput>
+      <FromVariableId>2</FromVariableId>
+      <Id>2</Id>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </RelationshipInput>
+  </Relationships>
+  <Variables>
+    <VariableInput>
+      <Formula>var(2)</Formula>
+      <Id>1</Id>
+      <Name>a</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+    </VariableInput>
+    <VariableInput>
+      <Formula>var(1)</Formula>
+      <Id>2</Id>
+      <Name>b</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+    </VariableInput>
+  </Variables>
+</AnalysisInput>

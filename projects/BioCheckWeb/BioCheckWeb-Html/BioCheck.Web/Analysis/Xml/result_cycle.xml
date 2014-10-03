@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisOutput>
+  <Status>Cycle</Status>
+  <Variables>
+    <Variable Id="1">
+      <Value>3</Value>
+    </Variable>
+    <Variable Id="2">
+      <Value>2</Value>
+    </Variable>
+    <Variable Id="3">
+      <Value>1</Value>
+    </Variable>
+  </Variables>
+</AnalysisOutput>
+
