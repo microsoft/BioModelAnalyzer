@@ -16,7 +16,7 @@ var BMA;
                 this.yOrigin = 0;
                 this.xStep = 250;
                 this.yStep = 280;
-                this.variableIndex = 0;
+                this.variableIndex = 1;
                 this.stagingLine = undefined;
                 this.stagingGroup = undefined;
                 this.stagingVariable = undefined;
@@ -309,7 +309,7 @@ var BMA;
 
                 for (var i = 0; i < containers.length; i++) {
                     var container = containers[i];
-                    if (container.Id !== i) {
+                    if (container.Id !== id) {
                         newCnt.push(container);
                     } else {
                         wasRemoved = true;
@@ -325,7 +325,7 @@ var BMA;
                     var removed = [];
 
                     for (var i = 0; i < variables.length; i++) {
-                        if (variables[i].ContainerId !== id) {
+                        if (variables[i].Type === "Constant" || variables[i].ContainerId !== id) {
                             newV.push(variables[i]);
                             newVL.push(variableLayouts[i]);
                         } else {

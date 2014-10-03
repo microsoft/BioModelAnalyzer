@@ -32,7 +32,7 @@ module BMA {
             private xStep = 250;
             private yStep = 280;
 
-            private variableIndex = 0;
+            private variableIndex = 1;
 
             private stagingLine = undefined;
             private stagingGroup = undefined;
@@ -363,7 +363,7 @@ module BMA {
 
                 for (var i = 0; i < containers.length; i++) {
                     var container = containers[i];
-                    if (container.Id !== i) {
+                    if (container.Id !== id) {
                         newCnt.push(container);
                     } else {
                         wasRemoved = true;
@@ -379,7 +379,7 @@ module BMA {
                     var removed = [];
 
                     for (var i = 0; i < variables.length; i++) {
-                        if (variables[i].ContainerId !== id) {
+                        if (variables[i].Type === "Constant" || variables[i].ContainerId !== id) {
                             newV.push(variables[i]);
                             newVL.push(variableLayouts[i]);
                         } else {

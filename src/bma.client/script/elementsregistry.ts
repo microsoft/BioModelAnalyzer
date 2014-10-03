@@ -423,11 +423,13 @@ module BMA {
 
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        var d = Math.abs((elementY.y - elementX.y) * pointerX -
-                            (elementY.x - elementX.x) * pointerY +
-                            elementY.x * elementX.y - elementX.x * elementY.y);
-                        d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
-                        return d < elementX.pixelWidth;
+                        if (elementX.x !== elementY.x || elementX.y !== elementY.y) {
+                            var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
+                            d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
+                            return d < elementX.pixelWidth;
+                        } else {
+                            return false;
+                        }
                     },
                     "Activating Relationship",
                     "images/activate.png"));
@@ -481,9 +483,13 @@ module BMA {
 
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
-                        d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
-                        return d < elementX.pixelWidth;
+                        if (elementX.x !== elementY.x || elementX.y !== elementY.y) {
+                            var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
+                            d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
+                            return d < elementX.pixelWidth;
+                        } else {
+                            return false;
+                        }
                     },
                     "Inhibiting Relationship",
                     "images/inhibit.png"));
