@@ -183,6 +183,14 @@ module BMA {
                 this.viewer.furthertesting({data: undefined});
                 //this.results.resultswindowviewer("destroy");
             }
+
+            public StandbyMode() {
+                this.viewer.furthertesting({ buttonMode: "StandbyMode" });
+            }
+
+            public ActiveMode() {
+                this.viewer.furthertesting({ buttonMode: "ActiveMode" });
+            }
         }
 
 

@@ -6,7 +6,28 @@
             header: "Further Testing",
             toggler: undefined,
             tabid: "FurtherTesting",
-            data: undefined
+            data: undefined,
+            buttonMode: "ActiveMode"
+        },
+        ChangeMode: function () {
+            var that = this;
+            var toAddClass = "", toRemoveClass = "", text = "";
+            switch (this.options.buttonMode) {
+                case "ActiveMode":
+                    toAddClass = "bma-furthertesting-button";
+                    toRemoveClass = "bma-furthertesting-button-waiting";
+                    text = "Further Testing";
+                    this.toggler.bind("click", function () {
+                        window.Commands.Execute("FurtherTestingRequested", {});
+                    });
+                    break;
+                case "StandbyMode":
+                    toAddClass = "bma-furthertesting-button-waiting";
+                    toRemoveClass = "bma-furthertesting-button";
+                    this.toggler.unbind("click");
+                    break;
+            }
+            this.toggler.removeClass(toRemoveClass).addClass(toAddClass).text(text);
         },
         _create: function () {
             var that = this;
@@ -32,6 +53,7 @@
                 this.results.resultswindowviewer();
                 this.results.resultswindowviewer("destroy");
             }
+            this.ChangeMode();
         },
         GetToggler: function () {
             return this.toggler;
@@ -55,6 +77,10 @@
                 case "data":
                     this.options.data = value;
                     this.refresh();
+                    break;
+                case "buttonMode":
+                    this.options.buttonMode = value;
+                    this.ChangeMode();
                     break;
             }
 

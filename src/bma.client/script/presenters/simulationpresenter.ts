@@ -106,6 +106,7 @@
                         },
                         error: function (res) {
                             console.log(res.statusText);
+                            that.expandedViewer.ActiveMode();
                             return;
                             //$("#log").append("Simulate error: " + res.statusText + "<br/>");
                         }

@@ -17,15 +17,17 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
-                            if (res.Status !== 4)
-                                window.Commands.Execute("ProofFailed", { Model: that.appModel, Res: res });
+                            var colorData = undefined;
 
                             //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
 
                             //if (res.Ticks !== null)
                             var variablesData = that.CreateTableView(res.Ticks);
-                            var colorData = that.CreateColoredTable(res.Ticks);
+                            if (res.Status !== 4)
+                                window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
+                            else
+                                colorData = that.CreateColoredTable(res.Ticks);
 
                             //var result = appModel.ProofResult;
                             //var data = { numericData: numericData, colorData: undefined };
@@ -156,4 +158,4 @@
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=proofPresenter.js.map
+//# sourceMappingURL=proofpresenter.js.map
