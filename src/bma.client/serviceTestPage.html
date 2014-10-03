@@ -65,7 +65,7 @@
                   "Name": "a",
                   "RangeFrom": 0,
                   "RangeTo": 4,
-                  "Function": "avg(pos)-avg(neg)", //"4-var(c)",
+                  "Function": "4-var(c)",
               },
               {
                   "Id": 2,
@@ -147,7 +147,7 @@
                             Analysis: res,
                         },
                         success: function (res2) {
-                            $("#log").append("FurtherTesting success. " + res2.Status + "<br/>");
+                            $("#log").append("FurtherTesting success. Counter examples found: " + res2.CounterExamples.length + "<br/>");
                         },
                         error: function (res2) {
                             $("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");

@@ -61,23 +61,24 @@ namespace bma.client.Controllers
                 // Convert to the Output Data
                 if (cexBifurcatesXml != null)
                 {
-                    var counterExampleOutput = new CounterExampleOutput();
-                    counterExampleOutput.Status = cexBifurcatesXml.Descendants("Status").FirstOrDefault().Value;
-                    if (counterExampleOutput.Status != StatusType.Stabilizing.ToString() && counterExampleOutput.Status != StatusType.NotStabilizing.ToString())
+                    XmlSerializer bifsSerializer = new XmlSerializer(typeof(CounterExampleOutput));
+                    var counterExampleOutput = (CounterExampleOutput)bifsSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexCyclesXml.ToString()));
+
+                    if (counterExampleOutput.Status != CounterExampleType.Bifurcation)
                     {
                         var error = cexBifurcatesXml.Descendants("Error").FirstOrDefault();
                         counterExampleOutput.Error = error != null ? error.Attribute("Msg").Value : "There was an error in the analyzer";
                     }
-
                     //counterExampleOutput.ZippedXml = ZipHelper.Zip(cexBifurcatesXml.ToString());
                     counterExamples.Add(counterExampleOutput);
                 }
 
                 if (cexCyclesXml != null)
                 {
-                    var counterExampleOutput = new CounterExampleOutput();
-                    counterExampleOutput.Status = cexCyclesXml.Descendants("Status").FirstOrDefault().Value;
-                    if (counterExampleOutput.Status != StatusType.Stabilizing.ToString() && counterExampleOutput.Status != StatusType.NotStabilizing.ToString())
+                    XmlSerializer cyclesSerializer = new XmlSerializer(typeof(CounterExampleOutput));
+
+                                        var counterExampleOutput = (CounterExampleOutput)cyclesSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexCyclesXml.ToString()));
+                    if (counterExampleOutput.Status != CounterExampleType.Cycle)
                     {
                         var error = cexCyclesXml.Descendants("Error").FirstOrDefault();
                         counterExampleOutput.Error = error != null ? error.Attribute("Msg").Value : "There was an error in the analyzer";

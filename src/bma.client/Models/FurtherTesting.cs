@@ -1,4 +1,7 @@
 ﻿using bma.client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Xml.Serialization;
 namespace bmaclient
 {
     public class FurtherTestingInput 
@@ -10,9 +13,9 @@ namespace bmaclient
 
     public enum CounterExampleType
     {
-        Bifurcation, Oscillation
+        Bifurcation, Cycle
     }
-
+/*
     public class BifurcatingVariableOutput
     {
         public int Id { get; set; }
@@ -36,18 +39,35 @@ namespace bmaclient
 
         public string Oscillation { get; set; }
     }
+*/
 
-    public class CounterExampleOutput
+    [XmlRoot(ElementName="AnalysisOutput")]
+    public class CounterExampleOutput    
     {
-        public string Status { get; set; }
+        public class CounterExampleVariable
+        {
+            [XmlAttribute]
+            public string Id { get; set; }
 
-        public string CounterExampleType { get; set; }
+            [XmlAttribute]
+            public int Value { get; set; }
+        }
+
+        // [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
+        public CounterExampleType Status { get; set; }
+
+        public string Error { get; set; }
+
+        [XmlArrayItem("Variable")]
+        public CounterExampleVariable[] Variables { get; set; }
+
+    /*    public string CounterExampleType { get; set; }
 
         public BifurcatingVariableOutput[] BifurcatingVariables { get; set; }
 
         public OscillatingVariableOutput[] OscillatingVariables { get; set; }
 
-        public string Error { get; set; }
+        public string Error { get; set; }*/
     }
 
     public class FurtherTestingOutput

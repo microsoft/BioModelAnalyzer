@@ -1,4 +1,6 @@
-﻿using System.Xml.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Xml.Serialization;
 
 namespace bma.client { 
    
@@ -24,6 +26,7 @@ namespace bma.client {
             public Variable[] Variables { get; set; }
         }
 
+        // [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
         public StatusType Status { get; set; }
 
         [XmlElement("Tick", Type = typeof(Tick))]
