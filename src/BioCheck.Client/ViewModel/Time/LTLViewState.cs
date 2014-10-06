@@ -5,6 +5,7 @@ namespace BioCheck.ViewModel.Time
     {
         None = 0,
         NoSimulation = 1,
-        Simulation = 2
+        Simulation = 2,
+        Error = 3
     }
 }

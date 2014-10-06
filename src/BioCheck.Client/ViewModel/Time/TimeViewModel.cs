@@ -5,7 +5,7 @@ using System.Linq;
 using System.ServiceModel;
 using BioCheck.AnalysisService;
 using BioCheck.Services;
-using BioCheck.Views; // New.. Allows me to call TimeView.xaml.cs functions?
+using BioCheck.Views; 
 using BioCheck.ViewModel.Simulation; // For running the sim window.____
 using BioCheck.ViewModel.Cells;
 using BioCheck.ViewModel.Proof;
@@ -29,10 +29,10 @@ namespace BioCheck.ViewModel.Time
         private readonly DelegateCommand runSimulationCommand; // For simulation_____
         private readonly DelegateCommand runProve;
 
-        private readonly TimebarViewModel timebarViewModel;         // For draggable buttons. Make this store What's dragged?   
+        private readonly TimebarViewModel timebarViewModel;
 
         private AnalysisServiceClient analyzerClient;
-        private LTLViewState state = LTLViewState.None; //_____
+        private LTLViewState state = LTLViewState.None;
 
         private DateTime timer;
         private string modelName;
@@ -40,8 +40,6 @@ namespace BioCheck.ViewModel.Time
         private int ltlPath = 100;
         private string ltlInput = "True";   
         private string ltlOutput;
-       
-
 
         public TimeViewModel()
         {
@@ -50,7 +48,8 @@ namespace BioCheck.ViewModel.Time
             this.cancelTimeCommand = new DelegateCommand(OnCancelTimeExecuted);
             this.consoleCommand = new DelegateCommand(OnConsoleExecuted);
             //this.runSimulation = new DelegateCommand(OnRunSimulationExecuted);
-            this.runSimulationCommand = new DelegateCommand(OnRunSimulationExecuted); // Simulation_____
+            this.runSimulationCommand = new DelegateCommand(OnRunSimulationExecuted); // Simulation
+            this.runSimulation = new DelegateCommand(OnNotProof);
             this.runProve = new DelegateCommand(OnRunProveExecuted);
             this.timebarViewModel = new TimebarViewModel();
         }             
@@ -158,8 +157,6 @@ namespace BioCheck.ViewModel.Time
             }
         }
 
-        // New above_______
-
         public DelegateCommand RunCommand
         {
             get { return this.runCommand; }
@@ -226,35 +223,18 @@ namespace BioCheck.ViewModel.Time
             if (!ApplicationViewModel.Instance.HasActiveModel)
             {
                 // New
+                this.State = LTLViewState.None;
                 ApplicationViewModel.Instance.Container
                  .Resolve<IMessageWindowService>()
                  .Show("There is no active model to test your formulas on. Please load a model to continue.");
                 return;
             }
 
-            // Terminal text has precedence. If anything is written there, it is parsed, not Formula.
-            if (this.LTLInput == null || this.LTLInput == "")
-            { 
-                // Parse the Formula
-                // NB Need to somehow get back to the View's data.
-                //if (FileStyleUriParser contains nil)
-                //{
-                //    this.LTLOutput = "\nYou wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
-                //}
-                //else
-                //{
-                //    // Parse the Formula grid.
-                    
-                //}
-                
-            }            
-
-            // Update the Terminal input
-
             // Counter lack of formula input
             if (this.LTLInput == null || this.LTLInput == "")
             {
-                this.LTLOutput = "\nYou wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
+                this.State = LTLViewState.Error;
+                this.LTLOutput = "You wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
             }
             else
             {
@@ -263,7 +243,8 @@ namespace BioCheck.ViewModel.Time
 
                 if (noWhite == "")
                 {
-                    this.LTLOutput = "\nYou wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
+                    this.State = LTLViewState.Error;
+                    this.LTLOutput = "You wrote no formula.\nPlease write a formula to test your loaded model against, and try again.";
                     this.LTLInput = "";                 // Remove any whitespace entered by the user in the formula input.
                 }
                 else 
@@ -312,7 +293,8 @@ namespace BioCheck.ViewModel.Time
                     }
                     else 
                     {
-                        this.LTLOutput = "\nYour input formula contains an unbalanced number of brackets.\nPlease correct this and try again.";
+                        this.State = LTLViewState.Error;
+                        this.LTLOutput = "Your input formula contains an unbalanced number of brackets.\nPlease correct this and try again.";
                     }
                 }
             }
@@ -320,28 +302,31 @@ namespace BioCheck.ViewModel.Time
 
         private TimeOutput timeOutput;
         private void OnTimeCompleted(object sender, AnalyzeCompletedEventArgs e)           // This is an object in Reference.cs!
-        {            
+        {
             if (e.Error != null)
             {
+                this.State = LTLViewState.Error;
+                this.LTLOutput = "There was an error running your LTL query! Revisit your formula and try again.";
                 OnTimeError(e.Error);
             }
             else
             {
                 try
-                {                     
+                {
                     // Unzip: Get the resulting dictionary of variables and their values
                     this.timeOutput = TimeOutputFactory.Create(e.Result);
-                    this.timeVM = TimeViewModelFactory.Create(timeInputDto, timeOutput); // ____ <-- new
-                    this.ModelName = timeVM.input.ModelName;
-                    // Nothing TimeView.xamle.cs can be accessed. It's private, and XAML vars are only accessible through getsetters here.
-                    //TimeView.TimeView_initializeTable();
-                    //TimeView_testAccess();
-
-                    this.TimeInfos = timeVM.progressionInfos;
-
-                    string finalOutput;
-                    if (timeOutput.Status != "Error")
+                    //this.timeVM = TimeViewModelFactory.Create(timeInputDto, timeOutput);
+                    var modelVM = ApplicationViewModel.Instance.ActiveModel;
+                    this.ModelName = modelVM.Name;
+                    if (timeOutput.Status == "Error")
                     {
+                        this.State = LTLViewState.Error;
+                        this.LTLOutput = "There is an error in your LTL formula! Please check it.\n\nAre all keyframes' rules complete?\nIndividual rules should be in the form:\n\"Variable - Operator - Value\"\n\"Value - Operator - Variable\"\nor\n\"Value - Operator - Variable - Operator - Value\"";
+                    }
+                    else
+                    {                        
+                        string finalOutput;
+
                         bool correct = bool.Parse(timeOutput.Status); // Using the fact that it's True or False
                         if (correct)
                         {
@@ -351,35 +336,24 @@ namespace BioCheck.ViewModel.Time
 
                             if (this.ltlProof)
                             {
-                                //finalOutput = "\nTRUE: All possible simulations of maximum length ";
-                                //finalOutput += this.ltlPath;
-                                //finalOutput += " satisifies the above formula for the current model, ";
-                                //finalOutput += this.ModelName;
-                                //finalOutput += ".";
                                 finalOutput += " steps, that does not satisfy your formula for the current model, ";
                                 finalOutput += this.ModelName;
                                 finalOutput += ".";
                                 finalOutput += "\n\nTo view an example of a simulation where the formula is not satisfied, push the button to run a simulation.\n";
                             }
-                            else 
+                            else
                             {
                                 finalOutput += " steps, that satisifies your formula for the current model, ";
                                 finalOutput += this.ModelName;
                                 finalOutput += ".\n\nTo view an example of a simulation where the formula is satisfied, push the button to run a simulation.\n";
                             }
                         }
-                        else 
+                        else
                         {
                             this.State = LTLViewState.NoSimulation;
                             if (this.ltlProof)
                             {
-                                //finalOutput = "\nFALSE: No possible simulation exists of maximum length ";
-                                //finalOutput += this.ltlPath;
-                                //finalOutput += " that satisifies the above formula for the current model, ";
-                                //finalOutput += this.ModelName;
-                                //finalOutput += ".";
-
-                                finalOutput = "\nNo simulations found\n\nAll possible simulations of maximum length ";
+                                finalOutput = "All possible simulations of maximum length ";
                                 finalOutput += this.ltlPath;
                                 finalOutput += " satisifies the above formula for the current model, ";
                                 finalOutput += this.ModelName;
@@ -387,20 +361,15 @@ namespace BioCheck.ViewModel.Time
                             }
                             else
                             {
-                                finalOutput = "\nNo simulations found\n\nNo possible simulation of maximum length ";
+                                finalOutput = "No possible simulation of maximum length ";
                                 finalOutput += this.ltlPath;
-                                finalOutput += " steps exist that satisifies the above formula for the current model, ";
+                                finalOutput += " steps exists that satisifies the above formula for the current model, ";
                                 finalOutput += this.ModelName;
                                 finalOutput += ".";
                             }
                         }
-                    } 
-                    else 
-                    {
-                        finalOutput = "\nSomething went wrong. Are you sure that the formula above is correct?\nPlease note that variable names are case-sensitive.";
+                        this.LTLOutput = finalOutput;
                     }
-                    
-                    this.LTLOutput = finalOutput;
 
                     // If we've reached the total number of steps, then close the busy dialog
                     ApplicationViewModel.Instance.Container
@@ -570,10 +539,10 @@ namespace BioCheck.ViewModel.Time
 
         }
 
-        //private void OnRunSimulationExecuted()
-        //{
-        //    this.ltlProof = false;
-        //}
+        private void OnNotProof()
+        {
+            this.ltlProof = false;
+        }
 
         private void OnRunProveExecuted()
         {

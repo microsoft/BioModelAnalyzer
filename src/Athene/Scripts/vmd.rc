@@ -1,0 +1,51 @@
+# add personalized keyboard shortcuts 
+user add key E echo on
+user add key e echo off
+user add key g display reset
+user add key A stage location bottom
+user add key m mol list
+
+# position the stage and axes
+axes location lowerleft
+stage location off
+
+# position and turn on menus
+menu main move 5 196
+menu display move 386 90
+menu animate move 124 7
+menu edit move 125 196
+menu graphics move 5 455
+menu files move 5 496
+menu mol move 5 745
+
+menu main on
+
+stty erase "^?" 
+
+display projection orthographic
+
+axes location off
+
+color Display Background 8
+
+#set auto_path [concat $env(HOME)/Scripts/VMD/tcl $auto_path]
+
+proc add_glass {} {
+
+	material add Glass
+	material change ambient   Glass 0.00
+	material change specular  Glass 0.50
+	material change diffuse   Glass 0.65
+	material change shininess Glass 0.53
+	material change opacity   Glass 0.15
+	}
+
+proc set_glass {} {
+
+	material change ambient   Glass 0.00
+	material change specular  Glass 0.50
+	material change diffuse   Glass 0.65
+	material change shininess Glass 0.53
+	material change opacity   Glass 0.15
+	}
+display rendermode GLSL

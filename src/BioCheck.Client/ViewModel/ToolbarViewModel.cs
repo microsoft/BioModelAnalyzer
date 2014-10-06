@@ -13,7 +13,7 @@ using BioCheck.Helpers;
 using BioCheck.Services;
 using BioCheck.ViewModel.Simulation;
 using BioCheck.ViewModel.Time;                  //Time edit
-using BioCheck.ViewModel.Synth;                  
+using BioCheck.ViewModel.Synth;
 using BioCheck.ViewModel.SCM;                 
 using BioCheck.ViewModel.XML;
 using BioCheck.ViewModel.Models;
@@ -737,7 +737,7 @@ namespace BioCheck.ViewModel
                  .Resolve<IMessageWindowService>()
                  .Show("There is no active model to test stability on. Please load a model to continue.");
                 return;
-        }
+            }
 
             // Invoke the async Analyze method on the service
             OnSCMCompleted();       // Maybe.
@@ -819,7 +819,7 @@ namespace BioCheck.ViewModel
                     if (this.proofVM != null)
                         this.proofVM.ResetOutput();
 
-                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result);
+                    this.analysisOutput = AnalysisOutputFactory.Create(e.Result); //_________ <--
                     this.analysisOutput.Time = time;
                 }
                 catch (Exception ex)
@@ -949,16 +949,9 @@ namespace BioCheck.ViewModel
                 return;
             }
 
-            //var timeTaken = Math.Round((DateTime.Now - timer).TotalSeconds, 1); // Use this for display?
-
-            // Show a Cancellable Busy Indicator window
-            //ApplicationViewModel.Instance.Container
-            //        .Resolve<IBusyIndicatorService>()
-            //        .Show("Initialising LTL...");
-
             var modelVM = ApplicationViewModel.Instance.ActiveModel;        // Gets active model's values.
 
-            var timeVM = TimeViewModelFactory.CreatePopUp(modelVM);              // Sets only the name.
+            var timeVM = TimeViewModelFactory.CreatePopUp(modelVM);
 
             ApplicationViewModel.Instance.Container
                     .Resolve<ITimeWindowService>().Show(timeVM);
@@ -979,7 +972,7 @@ namespace BioCheck.ViewModel
 
             if (synthVM == null)
             {
-                synthVM = SynthViewModelFactory.Create(modelVM);              // Sets only the name.
+                synthVM = SynthViewModelFactory.Create(modelVM);
             }
 
             ApplicationViewModel.Instance.Container

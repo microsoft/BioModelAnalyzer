@@ -54,7 +54,7 @@ namespace BioCheck.Services
                 view.Margin = new Thickness(10, -40, 10, 0);
 
                 var beh = new MouseDragElementBehavior();
-                beh.ConstrainToParentBounds = true;                 // Check: may prevent variable dragnDrop            
+                beh.ConstrainToParentBounds = true;                
                 beh.Attach(view);
             }
 

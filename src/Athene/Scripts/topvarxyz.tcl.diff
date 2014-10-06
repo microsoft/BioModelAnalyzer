@@ -1,0 +1,32 @@
+61c61
+<             lassign $line a x y z r t p c f
+---
+>             lassign $line a x y z
+72c72
+<             lappend frame [list $idx $x $y $z $p $t $c $f $r]
+---
+>             lappend frame [list $idx $x $y $z]
+135c135
+<                     lappend data {0.0 0.0 0.0 0.0 0.0 0.0 0.0 -1.0}
+---
+>                     lappend data {0.0 0.0 0.0 -1.0}
+142c142
+<             #lappend line 1.0
+---
+>             lappend line 1.0
+146c146
+<             lappend data {0.0 0.0 0.0 0.0 0.0 0.0 0.0 -1.0}
+---
+>             lappend data {0.0 0.0 0.0 -1.0}
+152c152
+<                 lappend data {0.0 0.0 0.0 0.0 0.0 0.0 0.0 -1.0}
+---
+>                 lappend data {0.0 0.0 0.0 -1.0}
+156c156
+<         $sel set {x y z user2 user3 vx vy user} $data
+---
+>         $sel set {x y z user} $data
+166c166
+<         adddefaultrep $mol "user >= 0"
+---
+>         adddefaultrep $mol "user > 0"

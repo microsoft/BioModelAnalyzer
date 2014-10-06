@@ -1,7 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;       // lists.
+using System.Collections.Generic;       // Necessary for lists.
 using System.Linq;
 using System.Net;
+using System.Diagnostics;
+using System.ComponentModel;
+using System.Collections.ObjectModel;   // For ObservableCollection
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -9,26 +13,32 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using BioCheck.ViewModel.Time;
-using MvvmFx.Common.ViewModels.States;
-//using BioCheck.ViewModel.Proof;
-
-using System.Diagnostics;
 using System.Windows.Controls.Primitives;
-using System.ComponentModel;
-using BioCheck.Controls; // Or VisualStates becomes a keyword
-using BioCheck.Services;
-using BioCheck.ViewModel;
+
+using MvvmFx.Common.ViewModels.States;
 using MvvmFx.Common.Helpers;
 using Microsoft.Practices.Unity;
 
-using System.Collections.ObjectModel;           // For ObservableCollection
+using BioCheck.ViewModel.Time;
+using BioCheck.Controls;
+using BioCheck.Services;
+using BioCheck.ViewModel;
 
-// Time edit
+
 namespace BioCheck.Views
-{   
-    // Public TimeView classes used in TimeView
+{
+    //[TemplateVisualState(Name = VisStates.SimulationDoesNotExist, GroupName = VisStates.LTLStateGroup)]
+    //[TemplateVisualState(Name = VisStates.SimulationExists, GroupName = VisStates.LTLStateGroup)]
+    //[TemplateVisualState(Name = VisStates.NoTestYet, GroupName = VisStates.LTLStateGroup)]
+
+    // -----------------------------------------------------------------------------------------------
+    //
+    //      Public TimeView classes used in TimeView functions
+    //      Initiated to store keyframe Rules, Formula content and Cell and Variable drop-down list content
+    //
+    // ------------------------------------------------------------------------------------------------
     #region Public TimeView classes used in TimeView
+
     public class KeyFrames
     {
         // Keyframe features
@@ -48,13 +58,13 @@ namespace BioCheck.Views
         public string KeyframeName { get; set; }      // null or the keyframe's name
         public string Rule { get; set; }              // The logical expression, or the keyframe's rule
         public Color KeyframeColor { get; set; }      // The color of the keyframe rectangle, or unset (Color can't be null)
-        public string Content { get; set; }           // "logics", "keyframe" or null
+        public string Content { get; set; }           // "logic", "keyframe" or null
     }
 
     public class NonNull_Formula
     {
         // Post-processed Formula content
-        public string Content { get; set; }           // "logics", "keyframe" or null
+        public string Content { get; set; }           // "logics", (actually "logic" ?) "keyframe" or null
         public string Rule { get; set; }              // The logical expression, or the keyframe's rule
                                                       // "Until", "If", "Eventually", "Always", "cb", "ob" et.c.
     }
@@ -72,11 +82,18 @@ namespace BioCheck.Views
 
     public partial class TimeView : UserControl
     {
-        // New: visuals by Test-outcome.
+
+        // -----------------------------------------------------------------------------------------------
+        //
+        //      Visual States accessible via TEST output
+        //
+        // ------------------------------------------------------------------------------------------------
+        #region Visual states
         private struct VisStates
         {
             public const string LTLStateGroup = "LTLStateGroup";
             public const string NoTestYet = "NoTestYet";
+            public const string ErrorState = "ErrorState";
             public const string SimulationDoesNotExist = "SimulationDoesNotExist";
             public const string SimulationExists = "SimulationExists";
         }
@@ -117,6 +134,9 @@ namespace BioCheck.Views
                 case LTLViewState.Simulation:
                     VisualStateManager.GoToState(this, VisStates.SimulationExists, true);
                     break;
+                case LTLViewState.Error:
+                    VisualStateManager.GoToState(this, VisStates.ErrorState, true);
+                    break;
                 case LTLViewState.None:
                     VisualStateManager.GoToState(this, VisStates.NoTestYet, true);
                     break;
@@ -133,33 +153,42 @@ namespace BioCheck.Views
                 case LTLViewState.Simulation:
                     VisualStateManager.GoToState(this, VisStates.SimulationExists, true);
                     break;
+                case LTLViewState.Error:
+                    VisualStateManager.GoToState(this, VisStates.ErrorState, true);
+                    break;
                 case LTLViewState.None:
                     VisualStateManager.GoToState(this, VisStates.NoTestYet, true);
                     break;
             }
         }
+        #endregion
 
-        // End of new Visuals by Test-outrcome.
-
-
+        // -----------------------------------------------------------------------------------------------
+        //
+        //      LTL Fundamentals:
+        //      Create TimeView class objects to hold data, 
+        //      LTL initialization 
+        //      GUI opacity control
+        //      Prevent window from moving around when object inside it is click-dragged
+        //
+        // ------------------------------------------------------------------------------------------------
+        #region Initialization at startup
         private TimeViewModel timeVM;
         public ObservableCollection<KeyFrames> allKeyframes;            // Now it's accessible throughout.
         public ObservableCollection<FormulaType> allFormulaElements;
         public List<NonNull_Formula> noNullElements = new List<NonNull_Formula>();     // Create list for parsed Formula consiting of non-null Formula elements only.
         public ObservableCollection<BMAvars> allVariables;
         public ObservableCollection<BMAcells> allCells;
-        private bool tableLoaded = false; // New, to load table if there is none._______
+        private bool tableLoaded = false;
+        public string textForTempDebug = ""; // Just to populate the Debug output more easily.
 
-        public string textForTempDebug = "";
-
-        // Initialization at startup
-        #region Initialization at startup
+        // Initialization at startup        
         public TimeView()
         {
             InitializeComponent();
 
             this.DataContextChanged += TimeView_DataContextChanged;
-            //this.ProgressionGrid.LoadingRow += ProgressionGrid_RowLoaded; // _____New. Failed. UNCOMMENT TO DEBUG SIM TABLE IN LTL
+            //this.ProgressionGrid.LoadingRow += ProgressionGrid_RowLoaded;
 
             this.AllowDrop = true;          // Still have not tested this.
             Debug.WriteLine("Opening TimeView window.");
@@ -186,8 +215,55 @@ namespace BioCheck.Views
                 addVars2ComboBox();
             }
         }
+
+        void TimeView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (timeVM != null)
+            {
+                timeVM.RemoveHandler("State", OnStateChanged);
+            }
+            timeVM = (TimeViewModel)this.DataContext;           // Gives me access to the data in the VM.
+            timeVM.AddHandler("State", OnStateChanged);
+            this.State = timeVM.State;
+            ManualOnStateChanged(this.State);
+            Debug.WriteLine(" ---->>>>>  TimeView_DataContextChanged accessed!");
+        }
+
+        // Change opacity when entering/leaving the window (so underlying Model is easier to view)
+        protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            this.Opacity = 0.7;
+        }
+        protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
+            this.Opacity = 1;
+        }
+        void TimeView_MouseMove(object sender, MouseEventArgs e)
+        {
+            var mouseLocus = e.GetPosition(this);                   // this refers to the element wrt which the coordinates are reported. Here = the LTL window.     
+            this.timeVM.LTLInput = mouseLocus.ToString();
+        }
+        private void Make_popup_notMove(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;           // Stops the window dragging! Rest of functionality intact?
+        }
+
+        // For LTL debug purposes.
+        public void TimeView_testAccess()
+        {
+            Debug.WriteLine("Accessed the TimeView_testAccess!");
+        }
+
         #endregion
 
+        // -----------------------------------------------------------------------------------------------
+        //
+        //      Reset button
+        //
+        // ------------------------------------------------------------------------------------------------
+        #region Reset button
         private void Reset_TimeView(object sender, RoutedEventArgs e)
         {
             // Reset Formula            
@@ -215,17 +291,21 @@ namespace BioCheck.Views
                 }
 
                 // Finally reset the Grid contents of KeyFrame 0
-                //_____ should be the full 20 grid eventually
                 Debug.WriteLine("Deleting individual Grid content; visuals and storage.");
-                for (int elementIndex = 0; elementIndex < 5; elementIndex++)
+                for (int elementIndex = 0; elementIndex < 20; elementIndex++)
                 {
                     deleteGrid_visuals_andStorage(elementIndex);
                 }
 
-            allKeyframes.Add(new KeyFrames { Name = "Initial", Content = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, NameContent = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, Rule = null, Color = Colors.Green });
-            //allKeyframes.Add(new KeyFrames { Name = "Cell2", Content = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, NameContent = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, Color = Colors.Blue });
-            //allKeyframes.Add(new KeyFrames { Name = "CellDeath", Content = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, NameContent = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, Color = Colors.Red });
-            
+                // Changing the KF name and color back to original is beyond me. 
+                // I can change storage, but since I don't have x:Names for the Textbox of each new KF
+                // (as they're generated on the fly), I can't access it. Failed attempts:
+                //textChange_by_Keyframe = true;
+                // Then change the stored name to the newly given name
+                //((KeyFrames)this.KeyFrames.SelectedItem).Name = "Initial";
+                //((KeyFrames)this.KeyFrames.SelectedItem).Rule = null;
+                //((KeyFrames)this.KeyFrames.SelectedItem).Color = Colors.Green;
+
                 //// Last update this keyframe's gridview
                 //KeyFrames_SelectionChangeManually();    // If I just hit the textbox (it doesn't bring me to the KF, just edits the text.)
             }
@@ -236,18 +316,6 @@ namespace BioCheck.Views
             }
             textChange_by_Keyframe = false;         // Because I'm done changing the grid around.
 
-            this.KeyFrames.ItemsSource = allKeyframes;         // KeyFrames is the XAML x:Name for the top listbox
-            this.KeyFrames.SelectedItem = allKeyframes[0];     // Works!
-            textChange_by_Keyframe = false;                    // As edits are prevented at startup otherwise.
-
-
-            // Add ten new Formula elements for the default viewable Formula grid
-            allFormulaElements = new ObservableCollection<FormulaType>();
-            for (int elementIndex = 0; elementIndex <= 10; elementIndex++)
-            {
-                allFormulaElements.Add(new FormulaType { KeyframeName = null, KeyframeColor = Colors.White, Rule = null, Content = null });
-            }                
-
             // If a model is loaded, set available variables
             if (ApplicationViewModel.Instance.HasActiveModel)
             {
@@ -255,11 +323,18 @@ namespace BioCheck.Views
                 addVars2ComboBox();
             }
 
-            // Reset Visualization area NB OVERRIDES TIMEVIEWMODEL_____
-            this.State = LTLViewState.None;
-            this.TestOutput.Text = "";
+            // Reset Visualization area - Unfortunately this overrides when VM tries to set it in the future, 
+            // so past result remains until new TEST done.
+            //this.State = LTLViewState.None;
+            //this.TestOutput.Text = ""; // Binds LTLOutput in VM
+            //Simulation.IsChecked = true;
+            //Proof.IsChecked = false;
+            SimSteps.Text = "100";
+            
+            //Clear Terminal input field
+            tempKF.Text = "True";
         }
-    #endregion
+        #endregion
 
         // -----------------------------------------------------------------------------------------------
         //
@@ -387,11 +462,11 @@ namespace BioCheck.Views
             switch (objectClicked)
             {
                 case "cell":
-                    this.dropdownCell.RenderTransform = new TranslateTransform { X = xy.X - dropdownCell.Width, Y = xy.Y - dropdownCell.Height * 10 };
+                    this.dropdownCell.RenderTransform = new TranslateTransform { X = xy.X - dropdownCell.Width, Y = xy.Y - dropdownCell.Height * 13 };
                     this.dropdownCell.Visibility = System.Windows.Visibility.Visible;
                     break;
                 case "var":
-                    this.dropdownVar.RenderTransform = new TranslateTransform { X = xy.X - dropdownVar.Width, Y = xy.Y - dropdownVar.Height * 10 };
+                    this.dropdownVar.RenderTransform = new TranslateTransform { X = xy.X - dropdownVar.Width, Y = xy.Y - dropdownVar.Height * 13 };
                     Debug.WriteLine("Put the Combobox at " + xy.X.ToString() + " and " + xy.Y.ToString());
                     this.dropdownVar.Visibility = System.Windows.Visibility.Visible;
                     break;
@@ -414,7 +489,7 @@ namespace BioCheck.Views
                 this.dropdownCell.Visibility = System.Windows.Visibility.Collapsed;
                 cellDropWasOpen = false;
 
-                // Set the relevant textblock to cellName_choice (whether sel changed or not)       ___new.
+                // Set the relevant textblock to cellName_choice (whether sel changed or not)
                 object selectedItem = this.dropdownCell.SelectedItem;
                 cellName_choice = (selectedItem == null)
                                     ? string.Empty
@@ -511,9 +586,9 @@ namespace BioCheck.Views
                 allStorage = allStorage + ", " + oneGridsContent;
             }
             Debug.WriteLine(allStorage);
-            Keyframe_Storage_checker(); 
+            Keyframe_Storage_checker();
         }
-#endregion
+        #endregion
 
         // --------------------------------------
         //
@@ -607,8 +682,8 @@ namespace BioCheck.Views
             // If no keyframes exist, do not proceed
             if (allKeyframes.Count > 0)
             {
-            KeyFrames selectedKeyframe = ((KeyFrames)this.KeyFrames.SelectedItem);
-            string currName = selectedKeyframe.Name;
+                KeyFrames selectedKeyframe = ((KeyFrames)this.KeyFrames.SelectedItem);
+                string currName = selectedKeyframe.Name;
                 Debug.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>> KeyFrames_SelectionChanged: Selected KF " + currName);
                 //((KeyFrames)this.KeyFrames.SelectedItem).Rule = "=";      // Changes the Selected item's rule?
                 //Debug.WriteLine("Changed Rule to " + ((KeyFrames)this.KeyFrames.SelectedItem).Rule);
@@ -620,45 +695,45 @@ namespace BioCheck.Views
                 //    // Not casting simply does not print.
                 //}
 
-            KeyFrames selectedKeyframes_storedGridItems = ((KeyFrames)this.KeyFrames.SelectedItem);
-            string selectedKeyframes_name = (string)selectedKeyframes_storedGridItems.Name;
-                Debug.WriteLine("Trying to draw out 5 spots for keyframe ");
-            Debug.WriteLine(selectedKeyframes_name);
-            //textForTempDebug = "\n\nStored spots for new chosen keyframe " + selectedKeyframes_name + ":\n";
-
-            // Draw according to presence/absence of string content:
-                for (int x = 0; x < 5; x++)
-            {
-                selectedKeyframes_name = selectedKeyframes_storedGridItems.Content[x];
+                KeyFrames selectedKeyframes_storedGridItems = ((KeyFrames)this.KeyFrames.SelectedItem);
+                string selectedKeyframes_name = (string)selectedKeyframes_storedGridItems.Name;
+                Debug.WriteLine("Trying to draw out 20 spots for keyframe ");
                 Debug.WriteLine(selectedKeyframes_name);
+                //textForTempDebug = "\n\nStored spots for new chosen keyframe " + selectedKeyframes_name + ":\n";
 
-                TextBlock exactTextBlock = (TextBlock)textID(x);
-                Path exactPath = (Path)pathID(x);
-                TextBox exactTextBox = (TextBox)textboxID(x);
+                // Draw according to presence/absence of string content:
+                for (int x = 0; x < 20; x++)
+                {
+                    selectedKeyframes_name = selectedKeyframes_storedGridItems.Content[x];
+                    Debug.WriteLine(selectedKeyframes_name);
 
-                //textForTempDebug = textForTempDebug + "\nSending " + x.ToString() + ", " + selectedKeyframes_name + " to restyleGrid_byKeyframeSelection";
+                    TextBlock exactTextBlock = (TextBlock)textID(x);
+                    Path exactPath = (Path)pathID(x);
+                    TextBox exactTextBox = (TextBox)textboxID(x);
 
-                restyleGrid_byKeyframeSelection(exactPath, exactTextBlock, x, selectedKeyframes_name, exactTextBox);
-            }
+                    //textForTempDebug = textForTempDebug + "\nSending " + x.ToString() + ", " + selectedKeyframes_name + " to restyleGrid_byKeyframeSelection";
+
+                    restyleGrid_byKeyframeSelection(exactPath, exactTextBlock, x, selectedKeyframes_name, exactTextBox);
+                }
                 Keyframe_Storage_checker();
-            //tempDebug.Text = textForTempDebug;
+                //tempDebug.Text = textForTempDebug;
 
-            // Extra path-drawing for 0, since it's failing..
-            TextBlock zeroTextBlock = (TextBlock)textID(0);
-            Path zeroPath = (Path)pathID(0);
-            TextBox zeroTextBox = (TextBox)textboxID(0);
-            restyleGrid_byKeyframeSelection(zeroPath, zeroTextBlock, 0, selectedKeyframes_storedGridItems.Content[0], zeroTextBox);
+                // Extra path-drawing for 0, since it's failing..
+                TextBlock zeroTextBlock = (TextBlock)textID(0);
+                Path zeroPath = (Path)pathID(0);
+                TextBox zeroTextBox = (TextBox)textboxID(0);
+                restyleGrid_byKeyframeSelection(zeroPath, zeroTextBlock, 0, selectedKeyframes_storedGridItems.Content[0], zeroTextBox);
 
-            // Ensure that drop-down boxes are invisible
-            dropdownCell.Visibility = System.Windows.Visibility.Collapsed;
-            dropdownVar.Visibility = System.Windows.Visibility.Collapsed;
-            cellDropWasOpen = false;
-            varDropWasOpen = false;
-        }
+                // Ensure that drop-down boxes are invisible
+                dropdownCell.Visibility = System.Windows.Visibility.Collapsed;
+                dropdownVar.Visibility = System.Windows.Visibility.Collapsed;
+                cellDropWasOpen = false;
+                varDropWasOpen = false;
+            }
             else
             {
                 // Retrieve correct grid items:
-                for (int x = 0; x < 5; x++)
+                for (int x = 0; x < 20; x++)
                 {
                     TextBlock exactTextBlock = (TextBlock)textID(x);
                     Path exactPath = (Path)pathID(x);
@@ -703,12 +778,12 @@ namespace BioCheck.Views
 
             KeyFrames selectedKeyframes_storedGridItems = ((KeyFrames)this.KeyFrames.SelectedItem);
             string selectedKeyframes_name = (string)selectedKeyframes_storedGridItems.Name;
-            Debug.WriteLine("Drawing out 5 spots for keyframe ");
+            Debug.WriteLine("Drawing out 20 spots for keyframe ");
             Debug.WriteLine(selectedKeyframes_name);
             //textForTempDebug = "\n\nStored spots for new chosen keyframe " + selectedKeyframes_name + ":\n";
 
             // Draw according to presence/absence of string content:
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 20; x++)
             {
                 selectedKeyframes_name = selectedKeyframes_storedGridItems.Content[x];
                 //Debug.WriteLine(selectedKeyframes_name);
@@ -758,7 +833,7 @@ namespace BioCheck.Views
             //textForTempDebug = "\n\nStorage for keyframe " + selectedKeyframes_name + ":\n";
 
             // Draw according to presence/absence of string content:
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 20; x++)
             {
                 selectedKeyframes_name = selectedKeyframes_storedGridItems.Content[x];
                 selectedKeyframes_namecontent = selectedKeyframes_storedGridItems.NameContent[x];
@@ -770,7 +845,7 @@ namespace BioCheck.Views
 
         // Redraw the grid to reflect the stored content for this keyframe.
         private void restyleGrid_byKeyframeSelection(Path pathN, TextBlock textN, int gridInt, string whatContentSign, TextBox boxN)
-        {   
+        {
             textChange_by_Keyframe = true;
             string compositeResourceName = "";
             switch (whatContentSign)
@@ -844,24 +919,18 @@ namespace BioCheck.Views
             }
             pathN.Style = (Style)this.Resources[compositeResourceName];
             pathN.AllowDrop = false;
-            //if (gridInt == 0 | gridInt == 1 | gridInt == 2 | gridInt == 3 | gridInt == 4)
-            //{
-            //    //textForTempDebug = textForTempDebug + "Grid " + gridInt.ToString() + " gets style " + compositeResourceName + " by dropping " + whatContentSign + "\n";
-            //}
-            //Debug.WriteLine("grid " + gridInt.ToString() + " gets style " + compositeResourceName);
             //textChange_by_Keyframe = false;
-            }
+        }
 
 
         private Random rand = new Random();
         private void Add_keyframe(object sender, RoutedEventArgs e)
         {
-            var item = new KeyFrames { Name = rand.Next(1000).ToString(), Content = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, NameContent = new string[35] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, Rule = null };
+            var item = new KeyFrames { Name = rand.Next(1000).ToString(), Content = new string[20] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, NameContent = new string[20] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null }, Rule = null };
             item.Color = Color.FromArgb(255, (byte)rand.Next(255), (byte)rand.Next(255), (byte)rand.Next(255));
 
-            var list = (ObservableCollection<KeyFrames>)this.KeyFrames.ItemsSource;       // The current list!
+            var list = (ObservableCollection<KeyFrames>)this.KeyFrames.ItemsSource;       // The current list.
             string totalList = this.KeyFrames.ItemsSource.ToString();
-            // System.Collections.ObjectModel.ObservableCollection`1[SilverlightApplication1.KeyFrames]
             Debug.WriteLine(totalList);
             list.Add(item);             // Adds to the end.
             //list.Insert(2, item);     // Works.
@@ -877,7 +946,7 @@ namespace BioCheck.Views
             var list = (ObservableCollection<KeyFrames>)this.KeyFrames.ItemsSource;       // Return the full list.
             if (list.Count > 0)
                 list.RemoveAt(0);
-        }
+        }        
 
         // Delete a right-clicked keyframe
         private void KeyFrames_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -887,29 +956,14 @@ namespace BioCheck.Views
 
             // Find what's underneath
             //var src = (ListBox)sender;
-            //var c = src.CaptureMouse();     // Necessary?
-
+            //var c = src.CaptureMouse();
+            
             // Retrieve the selected item in the Listbox
             string keyframeGoAway = ((BioCheck.Views.KeyFrames)(((System.Windows.FrameworkElement)(sender)).DataContext)).Name.ToString();
-
-            // Got index stored, too?
-
-            // Find its index
-            //int kf_index = 0;
-            //foreach (KeyFrames keyframe in allKeyframes)
-            //{
-            //    if (keyframe.Name.ToString() == keyframeGoAway)
-            //    {
-            //        allKeyframes.RemoveAt(kf_index);        // Only remove keyframe if found
-            //        Debug.WriteLine("Deleted keyframe at index " + kf_index.ToString());
-            //    }
-            //    kf_index++;
-            //}
 
             // Id the chosen keyframe and remove it
             for (int keyframeIndex = 0; keyframeIndex < allKeyframes.Count(); keyframeIndex++)
             {   
-                // Was .. == keyframeChosen
                 if (allKeyframes[keyframeIndex].Name == keyframeGoAway)
                 {
 
@@ -932,9 +986,6 @@ namespace BioCheck.Views
                             }
                         }
                     }
-
-
-                    //this.KeyFrames.SelectedItem = allKeyframes[keyframeIndex];
 
                     // Get index of selected item. If same as keyframeIndex, change selected item pre-delete (or error occurs)
                     if ((this.KeyFrames.SelectedIndex == keyframeIndex) && (allKeyframes.Count() > 1))
@@ -965,16 +1016,6 @@ namespace BioCheck.Views
             }
 
             //KeyFrames selectedKeyframe = ((KeyFrames)src.SelectedItem);
-
-            //var src2 = (KeyFrames)sender;
-            //var c2 = src.CaptureMouse();
-            //string boboo = src2.Name;
-            //string bibi = src2.Color.ToString();
-
-            //    KeyFrames selectedKeyframe = ((KeyFrames)this.KeyFrames.SelectedItem);
-            //string currName = selectedKeyframe.Name;
-            //((KeyFrames)this.KeyFrames.SelectedItem).Rule = "=";      // Changes the Selected item's rule?
-
             textChange_by_Keyframe = false;
         }
 
@@ -993,12 +1034,10 @@ namespace BioCheck.Views
         //
         // --------------------------------------
         #region Keyframe Drag-n-Drop
-      
-        bool textChange_by_Keyframe = false;
+
         bool textChange_by_Keyframe = false;
         private void KeyFrames_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine(">>>>>>>>>>>>>>>>> In KeyFrames_MouseLeftButtonDown <<<<<<<<<<<<<<<<<<<<<<<");
             e.Handled = true;   // Or the window moves.
             textChange_by_Keyframe = true;      // To stop Storage from updating just by grid calling N_TextChanged
 
@@ -1008,27 +1047,17 @@ namespace BioCheck.Views
             {
                 var src = (Rectangle)sender;    // If it was a path, it would be compatible with the Operator Drag n Drop.
                 var c = src.CaptureMouse();
-                // Manually change selected Keyframe
-
-                //keyframeChosen = src.Tag.ToString();
-                ////string hitKeyframeName = ((BioCheck.Views.KeyFrames)(((System.Windows.FrameworkElement)(sender)).DataContext)).Name.ToString();
-                //Debug.WriteLine("KeyFrames_MouseLeftButtonDown: Tag used to ID chosen KF = " + keyframeChosen + " ..whereas KF Names are = ");
-                src.MouseMove += Keyframe_MouseMove;
+                src.MouseMove += Operator_MouseMove;
                 src.MouseLeftButtonUp += Keyframe_MouseLeftButtonUp;
             }
             else
             {
                 var src = (TextBox)sender;    // If it was a path, it would be compatible with the Operator Drag n Drop.
                 var c = src.CaptureMouse();
-                // Manually change selected Keyframe
-                //keyframeChosen = src.Tag.ToString();
-                //keyframeChosen = src.Text.ToString();           // New idea. But still stuck with unchanging Tag above. Is Tag NECESSARY here?
-                src.MouseMove += Keyframe_MouseMove;
+                src.MouseMove += Operator_MouseMove;
                 src.MouseLeftButtonUp += Keyframe_MouseLeftButtonUp;
-
-                // If Textbox clicked
             }
-            
+
             string hitKeyframeName = ((BioCheck.Views.KeyFrames)(((System.Windows.FrameworkElement)(sender)).DataContext)).Name.ToString();
 
             // Id the chosen keyframe and make it the selected keyframe
@@ -1054,7 +1083,7 @@ namespace BioCheck.Views
 
         // --------------------------------------
         //
-        //          Mouse interactivity from the Toolbar
+        //          Mouse interactivity from the Toolbar 
         //       (any draggable symbols to Grid or Formula)
         //
         // --------------------------------------
@@ -1090,9 +1119,9 @@ namespace BioCheck.Views
                 // A Formula grid symbol is being dropped, e.g. Until, Eventually et.c.
                 // NB not just keyframes.
                 src.MouseLeftButtonUp += Keyframe_MouseLeftButtonUp;
-            }
+            }            
         }
-            
+
         // In case the selectorPath was chosen; not the object that it represents.
         private string editName_ifSelector(string maybeSelector)
         {
@@ -1124,6 +1153,8 @@ namespace BioCheck.Views
                     return "Not";
                 case "AndSelector":
                     return "And";
+                case "NextSelector":
+                    return "Next";
                 case "obSelector":
                     return "ob";
                 case "cbSelector":
@@ -1132,7 +1163,7 @@ namespace BioCheck.Views
                     return maybeSelector;
             }
         }
-
+            
 
         // Draw the shadow that accompanies the clicked icon
         private void Shadow_initialLocus(string whatToMove, Point refCoord)
@@ -1216,6 +1247,11 @@ namespace BioCheck.Views
                     this.And_shadow.Opacity = 0.6;
                     this.And_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - And_shadow.Width / 2, Y = refCoord.Y - And_shadow.Height / 2 };
                     break;
+                case "Next":
+                    this.Next_shadow.Visibility = System.Windows.Visibility.Visible;
+                    this.Next_shadow.Opacity = 0.6;
+                    this.Next_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - Next_shadow.Width / 2, Y = refCoord.Y - Next_shadow.Height / 2 };
+                    break;
                 case "ob":
                     this.ob_shadow.Visibility = System.Windows.Visibility.Visible;
                     this.ob_shadow.Opacity = 0.6;
@@ -1227,15 +1263,6 @@ namespace BioCheck.Views
                     this.cb_shadow.RenderTransform = new TranslateTransform { X = refCoord.X - cb_shadow.Width / 2, Y = refCoord.Y - cb_shadow.Height / 2 };
                     break;
             }
-        }
-
-        private void Keyframe_MouseMove(object sender, MouseEventArgs e)
-        {
-            //var src = (Rectangle)sender;
-            var pos = e.GetPosition(this);  
-
-            // Move the shadow
-            this.Keyframe_shadow.RenderTransform = new TranslateTransform { X = pos.X - Keyframe_shadow.Width / 2, Y = pos.Y - Keyframe_shadow.Height / 2 };
         }
 
         // Mouse-up from the Keyframe: make the shadow disappear, 
@@ -1276,67 +1303,45 @@ namespace BioCheck.Views
             // If it landed on a droppable area, make it show.
             if (elementsUnderPointer.Contains(f_rect1) && f_isEmpty(1))
             {
-                restylePath(f_path1, 1, operatorName, whatContent, f_N1, f_text1);
+                editVis(f_path1, 1, operatorName, whatContent, N0, f_text1, true);
             }
             else if (elementsUnderPointer.Contains(f_rect2) && f_isEmpty(2))
             {
-                restylePath(f_path2, 2, operatorName, whatContent, f_N2, f_text2);
-                tempDebug.Text = "sending operatorName = " + operatorName + " and whatContent = " + whatContent + "to restylePath.";
+                editVis(f_path2, 2, operatorName, whatContent, N0, f_text2, true);
             }
             else if (elementsUnderPointer.Contains(f_rect3) && f_isEmpty(3))
             {
-                editVis(f_path3, 3, operatorName, whatContent, f_N3, f_text3, true);
+                editVis(f_path3, 3, operatorName, whatContent, N0, f_text3, true);
             }
             else if (elementsUnderPointer.Contains(f_rect4) && f_isEmpty(4))
             {
-                editVis(f_path4, 4, operatorName, whatContent, f_N4, f_text4, true);
+                editVis(f_path4, 4, operatorName, whatContent, N0, f_text4, true);
             }
             else if (elementsUnderPointer.Contains(f_rect5) && f_isEmpty(5))
             {
-                editVis(f_path5, 5, operatorName, whatContent, f_N5, f_text5, true);
+                editVis(f_path5, 5, operatorName, whatContent, N0, f_text5, true);
             }
             else if (elementsUnderPointer.Contains(f_rect6) && f_isEmpty(6))
             {
-                editVis(f_path6, 6, operatorName, whatContent, f_N6, f_text6, true);
+                editVis(f_path6, 6, operatorName, whatContent, N0, f_text6, true);
             }
             else if (elementsUnderPointer.Contains(f_rect7) && f_isEmpty(7))
             {
-                editVis(f_path7, 7, operatorName, whatContent, f_N7, f_text7, true);
+                editVis(f_path7, 7, operatorName, whatContent, N0, f_text7, true);
             }
             else if (elementsUnderPointer.Contains(f_rect8) && f_isEmpty(8))
             {
-                editVis(f_path8, 8, operatorName, whatContent, f_N8, f_text8, true);
+                editVis(f_path8, 8, operatorName, whatContent, N0, f_text8, true);
             }
             else if (elementsUnderPointer.Contains(f_rect9) && f_isEmpty(9))
             {
-                editVis(f_path9, 9, operatorName, whatContent, f_N9, f_text9, true);
+                editVis(f_path9, 9, operatorName, whatContent, N0, f_text9, true);
             }
             else if (elementsUnderPointer.Contains(f_rect10) && f_isEmpty(10))
             {
-                editVis(f_path10, 10, operatorName, whatContent, f_N10, f_text10, true);
+                editVis(f_path10, 10, operatorName, whatContent, N0, f_text10, true);
             }
-            //src.RenderTransform = null;
-
-
-            // Print out to check change
-            //string allStorage = "";
-            //Debug.WriteLine("Updated formula: ");
-            //foreach (string oneGridsContent in Formula)
-            //{
-            //    allStorage = allStorage + oneGridsContent + ", ";
-            //}
-            //Debug.WriteLine(allStorage);
-            //textForTempDebug = textForTempDebug + "Updated formula : " + allStorage + "\n";
-
-            //allStorage = "";
-            //Debug.WriteLine("Updated varname storage: ");
-            //foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
-            //{
-            //    allStorage = allStorage + oneGridsContent + ", ";
-            //}
-            //Debug.WriteLine(allStorage);
-            //textForTempDebug = textForTempDebug + "\n Updated varname storage : " + allStorage;
-            //tempDebug.Text = textForTempDebug;
+           
             Keyframe_Storage_checker();
             textChange_by_Keyframe = false;      // Re-initiate Storage-updates by text change in grids
         }
@@ -1399,6 +1404,9 @@ namespace BioCheck.Views
                 case "And":
                     this.And_shadow.RenderTransform = new TranslateTransform { X = pos.X - And_shadow.Width / 2, Y = pos.Y - And_shadow.Height / 2 };
                     break;
+                case "Next":
+                    this.Next_shadow.RenderTransform = new TranslateTransform { X = pos.X - Next_shadow.Width / 2, Y = pos.Y - Next_shadow.Height / 2 };
+                    break;
                 case "ob":
                     this.ob_shadow.RenderTransform = new TranslateTransform { X = pos.X - ob_shadow.Width / 2, Y = pos.Y - ob_shadow.Height / 2 };
                     break;
@@ -1458,6 +1466,9 @@ namespace BioCheck.Views
                 case "And":
                     this.And_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
+                case "Next":
+                    this.Next_shadow.Visibility = System.Windows.Visibility.Collapsed;
+                    break;
                 case "ob":
                     this.ob_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
@@ -1467,37 +1478,47 @@ namespace BioCheck.Views
             }
         }
 
-        // Update the grid index' Path AND (some) storage - make separate function for storage?
-        private void restylePath(Path pathN, int rectInt, string whatResourceName, string whatContentSign, TextBox boxN, TextBlock textN)
+        // Update the grid index' Path AND (some) storage
+        private void editVis(Path pathN, int rectInt, string whatResourceName, string whatContentSign, TextBox boxN, TextBlock textN, bool formula)
         {
-            //restylePath(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, allFormulaElements[formulaElementIndex - 1].Content, "storageDone", f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
+            //editVis(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, allFormulaElements[formulaElementIndex - 1].Content, "storageDone", f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
             string compositeResourceName = "";
 
             // Delete or create visuals at this grid?
             if (whatContentSign == null)
             {
-                // Delete visuals
+                tempDebug.Text += "\ndeleting visuals at " + rectInt;
+                // Delete visuals only; not storage.
                 compositeResourceName = "EmptyStyle";
                 pathN.Style = (Style)this.Resources[compositeResourceName];
+
+                if (formula)
+                {
+                    pathN.Fill = new SolidColorBrush(Colors.Transparent);
+                    pathN.Stroke = new SolidColorBrush(Colors.Transparent);
+                }
+                else
+                {
+                    // TextBox taken out of action in Formula for now
+                    boxN.Text = "";
+                    boxN.IsHitTestVisible = true;
+                    boxN.IsReadOnly = false;
+                }
                 textN.Text = "";
-                boxN.Text = "";
-                boxN.IsHitTestVisible = true;
-                boxN.IsReadOnly = false;                
             }
             else
             {
-
                 // Create visuals
                 // Draw the correct path in the correct place
                 compositeResourceName = "path" + rectInt.ToString() + whatResourceName.ToLower();
                 pathN.Style = (Style)this.Resources[compositeResourceName];
-                tempDebug.Text += "Tried to draw path " + compositeResourceName + " at visual element " + rectInt.ToString();
+                tempDebug.Text += "\nTrying to draw path " + compositeResourceName + " at visual element " + rectInt.ToString();
 
-            // Keyframe storage only
-            if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "<=" || whatContentSign == ">=" || whatContentSign == "=")
-            {
-                ((KeyFrames)this.KeyFrames.SelectedItem).Content[rectInt] = whatContentSign;
-            }
+                // Keyframe storage only
+                if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "<=" || whatContentSign == ">=" || whatContentSign == "=")
+                {
+                    ((KeyFrames)this.KeyFrames.SelectedItem).Content[rectInt] = whatContentSign;
+                }
                 else if (whatContentSign == "storageDone")
                 {
                     // Scrolling within the Formula grid. Storage is done, and rectangle color and text is retrievable from curr storage.
@@ -1505,69 +1526,86 @@ namespace BioCheck.Views
                     {
                         pathN.Fill = new SolidColorBrush(allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor);
                         textN.Text = allFormulaElements[rectInt + N_rightScrollClicks].KeyframeName;
-                        tempDebug.Text += "Drew visuals at element " + rectInt + ": Put storage name " + allFormulaElements[rectInt + N_rightScrollClicks].KeyframeName + " onto color " + allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor.ToString();
+                        tempDebug.Text += "\nDrew visuals at element " + rectInt + ": Put storage name " + allFormulaElements[rectInt + N_rightScrollClicks].KeyframeName + " onto color " + allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor.ToString();
                     }
-            else
-            {
+                    else
+                    {
                         // Logics was moved by scroll. 
                         // Use the rule to retrieve what path to draw.
                         whatResourceName = allFormulaElements[rectInt + N_rightScrollClicks].Rule;
                         compositeResourceName = "path" + rectInt.ToString() + whatResourceName.ToLower();
                         pathN.Style = (Style)this.Resources[compositeResourceName];
-                        tempDebug.Text += "Tried to draw path " + compositeResourceName + " at visual element " + rectInt.ToString();
-                        if (whatResourceName == "Not")
-                        {
-                            pathN.Fill = new SolidColorBrush(Colors.Red);
-                        }
-                        else
-                        {
-                            pathN.Fill = new SolidColorBrush(Colors.Black);
-                        }
+                        tempDebug.Text += "Trying to draw path " + compositeResourceName + " at visual element " + rectInt.ToString();
+
+                        //if (formula)
+                        //{
+                            pathN.Fill = new SolidColorBrush(allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor);
+                            pathN.Stroke = new SolidColorBrush(allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor);
+                        //}
+
+                        //if (whatResourceName == "Not")
+                        //{
+                        //    pathN.Fill = new SolidColorBrush(Colors.Red);
+                        //    allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor = Colors.Red;
+                        //}
+                        //else
+                        //{
+                        //    pathN.Fill = new SolidColorBrush(Colors.Black);
+                        //    allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor = Colors.Black;
+                        //}
                     }
                 }
                 else
                 {
                     // Keyframe newly dropped into the Formula grid. Storage needs editing.
                     allFormulaElements[rectInt + N_rightScrollClicks].Content = whatContentSign;
-                    
-                if (whatResourceName == "Keyframe")
-                {
+
+                    if (whatResourceName.ToLower() == "keyframe")
+                    {
                         pathN.Fill = new SolidColorBrush(((KeyFrames)this.KeyFrames.SelectedItem).Color);
-                    textN.Text = ((KeyFrames)this.KeyFrames.SelectedItem).Name;
+                        textN.Text = ((KeyFrames)this.KeyFrames.SelectedItem).Name;
                         allFormulaElements[rectInt + N_rightScrollClicks].Rule = ((KeyFrames)this.KeyFrames.SelectedItem).Rule;
                         allFormulaElements[rectInt + N_rightScrollClicks].KeyframeName = ((KeyFrames)this.KeyFrames.SelectedItem).Name;
                         allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor = ((KeyFrames)this.KeyFrames.SelectedItem).Color;
-                }
-                else
-                {
+                    }
+                    else
+                    {
                         // Logics was dragged.
                         allFormulaElements[rectInt + N_rightScrollClicks].Rule = whatResourceName;   // "Until", "If", "Eventually", "Always", "cb", "ob" et.c.
+
                         if (whatResourceName == "Not")
                         {
                             pathN.Fill = new SolidColorBrush(Colors.Red);
+                            pathN.Stroke = new SolidColorBrush(Colors.Red);
+                            allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor = Colors.Red;
                         }
                         else
                         {
                             pathN.Fill = new SolidColorBrush(Colors.Black);
+                            pathN.Stroke = new SolidColorBrush(Colors.Black);
+                            allFormulaElements[rectInt + N_rightScrollClicks].KeyframeColor = Colors.Black;
                         }
                     }
                 }
 
                 // Make values not enterable.
-                boxN.IsHitTestVisible = false;
-                boxN.IsReadOnly = true;
+                if (!formula)
+                {
+                    boxN.IsHitTestVisible = false;
+                    boxN.IsReadOnly = true;
+                }
                 pathN.AllowDrop = false;
 
                 // Debug messages
-                Debug.WriteLine("Landed on a droppable area! Using path (whatResourceName) = " + whatResourceName + ", for Formula element = " + rectInt.ToString());
+                Debug.WriteLine("\nLanded on a droppable area! Using path (whatResourceName) = " + whatResourceName + ", for Formula element = " + rectInt.ToString());
                 //textForTempDebug = textForTempDebug + "\n" + "Landed on a droppable area! Storing " + whatResourceName + " in Rectangle " + rectInt.ToString() + "\n";
             }            
         }
 
-        private void restylePath_byScroll(Path rectN, int rectInt, int storageIndex, string whatResourceName, string whatContentSign, TextBox boxN, TextBlock textN)
+        private void editVis_byScroll(Path rectN, int rectInt, int storageIndex, string whatResourceName, string whatContentSign, TextBox boxN, TextBlock textN)
         {
 
-            //restylePath(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, allFormulaElements[formulaElementIndex - 1].Content, "storageDone", f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
+            //editVis(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, allFormulaElements[formulaElementIndex - 1].Content, "storageDone", f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
             string compositeResourceName = "";
            
             // Create visuals
@@ -1579,15 +1617,17 @@ namespace BioCheck.Views
             if (whatContentSign == "var" || whatContentSign == "cell" || whatContentSign == "N" || whatContentSign == "<" || whatContentSign == ">" || whatContentSign == "<=" || whatContentSign == ">=" || whatContentSign == "=")
             {
                 ((KeyFrames)this.KeyFrames.SelectedItem).Content[rectInt] = whatContentSign;
-                }
+            }
             else if (whatContentSign == "storageDone")
             {
                 // Scrolling within the Formula grid. Storage is done, and rectangle color and text is retrievable from curr storage.
-                if (whatResourceName == "keyframe")
-                {
-                    rectN.Fill = new SolidColorBrush(allFormulaElements[rectInt].KeyframeColor);
-                    textN.Text = allFormulaElements[rectInt].KeyframeName;
-            }
+                //if (whatResourceName == "keyframe")
+                //{
+                //___
+                rectN.Fill = new SolidColorBrush(allFormulaElements[rectInt].KeyframeColor);
+                rectN.Stroke = new SolidColorBrush(allFormulaElements[rectInt].KeyframeColor);
+                textN.Text = allFormulaElements[rectInt].KeyframeName;
+                //}
                 tempDebug.Text += "allFormulaElements index number " + rectInt + ": Trying to put name " + allFormulaElements[rectInt].KeyframeName + " onto color " + allFormulaElements[rectInt].KeyframeColor.ToString();
             }
             else
@@ -1607,6 +1647,7 @@ namespace BioCheck.Views
                 {
                     // Logics was dragged.
                     allFormulaElements[rectInt].Rule = whatResourceName;   // "Until", "If", "Eventually", "Always", "cb", "ob" et.c.
+                    allFormulaElements[rectInt].KeyframeColor = ((whatResourceName == "Not") ? Colors.Red : Colors.Black);
                 }
             }
 
@@ -1636,26 +1677,26 @@ namespace BioCheck.Views
             if (allKeyframes.Count() > 0)
             {
 
-            // Update this current keyframe's pathstrings so that the drop is stored
-            string whatResourceName = "equals";
-            string whatContentSign = "=";
-            switch (operatorName)
-            {
-                case "Equals":
-                    whatResourceName = "equals";
-                    whatContentSign = "=";
-                    break;
-                case "Variable":
-                    whatResourceName = whatContentSign = "var";
-                    break;
-                case "LessThan":
-                    whatResourceName = "lt";
-                    whatContentSign = "<";
-                    break;
-                case "MoreThan":
-                    whatResourceName = "mt";
+                // Update this current keyframe's pathstrings so that the drop is stored
+                string whatResourceName = "equals";
+                string whatContentSign = "=";
+                switch (operatorName)
+                {
+                    case "Equals":
+                        whatResourceName = "equals";
+                        whatContentSign = "=";
+                        break;
+                    case "Variable":
+                        whatResourceName = whatContentSign = "var";
+                        break;
+                    case "LessThan":
+                        whatResourceName = "lt";
+                        whatContentSign = "<";
+                        break;
+                    case "MoreThan":
+                        whatResourceName = "mt";
                         whatContentSign = ">";
-                    break;
+                        break;
                     case "LessThanEq":
                         whatResourceName = "lte";
                         whatContentSign = "<=";
@@ -1664,59 +1705,119 @@ namespace BioCheck.Views
                         whatResourceName = "mte";
                         whatContentSign = ">=";
                         break;
-                case "Cell":
-                    whatResourceName = whatContentSign = "cell";
-                    break;
-            }
-            textForTempDebug = textForTempDebug + "\n Dragged " + operatorName;
-            // Retrieve all elements under the cursor
-            var pos = e.GetPosition(null /*LayoutRoot*/);
-            var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
+                    case "Cell":
+                        whatResourceName = whatContentSign = "cell";
+                        break;
+                }
+                textForTempDebug = textForTempDebug + "\n Dragged " + operatorName;
+                // Retrieve all elements under the cursor
+                var pos = e.GetPosition(null /*LayoutRoot*/);
+                var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
 
-            // If it landed on a droppable area, make it show.
-            if ((elementsUnderPointer.Contains(rect0)) && isEmpty(0))
-            {
+                // If it landed on a droppable area, make it show.
+                if ((elementsUnderPointer.Contains(rect0)) && isEmpty(0))
+                {
                     editVis(path0, 0, whatResourceName, whatContentSign, N0, text0, false);
-            }
-            else if (elementsUnderPointer.Contains(rect1) && isEmpty(1))
-            {
+                }
+                else if (elementsUnderPointer.Contains(rect1) && isEmpty(1))
+                {
                     editVis(path1, 1, whatResourceName, whatContentSign, N1, text1, false);
-            }
-            else if (elementsUnderPointer.Contains(rect2) && isEmpty(2))
-            {
+                }
+                else if (elementsUnderPointer.Contains(rect2) && isEmpty(2))
+                {
                     editVis(path2, 2, whatResourceName, whatContentSign, N2, text2, false);
-            }
-            else if (elementsUnderPointer.Contains(rect3) && isEmpty(3))
-            {
+                }
+                else if (elementsUnderPointer.Contains(rect3) && isEmpty(3))
+                {
                     editVis(path3, 3, whatResourceName, whatContentSign, N3, text3, false);
-            }
-            else if (elementsUnderPointer.Contains(rect4) && isEmpty(4))
-            {
+                }
+                else if (elementsUnderPointer.Contains(rect4) && isEmpty(4))
+                {
                     editVis(path4, 4, whatResourceName, whatContentSign, N4, text4, false);
-            }
-            src.RenderTransform = null;
+                }
+                else if (elementsUnderPointer.Contains(rect5) && isEmpty(5))
+                {
+                    editVis(path5, 5, whatResourceName, whatContentSign, N5, text5, false);
+                }
+                else if (elementsUnderPointer.Contains(rect6) && isEmpty(6))
+                {
+                    editVis(path6, 6, whatResourceName, whatContentSign, N6, text6, false);
+                }
+                else if (elementsUnderPointer.Contains(rect7) && isEmpty(7))
+                {
+                    editVis(path7, 7, whatResourceName, whatContentSign, N7, text7, false);
+                }
+                else if (elementsUnderPointer.Contains(rect8) && isEmpty(8))
+                {
+                    editVis(path8, 8, whatResourceName, whatContentSign, N8, text8, false);
+                }
+                else if (elementsUnderPointer.Contains(rect9) && isEmpty(9))
+                {
+                    editVis(path9, 9, whatResourceName, whatContentSign, N9, text9, false);
+                }
+                else if ((elementsUnderPointer.Contains(rect10)) && isEmpty(10))
+                {
+                    editVis(path10, 10, whatResourceName, whatContentSign, N10, text10, false);
+                }
+                else if (elementsUnderPointer.Contains(rect11) && isEmpty(11))
+                {
+                    editVis(path11, 11, whatResourceName, whatContentSign, N11, text11, false);
+                }
+                else if (elementsUnderPointer.Contains(rect12) && isEmpty(12))
+                {
+                    editVis(path12, 12, whatResourceName, whatContentSign, N12, text12, false);
+                }
+                else if (elementsUnderPointer.Contains(rect13) && isEmpty(13))
+                {
+                    editVis(path13, 13, whatResourceName, whatContentSign, N13, text13, false);
+                }
+                else if (elementsUnderPointer.Contains(rect14) && isEmpty(14))
+                {
+                    editVis(path14, 14, whatResourceName, whatContentSign, N14, text14, false);
+                }
+                else if (elementsUnderPointer.Contains(rect15) && isEmpty(15))
+                {
+                    editVis(path15, 15, whatResourceName, whatContentSign, N15, text15, false);
+                }
+                else if (elementsUnderPointer.Contains(rect16) && isEmpty(16))
+                {
+                    editVis(path16, 16, whatResourceName, whatContentSign, N16, text16, false);
+                }
+                else if (elementsUnderPointer.Contains(rect17) && isEmpty(17))
+                {
+                    editVis(path17, 17, whatResourceName, whatContentSign, N17, text17, false);
+                }
+                else if (elementsUnderPointer.Contains(rect18) && isEmpty(18))
+                {
+                    editVis(path18, 18, whatResourceName, whatContentSign, N18, text18, false);
+                }
+                else if (elementsUnderPointer.Contains(rect19) && isEmpty(19))
+                {
+                    editVis(path19, 19, whatResourceName, whatContentSign, N19, text19, false);
+                }
+                src.RenderTransform = null;
 
-            // Print out to check change
-            string allStorage = "";
-            Debug.WriteLine("Updated storage: ");
-            foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).Content)
-            {
-                allStorage = allStorage + oneGridsContent + ", ";
-            }
-            Debug.WriteLine(allStorage);
-            textForTempDebug = textForTempDebug + "Updated storage : " + allStorage + "\n";
+                // Print out to check change
+                string allStorage = "";
+                Debug.WriteLine("Updated storage: ");
+                foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).Content)
+                {
+                    allStorage = allStorage + oneGridsContent + ", ";
+                }
+                Debug.WriteLine(allStorage);
+                textForTempDebug = textForTempDebug + "Updated storage : " + allStorage + "\n";
 
-            allStorage = "";
-            Debug.WriteLine("Updated varname storage: ");
-            foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
-            {
-                allStorage = allStorage + oneGridsContent + ", ";
-            }
-            Debug.WriteLine(allStorage);
-            textForTempDebug = textForTempDebug + "\n Updated varname storage : " + allStorage;
-            //tempDebug.Text = textForTempDebug;
+                allStorage = "";
+                Debug.WriteLine("Updated varname storage: ");
+                foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
+                {
+                    allStorage = allStorage + oneGridsContent + ", ";
+                }
+                Debug.WriteLine(allStorage);
+                textForTempDebug = textForTempDebug + "\n Updated varname storage : " + allStorage;
+                //tempDebug.Text = textForTempDebug;
                 Keyframe_Storage_checker();
-        }
+            }
         }
         #endregion
 
@@ -1744,14 +1845,13 @@ namespace BioCheck.Views
                 case ">":
                     return "path" + where.ToString() + "mt";
                 case "<":
-                    styleClicked = "path" + gridLocusClicked.ToString() + "lt";
-                    break;
+                    return "path" + where.ToString() + "lt";
                 case ">=":
-                    styleClicked = "path" + gridLocusClicked.ToString() + "mte";
-                    break;
+                    return "path" + where.ToString() + "mte";
                 case "<=":
-                    styleClicked = "path" + gridLocusClicked.ToString() + "lte";
-                    break;
+                    return "path" + where.ToString() + "lte";
+                case "n":
+                    return "path" + where.ToString() + "N";
                 default:
                     return "path" + where.ToString() + whatSymbol;
             }
@@ -1766,7 +1866,11 @@ namespace BioCheck.Views
             if (allKeyframes.Count() > 0)
             {
 
-            var src = (Path)sender;
+                // Find what Keyframe was clicked
+                string isPath = sender.ToString();
+                if (isPath == "System.Windows.Shapes.Path") 
+                {
+                    var src = (Path)sender;
                     gridLocusClicked = Int32.Parse((string)src.Tag);       // The grid index
                 }
                 else
@@ -1774,19 +1878,15 @@ namespace BioCheck.Views
                     var src = (Rectangle)sender;
                     gridLocusClicked = Int32.Parse((string)src.Tag);       // The grid index
                 }
-                // -----------------------------------
 
-                //var src = (Path)sender; // Original.
-
-
-            // Is anything under the cursor?
+                // Is anything under the cursor?
                 // If nothing or just a number, do not start dragging shadows around.
-                gridLocusClicked = Int32.Parse((string)src.Tag);       // The grid index
+                //gridLocusClicked = Int32.Parse((string)src.Tag);       // The grid index
                 if (((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusClicked] != null && ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusClicked] != "N")
-            {
+                {
 
-                objectClicked = ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusClicked];
-                Debug.WriteLine("Clicked the item: " + objectClicked);
+                    objectClicked = ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusClicked];
+                    Debug.WriteLine("Clicked the item: " + objectClicked);
                     styleClicked = What_path_style(objectClicked.ToLower(), gridLocusClicked);
 
 
@@ -1800,76 +1900,74 @@ namespace BioCheck.Views
                     else
                     {
                         var src = (Rectangle)sender;
-                var c = src.CaptureMouse();
-                src.MouseMove += Grid_MouseMove;
-                src.MouseLeftButtonUp += Grid_MouseLeftButtonUp;
+                        var c = src.CaptureMouse();
+                        src.MouseMove += Grid_MouseMove;
+                        src.MouseLeftButtonUp += Grid_MouseLeftButtonUp;
                     }
 
                     //var c = src.CaptureMouse();
                     //src.MouseMove += Grid_MouseMove;
                     //src.MouseLeftButtonUp += Grid_MouseLeftButtonUp;
 
-                //Point offset = e.GetPosition(null);
-                Point offset = e.GetPosition(this);       // Original!
+                    //Point offset = e.GetPosition(null);
+                    Point offset = e.GetPosition(this);       // Original!
 
-                Path shadowToEdit = Equals_shadow;
+                    Path shadowToEdit = Equals_shadow;
 
-                switch (objectClicked)
-                {
-                    case "=":
-                        shadowToEdit = Equals_shadow;
-                        break;
-                    case ">":
-                        shadowToEdit = MoreThan_shadow;
-                        break;
-                    case "<":
-                        shadowToEdit = LessThan_shadow;
-                        break;
+                    switch (objectClicked)
+                    {
+                        case "=":
+                            shadowToEdit = Equals_shadow;
+                            break;
+                        case ">":
+                            shadowToEdit = MoreThan_shadow;
+                            break;
+                        case "<":
+                            shadowToEdit = LessThan_shadow;
+                            break;
                         case ">=":
                             shadowToEdit = MoreThanEq_shadow;
-                        break;
+                            break;
                         case "<=":
                             shadowToEdit = LessThanEq_shadow;
                             break;
-                    case "var":
-                        shadowToEdit = Variable_shadow;
-                        break;
-                    case "cell":
-                        shadowToEdit = Cell_shadow;
-                        break;
+                        case "var":
+                            shadowToEdit = Variable_shadow;
+                            break;
+                        case "cell":
+                            shadowToEdit = Cell_shadow;
+                            break;
+                    }
+                    shadowToEdit.RenderTransform = new TranslateTransform { X = offset.X - shadowToEdit.Width / 2, Y = offset.Y - shadowToEdit.Height / 2 };
+                    shadowToEdit.Opacity = 1.0;
+                    shadowToEdit.Visibility = System.Windows.Visibility.Visible;
+
+                    // Make the original path disappear
+                    TextBlock exactTextBlock = (TextBlock)textID(gridLocusClicked);
+                    Path exactPath = (Path)pathID(gridLocusClicked);
+                    TextBox exactTextBox = (TextBox)textboxID(gridLocusClicked);
+                    Rectangle exactRect = (Rectangle)rectID(gridLocusClicked);
+
+                    exactPath.Style = (Style)this.Resources["EmptyStyle"];
+                    exactTextBlock.Text = "";
+                    exactRect.AllowDrop = true;
+                    exactTextBox.IsHitTestVisible = true;
+                    exactTextBox.IsReadOnly = false;
+
+                    // ID the object being clicked, to make the correct shadow..  No shadow! Just move the object clicked.
+                    // Make the grid object empty and have a completely opaque shadow move about.
+                    // Need to know what path to move, and move any contained detail: Name or Number too.
+
+                    // Enable shadow: only for the toolbar. For objects within the Target site, move those items.
+                    //this.Equals_shadow.Visibility = System.Windows.Visibility.Visible;
+                    //this.Equals_shadow.RenderTransform = new TranslateTransform { X = offset.X - Equals_shadow.Width / 2, Y = offset.Y - Equals_shadow.Height / 2 };
+
+                    // Only one thing can be moved at a time,
+                    // So I could populate variables according to the object clicked.
+                    // ID: by tag (if a string can hold that much)
+                    // or by curr keyframe and 
                 }
-                shadowToEdit.RenderTransform = new TranslateTransform { X = offset.X - shadowToEdit.Width / 2, Y = offset.Y - shadowToEdit.Height / 2 };
-                shadowToEdit.Opacity = 1.0;
-                shadowToEdit.Visibility = System.Windows.Visibility.Visible;
-
-                // Make the original path disappear
-                TextBlock exactTextBlock = (TextBlock)textID(gridLocusClicked);
-                Path exactPath = (Path)pathID(gridLocusClicked);
-                TextBox exactTextBox = (TextBox)textboxID(gridLocusClicked);
-                Rectangle exactRect = (Rectangle)rectID(gridLocusClicked);
-
-                exactPath.Style = (Style)this.Resources["EmptyStyle"];
-                exactTextBlock.Text = "";
-                exactRect.AllowDrop = true;
-                exactTextBox.IsHitTestVisible = true;
-                exactTextBox.IsReadOnly = false;
-
-                // ID the object being clicked, to make the correct shadow..  No shadow! Just move the object clicked.
-                // Make the grid object empty and have a completely opaque shadow move about.
-                // Need to know what path to move, and move any contained detail: Name or Number too.
-
-                // Enable shadow: only for the toolbar. For objects within the Target site, move those items.
-                //this.Equals_shadow.Visibility = System.Windows.Visibility.Visible;
-                //this.Equals_shadow.RenderTransform = new TranslateTransform { X = offset.X - Equals_shadow.Width / 2, Y = offset.Y - Equals_shadow.Height / 2 };
-
-                // Only one thing can be moved at a time,
-                // So I could populate variables according to the object clicked.
-                // ID: by tag (if a string can hold that much)
-                // or by curr keyframe and 
-            }
-
-
-        }
+            }            
         }
 
         private void f_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -1881,12 +1979,12 @@ namespace BioCheck.Views
             if (isPath == "System.Windows.Shapes.Path")
             {
                 var src = (Path)sender;
-                gridLocusClicked = Int32.Parse((string)src.Tag);       // The formula index
+                gridLocusClicked = Int32.Parse((string)src.Tag);     
             }
             else
             {
                 var src = (Rectangle)sender;
-                gridLocusClicked = Int32.Parse((string)src.Tag);       // The formula index
+                gridLocusClicked = Int32.Parse((string)src.Tag);    
             }
 
             int actualFormulaIndex = gridLocusClicked + N_rightScrollClicks;
@@ -1947,27 +2045,6 @@ namespace BioCheck.Views
                     this.Keyframe_shadow.Opacity = 0.6;
                     this.Keyframe_shadow.RenderTransform = new TranslateTransform { X = offset.X - Keyframe_shadow.Width / 2, Y = offset.Y - Keyframe_shadow.Height / 2 };
 
-                    //src.MouseMove += Keyframe_MouseMove;
-                    //src.MouseLeftButtonUp += Keyframe_MouseLeftButtonUp;
-
-                    //string hitKeyframeName = allFormulaElements[gridLocusClicked + N_rightScrollClicks].KeyframeName.ToString();
-                    //// Id the chosen keyframe and make it the selected keyframe
-                    //for (int keyframeIndex = 0; keyframeIndex < allKeyframes.Count(); keyframeIndex++)
-                    //{
-                    //    Debug.WriteLine(allKeyframes[keyframeIndex].Name.ToString());
-                    //    // Was .. == keyframeChosen
-                    //    if (allKeyframes[keyframeIndex].Name == hitKeyframeName)
-                    //    {
-                    //        this.KeyFrames.SelectedItem = allKeyframes[keyframeIndex];
-                    //    }
-                    //}
-                    //// Now load the data for this keyframe
-                    //KeyFrames_SelectionChangeManually();
-
-                    //// Enable shadow (for possible movement to the Rule area)
-                    //Point offset = e.GetPosition(this);
-                    //Shadow_initialLocus("Keyframe", offset);
-                    //operatorName = "Keyframe";
                 }               
 
                 Debug.WriteLine("Clicked the item: " + objectClicked);
@@ -1975,7 +2052,7 @@ namespace BioCheck.Views
                 // Send off the Formula storage index to be deleted:
                 // Formula_eraseGridContent(actualFormulaIndex); // Just erased for now.
                 // Deletes only visuals. Delete storage only if dropped on ok spot elsewhere.
-                editVis(f_pathID(gridLocusClicked), gridLocusClicked, null, null, f_textboxID(gridLocusClicked), f_textID(gridLocusClicked), true);                                
+                editVis(f_pathID(gridLocusClicked), gridLocusClicked, null, null, N0, f_textID(gridLocusClicked), true);                                
             }
         }
 
@@ -1988,6 +2065,125 @@ namespace BioCheck.Views
             }
         }       
 
+        private void f_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // Find what Keyframe was clicked
+            string isPath = sender.ToString();
+            if (isPath == "System.Windows.Shapes.Path")
+            {
+                var src = (Path)sender;
+                src.MouseLeftButtonUp -= f_MouseLeftButtonUp;
+                src.MouseMove -= Operator_MouseMove;
+                src.ReleaseMouseCapture();
+            }
+            else
+            {
+                var src = (Rectangle)sender;
+                src.MouseLeftButtonUp -= f_MouseLeftButtonUp;
+                src.MouseMove -= Operator_MouseMove;
+                src.ReleaseMouseCapture();
+            }
+
+            var pos = e.GetPosition(null);
+
+            // Make shadow disappear don type
+            Shadow_collapseByMove();
+            //Shadow_collapse();
+            int actualFormulaIndex = gridLocusClicked + N_rightScrollClicks; // Globals set from wherefrom dragged.
+            
+            Point xy = e.GetPosition(this /*LayoutRoot*/);
+            //Point xy = e.GetPosition(null /*LayoutRoot*/);
+            var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
+
+            if (elementsUnderPointer.Contains(f_rect1))
+            {
+                f_checkEmpty_UpdateVis_RidVis(1);
+            }
+            else if (elementsUnderPointer.Contains(f_rect2))
+            {
+                f_checkEmpty_UpdateVis_RidVis(2);                
+            }
+            else if (elementsUnderPointer.Contains(f_rect3))
+            {
+                f_checkEmpty_UpdateVis_RidVis(3);
+            }
+            else if (elementsUnderPointer.Contains(f_rect4))
+            {
+                f_checkEmpty_UpdateVis_RidVis(4);
+            }
+            else if (elementsUnderPointer.Contains(f_rect5))
+            {
+                f_checkEmpty_UpdateVis_RidVis(5);
+            }
+            else if (elementsUnderPointer.Contains(f_rect6))
+            {
+                f_checkEmpty_UpdateVis_RidVis(6);
+            }
+            else if (elementsUnderPointer.Contains(f_rect7))
+            {
+                f_checkEmpty_UpdateVis_RidVis(7);
+            }
+            else if (elementsUnderPointer.Contains(f_rect8))
+            {
+                f_checkEmpty_UpdateVis_RidVis(8);
+            }
+            else if (elementsUnderPointer.Contains(f_rect9))
+            {
+                f_checkEmpty_UpdateVis_RidVis(9);
+            }
+            else if (elementsUnderPointer.Contains(f_rect10))
+            {
+                f_checkEmpty_UpdateVis_RidVis(10);
+            }
+            else
+            {
+                // There was no valid dropspot for the object.
+                // Do not update the drop spot's content,
+                // and re-instate the pathstyle of the original locus.
+                f_forbiddenSite();
+            }
+
+            string allStorage = "";
+            Debug.WriteLine("1341: Updated storage by move: ");
+            foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).Content)
+            {
+                allStorage = allStorage + ", " + oneGridsContent;
+            }
+            Debug.WriteLine(allStorage);
+
+            allStorage = "";
+            Debug.WriteLine("1349: Updated varname storage by move: ");
+            foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
+            {
+                allStorage = allStorage + ", " + oneGridsContent;
+            }
+            Debug.WriteLine(allStorage);
+
+
+            if (isPath == "System.Windows.Shapes.Path")
+            {
+                var src = (Path)sender;
+                src.RenderTransform = null;
+            }
+            else
+            {
+                var src = (Rectangle)sender;
+                src.RenderTransform = null;
+            }
+            checkFormulaStorage();
+        }
+
+        private void f_checkEmpty_UpdateVis_RidVis(int where)
+        {
+            if (f_isEmpty(where))
+            {
+                updateMovedGrid(f_rectID(where), f_pathID(where), f_textID(where), gridLocusClicked + N_rightScrollClicks, where + N_rightScrollClicks, N0, true); 
+                // Rectangle rectN, Path pathN, TextBlock textN, int beforeGrid, int nowGrid, TextBox boxN
+            }
+            else
+            {
+                    f_forbiddenSite();
+            }
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
@@ -2030,37 +2226,37 @@ namespace BioCheck.Views
             int gridLocusEntered = Int32.Parse((string)src.Tag);        // The grid index
             //var xy = e.GetPosition(this);         // Original
             //var xy = e.GetPosition(null);             // Just used. Can't open dropdown
-            Point xy = e.GetPosition(this /*LayoutRoot*/);        // Original?
+            Point xy = e.GetPosition(this /*LayoutRoot*/);    
             //var yx = e.GetPosition(this.Topgrid);  
-            //var xz = e.GetPosition(null);                               // Mouse loci wrt null
+            //var xz = e.GetPosition(null);                               // Mouse loci wrt null            
 
             // If there are no keyframes, no movement is allowed.
             if (allKeyframes.Count() > 0)
             {
 
-            if (!isEmpty(gridLocusEntered))
-            {
-                // Only call rename if a relevant object occupies the cell
-                //Transform transforms loci wrt start-loci!
-                //ComboBox whichBox = dropdownCell;
-                // Encapsulating this made the box appear at the top of the screen, for some reason.
-                switch (((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered])
+                if (!isEmpty(gridLocusEntered))
                 {
-                    case "cell":
-                        this.dropdownCell.RenderTransform = new TranslateTransform { X = xy.X - dropdownCell.Width, Y = xy.Y - dropdownCell.Height * 10 };
-                        this.dropdownCell.Visibility = System.Windows.Visibility.Visible;
-                            nameChangeGridN = gridLocusEntered;
-                        break;
-                    case "var":
-                        this.dropdownVar.RenderTransform = new TranslateTransform { X = xy.X - dropdownVar.Width, Y = xy.Y - dropdownVar.Height * 10 };
-                        Debug.WriteLine("Put the Combobox at " + xy.X.ToString() + " and " + xy.Y.ToString());
-                        this.dropdownVar.Visibility = System.Windows.Visibility.Visible;
+                    // Only call rename if a relevant object occupies the cell
+                    //Transform transforms loci wrt start-loci!
+                    //ComboBox whichBox = dropdownCell;
+                    // Encapsulating this made the box appear at the top of the screen, for some reason.
+                    switch (((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered])
+                    {
+                        case "cell":
+                            this.dropdownCell.RenderTransform = new TranslateTransform { X = xy.X - dropdownCell.Width, Y = xy.Y - dropdownCell.Height * 10 };
+                            this.dropdownCell.Visibility = System.Windows.Visibility.Visible;
                             nameChangeGridN = gridLocusEntered;
                             break;
-                }
+                        case "var":
+                            this.dropdownVar.RenderTransform = new TranslateTransform { X = xy.X - dropdownVar.Width, Y = xy.Y - dropdownVar.Height * 10 };
+                            Debug.WriteLine("Put the Combobox at " + xy.X.ToString() + " and " + xy.Y.ToString());
+                            this.dropdownVar.Visibility = System.Windows.Visibility.Visible;
+                            nameChangeGridN = gridLocusEntered;
+                            break;
+                    }
                     Keyframe_Storage_checker();
+                }
             }
-        }
         }
 
         private void Shadow_collapseByMove()
@@ -2115,6 +2311,9 @@ namespace BioCheck.Views
                 case "And":
                     this.And_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
+                case "Next":
+                    this.Next_shadow.Visibility = System.Windows.Visibility.Collapsed;
+                    break;
                 case "ob":
                     this.ob_shadow.Visibility = System.Windows.Visibility.Collapsed;
                     break;
@@ -2125,45 +2324,23 @@ namespace BioCheck.Views
         }
 
         // Works for the Grid and Formula.
-        private void updateMovedGrid(Rectangle rectN, Path pathN, TextBlock textN, int previousIndex, int currentIndex, TextBox boxN)
+        private void updateMovedGrid(Rectangle rectN, Path pathN, TextBlock textN, int previousIndex, int currentIndex, TextBox boxN, bool formula)
         {
             rectN.AllowDrop = false;
             string resourceStyleToUse = What_path_style(objectClicked.ToLower(),currentIndex);           
-
-            string resourceStyleToUse = "";
-            // Original object; what's being moved.
-            // NB Default covers cell, var and N.
-            switch (objectClicked)
-            {
-                case "=":
-                    resourceStyleToUse = "path" + nowGrid.ToString() + "equals";
-                    break;
-                case ">":
-                    resourceStyleToUse = "path" + nowGrid.ToString() + "mt";
-                    break;
-                case "<":
-                    resourceStyleToUse = "path" + nowGrid.ToString() + "lt";
-                    break;
-                case ">=":
-                    resourceStyleToUse = "path" + nowGrid.ToString() + "mte";
-                    break;
-                case "<=":
-                    resourceStyleToUse = "path" + nowGrid.ToString() + "lte";
-                    break;
-                default:
-                    resourceStyleToUse = "path" + nowGrid.ToString() + objectClicked;
-                    break;
-            }
 
             // Update this grid's visuals and stored data
             pathN.Style = (Style)this.Resources[resourceStyleToUse];
 
             //textN.Text = ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[previousIndex];
-            boxN.IsHitTestVisible = false;
-            boxN.IsReadOnly = true;
+            if (!formula)
+            {
+                boxN.IsHitTestVisible = false;
+                boxN.IsReadOnly = true;
+            }
 
             // Edit the storage.
-            // Grid or Formula?
+            // Detect if Grid or Formula:
             if (objectClicked == "=" || objectClicked == ">" || objectClicked == "<" || objectClicked == ">=" || objectClicked == "<=" || objectClicked == "var" || objectClicked == "cell" || objectClicked == "N")
             {
                 // Grid.
@@ -2172,11 +2349,11 @@ namespace BioCheck.Views
                 ((KeyFrames)this.KeyFrames.SelectedItem).Content[currentIndex] = objectClicked;      // e.g "="
                 ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[currentIndex] = (string)textN.Text;
 
-            //Erase the former grid's stored data (visuals are already gone)
-            ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[beforeGrid] = null;
-            ((KeyFrames)this.KeyFrames.SelectedItem).Content[beforeGrid] = null;
-            Keyframe_Storage_checker(); 
-        }
+                //Erase the former grid's stored data (visuals are already gone)
+                ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[previousIndex] = null;
+                ((KeyFrames)this.KeyFrames.SelectedItem).Content[previousIndex] = null;
+                Keyframe_Storage_checker();
+            }
             else 
             {
                 // Formula.
@@ -2184,7 +2361,6 @@ namespace BioCheck.Views
                 textN.Text = allFormulaElements[previousIndex].KeyframeName; // Only produces text if Keyframe name exists here.
                 //if (allFormulaElements[previousIndex].Content == "keyframe")
                 //{ 
-                    //___
                     pathN.Fill = new SolidColorBrush(allFormulaElements[previousIndex].KeyframeColor);
                     pathN.Stroke = new SolidColorBrush(allFormulaElements[previousIndex].KeyframeColor);
                 //}
@@ -2194,7 +2370,7 @@ namespace BioCheck.Views
                 allFormulaElements[currentIndex].Content = allFormulaElements[previousIndex].Content;
                 allFormulaElements[currentIndex].KeyframeColor = allFormulaElements[previousIndex].KeyframeColor;
                 allFormulaElements[currentIndex].KeyframeName = allFormulaElements[previousIndex].KeyframeName;
-        
+                
                 //Erase the former grid's stored data (visuals are already gone)
                 Formula_eraseGridContent(previousIndex); // Tries to delete visuals as well..
             }
@@ -2204,10 +2380,14 @@ namespace BioCheck.Views
         private void Grid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
 
-            var src = (Path)sender;
-            src.MouseLeftButtonUp -= Grid_MouseLeftButtonUp;
-            src.MouseMove -= Grid_MouseMove;
-            src.ReleaseMouseCapture();
+            // Find what Keyframe was clicked
+            string isPath = sender.ToString();
+            if (isPath == "System.Windows.Shapes.Path") 
+            {
+                  var src = (Path)sender;
+                  src.MouseLeftButtonUp -= Grid_MouseLeftButtonUp;
+                  src.MouseMove -= Grid_MouseMove;
+                  src.ReleaseMouseCapture();
             }
             else
             {
@@ -2217,157 +2397,166 @@ namespace BioCheck.Views
                  src.ReleaseMouseCapture();
             }
 
-            // -----------------------------------
-
-            //var src = (Path)sender;
             var pos = e.GetPosition(null);
             //var pos = e.GetPosition(this);            // Original
 
             // Make shadow disappear don type
             Shadow_collapseByMove();
 
-            //this.Equals_shadow.Visibility = System.Windows.Visibility.Collapsed;
-
-
             // If there are no keyframes, no movement is allowed.
             if (allKeyframes.Count() > 0)
             {
-            Point xy = e.GetPosition(this /*LayoutRoot*/);        // Original?
-            //Point xy = e.GetPosition(null /*LayoutRoot*/);
-            var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
-            //var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
-            
-            // Note the spot where drop occurred, 
-            // and update this current keyframe's pathstrings so that the drop is stored
+                Point xy = e.GetPosition(this /*LayoutRoot*/);
+                //Point xy = e.GetPosition(null /*LayoutRoot*/);
+                var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
+                //var elementsUnderPointer = VisualTreeHelper.FindElementsInHostCoordinates(pos, this);   // Was LayoutRoot
 
-            //bool droppedOnTarget = elementsUnderPointer.Contains(rect0);
-            //Debug.WriteLine(droppedOnTarget);
+                // Note the spot where drop occurred, 
+                // and update this current keyframe's pathstrings so that the drop is stored
 
-            // Store former ContentName
-            string exContentName = ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusClicked];
+                //bool droppedOnTarget = elementsUnderPointer.Contains(rect0);
+                //Debug.WriteLine(droppedOnTarget);
 
-            if (elementsUnderPointer.Contains(rect0))
-            {
-                if (isEmpty(0))
+                // Store former ContentName
+                string exContentName = ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusClicked];
+
+                if (elementsUnderPointer.Contains(rect0))
                 {
-                    updateMovedGrid(rect0, path0, text0, gridLocusClicked, 0, N0);
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(0, xy, exContentName);
                 }
+                else if (elementsUnderPointer.Contains(rect1))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(1, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect2))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(2, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect3))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(3, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect4))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(4, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect5))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(5, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect6))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(6, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect7))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(7, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect8))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(8, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect9))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(9, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect10))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(10, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect11))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(11, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect12))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(12, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect13))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(13, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect14))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(14, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect15))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(15, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect16))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(16, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect17))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(17, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect18))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(18, xy, exContentName);
+                }
+                else if (elementsUnderPointer.Contains(rect19))
+                {
+                    checkEmpty_orComboBoxOpen_andDeleteGraphics(19, xy, exContentName);
+                }     
                 else
                 {
-                    // If current grid == former grid (nothing was ever moved acros a grid), 
-                    // you probably want to rename the var or cell, not move it.
-                    if (gridLocusClicked == 0)
-                    {
-                        nameChangeGridN = 0;        // To update the currect grid site's textblock
-                        // Nothing was ever moved across a grid boundary. The host control was just clicked: Rename!
-                        openComboBoxes(xy);
-                    }
-                    // Whether renamed or forbidden; need to revisible the variable.
+                    // There was no valid dropspot for the object.
+                    // Do not update the drop spot's content,
+                    // and re-instate the pathstyle of the original locus.
                     forbiddenSite(exContentName);
                 }
 
-            }
-            else if (elementsUnderPointer.Contains(rect1))
-            {
-                if (isEmpty(1))
+                string allStorage = "";
+                Debug.WriteLine("1341: Updated storage by move: ");
+                foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).Content)
                 {
-                    updateMovedGrid(rect1, path1, text1, gridLocusClicked, 1, N1);
+                    allStorage = allStorage + ", " + oneGridsContent;
                 }
-                else
-                {
-                        if (gridLocusClicked == 1 && (((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusClicked] == "var" || ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusClicked] == "cell"))
-                    {
-                        nameChangeGridN = 1;        // To update the currect grid site's textblock
-                        // Nothing was ever moved across a grid boundary. The host control was just clicked: Rename!
-                        openComboBoxes(xy);
-                    }
+                Debug.WriteLine(allStorage);
 
-                    forbiddenSite(exContentName);
-                }
-
-            }
-            else if (elementsUnderPointer.Contains(rect2))
-            {
-                if (isEmpty(2))
+                allStorage = "";
+                Debug.WriteLine("1349: Updated varname storage by move: ");
+                foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
                 {
-                    updateMovedGrid(rect2, path2, text2, gridLocusClicked, 2, N2);
+                    allStorage = allStorage + ", " + oneGridsContent;
                 }
-                else
-                {
-                    if (gridLocusClicked == 2)
-                    {
-                        nameChangeGridN = 2;        // To update the currect grid site's textblock
-                        // Nothing was ever moved across a grid boundary. The host control was just clicked: Rename!
-                        openComboBoxes(xy);
-                    }
-                    forbiddenSite(exContentName);
-                }
-            }
-            else if (elementsUnderPointer.Contains(rect3))
-            {
-                if (isEmpty(3))
-                {
-                    // Default
-                    updateMovedGrid(rect3, path3, text3, gridLocusClicked, 3, N3);
-                }
-                else
-                {
-                    if (gridLocusClicked == 3)
-                    {
-                        nameChangeGridN = 3;        // To update the currect grid site's textblock
-                        // Nothing was ever moved across a grid boundary. The host control was just clicked: Rename!
-                        openComboBoxes(xy);
-                    }
-                    forbiddenSite(exContentName);
-                }
-            }
-            else if (elementsUnderPointer.Contains(rect4))
-            {
-                if (isEmpty(4))
-                {
-                    updateMovedGrid(rect4, path4, text4, gridLocusClicked, 4, N4);
-                }
-                else
-                {
-                    if (gridLocusClicked == 4)
-                    {
-                        nameChangeGridN = 4;        // To update the currect grid site's textblock
-                        // Nothing was ever moved across a grid boundary. The host control was just clicked: Rename!
-                        openComboBoxes(xy);
-                    }
-                    forbiddenSite(exContentName);
-                }
-            }
-            else
-            {
-                // There was no valid dropspot for the object.
-                // Do not update the drop spot's content,
-                // and re-instate the pathstyle of the original locus.
-                forbiddenSite(exContentName);
-            }
-
-            string allStorage = "";
-            Debug.WriteLine("1341: Updated storage by move: ");
-            foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).Content)
-            {
-                allStorage = allStorage + ", " + oneGridsContent;
-            }
-            Debug.WriteLine(allStorage);
-
-            allStorage = "";
-            Debug.WriteLine("1349: Updated varname storage by move: ");
-            foreach (string oneGridsContent in ((KeyFrames)this.KeyFrames.SelectedItem).NameContent)
-            {
-                allStorage = allStorage + ", " + oneGridsContent;
-            }
-            Debug.WriteLine(allStorage);
+                Debug.WriteLine(allStorage);
 
 
                 if (isPath == "System.Windows.Shapes.Path")
                 {
                     var src = (Path)sender;
-            src.RenderTransform = null;
+                    src.RenderTransform = null;
+                }
+                else
+                {
+                    var src = (Rectangle)sender;
+                    src.RenderTransform = null;
+                }
+                //src.RenderTransform = null;
+            }           
         }
+
+        // Out-sourced grid editing
+        private void checkEmpty_orComboBoxOpen_andDeleteGraphics(int where, Point xy, string exContentName)
+        {
+            if (isEmpty(where))
+            {
+                updateMovedGrid(rectID(where), pathID(where), textID(where), gridLocusClicked, where, textboxID(where), false);
+                //updateMovedGrid(rect5, path5, text5, gridLocusClicked, 5, N5, false);
+            }
+            else
+            {
+                if (gridLocusClicked == where)
+                {
+                    nameChangeGridN = where;        // To update the currect grid site's textblock
+                    // Nothing was ever moved across a grid boundary. The host control was just clicked: Rename!
+                    openComboBoxes(xy);
+                }
+                forbiddenSite(exContentName);
+            }
         }
 
         // Restore previous grid visuals if nothing was moved
@@ -2393,7 +2582,7 @@ namespace BioCheck.Views
 
             TextBlock exactTextBlock = (TextBlock)f_textID(gridLocusClicked);
             Path exactPath = (Path)f_pathID(gridLocusClicked);
-            TextBox exactTextBox = (TextBox)f_textboxID(gridLocusClicked);
+            //TextBox exactTextBox = (TextBox)f_textboxID(gridLocusClicked);
             Rectangle exactRect = (Rectangle)f_rectID(gridLocusClicked);
 
             string whatPathToUse = What_path_style((allFormulaElements[actualFormulaIndex].Content == "keyframe") ? allFormulaElements[actualFormulaIndex].Content : allFormulaElements[actualFormulaIndex].Rule.ToLower(), gridLocusClicked);
@@ -2404,8 +2593,8 @@ namespace BioCheck.Views
             exactPath.Fill = new SolidColorBrush(allFormulaElements[actualFormulaIndex].KeyframeColor);
             exactTextBlock.Text = allFormulaElements[actualFormulaIndex].KeyframeName;
             exactRect.AllowDrop = false;
-            exactTextBox.IsHitTestVisible = false;
-            exactTextBox.IsReadOnly = true;
+            //exactTextBox.IsHitTestVisible = false;
+            //exactTextBox.IsReadOnly = true;
         }
 
         private bool isEmpty(int gridN)
@@ -2418,42 +2607,10 @@ namespace BioCheck.Views
             return (allFormulaElements[gridN + N_rightScrollClicks].Content == null);
         }
 
-        // Hover: not clicked down
-        //private void grayed_MouseEnter(object sender, MouseEventArgs e)
-        //{
-        //    // Find out what sent the signal
-        //    int formulaSpot;
-        //    string isPath = sender.ToString();
-        //    if (isPath == "System.Windows.Shapes.Path")
-        //    {
-        //        var src = (Path)sender;
-        //        formulaSpot = Int32.Parse((string)src.Tag);       // The formula index
-        //    }
-        //    else if (isPath == "System.Windows.Shapes.Rectangle")
-        //    {
-        //        var src = (Rectangle)sender;
-        //        formulaSpot = Int32.Parse((string)src.Tag);       // The formula index
-        //    }
-        //    else if (isPath == "System.Windows.Controls.TextBlock")
-        //    {
-        //        var src = (TextBlock)sender;
-        //        formulaSpot = Int32.Parse((string)src.Tag);
-        //    }
-        //    else 
-        //    {
-        //        var src = (TextBox)sender;
-        //        formulaSpot = Int32.Parse((string)src.Tag);
-        //    }
-
-        //    // Get the tag-rectangle
-        //    Rectangle exactRect = (Rectangle)f_rectID(formulaSpot);
-
-        //    // Colour it in
-        //    exactRect.Fill = myGrayBrush;
-        //}
+        // Hover over Grid element: change of colour
         private void grayed_MouseEnter(object sender, MouseEventArgs e)
         {
-            // Find out what sent the signal
+            // Find out what sent the signal: get the Tag
             int formulaSpot;
             string senderName;
             string isPath = sender.ToString();
@@ -2464,8 +2621,8 @@ namespace BioCheck.Views
                 senderName = src.Name;
             }
             else if (isPath == "System.Windows.Shapes.Rectangle")
-        {
-            var src = (Rectangle)sender;
+            {
+                var src = (Rectangle)sender;
                 formulaSpot = Int32.Parse((string)src.Tag);       // The formula index
                 senderName = src.Name;
             }
@@ -2482,16 +2639,19 @@ namespace BioCheck.Views
                 senderName = src.Name;
             }
 
-            // If there are no keyframes, no query is allowed.
-            if (allKeyframes.Count() > 0)
+            // Get the tag-rectangle
+            // Grid or Formula? Formula starts with "f_"
+            string[] varName = senderName.Split('_');
+            if (varName[0] == "f")
             {
-                // Find out if anything exists in this Keyframe, this grid
-                if (((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] != null)
+                Rectangle exactRect = (Rectangle)f_rectID(formulaSpot);
+                exactRect.Fill = myGrayBrush;
+            }
+            else
             {
                 Rectangle exactRect = (Rectangle)rectID(formulaSpot);
                 exactRect.Fill = myGrayBrush;
             }
-        }
         }
 
         private void grayed_MouseLeave(object sender, MouseEventArgs e)
@@ -2507,8 +2667,8 @@ namespace BioCheck.Views
                 senderName = src.Name;
             }
             else if (isPath == "System.Windows.Shapes.Rectangle")
-        {
-            var src = (Rectangle)sender;
+            {
+                var src = (Rectangle)sender;
                 formulaSpot = Int32.Parse((string)src.Tag);       // The formula index
                 senderName = src.Name;
             }
@@ -2524,7 +2684,7 @@ namespace BioCheck.Views
                 formulaSpot = Int32.Parse((string)src.Tag);
                 senderName = src.Name;
             }
-            
+
             // Get the tag-rectangle
             // Grid or Formula? Formula starts with "f_"
             string[] varName = senderName.Split('_');
@@ -2540,33 +2700,6 @@ namespace BioCheck.Views
             }
         }
 
-
-        //private void Rect_MouseEnter(object sender, MouseEventArgs e)
-        //{
-        //    var src = (Rectangle)sender;
-        //    int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-
-        //    // If there are no keyframes, no query is allowed.
-        //    if (allKeyframes.Count() > 0)
-        //    {
-        //        // Find out if anything exists in this Keyframe, this grid
-        //        if (((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] != null)
-        //        {
-        //            src.Fill = myGrayBrush;
-        //        }
-        //    }
-        //}
-
-        // When the mouse leaves, get the normal color back (whether the grid had content or not)
-        //private void Rect_MouseLeave(object sender, MouseEventArgs e)
-        //{
-        //    var src = (Rectangle)sender;
-        //    //int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-            
-        //    src.Fill = myWhiteBrush;
-        //}
-
-        // MouseClicked -- DOES NOT WORK. Not used in the XAML --
         private void Rect_DragEnter(object sender, DragEventArgs e)
         {
             var src = (Rectangle)sender;
@@ -2589,8 +2722,6 @@ namespace BioCheck.Views
             Debug.WriteLine("got to rect_dragleave.");
         }
 
-        
-
         // What grid N has focus?
         int gridWithFocus; 
         private void N_GotFocus(object sender, RoutedEventArgs e)
@@ -2607,73 +2738,73 @@ namespace BioCheck.Views
             {
                 tempDebug.Text = "N_TextChanged is called";
 
-            var src = (TextBox)sender;
-            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-            string newText = src.Text;
-            string noWhite = newText.Trim();                            // Strip start and end whitespace
-            int containedN;
-            bool correctInput = true;
-            Rectangle exactRect = (Rectangle)rectID(gridLocusEntered);
+                var src = (TextBox)sender;
+                int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
+                string newText = src.Text;
+                string noWhite = newText.Trim();                            // Strip start and end whitespace
+                int containedN;
+                bool correctInput = true;
+                Rectangle exactRect = (Rectangle)rectID(gridLocusEntered);
 
                 if (gridWithFocus == gridLocusEntered && ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] != "var" && ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] != "cell")
                 {
 
                     if (noWhite == null || noWhite == "")
-                {
-                    // No number was entered
-                    ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = null;
-                    ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;
-                    exactRect.Fill = myWhiteBrush;
-                }
-                    else if (noWhite == "=" || noWhite == "<" || noWhite == ">" || noWhite == "<=" || noWhite == ">=")
-                {
-                    // Accepted non-numeric input
-                    ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = noWhite;
-                        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;  // Was noWhite. Fixed bug?
-                    exactRect.Fill = myWhiteBrush;
-                } 
-                else
-                {
-                    // Number input. Test that the contained string converts successfully to an int
-                        try
-                        {
-                        containedN = Int32.Parse(noWhite);
-                    }
-                    catch (FormatException)
                     {
-                        //not an integer. 
-                        correctInput = false;
-                    }
-                    catch (OverflowException)
-                    {
-                        //in case the number is too big/small for an int.
-                        correctInput = false;
-                    }
-                    if (correctInput)
-                    {
-                        ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = "N";
-                        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = noWhite;
-                        exactRect.Fill = myWhiteBrush;
-                    }
-                        else
-                        {
+                        // No number was entered
                         ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = null;
                         ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;
-                        exactRect.Style = (Style)this.Resources["rectError"];            // ..but when I leave, it recolors to white anyways.
-                        exactRect.Fill = myRedBrush;        // Works.. Above does not.
+                        exactRect.Fill = myWhiteBrush;
                     }
+                    else if (noWhite == "=" || noWhite == "<" || noWhite == ">" || noWhite == "<=" || noWhite == ">=")
+                    {
+                        // Accepted non-numeric input
+                        ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = noWhite;
+                        ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;  // Was noWhite. Fixed bug?
+                        exactRect.Fill = myWhiteBrush;
+                    }
+                    else
+                    {
+                        // Number input. Test that the contained string converts successfully to an int
+                        try
+                        {
+                            containedN = Int32.Parse(noWhite);
+                        }
+                        catch (FormatException)
+                        {
+                            //not an integer. 
+                            correctInput = false;
+                        }
+                        catch (OverflowException)
+                        {
+                            //in case the number is too big/small for an int.
+                            correctInput = false;
+                        }
+                        if (correctInput)
+                        {
+                            ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = "N";
+                            ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = noWhite;
+                            exactRect.Fill = myWhiteBrush;
+                        }
+                        else
+                        {
+                            ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] = null;
+                            ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered] = null;
+                            exactRect.Style = (Style)this.Resources["rectError"];            // ..but when I leave, it recolors to white anyways.
+                            exactRect.Fill = myRedBrush;        // Works.. Above does not.
+                        }
+                    }
+                    Debug.WriteLine("Textbox was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered]);
+                    //tempDebug.Text = "Textbox " + gridLocusEntered.ToString() + " was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered];
                 }
-                Debug.WriteLine("Textbox was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered]);
-                //tempDebug.Text = "Textbox " + gridLocusEntered.ToString() + " was changed. Content is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridLocusEntered] + " NameContent is now = " + ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridLocusEntered];
             }
-        }
             else 
             {
                 tempDebug.Text = "Textbox change prevented by Keyframe push.";
             }
         }
         #endregion
-        
+
         // --------------------------------------
         //
         //          Simplifying code! 
@@ -2695,6 +2826,36 @@ namespace BioCheck.Views
                     return this.N3;
                 case 4:
                     return this.N4;
+                case 5:
+                    return this.N5;
+                case 6:
+                    return this.N6;
+                case 7:
+                    return this.N7;
+                case 8:
+                    return this.N8;
+                case 9:
+                    return this.N9;
+                case 10:
+                    return this.N10;
+                case 11:
+                    return this.N11;
+                case 12:
+                    return this.N12;
+                case 13:
+                    return this.N13;
+                case 14:
+                    return this.N14;
+                case 15:
+                    return this.N15;
+                case 16:
+                    return this.N16;
+                case 17:
+                    return this.N17;
+                case 18:
+                    return this.N18;
+                case 19:
+                    return this.N19;
             }
             return this.N0;
         }
@@ -2713,6 +2874,36 @@ namespace BioCheck.Views
                     return this.path3;
                 case 4:
                     return this.path4;
+                case 5:
+                    return this.path5;
+                case 6:
+                    return this.path6;
+                case 7:
+                    return this.path7;
+                case 8:
+                    return this.path8;
+                case 9:
+                    return this.path9;
+                case 10:
+                    return this.path10;
+                case 11:
+                    return this.path11;
+                case 12:
+                    return this.path12;
+                case 13:
+                    return this.path13;
+                case 14:
+                    return this.path14;
+                case 15:
+                    return this.path15;
+                case 16:
+                    return this.path16;
+                case 17:
+                    return this.path17;
+                case 18:
+                    return this.path18;
+                case 19:
+                    return this.path19;
             }
             return this.path0;
         }
@@ -2731,6 +2922,36 @@ namespace BioCheck.Views
                     return this.rect3;
                 case 4:
                     return this.rect4;
+                case 5:
+                    return this.rect5;
+                case 6:
+                    return this.rect6;
+                case 7:
+                    return this.rect7;
+                case 8:
+                    return this.rect8;
+                case 9:
+                    return this.rect9;
+                case 10:
+                    return this.rect10;
+                case 11:
+                    return this.rect11;
+                case 12:
+                    return this.rect12;
+                case 13:
+                    return this.rect13;
+                case 14:
+                    return this.rect14;
+                case 15:
+                    return this.rect15;
+                case 16:
+                    return this.rect16;
+                case 17:
+                    return this.rect17;
+                case 18:
+                    return this.rect18;
+                case 19:
+                    return this.rect19;
             }
             return this.rect0;
         }
@@ -2749,12 +2970,42 @@ namespace BioCheck.Views
                     return this.text3;
                 case 4:
                     return this.text4;
+                case 5:
+                    return this.text5;
+                case 6:
+                    return this.text6;
+                case 7:
+                    return this.text7;
+                case 8:
+                    return this.text8;
+                case 9:
+                    return this.text9;
+                case 10:
+                    return this.text10;
+                case 11:
+                    return this.text11;
+                case 12:
+                    return this.text12;
+                case 13:
+                    return this.text13;
+                case 14:
+                    return this.text14;
+                case 15:
+                    return this.text15;
+                case 16:
+                    return this.text16;
+                case 17:
+                    return this.text17;
+                case 18:
+                    return this.text18;
+                case 19:
+                    return this.text19;
             }
             return this.text0;
         }
 
         // Retrieve the correct object in the FormulaGrid
-        private TextBox f_textboxID(int gridN)
+        /*private TextBox f_textboxID(int gridN)
         {
             switch (gridN)
             {
@@ -2781,6 +3032,7 @@ namespace BioCheck.Views
             }
             return this.f_N1;
         }
+         */
 
         private Path f_pathID(int gridN)
         {
@@ -2875,35 +3127,56 @@ namespace BioCheck.Views
 
         #endregion
 
-        // Change opacity when entering/leaving the window (so underlying Model is easier to view)
-        protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
+        // --------------------------------------
+        //
+        //          Un-used code to create in-GUI progression table
+        //          Currently calling the Simulation window instead, 
+        //          which is practical and the preferred method atm.
+        //
+        // --------------------------------------
+        #region Progression table (unused)
+        // Called every time that the scroller shows new variables.
+        // Instance by a row (a variable)
+        private void ProgressionGrid_RowLoaded(object sender, DataGridRowEventArgs e)
         {
-            base.OnMouseLeave(e);
-            this.Opacity = 0.7;
-        }
-        protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
-        {
-            base.OnMouseEnter(e);
-            this.Opacity = 1;
-        }
-
-        public void TimeView_testAccess()
-        {
-            Debug.WriteLine("Accessed the TimeView_testAccess!");
-        }
-
-        // Keep!
-        void TimeView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (timeVM != null)
+            if (!tableLoaded)
             {
-                timeVM.RemoveHandler("State", OnStateChanged);
+                TimeView_initializeTable();
+                this.tableLoaded = true; // Change the value so it's not re-called.
             }
-            timeVM = (TimeViewModel)this.DataContext;           // Gives me access to the data in the VM.
-            //timeVM.AddHandler("State", OnStateChanged);
-            //this.State = timeVM.State;
-            Debug.WriteLine("this.DataContext changed.");
-           
+            var grid = sender as DataGrid;
+
+            // To debug further, uncomment the below:
+            //int rowIndex = e.Row.GetIndex();
+            //timeVM = (TimeViewModel)this.DataContext;           // Gives me access to the data in the VM. Perhaps unnecessary.
+            //var progressionInfo = timeVM.TimeInfos[rowIndex];
+
+            //for (int i = 0; i < progressionInfo.Steps.Count; i++)
+            //{
+            //    var column = grid.Columns[i + 1];
+            //    var cell = column.GetCellContent(e.Row); // fails. e.Row looks unset.  <-- NEEDS FIX IF I WANT SIM WINDOW IN LTL
+            //    cell.DataContext = progressionInfo.Steps[i]; // Fails since above fails.
+            //}
+        }
+
+        // Call this when Simulation found. Works ok.
+        // Writes out the T=0, T=1, T=2 colum headers.
+        public void TimeView_initializeTable()
+        {
+            timeVM = (TimeViewModel)this.DataContext;
+
+            // Create the Progression Info grid columns
+            var progressionInfo = timeVM.TimeInfos.FirstOrDefault();
+            if (progressionInfo == null)
+                return;
+
+            // Remove any previously written T=0, T=1 et.c.
+            // To continue table editing, uncomment below
+            //while (ProgressionGrid.Columns.Count > 1)
+            //{
+            //    ProgressionGrid.Columns.RemoveAt(1);
+            //}
+
             //var colTemplate = this.Resources["ProgressionInfoColumnTemplate"] as DataTemplate;
             //foreach (var step in progressionInfo.Steps)
             //{
@@ -2916,84 +3189,7 @@ namespace BioCheck.Views
             //    //ProgressionGrid.Columns.Insert(1,col); // Inserts column?
             //}
         }
-
-        void TimeView_MouseMove(object sender, MouseEventArgs e)
-        {
-            var mouseLocus = e.GetPosition(this);                   // this refers to the element wrt which the coordinates are reported. Here = the LTL window.     
-            this.timeVM.LTLInput = mouseLocus.ToString();
-        private void Make_popup_notMove (object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;           // Stops the window dragging! Rest of functionality intact?
-        }
-
-        //private void SuperstateDragGrid_Drop(object sender, DragEventArgs e)        // This may actually not do anything.. / Gavin
-        //{
-        //    var mouseLocus = e.GetPosition(this);
-        //    this.timeVM.LTLInput = "The button was dragged to " + mouseLocus.ToString();
-        //}
-
-        //private void SuperstateDragGrid_Enter(object sender, DragEventArgs e)
-        //{
-        //    //DragDroptextBlock.FontWeight = FontWeights.ExtraBold;
-        //}
-
-        //private void SuperstateDragGrid_DragLeave(object sender, DragEventArgs e)       // This may actually not do anything.. / Gavin
-        //{
-        //    //DragDroptextBlock.FontWeight = FontWeights.Normal;              // x:Name and a function.
-        //}
-
-        // Inputs the start and end index to edit
-        private void editNonNull_Formula(int start, int end)
-        {
-            string mergedRule = "";
-            for (int formulaIndex = start; formulaIndex <= end; formulaIndex++)
-            {
-                // Check what logical expressions are here:
-                if (noNullElements[formulaIndex].Content == "logic")
-                {
-                    // Logical expressions that expect one unit afterwards:
-                    if (noNullElements[formulaIndex].Rule == "Eventually" || noNullElements[formulaIndex].Rule == "Always" || noNullElements[formulaIndex].Rule == "Not")
-                    {
-                        // Piece together this logics expression and next non-null element (whatever it is)
-                        bool foundNonNull = false;
-                        for (int seekingNonNull = (formulaIndex + 1); seekingNonNull <= end; seekingNonNull++)
-                        {
-                            if (!foundNonNull && noNullElements[seekingNonNull].Content != null)
-                            {
-                                // Piece together the .Rules
-                                mergedRule = "(" + noNullElements[formulaIndex].Rule + " "+ noNullElements[seekingNonNull].Rule + ")";
-
-                                // Edit the noNullElements content to reflect new merged Rules
-                                noNullElements[formulaIndex].Content = "Merged";
-                                noNullElements[formulaIndex].Rule = mergedRule;
-
-                                noNullElements[seekingNonNull].Content = null;
-                                noNullElements[seekingNonNull].Rule = null;
-
-                                foundNonNull = true;
-                            }
-                        }
-                        if (!foundNonNull)
-        {
-                            // Report error.
-                        }
-        }
-                    else if (noNullElements[formulaIndex].Rule == "Until" || noNullElements[formulaIndex].Rule == "Implies" || noNullElements[formulaIndex].Rule == "And")
-                    {
-                        // Piece together this logics expression, the previous non-null element and the next non-null element (whatever they are)
-
-                        // Find previous:
-                        bool foundPreNonNull = false;
-                        for (int seekingNonNull = (formulaIndex - 1); seekingNonNull >= start; seekingNonNull--)
-                        {
-                            if (!foundPreNonNull && noNullElements[seekingNonNull].Content != null)
-                            {
-                                // Piece together the .Rules
-                                mergedRule = "(" + noNullElements[formulaIndex].Rule + " " + noNullElements[seekingNonNull].Rule;
-
-                                // Edit the noNullElements content to reflect new merged Rules
-                                noNullElements[seekingNonNull].Content = null;
-                                noNullElements[seekingNonNull].Rule = null;
+        #endregion
 
         // -----------------------------------------------------------
         //
@@ -3005,116 +3201,57 @@ namespace BioCheck.Views
         #region Delete Grid (Formula and/or Grid) content by RC
 
         // Grid erasing:
-        private void rect_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void Grid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-                                    // Piece together the .Rules
-                                    mergedRule += " " + noNullElements[seekingNonNull].Rule + ")";
-
-                                    // Edit the noNullElements content to reflect new merged Rules
-                                    noNullElements[formulaIndex].Content = "Merged";
-                                    noNullElements[formulaIndex].Rule = mergedRule;
-
-                                    noNullElements[seekingNonNull].Content = null;
-                                    noNullElements[seekingNonNull].Rule = null;
-
-            // Send off grid to be deleted:
-            deleteGrid_visuals_andStorage(gridLocusEntered);
             e.Handled = true;
-        }
+
+            // Find out what sent the signal
+            string isPath = sender.ToString();
+            int gridLocusEntered = 100;
+            string senderName;
+            if (isPath == "System.Windows.Shapes.Path")
+            {
+                var src = (Path)sender;
+                gridLocusEntered = Int32.Parse((string)src.Tag);
+                senderName = src.Name;
+            }
+            else if (isPath == "System.Windows.Shapes.Rectangle")
+            {
+                var src = (Rectangle)sender;
+                gridLocusEntered = Int32.Parse((string)src.Tag);
+                senderName = src.Name;
+            }
+            else if (isPath == "System.Windows.Controls.TextBlock")
+            {
+                var src = (TextBlock)sender;
+                gridLocusEntered = Int32.Parse((string)src.Tag);
+                senderName = src.Name;
+            }
             else
-        {
-                minibracketList.Add("(" + op + " " + var + " " + N + ")");
+            {
+                var src = (TextBox)sender;
+                gridLocusEntered = Int32.Parse((string)src.Tag);
+                senderName = src.Name;
             }
 
-            Debug.WriteLine("Test");
-        }
-        #endregion
-
-        // --------------------------------------
-        //
-        //          The Formula Scoller
-        //
-        // --------------------------------------
-        #region Formula scroller code
-        private void ScrollLeft_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            // Change color to indicate click
-            var src = (Path)sender;
-            src.Fill = myDarkGrayBrush;
-            src.MouseLeftButtonUp += ScrollLeft_MouseLeftButtonUp; // Explicitly cause the below function to be called, or it doesn't happen.
-
-            // Make a new Formula element. Add it to the end.
-            allFormulaElements.Add(new FormulaType { KeyframeName = null, KeyframeColor = Colors.White, Rule = null, Content = null }); // Added to the end.
-
-            // Move contents. Start from next to last (the formula element that was just added doesn't contain anything)
-            for (int formulaElementIndex = allFormulaElements.Count()-2 ; formulaElementIndex >= 0; formulaElementIndex--)
+            // Grid or Formula? Formula starts with "f_"
+            string[] varName = senderName.Split('_');
+            if (varName[0] == "f")
             {
-                if (allFormulaElements[formulaElementIndex].Content != null)
-                {
-                    tempDebug.Text = "allFormulaElements index " + formulaElementIndex + " is non-null: " + allFormulaElements[formulaElementIndex].Content;
-                    // Found something in the Formula grid. 
-                    // Move all grid content forwards one element, where there's nothing. 
-                    // Then erase the current Formula grid element's storage.
-                    allFormulaElements[formulaElementIndex +1].Content = allFormulaElements[formulaElementIndex].Content;
-                    allFormulaElements[formulaElementIndex].Content = null;
-
-                    allFormulaElements[formulaElementIndex + 1].KeyframeColor = allFormulaElements[formulaElementIndex].KeyframeColor;
-                    allFormulaElements[formulaElementIndex].KeyframeColor = Colors.White;
-
-                    allFormulaElements[formulaElementIndex + 1].KeyframeName = allFormulaElements[formulaElementIndex].KeyframeName;
-                    allFormulaElements[formulaElementIndex].KeyframeName = null;
-
-                    allFormulaElements[formulaElementIndex + 1].Rule = allFormulaElements[formulaElementIndex].Rule;
-                    allFormulaElements[formulaElementIndex].Rule = null;
-
-                    // Storage directs visual appearance, so must be offset by [- N_rightScrollClicks]
-                    // Edit visuals: edit current+1 -- ONLY IF 1 to 10 --
-                    int vis_from_storageElement = formulaElementIndex - N_rightScrollClicks;
-                    //tempDebug.Text += "\nWhere to erase = " + vis_from_storageElement + " and where to draw is that + 1. Is it within 1 to 10?";
-                    if (vis_from_storageElement > 0 && vis_from_storageElement <= 10 )
-                    {
-                        // Edit visuals: delete current (works)
-                        f_pathID(vis_from_storageElement).Fill = new SolidColorBrush(Colors.Transparent);
-                        editVis(f_pathID(vis_from_storageElement), vis_from_storageElement, null, null, f_textboxID(vis_from_storageElement), f_textID(vis_from_storageElement), true);
-                    }
-                    //tempDebug.Text += "\nDrawing if the place to draw, (" + vis_from_storageElement.ToString() + " + 1) is <= 10.";
-                    if (vis_from_storageElement >= 0 && vis_from_storageElement <= 9 )
-                    {
-                        // Add visuals: 
-                        // "storageDone" causes Formula grid editor not to try to edit Formula storage using selected keyframe data (which is irrelevant)
-                        editVis(f_pathID(vis_from_storageElement + 1), vis_from_storageElement + 1, allFormulaElements[formulaElementIndex + 1].Content, "storageDone", f_textboxID(vis_from_storageElement + 1), f_textID(vis_from_storageElement + 1), true);
-                    }
-                }
+                // Formula: Correct for scroller clicks, 
+                // then send off the real Formula storage index to be deleted:
+                int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
+                Formula_eraseGridContent(actual_storageIndex);
+            }
+            else
+            {
+                // Grid: Send off index to be deleted:
+                deleteGrid_visuals_andStorage(gridLocusEntered);
             }
         }
 
-        private void ScrollLeft_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            // Change color back to gray.
-            var src = (Path)sender;
-            src.Fill = myGrayBrush;
-            src.MouseLeftButtonUp -= ScrollLeft_MouseLeftButtonUp;
-        }
-
-        int N_rightScrollClicks = 0; // Correct storage wrt visuals
-        private void ScrollRight_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            // Change color to indicate click
-            var src = (Path)sender;
-            src.Fill = myDarkGrayBrush;
-            src.MouseLeftButtonUp += ScrollRight_MouseLeftButtonUp; // Explicitly cause the below function to be called, or it doesn't happen.
-            N_rightScrollClicks++;
-
-            //// Make a new Formula element
-            var item = new FormulaType { KeyframeName = null, KeyframeColor = Colors.White, Rule = null, Content = null };
-            allFormulaElements.Insert(0, item); // Add to start
-
-            // Move storage contents. Start from 1 (the formula element that was just added to index 0 doesn't contain anything)
-            for (int formulaElementIndex = 1; formulaElementIndex <= allFormulaElements.Count - 1; formulaElementIndex++)
-            {
-                if (allFormulaElements[formulaElementIndex].Content != null)
+        // Works.
+        private void deleteGrid_visuals_andStorage(int gridN)
         {
             // Just in case editing is prevented.
             //textChange_by_Keyframe = false;       // Should be no need.
@@ -3123,84 +3260,29 @@ namespace BioCheck.Views
             ((KeyFrames)this.KeyFrames.SelectedItem).Content[gridN] = null;
             ((KeyFrames)this.KeyFrames.SelectedItem).NameContent[gridN] = null;
 
-                    // Find out which visual element to edit
-                    // How storage relates to visuals:
-                    int whatVisIndexToDraw = formulaElementIndex - N_rightScrollClicks;
-                    //tempDebug.Text += "\nWhere to erase = " + whatVisIndexToDraw + " and where to draw is that -1. Is it within 1 to 10?";
-
-            restylePath(exactPath, gridN, null, null, exactTextBox, exactTextBlock);
-        }
-
-        // Formula erasing:
-        private void f_rect_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var src = (Rectangle)sender;
-            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-
-            // Correct for scroller clicks
-            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
-            
-            // Send off the Formula storage index to be deleted:
-            Formula_eraseGridContent(actual_storageIndex);
-            e.Handled = true;
-        }
-        private void f_textblock_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var src = (TextBlock)sender;
-            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-
-            // Correct for scroller clicks
-            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
-
-            // Send off the Formula storage index to be deleted:
-            Formula_eraseGridContent(actual_storageIndex);
-            e.Handled = true;
-        }
-
-        private void f_path_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var src = (Path)sender;
-            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-
-            // Correct for scroller clicks
-            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
-
-            // Send off the Formula storage index to be deleted:
-            Formula_eraseGridContent(actual_storageIndex);
-            e.Handled = true;
-        }
-
-        private void f_textbox_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var src = (TextBox)sender;
-            int gridLocusEntered = Int32.Parse((string)src.Tag);       // The grid index
-
-            // Correct for scroller clicks
-            int actual_storageIndex = gridLocusEntered + N_rightScrollClicks;
-
-            // Send off the Formula storage index to be deleted:
-            Formula_eraseGridContent(actual_storageIndex);
-            e.Handled = true;
+            editVis(pathID(gridN), gridN, null, null, textboxID(gridN), textID(gridN), false);
         }
 
         // Delete a right-clicked (or where a linked KF is erased) Formula Grid element from visuals and storage
-        private void Formula_eraseGridContent(int gridN)
+        private void Formula_eraseGridContent(int actualIndex)
         {
-            // NB gridN == Storage index, not the visual Formula grid index
+            tempDebug.Text = tempDebug.Text + "Erasing real formula storage index " + actualIndex;
+            // NB actualIndex == Storage index, not the visual Formula grid index
             // Delete Formula grid content
-            allFormulaElements[gridN].Content = null;
-            allFormulaElements[gridN].KeyframeName = null;
-            allFormulaElements[gridN].KeyframeColor = Colors.White;
-            allFormulaElements[gridN].Rule = null;
+            allFormulaElements[actualIndex].Content = null;
+            allFormulaElements[actualIndex].KeyframeName = null;
+            allFormulaElements[actualIndex].KeyframeColor = Colors.White;
+            allFormulaElements[actualIndex].Rule = null;
 
             // Storage directs visual appearance, so must be offset by [- N_rightScrollClicks]
-            int whatVisIndexToDraw = gridN - N_rightScrollClicks;
+            int visIndex = actualIndex - N_rightScrollClicks;
 
             // If the Formula storage's grid is in view, delete its content:
-            if (whatVisIndexToDraw >= 1 && whatVisIndexToDraw <= 10)
+            if (visIndex >= 1 && visIndex <= 10)
             {
-                f_pathID(whatVisIndexToDraw).Fill = new SolidColorBrush(Colors.Transparent);
-                restylePath(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, null, null, f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
+                f_pathID(visIndex).Fill = new SolidColorBrush(Colors.Transparent);
+                f_pathID(visIndex).Stroke = new SolidColorBrush(Colors.Transparent);
+                editVis(f_pathID(visIndex), visIndex, null, null, N0, f_textID(visIndex), true);
             }
         }
 
@@ -3216,11 +3298,17 @@ namespace BioCheck.Views
         private void Evaluate_expressions(object sender, RoutedEventArgs e)
         {
             tempDebug.Text = "Evaluating...";
-            
+
+            foreach (string indivContent in allKeyframes[0].Content)
+            {
+                tempDebug.Text = tempDebug.Text + " " + indivContent;
+            }
             // Clicked to start evaluation.
             if (allKeyframes.Count > 0)
             {
                 // Per KeyFrame:
+                // Evaluate its Content (populated by its Grid)
+                // If non-null, check if var, cell, N or operator
                 int kf_index = 0;
                 int removeAmount;
                 foreach (KeyFrames indivKF in allKeyframes)
@@ -3571,23 +3659,33 @@ namespace BioCheck.Views
                             }
                             else
                             {
+                                // Must be operator: =, <, <=, >, >=
                                 tripletOperator = indivKF.Content[contentIndex];
-                                // Use the operator: =, <, <=, >, >=
                                 // Depending on the current triplet order, it may need swapping around. Done once I hit a varName at the end of a triplet.
                                 if (foundNonNullGrid == 3)
                                 {
-                                    tempDebug.Text = "There is a grammatical error in keyframe " + indivKF.Name + ".";
+                                    tempDebug.Text = tempDebug.Text + "\nThere is a grammatical error in keyframe " + indivKF.Name + ". Just retrieved as third object operator " + tripletOperator;
                                 }
                             }
                         }
                         contentIndex++;
 
-                        // Only do this once I'm at a new 'grid-line'  _____Implement once more grid-rows work
-                        //varNameList.RemoveRange(0,varNameList.Count);
+                        // Detect new grid-rows and reset variables accordingly
+                        if (contentIndex == 5 || contentIndex == 10 || contentIndex == 15)
+                        {
+                            // Reset last row's vars
+                            foundNonNullGrid = 0;            // To count triplets.
+                            tripletOperator = "";
+                            tripletN = "";
+                            removeAmount = Math.Max(0, varNameList.Count);
+                            varNameList.RemoveRange(0, removeAmount);
+                        }
                     }
 
-                    // MAKE THE KF's RULE!---------------------------------------------------
+                    // --------------------------------------------------------
+                    // MAKE THE KF's RULE!
                     // Use stored minibrackets to create the final KF's Rule
+                    // --------------------------------------------------------
 
                     if (minibracketList.Count == 0)
                     {
@@ -3616,7 +3714,7 @@ namespace BioCheck.Views
                         allKeyframes[kf_index].Rule = bigbracket;
                     }
                     // Debug
-                    tempDebug.Text = "Rule for KF " + allKeyframes[kf_index].Name + " = " + allKeyframes[kf_index].Rule;
+                    tempDebug.Text = tempDebug.Text  + "\nRule for KF " + allKeyframes[kf_index].Name + " = " + allKeyframes[kf_index].Rule;
 
                     // Delete minibrackets storage to reset it for the next KF
                     removeAmount = Math.Max(0, minibracketList.Count);
@@ -3654,14 +3752,16 @@ namespace BioCheck.Views
                         {
                             if (avail_kf.Name == formulaElement.KeyframeName)
                             {
-                                // Poss evaluate the rule here, prior to using it. ______________
-                                formulaElement.Rule = avail_kf.Rule;    // Sets the Rule!
+                                // TODO
+                                // Poss evaluate the rule here, prior to using it.
+                                // Warn the user of his/her errors.
+                                formulaElement.Rule = avail_kf.Rule;
                             }
                         }
                     }
                     else
                     {
-                        // Logics. The formulaElement.Rule string below IS the logical rule.
+                        // Logics. The formulaElement.Rule string below IS the logical rule. No post-processing required.
                     }
                     tempKF.Text += "\nContent = " + formulaElement.Content + " and Rule = " + formulaElement.Rule;
                 }
@@ -3707,14 +3807,14 @@ namespace BioCheck.Views
                 if (noNullElement.Rule == "ob")
                 {
                     // Opening bracket
-                    ob_boolArray[ob_boolArrayIndex] = formulaIndex; // [3,5,9]
+                    ob_boolArray[ob_boolArrayIndex] = formulaIndex;
                     ob_boolArrayIndex++;
                     debugText += "\nob at " + formulaIndex;
                 }
                 else if (noNullElement.Rule == "cb")
                 {
                     // Closing bracket
-                    cb_boolArray[cb_boolArrayIndex] = formulaIndex; // [3,5,9]
+                    cb_boolArray[cb_boolArrayIndex] = formulaIndex;
                     cb_boolArrayIndex++;
                     debugText += "\ncb at " + formulaIndex;
                 }
@@ -3759,7 +3859,7 @@ namespace BioCheck.Views
                         // Send bracket content for bracketing (make into a function eventually)
 
                         // Edit the nonNullFormula from ob to cb, exclusive of brackets:
-                        editNonNull_Formula(openingBracketHere + 1, closingBracketHere - 1);
+                        editNonNull_Formula_KFfocused(openingBracketHere + 1, closingBracketHere - 1);
 
                         // Bracketed content done. Rm the brackets
                         noNullElements[openingBracketHere].Content = null;
@@ -3777,7 +3877,7 @@ namespace BioCheck.Views
                 }
             }
             // Whether no brackets to begin with or de-bracketed from above; go ahead and parse logics L to R.
-            editNonNull_Formula(0, (noNullElements.Count -1));
+            editNonNull_Formula_KFfocused(0, (noNullElements.Count - 1));
                         
             debugText += "\n\nParsed the Formula! Per element, it is:\n";
             Debug.WriteLine("Parsed the Formula! Per element, it is:");
@@ -3790,11 +3890,12 @@ namespace BioCheck.Views
                     Debug.WriteLine(noNullElements[formIndex].Rule);
                 }
             }
-            tempDebug.Text = debugText;
-            tempDebug.Text = ""; // DEBUG : comment out for debug mode.
+            tempDebug.Text = tempDebug.Text + "\n" + debugText;
+            //tempDebug.Text = ""; // DEBUG : comment out for debug mode.
         }
 
-        // Inputs the start and end index to edit
+        // Currently replaced by the keyframe-focused function below 
+        // (whereas this function is logics-driven)
         private void editNonNull_Formula(int start, int end)
         {
             string mergedRule = "";
@@ -3804,7 +3905,7 @@ namespace BioCheck.Views
                 if (noNullElements[formulaIndex].Content == "logic")
                 {
                     // Logical expressions that expect one unit afterwards:
-                    if (noNullElements[formulaIndex].Rule == "Eventually" || noNullElements[formulaIndex].Rule == "Always" || noNullElements[formulaIndex].Rule == "Not")
+                    if (noNullElements[formulaIndex].Rule == "Eventually" || noNullElements[formulaIndex].Rule == "Always" || noNullElements[formulaIndex].Rule == "Not" || noNullElements[formulaIndex].Rule == "Next")
                     {
                         // Piece together this logics expression and next non-null element (whatever it is)
                         bool foundNonNull = false;
@@ -3881,12 +3982,77 @@ namespace BioCheck.Views
             }; // Per Formula element
         }
 
+        // Processes a subset or the whole Formula so that a single string rule is outputted
+        private void editNonNull_Formula_KFfocused(int start, int end)
+        {
+            string mergedRule = "";
+            for (int formulaIndex = end; formulaIndex >= start; formulaIndex--)
+            {
+                // Check what non-logical operators are here:
+                if (noNullElements[formulaIndex].Content == "keyframe" || noNullElements[formulaIndex].Content == "Merged")
+                {
+                    mergedRule = " " + noNullElements[formulaIndex].Rule + ")";
+
+                    // Seek logical expression before.
+                    bool foundNonNull = false;
+                    for (int seekingNonNull = (formulaIndex - 1); seekingNonNull >= start; seekingNonNull--)
+                    {
+                        if (!foundNonNull && noNullElements[seekingNonNull].Content == "logic")
+                        {
+                            // Logical expressions that expect one unit afterwards:
+                            if (noNullElements[seekingNonNull].Rule == "Eventually" || noNullElements[seekingNonNull].Rule == "Always" || noNullElements[seekingNonNull].Rule == "Not" || noNullElements[seekingNonNull].Rule == "Next")
+                            {
+                                // Done! Just piece together the .Rules
+                                mergedRule = "(" + noNullElements[seekingNonNull].Rule + mergedRule;
+
+                                // Edit the noNullElements content to reflect new merged Rules
+                                noNullElements[seekingNonNull].Content = "Merged";
+                                noNullElements[seekingNonNull].Rule = mergedRule;
+
+                                noNullElements[formulaIndex].Content = null;
+                                noNullElements[formulaIndex].Rule = null;
+
+                                foundNonNull = true; // Stops loop operation.
+                            }
+                            else if (noNullElements[seekingNonNull].Rule == "Until" || noNullElements[seekingNonNull].Rule == "Implies" || noNullElements[seekingNonNull].Rule == "And")
+                            {
+                                // Piece together this logics expression, the previous keyframe or Merged element and the identified keyframe or Merged
+
+                                // Find previous kf or Merged:
+                                bool foundPreNonNull = false;
+                                for (int seekingKForMerged = (seekingNonNull - 1); seekingKForMerged >= start; seekingKForMerged--)
+                                {
+                                    if (!foundPreNonNull && (noNullElements[seekingKForMerged].Content == "keyframe" || noNullElements[seekingKForMerged].Content == "Merged"))
+                                    {
+                                        // Piece together the .Rules
+                                        mergedRule = "(" + noNullElements[seekingNonNull].Rule + " " + noNullElements[seekingKForMerged].Rule + mergedRule;
+
+                                        // Edit the noNullElements content to reflect new merged Rules
+                                        noNullElements[seekingKForMerged].Content = "Merged";
+                                        noNullElements[seekingKForMerged].Rule = mergedRule;
+                                        noNullElements[seekingNonNull].Content = null;
+                                        noNullElements[seekingNonNull].Rule = null;
+                                        noNullElements[formulaIndex].Content = null;
+                                        noNullElements[formulaIndex].Rule = null;
+
+                                        // Stop loop operation.
+                                        foundPreNonNull = true;
+                                        foundNonNull = true;
+                                    }
+                                }
+                            }; // Unary: Eventually, Always, Not     or    Binary: Until, Implies, And
+                        }
+                    }
+                }; // kf or Merged found in Formula
+            }; // Per Formula element
+        }
 
         // Where minibrackets are made, based on individual KF triplets.
         List<string> minibracketList = new List<string>();
 
         private void minibracketMachine(string var, string op, string N)
         {
+            tempDebug.Text = tempDebug.Text + "\n" + "reached minibracketMachine!";
             if (op == "=")
             {
                 // Make double bracket with < and >
@@ -3932,7 +4098,7 @@ namespace BioCheck.Views
 
         // --------------------------------------
         //
-        //          The Formula Scoller
+        //          The Hardcoded Formula Scoller
         //
         // --------------------------------------
         #region Formula scroller code
@@ -3976,14 +4142,14 @@ namespace BioCheck.Views
                     {
                         // Edit visuals: delete current (works)
                         f_pathID(vis_from_storageElement).Fill = new SolidColorBrush(Colors.Transparent);
-                        restylePath(f_pathID(vis_from_storageElement), vis_from_storageElement, null, null, f_textboxID(vis_from_storageElement), f_textID(vis_from_storageElement));
+                        editVis(f_pathID(vis_from_storageElement), vis_from_storageElement, null, null, N0, f_textID(vis_from_storageElement), true);
                     }
                     //tempDebug.Text += "\nDrawing if the place to draw, (" + vis_from_storageElement.ToString() + " + 1) is <= 10.";
                     if (vis_from_storageElement >= 0 && vis_from_storageElement <= 9 )
                     {
                         // Add visuals: 
                         // "storageDone" causes Formula grid editor not to try to edit Formula storage using selected keyframe data (which is irrelevant)
-                        restylePath(f_pathID(vis_from_storageElement + 1), vis_from_storageElement + 1, allFormulaElements[formulaElementIndex + 1].Content, "storageDone", f_textboxID(vis_from_storageElement + 1), f_textID(vis_from_storageElement + 1));
+                        editVis(f_pathID(vis_from_storageElement + 1), vis_from_storageElement + 1, allFormulaElements[formulaElementIndex + 1].Content, "storageDone", N0, f_textID(vis_from_storageElement + 1), true);
                     }
                 }
             }
@@ -4033,20 +4199,19 @@ namespace BioCheck.Views
                     // Find out which visual element to edit
                     // How storage relates to visuals:
                     int whatVisIndexToDraw = formulaElementIndex - N_rightScrollClicks;
-                    //tempDebug.Text += "\nWhere to erase = " + whatVisIndexToDraw + " and where to draw is that -1. Is it within 1 to 10?";
 
                     // Edit visuals: edit ONLY IF 1 to 10
                     if (whatVisIndexToDraw > 0 && whatVisIndexToDraw <= 10)
                     {
                         // Edit visuals: delete current (works)
                         f_pathID(whatVisIndexToDraw).Fill = new SolidColorBrush(Colors.Transparent);
-                        restylePath(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, null, null, f_textboxID(whatVisIndexToDraw), f_textID(whatVisIndexToDraw));
+                        editVis(f_pathID(whatVisIndexToDraw), whatVisIndexToDraw, null, null, N0, f_textID(whatVisIndexToDraw), true);
                     }
                     //tempDebug.Text += "\nDrawing if the place to draw, (" + whatVisIndexToDraw.ToString() + " -1) is > 1." ;
                     if (whatVisIndexToDraw > 1 && whatVisIndexToDraw <= 11)
                     {
                         // Draw new visuals
-                        restylePath(f_pathID(whatVisIndexToDraw - 1), whatVisIndexToDraw - 1, allFormulaElements[formulaElementIndex - 1].Content, "storageDone", f_textboxID(whatVisIndexToDraw - 1), f_textID(whatVisIndexToDraw - 1));
+                        editVis(f_pathID(whatVisIndexToDraw - 1), whatVisIndexToDraw - 1, allFormulaElements[formulaElementIndex - 1].Content, "storageDone", N0, f_textID(whatVisIndexToDraw - 1), true);
                     }
                 }
             }
