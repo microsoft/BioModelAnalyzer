@@ -270,10 +270,10 @@ module BMA {
 
             public CreatePlotView(colors) {
                 var data = [];
-                for (var i = 0; i < colors[0].Plot.length; i++) {
-                    data[i] = []; //= colors[i].Plot;
+                for (var i = 1; i < colors[0].Plot.length; i++) {
+                    data[i-1] = []; //= colors[i].Plot;
                     for (var j = 0; j < colors.length; j++) {
-                        data[i][j] = colors[j].Plot[i];
+                        data[i-1][j] = colors[j].Plot[i];
                     }
                 }
                 return data;

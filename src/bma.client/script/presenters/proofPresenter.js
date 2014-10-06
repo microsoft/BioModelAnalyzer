@@ -24,7 +24,7 @@
 
                             //if (res.Ticks !== null)
                             var variablesData = that.CreateTableView(res.Ticks);
-                            if (res.Status !== 4)
+                            if (res.Status === 5)
                                 window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                             else
                                 colorData = that.CreateColoredTable(res.Ticks);
@@ -84,7 +84,7 @@
                     table[i][0] = variables[i].Name;
                     table[i][1] = variables[i].Formula;
                     var range;
-                    var ij = ticks[ticks.length - 1].Variables[variables.length - 1 - i];
+                    var ij = ticks[0].Variables[variables.length - 1 - i];
                     var c = ij.Lo === ij.Hi;
                     if (c) {
                         range = ij.Lo;
@@ -109,7 +109,7 @@
                 for (var i = 0; i < v; i++) {
                     color[i] = [];
                     for (var j = 0; j < t; j++) {
-                        var ij = ticks[j].Variables[v - 1 - i];
+                        var ij = ticks[t - j - 1].Variables[v - 1 - i];
                         color[i][j] = ij.Hi === ij.Lo;
                     }
                 }
@@ -136,7 +136,7 @@
                     color[j] = [];
                     table[j][0] = biomodel.GetVariableById(ticks[0].Variables[variables.length - 1 - j].Id).Name;
                     for (var i = 0; i < l; i++) {
-                        var ij = ticks[i].Variables[variables.length - 1 - j];
+                        var ij = ticks[l - i - 1].Variables[variables.length - 1 - j];
                         if (ij.Lo === ij.Hi) {
                             table[j][i + 1] = ij.Lo;
                             color[j][i + 1] = true;
