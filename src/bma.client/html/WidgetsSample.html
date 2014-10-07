@@ -10,62 +10,75 @@
     <script type="text/javascript" src="../script/modeltoolbar.js"></script>
     <script type="text/javascript" src="../script/skinmodel.js"></script>
     <script type="text/javascript" src="../script/visibilitysettings.js"></script>
-    
-
+    <script type="text/javascript" src="../script/widgets/containernameeditor.js"></script>
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="../script/jquery.svg.min.js"></script>
+    <script src="../script/rx.js"></script>
+    <script src="../script/rx.jQuery.js"></script>
+    <script src="../script/idd.js"></script>
+    <script src="../script/svgplot.js"></script>
+    <script src="../script/scalablegridlinesplot.js"></script>
     <script>
 
         //var sh = true;
         $(document).ready(function () {
 
-            /*
-            var toggleLabels = true;
-            window.Commands = {};
-            Commands.New = { Execute: function () { alert("new"); } };
-            Commands.ToggleLabels = {
-                Execute: function (child) {
-                    var grr = $("#"+child);
-                    if (!toggleLabels) {
-                        grr.css("content", "ON");
-                        grr.addClass("buttonON").removeClass("buttonOFF");
-                    }
-                    else {
-                        grr.css("content", "OFF");
-                        grr.addClass("buttonOFF").removeClass("buttonON");
-                    }
-                    toggleLabels = !toggleLabels;
-                }
-            };
-            */
+            var chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "chart").attr("data-idd-style", "isLegendVisible:false").width("300").height("300");
+            chartdiv.appendTo('body');
+            $('<div></div>').attr("id", "polyline").attr("data-idd-plot", "polyline").appendTo(chartdiv);
+            var _chart = InteractiveDataDisplay.asPlot(chartdiv);
+            
+            //$("#nameeditor").containernameeditor();
+            ///*
+            //var toggleLabels = true;
+            //window.Commands = {};
+            //Commands.New = { Execute: function () { alert("new"); } };
+            //Commands.ToggleLabels = {
+            //    Execute: function (child) {
+            //        var grr = $("#"+child);
+            //        if (!toggleLabels) {
+            //            grr.css("content", "ON");
+            //            grr.addClass("buttonON").removeClass("buttonOFF");
+            //        }
+            //        else {
+            //            grr.css("content", "OFF");
+            //            grr.addClass("buttonOFF").removeClass("buttonON");
+            //        }
+            //        toggleLabels = !toggleLabels;
+            //    }
+            //};
+            //*/
 
-            $("#modelToolbarHeader").modeltoolbar();
-            $("#modelToolbarContent").modeltoolbar();
+            //$("#modelToolbarHeader").modeltoolbar();
+            //$("#modelToolbarContent").modeltoolbar();
 
             
-            $("#visibility").visibilitysettings();
-            $("#visibility").visibilitysettings("option", "settingsState", { name: "Icons", toggle: true, increment: 17 });
+            //$("#visibility").visibilitysettings();
+            //$("#visibility").visibilitysettings("option", "settingsState", { name: "Icons", toggle: true, increment: 17 });
             
-            //$("#expandVariablesInProof").click(function () {
-            //    if ($("#flower").is(":hidden"))
-            //        $("#flower").show();
-            //    else
-            //        $("#flower").hide();
-            //});
+            ////$("#expandVariablesInProof").click(function () {
+            ////    if ($("#flower").is(":hidden"))
+            ////        $("#flower").show();
+            ////    else
+            ////        $("#flower").hide();
+            ////});
             
 
-            $("#modelToolbarSlider").bmaaccordion({ position: "left" });//, header: $("#toggle2"), context: $("#toggle") });
-            $("#accordeon").bmaaccordion({ header: $("#visButton"), context: $("#visibility") });
-            $("#tabs").bmaaccordion({ position: "right" });
+            //$("#modelToolbarSlider").bmaaccordion({ position: "left" });//, header: $("#toggle2"), context: $("#toggle") });
+            //$("#accordeon").bmaaccordion({ header: $("#visButton"), context: $("#visibility") });
+            //$("#tabs").bmaaccordion({ position: "right" });
 
-            //$("#modeltoolbarnew").HyperTabs({ position: "left", collapsible: true });
-            //$("#modeltoolbarnew li").removeClass("ui-corner-top").addClass("ui-corner-left");
-            //$("#tabs").HyperTabs({ tab1: "tabs-1", tab2: "tabs-2", collapsible: true, position: "right" });//.addClass("ui-tabs-vertical ui-helper-clearfix");
-            //$("#tabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
+            ////$("#modeltoolbarnew").HyperTabs({ position: "left", collapsible: true });
+            ////$("#modeltoolbarnew li").removeClass("ui-corner-top").addClass("ui-corner-left");
+            ////$("#tabs").HyperTabs({ tab1: "tabs-1", tab2: "tabs-2", collapsible: true, position: "right" });//.addClass("ui-tabs-vertical ui-helper-clearfix");
+            ////$("#tabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
         })
 
     </script>
 </head>
 <body>
-
+    <div id="nameeditor"></div>>
     <div id="modelToolbarSlider">
         <div id="modelToolbarHeader" class="skinModelContainer shadow">
             <ul>

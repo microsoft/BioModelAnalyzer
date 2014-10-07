@@ -117,8 +117,10 @@
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
     <Content Include="Global.asax" />
+    <Content Include="html\chartSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
+    <Content Include="images\20x20.gif" />
     <Content Include="images\60x60.gif" />
     <Content Include="images\activate.png" />
     <Content Include="images\analyze.png" />
@@ -130,6 +132,7 @@
     <Content Include="images\editorExpander.png" />
     <Content Include="images\expand.png" />
     <Content Include="images\export.png" />
+    <Content Include="images\failed.png" />
     <Content Include="images\formula_not_validated.png" />
     <Content Include="images\formula_validated.png" />
     <Content Include="images\graphic.png" />
@@ -140,7 +143,6 @@
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
-    <Content Include="images\kit_i_kot.jpg" />
     <Content Include="images\new.png" />
     <Content Include="images\open.png" />
     <Content Include="images\pointer.png" />
@@ -163,6 +165,7 @@
     <Content Include="images\zoomminus.png" />
     <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />
+    <Content Include="js\idd.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
@@ -205,6 +208,9 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <TypeScriptCompile Include="script\model\visualsettings.ts" />
+    <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
@@ -249,18 +255,17 @@
     <Content Include="Scripts\x.min.js" />
     <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
-    <Content Include="js\idd.js" />
     <Content Include="js\jquery.browser.min.js" />
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
-    <TypeScriptCompile Include="script\widgets\graphnamerangetable.ts" />
+    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
     <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationfull.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
     <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
@@ -280,12 +285,14 @@
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
+    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
     <TypeScriptCompile Include="test\PresenterTests.ts" />
     <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
     <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
-    <TypeScriptCompile Include="test\SimulationFullTest.ts" />
+    <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
+    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
   </ItemGroup>
@@ -301,10 +308,15 @@
     <Content Include="Chutzpah.json" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ext\FSharp 3.0\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\ext\nuget\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -324,9 +336,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\ext\nuget\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http.Formatting">
       <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
@@ -350,15 +359,19 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AnalyzeController.cs" />
+    <Compile Include="Controllers\FurtherTestingController.cs" />
     <Compile Include="Controllers\SimulateController.cs" />
+    <Compile Include="Controllers\ValidateController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Analysis.cs" />
+    <Compile Include="Models\FurtherTesting.cs" />
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\ServiceMessages.cs" />
     <Compile Include="Models\Simulate.cs" />
     <Compile Include="Models\StatusType.cs" />
+    <Compile Include="Models\Validate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

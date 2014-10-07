@@ -123,9 +123,14 @@ module BMA {
         }
 
         export class Relationship {
+            private id: number;
             private fromVariableId: number;
             private toVariableId: number;
             private type: string;
+
+            public get Id(): number {
+                return this.id;
+            }
 
             public get FromVariableId(): number {
                 return this.fromVariableId;
@@ -141,14 +146,15 @@ module BMA {
 
             public GetJSON() {
                 return {
-                    Id: 0, //TODO: find out what should be here
+                    Id: this.id, 
                     FromVariableId: this.fromVariableId,
                     ToVariableId: this.toVariableId,
                     Type: this.type
                 };
             }
 
-            constructor(fromVariableId: number, toVariableId: number, type: string) {
+            constructor(id: number, fromVariableId: number, toVariableId: number, type: string) {
+                this.id = id;
                 this.fromVariableId = fromVariableId;
                 this.toVariableId = toVariableId;
                 this.type = type;
@@ -170,6 +176,27 @@ module BMA {
             public Clone(): Layout {
                 return new Layout(this.containers.slice(0), this.variables.slice(0));
             }
+
+            public GetVariableById(id: number) {
+                for (var i = 0; i < this.variables.length; i++) {
+                    if (this.variables[i].Id === id) {
+                        return this.variables[i];
+                    }
+                }
+
+                return undefined;
+            }
+
+            public GetContainerById(id: number) {
+                for (var i = 0; i < this.containers.length; i++) {
+                    if (this.containers[i].Id === id) {
+                        return this.containers[i];
+                    }
+                }
+
+                return undefined;
+            }
+
 
             constructor(containers: ContainerLayout[], varialbes: VarialbeLayout[]) {
                 this.containers = containers;

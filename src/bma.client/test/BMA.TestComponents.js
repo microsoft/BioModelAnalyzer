@@ -1,7 +1,4 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\script\uidrivers.interfaces.ts"/>
-var BMA;
+﻿var BMA;
 (function (BMA) {
     (function (Test) {
         var TestSVGPlotDriver = (function () {
@@ -21,6 +18,8 @@ var BMA;
 
             TestSVGPlotDriver.prototype.GetDragSubject = function () {
             };
+            TestSVGPlotDriver.prototype.GetZoomSubject = function () {
+            };
 
             TestSVGPlotDriver.prototype.Draw = function (svg) {
                 this.svg.push(svg);
@@ -30,6 +29,21 @@ var BMA;
             };
 
             TestSVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
+            };
+
+            TestSVGPlotDriver.prototype.GetPlotX = function (left) {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.GetPlotY = function (left) {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.GetPixelWidth = function () {
+                return 0;
+            };
+
+            TestSVGPlotDriver.prototype.SetGridVisibility = function (isOn) {
             };
             return TestSVGPlotDriver;
         })();
@@ -68,6 +82,10 @@ var BMA;
                 return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 };
             };
 
+            TestVariableEditor.prototype.SetValidation = function (v) {
+                return v;
+            };
+
             TestVariableEditor.prototype.Initialize = function (variable, model) {
             };
 
@@ -82,4 +100,3 @@ var BMA;
     })(BMA.Test || (BMA.Test = {}));
     var Test = BMA.Test;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=BMA.TestComponents.js.map

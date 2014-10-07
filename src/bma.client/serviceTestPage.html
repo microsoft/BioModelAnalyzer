@@ -54,6 +54,57 @@
               }
             ]
         }
+               
+        var unstableModel = {
+            "ModelName": "ToyModelUntable",
+            "Engine": "VMCAI",
+
+            "Variables": [
+              {
+                  "Id": 1,
+                  "Name": "a",
+                  "RangeFrom": 0,
+                  "RangeTo": 4,
+                  "Function": "4-var(c)",
+              },
+              {
+                  "Id": 2,
+                  "Name": "b",
+                  "RangeFrom": 0,
+                  "RangeTo": 4,
+                  "Function": "",
+              },
+              {
+                  "Id": 3,
+                  "Name": "c",
+                  "RangeFrom": 0,
+                  "RangeTo": 4,
+                  "Function": "",
+              }
+            ],
+
+            "Relationships": [
+              {
+                  "Id": 1,
+                  "FromVariableId": 1,
+                  "ToVariableId": 2,
+                  "Type": "Activator"
+              },
+              {
+                  "Id": 2,
+                  "FromVariableId": 2,
+                  "ToVariableId": 3,
+                  "Type": "Activator"
+              },
+              {
+                  "Id": 3,
+                  "FromVariableId": 3,
+                  "ToVariableId": 1,
+                  "Type": "Inhibitor"
+              }
+            ]
+        };
+
 
         var simulate = {
             "Model": stableModel,
@@ -64,14 +115,44 @@
             ]
         }
 
+        var correctFormula = "max( (avg(var(x),var(y),var(z),var(w),var(v),var(u)) - avg(var(a),var(b),var(c),var(d))), 0)";
+     
         $(function () {
-            $("#log").append("Invoking api/Analyze...<br/>");
+            $("#log").append("Invoking api/Analyze (for stable model)...<br/>");
             $.ajax({
                 type: "POST",
                 url: "api/Analyze",
                 data: stableModel,
                 success: function (res) {
-                    $("#log").append("Analyze success. Analysis result: " + res.Status + "<br/>");
+                    $("#log").append("Analyze success. Analysis result (for stable): " + res.Status + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Analyze error: " + res.statusText + "<br/>");
+                }
+            });
+
+            $("#log").append("Invoking api/Analyze (for unstable model)...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Analyze",
+                data: unstableModel,
+                success: function (res) {
+                    $("#log").append("Analyze success. Analysis result (for unstable): " + res.Status + "<br/>");
+                    $("#log").append("Invoking api/FurtherTesting...<br/>");
+                    $.ajax({
+                        type: "POST",
+                        url: "api/FurtherTesting",
+                        data: {
+                            Model: unstableModel,
+                            Analysis: res,
+                        },
+                        success: function (res2) {
+                            $("#log").append("FurtherTesting success. Counter examples found: " + res2.CounterExamples.length + "<br/>");
+                        },
+                        error: function (res2) {
+                            $("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
+                        }
+                    });
                 },
                 error: function (res) {
                     $("#log").append("Analyze error: " + res.statusText + "<br/>");
@@ -84,13 +165,42 @@
                 url: "api/Simulate",
                 data: simulate,
                 success: function (res) {
-                    $("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
+                    $("#log").append("Simulate success. Result variable count: " + res.Variables.length + "<br/>");
                 },
                 error: function (res) {
                     $("#log").append("Simulate error: " + res.statusText + "<br/>");
                 }
             });
 
+            $("#log").append("Invoking api/Validate (for correct formula)...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Validate",
+                data: {
+                    Formula: correctFormula
+                },
+                success: function (res) {
+                    $("#log").append("Validate success (for correct). IsValid: " + res.IsValid + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Validate error: " + res.statusText + "<br/>");
+                }
+            });
+
+            $("#log").append("Invoking api/Validate (for incorrect formula)...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Validate",
+                data: {
+                    Formula: "foobar"
+                },
+                success: function (res) {
+                    $("#log").append("Validate success (for incorrect). IsValid: " + res.IsValid + "; Message: " + res.Message + "<br/>");
+                },
+                error: function (res) {
+                    $("#log").append("Validate error: " + res.statusText + "<br/>");
+                }
+            });
         });
     </script>
 </head>

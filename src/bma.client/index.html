@@ -37,12 +37,15 @@
     <script src="script/model/biomodel.js"></script>
     <script src="script/model/model.js"></script>
     <script src="script/model/analytics.js"></script>
+    <script src="script/model/visualsettings.js"></script>
 
     <script src="script/uidrivers.js"></script>
     <script src="script/presenters/presenters.js"></script>
     <script src="script/presenters/proofpresenter.js"></script>
     <script src="script/presenters/simulationpresenter.js"></script>
     <script src="script/presenters/modelstoragepresenter.js"></script>
+    <script src="script/presenters/formulavalidationpresenter.js"></script>
+    <script src="script/presenters/furthertestingpresenter.js"></script>
     <script src="script/arraytotableconverter.js"></script>
     <script src="script/logictableconverter.js"></script>
 
@@ -54,10 +57,11 @@
     <script src="script/widgets/elemettoolbar.js"></script>
     <script src="script/widgets/progressiontable.js"></script>
     <script src="script/widgets/proofresultviewer.js"></script>
+    <script src="script/widgets/furthertestingviewer.js"></script>
     <script src="script/widgets/resultswindowviewer.js"></script>
     <script src="script/widgets/simulationplot.js"></script>
     
-    <script src="script/widgets/simulationfull.js"></script>
+    <script src="script/widgets/simulationexpanded.js"></script>
     <script src="script/widgets/simulationviewer.js"></script>
     <script src="script/widgets/skinmodel.js"></script>
     <script src="script/widgets/variablesOptionsEditor.js"></script>
@@ -109,19 +113,19 @@
                             <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true" style="float: left;"></div>
                             <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10" style="float: left;"></div>
                         </li>
-                        <li id="li2">
+                        <!--<li id="li2">
                             <div class="optionsNames">Icons</div>
                             <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
                             <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
-                        </li>
+                        </li>-->
                         <li id="li3">
                             <div class="optionsNames">Grid</div>
                             <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true" style="float: left;"></div>
                         </li>
-                        <li id="li4">
+                        <!--<li id="li4">
                             <div class="optionsNames">Line Width</div>
                             <div data-behavior="increment" data-command="Commands.LineWidth" data-default="10" style="float: left;"></div>
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
             </div>
@@ -167,7 +171,8 @@
                     <img src="images/analyze.png" class="iconAnalyze">
                 </div>
                 <div id="tabs-1" class="tabPanel ">
-                    <h2>Proof Analysis</h2>
+                    <div id="Proof-Analysis"></div>
+                    <div id="Further-Testing"></div>
                 </div>
                 <div id="icon2" data-command="SimulationRequested" class="analyze-header-icon " style="top: 80px">
                     <img src="images/graphic.png" class="iconAnalyze">

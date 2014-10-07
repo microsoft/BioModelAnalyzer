@@ -18,10 +18,14 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
+                            var colorData = undefined;
+                            //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             //if (res.Ticks !== null)
                             var variablesData = that.CreateTableView(res.Ticks);
-                            var colorData = that.CreateColoredTable(res.Ticks);
+                            if (res.Status !== 4)
+                                window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
+                            else colorData = that.CreateColoredTable(res.Ticks);
                             //var result = appModel.ProofResult;
                             //var data = { numericData: numericData, colorData: undefined };
                             proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData,  colorData: colorData } });
@@ -40,7 +44,7 @@
                         switch (param) {
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null)
-                                    full = that.CreateFullResultTable(appModel.ProofResult.Ticks);
+                                    full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
                                 break;
                             case "ProofVariables":
                                 var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
@@ -111,7 +115,7 @@
                 return color;
             }
 
-            public CreateFullResultTable(ticks) {
+            public CreateExpandedResultTable(ticks) {
                 
                 var container = $('<div></div>');
                 if (ticks === null) return container;

@@ -10,13 +10,18 @@ declare var Rx: any;
         _gridLinesPlot: null,
         _svgPlot: null,
         _dragService: null,
-        _zoomObservable: undefined,
+        //_zoomObservable: undefined,
         _zoomObs: undefined,
 
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: undefined
+            zoom: 50
+        },
+
+        _plotSettings: {
+            MinWidth: 0.01,
+            MaxWidth: 1e5
         },
 
 
@@ -29,10 +34,14 @@ declare var Rx: any;
         _create: function () {
             var that = this;
 
-            this._zoomObs = undefined;
-            this._zoomObservable = Rx.Observable.create(function (rx) {
-                this._zoomObs = rx;
-            });
+            if (window.PlotSettings !== undefined) {
+                this._plotSettings = window.PlotSettings;
+            }
+
+            //this._zoomObs = undefined;
+            //this._zoomObservable = Rx.Observable.create(function (rx) {
+            //    that._zoomObs = rx;
+            //});
 
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
@@ -198,6 +207,7 @@ declare var Rx: any;
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
 
+
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
 
             var yDT = new InteractiveDataDisplay.DataTransform(
@@ -212,15 +222,24 @@ declare var Rx: any;
             this._plot.yDataTransform = yDT;
             //this._gridLinesPlot.yDataTransform = yDT;
 
+            var width = 1600;
+            that.options.zoom = width;
+
             if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host);
-                that._plot.navigation.gestureSource = gestureSource.merge(this._zoomObservable);
+                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).where(function (g) {
+                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                });
+                that._plot.navigation.gestureSource = gestureSource;
             } else {
-                that._plot.navigation.gestureSource = this._zoomObservable;
+                that._plot.navigation.gestureSource = undefined;
             }
 
-            var width = 1600;
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
+            that._plot.host.bind("visibleRectChanged", function (args) {
+                if (Math.round(that._plot.visibleRect.width) !== that.options.zoom) {
+                    window.Commands.Execute("VisibleRectChanged", that._plot.visibleRect.width);
+                }
+            })
 
             $(window).resize(function () { that.resize(); });
             that.resize();
@@ -236,6 +255,7 @@ declare var Rx: any;
         },
 
         _setOption: function (key, value) {
+            var that = this;
             switch (key) {
                 case "svg":
                     if (this._svgPlot !== undefined && this._svgPlot.svg !== undefined) {
@@ -248,16 +268,13 @@ declare var Rx: any;
                 case "isNavigationEnabled":
                     if (value === true) {
                         if (this._plot.navigation.gestureSource === undefined) {
-                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host);
-
-                            if (this._zoomObservable !== undefined) {
-                                gestureSource = gestureSource.merge(this._zoomObservable);
-                            }
-
+                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                                return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                            });
                             this._plot.navigation.gestureSource = gestureSource;
                         }
                     } else {
-                        this._plot.navigation.gestureSource = undefined;
+                        this._plot.navigation.gestureSource = undefined;//this._zoomObservable;
                     }
                     break;
                 case "grid":
@@ -266,22 +283,49 @@ declare var Rx: any;
                         this._gridLinesPlot.y0 = value.y0;
                         this._gridLinesPlot.xStep = value.xStep;
                         this._gridLinesPlot.yStep = value.yStep;
+                        this._plot.requestUpdateLayout();
                     }
                     break;
                 case "zoom":
                     if (value !== undefined) {
-                        var currentZoom = this._getZoom();
+                        console.log(value);
+                        if (that._plot.visibleRect.width !== value) {
 
+                            var oldPlotRect = that._plot.visibleRect;
+                            var xCenter = oldPlotRect.x + oldPlotRect.width / 2;
+                            var yCenter = oldPlotRect.y + oldPlotRect.height / 2;
+                            var scale = oldPlotRect.width / value;
+                            var newHeight = oldPlotRect.height / scale;
+
+                            that._plot.navigation.setVisibleRect({
+                                x: xCenter - value / 2,
+                                y: yCenter - newHeight / 2,
+                                width: value,
+                                height: newHeight
+                            }, false);
+                            that.options.zoom = value;
+                        }
                     }
+                    break;
+                case "gridVisibility":
+                    this._gridLinesPlot.isVisible = value;
+                    this._plot.requestUpdateLayout();
                     break;
             }
             this._super(key, value);
         },
 
         _getZoom: function () {
-            var plotRect = this._plot.visibleRect;
-            //console.log(plotRect.width);
-            return 0;
+            //var plotRect = this._plot.visibleRect;
+            ////console.log(plotRect.width);
+            //return 0;
+            if (this._gridLinesPlot.mapControl === undefined)
+
+                return InteractiveDataDisplay.Gestures.zoomLevelFactor;
+
+            else
+
+                return 3.0;
         },
 
         _setOptions: function (options) {
@@ -303,11 +347,32 @@ declare var Rx: any;
 
         getDragSubject: function () {
             return this._dragService;
+        },
+
+        getPlotX: function (left: number) {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return cs.screenToDataX(left);
+        },
+
+        getPlotY: function (top: number) {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return -cs.screenToDataY(top);
+        },
+
+        getPixelWidth: function () {
+            var cs = this._svgPlot.getScreenToDataTransform();
+            return cs.screenToDataX(1) - cs.screenToDataX(0);
+        },
+
+        getZoomSubject: function () {
+            return this._zoomService;
         }
+
     });
 } (jQuery));
 
 interface JQuery {
     drawingsurface(): JQueryUI.Widget;
     drawingsurface(settings: Object): JQueryUI.Widget;
+    drawingsurface(methodName: string, arg: any): JQueryUI.Widget;
 }

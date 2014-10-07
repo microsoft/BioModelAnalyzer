@@ -19,21 +19,19 @@ describe("DesignSurfacePresenter", function () {
         var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
         var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($());
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver, undefined);
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
     it("should create proper presenter for specified model and layout", function () {
         var appModel = new BMA.Model.AppModel();
 
-        //var drawingSurface = $("<div></div>");
-        //drawingSurface.drawingsurface();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
         var elementPanel = new BMA.Test.TestElementsPanel();
         var variableEditorDriver = new BMA.Test.TestVariableEditor();
 
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, elementPanel, testbutton, testbutton, variableEditorDriver);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, elementPanel, testbutton, testbutton, variableEditorDriver, undefined);
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
@@ -44,7 +42,7 @@ describe("DesignSurfacePresenter", function () {
         var variableEditorDriver = new BMA.Test.TestVariableEditor();
 
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, elementPanel, testbutton, testbutton, variableEditorDriver);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, elementPanel, testbutton, testbutton, variableEditorDriver, undefined);
 
         spyOn(svgPlotDriver, "TurnNavigation");
         window.Commands.Execute("AddElementSelect", undefined);
@@ -61,7 +59,7 @@ describe("DesignSurfacePresenter", function () {
         var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
         var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("<div></div>"));
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver, undefined);
 
         window.Commands.Execute("AddElementSelect", "Constant");
         console.log("first click");
@@ -79,4 +77,3 @@ describe("DesignSurfacePresenter", function () {
         expect(ds).toBeDefined();
     });
 });
-//# sourceMappingURL=PresenterTests.js.map

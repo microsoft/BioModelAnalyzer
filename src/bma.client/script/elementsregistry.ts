@@ -69,14 +69,14 @@ module BMA {
         }
 
         export class BorderContainerElement extends Element {
-            private intersectsBorder: (pointerX: number, pointerY: number, elementX: number, elementY: number) => boolean;
-            private containsBBox: (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) => boolean;
+            private intersectsBorder: (pointerX: number, pointerY: number, elementX: number, elementY: number, elementParams: any) => boolean;
+            private containsBBox: (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number, elementParams: any) => boolean;
 
-            public get IntersectsBorder(): (pointerX: number, pointerY: number, elementX, elementY) => boolean {
+            public get IntersectsBorder(): (pointerX: number, pointerY: number, elementX, elementY, elementParams: any) => boolean {
                 return this.intersectsBorder;
             }
 
-            public get ContainsBBox(): (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) => boolean {
+            public get ContainsBBox(): (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number, elementParams: any) => boolean {
                 return this.containsBBox;
             }
 
@@ -84,8 +84,8 @@ module BMA {
                 type: string,
                 renderToSvg: (renderParams: any) => SVGElement,
                 contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean,
-                intersectsBorder: (pointerX: number, pointerY: number, elementX: number, elementY: number) => boolean,
-                containsBBox: (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) => boolean,
+                intersectsBorder: (pointerX: number, pointerY: number, elementX: number, elementY: number, elementParams: any) => boolean,
+                containsBBox: (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number, elementParams: any) => boolean,
                 description: string,
                 iconUrl: string) {
 
@@ -104,6 +104,35 @@ module BMA {
             private relationshipBboxOffset = 20;
             private containerRadius = 100;
             private svg;
+
+            private lineWidth = 1;
+            private labelSize = 10;
+            private labelVisibility = true;
+
+            public get LineWidth(): number {
+                return this.lineWidth;
+            }
+
+            public set LineWidth(value: number) {
+                this.lineWidth = value;
+                console.log(this.lineWidth);
+            }
+
+            public get LabelSize(): number {
+                return this.labelSize;
+            }
+
+            public set LabelSize(value: number) {
+                this.labelSize = value;
+            }
+
+            public get LabelVisibility(): boolean {
+                return this.labelVisibility;
+            }
+
+            public set LabelVisibility(value: boolean) {
+                this.labelVisibility = value;
+            }
 
             private CreateSvgElement(type: string, renderParams: any) {
                 var elem = <SVGElement>document.createElementNS("http://www.w3.org/2000/svg", type);
@@ -140,7 +169,7 @@ module BMA {
             constructor() {
                 var that = this;
                 this.elements = [];
-                
+
                 var svgCnt = $("<div></div>");
                 svgCnt.svg({
                     onLoad: (svg) => {
@@ -148,7 +177,12 @@ module BMA {
                     }
                 });
 
-
+                var containerInnerEllipseWidth = 102;
+                var containerInnerEllipseHeight = 124;
+                var containerOuterEllipseWidth = 112;
+                var containerOuterEllipseHeight = 130;
+                var containerInnerCenterOffset = 0;
+                var containerOuterCenterOffset = 5;
 
                 this.elements.push(new BorderContainerElement(
                     "Container",
@@ -158,8 +192,11 @@ module BMA {
                             return undefined;
                         jqSvg.clear();
 
+                        var x = (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2;
+                        var y = (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2;
+
                         var g = jqSvg.group({
-                            transform: "translate(" + (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + ", " + (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + ") scale(0.45) translate(-250, -290)"
+                            transform: "translate(" + x + ", " + y + ") scale(" + 0.45 * renderParams.layout.Size + ") translate(-250, -290)"
                         });
 
                         var cellData = "M249,577 C386.518903,577 498,447.83415 498,288.5 C498,129.16585 386.518903,0 249,0 C111.481097,0 0,129.16585 0,288.5 C0,447.83415 111.481097,577 249,577 Z M262,563 C387.368638,563 489,440.102164 489,288.5 C489,136.897836 387.368638,14 262,14 C136.631362,14 35,136.897836 35,288.5 C35,440.102164 136.631362,563 262,563 Z";
@@ -167,7 +204,7 @@ module BMA {
                         var op = jqSvg.path(g, cellPath, {
                             stroke: 'transparent',
                             fill: "#FAAF40",
-                            "fill-rule": "evenodd", 
+                            "fill-rule": "evenodd",
                             d: cellData,
                         });
 
@@ -176,13 +213,13 @@ module BMA {
 
                         /*
                         //Helper bounding ellipses
-                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 0,
-                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
-                            112, 130, { stroke: "red", fill: "none" });
+                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                            containerOuterEllipseWidth * renderParams.layout.Size, containerOuterEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
                         
-                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + 5,
-                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep,
-                            102, 124, { stroke: "red", fill: "none" });
+                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerOuterCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                            containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
                         */
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
@@ -191,24 +228,29 @@ module BMA {
                     function (pointerX: number, pointerY: number, elementX, elementY) {
                         return false;
                     },
-                    function (pointerX: number, pointerY: number, elementX, elementY) {
-                        var dstXInner = Math.abs(pointerX - (elementX + 0));
-                        var dstXOuter = Math.abs(pointerX - (elementX + 5));
-                        var dstY = Math.abs(pointerY - elementY);
-                        return Math.pow(dstXOuter / 112, 2) + Math.pow(dstY / 130, 2) < 1 &&
-                            Math.pow(dstXInner / 102, 2) + Math.pow(dstY / 124, 2) > 1;
+                    function (pointerX: number, pointerY: number, elementX, elementY, elementParams: any) {
+                        var dstXInner = Math.abs(pointerX - (elementX + containerInnerCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1)));
+                        var dstXOuter = Math.abs(pointerX - (elementX + containerOuterCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1)));
+                        var dstY = Math.abs(pointerY - elementY - elementParams.yStep * (elementParams.Size - 1));
+                        var outerCheck = Math.pow(dstXOuter / (containerOuterEllipseWidth * elementParams.Size), 2) + Math.pow(dstY / (containerOuterEllipseHeight * elementParams.Size), 2) < 1;
+                        var innerCheck = Math.pow(dstXInner / (containerInnerEllipseWidth * elementParams.Size), 2) + Math.pow(dstY / (containerInnerEllipseHeight * elementParams.Size), 2) > 1;
+                        return outerCheck && innerCheck;
                     },
-                    function (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number) {
+                    function (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number, elementParams: any) {
+
                         var iscontaining = function (x, y) {
-                            var dstX = Math.abs(x - (elementX + 0));
-                            var dstY = Math.abs(y - elementY);
-                            return Math.pow(dstX / 102, 2) + Math.pow(dstY / 124, 2) < 1
+                            var dstX = Math.abs(x - (elementX + containerInnerCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1)));
+                            var dstY = Math.abs(y - elementY - elementParams.yStep * (elementParams.Size - 1));
+                            return Math.pow(dstX / (containerInnerEllipseWidth * elementParams.Size), 2) + Math.pow(dstY / (containerInnerEllipseHeight * elementParams.Size), 2) < 1
                         }
 
-                        return iscontaining(bbox.x, bbox.y) &&
-                            iscontaining(bbox.x + bbox.width, bbox.y) &&
-                            iscontaining(bbox.x, bbox.y + bbox.height) &&
-                            iscontaining(bbox.x + bbox.width, bbox.y + bbox.height);
+                        var leftTop = iscontaining(bbox.x, bbox.y);
+                        var leftBottom = iscontaining(bbox.x, bbox.y + bbox.height);
+                        var rightTop = iscontaining(bbox.x + bbox.width, bbox.y);
+                        var rightBottom = iscontaining(bbox.x + bbox.width, bbox.y + bbox.height);
+
+
+                        return leftTop && leftBottom && rightTop && rightBottom;
                     },
                     "Cell",
                     "images/container.png"));
@@ -230,11 +272,17 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#BBBDBF",
-                            strokeWidth: 8.3333,
+                            "stroke-width": 8,
                             d: data,
                             transform: "scale(0.36)"
                         });
-                        jqSvg.text(g, -that.variableWidthConstant / 2, 50, renderParams.model.Name, { transform: "scale(0.4)" });
+
+                        if (that.labelVisibility === true) {
+                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                "font-size": that.labelSize
+                            });
+                        }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -268,11 +316,17 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#EF4137",
-                            strokeWidth: 8.3333,
+                            strokeWidth: 8,
                             d: data,
                             transform: "scale(0.36)"
                         });
-                        jqSvg.text(g, -that.variableWidthConstant / 2, 50, renderParams.model.Name, { transform: "scale(0.4)" });
+
+                        if (that.labelVisibility === true) {
+                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                "font-size": that.labelSize
+                            });
+                        }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -306,11 +360,17 @@ module BMA {
                         var variable = jqSvg.path(g, path, {
                             stroke: 'transparent',
                             fill: "#3BB34A",
-                            strokeWidth: 8.3333,
+                            strokeWidth: 8,
                             d: data,
                             transform: "scale(1.2) rotate(" + renderParams.layout.Angle + ")"
                         });
-                        jqSvg.text(g, -that.variableWidthConstant / 2, 50, renderParams.model.Name, { transform: "scale(0.4)" });
+
+                        if (that.labelVisibility === true) {
+                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                "font-size": that.labelSize
+                            });
+                        }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -350,7 +410,7 @@ module BMA {
                                 x0 + w, y0 + h)
                                 .curveQ(x0 + w / 2, y0 + h * 1.5,
                                 x0, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Activator)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
 
                         } else {
 
@@ -376,7 +436,13 @@ module BMA {
 
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return false;
+                        if (elementX.x !== elementY.x || elementX.y !== elementY.y) {
+                            var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
+                            d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
+                            return d < elementX.pixelWidth;
+                        } else {
+                            return false;
+                        }
                     },
                     "Activating Relationship",
                     "images/activate.png"));
@@ -404,7 +470,7 @@ module BMA {
                                 x0 + w, y0 + h)
                                 .curveQ(x0 + w / 2, y0 + h * 1.5,
                                 x0, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
 
                         } else {
 
@@ -430,7 +496,13 @@ module BMA {
 
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return false;
+                        if (elementX.x !== elementY.x || elementX.y !== elementY.y) {
+                            var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
+                            d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
+                            return d < elementX.pixelWidth;
+                        } else {
+                            return false;
+                        }
                     },
                     "Inhibiting Relationship",
                     "images/inhibit.png"));

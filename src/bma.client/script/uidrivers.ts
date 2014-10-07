@@ -27,8 +27,28 @@ module BMA {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             }
 
+            //public GetZoomSubject() {
+            //    return this.svgPlotDiv.drawingsurface("getZoomSubject");
+            //}
+
             public SetZoom(zoom: number) {
                 this.svgPlotDiv.drawingsurface({ zoom: zoom });
+            }
+
+            public GetPlotX(left: number) {
+                return this.svgPlotDiv.drawingsurface("getPlotX", left);
+            }
+
+            public GetPlotY(top: number) {
+                return this.svgPlotDiv.drawingsurface("getPlotY", top);
+            }
+
+            public GetPixelWidth() {
+                return this.svgPlotDiv.drawingsurface("getPixelWidth");
+            }
+
+            public SetGridVisibility(isOn: boolean) {
+                this.svgPlotDiv.drawingsurface({ gridVisibility: isOn });
             }
         }
 
@@ -63,6 +83,10 @@ module BMA {
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
                     rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
                 };
+            }
+
+            public SetValidation(val: boolean, message: string) {
+                this.variableEditor.bmaeditor("SetValidation", val, message);
             }
 
             public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
@@ -100,10 +124,8 @@ module BMA {
                 this.proofContentViewer = proofContentViewer;
             }
 
-            
-
             public SetData(params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data});
+                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data });
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {
@@ -119,7 +141,7 @@ module BMA {
             }
 
             public Show(params: any) {
-                this.proofContentViewer.proofresultviewer("show",params.tab);
+                this.proofContentViewer.proofresultviewer("show", params.tab);
             }
 
 
@@ -127,10 +149,50 @@ module BMA {
                 this.proofContentViewer.proofresultviewer("hide", params.tab);
             }
 
-            private DataToCompactMode(data) { }
-            private DataToFullMode(data) { }
-            
         }
+
+        export class FurtherTestingDriver implements IFurtherTesting {
+
+            private viewer: JQuery;
+
+            constructor(viewer: JQuery, toggler: JQuery) {
+                this.viewer = viewer;
+            }
+
+            public GetViewer() {
+                return this.viewer;
+            }
+
+            public ShowStartToggler() {
+                this.viewer.furthertesting("ShowStartToggler");
+            }
+
+            public HideStartToggler() {
+                this.viewer.furthertesting("HideStartToggler");
+            }
+
+            public ShowResults(data) {
+                this.viewer.furthertesting({ data: data });
+                //var content = $('<div></div>')
+                //    .addClass("scrollable-results")
+                //    .coloredtableviewer({ numericData: data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
+                //this.results.resultswindowviewer({header: "Further Testing", content: content, icon: "max"})
+            }
+            
+            public HideResults() {
+                this.viewer.furthertesting({data: undefined});
+                //this.results.resultswindowviewer("destroy");
+            }
+
+            public StandbyMode() {
+                this.viewer.furthertesting({ buttonMode: "StandbyMode" });
+            }
+
+            public ActiveMode() {
+                this.viewer.furthertesting({ buttonMode: "ActiveMode" });
+            }
+        }
+
 
         export class PopupDriver implements IPopup {
             private popupWindow;
@@ -152,6 +214,9 @@ module BMA {
                     case "SimulationVariables":
                         header = "Simulation Progression";
                         break;
+                    case "FurtherTesting": 
+                        header = "Further Testing";
+                        break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 this.popupWindow.show();
@@ -159,6 +224,11 @@ module BMA {
 
             public Hide() {
                 this.popupWindow.hide();
+                //window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
+            }
+
+            public Collapse() {
+                window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
             }
 
             //private createResultView(params) {
@@ -167,27 +237,35 @@ module BMA {
             //}
         }
 
-        export class SimulationFullDriver implements ISimulationFull {
+        export class SimulationExpandedDriver implements ISimulationExpanded {
             private viewer;
 
-            constructor (view: JQuery) {
+            constructor(view: JQuery) {
                 this.viewer = view;
             }
 
             public Set(data: { variables; colors; init }) {
-                var table = this.CreateFullTable(data.variables, data.colors);
+                var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
-                var add = this.CreatePlotView(data.colors);
-                this.viewer.simulationfull({ data: { variables: table, init: data.init, interval: interval, data: add } });
+                var toAdd = this.CreatePlotView(data.colors);
+                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: toAdd });
             }
 
             public GetViewer(): JQuery {
                 return this.viewer;
             }
 
+            public StandbyMode() {
+                this.viewer.simulationexpanded({buttonMode: "StandbyMode"});
+            }
+
+            public ActiveMode() {
+                this.viewer.simulationexpanded({buttonMode: "ActiveMode"});
+            }
+
             public AddResult(res) {
                 var result = this.ConvertResult(res);
-                this.viewer.simulationfull("AddResult", result);
+                this.viewer.simulationexpanded("AddResult", result);
             }
 
             public CreatePlotView(colors) {
@@ -221,14 +299,14 @@ module BMA {
                 return data;
             }
 
-            public findColorById(colors,id) {
+            public findColorById(colors, id) {
                 for (var i = 0; i < colors.length; i++)
                     if (id === colors[i].Id)
                         return colors[i];
                 return undefined;
             }
 
-            public CreateFullTable(variables,colors) {
+            public CreateExpandedTable(variables,colors) {
                 var table = [];
                 //var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
@@ -292,8 +370,38 @@ module BMA {
                 return deferred.promise();
             }
 
-            private OnCheckFileSelected() : boolean {
+            private OnCheckFileSelected(): boolean {
                 return false;
+            }
+        }
+
+        export class ContextMenuDriver implements IContextMenu {
+            private contextMenu: JQuery;
+
+            constructor(contextMenu: JQuery) {
+                this.contextMenu = contextMenu;
+            }
+
+            public EnableMenuItems(optionVisibilities: { name: string; isVisible: boolean }[]) {
+                for (var i = 0; i < optionVisibilities.length; i++) {
+                    this.contextMenu.contextmenu("enableEntry", optionVisibilities[i].name, optionVisibilities[i].isVisible);
+                }
+            }
+
+            public GetMenuItems() {
+                return [];
+            }
+        }
+
+        export class AccordionHider implements IHider {
+            private acc: JQuery;
+
+            constructor(acc: JQuery) {
+                this.acc = acc;
+            }
+
+            public Hide() {
+                var coll = this.acc.children().filter('[aria-selected="true"]').trigger("click");
             }
         }
     }

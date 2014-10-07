@@ -18,6 +18,8 @@ module BMA {
 
             public GetDragSubject() {
             }
+            public GetZoomSubject() {
+            }
 
             public Draw(svg: SVGSVGElement) {
                 this.svg.push(svg);
@@ -27,6 +29,22 @@ module BMA {
             }
 
             public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
+            }
+
+            public GetPlotX(left) {
+                return 0;
+            }
+
+            public GetPlotY(left) {
+                return 0;
+            }
+
+            public GetPixelWidth() {
+                return 0;
+            }
+
+            public SetGridVisibility(isOn: boolean) {
+
             }
         }
 
@@ -47,6 +65,10 @@ module BMA {
 
             GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; } {
                 return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100 }
+            }
+
+            SetValidation(v: boolean) {
+                return v;
             }
 
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) { }

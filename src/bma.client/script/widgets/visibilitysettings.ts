@@ -48,7 +48,7 @@
                         switch (behavior) {
                             case "toggle":
                                 if (that.listOptions[ind].toggle === undefined) {
-                                    value = command !== undefined ? Boolean($(child).attr("data-default")) || true : undefined;
+                                    value = command !== undefined ? ($(child).attr("data-default")==="true") : undefined;
                                     var button = $('<button></button>')
                                         .appendTo($(child))
                                         .addClass("hoverable");
@@ -59,8 +59,8 @@
                                     that.listOptions[ind].toggleButton = button;
                                     if (command !== undefined) {
                                         button.bind("click", function (e) {
-                                            window.Commands.Execute(command, {checked: value});
                                             that.listOptions[ind].toggle = !that.listOptions[ind].toggle;
+                                            window.Commands.Execute(command, that.listOptions[ind].toggle);
                                             that.changeButtonONOFFStyle(ind);
                                         });
                                     }
@@ -71,7 +71,7 @@
 
                             case "increment":
                                 if (that.listOptions[ind].increment === undefined) {
-                                    value = command !== undefined ? $(item).attr("data-default") || 10 : undefined;
+                                    value = command !== undefined ? parseInt($(child).attr("data-default")) || 10 : undefined;
                                     var plus = $('<button>+</button>').addClass("plusminus")
                                         .appendTo($(child))
                                         .addClass("hoverable");
@@ -79,11 +79,19 @@
                                         .appendTo($(child))
                                         .addClass("hoverable");
                                     that.listOptions[ind].increment = value;
+                                    plus.bind("click", function () {
+                                        that.listOptions[ind].increment++;
+                                        window.Commands.Execute(command, that.listOptions[ind].increment);
+                                    })
+                                    minus.bind("click", function () {
+                                        that.listOptions[ind].increment--;
+                                        window.Commands.Execute(command, that.listOptions[ind].increment);
+                                    })
                                 }
                                 break;
                         }
                         if (value === undefined) {
-                            console.log("Undefind command or invalid value");
+                            console.log(behavior + ' ' + command + ' ' + value);
                         }
                     }
                 })

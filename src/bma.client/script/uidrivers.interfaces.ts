@@ -6,10 +6,19 @@ module BMA {
         export interface ISVGPlot {
             Draw(svg: SVGElement);
             SetGrid(x0: number, y0: number, xStep: number, yStep: number);
+            GetPlotX(left: number);
+            GetPlotY(top: number);
+            GetPixelWidth();
+            SetGridVisibility(isOn: boolean);
+        }
+
+        export interface IHider {
+            Hide();
         }
 
         export interface INavigationPanel {
             TurnNavigation(isOn: boolean);
+            //GetZoomSubject(): any;
             SetZoom(zoom: number);
         }
 
@@ -20,6 +29,7 @@ module BMA {
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel);
             Show(x: number, y: number);
             Hide();
+            SetValidation(val: boolean, message: string);
         }
 
         export interface IElementsPanel {
@@ -49,6 +59,16 @@ module BMA {
             Hide(params);
         }
 
+        export interface IFurtherTesting {
+            ShowStartToggler();
+            HideStartToggler();
+            ShowResults(data);
+            HideResults();
+            GetViewer();
+            StandbyMode();
+            ActiveMode();
+        }
+
         export interface ISimulationViewer {
             SetData(params);
             Show(params);
@@ -56,14 +76,21 @@ module BMA {
             ChangeVisibility(params);
         }
 
-        export interface ISimulationFull {
+        export interface ISimulationExpanded {
             AddResult(res);
             GetViewer();
             Set(data);
+            StandbyMode();
+            ActiveMode();
         }
 
         export interface IFileLoader {
-            OpenFileDialog() : JQueryPromise<File>;
+            OpenFileDialog(): JQueryPromise<File>;
+        }
+
+        export interface IContextMenu {
+            GetMenuItems(): string[];
+            EnableMenuItems(optionsVisibility: { name: string; isVisible: boolean}[]) : void ;
         }
 
     }

@@ -165,10 +165,10 @@ describe("ProgressionTable", () => {
         //for (var i = 0; i < t2.length; i++)
         //    console.log(t2.eq(i).text());
         widget.progressiontable();
-        expect(widget.progressiontable("isClone", t1, t2)).toBeFalsy();
+        expect(widget.progressiontable("IsClone", t1, t2)).toBeFalsy();
     })
 
-    it("should commpare equal columns", () => {
+    it("should compare equal columns", () => {
         var table = $('<table></table>');
         var tr0 = $('<tr></tr>').appendTo(table);
         var tr1 = $('<tr></tr>').appendTo(table);
@@ -182,24 +182,8 @@ describe("ProgressionTable", () => {
         var t2 = table.find("tr").children("td:nth-child(3)");
         
         widget.progressiontable();
-        expect(widget.progressiontable("isClone", t1, t2)).toBeTruthy();
+        expect(widget.progressiontable("IsClone", t1, t2)).toBeTruthy();
     })
 
-    it("should commpare equal columns", () => {
-        var table = $('<table></table>');
-        var tr0 = $('<tr></tr>').appendTo(table);
-        var tr1 = $('<tr></tr>').appendTo(table);
-        var td0 = $('<td></td>').text(1).appendTo(tr0);
-        var td1 = $('<td></td>').text(2).appendTo(tr0);
-        var td2 = $('<td></td>').text(2).appendTo(tr0);
-        var td3 = $('<td></td>').text(4).appendTo(tr1);
-        var td4 = $('<td></td>').text(2).appendTo(tr1);
-        var td5 = $('<td></td>').text(2).appendTo(tr1);
-        var t1 = table.find('tr').children("td:nth-child(2)");
-        var t2 = table.find("tr").children("td:nth-child(3)");
-
-        widget.progressiontable();
-        expect(widget.progressiontable("findClone", t1, t2)).toEqual(1);
-    })
 
 })
