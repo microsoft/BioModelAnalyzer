@@ -3,20 +3,20 @@
   <PropertyGroup>
     <AzureCredentials>{"ServiceManagementEndpoint":"https:\/\/management.core.windows.net\/","SubscriptionId":"9464ec42-b84e-4ca3-a12d-20de07731554"}</AzureCredentials>
     <AzureDeleteDeploymentOnFailure>False</AzureDeleteDeploymentOnFailure>
-    <AzureDeploymentLabel>BioCheck Debug</AzureDeploymentLabel>
+    <AzureDeploymentLabel>BioCheck/SL, from git master.</AzureDeploymentLabel>
     <AzureDeploymentReplacementMethod>AutomaticUpgrade</AzureDeploymentReplacementMethod>
     <AzureSlot>Staging</AzureSlot>
     <AzureEnableRemoteDesktop>True</AzureEnableRemoteDesktop>
     <AzureEnableWebDeploy>True</AzureEnableWebDeploy>
     <AzureFallbackToDeleteAndRecreateIfUpgradeFails>False</AzureFallbackToDeleteAndRecreateIfUpgradeFails>
-    <AzureHostedServiceLabel>BioCheck-Test Service</AzureHostedServiceLabel>
-    <AzureHostedServiceName>biochecktest</AzureHostedServiceName>
+    <AzureHostedServiceLabel>biomodelanalyzertest</AzureHostedServiceLabel>
+    <AzureHostedServiceName>biomodelanalyzertest</AzureHostedServiceName>
     <AzureEnableIntelliTrace>False</AzureEnableIntelliTrace>
     <AzureEnableProfiling>False</AzureEnableProfiling>
     <AzureServiceConfiguration>Cloud</AzureServiceConfiguration>
     <AzureSolutionConfiguration>Debug</AzureSolutionConfiguration>
-    <AzureStorageAccountLabel>bma</AzureStorageAccountLabel>
-    <AzureStorageAccountName>bma</AzureStorageAccountName>
+    <AzureStorageAccountLabel>biomodelanalyzertest</AzureStorageAccountLabel>
+    <AzureStorageAccountName>biomodelanalyzertest</AzureStorageAccountName>
     <AzureAppendTimestampToDeploymentLabel>True</AzureAppendTimestampToDeploymentLabel>
   </PropertyGroup>
 </Project>
