@@ -2,12 +2,6 @@
     var widget = $('<div></div>');
     window.Commands = new BMA.CommandRegistry();
 
-    //beforeEach(() => {
-    //    widget.containernameeditor();
-    //})
-    //afterEach(() => {
-    //    widget.containernameeditor("destroy");
-    //})
     it("creates a 'Container Name' label div", function () {
         widget.containernameeditor();
         expect(widget.children("div").eq(0).text()).toEqual("Container Name");
@@ -50,4 +44,3 @@
         expect(window.Commands.Execute).not.toHaveBeenCalled();
     });
 });
-//# sourceMappingURL=ContainerNameEditorTest.js.map
