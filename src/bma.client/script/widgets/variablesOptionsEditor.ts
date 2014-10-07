@@ -10,7 +10,7 @@
             rangeFrom: 0,
             rangeTo: 0,
             functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
-            inputs: ["qqq", "www", "eee", "rrr"],
+            inputs: [],
             formula: "",
             approved: undefined
         },
@@ -206,7 +206,8 @@
             });
 
             this.textarea.bind("input change propertychange", function () {
-                that._setOption("formula", that.textarea.val());
+                //that._setOption("formula", that.textarea.val());
+                that.options.formula = that.textarea.val();
                 window.Commands.Execute("VariableEdited", {});
             });
 
@@ -233,7 +234,9 @@
                     break;
                 case "formula":
                     that.options.formula = value;
-                    this.textarea.val(that.options.formula);
+
+                    if (this.textarea.val() !== that.options.formula)
+                        this.textarea.val(that.options.formula);
                     window.Commands.Execute("FormulaEdited", that.options.formula);
                     
                     break;

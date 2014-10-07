@@ -24,8 +24,9 @@
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
                     that.data = [];
-                    that.ClearColors();
                     that.initValues = param.data;
+                    that.ClearColors();
+                    //that.AddData(that.initValues);
                     var stableModel = that.appModel.BioModel.GetJSON();
                     var variables = that.ConvertParam(param.data);
                     that.StartSimulation({ model: stableModel, variables: variables, num: param.num});
@@ -33,8 +34,8 @@
 
                 window.Commands.On("SimulationRequested", function (args) {
                     that.initValues = [];
-                    that.ClearColors();
                     that.CreateColors();
+                    that.ClearColors();
                     var variables = that.CreateVariablesView();
                     //var prmin = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
@@ -116,13 +117,15 @@
 
             public AddData(d) {
                 if (d !== null) {
-                    this.data[this.data.length] = d;
+                    //this.data[this.data.length] = d;
+                    this.data.push(d);
                     var variables = this.appModel.BioModel.Variables;
                     for (var i = 0; i < d.length; i++) {
                         var color = this.GetColorById(variables[i].Id);
-                        color.Plot[color.Plot.length] = d[i];
+                        color.Plot.push(d[i]);
                     }
                 }
+                return color;
             }
 
            
@@ -141,8 +144,15 @@
             }
 
             public ClearColors() {
-                for (var i = 0; i < this.colors.length; i++) {
-                    this.colors[i].Plot = [];
+                //for (var i = 0; i < this.colors.length; i++) {
+                //    this.colors[i].Plot = [];
+                //    this.colors[i].Plot[0] = this.initValues[i];
+                //}
+                var variables = this.appModel.BioModel.Variables;
+                for (var i = 0; i < this.initValues.length; i++) {
+                    var color = this.GetColorById(variables[i].Id);
+                    color.Plot = [];
+                    color.Plot[0] = this.initValues[i];
                 }
             }
 
