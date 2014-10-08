@@ -1,4 +1,6 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
     $.widget("BMA.simulationexpanded", {
         options: {
             data: undefined,
@@ -28,7 +30,8 @@
 
             this.table1 = $('<div></div>').width("40%").appendTo(that.element);
 
-            this.progression = $('<div></div>').appendTo(that.element).progressiontable();
+            //this.table1.css("position", "relative");
+            this.progression = $('<div></div>').appendTo(that.element).progressiontable(); //.addClass("bma-simulation-table")
             this.progression.css("position", "absolute");
             this.progression.css("left", "45%");
             this.progression.css("top", 0);
@@ -43,6 +46,7 @@
             that.element.css("margin-bottom", "40px");
             that.element.css("position", "relative");
 
+            //that.element.children().css("margin", "10px");
             this.refresh();
         },
         ChangeMode: function () {
@@ -123,3 +127,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=simulationexpanded.js.map

@@ -90,6 +90,22 @@ declare var Rx: any;
                     });
             });
 
+            /*
+            plotDiv.bind("mousemove", function (arg) {
+                var cs = svgPlot.getScreenToDataTransform();
+
+                if (arg.originalEvent !== undefined) {
+                    arg = arg.originalEvent;
+                }
+
+                window.Commands.Execute("DrawingSurfaceMouseMove",
+                    {
+                        x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
+                    });
+            });
+            */
+
             plotDiv.dblclick(function (arg) {
                 var cs = svgPlot.getScreenToDataTransform();
 

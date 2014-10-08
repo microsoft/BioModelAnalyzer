@@ -1,4 +1,10 @@
-﻿
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\model\biomodel.ts"/>
+/// <reference path="..\model\model.ts"/>
+/// <reference path="..\uidrivers.ts"/>
+/// <reference path="..\commands.ts"/>
+
 var BMA;
 (function (BMA) {
     (function (Presenters) {
@@ -33,6 +39,8 @@ var BMA;
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
                     that.stagingLine = undefined;
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
                 window.Commands.On("DrawingSurfaceClick", function (args) {
@@ -97,9 +105,9 @@ var BMA;
                         { name: "Cut", isVisible: id !== undefined || containerId !== undefined },
                         { name: "Delete", isVisible: id !== undefined || containerId !== undefined || relationshipId !== undefined },
                         { name: "Size", isVisible: containerId !== undefined },
-                        { name: "ResizeCellTo1x1", isVisible: false },
-                        { name: "ResizeCellTo2x2", isVisible: cntSize < 2 },
-                        { name: "ResizeCellTo3x3", isVisible: cntSize < 3 }
+                        { name: "ResizeCellTo1x1", isVisible: true },
+                        { name: "ResizeCellTo2x2", isVisible: true },
+                        { name: "ResizeCellTo3x3", isVisible: true }
                     ]);
 
                     if (id !== undefined) {
@@ -141,7 +149,7 @@ var BMA;
                 window.Commands.On("DrawingSurfaceResizeCell", function (args) {
                     if (that.contextElement !== undefined && that.contextElement.type === "container") {
                         var container = that.Current.layout.GetContainerById(that.contextElement.id);
-                        if (container !== undefined && container.Size < args.size) {
+                        if (container !== undefined) {
                             var sizeDiff = args.size - container.Size;
 
                             var containerLayouts = that.Current.layout.Containers;
@@ -218,6 +226,13 @@ var BMA;
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
 
+                /*
+                window.Commands.On("DrawingSurfaceMouseMove", function (param) {
+                
+                var cnt = that.GetContainerAtPosition(param.x, param.y);
+                that.driver.SetGridVisibility(cnt===undefined);
+                });
+                */
                 dragSubject.dragStart.subscribe(function (gesture) {
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
@@ -247,6 +262,7 @@ var BMA;
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
 
+                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             if (that.stagingLine.svg !== undefined) {
                                 that.svg.remove(that.stagingLine.svg);
@@ -448,7 +464,7 @@ var BMA;
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
                     var containerLayout = containers[i];
-                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: this.Grid.xStep / 2, yStep: this.Grid.yStep / 2 })) {
+                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: grid.xStep / 2, yStep: grid.yStep / 2 })) {
                         return containerLayout.Id;
                     }
                 }
@@ -632,19 +648,25 @@ var BMA;
                                 return;
                         }
 
-                        var containerX = (gridCell.x + 0.5) * this.xStep + this.xOrigin + (container.Size - 1) * this.xStep / 2;
-                        var containerY = (gridCell.y + 0.5) * this.yStep + this.yOrigin + (container.Size - 1) * this.yStep / 2;
+                        var containerX = (container.PositionX + 0.5) * this.xStep + this.xOrigin + (container.Size - 1) * this.xStep / 2;
+                        var containerY = (container.PositionY + 0.5) * this.yStep + this.yOrigin + (container.Size - 1) * this.yStep / 2;
 
                         var v = {
                             x: x - containerX,
-                            y: -(y - containerY)
+                            y: y - containerY
                         };
                         var len = Math.sqrt(v.x * v.x + v.y * v.y);
 
-                        var acos = Math.acos(v.y / len);
+                        v.x = v.x / len;
+                        v.y = v.y / len;
+
+                        var acos = Math.acos(-v.y);
+
                         var angle = acos * v.x / Math.abs(v.x);
 
                         angle = angle * 180 / Math.PI;
+                        if (angle < 0)
+                            angle += 360;
 
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
@@ -653,6 +675,7 @@ var BMA;
                                 }
                             }
                         } else {
+                            var pos = BMA.SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y);
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
                         }
@@ -686,6 +709,16 @@ var BMA;
                 return undefined;
             };
 
+            //private GetContainerGridCells(containerLayout: BMA.Model.ContainerLayout): { x: number; y: number }[] {
+            //    var result = [];
+            //    var size = containerLayout.Size;
+            //    for (var i = 0; i < size; i++) {
+            //        for (var j = 0; j < size; j++) {
+            //            result.push({ x: i + containerLayout.PositionX, y: j + containerLayout.PositionY });
+            //        }
+            //    }
+            //    return result;
+            //}
             DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
                 var result = [];
                 var variables = this.Current.model.Variables;
@@ -831,6 +864,7 @@ var BMA;
                 if (this.svg === undefined)
                     return undefined;
 
+                //Generating svg elements from model and layout
                 var svgElements = [];
 
                 var containerLayouts = this.Current.layout.Containers;
@@ -868,6 +902,7 @@ var BMA;
                     svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
                 }
 
+                //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
@@ -887,3 +922,4 @@ var BMA;
     })(BMA.Presenters || (BMA.Presenters = {}));
     var Presenters = BMA.Presenters;
 })(BMA || (BMA = {}));
+//# sourceMappingURL=presenters.js.map
