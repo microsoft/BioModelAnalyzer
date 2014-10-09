@@ -9,7 +9,7 @@ var BMA;
 (function (BMA) {
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, svgPlotDriver, navigationDriver, dragService, undoButton, redoButton, variableEditorDriver, contextMenu) {
+            function DesignSurfacePresenter(appModel, svgPlotDriver, highlightDriver, navigationDriver, dragService, undoButton, redoButton, variableEditorDriver, contextMenu) {
                 var _this = this;
                 this.currentModelIndex = -1;
                 this.xOrigin = 0;
@@ -27,6 +27,7 @@ var BMA;
                 this.redoButton = redoButton;
 
                 this.driver = svgPlotDriver;
+                this.highlightDriver = highlightDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.contextMenu = contextMenu;
@@ -188,6 +189,7 @@ var BMA;
                 window.Commands.On("DrawingSurfaceRefreshOutput", function () {
                     if (_this.Current !== undefined) {
                         var drawingSvg = _this.CreateSvg();
+                        _this.highlightDriver.HighlightAreas(_this.PrepareHighlightAreas());
                         _this.driver.Draw(drawingSvg);
                     }
                 });
@@ -199,6 +201,7 @@ var BMA;
 
                         if (_this.Current !== undefined) {
                             var drawingSvg = _this.CreateSvg();
+                            _this.highlightDriver.HighlightAreas(_this.PrepareHighlightAreas());
                             _this.driver.Draw(drawingSvg);
                         }
                     }
@@ -276,6 +279,7 @@ var BMA;
                                 id: "stagingLine"
                             });
 
+                            that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
                             that.driver.Draw(that.GetCurrentSVG(that.svg));
                         }
 
@@ -302,6 +306,7 @@ var BMA;
                         that.stagingVariable = undefined;
                         if (!that.TryAddVariable(x, y, type, id)) {
                             var drawingSvg = that.CreateSvg();
+                            that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
                             that.driver.Draw(drawingSvg);
                         }
                     }
@@ -677,7 +682,7 @@ var BMA;
                         } else {
                             var pos = BMA.SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y);
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
+                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, pos.x, pos.y, 0, 0, angle));
                         }
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
@@ -748,7 +753,30 @@ var BMA;
                 this.appModel.Layout = this.Current.layout;
 
                 var drawingSvg = this.CreateSvg();
+                this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                 this.driver.Draw(drawingSvg);
+            };
+
+            DesignSurfacePresenter.prototype.PrepareHighlightAreas = function () {
+                var result = [];
+                var containers = this.Current.layout.Containers;
+                var grid = this.Grid;
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    if (container.Size > 1) {
+                        var containerX = container.PositionX * this.xStep + this.xOrigin;
+                        var containerY = (container.PositionY + container.Size) * this.yStep + this.yOrigin;
+                        result.push({
+                            x: containerX + 1,
+                            y: -containerY - 1,
+                            width: this.xStep * container.Size - 2,
+                            height: this.yStep * container.Size - 2,
+                            fill: "white"
+                        });
+                    }
+                }
+
+                return result;
             };
 
             DesignSurfacePresenter.prototype.Undo = function () {

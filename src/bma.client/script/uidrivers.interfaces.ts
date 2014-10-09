@@ -93,5 +93,8 @@ module BMA {
             EnableMenuItems(optionsVisibility: { name: string; isVisible: boolean}[]) : void ;
         }
 
+        export interface IAreaHightlighter {
+            HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string}[]);
+        }
     }
 } 

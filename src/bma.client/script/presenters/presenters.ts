@@ -20,6 +20,7 @@ module BMA {
 
             private selectedType: string;
             private driver: BMA.UIDrivers.ISVGPlot;
+            private highlightDriver: BMA.UIDrivers.IAreaHightlighter;
             private navigationDriver: BMA.UIDrivers.INavigationPanel;
             private variableEditor: BMA.UIDrivers.IVariableEditor;
             private svg: any;
@@ -47,6 +48,7 @@ module BMA {
 
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
+                highlightDriver: BMA.UIDrivers.IAreaHightlighter,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
                 undoButton: BMA.UIDrivers.ITurnableButton,
@@ -60,6 +62,7 @@ module BMA {
                 this.redoButton = redoButton;
 
                 this.driver = svgPlotDriver;
+                this.highlightDriver = highlightDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.contextMenu = contextMenu;
@@ -230,6 +233,7 @@ module BMA {
                 window.Commands.On("DrawingSurfaceRefreshOutput", () => {
                     if (this.Current !== undefined) {
                         var drawingSvg = <SVGElement>this.CreateSvg();
+                        this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                         this.driver.Draw(drawingSvg);
                     }
                 });
@@ -241,6 +245,7 @@ module BMA {
 
                         if (this.Current !== undefined) {
                             var drawingSvg = <SVGElement>this.CreateSvg();
+                            this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                             this.driver.Draw(drawingSvg);
                         }
                     }
@@ -330,6 +335,7 @@ module BMA {
                                         id: "stagingLine"
                                     });
 
+                                that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
                                 that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
                             }
 
@@ -358,6 +364,7 @@ module BMA {
                             that.stagingVariable = undefined;
                             if (!that.TryAddVariable(x, y, type, id)) {
                                 var drawingSvg = <SVGElement>that.CreateSvg();
+                                that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
                                 that.driver.Draw(drawingSvg);
                             }
                         }
@@ -756,7 +763,7 @@ module BMA {
                         } else {
                             var pos = SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y); 
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
+                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, pos.x, pos.y, 0, 0, angle));
                         }
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
@@ -829,7 +836,30 @@ module BMA {
                 this.appModel.Layout = this.Current.layout;
 
                 var drawingSvg = <SVGElement>this.CreateSvg();
+                this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                 this.driver.Draw(drawingSvg);
+            }
+
+            private PrepareHighlightAreas(): { x: number; y: number; width: number; height: number; fill: string }[]{
+                var result = [];
+                var containers = this.Current.layout.Containers;
+                var grid = this.Grid;
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    if (container.Size > 1) {
+                        var containerX = container.PositionX * this.xStep + this.xOrigin;
+                        var containerY = (container.PositionY + container.Size) * this.yStep + this.yOrigin;
+                        result.push({
+                            x: containerX + 1,
+                            y: -containerY - 1,
+                            width: this.xStep * container.Size - 2,
+                            height: this.yStep * container.Size - 2,
+                            fill: "white"
+                        });
+                    }
+                }
+
+                return result;
             }
 
             private Undo() {
