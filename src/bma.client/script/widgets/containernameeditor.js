@@ -1,4 +1,7 @@
-﻿(function ($) {
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\functionsregistry.ts"/>
+(function ($) {
     $.widget("BMA.containernameeditor", {
         options: {
             name: "name"
@@ -35,3 +38,4 @@
         }
     });
 }(jQuery));
+//# sourceMappingURL=containernameeditor.js.map

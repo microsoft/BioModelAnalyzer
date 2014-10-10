@@ -45,6 +45,7 @@
                             },
                             error: function (res2) {
                                 that.driver.ActiveMode();
+                                alert(res2.statusText);
                                 //$("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
                             }
                         });
@@ -101,8 +102,8 @@
                 }
                 var result = [];
                 for (var i = 0; i < table.length; i++) {
-                    result[i] = { min: table[i][0], max: table[i][0], oscillations: "" };
                     if (table[i] !== undefined) {
+                        result[i] = { min: table[i][0], max: table[i][0], oscillations: "" };
                         for (var j = 0; j < table[i].length - 1; j++) {
                             if (table[i][j] < result[i].min)
                                 result[i].min = table[i][j];
