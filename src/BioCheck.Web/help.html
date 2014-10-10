@@ -19,6 +19,7 @@
 	function makeMin4() { b4.innerHTML = (b4.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin5() { b5.innerHTML = (b5.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin6() { b6.innerHTML = (b6.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
+	function makeMin65() { b65.innerHTML = (b65.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin7() { b7.innerHTML = (b7.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin8() { b8.innerHTML = (b8.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
 	function makeMin9() { b9.innerHTML = (b9.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
@@ -95,7 +96,19 @@
 			<div class="FAQ_question">
 				<a onclick =makeMin4();(toggleInfo('#q4'))><span id='b4'>[+]</span></a> <span class="bold">How do I name and give ranges to variables?</span><br>
 				<p style="display:none" id="q4">
-				Clicking on a variable opens up a dialogue box in the bottom left corner. Here you can specify a name and descriptive range for variables. As usual it is good practice not to include symbols in names of variables (or files). For example, a &#8216;-&#8216; symbols in the name of a variable increases the likelihood of getting a failed analysis run as the tool processes subtraction relationships too, specified by &#8216;-&#8216;. Typical qualitatively descriptive ranges are as follows: 0-1 for &#8216;off&#8217; and &#8216;on&#8217;; 0-3 for &#8216;off&#8217;, &#8216;low&#8217;, &#8216;medium&#8217; and &#8216;high&#8217; concentrations; 1-1 for a &#8216;low concentration constant&#8217;; 3-3 for a &#8216;high concentration constant&#8217;; etc. 
+				    Clicking on a variable opens up a dialogue box in the bottom left corner. 
+                    Here you can specify a name and descriptive range for variables. 
+                    As usual it is good practice not to include symbols in names of variables (or files). 
+                    For example, a &#8216;-&#8216; symbols in the name of a variable increases the likelihood of 
+                    getting a failed analysis run as the tool processes subtraction relationships too, 
+                    specified by &#8216;-&#8216;. Typical qualitatively descriptive ranges are as follows: 
+                    0-1 for &#8216;off&#8217; and &#8216;on&#8217;; 0-3 for &#8216;off&#8217;, 
+                    &#8216;low&#8217;, &#8216;medium&#8217; and &#8216;high&#8217; concentrations; 
+                    1-1 for a &#8216;low concentration constant&#8217;; 
+                    3-3 for a &#8216;high concentration constant&#8217;; etc. <br/>
+
+                    If you include variables with different ranges in the same model please have a look at 
+                    &quot;What happens with variables with different ranges?&quot;.
 				</p>
 			</div>
 			
@@ -123,6 +136,33 @@
 					It is important to include in target functions only variables that have a relationship with the variable. If multiple variables of the same name have a relationship with the same variable, Bio Model Analyzer assumes that they affect it in a symmetric way. E.g., in var(a) + var(a) the association between the different a&#8217;s and the variables they represent is symmetric. In var(a)-var(a) it is not symmetric. Such an a-symmetric function could lead to problems with analysis. Similarly, if a variable has one relationship with one variable named b, then b cannot appear twice in the target function.
 				</p>
 			</div>	
+
+            <div class="FAQ_question">
+                <a onclick=makeMin65();(toggleInfo('#q65'))><span id='b65'>[+]</span></a> <span class="bold">What happens with variables with different ranges?</span><br />
+                <p style="display:none" id="q65">
+                    BioModelAnalyzer is built to facilitate the usage of the default target function. 
+                    What should happen if I have a variable X with range [0,1] activating a variable Y with range [0,2] 
+                    (and no other influences)? 
+                    In this case, it makes sense that the maximal value of X should lead to Y having maximal value as well. 
+                    This means that the ranges of X and Y need to be adjusted when they affect each other. 
+                    So BioModelAnalyzer does an automatic range conversion when X appears in the target function of Y (or vice versa). 
+                    If you just use the default target functions this is not something you have to worry about. 
+                    It essentially means that the entire range of Y will be possible in the example above (and similar cases).
+                    However, if you are building your own target functions this may lead to unexpected behaviour.<br/>
+                    The exact range conversion that BioModelAnalyzer applies is as follows. 
+                    If a constant with range [n,n] appears in the target function of a variable with a different range, 
+                    then <b>no</b> range conversion is applied. 
+                    If a variable X with range [a,b] appears in the target function of a variable Y with range [c,d], 
+                    then whenever X appears in the target function of Y it will be modified to (X-a)*(d-c)/(b-a)+c.<br/>
+                    If you want to create a model with different ranges that bypasses this automatic range conversion 
+                    there is a simple solution. 
+                    You have to define the ranges of all variables to be the same and use the target functions to 
+                    practically restrict the range to what you want. 
+                    In the example above, change the range of X to [0,2] and it's target function to be min(1,old_target_function). 
+                    In general, if the maximal range in the model is [a,b] and you want a range of [c,d], where a<=c<=d<=b you will 
+                    have to change to use the range [a,b] and the target function min(d,max(c,old_target_function)).
+                </p>
+            </div>
 				
 			<div class="FAQ_question">
 				<a onclick =makeMin7();(toggleInfo('#q7'))><span id='b7'>[+]</span></a> <span class="bold">How do I save my work to the model library?</span><br>

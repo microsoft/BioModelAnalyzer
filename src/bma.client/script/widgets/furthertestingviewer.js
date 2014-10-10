@@ -17,14 +17,12 @@
                     toAddClass = "bma-furthertesting-button";
                     toRemoveClass = "bma-furthertesting-button-waiting";
                     text = "Further Testing";
-                    this.toggler.bind("click", function () {
-                        window.Commands.Execute("FurtherTestingRequested", {});
-                    });
+
                     break;
                 case "StandbyMode":
                     toAddClass = "bma-furthertesting-button-waiting";
                     toRemoveClass = "bma-furthertesting-button";
-                    this.toggler.unbind("click");
+
                     break;
             }
             this.toggler.removeClass(toRemoveClass).addClass(toAddClass).text(text);

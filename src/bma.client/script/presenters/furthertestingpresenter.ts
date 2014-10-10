@@ -30,7 +30,6 @@
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0 && that.model !== undefined && that.result !== undefined && that.variables !== undefined) {
                         that.driver.StandbyMode();
-                        
                         $.ajax({
                             type: "POST",
                             url: "api/FurtherTesting",

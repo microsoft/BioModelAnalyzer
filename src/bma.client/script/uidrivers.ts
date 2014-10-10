@@ -4,7 +4,7 @@
 
 module BMA {
     export module UIDrivers {
-        export class SVGPlotDriver implements ISVGPlot, IElementsPanel, INavigationPanel {
+        export class SVGPlotDriver implements ISVGPlot, IElementsPanel, INavigationPanel, IAreaHightlighter {
             private svgPlotDiv: JQuery;
 
             constructor(svgPlotDiv: JQuery) {
@@ -49,6 +49,10 @@ module BMA {
 
             public SetGridVisibility(isOn: boolean) {
                 this.svgPlotDiv.drawingsurface({ gridVisibility: isOn });
+            }
+
+            public HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string }[]) {
+                this.svgPlotDiv.drawingsurface({ rects: areas });
             }
         }
 

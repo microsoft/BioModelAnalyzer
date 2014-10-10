@@ -181,8 +181,8 @@ module BMA {
                 var containerInnerEllipseHeight = 124;
                 var containerOuterEllipseWidth = 112;
                 var containerOuterEllipseHeight = 130;
-                var containerInnerCenterOffset = 0;
-                var containerOuterCenterOffset = 5;
+                var containerInnerCenterOffset = 5;
+                var containerOuterCenterOffset = 0;
 
                 this.elements.push(new BorderContainerElement(
                     "Container",
@@ -213,13 +213,22 @@ module BMA {
 
                         /*
                         //Helper bounding ellipses
-                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        jqSvg.ellipse(
+                            (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerOuterCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
                             (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
                             containerOuterEllipseWidth * renderParams.layout.Size, containerOuterEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
                         
-                        jqSvg.ellipse((renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerOuterCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        jqSvg.ellipse(
+                            (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
                             (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
                             containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+
+                        jqSvg.ellipse(
+                            x + containerOuterCenterOffset * renderParams.layout.Size / 2,
+                            y,
+                            (containerInnerEllipseWidth + containerOuterEllipseWidth) * renderParams.layout.Size / 2,
+                            (containerInnerEllipseHeight + containerOuterEllipseHeight) * renderParams.layout.Size / 2,
+                            { stroke: "red", fill: "none" });
                         */
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
@@ -229,9 +238,15 @@ module BMA {
                         return false;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY, elementParams: any) {
-                        var dstXInner = Math.abs(pointerX - (elementX + containerInnerCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1)));
-                        var dstXOuter = Math.abs(pointerX - (elementX + containerOuterCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1)));
-                        var dstY = Math.abs(pointerY - elementY - elementParams.yStep * (elementParams.Size - 1));
+                        var innerCenterX = elementX + containerInnerCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1);
+                        var dstXInner = Math.abs(pointerX - innerCenterX);
+
+                        var outerCenterX = elementX + containerOuterCenterOffset * elementParams.Size + elementParams.xStep * (elementParams.Size - 1);
+                        var dstXOuter = Math.abs(pointerX - outerCenterX);
+
+                        var centerY = elementY + elementParams.yStep * (elementParams.Size - 1);
+                        var dstY = Math.abs(pointerY - centerY);
+
                         var outerCheck = Math.pow(dstXOuter / (containerOuterEllipseWidth * elementParams.Size), 2) + Math.pow(dstY / (containerOuterEllipseHeight * elementParams.Size), 2) < 1;
                         var innerCheck = Math.pow(dstXInner / (containerInnerEllipseWidth * elementParams.Size), 2) + Math.pow(dstY / (containerInnerEllipseHeight * elementParams.Size), 2) > 1;
                         return outerCheck && innerCheck;

@@ -9,7 +9,6 @@
 
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
-
                     var proofInput = appModel.BioModel.GetJSON();
 
                     $.ajax({

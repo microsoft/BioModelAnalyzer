@@ -9,6 +9,7 @@ declare var Rx: any;
         _plot: null,
         _gridLinesPlot: null,
         _svgPlot: null,
+        _rectsPlot: null,
         _dragService: null,
         //_zoomObservable: undefined,
         _zoomObs: undefined,
@@ -45,12 +46,16 @@ declare var Rx: any;
 
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
+            var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
+
+            this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
+            //rectsPlot.draw({ rects: [{ x: 0, y: 0, width: 500, height: 500, fill: "red" }] })
 
             if (this.options.svg !== undefined) {
                 if (svgPlot.svg === undefined) {
@@ -89,6 +94,22 @@ declare var Rx: any;
                         y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
                     });
             });
+
+            /*
+            plotDiv.bind("mousemove", function (arg) {
+                var cs = svgPlot.getScreenToDataTransform();
+
+                if (arg.originalEvent !== undefined) {
+                    arg = arg.originalEvent;
+                }
+
+                window.Commands.Execute("DrawingSurfaceMouseMove",
+                    {
+                        x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
+                    });
+            });
+            */
 
             plotDiv.dblclick(function (arg) {
                 var cs = svgPlot.getScreenToDataTransform();
@@ -309,6 +330,10 @@ declare var Rx: any;
                     break;
                 case "gridVisibility":
                     this._gridLinesPlot.isVisible = value;
+                    this._plot.requestUpdateLayout();
+                    break;
+                case "rects":
+                    this._rectsPlot.draw({ rects: value });
                     this._plot.requestUpdateLayout();
                     break;
             }

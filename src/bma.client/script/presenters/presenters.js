@@ -9,7 +9,7 @@ var BMA;
 (function (BMA) {
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, svgPlotDriver, navigationDriver, dragService, undoButton, redoButton, variableEditorDriver, contextMenu) {
+            function DesignSurfacePresenter(appModel, svgPlotDriver, highlightDriver, navigationDriver, dragService, undoButton, redoButton, variableEditorDriver, contextMenu) {
                 var _this = this;
                 this.currentModelIndex = -1;
                 this.xOrigin = 0;
@@ -27,6 +27,7 @@ var BMA;
                 this.redoButton = redoButton;
 
                 this.driver = svgPlotDriver;
+                this.highlightDriver = highlightDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.contextMenu = contextMenu;
@@ -105,9 +106,9 @@ var BMA;
                         { name: "Cut", isVisible: id !== undefined || containerId !== undefined },
                         { name: "Delete", isVisible: id !== undefined || containerId !== undefined || relationshipId !== undefined },
                         { name: "Size", isVisible: containerId !== undefined },
-                        { name: "ResizeCellTo1x1", isVisible: false },
-                        { name: "ResizeCellTo2x2", isVisible: cntSize < 2 },
-                        { name: "ResizeCellTo3x3", isVisible: cntSize < 3 }
+                        { name: "ResizeCellTo1x1", isVisible: true },
+                        { name: "ResizeCellTo2x2", isVisible: true },
+                        { name: "ResizeCellTo3x3", isVisible: true }
                     ]);
 
                     if (id !== undefined) {
@@ -149,7 +150,7 @@ var BMA;
                 window.Commands.On("DrawingSurfaceResizeCell", function (args) {
                     if (that.contextElement !== undefined && that.contextElement.type === "container") {
                         var container = that.Current.layout.GetContainerById(that.contextElement.id);
-                        if (container !== undefined && container.Size < args.size) {
+                        if (container !== undefined) {
                             var sizeDiff = args.size - container.Size;
 
                             var containerLayouts = that.Current.layout.Containers;
@@ -188,6 +189,7 @@ var BMA;
                 window.Commands.On("DrawingSurfaceRefreshOutput", function () {
                     if (_this.Current !== undefined) {
                         var drawingSvg = _this.CreateSvg();
+                        _this.highlightDriver.HighlightAreas(_this.PrepareHighlightAreas());
                         _this.driver.Draw(drawingSvg);
                     }
                 });
@@ -199,6 +201,7 @@ var BMA;
 
                         if (_this.Current !== undefined) {
                             var drawingSvg = _this.CreateSvg();
+                            _this.highlightDriver.HighlightAreas(_this.PrepareHighlightAreas());
                             _this.driver.Draw(drawingSvg);
                         }
                     }
@@ -226,6 +229,13 @@ var BMA;
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
 
+                /*
+                window.Commands.On("DrawingSurfaceMouseMove", function (param) {
+                
+                var cnt = that.GetContainerAtPosition(param.x, param.y);
+                that.driver.SetGridVisibility(cnt===undefined);
+                });
+                */
                 dragSubject.dragStart.subscribe(function (gesture) {
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                         var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
@@ -269,6 +279,7 @@ var BMA;
                                 id: "stagingLine"
                             });
 
+                            that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
                             that.driver.Draw(that.GetCurrentSVG(that.svg));
                         }
 
@@ -295,6 +306,7 @@ var BMA;
                         that.stagingVariable = undefined;
                         if (!that.TryAddVariable(x, y, type, id)) {
                             var drawingSvg = that.CreateSvg();
+                            that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
                             that.driver.Draw(drawingSvg);
                         }
                     }
@@ -457,7 +469,7 @@ var BMA;
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
                     var containerLayout = containers[i];
-                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: this.Grid.xStep / 2, yStep: this.Grid.yStep / 2 })) {
+                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: grid.xStep / 2, yStep: grid.yStep / 2 })) {
                         return containerLayout.Id;
                     }
                 }
@@ -641,19 +653,25 @@ var BMA;
                                 return;
                         }
 
-                        var containerX = (gridCell.x + 0.5) * this.xStep + this.xOrigin + (container.Size - 1) * this.xStep / 2;
-                        var containerY = (gridCell.y + 0.5) * this.yStep + this.yOrigin + (container.Size - 1) * this.yStep / 2;
+                        var containerX = (container.PositionX + 0.5) * this.xStep + this.xOrigin + (container.Size - 1) * this.xStep / 2;
+                        var containerY = (container.PositionY + 0.5) * this.yStep + this.yOrigin + (container.Size - 1) * this.yStep / 2;
 
                         var v = {
                             x: x - containerX,
-                            y: -(y - containerY)
+                            y: y - containerY
                         };
                         var len = Math.sqrt(v.x * v.x + v.y * v.y);
 
-                        var acos = Math.acos(v.y / len);
+                        v.x = v.x / len;
+                        v.y = v.y / len;
+
+                        var acos = Math.acos(-v.y);
+
                         var angle = acos * v.x / Math.abs(v.x);
 
                         angle = angle * 180 / Math.PI;
+                        if (angle < 0)
+                            angle += 360;
 
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
@@ -662,8 +680,9 @@ var BMA;
                                 }
                             }
                         } else {
+                            var pos = BMA.SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y);
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, angle));
+                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, pos.x, pos.y, 0, 0, angle));
                         }
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
@@ -734,7 +753,30 @@ var BMA;
                 this.appModel.Layout = this.Current.layout;
 
                 var drawingSvg = this.CreateSvg();
+                this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                 this.driver.Draw(drawingSvg);
+            };
+
+            DesignSurfacePresenter.prototype.PrepareHighlightAreas = function () {
+                var result = [];
+                var containers = this.Current.layout.Containers;
+                var grid = this.Grid;
+                for (var i = 0; i < containers.length; i++) {
+                    var container = containers[i];
+                    if (container.Size > 1) {
+                        var containerX = container.PositionX * this.xStep + this.xOrigin;
+                        var containerY = (container.PositionY + container.Size) * this.yStep + this.yOrigin;
+                        result.push({
+                            x: containerX + 1,
+                            y: -containerY - 1,
+                            width: this.xStep * container.Size - 2,
+                            height: this.yStep * container.Size - 2,
+                            fill: "white"
+                        });
+                    }
+                }
+
+                return result;
             };
 
             DesignSurfacePresenter.prototype.Undo = function () {
