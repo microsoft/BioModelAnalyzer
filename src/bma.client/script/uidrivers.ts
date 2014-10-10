@@ -386,9 +386,15 @@ module BMA {
                 this.contextMenu = contextMenu;
             }
 
-            public EnableMenuItems(optionVisibilities: { name: string; isVisible: boolean }[]) {
+            public EnableMenuItems(optionVisibilities: { name: string; isEnabled: boolean }[]) {
                 for (var i = 0; i < optionVisibilities.length; i++) {
-                    this.contextMenu.contextmenu("enableEntry", optionVisibilities[i].name, optionVisibilities[i].isVisible);
+                    this.contextMenu.contextmenu("enableEntry", optionVisibilities[i].name, optionVisibilities[i].isEnabled);
+                }
+            }
+
+            public ShowMenuItems(optionVisibilities: { name: string; isVisible: boolean }[]) {
+                for (var i = 0; i < optionVisibilities.length; i++) {
+                    this.contextMenu.contextmenu("showEntry", optionVisibilities[i].name, optionVisibilities[i].isVisible);
                 }
             }
 

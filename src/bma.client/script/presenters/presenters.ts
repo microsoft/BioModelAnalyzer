@@ -131,14 +131,14 @@ module BMA {
 
                     var id = that.GetVariableAtPosition(x, y);
                     var containerId = that.GetContainerAtPosition(x, y);
-                    var relationshipId = that.GetRelationshipAtPosition(x, y, that.driver.GetPixelWidth());
+                    var relationshipId = that.GetRelationshipAtPosition(x, y, 3 * that.driver.GetPixelWidth());
                     var cntSize = containerId !== undefined ? that.Current.layout.GetContainerById(containerId).Size : undefined;
 
                     var canPaste = id === undefined &&
                         containerId === undefined &&
                         that.clipboard !== undefined; //TODO: add more complex check
 
-                    that.contextMenu.EnableMenuItems([
+                    that.contextMenu.ShowMenuItems([
                         { name: "Copy", isVisible: id !== undefined || containerId !== undefined },
                         { name: "Paste", isVisible: canPaste },
                         { name: "Cut", isVisible: id !== undefined || containerId !== undefined },
@@ -147,7 +147,6 @@ module BMA {
                         { name: "ResizeCellTo1x1", isVisible: true },
                         { name: "ResizeCellTo2x2", isVisible: true },
                         { name: "ResizeCellTo3x3", isVisible: true },
-
                     ]);
 
                     if (id !== undefined) {

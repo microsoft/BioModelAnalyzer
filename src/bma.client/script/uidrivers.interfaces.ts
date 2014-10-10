@@ -90,7 +90,8 @@ module BMA {
 
         export interface IContextMenu {
             GetMenuItems(): string[];
-            EnableMenuItems(optionsVisibility: { name: string; isVisible: boolean}[]) : void ;
+            EnableMenuItems(optionsVisibility: { name: string; isEnabled: boolean }[]): void;
+            ShowMenuItems(optionsVisibility: { name: string; isVisible: boolean }[]): void;
         }
 
         export interface IAreaHightlighter {

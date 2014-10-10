@@ -86,14 +86,14 @@ $(document).ready(function () {
             //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors", disabled: true },
             //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy", disabled: true },
             //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
-            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash", disabled: true  },
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash"  },
             {
                 title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
                     { title: "2x2", cmd: "ResizeCellTo2x2" },
                     { title: "3x3", cmd: "ResizeCellTo3x3" },
                 ],
-                uiIcon: "ui-icon-arrow-4-diag", disabled: true
+                uiIcon: "ui-icon-arrow-4-diag"
             }
         ],
         beforeOpen: function (event, ui) {
