@@ -17,17 +17,14 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
-                            var colorData = undefined;
-
                             //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
 
                             //if (res.Ticks !== null)
-                            var variablesData = that.CreateTableView(res.Ticks);
                             if (res.Status === 5)
                                 window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
-                            else
-                                colorData = that.CreateColoredTable(res.Ticks);
+                            var variablesData = that.CreateTableView(res.Ticks);
+                            var colorData = that.CreateColoredTable(res.Ticks);
 
                             //var result = appModel.ProofResult;
                             //var data = { numericData: numericData, colorData: undefined };
