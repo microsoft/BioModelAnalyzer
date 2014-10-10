@@ -20,7 +20,6 @@
                             //else window.Commands.Execute("ProofSucceeded", {});
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             //if (res.Ticks !== null)
-                            
                             if (res.Status === 5)
                                 window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                             var variablesData = that.CreateTableView(res.Ticks);
