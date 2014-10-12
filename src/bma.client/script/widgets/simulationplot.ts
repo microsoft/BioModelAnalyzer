@@ -23,27 +23,26 @@
             var options = this.options;
             this.element.empty();
             this.chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("100%").height("100%").appendTo(that.element);
-            var leftAxis = $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "left").appendTo(this.chartdiv);
-            var bottomAxis = $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "bottom").appendTo(this.chartdiv);
+            //var leftAxis = $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "left").appendTo(this.chartdiv);
+            //var bottomAxis = $("<div></div>").attr("data-idd-axis", "labels").attr("data-idd-placement", "bottom").appendTo(this.chartdiv);
             var gridLinesPlotDiv = $("<div></div>").attr("id","glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
             
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
 
-            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);
-            var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
-            var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
-            that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
+            
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++)
                     that._chart.polyline("polyline" + i, undefined);
 
+                
                 that._chart.isAutoFitEnabled = true;
                 this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
                 this._gridLinesPlot.x0 = 0;
                 this._gridLinesPlot.y0 = 0;
                 this._gridLinesPlot.xStep = 1;
                 this._gridLinesPlot.yStep = 1;
+                var labels = [];
 
                 if (options.colors !== undefined) {
                     for (var i = 0; i < options.colors.length; i++) {
@@ -55,10 +54,20 @@
                             polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
                         }
                     }
+                    for (var i = 0; i < options.colors[0].Plot.length; i++) {
+                        labels[i] = i.toString();
+                    }
                 }
 
+                var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: labels });
+                var leftAxis = that._chart.addAxis("left", "numeric");
                 var bounds = that._chart.aggregateBounds();
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
+
+                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);
+                var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
+                var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
+                that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
             }
             
         },
