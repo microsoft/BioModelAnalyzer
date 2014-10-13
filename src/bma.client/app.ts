@@ -86,7 +86,7 @@ $(document).ready(function () {
             //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors", disabled: true },
             //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy", disabled: true },
             //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
-            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash"  },
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
             {
                 title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
@@ -94,7 +94,8 @@ $(document).ready(function () {
                     { title: "3x3", cmd: "ResizeCellTo3x3" },
                 ],
                 uiIcon: "ui-icon-arrow-4-diag"
-            }
+            },
+            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" }
         ],
         beforeOpen: function (event, ui) {
             var left = event.pageX - $(".bma-drawingsurface").offset().left;

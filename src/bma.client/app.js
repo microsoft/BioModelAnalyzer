@@ -81,7 +81,8 @@ $(document).ready(function () {
                     { title: "3x3", cmd: "ResizeCellTo3x3" }
                 ],
                 uiIcon: "ui-icon-arrow-4-diag"
-            }
+            },
+            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" }
         ],
         beforeOpen: function (event, ui) {
             var left = event.pageX - $(".bma-drawingsurface").offset().left;
