@@ -44,7 +44,14 @@ module BMA {
             private contextMenu: BMA.UIDrivers.IContextMenu;
             private contextElement;
 
-            private clipboard: any;
+            private clipboard: {
+                Container: BMA.Model.ContainerLayout;
+                Variables: {
+                    m: BMA.Model.Variable;
+                    l: BMA.Model.VarialbeLayout
+                }[];
+                Realtionships: BMA.Model.Relationship[]
+            };
 
             constructor(appModel: BMA.Model.AppModel,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
@@ -80,7 +87,7 @@ module BMA {
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
-                window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number }) => {
+                window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number; screenX: number; screenY: number }) => {
                     if (that.selectedType !== undefined) {
                         that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
                     } else {
@@ -88,7 +95,7 @@ module BMA {
                         if (id !== undefined) {
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
-                            that.variableEditor.Show(0, 0);
+                            that.variableEditor.Show(args.screenX, args.screenY);
                         }
                     }
                 });
@@ -151,12 +158,17 @@ module BMA {
                         { name: "Edit", isVisible: id !== undefined }
                     ]);
 
+                    that.contextElement = { x: x, y: y, screenX: args.left, screenY: args.top };
+
                     if (id !== undefined) {
-                        that.contextElement = { id: id, type: "variable" };
+                        that.contextElement.id = id;
+                        that.contextElement.type = "variable";
                     } else if (containerId !== undefined) {
-                        that.contextElement = { id: containerId, type: "container" };
+                        that.contextElement.id = containerId;
+                        that.contextElement.type = "container";
                     } else if (relationshipId !== undefined) {
-                        that.contextElement = { id: relationshipId, type: "relationship" };
+                        that.contextElement.id = relationshipId;
+                        that.contextElement.type = "relationship";
                     }
 
                 });
@@ -176,16 +188,20 @@ module BMA {
                 });
 
                 window.Commands.On("DrawingSurfaceCopy", (args) => {
-                    if (that.contextElement !== undefined) {
-                        if (that.contextElement.type === "variable") {
-                            that.clipboard = that.contextElement;
-                            that.RemoveVariable(that.contextElement.id);
-                        } else if (that.contextElement.type === "container") {
-                            that.RemoveContainer(that.contextElement.id);
-                        }
+                    that.CopyToClipboard(false);
+                });
 
-                        that.contextElement = undefined;
+                window.Commands.On("DrawingSurfaceCut", (args) => {
+                    that.CopyToClipboard(true);
+                });
+
+                window.Commands.On("DrawingSurfacePaste", (args) => {
+                    if (that.clipboard !== undefined) {
+                        var model = that.Current.model;
+                        var layout = that.Current.layout;
                     }
+
+                    that.clipboard = undefined;
                 });
 
                 window.Commands.On("DrawingSurfaceResizeCell", (args) => {
@@ -236,7 +252,7 @@ module BMA {
                         var id = that.contextElement.id;
                         that.editingVariableId = id;
                         that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
-                        that.variableEditor.Show(0, 0);
+                        that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                     }
 
                     that.contextElement = undefined;
@@ -385,7 +401,78 @@ module BMA {
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
 
+            private CopyToClipboard(remove: boolean) {
+                var that = this;
 
+                if (that.contextElement !== undefined) {
+                    if (that.contextElement.type === "variable") {
+                        that.clipboard = that.contextElement;
+                        var v = that.Current.model.GetVariableById(that.contextElement.id);
+                        var l = that.Current.layout.GetVariableById(that.contextElement.id);
+
+                        if (v !== undefined && l !== undefined) {
+                            that.clipboard = {
+                                Container: undefined,
+                                Realtionships: undefined,
+                                Variables: [{ m: v, l: l }]
+                            };
+                        }
+
+                        if (remove)
+                            that.RemoveVariable(that.contextElement.id);
+
+                    } else if (that.contextElement.type === "container") {
+                        var id = that.contextElement.id;
+                        var cnt = that.Current.layout.GetContainerById(id);
+                        if (cnt !== undefined) {
+                            var clipboardVariables = [];
+
+                            var variables = that.Current.model.Variables;
+                            var variableLayouts = that.Current.layout.Variables;
+
+                            for (var i = 0; i < variables.length; i++) {
+                                var variable = variables[i];
+                                if (variable.ContainerId === id) {
+                                    clipboardVariables.push({ m: variable, l: variableLayouts[i] });
+                                }
+                            }
+
+                            var clipboardRelationships = [];
+                            var relationships = that.Current.model.Relationships;
+
+                            for (var i = 0; i < relationships.length; i++) {
+                                var rel = relationships[i];
+                                var index = 0;
+                                for (var j = 0; j < clipboardVariables.length; j++) {
+                                    var cv = clipboardVariables[i];
+                                    if (rel.FromVariableId === cv.m.Id || rel.ToVariableId === cv.m.Id) {
+                                        index++;
+                                    }
+                                    if (index == 2)
+                                        break;
+                                }
+
+                                if (index === 2) {
+                                    clipboardRelationships.push(rel);
+                                }
+                            }
+
+                            that.clipboard = {
+                                Container: cnt,
+                                Realtionships: clipboardRelationships,
+                                Variables: clipboardVariables
+                            };
+
+                            if (remove)
+                                that.RemoveContainer(that.contextElement.id);
+                        }
+
+
+                    }
+
+                    that.contextElement = undefined;
+                }
+            }
 
 
             private GetCurrentSVG(svg): any {
@@ -773,7 +860,7 @@ module BMA {
                                 }
                             }
                         } else {
-                            var pos = SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y); 
+                            var pos = SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y);
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, pos.x, pos.y, 0, 0, angle));
                         }
@@ -852,7 +939,7 @@ module BMA {
                 this.driver.Draw(drawingSvg);
             }
 
-            private PrepareHighlightAreas(): { x: number; y: number; width: number; height: number; fill: string }[]{
+            private PrepareHighlightAreas(): { x: number; y: number; width: number; height: number; fill: string }[] {
                 var result = [];
                 var containers = this.Current.layout.Containers;
                 var grid = this.Grid;
