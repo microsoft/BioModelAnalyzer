@@ -113,6 +113,7 @@ module BMA {
                     }
                 });
 
+
                 window.Commands.On("ModelReset", () => {
                     this.Set(this.appModel.BioModel, this.appModel.Layout);
                 });
@@ -147,6 +148,7 @@ module BMA {
                         { name: "ResizeCellTo1x1", isVisible: true },
                         { name: "ResizeCellTo2x2", isVisible: true },
                         { name: "ResizeCellTo3x3", isVisible: true },
+                        { name: "Edit", isVisible: id !== undefined }
                     ]);
 
                     if (id !== undefined) {
@@ -227,6 +229,17 @@ module BMA {
                             this.Dup(new BMA.Model.BioModel(that.Current.model.Name, that.Current.model.Variables, that.Current.model.Relationships), newlayout);
                         }
                     }
+                });
+
+                window.Commands.On("DrawingSurfaceEdit", () => {
+                    if (that.contextElement !== undefined && that.contextElement.type === "variable") {
+                        var id = that.contextElement.id;
+                        that.editingVariableId = id;
+                        that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
+                        that.variableEditor.Show(0, 0);
+                    }
+
+                    that.contextElement = undefined;
                 });
 
                 window.Commands.On("DrawingSurfaceRefreshOutput", () => {

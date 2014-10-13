@@ -204,6 +204,8 @@
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
+    <None Include="Properties\PublishProfiles\bmaclienttest2 - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %282%29.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jasmine-html.js" />
     <Content Include="Scripts\jasmine.js" />
@@ -313,7 +315,7 @@
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\FSharp 3.0\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\ext\FSharp 4.3.1.0\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />

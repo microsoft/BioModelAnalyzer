@@ -42,11 +42,14 @@
                 this._gridLinesPlot.y0 = 0;
                 this._gridLinesPlot.xStep = 1;
                 this._gridLinesPlot.yStep = 1;
-                var labels = [];
-
+                var bottomLabels = [];
+                var leftLabels = [];
+                var max = 0;
                 if (options.colors !== undefined) {
                     for (var i = 0; i < options.colors.length; i++) {
                         var y = options.colors[i].Plot;
+                        var m = that.Max(y);
+                        if (m > max) max = m;
                         var polyline = that._chart.get("polyline" + i);
                         if (polyline !== undefined) {
                             polyline.stroke = options.colors[i].Color;
@@ -55,12 +58,15 @@
                         }
                     }
                     for (var i = 0; i < options.colors[0].Plot.length; i++) {
-                        labels[i] = i.toString();
+                        bottomLabels[i] = i.toString();
+                    }
+                    for (var i = 0; i < max+1; i++) {
+                        leftLabels[i] = i.toString();
                     }
                 }
-
-                var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: labels });
-                var leftAxis = that._chart.addAxis("left", "numeric");
+                alert(max);
+                var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
+                var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
 
@@ -70,6 +76,18 @@
                 that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
             }
             
+        },
+
+        Max: function (y) {
+
+            if (y !== null && y !== undefined) {
+                var max = y[0];
+                for (var i = 0; i < y.length; i++) {
+                    if (y[i] > max) max = y[i];
+                }
+                return max;
+            }
+            else return undefined;
         },
 
         getPlot: function () {

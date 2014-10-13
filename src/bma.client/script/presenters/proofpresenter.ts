@@ -17,9 +17,8 @@
                         url: "api/Analyze",
                         data: proofInput,
                         success: function (res) {
-                            //else window.Commands.Execute("ProofSucceeded", {});
+                            console.log("Proof Result Status: " + res.Status);
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
-                            //if (res.Ticks !== null)
                             if (res.Status === 5)
                                 window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                             var st = that.Stability(res.Ticks);
@@ -32,6 +31,7 @@
                             proofResultViewer.ShowResult(appModel.ProofResult);
                         },
                         error: function (res) {
+                            console.log("Proof Service Failed: " + res.statusText);
                             alert("Error: " + res.statusText);
                             proofResultViewer.OnProofFailed();
                         } 

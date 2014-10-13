@@ -121,7 +121,7 @@
                     this.data.push(d);
                     var variables = this.appModel.BioModel.Variables;
                     for (var i = 0; i < d.length; i++) {
-                        var color = this.GetColorById(variables[i].Id);
+                        var color = this.colors[this.GetColorById(variables[i].Id)];
                         color.Plot.push(d[i]);
                     }
                 }
@@ -133,33 +133,33 @@
             public CreateColors() {
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
-                    if (this.GetColorById(variables[i].Id) === undefined) 
-                    this.colors.push({
-                        Id: variables[i].Id,
-                        Color: this.getRandomColor(),
-                        Seen: true,
-                        Plot: []
-                    })
+                    if (this.colors[this.GetColorById(variables[i].Id)] === undefined) 
+                        this.colors.push({
+                            Id: variables[i].Id,
+                            Color: this.getRandomColor(),
+                            Seen: true,
+                            Plot: []
+                        })
                 }
             }
 
             public ClearColors() {
-                //for (var i = 0; i < this.colors.length; i++) {
-                //    this.colors[i].Plot = [];
-                //    this.colors[i].Plot[0] = this.initValues[i];
-                //}
+                for (var i = 0; i < this.colors.length; i++) {
+                    this.colors[i].Plot = [];
+                }
                 var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < this.initValues.length; i++) {
+                for (var i = 0; i < variables.length; i++) {
                     var color = this.GetColorById(variables[i].Id);
-                    color.Plot = [];
-                    color.Plot[0] = this.initValues[i];
+                    this.colors[color].Plot = [];
+                    if (this.initValues[i] !== undefined)
+                        this.colors[color].Plot[0] = this.initValues[i];
                 }
             }
 
             public GetColorById(id) {
                 for (var i = 0; i < this.colors.length; i++)
                     if (id === this.colors[i].Id)
-                        return this.colors[i];
+                        return i;
                 return undefined;
             }
 
@@ -192,7 +192,7 @@
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
-                    table[i][0] = this.GetColorById(variables[i].Id).Color; // color should be there
+                    table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color; // color should be there
                     table[i][1] = variables[i].ContainerId;
                     table[i][2] = variables[i].Name;
                     table[i][3] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
