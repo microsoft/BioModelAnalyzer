@@ -135,3 +135,7 @@ html {
     stroke: gray;
     stroke-width: 2px;
 }
+
+.modeldesigner-line-hover {
+    stroke-width: 3px;
+}

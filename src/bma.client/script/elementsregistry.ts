@@ -410,6 +410,8 @@ module BMA {
                             return undefined;
                         jqSvg.clear();
 
+                        var lineRef = undefined;
+
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
                             var x0 = renderParams.layout.start.PositionX;
@@ -418,7 +420,7 @@ module BMA {
                             var h = that.variableHeightConstant * 0.7;
 
                             var path = jqSvg.createPath();
-                            jqSvg.path(path.move(x0, y0 - h)
+                            lineRef = jqSvg.path(path.move(x0, y0 - h)
                                 .curveQ(x0 + w / 2, y0 - h * 1.5,
                                 x0 + w, y0 - h)
                                 .curveQ(x0 + w * 1.5, y0,
@@ -438,12 +440,17 @@ module BMA {
                             dir.x /= dirLen;
                             dir.y /= dirLen;
 
-                            jqSvg.line(
+                            lineRef = jqSvg.line(
                                 renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
                                 renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
                                 { stroke: "#808080", strokeWidth: 2, "marker-end": "url(#Activator)" });
+                        }
+
+                        if (lineRef !== undefined) {
+                            $(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
+                            $(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
                         }
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
@@ -470,6 +477,8 @@ module BMA {
                             return undefined;
                         jqSvg.clear();
 
+                        var lineRef = undefined;
+
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
                             var x0 = renderParams.layout.start.PositionX;
@@ -478,7 +487,7 @@ module BMA {
                             var h = that.variableHeightConstant * 0.7;
 
                             var path = jqSvg.createPath();
-                            jqSvg.path(path.move(x0, y0 - h)
+                            lineRef = jqSvg.path(path.move(x0, y0 - h)
                                 .curveQ(x0 + w / 2, y0 - h * 1.5,
                                 x0 + w, y0 - h)
                                 .curveQ(x0 + w * 1.5, y0,
@@ -498,12 +507,17 @@ module BMA {
                             dir.x /= dirLen;
                             dir.y /= dirLen;
 
-                            jqSvg.line(
+                            lineRef = jqSvg.line(
                                 renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
                                 renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
                                 { stroke: "#808080", strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+                        }
+
+                        if (lineRef !== undefined) {
+                            $(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
+                            $(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
                         }
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
