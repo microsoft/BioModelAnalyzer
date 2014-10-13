@@ -21,8 +21,12 @@
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             if (res.Status === 5)
                                 window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
-                            var variablesData = that.CreateTableView(res.Ticks);
+                            var st = that.Stability(res.Ticks);
+                            var variablesData = that.CreateTableView(st.variablesStability);
                             var colorData = that.CreateColoredTable(res.Ticks);
+                            //var result = appModel.ProofResult;
+                            //var data = { numericData: numericData, colorData: undefined };
+                            window.Commands.Execute("DrawingSurfaceSetProofResults", st);
                             proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData,  colorData: colorData } });
                             proofResultViewer.ShowResult(appModel.ProofResult);
                         },
@@ -66,9 +70,36 @@
                 });
             }
 
-            public CreateTableView(ticks) {
+            public Stability(ticks) {
+                var containers = [];
+                if (ticks === null) return undefined;
+                var variables = this.appModel.BioModel.Variables;
+                var stability = [];
+                for (var i = 0; i < variables.length; i++) {
+                    var ij = ticks[0].Variables[variables.length - 1 - i];
+                    var c = ij.Lo === ij.Hi;
+                    var range = '';
+                    if (c) {
+                        range = ij.Lo;
+
+                    }
+                    else {
+                        range = ij.Lo + ' - ' + ij.Hi;
+                    }
+                    stability[i] = { state: c, range: range };
+                    var id = ticks[0].Variables[variables.length - 1 - i].Id;
+                    var v = this.appModel.BioModel.GetVariableById(id);
+                    if (v.ContainerId !== undefined &&  (!c || containers[v.ContainerId] === undefined)) 
+                            containers[v.ContainerId] = c;
+                        
+                }
+                return {variablesStability: stability, containersStability: containers};
+            }
+
+
+            public CreateTableView(stability) {
                 var table = [];
-                if (ticks === null) return { numericData: undefined, colorData: undefined };
+                if (stability === undefined) return { numericData: undefined, colorData: undefined };
                 var variables = this.appModel.BioModel.Variables;
                 var color = [];
                 for (var i = 0; i < variables.length; i++) {
@@ -76,20 +107,15 @@
                     color[i] = [];
                     table[i][0] = variables[i].Name;
                     table[i][1] = variables[i].Formula;
-                    var range;
-                    var ij = ticks[0].Variables[variables.length - 1 - i];
-                    var c = ij.Lo === ij.Hi;
-                    if (c) {
-                        range = ij.Lo;
-
-                    }
-                    else {
-                        range = ij.Lo + ' - ' + ij.Hi;
+                    var range = '';
+                    //var ij = ticks[0].Variables[variables.length - 1 - i];
+                    var c = stability[i].state;
+                    if (!c) {
                         for (var j = 0; j < 3; j++)
                             color[i][j] = c;
                     }
                     
-                    table[i][2] = range;
+                    table[i][2] = stability[i].range;
                     
                 }
                 return {numericData: table, colorData:color};
