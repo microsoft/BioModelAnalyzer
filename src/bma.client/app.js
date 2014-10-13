@@ -25,6 +25,7 @@
 /// <reference path="script\widgets\progressiontable.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
+/// <reference path="script\widgets\localstoragewidget.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -173,6 +174,13 @@ $(document).ready(function () {
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
 
+    $("#localSaveBtn").click(function (args) {
+        window.Commands.Execute("LocalStorageSave", undefined);
+    });
+    $("#localStorageBtn").click(function (args) {
+        window.Commands.Execute("LocalStorageRequested", undefined);
+    });
+
     $("#newModelBtn").click(function (args) {
         window.Commands.Execute("NewModel", undefined);
     });
@@ -213,6 +221,8 @@ $(document).ready(function () {
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
 
+    var localStorageWidget = $('<div></div>').appendTo('body').localstoragewidget();
+
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
@@ -226,6 +236,7 @@ $(document).ready(function () {
     var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
+    var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
 
     window.Commands.On("Commands.ToggleGrid", function (param) {
         visualSettings.GridVisibility = param;
@@ -248,5 +259,6 @@ $(document).ready(function () {
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver);
+    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver);
 });
 //# sourceMappingURL=app.js.map

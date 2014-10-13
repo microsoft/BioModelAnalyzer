@@ -46,6 +46,7 @@
     <script src="script/presenters/modelstoragepresenter.js"></script>
     <script src="script/presenters/formulavalidationpresenter.js"></script>
     <script src="script/presenters/furthertestingpresenter.js"></script>
+    <script src="script/presenters/localstoragepresenter.js"></script>
     <script src="script/arraytotableconverter.js"></script>
     <script src="script/logictableconverter.js"></script>
 
@@ -58,6 +59,7 @@
     <script src="script/widgets/progressiontable.js"></script>
     <script src="script/widgets/proofresultviewer.js"></script>
     <script src="script/widgets/furthertestingviewer.js"></script>
+    <script src="script/widgets/localstoragewidget.js"></script>
     <script src="script/widgets/resultswindowviewer.js"></script>
     <script src="script/widgets/simulationplot.js"></script>
     
@@ -155,6 +157,8 @@
                 </div>
                 <div id="modelToolbarContent" class="toolbarContainer">
                     <ul>
+                        <li><span id="localSaveBtn" class="localSaveButton" data-command="LocalStorageSave">SAVE</span></li>
+                        <li><span id="localStorageBtn" class="localStorageButton" data-command="LocalStorageRequested">REPO</span></li>
                         <li><span id="newModelBtn" class="newButton" data-command="NewModel">NEW</span></li>
                         <li><span id="importModelBtn" class="saveButton" data-command="ImportModel">IMPORT</span></li>
                         <li><span id="exportModelBtn" class="openButton" data-command="ExportModel">EXPORT</span></li>

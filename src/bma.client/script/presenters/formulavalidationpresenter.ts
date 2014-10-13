@@ -8,9 +8,6 @@
                 this.editorDriver = editor;
 
                 window.Commands.On("FormulaEdited", function (formula) {
-                    //alert("validation");
-                    var r = that.RandomValidation();
-                    //$("#log").append("Invoking api/Validate (for correct formula)...<br/>");
                     if (formula !== "")
                         $.ajax({
                             type: "POST",
@@ -32,11 +29,6 @@
                     
                 })
             }
-
-            public RandomValidation(): { res; error} {
-                return { res: Math.round(Math.random()), error: (Math.random()*100).toString() };
-            }
-
         }
     }
 }

@@ -84,6 +84,12 @@ module BMA {
             ActiveMode();
         }
 
+        export interface ILocalStorageDriver {
+            AddItem(key, item);
+            Show();
+            Hide();
+        }
+
         export interface IFileLoader {
             OpenFileDialog(): JQueryPromise<File>;
         }

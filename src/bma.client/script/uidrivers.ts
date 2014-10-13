@@ -349,6 +349,27 @@ module BMA {
             }
         }
 
+        export class LocalStorageDriver implements ILocalStorageDriver {
+            private widget: JQuery;
+
+            constructor(widget: JQuery) {
+                this.widget = widget;
+            }
+
+            public AddItem(key, item) {
+                this.widget.localstoragewidget("AddItem", key);
+            }
+
+            public Show() {
+                this.widget.show();
+            }
+
+            public Hide() {
+                this.widget.hide();
+            }
+        }
+
+
         export class ModelFileLoader implements IFileLoader {
             private fileInput: JQuery;
             private currentPromise = undefined;

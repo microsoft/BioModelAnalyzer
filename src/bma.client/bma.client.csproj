@@ -141,6 +141,7 @@
     <Content Include="images\graphic.png" />
     <Content Include="images\inhibit.png" />
     <Content Include="images\launch-tool-btn.png" />
+    <Content Include="images\list.png" />
     <Content Include="images\logo-crop.png" />
     <Content Include="images\logo.png" />
     <Content Include="images\maximize.png" />
@@ -156,6 +157,7 @@
     <Content Include="images\runbutton.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />
+    <Content Include="images\savelocally.png" />
     <Content Include="images\succeeded.png" />
     <Content Include="images\svgtest.txt" />
     <Content Include="images\title-about.png" />
@@ -216,6 +218,7 @@
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
     <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
@@ -266,6 +269,7 @@
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
