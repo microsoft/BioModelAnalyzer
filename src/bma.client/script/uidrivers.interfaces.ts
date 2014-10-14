@@ -85,6 +85,7 @@ module BMA {
         }
 
         export interface ILocalStorageDriver {
+            SetItems(keys);
             AddItem(key, item);
             Show();
             Hide();

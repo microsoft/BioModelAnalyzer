@@ -6,30 +6,54 @@
             constructor(appModel: BMA.Model.AppModel, editor: BMA.UIDrivers.ILocalStorageDriver) {
                 var that = this;
                 this.driver = editor;
-                window.Commands.On("LocalStorageRequested", function () {
+                var keys = that.ScanLocalStorage();
+                this.driver.SetItems(keys);
+                this.driver.Hide();
 
-                    for (var i = 0; i < window.localStorage.length; i++) {
-                        var key = window.localStorage.key(i);
-                        var item = window.localStorage.getItem(key);
-                        var model = that.ParseItem(item);
-                        if (model !== undefined) {
-                            that.driver.AddItem(key, model);
-                        }
+                window.Commands.On("LocalStorageChanged", function (arg) {
+                    if (arg !== undefined && window.localStorage.getItem(arg) === undefined) {
+                        that.driver.AddItem(arg, {});
                     }
+                    else {
+                        var keys = that.ScanLocalStorage();
+                        that.driver.SetItems(keys);
+                    }
+                });
+
+                window.Commands.On("LocalStorageRequested", function () {
                     that.driver.Show();
                 });
 
                 window.Commands.On("LocalStorageSave", function () {
-                    if (window.localStorage.getItem(appModel.BioModel.Name) !== undefined)
-                        alert(window.localStorage.getItem(appModel.BioModel.Name));
+                    var key = appModel.BioModel.Name;
+                    if (window.localStorage.getItem(key) !== undefined)
+                        alert(window.localStorage.getItem(key));
 
-                    window.localStorage.setItem(appModel.BioModel.Name, appModel.Serialize());
+                    window.localStorage.setItem(key, appModel.Serialize());
+                    window.Commands.Execute("LocalStorageChanged", {});
                     //alert(appModel.BioModel.Name);
                 });
+
+                window.Commands.On("LocalStorageOpen", function (key) {
+                    appModel.Reset(window.localStorage.getItem(key));
+                })
             }
 
             public ParseItem(item) {
+                return 1;
+            }
 
+            public ScanLocalStorage(): any[] {
+                var keys = [];
+                for (var i = 0; i < window.localStorage.length; i++) {
+                    var key = window.localStorage.key(i);
+                    var item = window.localStorage.getItem(key);
+                    var model = this.ParseItem(item);
+                    if (model !== undefined) {
+                        keys.push(key);
+                    }
+                }
+                return keys;
             }
         }
     }

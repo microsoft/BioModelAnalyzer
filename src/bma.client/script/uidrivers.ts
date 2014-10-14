@@ -367,6 +367,10 @@ module BMA {
             public Hide() {
                 this.widget.hide();
             }
+
+            public SetItems(keys) {
+                this.widget.localstoragewidget({ items: keys });
+            }
         }
 
 

@@ -1257,3 +1257,12 @@
 .containernameeditor input {
     margin-top: 10px;
 }
+
+.localStorageWidget {
+    position:absolute;
+    top: 300px;
+    background-color: Window;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px lightgray;
+}

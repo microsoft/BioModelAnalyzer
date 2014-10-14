@@ -22,7 +22,7 @@
         refresh: function () {
             var that = this;
             var items = this.options.items;
-            this.table.coloredtableviewer({ header: "Models", numericData: that._createTableView(items) });
+            this.table.coloredtableviewer({ header: ["Models"], numericData: that._createTableView(items) });
         },
 
         AddItem: function (item) {
@@ -34,8 +34,10 @@
             var table = [];
             if (items !== undefined && items !== null && items.length !==0)
                 for (var i = 0; i < items.length; i++) {
-                    table[0] = items[i];
+                    table[i] = [];
+                    table[i][0] = items[i];
                 }
+            return table;
         },
 
         _setOption: function (key, value) {

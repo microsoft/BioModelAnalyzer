@@ -75,7 +75,6 @@
                         tr0.children("td").eq(2).attr("colspan", "2");
                         //var tr1 = that.table.find("tr").eq(1);
                         //tr1.children("td").eq(2).bind("click", () => {
-                        //    alert("fuck");
                         //})
                         //tr1.children("td").eq(3).attr("display", "none");//.width(35).css("background-color", "green");
                         //tr1.children("td").eq(4).attr("display", "none");//.width(35).css("background-color", "green");

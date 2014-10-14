@@ -242,7 +242,10 @@ $(document).ready(function () {
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
 
-    var localStorageWidget = $('<div></div>').appendTo('body').localstoragewidget();
+    var localStorageWidget = $('<div></div>')
+        .addClass('localStorageWidget')
+        .appendTo('body')
+        .localstoragewidget();
 
 
     //Loading Drivers

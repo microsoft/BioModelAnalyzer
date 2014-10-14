@@ -64,7 +64,6 @@
                         leftLabels[i] = i.toString();
                     }
                 }
-                alert(max);
                 var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
                 var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
