@@ -17,6 +17,8 @@ namespace bma.client.Controllers
         public FurtherTestingOutput Post([FromBody]FurtherTestingInput input)
         {
             input.Model.ReplaceVariableNamesWithIDs();
+            input.Model.NullifyDefaultFunction();
+
 
             // Hack: create XDocuments to interop with old code
             var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));
