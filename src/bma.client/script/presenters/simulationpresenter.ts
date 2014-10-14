@@ -102,7 +102,7 @@
                                 that.AddData(d);
                                 that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             }
-                            else alert(res.ErrorMessages);
+                            else alert("Simulation Error: " + res.ErrorMessages);
                             //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
                         },
                         error: function (res) {
