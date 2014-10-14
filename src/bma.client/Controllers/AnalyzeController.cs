@@ -19,6 +19,7 @@ namespace bma.client.Controllers
         public AnalysisOutput Post([FromBody]AnalysisInput input)
         {
             input.ReplaceVariableNamesWithIDs();
+            input.NullifyDefaultFunction();
 
             var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));
             var stream = new MemoryStream();
