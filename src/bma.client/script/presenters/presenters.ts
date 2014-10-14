@@ -362,14 +362,6 @@ module BMA {
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
 
-                /*
-                window.Commands.On("DrawingSurfaceMouseMove", function (param) {
-
-                    var cnt = that.GetContainerAtPosition(param.x, param.y);
-                    that.driver.SetGridVisibility(cnt===undefined);
-                });
-                */
-
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
 

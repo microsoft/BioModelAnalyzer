@@ -226,6 +226,7 @@
     <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />
     <TypeScriptCompile Include="script\SVGHelper.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
     <TypeScriptCompile Include="script\widgets\coloredtableviewer.ts" />
