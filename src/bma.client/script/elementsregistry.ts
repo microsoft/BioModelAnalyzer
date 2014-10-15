@@ -299,6 +299,18 @@ module BMA {
                             });
                         }
 
+                        /*
+                        //Helper bounding box
+                        jqSvg.rect(
+                            renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                            renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                            that.variableWidthConstant,
+                            that.variableHeightConstant,
+                            0,
+                            0,
+                            { stroke: "red", fill: "none" });
+                        */
+
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
 
@@ -306,7 +318,8 @@ module BMA {
                         return <SVGElement>svgElem;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return Math.sqrt(Math.pow(pointerX - elementX, 2) + Math.pow(pointerY - elementY, 2)) < that.variableSizeConstant;
+                        return pointerX > elementX - that.variableWidthConstant / 2 && pointerX < elementX + that.variableWidthConstant / 2 &&
+                            pointerY > elementY - that.variableHeightConstant / 2 && pointerY < elementY + that.variableHeightConstant / 2;
                     },
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
@@ -350,7 +363,8 @@ module BMA {
                         return <SVGElement>svgElem;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return Math.sqrt(Math.pow(pointerX - elementX, 2) + Math.pow(pointerY - elementY, 2)) < that.variableSizeConstant;
+                        return pointerX > elementX - that.variableWidthConstant / 2 && pointerX < elementX + that.variableWidthConstant / 2 &&
+                            pointerY > elementY - that.variableHeightConstant / 2 && pointerY < elementY + that.variableHeightConstant / 2;
                     },
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
@@ -387,6 +401,18 @@ module BMA {
                             });
                         }
 
+                        /*
+                        //Helper bounding box
+                        jqSvg.rect(
+                            renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                            renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                            that.variableWidthConstant,
+                            that.variableHeightConstant,
+                            0,
+                            0,
+                            { stroke: "red", fill: "none" });
+                        */
+
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
 
@@ -394,7 +420,8 @@ module BMA {
                         return <SVGElement>svgElem;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return Math.sqrt(Math.pow(pointerX - elementX, 2) + Math.pow(pointerY - elementY, 2)) < that.variableSizeConstant;
+                        return pointerX > elementX - that.variableWidthConstant / 2 && pointerX < elementX + that.variableWidthConstant / 2 &&
+                            pointerY > elementY - that.variableHeightConstant / 2 && pointerY < elementY + that.variableHeightConstant / 2;
                     },
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
@@ -418,15 +445,12 @@ module BMA {
                             var y0 = renderParams.layout.start.PositionY;
                             var w = that.variableWidthConstant * 0.7;
                             var h = that.variableHeightConstant * 0.7;
+                            var s = that.variableSizeConstant;
 
                             var path = jqSvg.createPath();
                             lineRef = jqSvg.path(path.move(x0, y0 - h)
-                                .curveQ(x0 + w / 2, y0 - h * 1.5,
-                                x0 + w, y0 - h)
-                                .curveQ(x0 + w * 1.5, y0,
-                                x0 + w, y0 + h)
-                                .curveQ(x0 + w / 2, y0 + h * 1.5,
-                                x0, y0 + h),
+                                .arc(w * 0.6, h * 1.6, 0, true, true, x0, y0 + h),
+                                //.arc(s * 1.2, s * 1.2, 0, true, true, x0, y0 + h),
                                 { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
 
                         } else {
@@ -500,12 +524,7 @@ module BMA {
 
                             var path = jqSvg.createPath();
                             lineRef = jqSvg.path(path.move(x0, y0 - h)
-                                .curveQ(x0 + w / 2, y0 - h * 1.5,
-                                x0 + w, y0 - h)
-                                .curveQ(x0 + w * 1.5, y0,
-                                x0 + w, y0 + h)
-                                .curveQ(x0 + w / 2, y0 + h * 1.5,
-                                x0, y0 + h),
+                                .arc(w * 0.6, h * 1.6, 0, true, true, x0, y0 + h),
                                 { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
 
                         } else {
@@ -554,7 +573,20 @@ module BMA {
                             d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
                             return d < elementX.pixelWidth;
                         } else {
-                            return false;
+
+
+                            var x0 = elementX.x;
+                            var y0 = elementX.y;
+                            var w = that.variableWidthConstant * 0.7 * 0.6;
+                            var h = that.variableHeightConstant * 0.7 * 1.6;
+
+                            var ellipseX = x0 + w;
+                            var ellipseY = y0;
+
+                            var p = SVGHelper.GeEllipsePoint(ellipseX, ellipseY, w, h, pointerX, pointerY);
+                            var len = Math.sqrt(Math.pow(p.x - pointerX, 2) + Math.pow(p.y - pointerY, 2));
+
+                            return len < elementX.pixelWidth;
                         }
                     },
                     "Inhibiting Relationship",

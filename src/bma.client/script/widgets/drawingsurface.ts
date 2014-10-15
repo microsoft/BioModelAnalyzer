@@ -177,7 +177,9 @@ declare var Rx: any;
 
             var createDragStartSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = vc.onAsObservable("mousedown");
+                var mousedown = vc.onAsObservable("mousedown").where(function (md) {
+                    return md.button === 0;
+                });
                 var mouseMove = vc.onAsObservable("mousemove");
                 var mouseUp = _doc.onAsObservable("mouseup");
 
