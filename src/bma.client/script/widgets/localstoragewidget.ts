@@ -12,6 +12,11 @@
         _create: function () {
 
             var that = this;
+            var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
+            closing.bind("click", function () {
+                that.element.hide();
+            });
+            that.element.draggable({ constraint: parent });
             this.table = $('<div></div>')
                 .addClass("bma-localstoragewidget")
                 .appendTo(that.element)

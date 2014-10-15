@@ -26,12 +26,10 @@
             this.button = $('<img src=' + url + '>').addClass('togglePopUpWindow');
             var img = new Image();
             img.onload = function () {
-                //alert(this. + 'x' + this.height);
                 that.head.css("min-height", this.height);
                 that.header.css("height", Math.max(this.height,that.header.height()));
             }
             img.src = url;
-            //alert(this.button.css("height"));
             this.button.appendTo(that.icontd);
             this.button.bind("click", function () {
                 if (options.icon === "max")

@@ -42,7 +42,6 @@
                                 if (res2.CounterExamples !== null) {
                                     that.driver.HideStartToggler();
                                     that.data = res2.CounterExamples;
-                                    //$("#log").append("FurtherTesting success. " + res2.Status + "<br/>");
                                     var result = that.ConvertCounterExamlpes(res2.CounterExamples);
                                     var table = that.CreateVariablesView(that.variables, result);
                                     that.driver.ShowResults(table);
@@ -53,7 +52,6 @@
                             error: function (res2) {
                                 that.driver.ActiveMode();
                                 alert(res2.statusText);
-                                //$("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
                             }
                         });
                     }

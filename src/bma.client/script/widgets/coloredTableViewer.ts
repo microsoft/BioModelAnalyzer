@@ -73,14 +73,6 @@
                         var tr0 = that.table.find("tr").eq(0);
                         tr0.children("td").eq(0).attr("colspan", "2");
                         tr0.children("td").eq(2).attr("colspan", "2");
-                        //var tr1 = that.table.find("tr").eq(1);
-                        //tr1.children("td").eq(2).bind("click", () => {
-                        //})
-                        //tr1.children("td").eq(3).attr("display", "none");//.width(35).css("background-color", "green");
-                        //tr1.children("td").eq(4).attr("display", "none");//.width(35).css("background-color", "green");
-                        //var td01 = $('<td colspan="2"></td>').text("Graph").appendTo(tr0);
-                        //var td02 = $('<td></td>').text("Name").appendTo(tr0);
-                        //var td03 = $('<td colspan="2"></td>').text("Range").appendTo(tr0);
                         this.arrayToTableGraphMax(options.numericData);
 
                         if (options.colorData !== undefined)
@@ -102,8 +94,6 @@
                             }
                         }
                         
-                        //this.paintSimulationTable(options.colorData);
-
                     }
                     break;
 

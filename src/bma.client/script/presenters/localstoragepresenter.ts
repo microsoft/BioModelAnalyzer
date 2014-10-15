@@ -26,12 +26,11 @@
 
                 window.Commands.On("LocalStorageSave", function () {
                     var key = appModel.BioModel.Name;
-                    if (window.localStorage.getItem(key) !== undefined)
-                        alert(window.localStorage.getItem(key));
+                    //if (window.localStorage.getItem(key) !== undefined)
+                    //    alert(window.localStorage.getItem(key));
 
                     window.localStorage.setItem(key, appModel.Serialize());
                     window.Commands.Execute("LocalStorageChanged", {});
-                    //alert(appModel.BioModel.Name);
                 });
 
                 window.Commands.On("LocalStorageOpen", function (key) {

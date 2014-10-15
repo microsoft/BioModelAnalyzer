@@ -20,9 +20,7 @@
 
                 var item = this;
                 that.listOptions[ind] = {};
-                var children = $(item).children();//.find("[data-behavior$=undefined]");
-                //var wanted = $("children[data-behavior$='undefined']");
-                //alert("children.length ="+ wanted.length);
+                var children = $(item).children();
                 children.each(function () {
 
                     var child = this;

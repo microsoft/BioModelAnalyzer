@@ -243,7 +243,7 @@ $(document).ready(function () {
     });
 
     var localStorageWidget = $('<div></div>')
-        .addClass('localStorageWidget')
+        .addClass('newWindow')
         .appendTo('body')
         .localstoragewidget();
 
