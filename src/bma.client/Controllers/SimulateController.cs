@@ -19,6 +19,8 @@ namespace bma.client.Controllers
         public SimulationOutput Post([FromBody]SimulationInput input)
         {
             input.Model.ReplaceVariableNamesWithIDs();
+            input.Model.NullifyDefaultFunction();
+
 
             try {
                 var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));

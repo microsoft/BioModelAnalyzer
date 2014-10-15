@@ -91,7 +91,9 @@ declare var Rx: any;
                 window.Commands.Execute("DrawingSurfaceClick",
                     {
                         x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
-                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
+                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
+                        screenX: arg.pageX - plotDiv.offset().left,
+                        screenY: arg.pageY - plotDiv.offset().top
                     });
             });
 

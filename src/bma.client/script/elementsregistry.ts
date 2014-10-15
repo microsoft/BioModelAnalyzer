@@ -459,6 +459,18 @@ module BMA {
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
                         if (elementX.x !== elementY.x || elementX.y !== elementY.y) {
+                            var dot1 = (pointerX - elementX.x) * (elementY.x - elementX.x) + (pointerY - elementX.y) * (elementY.y - elementX.y);
+
+                            if (dot1 < 0) {
+                                return Math.sqrt(Math.pow(elementX.y - pointerY, 2) + Math.pow(elementX.x - pointerX, 2)) < elementX.pixelWidth;
+                            }
+
+                            var dot2 = Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2);
+
+                            if (dot2 <= dot1) {
+                                return Math.sqrt(Math.pow(elementY.y - pointerY, 2) + Math.pow(elementY.x - pointerX, 2)) < elementX.pixelWidth;
+                            }
+
                             var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
                             d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
                             return d < elementX.pixelWidth;
@@ -526,6 +538,18 @@ module BMA {
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
                         if (elementX.x !== elementY.x || elementX.y !== elementY.y) {
+                            var dot1 = (pointerX - elementX.x) * (elementY.x - elementX.x) + (pointerY - elementX.y) * (elementY.y - elementX.y);
+
+                            if (dot1 < 0) {
+                                return Math.sqrt(Math.pow(elementX.y - pointerY, 2) + Math.pow(elementX.x - pointerX, 2)) < elementX.pixelWidth;
+                            }
+
+                            var dot2 = Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2);
+
+                            if (dot2 <= dot1) {
+                                return Math.sqrt(Math.pow(elementY.y - pointerY, 2) + Math.pow(elementY.x - pointerX, 2)) < elementX.pixelWidth;
+                            }
+
                             var d = Math.abs((elementY.y - elementX.y) * pointerX - (elementY.x - elementX.x) * pointerY + elementY.x * elementX.y - elementX.x * elementY.y);
                             d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
                             return d < elementX.pixelWidth;

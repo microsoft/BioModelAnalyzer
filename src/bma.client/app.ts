@@ -84,9 +84,9 @@ $(document).ready(function () {
         preventSelect: true,
         taphold: true,
         menu: [
-            //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors", disabled: true },
-            //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy", disabled: true },
-            //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard", disabled: true },
+            { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+            { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+            { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
             { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
             {
                 title: "Size", cmd: "Size", children: [

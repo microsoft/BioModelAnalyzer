@@ -112,6 +112,7 @@ module BMA {
 
             public Show(x: number, y: number) {
                 this.variableEditor.show();
+                this.variableEditor.css("left", x).css("top", y);
             }
 
             public Hide() {

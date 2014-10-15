@@ -26,6 +26,13 @@ namespace bma.client {
             }
         }
 
+        public void NullifyDefaultFunction()
+        {
+            foreach (var v in Variables)
+                if (v.Function != null && v.Function.Replace(" ", "").ToLower() == "avg(pos)-avg(neg)")
+                    v.Function = null;
+        }
+
         private static string ReplaceVariableNames(string s, Func<string, string> f)
         {
             const string var = "var(";
