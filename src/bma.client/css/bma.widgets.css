@@ -229,7 +229,7 @@
     }
 
     .localStorageButton {
-        background-image: url("../images/list.png");
+        background-image: url("../images/local.png");
     }
     .localSaveButton {
         background-image: url("../images/savelocally.png");
@@ -797,6 +797,7 @@
         cursor:pointer;
         position: absolute;
         right: 10px;
+        top: 10px;
         width: 20px;
     }
 
@@ -1258,11 +1259,29 @@
     margin-top: 10px;
 }
 
-.localStorageWidget {
-    position:absolute;
-    top: 300px;
-    background-color: Window;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 8px lightgray;
+.localStorageWidget ol {
+    list-style: none;
+    padding: 0;
+}
+
+.localStorageWidget ol li {
+    cursor: pointer;
+    border-bottom: 1px solid lightgray;
+}
+
+.localStorageWidget ol li input {
+    border: none;
+    font-size: large;
+    background-color: transparent;
+    padding: 3px;
+}
+
+.localStorageWidget-header {
+    font-weight: bold;
+    margin: 3px;
+    font-size: large;
+}
+
+.localStorageWidget ol .ui-selected {
+    background-color: gainsboro;
 }

@@ -142,6 +142,7 @@
     <Content Include="images\inhibit.png" />
     <Content Include="images\launch-tool-btn.png" />
     <Content Include="images\list.png" />
+    <Content Include="images\local.png" />
     <Content Include="images\logo-crop.png" />
     <Content Include="images\logo.png" />
     <Content Include="images\maximize.png" />
