@@ -46,6 +46,10 @@
             
             for (var i = 0; i < items.length; i++) {
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
+                var removeBtn = $('<button></button>').addClass("localstorage-remove-button").appendTo(li);
+                removeBtn.bind("click", function () {
+                    window.Commands.Execute("LocalStorageRemove", items[$(this).parent().index()]);
+                })
                 //var input = $('<input>').attr("type", "text").val(items[i]).appendTo(li);
                
                 //input.dblclick(function (event) {

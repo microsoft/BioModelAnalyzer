@@ -1294,3 +1294,15 @@
 .localStorageWidget ol .ui-selected {
     background-color: gainsboro;
 }
+
+.localstorage-remove-button {
+    float:right;
+    background-image: url("../images/remove.gif");
+    background-color:white;
+    width: 20px;
+    height: 20px;
+    background-position:center;
+    background-repeat:no-repeat;
+    border:none;
+    cursor:pointer;
+}

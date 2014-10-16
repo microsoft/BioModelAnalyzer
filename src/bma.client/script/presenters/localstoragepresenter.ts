@@ -20,6 +20,11 @@
                     }
                 });
 
+                window.Commands.On("LocalStorageRemove", function (key) {
+                    window.localStorage.removeItem(key);
+                    window.Commands.Execute("LocalStorageChanged", {});
+                });
+
                 window.Commands.On("LocalStorageRequested", function () {
                     that.driver.Show();
                 });
