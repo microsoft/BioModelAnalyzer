@@ -135,7 +135,7 @@
         max-height: 600px;
     }
 
-    .popup-window div:nth-child(2) {
+    .proof-expanded {
         overflow: scroll;
         max-height: inherit;
         width: 100%;

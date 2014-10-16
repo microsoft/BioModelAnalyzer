@@ -43,8 +43,10 @@
                         var full;
                         switch (param) {
                             case "ProofPropagation":
-                                if (this.appModel.ProofResult.Ticks !== null)
+                                if (this.appModel.ProofResult.Ticks !== null) {
                                     full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
+                                    full.addClass("proof-expanded");
+                                }
                                 break;
                             case "ProofVariables":
                                 var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
