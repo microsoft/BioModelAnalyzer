@@ -324,7 +324,7 @@ module BMA {
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
-                    "Extracellural Protein",
+                    "Extracellular Protein",
                     "images/constant.png"));
 
                 this.elements.push(new BboxElement(
@@ -369,7 +369,7 @@ module BMA {
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
-                    "Intracellural Protein",
+                    "Intracellular Protein",
                     "images/variable.png"));
 
                 this.elements.push(new BboxElement(
