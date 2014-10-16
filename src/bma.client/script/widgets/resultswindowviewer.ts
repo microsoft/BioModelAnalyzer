@@ -43,9 +43,10 @@
         refresh: function () {
             var that = this;
             var options = this.options;
-            this.content.empty();
+            this.content.detach();
             if (options.content !== undefined) {
-                options.content.appendTo(that.content); 
+                this.content = options.content.appendTo(that.element); 
+                //this.content.html(options.content);
                 
             }
             

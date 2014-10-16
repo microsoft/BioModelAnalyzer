@@ -32,39 +32,20 @@
                 window.Commands.On("LocalStorageSave", function () {
                     var key = appModel.BioModel.Name;
                     if (window.localStorage.getItem(key) !== null) {
-                        //var dialog = $("<div></div>").dialog({
-                        //    resizable: false,
-                        //    height: 140,
-                        //    modal: true,
-                        //    buttons: {
-                        //        "Save": function () {
-                        //            window.localStorage.setItem(key, appModel.Serialize());
-                        //            window.Commands.Execute("LocalStorageChanged", {});
-                        //            $(this).dialog("close");
-                        //            $(this).detach();
-                        //        },
-                        //        Cancel: function () {
-                        //            $(this).dialog("close");
-                        //            $(this).detach();
-                        //        }
-                        //    }
-                        //});
-                        //$('<span></span>').text("There is file with such name in repository").appendTo(dialog);
-                        //var question = confirm("Overwrite the file?");
-                        if (confirm("Overwrite the file?")) {
-                            window.localStorage.setItem(key, appModel.Serialize());
-                            window.Commands.Execute("LocalStorageChanged", {});
-                        }
+                        if (confirm("Overwrite the file?")) 
+                            that.Save(key, appModel.Serialize());
                     }
-                    else {
-                        window.localStorage.setItem(key, appModel.Serialize());
-                        window.Commands.Execute("LocalStorageChanged", {});
-                    }
+                    else that.Save(key, appModel.Serialize());
                 });
 
                 window.Commands.On("LocalStorageOpen", function (key) {
                     appModel.Reset(window.localStorage.getItem(key));
                 })
+            }
+
+            public Save(key: string, appModel: string) {
+                window.localStorage.setItem(key, appModel);
+                window.Commands.Execute("LocalStorageChanged", {});
             }
 
             public ParseItem(item): boolean {

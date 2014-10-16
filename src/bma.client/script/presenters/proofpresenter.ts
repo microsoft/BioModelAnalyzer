@@ -45,7 +45,6 @@
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null) {
                                     full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
-                                    full.addClass("proof-expanded");
                                 }
                                 break;
                             case "ProofVariables":
@@ -60,6 +59,7 @@
                                 break;
                         }
                         if (full !== undefined) {
+                            full.addClass("proof-expanded");
                             proofResultViewer.Hide({ tab: param });
                             popupViewer.Show({ tab: param, content: full });
                         }
