@@ -299,6 +299,18 @@ module BMA {
                             });
                         }
 
+                        /*
+                        //Helper bounding box
+                        jqSvg.rect(
+                            renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                            renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                            that.variableWidthConstant,
+                            that.variableHeightConstant,
+                            0,
+                            0,
+                            { stroke: "red", fill: "none" });
+                        */
+
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
 
@@ -306,12 +318,13 @@ module BMA {
                         return <SVGElement>svgElem;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return Math.sqrt(Math.pow(pointerX - elementX, 2) + Math.pow(pointerY - elementY, 2)) < that.variableSizeConstant;
+                        return pointerX > elementX - that.variableWidthConstant / 2 && pointerX < elementX + that.variableWidthConstant / 2 &&
+                            pointerY > elementY - that.variableHeightConstant / 2 && pointerY < elementY + that.variableHeightConstant / 2;
                     },
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
-                    "Extracellural Protein",
+                    "Extracellular Protein",
                     "images/constant.png"));
 
                 this.elements.push(new BboxElement(
@@ -350,12 +363,13 @@ module BMA {
                         return <SVGElement>svgElem;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return Math.sqrt(Math.pow(pointerX - elementX, 2) + Math.pow(pointerY - elementY, 2)) < that.variableSizeConstant;
+                        return pointerX > elementX - that.variableWidthConstant / 2 && pointerX < elementX + that.variableWidthConstant / 2 &&
+                            pointerY > elementY - that.variableHeightConstant / 2 && pointerY < elementY + that.variableHeightConstant / 2;
                     },
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
-                    "Intracellural Protein",
+                    "Intracellular Protein",
                     "images/variable.png"));
 
                 this.elements.push(new BboxElement(
@@ -387,6 +401,18 @@ module BMA {
                             });
                         }
 
+                        /*
+                        //Helper bounding box
+                        jqSvg.rect(
+                            renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                            renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                            that.variableWidthConstant,
+                            that.variableHeightConstant,
+                            0,
+                            0,
+                            { stroke: "red", fill: "none" });
+                        */
+
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
 
@@ -394,7 +420,8 @@ module BMA {
                         return <SVGElement>svgElem;
                     },
                     function (pointerX: number, pointerY: number, elementX, elementY) {
-                        return Math.sqrt(Math.pow(pointerX - elementX, 2) + Math.pow(pointerY - elementY, 2)) < that.variableSizeConstant;
+                        return pointerX > elementX - that.variableWidthConstant / 2 && pointerX < elementX + that.variableWidthConstant / 2 &&
+                            pointerY > elementY - that.variableHeightConstant / 2 && pointerY < elementY + that.variableHeightConstant / 2;
                     },
                     function (elementX: number, elementY: number) {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
@@ -418,15 +445,13 @@ module BMA {
                             var y0 = renderParams.layout.start.PositionY;
                             var w = that.variableWidthConstant * 0.7;
                             var h = that.variableHeightConstant * 0.7;
+                            var ew = w * 0.6;
+                            var eh = h * 1.6;
+                            var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
 
                             var path = jqSvg.createPath();
-                            lineRef = jqSvg.path(path.move(x0, y0 - h)
-                                .curveQ(x0 + w / 2, y0 - h * 1.5,
-                                x0 + w, y0 - h)
-                                .curveQ(x0 + w * 1.5, y0,
-                                x0 + w, y0 + h)
-                                .curveQ(x0 + w / 2, y0 + h * 1.5,
-                                x0, y0 + h),
+                            lineRef = jqSvg.path(path.move(x1, y0 - h)
+                                .arc(ew, eh, 0, true, true, x1, y0 + h),
                                 { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
 
                         } else {
@@ -475,7 +500,20 @@ module BMA {
                             d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
                             return d < elementX.pixelWidth;
                         } else {
-                            return false;
+                            var x0 = elementX.x;
+                            var y0 = elementX.y;
+                            var w = that.variableWidthConstant * 0.7 * 0.6;
+                            var h = that.variableHeightConstant * 0.7 * 1.6;
+
+                            var ellipseX = x0 + w;
+                            var ellipseY = y0;
+
+                            var points = SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
+                            var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
+                            var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+
+                            console.log(len1 + ", " + len2);
+                            return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                         }
                     },
                     "Activating Relationship",
@@ -497,17 +535,21 @@ module BMA {
                             var y0 = renderParams.layout.start.PositionY;
                             var w = that.variableWidthConstant * 0.7;
                             var h = that.variableHeightConstant * 0.7;
+                            var ew = w * 0.6;
+                            var eh = h * 1.6;
+                            var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
 
                             var path = jqSvg.createPath();
-                            lineRef = jqSvg.path(path.move(x0, y0 - h)
-                                .curveQ(x0 + w / 2, y0 - h * 1.5,
-                                x0 + w, y0 - h)
-                                .curveQ(x0 + w * 1.5, y0,
-                                x0 + w, y0 + h)
-                                .curveQ(x0 + w / 2, y0 + h * 1.5,
-                                x0, y0 + h),
+                            lineRef = jqSvg.path(path.move(x1, y0 - h)
+                                .arc(ew, eh, 0, true, true, x1, y0 + h),
                                 { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
 
+                            /*
+                            jqSvg.ellipse(
+                                x0 + w * 0.6,
+                                y0,
+                                w * 0.6, h * 1.6, { stroke: "red", fill: "none" });
+                            */
                         } else {
 
                             var dir = {
@@ -554,7 +596,22 @@ module BMA {
                             d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
                             return d < elementX.pixelWidth;
                         } else {
-                            return false;
+
+
+                            var x0 = elementX.x;
+                            var y0 = elementX.y;
+                            var w = that.variableWidthConstant * 0.7 * 0.6;
+                            var h = that.variableHeightConstant * 0.7 * 1.6;
+
+                            var ellipseX = x0 + w;
+                            var ellipseY = y0;
+
+                            var points = SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
+                            var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
+                            var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+
+                            console.log(len1 + ", " + len2);
+                            return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                         }
                     },
                     "Inhibiting Relationship",
