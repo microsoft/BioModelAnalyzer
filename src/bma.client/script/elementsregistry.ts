@@ -445,12 +445,13 @@ module BMA {
                             var y0 = renderParams.layout.start.PositionY;
                             var w = that.variableWidthConstant * 0.7;
                             var h = that.variableHeightConstant * 0.7;
-                            var s = that.variableSizeConstant;
+                            var ew = w * 0.6;
+                            var eh = h * 1.6;
+                            var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
 
                             var path = jqSvg.createPath();
-                            lineRef = jqSvg.path(path.move(x0, y0 - h)
-                                .arc(w * 0.6, h * 1.6, 0, true, true, x0, y0 + h),
-                                //.arc(s * 1.2, s * 1.2, 0, true, true, x0, y0 + h),
+                            lineRef = jqSvg.path(path.move(x1, y0 - h)
+                                .arc(ew, eh, 0, true, true, x1, y0 + h),
                                 { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
 
                         } else {
@@ -499,7 +500,20 @@ module BMA {
                             d /= Math.sqrt(Math.pow(elementY.y - elementX.y, 2) + Math.pow(elementY.x - elementX.x, 2));
                             return d < elementX.pixelWidth;
                         } else {
-                            return false;
+                            var x0 = elementX.x;
+                            var y0 = elementX.y;
+                            var w = that.variableWidthConstant * 0.7 * 0.6;
+                            var h = that.variableHeightConstant * 0.7 * 1.6;
+
+                            var ellipseX = x0 + w;
+                            var ellipseY = y0;
+
+                            var points = SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
+                            var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
+                            var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+
+                            console.log(len1 + ", " + len2);
+                            return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                         }
                     },
                     "Activating Relationship",
@@ -521,12 +535,21 @@ module BMA {
                             var y0 = renderParams.layout.start.PositionY;
                             var w = that.variableWidthConstant * 0.7;
                             var h = that.variableHeightConstant * 0.7;
+                            var ew = w * 0.6;
+                            var eh = h * 1.6;
+                            var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
 
                             var path = jqSvg.createPath();
-                            lineRef = jqSvg.path(path.move(x0, y0 - h)
-                                .arc(w * 0.6, h * 1.6, 0, true, true, x0, y0 + h),
+                            lineRef = jqSvg.path(path.move(x1, y0 - h)
+                                .arc(ew, eh, 0, true, true, x1, y0 + h),
                                 { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
 
+                            /*
+                            jqSvg.ellipse(
+                                x0 + w * 0.6,
+                                y0,
+                                w * 0.6, h * 1.6, { stroke: "red", fill: "none" });
+                            */
                         } else {
 
                             var dir = {
@@ -583,10 +606,12 @@ module BMA {
                             var ellipseX = x0 + w;
                             var ellipseY = y0;
 
-                            var p = SVGHelper.GeEllipsePoint(ellipseX, ellipseY, w, h, pointerX, pointerY);
-                            var len = Math.sqrt(Math.pow(p.x - pointerX, 2) + Math.pow(p.y - pointerY, 2));
+                            var points = SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
+                            var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
+                            var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
 
-                            return len < elementX.pixelWidth;
+                            console.log(len1 + ", " + len2);
+                            return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                         }
                     },
                     "Inhibiting Relationship",
