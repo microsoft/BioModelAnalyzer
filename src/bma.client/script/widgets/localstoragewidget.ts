@@ -45,15 +45,15 @@
             this.ol = $('<ol></ol>').appendTo(this.repo); 
             
             for (var i = 0; i < items.length; i++) {
-                var li = $('<li></li>').appendTo(this.ol);
-                var input = $('<input>').attr("type", "text").val(items[i]).appendTo(li);
+                var li = $('<li></li>').text(items[i]).appendTo(this.ol);
+                //var input = $('<input>').attr("type", "text").val(items[i]).appendTo(li);
                
-                input.dblclick(function (event) {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    window.Commands.Execute("LocalStorageOpen", items[$(this).parent().index()]);
-                    $(this).parent().click();
-                })
+                //input.dblclick(function (event) {
+                //    event.stopPropagation();
+                //    event.preventDefault();
+                //    window.Commands.Execute("LocalStorageOpen", items[$(this).parent().index()]);
+                //    $(this).parent().click();
+                //})
             }
 
             this.ol.selectable({

@@ -120,7 +120,7 @@
     .popup-window {
         display:none; 
         padding: 40px;
-        padding-bottom: 50px;
+        padding-bottom: 70px;
         /* background-color: rgba(0,0,0,0.5); */
         background-color: white;
         position: absolute;
@@ -133,6 +133,14 @@
         width: calc(100% - 400px - 450px);
         min-width:800px;
         max-height: 600px;
+    }
+
+    .popup-window div:nth-child(2) {
+        overflow: scroll;
+        max-height: inherit;
+        width: 100%;
+        min-width: inherit;
+        white-space: nowrap;
     }
 
     .togglePopUpWindow {
@@ -686,7 +694,7 @@
     }
 
     ::-webkit-scrollbar {
-        width: 4px;
+        width: 18px;
         height: 18px; 
     }
  
@@ -847,7 +855,7 @@
 	vertical-align:middle;
 	border:1px solid #cccccc;
 	text-align:center;
-	padding:0;
+	padding: 1px 3px 1px 3px;
 	font-size:14px;
 	color:#000000;
     height: 20px;
@@ -1267,6 +1275,7 @@
 .localStorageWidget ol li {
     cursor: pointer;
     border-bottom: 1px solid lightgray;
+    overflow:hidden;
 }
 
 .localStorageWidget ol li input {

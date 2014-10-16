@@ -46,6 +46,7 @@
             this.content.empty();
             if (options.content !== undefined) {
                 options.content.appendTo(that.content); 
+                
             }
             
         },
@@ -54,17 +55,13 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            //var table = $('<table></table>').width("100%").appendTo(this.element);
-            //var tr = $('<tr></tr>').appendTo(table);
             this.head = $('<div></div>').appendTo(this.element);
             this.head.css("position", "relative");
-            this.head.css("margin-bottom", "10px");
             this.header = $('<div></div>')
                 .text(options.header)
                 .addClass('resultswindowviewer-header')
                 .appendTo(this.head);
             this.icontd = $('<div></div>').appendTo(this.head);
-            //this.header = $('<div></div>').text(options.header).appendTo(td1);
             this.content = $('<div></div>').appendTo(this.element);
             this.reseticon();
             this.refresh();

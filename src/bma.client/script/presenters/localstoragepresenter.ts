@@ -26,7 +26,7 @@
 
                 window.Commands.On("LocalStorageSave", function () {
                     var key = appModel.BioModel.Name;
-                    if (window.localStorage.getItem(key) !== undefined) {
+                    if (window.localStorage.getItem(key) !== null) {
                         //var dialog = $("<div></div>").dialog({
                         //    resizable: false,
                         //    height: 140,
@@ -45,7 +45,13 @@
                         //    }
                         //});
                         //$('<span></span>').text("There is file with such name in repository").appendTo(dialog);
-                        alert("The file will be overwritten");
+                        //var question = confirm("Overwrite the file?");
+                        if (confirm("Overwrite the file?")) {
+                            window.localStorage.setItem(key, appModel.Serialize());
+                            window.Commands.Execute("LocalStorageChanged", {});
+                        }
+                    }
+                    else {
                         window.localStorage.setItem(key, appModel.Serialize());
                         window.Commands.Execute("LocalStorageChanged", {});
                     }
