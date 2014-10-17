@@ -20,17 +20,22 @@
                     }
                 });
 
+                window.Commands.On("LocalStorageRemove", function (key) {
+                    window.localStorage.removeItem(key);
+                    window.Commands.Execute("LocalStorageChanged", {});
+                });
+
                 window.Commands.On("LocalStorageRequested", function () {
                     that.driver.Show();
                 });
 
                 window.Commands.On("LocalStorageSave", function () {
                     var key = appModel.BioModel.Name;
-                    //if (window.localStorage.getItem(key) !== undefined)
-                    //    alert(window.localStorage.getItem(key));
-
-                    window.localStorage.setItem(key, appModel.Serialize());
-                    window.Commands.Execute("LocalStorageChanged", {});
+                    if (window.localStorage.getItem(key) !== null) {
+                        if (confirm("Overwrite the file?")) 
+                            that.Save(key, appModel.Serialize());
+                    }
+                    else that.Save(key, appModel.Serialize());
                 });
 
                 window.Commands.On("LocalStorageOpen", function (key) {
@@ -38,8 +43,23 @@
                 })
             }
 
-            public ParseItem(item) {
-                return 1;
+            public Save(key: string, appModel: string) {
+                window.localStorage.setItem(key, appModel);
+                window.Commands.Execute("LocalStorageChanged", {});
+            }
+
+            public ParseItem(item): boolean {
+                var ml = JSON.parse(item);
+
+                if (ml === undefined || ml.model === undefined || ml.layout === undefined ||
+                    ml.model.variables === undefined ||
+                    ml.layout.variables === undefined ||
+                    ml.model.variables.length !== ml.layout.variables.length ||
+                    ml.layout.containers === undefined ||
+                    ml.model.relationships === undefined) {
+                    return false;
+                }
+                else return true;
             }
 
             public ScanLocalStorage(): any[] {
@@ -47,8 +67,7 @@
                 for (var i = 0; i < window.localStorage.length; i++) {
                     var key = window.localStorage.key(i);
                     var item = window.localStorage.getItem(key);
-                    var model = this.ParseItem(item);
-                    if (model !== undefined) {
+                    if (this.ParseItem(item)) {
                         keys.push(key);
                     }
                 }

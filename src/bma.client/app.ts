@@ -74,8 +74,15 @@ $(document).ready(function () {
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
 
+    $("#modelNameEditor").val(appModel.BioModel.Name);
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();
+    });
+    $("#modelNameEditor").bind("input change", function () {
+        appModel.BioModel.Name = $(this).val();
+    });
+    window.Commands.On("ModelReset", function () {
+        $("#modelNameEditor").val(appModel.BioModel.Name);
     });
 
     $("#drawingSurceContainer").contextmenu({

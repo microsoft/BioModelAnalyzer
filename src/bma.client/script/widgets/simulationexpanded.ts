@@ -19,6 +19,24 @@
             this.RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
             
 
+            
+
+
+            this.table1 = $('<div></div>').width("40%").appendTo(that.element);
+            this.table1.addClass("bma-simulation-table-expanded-scroll");
+            this.progression = $('<div></div>').appendTo(that.element).progressiontable();//.addClass("bma-simulation-table")
+            this.progression.css("position", "absolute");
+            this.progression.css("left", "45%");
+            this.progression.css("top", 0);
+            this.progression.addClass("bma-simulation-table-expanded-scroll");
+            if (options.variables !== undefined) {
+                this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
+                if (options.interval !== undefined && options.interval.length !== 0) {
+                    this.progression.progressiontable({ interval: options.interval, init: options.init, data: options.data });
+
+                }
+            }
+
             var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
             this.num = $('<span></span>').text(that.options.num).appendTo(steps);
             $('<span></span>').text("Steps").appendTo(steps);
@@ -30,23 +48,6 @@
             min10.bind("click", function () {
                 that._setOption("num", that.options.num - 10);
             })
-
-
-            this.table1 = $('<div></div>').width("40%").appendTo(that.element);
-            //this.table1.css("position", "relative");
-            this.progression = $('<div></div>').appendTo(that.element).progressiontable();//.addClass("bma-simulation-table")
-            this.progression.css("position", "absolute");
-            this.progression.css("left", "45%");
-            this.progression.css("top", 0);
-            if (options.variables !== undefined) {
-                this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
-                if (options.interval !== undefined && options.interval.length !== 0) {
-                    this.progression.progressiontable({ interval: options.interval, init: options.init, data: options.data });
-
-                }
-            }
-
-            
 
             that.element.css("margin-top", "30px");
             that.element.css("margin-bottom", "40px");

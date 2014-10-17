@@ -142,6 +142,7 @@
     <Content Include="images\inhibit.png" />
     <Content Include="images\launch-tool-btn.png" />
     <Content Include="images\list.png" />
+    <Content Include="images\local.png" />
     <Content Include="images\logo-crop.png" />
     <Content Include="images\logo.png" />
     <Content Include="images\maximize.png" />
@@ -154,6 +155,7 @@
     <Content Include="images\random2.png" />
     <Content Include="images\receptor.png" />
     <Content Include="images\redo.png" />
+    <Content Include="images\remove.gif" />
     <Content Include="images\runbutton.png" />
     <Content Include="images\save.png" />
     <Content Include="images\saveicon.png" />

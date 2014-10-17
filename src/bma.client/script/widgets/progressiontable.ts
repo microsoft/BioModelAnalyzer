@@ -16,7 +16,7 @@
 
             var randomise = $('<div></div>')
                 .addClass("bma-progressiontable-randimise")
-                .appendTo(that.element);
+                .appendTo(that.element.parent());
             
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
             var randomLabel = $('<div></div>').text("Randomise").addClass("randomize-button").appendTo(randomise);
@@ -30,10 +30,18 @@
                 .appendTo(that.element);
             this.InitData();
             randomise.bind("click", function () {
+                that.ClearBackground();
                 var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
             })
 
+        },
+
+        ClearBackground: function () {
+            var inits = this.init.find("tr").not(":first-child");
+            inits.each(function () {
+                $(this).css("background-color", "transparent");
+            })
         },
 
         InitData: function () {
@@ -78,9 +86,16 @@
                     //input.bind ("input change")
 
                     random.bind("click", function () {
+                        var prev = parseInt($(this).prev().children("input").eq(0).val());
                         var index = $(this).parent().index() - 1;
                         var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
                         $(this).prev().children("input").eq(0).val(randomValue);//randomValue);
+                        if (randomValue !== prev) {
+                            $(this).parent().css("background-color", "rgb(255, 173, 173)");
+                        }
+                        else {
+                            $(this).parent().css("background-color", "transparent");
+                        }
                     })
                 }
             }

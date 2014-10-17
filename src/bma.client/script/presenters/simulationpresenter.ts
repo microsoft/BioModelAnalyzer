@@ -52,7 +52,7 @@
                                 full = that.expandedViewer.GetViewer();//$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
                             case "SimulationPlot":
-                                full = $('<div id="SimulationPlot"></div>').height(500).simulationplot({colors: that.colors});
+                                full = $('<div id="SimulationPlot"></div>').height(600).simulationplot({colors: that.colors});
                                 break;
                             default:
                                 full = undefined;
@@ -108,6 +108,7 @@
                         error: function (res) {
                             console.log(res.statusText);
                             that.expandedViewer.ActiveMode();
+                            alert("Error");
                             return;
                             //$("#log").append("Simulate error: " + res.statusText + "<br/>");
                         }

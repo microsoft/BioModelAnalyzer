@@ -12,27 +12,61 @@
         _create: function () {
 
             var that = this;
+            var items = this.options.items;
+            var header = $('<div></div>')
+                .text("Name")
+                .addClass('localStorageWidget-header')
+                .appendTo(that.element);
             var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
             closing.bind("click", function () {
                 that.element.hide();
             });
             that.element.draggable({ constraint: parent });
-            this.table = $('<div></div>')
-                .addClass("bma-localstoragewidget")
-                .appendTo(that.element)
-                .coloredtableviewer();
+            this.repo = $('<div></div>').addClass('localStorageWidget').appendTo(this.element);            
             this.refresh();
         },
 
         refresh: function () {
             var that = this;
             var items = this.options.items;
-            this.table.coloredtableviewer({ header: ["Models"], numericData: that._createTableView(items) });
+            this._cteateHTML();
+            //this.table.coloredtableviewer({ header: ["Models"], numericData: that._createTableView(items) });
         },
 
         AddItem: function (item) {
             this.options.items.push(item);
             this.refresh();
+        },
+
+        _cteateHTML: function (items) {
+            var items = this.options.items;
+            this.repo.empty();
+
+            this.ol = $('<ol></ol>').appendTo(this.repo); 
+            
+            for (var i = 0; i < items.length; i++) {
+                var li = $('<li></li>').text(items[i]).appendTo(this.ol);
+                var removeBtn = $('<button></button>').addClass("localstorage-remove-button").appendTo(li);
+                removeBtn.bind("click", function () {
+                    window.Commands.Execute("LocalStorageRemove", items[$(this).parent().index()]);
+                })
+                //var input = $('<input>').attr("type", "text").val(items[i]).appendTo(li);
+               
+                //input.dblclick(function (event) {
+                //    event.stopPropagation();
+                //    event.preventDefault();
+                //    window.Commands.Execute("LocalStorageOpen", items[$(this).parent().index()]);
+                //    $(this).parent().click();
+                //})
+            }
+
+            this.ol.selectable({
+                stop: function () {
+                    $(".ui-selected", this).each(function () {
+                        window.Commands.Execute("LocalStorageOpen", items[$(this).index()]);
+                    });
+                }
+            });
         },
 
         _createTableView: function (items) {
