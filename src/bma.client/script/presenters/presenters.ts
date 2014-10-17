@@ -142,27 +142,37 @@ module BMA {
                     var relationshipId = that.GetRelationshipAtPosition(x, y, 3 * that.driver.GetPixelWidth());
                     var cntSize = containerId !== undefined ? that.Current.layout.GetContainerById(containerId).Size : undefined;
 
-                    var canPaste = that.clipboard !== undefined;
-                    if (canPaste === true) {
+                    var showPaste = that.clipboard !== undefined;
+                    if (showPaste === true) {
 
                         if (that.clipboard.Container !== undefined) {
-                            canPaste = that.CanAddContainer(x, y);
+                            showPaste = that.CanAddContainer(x, y);
                         } else {
                             var variable = that.clipboard.Variables[0];
-                            canPaste = that.CanAddVariable(x, y, variable.m.Type);
+                            showPaste = that.CanAddVariable(x, y, variable.m.Type);
                         }
+                    }
+
+                    var canPaste = true;
+                    if (showPaste !== true && id === undefined && containerId === undefined && relationshipId === undefined) {
+                        showPaste = true;
+                        canPaste = false;
                     }
 
                     that.contextMenu.ShowMenuItems([
                         { name: "Cut", isVisible: id !== undefined || containerId !== undefined },
                         { name: "Copy", isVisible: id !== undefined || containerId !== undefined },
-                        { name: "Paste", isVisible: canPaste },
+                        { name: "Paste", isVisible: showPaste },
                         { name: "Delete", isVisible: id !== undefined || containerId !== undefined || relationshipId !== undefined },
                         { name: "Size", isVisible: containerId !== undefined },
                         { name: "ResizeCellTo1x1", isVisible: true },
                         { name: "ResizeCellTo2x2", isVisible: true },
                         { name: "ResizeCellTo3x3", isVisible: true },
                         { name: "Edit", isVisible: id !== undefined }
+                    ]);
+
+                    that.contextMenu.EnableMenuItems([
+                        { name: "Paste", isEnabled: canPaste }
                     ]);
 
                     that.contextElement = { x: x, y: y, screenX: args.left, screenY: args.top };
@@ -376,7 +386,6 @@ module BMA {
                             }
                         } else if (that.selectedType === undefined) {
                             var id = this.GetVariableAtPosition(gesture.x, gesture.y);
-                            console.log(id);
                             if (id !== undefined) {
                                 that.navigationDriver.TurnNavigation(false);
                                 var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
@@ -805,7 +814,7 @@ module BMA {
 
                         return true;
 
-                    case "MembraneReceptor": 
+                    case "MembraneReceptor":
                         var bbox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType("MembraneReceptor")).GetBoundingBox(x, y);
                         var gridCell = that.GetGridCell(x, y);
                         var container = that.GetContainerFromGridCell(gridCell);
@@ -843,7 +852,7 @@ module BMA {
 
                         var gridCell = that.GetGridCell(x, y);
 
-                        if (that.CanAddContainer(x,y) === true) {
+                        if (that.CanAddContainer(x, y) === true) {
 
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {

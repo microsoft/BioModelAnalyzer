@@ -13,6 +13,7 @@ declare var Rx: any;
         _dragService: null,
         //_zoomObservable: undefined,
         _zoomObs: undefined,
+        _onlyZoomEnabled: false,
 
         options: {
             isNavigationEnabled: true,
@@ -292,14 +293,19 @@ declare var Rx: any;
                     break;
                 case "isNavigationEnabled":
                     if (value === true) {
-                        if (this._plot.navigation.gestureSource === undefined) {
+                        if (this._onlyZoomEnabled === true) {
                             var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
                                 return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
                             });
                             this._plot.navigation.gestureSource = gestureSource;
+                            this._onlyZoomEnabled = false;
                         }
                     } else {
-                        this._plot.navigation.gestureSource = undefined;//this._zoomObservable;
+                        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                            return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
+                        });
+                        this._plot.navigation.gestureSource = gestureSource;
+                        this._onlyZoomEnabled = true;
                     }
                     break;
                 case "grid":
