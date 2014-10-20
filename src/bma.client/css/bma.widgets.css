@@ -1313,3 +1313,20 @@
     border:none;
     cursor:pointer;
 }
+
+.bma-futhertesting-bifurcations-icon {
+    background-image: url("../images/bifurcations.png");
+    background-position:center;
+    background-repeat:no-repeat;
+    height: 36px;
+    width: 36px;
+}
+
+.bma-futhertesting-oscillations-icon {
+    background-image: url("../images/oscillations.png");
+    background-position:center;
+    background-repeat:no-repeat;
+    background-color:transparent;
+    height: 36px;
+    width: 36px;
+}

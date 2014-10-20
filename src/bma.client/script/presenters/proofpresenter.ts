@@ -35,7 +35,7 @@
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
                             else {
-                                alert("Error: " + res.Error);
+                                //alert("Error: " + res.Error);
                                 proofResultViewer.OnProofFailed();
                             }
                         },
