@@ -63,8 +63,8 @@ namespace bma.client.Controllers
                 // Convert to the Output Data
                 if (cexBifurcatesXml != null)
                 {
-                    XmlSerializer bifsSerializer = new XmlSerializer(typeof(CounterExampleOutput));
-                    var counterExampleOutput = (CounterExampleOutput)bifsSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexCyclesXml.ToString()));
+                    XmlSerializer bifsSerializer = new XmlSerializer(typeof(CounterExampleOutputXML));
+                    var counterExampleOutput = (CounterExampleOutputXML)bifsSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexBifurcatesXml.ToString()));
 
                     if (counterExampleOutput.Status != CounterExampleType.Bifurcation)
                     {
@@ -72,14 +72,25 @@ namespace bma.client.Controllers
                         counterExampleOutput.Error = error != null ? error.Attribute("Msg").Value : "There was an error in the analyzer";
                     }
                     //counterExampleOutput.ZippedXml = ZipHelper.Zip(cexBifurcatesXml.ToString());
-                    counterExamples.Add(counterExampleOutput);
+                    
+                    counterExamples.Add(new BifurcationCounterExample
+                    {
+                        Status = CounterExampleType.Bifurcation,
+                        Error = counterExampleOutput.Error,
+                        Variables = counterExampleOutput.Variables[0].Variables.Zip(counterExampleOutput.Variables[1].Variables, (v1, v2) => new BifurcationCounterExample.BifurcatingVariable
+                        {
+                            Id = v1.Id,
+                            Fix1 = v1.Value,
+                            Fix2 = v2.Value
+                        }).ToArray()
+                    });
                 }
 
                 if (cexCyclesXml != null)
                 {
-                    XmlSerializer cyclesSerializer = new XmlSerializer(typeof(CounterExampleOutput));
+                    XmlSerializer cyclesSerializer = new XmlSerializer(typeof(CounterExampleOutputXML));
 
-                                        var counterExampleOutput = (CounterExampleOutput)cyclesSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexCyclesXml.ToString()));
+                    var counterExampleOutput = (CounterExampleOutputXML)cyclesSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexCyclesXml.ToString()));
                     if (counterExampleOutput.Status != CounterExampleType.Cycle)
                     {
                         var error = cexCyclesXml.Descendants("Error").FirstOrDefault();
@@ -87,7 +98,16 @@ namespace bma.client.Controllers
                     }
 
                     //counterExampleOutput.ZippedXml = ZipHelper.Zip(cexCyclesXml.ToString());
-                    counterExamples.Add(counterExampleOutput);
+                    counterExamples.Add(new CycleCounterExample
+                    {
+                        Status = CounterExampleType.Cycle,
+                        Error = counterExampleOutput.Error,
+                        Variables = counterExampleOutput.Variables[0].Variables.Select(v => new CycleCounterExample.CycleVariable
+                        {
+                            Id = v.Id,
+                            Value = v.Value
+                        }).ToArray()
+                    });
                 }
 
                 furtherTestingOutput.CounterExamples = counterExamples.ToArray();
