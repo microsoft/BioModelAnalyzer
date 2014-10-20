@@ -118,6 +118,8 @@
                             return;
                             //$("#log").append("Simulate error: " + res.statusText + "<br/>");
                         }
+                    }).fail(function (arg) {
+                        console.log("Sim fail: ");
                     });
                 else return;
             }

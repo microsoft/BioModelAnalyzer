@@ -97,8 +97,8 @@
                     else {
                         range = ij.Lo + ' - ' + ij.Hi;
                     }
-                    stability[i] = { state: c, range: range };
                     var id = ticks[0].Variables[variables.length - 1 - i].Id;
+                    stability[i] = { id: id, state: c, range: range };
                     var v = this.appModel.BioModel.GetVariableById(id);
                     if (v.ContainerId !== undefined &&  (!c || containers[v.ContainerId] === undefined)) 
                             containers[v.ContainerId] = c;

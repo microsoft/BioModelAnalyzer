@@ -279,14 +279,29 @@ module BMA {
                             var cntY = container.PositionY * that.yStep + that.yOrigin;
                             var newVL = [];
                             for (var i = 0; i < variableLayouts.length; i++) {
+                                var v = variables[i];
                                 var vl = variableLayouts[i];
                                 if (variables[i].ContainerId === container.Id) {
                                     newVL.push(new BMA.Model.VarialbeLayout(vl.Id, cntX + (vl.PositionX - cntX) * args.size / container.Size, cntY + (vl.PositionY - cntY) * args.size / container.Size, 0, 0, vl.Angle));
                                 } else {
-                                    newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
-                                        vl.PositionX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX,
-                                        vl.PositionY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY,
-                                        0, 0, vl.Angle));
+                                    if (v.Type === "Constant") {
+                                        newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
+                                            vl.PositionX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX,
+                                            vl.PositionY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY,
+                                            0, 0, vl.Angle));
+                                    } else {
+                                        var vCnt = that.undoRedoPresenter.Current.layout.GetContainerById(v.ContainerId);
+                                        var vCntX = vCnt.PositionX * that.xStep + that.xOrigin;
+                                        var vCntY = vCnt.PositionY * that.yStep + that.yOrigin;
+
+                                        var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
+                                        var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
+
+                                        newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
+                                            unsizedVposX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX,
+                                            unsizedVposY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY,
+                                            0, 0, vl.Angle));
+                                    }
                                 }
                             }
 
@@ -325,6 +340,14 @@ module BMA {
                         }
 
                         that.RefreshOutput();
+                    }
+                });
+
+                window.Commands.On("DrawingSurfaceSetProofResults", (args) => {
+                    if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
+                        var drawingSvg = <SVGElement>this.CreateSvg(args);
+                        this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
+                        this.driver.Draw(drawingSvg);
                     }
                 });
 
@@ -418,8 +441,7 @@ module BMA {
                             return;
                         } else if (that.stagingVariable !== undefined) {
                             that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                            var drawingSvg = <SVGElement>that.CreateSvg();
-                            that.driver.Draw(drawingSvg);
+                            that.RefreshOutput();
                         }
                     });
 
@@ -441,9 +463,7 @@ module BMA {
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
                             if (!that.TryAddVariable(x, y, type, id)) {
-                                var drawingSvg = <SVGElement>that.CreateSvg();
-                                that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
-                                that.driver.Draw(drawingSvg);
+                                that.RefreshOutput();
                             }
                         }
                     });
@@ -451,7 +471,7 @@ module BMA {
 
             private RefreshOutput() {
                 if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
-                    var drawingSvg = <SVGElement>this.CreateSvg();
+                    var drawingSvg = <SVGElement>this.CreateSvg(undefined);
                     this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                     this.driver.Draw(drawingSvg);
                 }
@@ -1086,7 +1106,30 @@ module BMA {
                 throw "No such variable in model";
             }
 
-            private CreateSvg(): any {
+            private GetVariableColorByStatus(status): string {
+                if (status)
+                    return "green";//"#D9FFB3";
+                else
+                    return "red";
+            }
+
+            private GetContainerColorByStatus(status): string {
+                if (status)
+                    return "#E9FFCC";
+                else
+                    return "#FFDDDB";
+            }
+
+            private GetItemById(arr, id) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i].id === id)
+                        return arr[i];
+                }
+
+                return undefined;
+            }
+
+            private CreateSvg(args: any): any {
                 if (this.svg === undefined)
                     return undefined;
 
@@ -1097,16 +1140,28 @@ module BMA {
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
                     var element = window.ElementRegistry.GetElementByType("Container");
-                    svgElements.push(element.RenderToSvg({ layout: containerLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg({
+                        layout: containerLayout,
+                        grid: this.Grid,
+                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
+                    }));
                 }
 
                 var variables = this.undoRedoPresenter.Current.model.Variables;
                 var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
+
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    svgElements.push(element.RenderToSvg({ model: variable, layout: variableLayout, grid: this.Grid }));
+                    var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    svgElements.push(element.RenderToSvg({
+                        model: variable,
+                        layout: variableLayout,
+                        grid: this.Grid,
+                        valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
+                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
+                    }));
                 }
 
                 var relationships = this.undoRedoPresenter.Current.model.Relationships;
