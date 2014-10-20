@@ -16,6 +16,9 @@ namespace bma.client {
 
         public void ReplaceVariableNamesWithIDs()
         {
+            if (Variables == null)
+                return;
+
             foreach (var v in Variables)
             {
                 v.Function = ReplaceVariableNames(v.Function, name =>
@@ -28,6 +31,9 @@ namespace bma.client {
 
         public void NullifyDefaultFunction()
         {
+            if (Variables == null)
+                return;
+
             foreach (var v in Variables)
                 if (v.Function != null && v.Function.Replace(" ", "").ToLower() == "avg(pos)-avg(neg)")
                     v.Function = null;

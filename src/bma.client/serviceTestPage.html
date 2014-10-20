@@ -105,6 +105,17 @@
             ]
         };
 
+        
+        var bifurcatingModel = {
+            "ModelName": "BifurcatingModel",
+            "Engine": "VMCAI",
+            "Variables": [
+                { "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Function": "", "Name":"a" }
+            ],
+            "Relationships": [
+                { "Id": 12, "FromVariableId": 3, "ToVariableId": 3, "Type": "Activator" }
+            ]
+        };
 
         var simulate = {
             "Model": stableModel,
@@ -158,6 +169,35 @@
                     $("#log").append("Analyze error: " + res.statusText + "<br/>");
                 }
             });
+
+            $("#log").append("Invoking api/Analyze (for bifurcating model)...<br/>");
+            $.ajax({
+                type: "POST",
+                url: "api/Analyze",
+                data: bifurcatingModel,
+                success: function (res) {
+                    $("#log").append("Analyze success. Analysis result (for bifurcating): " + res.Status + "<br/>");
+                    $("#log").append("Invoking api/FurtherTesting...<br/>");
+                    $.ajax({
+                        type: "POST",
+                        url: "api/FurtherTesting",
+                        data: {
+                            Model: bifurcatingModel,
+                            Analysis: res,
+                        },
+                        success: function (res2) {
+                            $("#log").append("FurtherTesting success. Counter examples found: " + res2.CounterExamples.length + "<br/>");
+                        },
+                        error: function (res2) {
+                            $("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
+                        }
+                    });
+                },
+                error: function (res) {
+                    $("#log").append("Analyze error: " + res.statusText + "<br/>");
+                }
+            });
+
 
             $("#log").append("Invoking api/Simulate...<br/>");
             $.ajax({
