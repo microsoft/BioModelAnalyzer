@@ -1,5 +1,4 @@
-﻿/*
-module BMA {
+﻿module BMA {
     export module Presenters {
         export class UndoRedoPresenter {
             private appModel: BMA.Model.AppModel;
@@ -33,37 +32,28 @@ module BMA {
                 this.Set(this.appModel.BioModel, this.appModel.Layout);
             }
 
-            private OnModelUpdated() {
+            private OnModelUpdated(status: string) {
                 this.undoButton.Turn(this.CanUndo);
                 this.redoButton.Turn(this.CanRedo);
 
                 this.appModel.BioModel = this.Current.model;
                 this.appModel.Layout = this.Current.layout;
 
-                if (this.editingVariableId !== undefined) {
-                    this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
-                }
-
-                var drawingSvg = <SVGElement>this.CreateSvg();
-                this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
-                this.driver.Draw(drawingSvg);
+                window.Commands.Execute("DrawingSurfaceRefreshOutput", { status: status });
             }
 
             private Undo() {
                 if (this.CanUndo) {
                     --this.currentModelIndex;
-                    this.variableEditor.Hide();
-                    this.editingVariableId = undefined;
-                    this.OnModelUpdated();
+                    
+                    this.OnModelUpdated("Undo");
                 }
             }
 
             private Redo() {
                 if (this.CanRedo) {
                     ++this.currentModelIndex;
-                    this.variableEditor.Hide();
-                    this.editingVariableId = undefined;
-                    this.OnModelUpdated();
+                    this.OnModelUpdated("Redo");
                 }
             }
 
@@ -77,7 +67,7 @@ module BMA {
                 this.models[this.currentModelIndex] = { model: current.model.Clone(), layout: current.layout.Clone() };
                 this.models.push({ model: m, layout: l });
                 ++this.currentModelIndex;
-                this.OnModelUpdated();
+                this.OnModelUpdated("Dup");
             }
 
             private get CanUndo(): boolean {
@@ -91,10 +81,7 @@ module BMA {
             public Set(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
                 this.models = [{ model: m, layout: l }];
                 this.currentModelIndex = 0;
-                this.ResetVariableIdIndex();
-                this.variableEditor.Hide();
-                this.editingVariableId = undefined;
-                this.OnModelUpdated();
+                this.OnModelUpdated("Set");
             }
 
             public get Current(): { model: BMA.Model.BioModel; layout: BMA.Model.Layout } {
@@ -103,4 +90,3 @@ module BMA {
         }
     }
 }
-*/

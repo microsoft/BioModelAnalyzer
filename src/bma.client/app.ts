@@ -8,6 +8,7 @@
 /// <reference path="script\functionsregistry.ts"/>
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
+/// <reference path="script\presenters\undoredopresenter.ts"/>
 /// <reference path="script\presenters\presenters.ts"/>
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
 /// <reference path="script\presenters\simulationpresenter.ts"/>
@@ -286,7 +287,8 @@ $(document).ready(function () {
     });
 
     //Loading presenters
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, undoDriver, redoDriver, variableEditorDriver, contextMenuDriver);
+    var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(furtherTestingDriver, popupDriver);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
