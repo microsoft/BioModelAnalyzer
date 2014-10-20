@@ -36,7 +36,12 @@
                             }
                             else {
                                 //alert("Error: " + res.Error);
-                                proofResultViewer.OnProofFailed();
+                                proofResultViewer.SetData({
+                                    issucceeded: res.Status === 4,
+                                    time: res.Time
+                                })
+                                proofResultViewer.ShowResult(appModel.ProofResult);
+                                //proofResultViewer.OnProofFailed();
                             }
                         },
                         error: function (XMLHttpRequest, textStatus, errorThrown) {
