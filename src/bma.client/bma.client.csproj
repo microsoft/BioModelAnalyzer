@@ -173,6 +173,7 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="index.html" />
     <Content Include="js\idd.js" />
+    <Content Include="js\jquery.jsonp-2.4.0.min.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />

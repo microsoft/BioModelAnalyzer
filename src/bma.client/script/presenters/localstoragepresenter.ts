@@ -39,13 +39,26 @@
                 });
 
                 window.Commands.On("LocalStorageOpen", function (key) {
-                    appModel.Reset(window.localStorage.getItem(key));
+                    var model = window.localStorage.getItem(key);
+                    if (model !== null)
+                        appModel.Reset(model);
+                    else {
+                        alert("Model have been removed from outside");
+                        window.Commands.Execute("LocalStorageChanged", {});
+                    }
                 })
             }
 
             public Save(key: string, appModel: string) {
-                window.localStorage.setItem(key, appModel);
-                window.Commands.Execute("LocalStorageChanged", {});
+                try {
+                    window.localStorage.setItem(key, appModel);
+                    window.Commands.Execute("LocalStorageChanged", {});
+                }
+                catch(e) {
+                    if (e === 'QUOTA_EXCEEDED_ERR') {
+                        alert("Error: Local repository is full");
+                    }
+                }
             }
 
             public ParseItem(item): boolean {

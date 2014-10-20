@@ -15,6 +15,8 @@
                 this.driver = driver;
                 this.popupViewer = popupViewer;
 
+
+
                 window.Commands.On("ProofFailed", function (param: { Model; Variables; Res }) {
                     that.driver.ShowStartToggler();
                     that.model = param.Model;
@@ -33,6 +35,9 @@
                         $.ajax({
                             type: "POST",
                             url: "api/FurtherTesting",
+                            //callbackParameter: 'callback',
+                            //dataType: 'jsonp',
+                            //timeout: 10000,
                             data: {
                                 Model: that.model,
                                 Analysis: that.result,
@@ -47,11 +52,14 @@
                                     that.driver.ShowResults(table);
                                     that.data = table;
                                 }
-                                else alert(res2.Error);
+                                else {
+                                    alert(res2.Error);
+                                    that.driver.ActiveMode();
+                                }
                             },
-                            error: function (res2) {
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
                                 that.driver.ActiveMode();
-                                alert(res2.statusText);
+                                alert(errorThrown);
                             }
                         });
                     }
@@ -87,7 +95,7 @@
                 for (var i = 0; i < variables.length; i++) {
                     var resid = results[variables[i].Id];
                     table[i] = [];
-                    table[i][0] = variables[i].ContainerId; // color should be there
+                    table[i][0] = variables[i].ContainerId; 
                     table[i][1] = variables[i].Name;
                     table[i][2] = resid.min + '-' + resid.max;
                     table[i][3] = resid.oscillations;

@@ -10,29 +10,38 @@
 
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
-                    var proofInput = appModel.BioModel.GetJSON()
+                    var proofInput = appModel.BioModel.GetJSON();
 
                     $.ajax({
                         type: "POST",
                         url: "api/Analyze",
+                        //callbackParameter: 'callback',
+                        //dataType: 'jsonp',
+                        //timeout: 10000,
                         data: proofInput,
                         success: function (res) {
                             console.log("Proof Result Status: " + res.Status);
-                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
-                            if (res.Status === 5)
-                                window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
-                            var st = that.Stability(res.Ticks);
-                            var variablesData = that.CreateTableView(st.variablesStability);
-                            var colorData = that.CreateColoredTable(res.Ticks);
-                            //var result = appModel.ProofResult;
-                            //var data = { numericData: numericData, colorData: undefined };
-                            window.Commands.Execute("DrawingSurfaceSetProofResults", st);
-                            proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData,  colorData: colorData } });
-                            proofResultViewer.ShowResult(appModel.ProofResult);
+                            if (res.Ticks !== null) {
+                                var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
+                                if (res.Status === 5)
+                                    window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
+                                var st = that.Stability(res.Ticks);
+                                var variablesData = that.CreateTableView(st.variablesStability);
+                                var colorData = that.CreateColoredTable(res.Ticks);
+                                //var result = appModel.ProofResult;
+                                //var data = { numericData: numericData, colorData: undefined };
+                                window.Commands.Execute("DrawingSurfaceSetProofResults", st);
+                                proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
+                                proofResultViewer.ShowResult(appModel.ProofResult);
+                            }
+                            else {
+                                alert("Error: " + res.Error);
+                                proofResultViewer.OnProofFailed();
+                            }
                         },
-                        error: function (res) {
-                            console.log("Proof Service Failed: " + res.statusText);
-                            alert("Error: " + res.statusText);
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log("Proof Service Failed: " + errorThrown);
+                            alert("Error: " + errorThrown);
                             proofResultViewer.OnProofFailed();
                         } 
                     });

@@ -93,6 +93,9 @@
                     $.ajax({
                         type: "POST",
                         url: "api/Simulate",
+                        //callbackParameter: 'callback',
+                        //dataType: 'jsonp',
+                        //timeout: 10000,
                         data: simulate,
                         success: function (res) {
                             if (res.Variables !== null) {
@@ -102,13 +105,16 @@
                                 that.AddData(d);
                                 that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             }
-                            else alert("Simulation Error: " + res.ErrorMessages);
+                            else {
+                                that.expandedViewer.ActiveMode();
+                                alert("Simulation Error: " + res.ErrorMessages);
+                            }
                             //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
                         },
-                        error: function (res) {
-                            console.log(res.statusText);
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log(textStatus);
                             that.expandedViewer.ActiveMode();
-                            alert("Error");
+                            alert("Simulate error: " + errorThrown);
                             return;
                             //$("#log").append("Simulate error: " + res.statusText + "<br/>");
                         }
