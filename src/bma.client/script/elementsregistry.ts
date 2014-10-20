@@ -183,6 +183,7 @@ module BMA {
                 var containerOuterEllipseHeight = 130;
                 var containerInnerCenterOffset = 5;
                 var containerOuterCenterOffset = 0;
+                var containerPaddingCoef = 100;
 
                 this.elements.push(new BorderContainerElement(
                     "Container",
@@ -194,6 +195,18 @@ module BMA {
 
                         var x = (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2;
                         var y = (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2;
+
+                        jqSvg.rect(
+                            renderParams.layout.PositionX * renderParams.grid.xStep + renderParams.grid.xStep / containerPaddingCoef,
+                            renderParams.layout.PositionY * renderParams.grid.yStep + renderParams.grid.yStep / containerPaddingCoef,
+                            renderParams.grid.xStep * renderParams.layout.Size - 2 * renderParams.grid.xStep / containerPaddingCoef,
+                            renderParams.grid.yStep * renderParams.layout.Size - 2 * renderParams.grid.yStep / containerPaddingCoef,
+                            0,
+                            0,
+                            {
+                                stroke: "none",
+                                fill: renderParams.background !== undefined ? renderParams.background : "white"
+                            });
 
                         var g = jqSvg.group({
                             transform: "translate(" + x + ", " + y + ") scale(" + 0.45 * renderParams.layout.Size + ") translate(-250, -290)"
@@ -207,6 +220,11 @@ module BMA {
                             "fill-rule": "evenodd",
                             d: cellData,
                         });
+
+                        jqSvg.ellipse(
+                            (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                            containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "none", fill: "white" });
 
                         $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(op).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -293,10 +311,27 @@ module BMA {
                         });
 
                         if (that.labelVisibility === true) {
-                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
-                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
-                                "font-size": that.labelSize
-                            });
+                            
+                            
+
+                            var offset = 0;
+
+                            if (renderParams.model.Name !== "") {
+                                var textLabel = jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                    transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                    "font-size": that.labelSize,
+                                    "fill": renderParams.labelColor !== undefined ? renderParams.labelColor : "black"
+                                });
+                                offset += that.labelSize;
+                            }
+
+                            if (renderParams.valueText !== undefined) {
+                                jqSvg.text(g, 0, 0, renderParams.valueText + "", {
+                                    transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize + offset) + ")",
+                                    "font-size": that.labelSize,
+                                    "fill": renderParams.labelColor !== undefined ? renderParams.labelColor : "black"
+                                });
+                            }
                         }
 
                         /*
@@ -350,10 +385,24 @@ module BMA {
                         });
 
                         if (that.labelVisibility === true) {
-                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
-                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
-                                "font-size": that.labelSize
-                            });
+                            var offset = 0;
+
+                            if (renderParams.model.Name !== "") {
+                                var textLabel = jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                    transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                    "font-size": that.labelSize,
+                                    "fill": renderParams.labelColor !== undefined ? renderParams.labelColor : "black"
+                                });
+                                offset += that.labelSize;
+                            }
+
+                            if (renderParams.valueText !== undefined) {
+                                jqSvg.text(g, 0, 0, renderParams.valueText + "", {
+                                    transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize + offset) + ")",
+                                    "font-size": that.labelSize,
+                                    "fill": renderParams.labelColor !== undefined ? renderParams.labelColor : "black"
+                                });
+                            }
                         }
 
                         $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
