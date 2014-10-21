@@ -1,9 +1,9 @@
-module FSharpWeb2.AssemblyInfo
+module FSharpWeb2A.AssemblyInfo
 open System.Reflection
 open System.Runtime.CompilerServices
 
 
-[<assembly: AssemblyTitle("FSharpWeb2")>]
+[<assembly: AssemblyTitle("FSharpWeb2A")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]

@@ -7,17 +7,17 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>f22038e8-5552-4e47-9967-fefb15cb479a</ProjectGuid>
+    <ProjectGuid>76e64416-7a31-47d7-8dbd-a22d388b1d67</ProjectGuid>
     <ProjectTypeGuids>{349C5851-65DF-11DA-9384-00065B846F21};{F2A71F9B-5D33-465A-A702-920D77279786}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <RootNamespace>FSharpWeb2</RootNamespace>
-    <AssemblyName>FSharpWeb2</AssemblyName>
+    <RootNamespace>FSharpWeb2A</RootNamespace>
+    <AssemblyName>FSharpWeb2A</AssemblyName>
     <UseIISExpress>true</UseIISExpress>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <WebGreaseLibPath>$(SolutionDir)\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
-    <Name>FSharpWeb2</Name>
+    <Name>FSharpWeb2A</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -78,7 +78,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>48213</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:21278/api</IISUrl>
+          <IISUrl>http://localhost:48213/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -126,6 +126,7 @@
     <None Include="fonts\glyphicons-halflings-regular.eot" />
     <Compile Include="Models\Car.fs" />
     <Compile Include="Controllers\CarsController.fs" />
+    <Compile Include="Controllers\FooController.fs" />
     <Content Include="Web.config" />
     <Content Include="Global.asax" />
     <Compile Include="Global.asax.fs">

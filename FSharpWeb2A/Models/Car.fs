@@ -1,4 +1,4 @@
-namespace FSharpWeb2.Models
+namespace FSharpWeb2A.Models
 
 open Newtonsoft.Json
 
