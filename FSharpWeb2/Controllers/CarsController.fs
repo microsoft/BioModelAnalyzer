@@ -15,5 +15,9 @@ type CarsController() =
     /// Gets all values.
     member x.Get()  = values
 
+    member x.Get(id:int) = 
+        Array.get values id |> Seq.singleton
+
+
     /// Post request x -> 2x
     member x.Post(z:int) = z * 2 
