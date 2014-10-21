@@ -110,7 +110,7 @@
                                 this.popupViewer.Show({ tab: param, content: content.children().eq(1).children().eq(1) });
                                 break;
                             default:
-                                that.driver.ShowResults(that.data);
+                                //that.driver.ShowResults(that.data);
                                 break;
                         }
                 })
