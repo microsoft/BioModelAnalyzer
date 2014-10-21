@@ -5,6 +5,13 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeScriptHTMLApp2", "TypeScriptHTMLApp2\TypeScriptHTMLApp2.csproj", "{881C2371-02A9-487A-B4A8-757883E2EF42}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpWeb2", "FSharpWeb2\FSharpWeb2.fsproj", "{F22038E8-5552-4E47-9967-FEFB15CB479A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{78A262CB-6D65-41B2-8970-B4E27BC696E9}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,10 @@ Global
 		{881C2371-02A9-487A-B4A8-757883E2EF42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{881C2371-02A9-487A-B4A8-757883E2EF42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{881C2371-02A9-487A-B4A8-757883E2EF42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F22038E8-5552-4E47-9967-FEFB15CB479A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F22038E8-5552-4E47-9967-FEFB15CB479A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F22038E8-5552-4E47-9967-FEFB15CB479A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F22038E8-5552-4E47-9967-FEFB15CB479A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
