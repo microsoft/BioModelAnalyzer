@@ -444,10 +444,24 @@ module BMA {
                         });
 
                         if (that.labelVisibility === true) {
-                            jqSvg.text(g, 0, 0, renderParams.model.Name, {
-                                transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
-                                "font-size": that.labelSize
-                            });
+                            var offset = 0;
+
+                            if (renderParams.model.Name !== "") {
+                                var textLabel = jqSvg.text(g, 0, 0, renderParams.model.Name, {
+                                    transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize) + ")",
+                                    "font-size": that.labelSize,
+                                    "fill": renderParams.labelColor !== undefined ? renderParams.labelColor : "black"
+                                });
+                                offset += that.labelSize;
+                            }
+
+                            if (renderParams.valueText !== undefined) {
+                                jqSvg.text(g, 0, 0, renderParams.valueText + "", {
+                                    transform: "translate(" + -that.variableWidthConstant / 2 + ", " + (that.variableHeightConstant / 2 + that.labelSize + offset) + ")",
+                                    "font-size": that.labelSize,
+                                    "fill": renderParams.labelColor !== undefined ? renderParams.labelColor : "black"
+                                });
+                            }
                         }
 
                         /*
