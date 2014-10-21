@@ -124,7 +124,7 @@ module BMA {
                     if (showPaste === true) {
 
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(x, y);
+                            showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
                         } else {
                             var variable = that.clipboard.Variables[0];
                             showPaste = that.CanAddVariable(x, y, variable.m.Type);
@@ -204,7 +204,7 @@ module BMA {
 
                             var newContainerId = that.variableIndex++;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
-                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, 1, gridCell.x, gridCell.y));
+                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, clipboardContainer.Size, gridCell.x, gridCell.y));
 
                             var oldContainerOffset = {
                                 x: clipboardContainer.PositionX * that.Grid.xStep + that.Grid.x0,
@@ -521,9 +521,15 @@ module BMA {
                                 var index = 0;
                                 for (var j = 0; j < clipboardVariables.length; j++) {
                                     var cv = clipboardVariables[j];
-                                    if (rel.FromVariableId === cv.m.Id || rel.ToVariableId === cv.m.Id) {
+
+                                    if (rel.FromVariableId === cv.m.Id) { 
                                         index++;
                                     }
+
+                                    if (rel.ToVariableId === cv.m.Id) {
+                                        index++;
+                                    }
+
                                     if (index == 2)
                                         break;
                                 }
@@ -778,10 +784,20 @@ module BMA {
                 }
             }
 
-            private CanAddContainer(x: number, y: number): boolean {
+            private CanAddContainer(x: number, y: number, size: number): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
-                return that.GetContainerFromGridCell(gridCell) === undefined && that.GetConstantsFromGridCell(gridCell).length === 0;
+
+                for (var i = 0; i < size; i++) {
+                    for (var j = 0; j < size; j++) {
+                        var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
+                        var checkCell = that.GetContainerFromGridCell(cellForCheck) === undefined && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        if (checkCell !== true)
+                            return false;
+                    }
+                }
+
+                return true;
             }
 
             private CanAddVariable(x: number, y: number, type: string): boolean {
@@ -865,8 +881,9 @@ module BMA {
                         var containerLayouts = layout.Containers.slice(0);
 
                         var gridCell = that.GetGridCell(x, y);
+                        var container = layout.GetContainerById(id);
 
-                        if (that.CanAddContainer(x, y) === true) {
+                        if (that.CanAddContainer(x, y, container === undefined ? 1 : container.Size) === true) {
 
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
