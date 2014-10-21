@@ -1,15 +1,27 @@
 ﻿<!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-app="myApp">
 <head>
-    <meta charset="utf-8" />
-    <title>TypeScript HTML App</title>
-    <link rel="stylesheet" href="app.css" type="text/css" />
+    <title>TypedScriptHTMLApp1</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular-route.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="app.js"></script>
+    <script src="Controllers/homeController.js"></script>
+    <script src="Controllers/aboutController.js"></script>
 </head>
 <body>
     <h1>TypeScript HTML App</h1>
 
-    <div id="content"></div>
+    <div>
+        <a href="#/">Home</a>
+        <a href="#/about">About</a>
+    </div>
+
+    <div ng-controller="mainController">
+        <h1>{{message}}</h1>
+        <div ng-view>
+        </div>
+    </div>
 </body>
 </html>
