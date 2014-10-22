@@ -13,14 +13,18 @@ let find_cex_bifurcation (net : QN.node list) (bounds : Map<QN.var, int*int>) =
 let find_cex_cycle (net : QN.node list) (bounds : Map<QN.var, int*int>) =
     Log.log_debug "CEx(2): check whether the model cycles."
     // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
-    let diameter =
-            Map.fold 
-                (fun total _ (lo: int, hi: int) -> 
-                    bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo))))
-                bigint.One
-                bounds
+// Diameter calculation was needed for running bound on Z.find_cycle_steps net diameter bounds
+//        let diameter =
+//                Map.fold 
+//                    (fun total _ (lo: int, hi: int) -> 
+//                        bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo))))
+//                    bigint.One
+//                    bounds
 
-    let cycle = Z.find_cycle_steps net diameter bounds 
+        // old find cycle (looks for a cycle up to the number of steps in the network): 
+//        let cycle = Z.find_cycle_steps net diameter bounds //range
+
+    let cycle = Z.find_cycle_steps_optimized net bounds //range
 
     match cycle with
     | Some(x) -> Some(Result.CExCycle(x))
