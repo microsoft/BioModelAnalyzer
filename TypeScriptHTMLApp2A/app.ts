@@ -1,40 +1,35 @@
 ﻿/// <reference path="Scripts/typings/angularjs/angular.d.ts" />
 
-//var app = angular.module('myApp', ['ngRoute'])
-//    .config(['$routeProvider', function ($routeProvider) {
-//        $routeProvider
-//            .when('/', {
-//                templateUrl: 'views/home.html',
-//                controller: 'homeController'
-//            })
-//            .when('/about', {
-//                templateUrl: 'views/about.html',
-//                controller: 'aboutController'
-//            })
-//            .otherwise({
-//                redirectTo: '/'
-//            });
-//    }])
-//    .controller('mainController', function ($scope) {
-//        $scope.message = "Main Content";
-            
-//    });;
-
-
-
-var app = angular.module('myApp', []);
+var app = angular.module('myApp', ['ngRoute']);
 
 interface Car {
     Make: string; 
     Model: string;
 }
 
+// The Model part of MVC?
 interface myAppScope extends ng.IScope {
     pgm : string
     debug_console : string
     run_cars(): void
     run_foo(): void
 }
+
+app.config(function($routeProvider) {
+    $routeProvider
+        .when('/', {
+            templateUrl: 'views/home.html',
+            controller: 'homeController'
+        })
+        .when('/about', {
+            templateUrl: 'views/about.html',
+            controller: 'aboutController'
+        })
+        .otherwise({
+            redirectTo: '/'
+        });
+});
+
 
 app.controller("mainController", ['$scope', '$http', ($scope: myAppScope, $http: ng.IHttpService) => {
     var counter = [0, 1, 2];

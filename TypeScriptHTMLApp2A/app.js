@@ -1,23 +1,18 @@
 ﻿/// <reference path="Scripts/typings/angularjs/angular.d.ts" />
-//var app = angular.module('myApp', ['ngRoute'])
-//    .config(['$routeProvider', function ($routeProvider) {
-//        $routeProvider
-//            .when('/', {
-//                templateUrl: 'views/home.html',
-//                controller: 'homeController'
-//            })
-//            .when('/about', {
-//                templateUrl: 'views/about.html',
-//                controller: 'aboutController'
-//            })
-//            .otherwise({
-//                redirectTo: '/'
-//            });
-//    }])
-//    .controller('mainController', function ($scope) {
-//        $scope.message = "Main Content";
-//    });;
-var app = angular.module('myApp', []);
+var app = angular.module('myApp', ['ngRoute']);
+
+
+app.config(function ($routeProvider) {
+    $routeProvider.when('/', {
+        templateUrl: 'views/home.html',
+        controller: 'homeController'
+    }).when('/about', {
+        templateUrl: 'views/about.html',
+        controller: 'aboutController'
+    }).otherwise({
+        redirectTo: '/'
+    });
+});
 
 app.controller("mainController", [
     '$scope', '$http', function ($scope, $http) {
