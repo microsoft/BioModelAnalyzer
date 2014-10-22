@@ -24,13 +24,9 @@
 
 var app = angular.module('myApp', []);
 
-class Car {
+interface Car {
     Make: string; 
     Model: string;
-    constructor(ma: string, mo: string) {
-        this.Make = ma;
-        this.Model = mo;
-    }
 }
 
 interface myAppScope extends ng.IScope {

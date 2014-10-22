@@ -2,7 +2,7 @@ namespace FSharpWeb2A.Models
 
 open Newtonsoft.Json
 
-[<CLIMutable>]
+//[<CLIMutable>]
 type Car = {
     Make : string
     Model : string

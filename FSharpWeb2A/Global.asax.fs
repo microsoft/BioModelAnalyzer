@@ -24,7 +24,7 @@ type Global() =
 
         // Configure serialization
         config.Formatters.XmlFormatter.UseXmlSerializer <- true
-        config.Formatters.JsonFormatter.SerializerSettings.ContractResolver <- Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+        config.Formatters.JsonFormatter.SerializerSettings.ContractResolver <- Newtonsoft.Json.Serialization.DefaultContractResolver()//.CamelCasePropertyNamesContractResolver()
 
         // Additional Web API settings
 
