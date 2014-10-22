@@ -11,7 +11,5 @@ type FooController() =
     inherit ApiController()
 
     // api/foo
-    member x.Get() = 42
+    member x.Get() = { Make="Foo"; Model="Cat"}
 
-    // api/foo/y
-    member x.Get(y:int) = y*2

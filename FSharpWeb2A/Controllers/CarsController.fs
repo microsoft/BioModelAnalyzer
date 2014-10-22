@@ -11,6 +11,6 @@ type CarsController() =
     inherit ApiController()
 
     let values = [| { Make = "Ford"; Model = "Mustang" }; { Make = "Nissan"; Model = "Titan" } |]
-
+    
     /// Gets all values.
-    member x.Get() = values
+    member x.Get() = { Make="Cars"; Model="Dog"}

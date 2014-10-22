@@ -22,6 +22,14 @@
         <h1>{{message}}</h1>
         <div ng-view>
         </div>
+
+        <form>
+            <input type="text" name="pgm" ng-model="pgm" />
+            <button type="button" class="btn btn-primary" ng-click="run_cars()">Cars</button>
+            <button type="button" class="btn btn-primary" ng-click="run_foo()">Foo</button>
+
+            <textarea>{{debug_console}}</textarea>
+        </form>    
     </div>
 </body>
 </html>
