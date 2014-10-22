@@ -69,14 +69,18 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
 
         Log.log_debug "CEx(2): check whether the model cycles."
         // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
-        let diameter =
-                Map.fold 
-                    (fun total _ (lo: int, hi: int) -> 
-                        bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo))))
-                    bigint.One
-                    bounds
 
-        let cycle = Z.find_cycle_steps net diameter bounds //range
+// Diameter calculation was needed for running bound on Z.find_cycle_steps net diameter bounds
+//        let diameter =
+//                Map.fold 
+//                    (fun total _ (lo: int, hi: int) -> 
+//                        bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo))))
+//                    bigint.One
+//                    bounds
+
+//        let cycle = Z.find_cycle_steps net diameter bounds //range
+
+        let cycle = Z.find_cycle_steps_optimized net bounds //range
 
         match cycle with
         | Some(x) -> Result.CExCycle(x)
