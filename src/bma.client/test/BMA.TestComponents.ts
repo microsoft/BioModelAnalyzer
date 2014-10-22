@@ -5,47 +5,102 @@
 module BMA {
     export module Test {
         export class TestSVGPlotDriver implements BMA.UIDrivers.ISVGPlot, BMA.UIDrivers.IElementsPanel, BMA.UIDrivers.INavigationPanel {
-            private svg: SVGElement[];
+            
+            private svgPlotDiv: JQuery;
 
-            public get SVGs() {
-                return this.svg; 
+            constructor(svgPlotDiv: JQuery) {
+                this.svgPlotDiv = svgPlotDiv;
             }
 
-            constructor() {
-                this.svg = [];
-            }
-            public SetZoom(zoom: number){}
-
-            public GetDragSubject() {
-            }
-            public GetZoomSubject() {
-            }
-
-            public Draw(svg: SVGSVGElement) {
-                this.svg.push(svg);
+            public Draw(svg: SVGElement) {
+                this.svgPlotDiv.drawingsurface({ svg: svg });
             }
 
             public TurnNavigation(isOn: boolean) {
+                this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
             }
 
             public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
+                this.svgPlotDiv.drawingsurface({ grid: { x0: x0, y0: y0, xStep: xStep, yStep: yStep } });
             }
 
-            public GetPlotX(left) {
-                return 0;
+            public GetDragSubject() {
+                return this.svgPlotDiv.drawingsurface("getDragSubject");
             }
 
-            public GetPlotY(left) {
-                return 0;
+            //public GetZoomSubject() {
+            //    return this.svgPlotDiv.drawingsurface("getZoomSubject");
+            //}
+
+            public SetZoom(zoom: number) {
+                this.svgPlotDiv.drawingsurface({ zoom: zoom });
+            }
+
+            public GetPlotX(left: number) {
+                return this.svgPlotDiv.drawingsurface("getPlotX", left);
+            }
+
+            public GetPlotY(top: number) {
+                return this.svgPlotDiv.drawingsurface("getPlotY", top);
             }
 
             public GetPixelWidth() {
-                return 0;
+                return this.svgPlotDiv.drawingsurface("getPixelWidth");
             }
 
             public SetGridVisibility(isOn: boolean) {
-
+                this.svgPlotDiv.drawingsurface({ gridVisibility: isOn });
             }
+
+            public HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string }[]) {
+                this.svgPlotDiv.drawingsurface({ rects: areas });
+            }
+            
+            //private svg: SVGElement[];
+
+            //public get SVGs() {
+            //    return this.svg; 
+            //}
+
+            //constructor() {
+            //    this.svg = [];
+            //}
+
+            //public SetZoom(zoom: number){}
+
+            //public GetDragSubject() {
+            //    return {
+            //        dragStart: null,//createDragStartSubject(that._plot.centralPart),
+            //        drag: null, //createPanSubject(that._plot.centralPart),
+            //        dragEnd: null, //createDragEndSubject(that._plot.centralPart)
+            //    };
+            //}
+
+            //public Draw(svg: SVGSVGElement) {
+            //    this.svg.push(svg);
+            //}
+
+            //public TurnNavigation(isOn: boolean) {
+            //}
+
+            //public SetGrid(x0: number, y0: number, xStep: number, yStep: number) {
+            //}
+
+            //public GetPlotX(left) {
+            //    return 0;
+            //}
+
+            //public GetPlotY(left) {
+            //    return 0;
+            //}
+
+            //public GetPixelWidth() {
+            //    return 0;
+            //}
+
+            //public SetGridVisibility(isOn: boolean) {
+
+            //}
         }
 
         export class TestUndoRedoButton implements BMA.UIDrivers.ITurnableButton {

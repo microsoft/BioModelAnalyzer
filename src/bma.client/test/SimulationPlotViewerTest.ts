@@ -31,15 +31,18 @@ describe("SimulationPlotViewer", () => {
 
     it("creates gridline plot", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).children().eq(0).attr("data-idd-axis")).toEqual("numeric");
-        expect(widget.children().eq(0).children().eq(1).attr("data-idd-axis")).toEqual("numeric");
-        expect(widget.children().eq(0).children().eq(2).attr("data-idd-plot")).toEqual("scalableGridLines");
-        expect(widget.children().eq(0).children().length).toEqual(3);
+        //expect(widget.children().eq(0).children().eq(0).attr("data-idd-axis")).toEqual("numeric");
+        //expect(widget.children().eq(0).children().eq(1).attr("data-idd-axis")).toEqual("numeric");
+        var figure = widget.children().eq(0);
+        expect(figure.attr("data-idd-plot")).toEqual("figure");
+        //expect(widget.children().eq(0).children().eq(1).attr("data-idd-plot")).toEqual("scalableGridLines");
+        expect(figure.find('[data-idd-plot="scalableGridLines"]').length).toEqual(1);
+        expect(widget.children().eq(0).children().length).toEqual(2);
     })
 
     it("don't creates polylines without data", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).children().length).toEqual(3);
+        expect(widget.children().eq(0).children().length).toEqual(2);
     })
 
     it("should add polylines", () => {

@@ -56,6 +56,7 @@ $(document).ready(function () {
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
 
+
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 

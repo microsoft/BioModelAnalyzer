@@ -21,7 +21,7 @@ describe("Simulation Expanded", () => {
         var variables = [];
         variables[0] = ["#FFFFFF", false, "var1", "3-15"];
         widget.simulationexpanded({ variables: variables });
-        var variablesTable = widget.children().eq(2);
+        var variablesTable = widget.children().eq(1);
         expect(variablesTable.coloredtableviewer("option", "header")).toEqual(["Graph", "Name", "Range"]);
         expect(variablesTable.coloredtableviewer("option", "type")).toEqual("graph-max");
         expect(variablesTable.coloredtableviewer("option", "numericData")).toEqual(variables);
@@ -43,7 +43,7 @@ describe("Simulation Expanded", () => {
 
         widget.simulationexpanded({ variables: variables, interval: interval, init: init, data: data });
 
-        var progressionTable = widget.children().eq(3);
+        var progressionTable = widget.children().eq(2);
         expect(progressionTable.progressiontable("option", "interval")).toEqual(interval);
         expect(progressionTable.progressiontable("option", "init")).toEqual(init);
         expect(progressionTable.progressiontable("option", "data")).toEqual(data);
@@ -72,7 +72,7 @@ describe("Simulation Expanded", () => {
 
     it("should initially set num option", () => {
         widget.simulationexpanded();
-        var span = widget.children().eq(1).children().eq(0);
+        var span = widget.children(":last-child").children().eq(0);
         expect(span.text()).toEqual('10');
         expect(span.text()).toEqual(widget.simulationexpanded("option", "num").toString());
 
@@ -82,9 +82,9 @@ describe("Simulation Expanded", () => {
 
     it("should change num option", () => {
         widget.simulationexpanded();
-        var span = widget.children().eq(1).children().eq(0);
-        var inc = widget.children().eq(1).children("button").eq(0);
-        var dec = widget.children().eq(1).children("button").eq(1);
+        var span = widget.children(":last-child").children().eq(0);
+        var inc = widget.children(":last-child").children("button").eq(0);
+        var dec = widget.children(":last-child").children("button").eq(1);
         var initValue = parseInt(span.text());
 
         inc.click();

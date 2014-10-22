@@ -78,16 +78,18 @@
         expect(neweditor.bmaeditor("option", "formula")).toEqual("123-ceil(x)");
         expect(neweditor.bmaeditor("option", "approved")).toBeFalsy();
         var funs = neweditor.find(".formula-failed");
-        expect(funs.length).toEqual(1);
+        //expect(funs.length).toEqual(1);
 
-        neweditor.bmaeditor("option", "approved", true);
+        neweditor.bmaeditor("SetValidation", true, "");
         funs = neweditor.find(".formula-validated");
         expect(funs.length).toEqual(1);
 
 
-        neweditor.bmaeditor({ approved: false });
+        var error = "ErrorMessage";
+        neweditor.bmaeditor("SetValidation", false, error);
         funs = neweditor.find(".formula-failed");
         expect(funs.length).toEqual(1);
+        expect(neweditor.find("div.bma-formula-validation-message").text()).toEqual(error);
     });
 
     it("should change functions option", () => {
@@ -156,8 +158,8 @@
     it("should set inputs", () => {
         var inputslist = editor.find(".inputs-list-content");
         expect(inputslist.length).toEqual(1);
-        expect(inputslist.children().length).toEqual(4);
-        var arr = ["fight", "rebel", "riot"]
+        expect(inputslist.children().length).toEqual(0);
+        var arr = ["one", "two", "three"]
         editor.bmaeditor("option", "inputs", arr);
         expect(inputslist.children().length).toEqual(3);
 
