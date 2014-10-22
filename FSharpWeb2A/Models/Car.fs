@@ -8,3 +8,7 @@ type Car = {
     Model : string
 }
 
+type Results = {
+    Status : bool;
+    Log: string; 
+    }

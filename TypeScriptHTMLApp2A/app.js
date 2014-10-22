@@ -2,6 +2,7 @@
 var app = angular.module('myApp', ['ngRoute']);
 
 
+// We don't really need routing...
 app.config(function ($routeProvider) {
     $routeProvider.when('/', {
         templateUrl: 'views/home.html',

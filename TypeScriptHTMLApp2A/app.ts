@@ -15,6 +15,7 @@ interface myAppScope extends ng.IScope {
     run_foo(): void
 }
 
+// We don't really need routing...
 app.config(function($routeProvider) {
     $routeProvider
         .when('/', {
@@ -37,7 +38,7 @@ app.controller("mainController", ['$scope', '$http', ($scope: myAppScope, $http:
     $scope.debug_console = "dbg started";
     $scope.run_cars = () => {
         $scope.debug_console = "run_cars";
-        $http.get("api/api/cars")
+        $http.get("api/api/cars") // Don't know why this is api/api. 
             .error(x => {
                 console.log('error');
                 console.log("<=:" + x);
