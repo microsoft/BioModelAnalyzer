@@ -219,7 +219,6 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
-    <TypeScriptCompile Include="Scripts\lib.d.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
@@ -232,7 +231,6 @@
     <TypeScriptCompile Include="script\commands.ts" />
     <TypeScriptCompile Include="script\model\analytics.ts" />
     <TypeScriptCompile Include="script\model\model.ts" />
-    <TypeScriptCompile Include="script\presenters\elementtoolbarpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />

@@ -275,11 +275,5 @@ module BMA {
                 this.angle = angle;
             }
         }
-
-        export class BMAModel {
-            constructor() {
-
-            }
-        }
     }
 } 

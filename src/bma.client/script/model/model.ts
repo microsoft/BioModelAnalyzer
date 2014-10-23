@@ -38,7 +38,7 @@ module BMA {
 
             public Reset(serializedModel: string) {
 
-                if (serializedModel !== undefined) {
+                if (serializedModel !== undefined && serializedModel !== null) {
                     var ml = JSON.parse(serializedModel);
                     //TODO: verify model
                     if (ml === undefined || ml.model === undefined || ml.layout === undefined ||
