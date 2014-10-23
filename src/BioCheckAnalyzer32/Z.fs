@@ -412,34 +412,69 @@ let find_cycle_steps network diameter bounds =
     cycle
 
 
+// Finds a cycle and returns it. I f no cycle is found returns None
 let find_cycle_steps_optimized network bounds = 
-
-    let rec find_cycle_of_length length (ctx : Context) =
-        let mutable cycle = None
+    let mutable cycle = None
+    let rec find_cycle_of_length length (ctx : Context) =      
         let model = ref null
 
-        // TODO:
-        // add to ctx the constratints to increase the path to length length
-        let sat = ctx.CheckAndGetModel (model)
-        match sat with
-        | LBool.False -> cycle
-        | LBool.True -> 
-            ctx.Push()
-            // TODO:
-            // add to ctx the constraints to close a loop
-            let sat = ctx.CheckAndGetModel (model)
-            match sat with
-            | LBool.False ->
-                ctx.Pop()
-                find_cycle_of_length (length+1) ctx
-            | LBool.True ->                
-                // TODO:
-                // update cycle with the information from model
-                cycle
+        // add to ctx the constratints to increase the path to 0..length:
 
+        // Unroll the model (length/2)-times
+        for time = (length/2) to (length-1) do
+            unroll_qn network bounds (time) (time+1) ctx
+
+        // Check that the last step is different than the one before it (fix point would come up here)
+        let last_identical = assert_states_equal network (length-1) length ctx
+        let last_not_identical = ctx.MkNot(last_identical)
+        ctx.AssertCnstr last_not_identical
+
+        let sat = ctx.CheckAndGetModel (model)
+        if (!model) <> null then (!model).Dispose()
+
+        match sat with
+        // A path of the requested length does not exists in the model, may stop the earsch now
+        | LBool.False ->                 
+                None
+        // A path of the requested length exists, Check for a cycle in the range: length/2..length  
+        | LBool.True -> 
+
+            ctx.Push()
+           
+            // Assert that we get a repetition (cycle) in the range : length/2..length  
+            let mutable loop_condition = ctx.MkFalse()
+            for time in [0..((length/2)-1)] do 
+                let k_loop = assert_states_equal network time length ctx
+                loop_condition <- ctx.MkOr(loop_condition, k_loop)
+                
+            ctx.AssertCnstr loop_condition
+
+            // Now go find that cycle
+            let model = ref null
+            let sat = ctx.CheckAndGetModel (model)
+            ctx.Pop()
+        
+            match sat with
+            | LBool.False -> 
+                find_cycle_of_length (length*2) ctx
+            | LBool.True -> 
+                // update cycle with the information from model
+                let res = Some(model_to_fixpoint (!model))
+                if (!model) <> null then (!model).Dispose()
+                res
+     
     let cfg = new Config()
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
-    let length=1
-    find_cycle_of_length length ctx
+
+    // Prepare the first step - cannot contain a loop yet, and a fix point will be found via states 0==2
+    let length=1    
+    unroll_qn network bounds 0 length ctx   
+    cycle <- find_cycle_of_length (length+1) ctx
+
+    ctx.Dispose()
+    cfg.Dispose()
+
+    cycle
+
 
