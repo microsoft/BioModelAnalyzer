@@ -17,21 +17,6 @@
         
     })
 
-    it("should inspect button widget", () => {
-        var data = $('<button></button>').button();
-        data.button("disable");
-        data.button("enable");
-        
-        expect(data.button("option", "disabled")).toEqual(false);
-    });
-
-    xit("should get widget object", () => {
-        var data = $('<button></button>').button().data("button");
-        data.disable();
-        data.enable();
-        expect(data.options.disabled).toEqual(false);
-    });
-
 
     it("should correctly set event option", () => {
         var event = "click";
@@ -39,11 +24,6 @@
         event = "toggle";
         acc.bmaaccordion("option", "event", event);
         expect(acc.bmaaccordion("option", "event")).toEqual(event);
-        
-        //spyOn(acc, "eventHandler");
-        //c1.trigger(event);
-        //expect(data.active).toBe(context);
-        //expect(acc.bmaaccordion("eventHandler", )).toHaveBeenCalled();
     });
 
     it("should be collapsible", () => {

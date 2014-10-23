@@ -58,7 +58,7 @@
             var options = this.options;
             var tabs = $('<div></div>');
             var ul = $('<ul></ul>').appendTo(tabs);
-            if (that.options.data !== null) {
+            if (that.options.data !== null && that.options.data !== undefined && that.options.tabLabels !== null && that.options.tabLabels !== undefined && that.options.tableHeaders !== null && that.options.tableHeaders !== undefined) {
                 for (var i = 0; i < that.options.data.length; i++) {
                     var li = $('<li></li>').appendTo(ul);
                     var a = $('<a href="#FurtherTestingTab' + i + '"></a>').appendTo(li);

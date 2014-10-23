@@ -16,7 +16,6 @@
          {"Path": "Scripts/jasmine/jasmine-matchers/jasmine-jquery.d.ts"},
 
          {"Path": "Scripts/rx.js" },
-         {"Path": "Scripts/lib.d.ts"},
 
          {"Path": "js/jquery.ui-contextmenu.js" },
          {"Path": "js/jquery.svg.js" },

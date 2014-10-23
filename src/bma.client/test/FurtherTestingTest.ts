@@ -26,15 +26,22 @@ describe("Further Testing", () => {
         expect(window.Commands.Execute).toHaveBeenCalledWith("FurtherTestingRequested", {});
     })
 
-    it("creates table in widget with data option", () => {
-        editor.furthertesting();
-        var data = ["q", "w", "e", "q, w, e, r, t, y"];
-        editor.furthertesting({ data: data });
-        var table = editor.children().eq(1).resultswindowviewer("option", "content");
-        expect(table.coloredtableviewer("option", "numericData")).toEqual(data);
-        expect(table.coloredtableviewer("option", "type")).toEqual("standart");
-        expect(table.coloredtableviewer("option", "header")).toEqual(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-    })
+    //it("creates table in widget with data option", () => {
+    //    //editor.furthertesting();
+    //    var data = ["q", "w", "e", "q, w, e, r, t, y"];
+    //    var header = ["Cell", "Name", "Calculated Bound", "Oscillation"];
+    //    var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
+    //    editor.furthertesting({
+    //        data: [data],
+    //        tableHeaders: [header],
+    //        tabLabels: [label]
+    //    });
+    //    var table = editor.children().eq(1).resultswindowviewer("option", "content");
+    //    table = table.children().eq(2);
+    //    expect(table.coloredtableviewer("option", "numericData")).toEqual(data);
+    //    expect(table.coloredtableviewer("option", "type")).toEqual("standart");
+    //    expect(table.coloredtableviewer("option", "header")).toEqual(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+    //})
 
     it("hide toggler", () => {
         editor.furthertesting();
@@ -52,9 +59,15 @@ describe("Further Testing", () => {
     })
 
     it("destroy table with results when 'data' option is undefined", () => {
-        editor.furthertesting();
+        //editor.furthertesting();
         var data = ["q", "w", "e", "q, w, e, r, t, y"];
-        editor.furthertesting({ data: data });
+        var header = ["Cell", "Name", "Calculated Bound", "Oscillation"];
+        var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
+        editor.furthertesting({
+            data: [data], 
+            tableHeaders: [header],
+            tabLabels: [label]
+        });
         editor.furthertesting({ data: undefined });
         expect(editor.children().eq(1).children().length).toEqual(0);
     })
