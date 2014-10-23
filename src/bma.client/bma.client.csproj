@@ -220,6 +220,7 @@
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
     <TypeScriptCompile Include="script\localRepository.ts" />
+    <TypeScriptCompile Include="script\ModelHelper.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
@@ -300,7 +301,7 @@
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
-    <TypeScriptCompile Include="test\PresenterTests.ts" />
+    <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
     <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
