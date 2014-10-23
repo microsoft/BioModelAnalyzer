@@ -8,9 +8,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{78A262
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeScriptHTMLApp2A", "TypeScriptHTMLApp2A\TypeScriptHTMLApp2A.csproj", "{277F356F-81A9-4FDD-95D6-6B097372EC1A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeScriptFrontend", "TypeScriptHTMLApp2A\TypeScriptFrontend.csproj", "{277F356F-81A9-4FDD-95D6-6B097372EC1A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpWeb2A", "FSharpWeb2A\FSharpWeb2A.fsproj", "{76E64416-7A31-47D7-8DBD-A22D388B1D67}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpBackend", "FSharpWeb2A\FSharpBackend.fsproj", "{76E64416-7A31-47D7-8DBD-A22D388B1D67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
