@@ -22,33 +22,40 @@ describe("DesignSurfacePresenter", () => {
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
         var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($());
+        var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
+        var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
+        var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
+        var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, contextMenuDriver);
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver, undefined);
+        //var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undefined, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, undefined);
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
     it("should create proper presenter for specified model and layout", () => {
 
         var appModel = new BMA.Model.AppModel();
-        //var drawingSurface = $("<div></div>");
-        //drawingSurface.drawingsurface();
-        var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
+        var drawingSurface = $("<div></div>");
+        drawingSurface.drawingsurface();
+        var svgPlotDriver = new BMA.Test.TestSVGPlotDriver(drawingSurface);
         var elementPanel = new BMA.Test.TestElementsPanel();
         var variableEditorDriver = new BMA.Test.TestVariableEditor();//UIDrivers.VariableEditorDriver($());
 
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, undefined, elementPanel, testbutton, testbutton, variableEditorDriver, undefined);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undefined, svgPlotDriver, undefined, undefined, elementPanel, variableEditorDriver, undefined);
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
     xit("turns navigation on executing 'AddElementSelect' command", () => {
         var appModel = new BMA.Model.AppModel();
-        var svgPlotDriver = new BMA.Test.TestSVGPlotDriver();
+        var drawingSurface = $("<div></div>");
+        drawingSurface.drawingsurface();
+        var svgPlotDriver = new BMA.Test.TestSVGPlotDriver(drawingSurface);
         var elementPanel = new BMA.Test.TestElementsPanel();
         var variableEditorDriver = new BMA.Test.TestVariableEditor();
 
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, undefined, undefined, elementPanel, testbutton, testbutton, variableEditorDriver, undefined);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undefined, svgPlotDriver, undefined, undefined, elementPanel, variableEditorDriver, undefined);
 
         spyOn(svgPlotDriver, "TurnNavigation");
         window.Commands.Execute("AddElementSelect", undefined);
@@ -67,7 +74,7 @@ describe("DesignSurfacePresenter", () => {
         var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
         var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("<div></div>"));
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, testbutton, testbutton, variableEditorDriver, undefined);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undefined, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, undefined);
 
         
         window.Commands.Execute("AddElementSelect", "Constant");

@@ -16,6 +16,9 @@ namespace bma.client {
 
         public void ReplaceVariableNamesWithIDs()
         {
+            if (Variables == null)
+                return;
+
             foreach (var v in Variables)
             {
                 v.Function = ReplaceVariableNames(v.Function, name =>
@@ -28,6 +31,9 @@ namespace bma.client {
 
         public void NullifyDefaultFunction()
         {
+            if (Variables == null)
+                return;
+
             foreach (var v in Variables)
                 if (v.Function != null && v.Function.Replace(" ", "").ToLower() == "avg(pos)-avg(neg)")
                     v.Function = null;
@@ -43,8 +49,8 @@ namespace bma.client {
                 int endIndex = s.IndexOf(")", index);
                 if (endIndex < 0)
                     return s;
-                var varName = s.Substring(index + var.Length, endIndex - var.Length - 2);
-                s = s.Remove(index + var.Length, endIndex - var.Length - 2).Insert(index + var.Length, f(varName));
+                var varName = s.Substring(index + var.Length, endIndex - index - var.Length);
+                s = s.Remove(index + var.Length, endIndex - index - var.Length).Insert(index + var.Length, f(varName));
                 startPos = index + 1;
             }
             return s;

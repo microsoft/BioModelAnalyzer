@@ -14,9 +14,7 @@ module BMA {
     export module Presenters {
         export class DesignSurfacePresenter {
             private appModel: BMA.Model.AppModel;
-
-            private models: { model: BMA.Model.BioModel; layout: BMA.Model.Layout }[];
-            private currentModelIndex: number = -1;
+            private undoRedoPresenter: BMA.Presenters.UndoRedoPresenter;
 
             private selectedType: string;
             private driver: BMA.UIDrivers.ISVGPlot;
@@ -24,9 +22,6 @@ module BMA {
             private navigationDriver: BMA.UIDrivers.INavigationPanel;
             private variableEditor: BMA.UIDrivers.IVariableEditor;
             private svg: any;
-
-            private undoButton: BMA.UIDrivers.ITurnableButton;
-            private redoButton: BMA.UIDrivers.ITurnableButton;
 
             private xOrigin = 0;
             private yOrigin = 0;
@@ -54,27 +49,23 @@ module BMA {
             };
 
             constructor(appModel: BMA.Model.AppModel,
+                undoRedoPresenter: BMA.Presenters.UndoRedoPresenter,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 highlightDriver: BMA.UIDrivers.IAreaHightlighter,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
-                undoButton: BMA.UIDrivers.ITurnableButton,
-                redoButton: BMA.UIDrivers.ITurnableButton,
                 variableEditorDriver: BMA.UIDrivers.IVariableEditor,
                 contextMenu: BMA.UIDrivers.IContextMenu) {
 
                 var that = this;
                 this.appModel = appModel;
-                this.undoButton = undoButton;
-                this.redoButton = redoButton;
+                this.undoRedoPresenter = undoRedoPresenter;
 
                 this.driver = svgPlotDriver;
                 this.highlightDriver = highlightDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
                 this.contextMenu = contextMenu;
-
-                this.models = [];
 
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
 
@@ -94,7 +85,7 @@ module BMA {
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
                             that.editingVariableId = id;
-                            that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
+                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
                         }
                     }
@@ -103,7 +94,7 @@ module BMA {
                 window.Commands.On("VariableEdited", () => {
                     var that = this;
                     if (that.editingVariableId !== undefined) {
-                        var model = this.Current.model;
+                        var model = this.undoRedoPresenter.Current.model;
                         var variables = model.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
@@ -115,22 +106,9 @@ module BMA {
                         if (editingVariableIndex !== -1) {
                             var params = that.variableEditor.GetVariableProperties();
                             variables[i] = new BMA.Model.Variable(variables[i].Id, variables[i].ContainerId, variables[i].Type, params.name, params.rangeFrom, params.rangeTo, params.formula);
-                            that.OnModelUpdated();
+                            that.RefreshOutput();
                         }
                     }
-                });
-
-
-                window.Commands.On("ModelReset", () => {
-                    this.Set(this.appModel.BioModel, this.appModel.Layout);
-                });
-
-                window.Commands.On("Undo", () => {
-                    this.Undo();
-                });
-
-                window.Commands.On("Redo", () => {
-                    this.Redo();
                 });
 
                 window.Commands.On("DrawingSurfaceContextMenuOpening", (args) => {
@@ -140,13 +118,13 @@ module BMA {
                     var id = that.GetVariableAtPosition(x, y);
                     var containerId = that.GetContainerAtPosition(x, y);
                     var relationshipId = that.GetRelationshipAtPosition(x, y, 3 * that.driver.GetPixelWidth());
-                    var cntSize = containerId !== undefined ? that.Current.layout.GetContainerById(containerId).Size : undefined;
+                    var cntSize = containerId !== undefined ? that.undoRedoPresenter.Current.layout.GetContainerById(containerId).Size : undefined;
 
                     var showPaste = that.clipboard !== undefined;
                     if (showPaste === true) {
 
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(x, y);
+                            showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
                         } else {
                             var variable = that.clipboard.Variables[0];
                             showPaste = that.CanAddVariable(x, y, variable.m.Type);
@@ -215,8 +193,8 @@ module BMA {
                 window.Commands.On("DrawingSurfacePaste", (args) => {
                     if (that.clipboard !== undefined) {
                         if (that.clipboard.Container !== undefined) {
-                            var model = that.Current.model;
-                            var layout = that.Current.layout;
+                            var model = that.undoRedoPresenter.Current.model;
+                            var layout = that.undoRedoPresenter.Current.layout;
                             var idDic = {};
                             var clipboardContainer = that.clipboard.Container;
                             var variables = model.Variables.slice(0);
@@ -226,7 +204,7 @@ module BMA {
 
                             var newContainerId = that.variableIndex++;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
-                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, 1, gridCell.x, gridCell.y));
+                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, clipboardContainer.Size, gridCell.x, gridCell.y));
 
                             var oldContainerOffset = {
                                 x: clipboardContainer.PositionX * that.Grid.xStep + that.Grid.x0,
@@ -255,20 +233,20 @@ module BMA {
 
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, variableLayouts);
-                            that.Dup(newmodel, newlayout);
+                            that.undoRedoPresenter.Dup(newmodel, newlayout);
 
                         } else {
                             var variable = that.clipboard.Variables[0].m;
                             var variableLayout = that.clipboard.Variables[0].l;
-                            var model = that.Current.model;
-                            var layout = that.Current.layout;
+                            var model = that.undoRedoPresenter.Current.model;
+                            var layout = that.undoRedoPresenter.Current.layout;
                             var variables = model.Variables.slice(0);
                             var variableLayouts = layout.Variables.slice(0);
                             variables.push(new BMA.Model.Variable(that.variableIndex, variable.ContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
                             variableLayouts.push(new BMA.Model.VarialbeLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
-                            that.Dup(newmodel, newlayout);
+                            that.undoRedoPresenter.Dup(newmodel, newlayout);
                         }
                     }
 
@@ -277,13 +255,13 @@ module BMA {
 
                 window.Commands.On("DrawingSurfaceResizeCell", (args) => {
                     if (that.contextElement !== undefined && that.contextElement.type === "container") {
-                        var container = that.Current.layout.GetContainerById(that.contextElement.id);
+                        var container = that.undoRedoPresenter.Current.layout.GetContainerById(that.contextElement.id);
                         if (container !== undefined) {
                             var sizeDiff = args.size - container.Size;
 
-                            var containerLayouts = that.Current.layout.Containers;
-                            var variables = that.Current.model.Variables;
-                            var variableLayouts = that.Current.layout.Variables;
+                            var containerLayouts = that.undoRedoPresenter.Current.layout.Containers;
+                            var variables = that.undoRedoPresenter.Current.model.Variables;
+                            var variableLayouts = that.undoRedoPresenter.Current.layout.Variables;
 
                             var newCnt = [];
                             for (var i = 0; i < containerLayouts.length; i++) {
@@ -301,19 +279,34 @@ module BMA {
                             var cntY = container.PositionY * that.yStep + that.yOrigin;
                             var newVL = [];
                             for (var i = 0; i < variableLayouts.length; i++) {
+                                var v = variables[i];
                                 var vl = variableLayouts[i];
                                 if (variables[i].ContainerId === container.Id) {
                                     newVL.push(new BMA.Model.VarialbeLayout(vl.Id, cntX + (vl.PositionX - cntX) * args.size / container.Size, cntY + (vl.PositionY - cntY) * args.size / container.Size, 0, 0, vl.Angle));
                                 } else {
-                                    newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
-                                        vl.PositionX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX,
-                                        vl.PositionY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY,
-                                        0, 0, vl.Angle));
+                                    if (v.Type === "Constant") {
+                                        newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
+                                            vl.PositionX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX,
+                                            vl.PositionY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY,
+                                            0, 0, vl.Angle));
+                                    } else {
+                                        var vCnt = that.undoRedoPresenter.Current.layout.GetContainerById(v.ContainerId);
+                                        var vCntX = vCnt.PositionX * that.xStep + that.xOrigin;
+                                        var vCntY = vCnt.PositionY * that.yStep + that.yOrigin;
+
+                                        var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
+                                        var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
+
+                                        newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
+                                            unsizedVposX > cntX + that.xStep ? vl.PositionX + sizeDiff * that.xStep : vl.PositionX,
+                                            unsizedVposY > cntY + that.yStep ? vl.PositionY + sizeDiff * that.yStep : vl.PositionY,
+                                            0, 0, vl.Angle));
+                                    }
                                 }
                             }
 
                             var newlayout = new BMA.Model.Layout(newCnt, newVL);
-                            this.Dup(new BMA.Model.BioModel(that.Current.model.Name, that.Current.model.Variables, that.Current.model.Relationships), newlayout);
+                            this.undoRedoPresenter.Dup(new BMA.Model.BioModel(that.undoRedoPresenter.Current.model.Name, that.undoRedoPresenter.Current.model.Variables, that.undoRedoPresenter.Current.model.Relationships), newlayout);
                         }
                     }
                 });
@@ -322,16 +315,37 @@ module BMA {
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
                         that.editingVariableId = id;
-                        that.variableEditor.Initialize(that.GetVariableById(that.Current.layout, that.Current.model, id).model, that.Current.model);
+                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                     }
 
                     that.contextElement = undefined;
                 });
 
-                window.Commands.On("DrawingSurfaceRefreshOutput", () => {
-                    if (this.Current !== undefined) {
-                        var drawingSvg = <SVGElement>this.CreateSvg();
+                window.Commands.On("DrawingSurfaceRefreshOutput", (args) => {
+                    if (this.undoRedoPresenter.Current !== undefined) {
+
+                        if (args !== undefined) {
+                            if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
+                                this.variableEditor.Hide();
+                                this.editingVariableId = undefined;
+                            }
+
+                            if (args.status === "Set")
+                                this.ResetVariableIdIndex();
+                        }
+
+                        if (that.editingVariableId !== undefined) {
+                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingVariableId).model, that.undoRedoPresenter.Current.model);
+                        }
+
+                        that.RefreshOutput();
+                    }
+                });
+
+                window.Commands.On("DrawingSurfaceSetProofResults", (args) => {
+                    if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
+                        var drawingSvg = <SVGElement>this.CreateSvg(args);
                         this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
                         this.driver.Draw(drawingSvg);
                     }
@@ -341,12 +355,7 @@ module BMA {
                 svgCnt.svg({
                     onLoad: (svg) => {
                         this.svg = svg;
-
-                        if (this.Current !== undefined) {
-                            var drawingSvg = <SVGElement>this.CreateSvg();
-                            this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
-                            this.driver.Draw(drawingSvg);
-                        }
+                        that.RefreshOutput();
                     }
                 });
 
@@ -388,7 +397,7 @@ module BMA {
                             var id = this.GetVariableAtPosition(gesture.x, gesture.y);
                             if (id !== undefined) {
                                 that.navigationDriver.TurnNavigation(false);
-                                var vl = that.GetVariableById(that.Current.layout, that.Current.model, id);
+                                var vl = that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id);
                                 that.stagingVariable = { model: vl.model, layout: vl.layout };
                             } else {
                                 that.navigationDriver.TurnNavigation(true);
@@ -432,8 +441,7 @@ module BMA {
                             return;
                         } else if (that.stagingVariable !== undefined) {
                             that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                            var drawingSvg = <SVGElement>that.CreateSvg();
-                            that.driver.Draw(drawingSvg);
+                            that.RefreshOutput();
                         }
                     });
 
@@ -443,7 +451,9 @@ module BMA {
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
                             this.TryAddStagingLineAsLink();
                             this.stagingLine = undefined;
-                            this.OnModelUpdated();
+
+                            this.RefreshOutput();
+                            //this.OnModelUpdated();
                         }
 
                         if (that.stagingVariable !== undefined) {
@@ -453,14 +463,18 @@ module BMA {
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
                             if (!that.TryAddVariable(x, y, type, id)) {
-                                var drawingSvg = <SVGElement>that.CreateSvg();
-                                that.highlightDriver.HighlightAreas(that.PrepareHighlightAreas());
-                                that.driver.Draw(drawingSvg);
+                                that.RefreshOutput();
                             }
                         }
                     });
+            }
 
-                this.Set(this.appModel.BioModel, this.appModel.Layout);
+            private RefreshOutput() {
+                if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
+                    var drawingSvg = <SVGElement>this.CreateSvg(undefined);
+                    this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
+                    this.driver.Draw(drawingSvg);
+                }
             }
 
             private CopyToClipboard(remove: boolean) {
@@ -469,8 +483,8 @@ module BMA {
                 if (that.contextElement !== undefined) {
                     if (that.contextElement.type === "variable") {
                         that.clipboard = that.contextElement;
-                        var v = that.Current.model.GetVariableById(that.contextElement.id);
-                        var l = that.Current.layout.GetVariableById(that.contextElement.id);
+                        var v = that.undoRedoPresenter.Current.model.GetVariableById(that.contextElement.id);
+                        var l = that.undoRedoPresenter.Current.layout.GetVariableById(that.contextElement.id);
 
                         if (v !== undefined && l !== undefined) {
                             that.clipboard = {
@@ -485,12 +499,12 @@ module BMA {
 
                     } else if (that.contextElement.type === "container") {
                         var id = that.contextElement.id;
-                        var cnt = that.Current.layout.GetContainerById(id);
+                        var cnt = that.undoRedoPresenter.Current.layout.GetContainerById(id);
                         if (cnt !== undefined) {
                             var clipboardVariables = [];
 
-                            var variables = that.Current.model.Variables;
-                            var variableLayouts = that.Current.layout.Variables;
+                            var variables = that.undoRedoPresenter.Current.model.Variables;
+                            var variableLayouts = that.undoRedoPresenter.Current.layout.Variables;
 
                             for (var i = 0; i < variables.length; i++) {
                                 var variable = variables[i];
@@ -500,16 +514,22 @@ module BMA {
                             }
 
                             var clipboardRelationships = [];
-                            var relationships = that.Current.model.Relationships;
+                            var relationships = that.undoRedoPresenter.Current.model.Relationships;
 
                             for (var i = 0; i < relationships.length; i++) {
                                 var rel = relationships[i];
                                 var index = 0;
                                 for (var j = 0; j < clipboardVariables.length; j++) {
                                     var cv = clipboardVariables[j];
-                                    if (rel.FromVariableId === cv.m.Id || rel.ToVariableId === cv.m.Id) {
+
+                                    if (rel.FromVariableId === cv.m.Id) { 
                                         index++;
                                     }
+
+                                    if (rel.ToVariableId === cv.m.Id) {
+                                        index++;
+                                    }
+
                                     if (index == 2)
                                         break;
                                 }
@@ -548,11 +568,11 @@ module BMA {
 
                 var wasRemoved = false;
 
-                var model = this.Current.model;
-                var layout = this.Current.layout;
+                var model = this.undoRedoPresenter.Current.model;
+                var layout = this.undoRedoPresenter.Current.layout;
 
-                var variables = this.Current.model.Variables;
-                var variableLayouts = this.Current.layout.Variables;
+                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
 
                 var newVars = [];
                 var newVarLs = [];
@@ -566,7 +586,7 @@ module BMA {
                     }
                 }
 
-                var relationships = this.Current.model.Relationships;
+                var relationships = this.undoRedoPresenter.Current.model.Relationships;
 
                 var newRels = [];
 
@@ -581,15 +601,15 @@ module BMA {
                 if (wasRemoved === true) {
                     var newmodel = new BMA.Model.BioModel(model.Name, newVars, newRels);
                     var newlayout = new BMA.Model.Layout(layout.Containers, newVarLs);
-                    this.Dup(newmodel, newlayout);
+                    this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
             }
 
             private RemoveContainer(id: number) {
                 var wasRemoved = false;
 
-                var model = this.Current.model;
-                var layout = this.Current.layout;
+                var model = this.undoRedoPresenter.Current.model;
+                var layout = this.undoRedoPresenter.Current.layout;
 
                 var containers = layout.Containers;
                 var newCnt = [];
@@ -643,17 +663,17 @@ module BMA {
 
                     var newmodel = new BMA.Model.BioModel(model.Name, newV, newRels);
                     var newlayout = new BMA.Model.Layout(newCnt, newVL);
-                    this.Dup(newmodel, newlayout);
+                    this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
             }
 
             private RemoveRelationship(id: number) {
                 var wasRemoved = false;
 
-                var model = this.Current.model;
-                var layout = this.Current.layout;
+                var model = this.undoRedoPresenter.Current.model;
+                var layout = this.undoRedoPresenter.Current.layout;
 
-                var relationships = this.Current.model.Relationships;
+                var relationships = this.undoRedoPresenter.Current.model.Relationships;
 
                 var newRels = [];
 
@@ -668,13 +688,13 @@ module BMA {
                 if (wasRemoved === true) {
                     var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, newRels);
                     var newlayout = new BMA.Model.Layout(layout.Containers, layout.Variables);
-                    this.Dup(newmodel, newlayout);
+                    this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
             }
 
             private GetVariableAtPosition(x: number, y: number): number {
-                var variables = this.Current.model.Variables;
-                var variableLayouts = this.Current.layout.Variables;
+                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
@@ -689,7 +709,7 @@ module BMA {
             }
 
             private GetContainerAtPosition(x: number, y: number): number {
-                var containers = this.Current.layout.Containers;
+                var containers = this.undoRedoPresenter.Current.layout.Containers;
                 var element = <BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container");
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
@@ -703,8 +723,8 @@ module BMA {
             }
 
             private GetRelationshipAtPosition(x: number, y: number, pixelWidth: number): number {
-                var relationships = this.Current.model.Relationships;
-                var layout = this.Current.layout;
+                var relationships = this.undoRedoPresenter.Current.model.Relationships;
+                var layout = this.undoRedoPresenter.Current.layout;
 
                 for (var i = 0; i < relationships.length; i++) {
                     var relationship = relationships[i];
@@ -742,8 +762,8 @@ module BMA {
             }
 
             private TryAddStagingLineAsLink() {
-                var variables = this.Current.model.Variables;
-                var variableLayouts = this.Current.layout.Variables;
+                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
@@ -751,30 +771,40 @@ module BMA {
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     if (element.Contains(this.stagingLine.x1, this.stagingLine.y1, variableLayout.PositionX, variableLayout.PositionY)) {
 
-                        var current = this.Current;
+                        var current = this.undoRedoPresenter.Current;
                         var model = current.model;
                         var layout = current.layout;
                         var relationships = model.Relationships.slice(0);
                         relationships.push(new BMA.Model.Relationship(this.variableIndex++, this.stagingLine.id, variable.Id, this.selectedType));
                         var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, relationships);
-                        this.Dup(newmodel, layout);
+                        this.undoRedoPresenter.Dup(newmodel, layout);
 
                         return;
                     }
                 }
             }
 
-            private CanAddContainer(x: number, y: number): boolean {
+            private CanAddContainer(x: number, y: number, size: number): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
-                return that.GetContainerFromGridCell(gridCell) === undefined && that.GetConstantsFromGridCell(gridCell).length === 0;
+
+                for (var i = 0; i < size; i++) {
+                    for (var j = 0; j < size; j++) {
+                        var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
+                        var checkCell = that.GetContainerFromGridCell(cellForCheck) === undefined && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        if (checkCell !== true)
+                            return false;
+                    }
+                }
+
+                return true;
             }
 
             private CanAddVariable(x: number, y: number, type: string): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
-                var variables = that.Current.model.Variables.slice(0);
-                var variableLayouts = that.Current.layout.Variables.slice(0);
+                var variables = that.undoRedoPresenter.Current.model.Variables.slice(0);
+                var variableLayouts = that.undoRedoPresenter.Current.layout.Variables.slice(0);
 
                 switch (type) {
                     case "Constant":
@@ -841,7 +871,7 @@ module BMA {
 
             private TryAddVariable(x: number, y: number, type: string, id: number): boolean {
                 var that = this;
-                var current = that.Current;
+                var current = that.undoRedoPresenter.Current;
                 var model = current.model;
                 var layout = current.layout;
 
@@ -851,8 +881,9 @@ module BMA {
                         var containerLayouts = layout.Containers.slice(0);
 
                         var gridCell = that.GetGridCell(x, y);
+                        var container = layout.GetContainerById(id);
 
-                        if (that.CanAddContainer(x, y) === true) {
+                        if (that.CanAddContainer(x, y, container === undefined ? 1 : container.Size) === true) {
 
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
@@ -866,7 +897,7 @@ module BMA {
 
                             var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
-                            that.Dup(newmodel, newlayout);
+                            that.undoRedoPresenter.Dup(newmodel, newlayout);
                             return true;
                         }
 
@@ -891,7 +922,7 @@ module BMA {
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
-                        that.Dup(newmodel, newlayout);
+                        that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
                         break;
                     case "Default":
@@ -921,7 +952,7 @@ module BMA {
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
-                        that.Dup(newmodel, newlayout);
+                        that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
                         break;
                     case "MembraneReceptor":
@@ -972,7 +1003,7 @@ module BMA {
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
-                        that.Dup(newmodel, newlayout);
+                        that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
                         break;
                 }
@@ -987,7 +1018,7 @@ module BMA {
             }
 
             private GetContainerFromGridCell(gridCell: { x: number; y: number }): BMA.Model.ContainerLayout {
-                var current = this.Current;
+                var current = this.undoRedoPresenter.Current;
 
                 var layouts = current.layout.Containers;
                 for (var i = 0; i < layouts.length; i++) {
@@ -1013,8 +1044,8 @@ module BMA {
 
             private GetConstantsFromGridCell(gridCell: { x: number; y: number }): { container: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout }[] {
                 var result = [];
-                var variables = this.Current.model.Variables;
-                var variableLayouts = this.Current.layout.Variables;
+                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
@@ -1028,25 +1059,9 @@ module BMA {
                 return result;
             }
 
-            private OnModelUpdated() {
-                this.undoButton.Turn(this.CanUndo);
-                this.redoButton.Turn(this.CanRedo);
-
-                if (this.editingVariableId !== undefined) {
-                    this.variableEditor.Initialize(this.GetVariableById(this.Current.layout, this.Current.model, this.editingVariableId).model, this.Current.model);
-                }
-
-                this.appModel.BioModel = this.Current.model;
-                this.appModel.Layout = this.Current.layout;
-
-                var drawingSvg = <SVGElement>this.CreateSvg();
-                this.highlightDriver.HighlightAreas(this.PrepareHighlightAreas());
-                this.driver.Draw(drawingSvg);
-            }
-
             private PrepareHighlightAreas(): { x: number; y: number; width: number; height: number; fill: string }[] {
                 var result = [];
-                var containers = this.Current.layout.Containers;
+                var containers = this.undoRedoPresenter.Current.layout.Containers;
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
                     var container = containers[i];
@@ -1066,50 +1081,11 @@ module BMA {
                 return result;
             }
 
-            private Undo() {
-                if (this.CanUndo) {
-                    --this.currentModelIndex;
-                    this.variableEditor.Hide();
-                    this.editingVariableId = undefined;
-                    this.OnModelUpdated();
-                }
-            }
-
-            private Redo() {
-                if (this.CanRedo) {
-                    ++this.currentModelIndex;
-                    this.variableEditor.Hide();
-                    this.editingVariableId = undefined;
-                    this.OnModelUpdated();
-                }
-            }
-
-            private Truncate() {
-                this.models.length = this.currentModelIndex + 1;
-            }
-
-            private Dup(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
-                this.Truncate();
-                var current = this.Current;
-                this.models[this.currentModelIndex] = { model: current.model.Clone(), layout: current.layout.Clone() };
-                this.models.push({ model: m, layout: l });
-                ++this.currentModelIndex;
-                this.OnModelUpdated();
-            }
-
-            private get CanUndo(): boolean {
-                return this.currentModelIndex > 0;
-            }
-
-            private get CanRedo(): boolean {
-                return this.currentModelIndex < this.models.length - 1;
-            }
-
             private ResetVariableIdIndex() {
                 this.variableIndex = 1;
 
-                var m = this.Current.model;
-                var l = this.Current.layout;
+                var m = this.undoRedoPresenter.Current.model;
+                var l = this.undoRedoPresenter.Current.layout;
 
                 for (var i = 0; i < m.Variables.length; i++) {
                     if (m.Variables[i].Id >= this.variableIndex)
@@ -1129,18 +1105,6 @@ module BMA {
                 }
             }
 
-            private Set(m: BMA.Model.BioModel, l: BMA.Model.Layout) {
-                this.models = [{ model: m, layout: l }];
-                this.currentModelIndex = 0;
-                this.ResetVariableIdIndex();
-                this.variableEditor.Hide();
-                this.editingVariableId = undefined;
-                this.OnModelUpdated();
-            }
-
-            private get Current(): { model: BMA.Model.BioModel; layout: BMA.Model.Layout } {
-                return this.models[this.currentModelIndex];
-            }
 
             private get Grid(): { x0: number; y0: number; xStep: number; yStep: number } {
                 return { x0: this.xOrigin, y0: this.yOrigin, xStep: this.xStep, yStep: this.yStep };
@@ -1159,36 +1123,71 @@ module BMA {
                 throw "No such variable in model";
             }
 
-            private CreateSvg(): any {
+            private GetVariableColorByStatus(status): string {
+                if (status)
+                    return "green";//"#D9FFB3";
+                else
+                    return "red";
+            }
+
+            private GetContainerColorByStatus(status): string {
+                if (status)
+                    return "#E9FFCC";
+                else
+                    return "#FFDDDB";
+            }
+
+            private GetItemById(arr, id) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i].id === id)
+                        return arr[i];
+                }
+
+                return undefined;
+            }
+
+            private CreateSvg(args: any): any {
                 if (this.svg === undefined)
                     return undefined;
 
                 //Generating svg elements from model and layout
                 var svgElements = [];
 
-                var containerLayouts = this.Current.layout.Containers;
+                var containerLayouts = this.undoRedoPresenter.Current.layout.Containers;
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
                     var element = window.ElementRegistry.GetElementByType("Container");
-                    svgElements.push(element.RenderToSvg({ layout: containerLayout, grid: this.Grid }));
+                    svgElements.push(element.RenderToSvg({
+                        layout: containerLayout,
+                        grid: this.Grid,
+                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
+                    }));
                 }
 
-                var variables = this.Current.model.Variables;
-                var variableLayouts = this.Current.layout.Variables;
+                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
+
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    svgElements.push(element.RenderToSvg({ model: variable, layout: variableLayout, grid: this.Grid }));
+                    var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    svgElements.push(element.RenderToSvg({
+                        model: variable,
+                        layout: variableLayout,
+                        grid: this.Grid,
+                        valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
+                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
+                    }));
                 }
 
-                var relationships = this.Current.model.Relationships;
+                var relationships = this.undoRedoPresenter.Current.model.Relationships;
                 for (var i = 0; i < relationships.length; i++) {
                     var relationship = relationships[i];
                     var element = window.ElementRegistry.GetElementByType(relationship.Type);
 
-                    var start = this.GetVariableById(this.Current.layout, this.Current.model, relationship.FromVariableId).layout;
-                    var end = this.GetVariableById(this.Current.layout, this.Current.model, relationship.ToVariableId).layout;
+                    var start = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.FromVariableId).layout;
+                    var end = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.ToVariableId).layout;
 
                     svgElements.push(element.RenderToSvg({
                         layout: { start: start, end: end },

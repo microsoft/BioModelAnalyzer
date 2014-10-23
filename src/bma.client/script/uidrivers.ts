@@ -177,7 +177,7 @@ module BMA {
             }
 
             public ShowResults(data) {
-                this.viewer.furthertesting({ data: data });
+                this.viewer.furthertesting("SetData", { tabLabels: data.tabLabels, tableHeaders: data.tableHeaders, data: data.data });
                 //var content = $('<div></div>')
                 //    .addClass("scrollable-results")
                 //    .coloredtableviewer({ numericData: data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
@@ -185,7 +185,7 @@ module BMA {
             }
             
             public HideResults() {
-                this.viewer.furthertesting({data: undefined});
+                this.viewer.furthertesting({data: null});
                 //this.results.resultswindowviewer("destroy");
             }
 

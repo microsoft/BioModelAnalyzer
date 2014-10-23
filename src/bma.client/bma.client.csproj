@@ -127,6 +127,7 @@
     <Content Include="images\60x60.gif" />
     <Content Include="images\activate.png" />
     <Content Include="images\analyze.png" />
+    <Content Include="images\bifurcations.png" />
     <Content Include="images\check.png" />
     <Content Include="images\close.png" />
     <Content Include="images\constant.png" />
@@ -150,6 +151,7 @@
     <Content Include="images\MSR-logo.png" />
     <Content Include="images\new.png" />
     <Content Include="images\open.png" />
+    <Content Include="images\oscillations.png" />
     <Content Include="images\pointer.png" />
     <Content Include="images\random1.png" />
     <Content Include="images\random2.png" />
@@ -217,6 +219,8 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <TypeScriptCompile Include="Scripts\lib.d.ts" />
+    <TypeScriptCompile Include="script\localRepository.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />

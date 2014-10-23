@@ -41,9 +41,15 @@ namespace bmaclient
     }
 */
 
-    [XmlRoot(ElementName="AnalysisOutput")]
+
     public class CounterExampleOutput    
     {
+        public class CounterExampleVariables
+        {
+            [XmlElement("Variable", Type = typeof(CounterExampleVariable))]
+            public CounterExampleVariable[] Variables { get; set; }
+        }
+
         public class CounterExampleVariable
         {
             [XmlAttribute]
@@ -57,10 +63,7 @@ namespace bmaclient
         public CounterExampleType Status { get; set; }
 
         public string Error { get; set; }
-
-        [XmlArrayItem("Variable")]
-        public CounterExampleVariable[] Variables { get; set; }
-
+        
     /*    public string CounterExampleType { get; set; }
 
         public BifurcatingVariableOutput[] BifurcatingVariables { get; set; }
@@ -69,6 +72,48 @@ namespace bmaclient
 
         public string Error { get; set; }*/
     }
+
+    [XmlRoot(ElementName = "AnalysisOutput")]
+    public class CounterExampleOutputXML : CounterExampleOutput
+    {
+        //[XmlArrayItem("Variables")]
+        [XmlElement("Variables", Type = typeof(CounterExampleVariables))]
+        public CounterExampleVariables[] Variables { get; set; }
+
+    }
+
+    public class CycleCounterExample : CounterExampleOutput
+    {
+        public class CycleVariable
+        {
+            [XmlAttribute]
+            public string Id { get; set; }
+
+            [XmlAttribute]
+            public int Value { get; set; }
+        }
+
+        public CycleVariable[] Variables { get; set; }
+    }
+
+    public class BifurcationCounterExample : CounterExampleOutput
+    {
+        public class BifurcatingVariable
+        {
+            [XmlAttribute]
+            public string Id { get; set; }
+
+            [XmlAttribute]
+            public int Fix1 { get; set; }
+
+            [XmlAttribute]
+            public int Fix2 { get; set; }
+
+        }
+
+        public BifurcatingVariable[] Variables { get; set; }
+    }
+
 
     public class FurtherTestingOutput
     {

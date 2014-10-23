@@ -14,8 +14,9 @@
          {"Path": "Scripts/typings/jasmine/jasmine.d.ts"},
          {"Path": "Scripts/jasmine/jasmine-jquery/jasmine-jquery.d.ts"},
          {"Path": "Scripts/jasmine/jasmine-matchers/jasmine-jquery.d.ts"},
-         
-         {"Path": "Scripts/rx.js"},
+
+         {"Path": "Scripts/rx.js" },
+         {"Path": "Scripts/lib.d.ts"},
 
          {"Path": "js/jquery.ui-contextmenu.js" },
          {"Path": "js/jquery.svg.js" },
@@ -23,41 +24,53 @@
          {"Path": "js/idd.js"},
          {"Path": "js/svgplot.js"},
          {"Path": "js/scalablegridlinesplot.js"},
-         {"Path": "js/FileSaver.js"},
-
+         {"Path": "js/FileSaver.js" },
+         
          {"Path": "script/model/analytics.ts"},
          {"Path": "script/model/analytics.js"},
          {"Path": "script/model/biomodel.ts"},
          {"Path": "script/model/biomodel.js"},
          {"Path": "script/model/model.ts"},
-         {"Path": "script/model/model.js"},
+         {"Path": "script/model/model.js" },
+         {"Path": "script/model/visualsettings.ts"},
+         {"Path": "script/model/visualsettings.js"},
 
          {"Path": "script/commands.ts"},
          {"Path": "script/commands.js"},
          {"Path": "script/elementsregistry.ts"},
          {"Path": "script/elementsregistry.js"},
          {"Path": "script/functionsregistry.ts"},
-         {"Path": "script/functionsregistry.js"},
+         {"Path": "script/functionsregistry.js" },
+         {"Path": "script/localRepository.ts"},
+         { "Path": "script/localRepository.js" },
+         {"Path": "script/SVGHelper.ts"},
+         {"Path": "script/SVGHelper.js" },
+
+         {"Path": "app.ts"},
+         {"Path": "app.js"},
+
          {"Path": "script/presenters/elementtoolbarpresenter.ts"},
          {"Path": "script/presenters/elementtoolbarpresenter.js"},
          {"Path": "script/presenters/formulavalidationpresenter.ts"},
          {"Path": "script/presenters/formulavalidationpresenter.js"},
          {"Path": "script/presenters/furthertestingpresenter.ts"},
          {"Path": "script/presenters/furthertestingpresenter.js"},
-         
-
+         {"Path": "script/presenters/localstoragepresenter.ts"},
+         {"Path": "script/presenters/localstoragepresenter.js"},
+         {"Path": "script/presenters/modelstoragepresenter.ts"},
+         {"Path": "script/presenters/modelstoragepresenter.js"},
          {"Path": "script/presenters/presenters.ts"},
          {"Path": "script/presenters/presenters.js"},
          {"Path": "script/presenters/proofpresenter.ts"},
          {"Path": "script/presenters/proofpresenter.js"},
          {"Path": "script/presenters/simulationpresenter.ts"},
          {"Path": "script/presenters/simulationpresenter.js"},
-
+         {"Path": "script/presenters/undoredopresenter.ts"},
+         {"Path": "script/presenters/undoredopresenter.js"},
          
          
          
-         {"Path": "script/widgets/proofresultviewer.ts"},
-         {"Path": "script/widgets/proofresultviewer.js"},
+         
          {"Path": "script/widgets/accordeon.ts"},
          {"Path": "script/widgets/accordeon.js"},
          {"Path": "script/widgets/bmaslider.ts"},
@@ -71,7 +84,9 @@
          {"Path": "script/widgets/elementbutton.ts"},
          {"Path": "script/widgets/elementbutton.js"},
          {"Path": "script/widgets/furthertestingviewer.ts"},
-         {"Path": "script/widgets/furthertestingviewer.js"},
+         {"Path": "script/widgets/furthertestingviewer.js" },
+         {"Path": "script/widgets/localstoragewidget.ts"},
+         {"Path": "script/widgets/localstoragewidget.js"},
          {"Path": "script/widgets/progressiontable.ts"},
          {"Path": "script/widgets/progressiontable.js"},
          {"Path": "script/widgets/proofresultviewer.ts"},
@@ -81,9 +96,9 @@
          {"Path": "script/widgets/simulationexpanded.ts"},
          {"Path": "script/widgets/simulationexpanded.js"},
          {"Path": "script/widgets/simulationplot.ts"},
-         {"Path": "script/widgets/simulationplot.js"},
-         {"Path": "script/widgets/simulationprogressiontable.ts"},
-         {"Path": "script/widgets/simulationprogressiontable.js"},
+         {"Path": "script/widgets/simulationplot.js" },
+         {"Path": "script/widgets/simulationviewer.ts"},
+         {"Path": "script/widgets/simulationviewer.js"},
          {"Path": "script/widgets/variablesOptionsEditor.ts"},
          {"Path": "script/widgets/variablesOptionsEditor.js"},
          {"Path": "script/widgets/visibilitysettings.ts"},

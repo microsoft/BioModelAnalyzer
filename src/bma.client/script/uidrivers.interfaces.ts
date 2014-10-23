@@ -104,5 +104,14 @@ module BMA {
         export interface IAreaHightlighter {
             HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string}[]);
         }
+
+        export interface IModelRepository {
+            GetModelList(): string[];
+            LoadModel(id: string): JSON;
+            RemoveModel(id: string);
+            SaveModel(id: string, model: JSON);
+            IsInRepo(id: string);
+            //OnRepositoryUpdated();
+        }
     }
 } 

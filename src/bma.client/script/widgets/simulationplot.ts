@@ -67,6 +67,8 @@
                 var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
                 var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
+                bounds.bounds.height += 0.04; // padding
+                bounds.bounds.y -= 0.02;      // padding
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
 
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);

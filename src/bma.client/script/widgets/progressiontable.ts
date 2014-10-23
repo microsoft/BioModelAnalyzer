@@ -30,19 +30,12 @@
                 .appendTo(that.element);
             this.InitData();
             randomise.bind("click", function () {
-                that.ClearBackground();
                 var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
                 rands.click();
             })
 
         },
 
-        ClearBackground: function () {
-            var inits = this.init.find("tr").not(":first-child");
-            inits.each(function () {
-                $(this).css("background-color", "transparent");
-            })
-        },
 
         InitData: function () {
             this.ClearData();
@@ -91,10 +84,12 @@
                         var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
                         $(this).prev().children("input").eq(0).val(randomValue);//randomValue);
                         if (randomValue !== prev) {
-                            $(this).parent().css("background-color", "rgb(255, 173, 173)");
+                            $(this).prev().css("background-color", "rgb(255, 173, 173)");
+                            $(this).css("background-color", "rgb(255, 173, 173)");
                         }
                         else {
-                            $(this).parent().css("background-color", "transparent");
+                            $(this).prev().css("background-color", "transparent");
+                            $(this).css("background-color", "transparent");
                         }
                     })
                 }

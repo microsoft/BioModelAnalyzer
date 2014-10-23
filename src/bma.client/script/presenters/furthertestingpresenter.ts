@@ -15,6 +15,8 @@
                 this.driver = driver;
                 this.popupViewer = popupViewer;
 
+
+
                 window.Commands.On("ProofFailed", function (param: { Model; Variables; Res }) {
                     that.driver.ShowStartToggler();
                     that.model = param.Model;
@@ -33,6 +35,9 @@
                         $.ajax({
                             type: "POST",
                             url: "api/FurtherTesting",
+                            //callbackParameter: 'callback',
+                            //dataType: 'jsonp',
+                            //timeout: 10000,
                             data: {
                                 Model: that.model,
                                 Analysis: that.result,
@@ -41,17 +46,53 @@
                                 that.driver.ActiveMode();
                                 if (res2.CounterExamples !== null) {
                                     that.driver.HideStartToggler();
-                                    that.data = res2.CounterExamples;
-                                    var result = that.ConvertCounterExamlpes(res2.CounterExamples);
-                                    var table = that.CreateVariablesView(that.variables, result);
-                                    that.driver.ShowResults(table);
-                                    that.data = table;
+
+                                    //that.data = res2.CounterExamples;
+                                    var bif = null, osc = null;
+                                    for (var i = 0; i < res2.CounterExamples.length; i++) {
+                                        switch (res2.CounterExamples[i].Status) {
+                                            case 0:
+                                                bif = res2.CounterExamples[i];
+                                                break;
+                                            case 1:
+                                                osc = res2.CounterExamples[i];
+                                                break;
+                                        }
+                                    }
+
+                                    var data = [];
+                                    var headers = [];
+                                    var tabLabels = [];
+
+                                    if (bif !== null) {
+                                        var parseBifurcations = that.ParseBifurcations(bif.Variables);
+                                        var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
+                                        data.push(bifurcationsView);
+                                        headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
+                                        var label = $('<div></div>').addClass('bma-futhertesting-bifurcations-icon');
+                                        tabLabels.push(label);
+                                    }
+                                    if (osc !== null) {
+                                        var parseOscillations = that.ParseOscillations(osc.Variables);
+                                        var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
+                                        data.push(oscillationsView);
+                                        headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+                                        var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
+                                        tabLabels.push(label);
+                                    }
+
+                                    
+                                    that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                    that.driver.ShowResults(that.data);
                                 }
-                                else alert(res2.Error);
+                                else {
+                                    alert(res2.Error);
+                                    that.driver.ActiveMode();
+                                }
                             },
-                            error: function (res2) {
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
                                 that.driver.ActiveMode();
-                                alert(res2.statusText);
+                                alert(errorThrown);
                             }
                         });
                     }
@@ -63,11 +104,13 @@
                             case "FurtherTesting":
                                 that.driver.HideStartToggler();
                                 that.driver.HideResults();
-                                var content = $('<div></div>').coloredtableviewer({ numericData: that.data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
-                                this.popupViewer.Show({ tab: param, content: content });
+                                var content = $('<div></div>').furthertesting();
+                                content.furthertesting("SetData", that.data);
+                                content.find("*").removeClass("scrollable-results");
+                                this.popupViewer.Show({ tab: param, content: content.children().eq(1).children().eq(1) });
                                 break;
                             default:
-                                that.driver.ShowResults(that.data);
+                                //that.driver.ShowResults(that.data);
                                 break;
                         }
                 })
@@ -82,12 +125,12 @@
                 })
             }
 
-            public CreateVariablesView(variables, results) {
+            public CreateOscillationsView(variables, results) {
                 var table = [];
                 for (var i = 0; i < variables.length; i++) {
                     var resid = results[variables[i].Id];
                     table[i] = [];
-                    table[i][0] = variables[i].ContainerId; // color should be there
+                    table[i][0] = variables[i].ContainerId; 
                     table[i][1] = variables[i].Name;
                     table[i][2] = resid.min + '-' + resid.max;
                     table[i][3] = resid.oscillations;
@@ -95,8 +138,49 @@
                 return table;
             }
 
-            private ConvertCounterExamlpes(ex) {
-                var variables = ex[0].Variables;
+            private CreateBifurcationsView(variables, results) {
+                var table = [];
+                for (var i = 0; i < variables.length; i++) {
+                    var resid = results[variables[i].Id];
+                    table[i] = [];
+                    table[i][0] = variables[i].ContainerId;
+                    table[i][1] = variables[i].Name;
+                    if (resid.min !== resid.max)
+                        table[i][2] = resid.min + '-' + resid.max;
+                    else
+                        table[i][2] = resid.min;
+                    table[i][3] = resid.Fix1;
+                    table[i][4] = resid.Fix2;
+                }
+                return table;
+
+            }
+
+            private ParseBifurcations(variables) {
+                var table = [];
+                for (var j = 0; j < variables.length; j++) {
+                    var parse = this.ParseId(variables[j].Id);
+                    if (table[parseInt(parse[0])] === undefined)
+                        table[parseInt(parse[0])] = [];
+                    table[parseInt(parse[0])][0] = parseInt(variables[j].Fix1);
+                    table[parseInt(parse[0])][1] = parseInt(variables[j].Fix2);
+                }
+                var result = [];
+                for (var i = 0; i < table.length; i++) {
+                    if (table[i] !== undefined) {
+                        result[i] = {
+                            min: Math.min(table[i][0], table[i][1]),
+                            max: Math.max(table[i][0], table[i][1]),
+                            Fix1: table[i][0],
+                            Fix2: table[i][1]
+                        };
+                    }
+                }
+                return result;
+            }
+
+            private ParseOscillations(variables) {
+                //var variables = ex[1].Variables;
                 var table = [];
                 for (var j = 0; j < variables.length; j++) {
                     //table[i][j] = ex[i].Variables[j].Id + " " + ex[i].Variables[j].Value;
@@ -124,20 +208,6 @@
             private ParseId(id) {
                 var parse = id.split('^');
                 return parse;
-            }
-
-            private FurtherTestingImitation(num) {
-                var data = [];
-                for (var i = 0; i < num; i++) {
-                    data[i] = [];
-                    data[i][0] = Math.round(Math.random());
-                    data[i][1] = Math.round(Math.random());
-                    data[i][2] = Math.round(Math.random());
-                    data[i][3] = '';
-                    for (var j = 0; j < 6; j++)
-                        data[i][3] += Math.round(Math.random()) + ' ';
-                }
-                return data;
             }
         }
     }

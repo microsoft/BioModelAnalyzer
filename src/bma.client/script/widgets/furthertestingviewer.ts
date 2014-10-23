@@ -7,8 +7,10 @@
             header: "Further Testing",
             toggler: undefined,
             tabid: "FurtherTesting",
-            data: undefined,
-            buttonMode: "ActiveMode"
+            buttonMode: "ActiveMode",
+            tableHeaders: [],
+            data: [],
+            tabLabels: [],
         },
 
         ChangeMode: function () {
@@ -54,18 +56,38 @@
         refresh: function () {
             var that = this;
             var options = this.options;
-            if (that.options.data !== undefined) {
-                var content = $('<div></div>')
-                    .addClass("scrollable-results")
-                    .coloredtableviewer({ numericData: that.options.data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
-                this.results.resultswindowviewer({ header: that.options.header, content: content, icon: "max", tabid: that.options.tabid });
+            var tabs = $('<div></div>');
+            var ul = $('<ul></ul>').appendTo(tabs);
+            if (that.options.data !== null) {
+                for (var i = 0; i < that.options.data.length; i++) {
+                    var li = $('<li></li>').appendTo(ul);
+                    var a = $('<a href="#FurtherTestingTab' + i + '"></a>').appendTo(li);
+                    that.options.tabLabels[i].appendTo(a);
+                }
+
+                for (var i = 0; i < that.options.data.length; i++) {
+                    var content = $('<div></div>')
+                        .attr('id', 'FurtherTestingTab' + i)
+                        .addClass("scrollable-results")
+                        .coloredtableviewer({ numericData: that.options.data[i], header: that.options.tableHeaders[i] })
+                        .appendTo(tabs);
+                }
+
+                tabs.tabs();
+                tabs.removeClass("ui-widget ui-widget-content ui-corner-all");
+                tabs.children("ul").removeClass("ui-helper-reset ui-widget-header ui-corner-all");
+                tabs.children("div").removeClass("ui-tabs-panel ui-widget-content ui-corner-bottom");
+                
+                this.results.resultswindowviewer({ header: that.options.header, content: tabs, icon: "max", tabid: that.options.tabid });
             }
+            
             else {
                 this.results.resultswindowviewer();
                 this.results.resultswindowviewer("destroy");
             }
             this.ChangeMode();
         },
+
 
         GetToggler: function (): JQuery {
             return this.toggler;
@@ -74,6 +96,13 @@
         ShowStartToggler: function () {
             this.toggler.show();
         },
+
+        SetData: function(arg) {
+            this.options.data = arg.data;
+            this.options.tableHeaders = arg.tableHeaders;
+            this.options.tabLabels = arg.tabLabels;
+            this.refresh();
+        }, 
 
         HideStartToggler: function () {
             this.toggler.hide();
@@ -110,6 +139,7 @@ interface JQuery {
     furthertesting(): JQuery;
     furthertesting(settings: Object): JQuery;
     furthertesting(fun: string): any;
+    furthertesting(fun: string, arg: any): any;
     furthertesting(optionLiteral: string, optionName: string): any;
     furthertesting(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }  

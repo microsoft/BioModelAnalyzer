@@ -2,27 +2,23 @@
     export module Presenters {
         export class LocalStoragePresenter {
             private driver: BMA.UIDrivers.ILocalStorageDriver;
+            private tool: BMA.UIDrivers.IModelRepository;
 
-            constructor(appModel: BMA.Model.AppModel, editor: BMA.UIDrivers.ILocalStorageDriver) {
+            constructor(appModel: BMA.Model.AppModel, editor: BMA.UIDrivers.ILocalStorageDriver, tool: BMA.UIDrivers.IModelRepository) {
                 var that = this;
                 this.driver = editor;
-                var keys = that.ScanLocalStorage();
+                this.tool = tool;
+                var keys = that.tool.GetModelList();
                 this.driver.SetItems(keys);
                 this.driver.Hide();
 
-                window.Commands.On("LocalStorageChanged", function (arg) {
-                    if (arg !== undefined && window.localStorage.getItem(arg) === undefined) {
-                        that.driver.AddItem(arg, {});
-                    }
-                    else {
-                        var keys = that.ScanLocalStorage();
-                        that.driver.SetItems(keys);
-                    }
+                window.Commands.On("LocalStorageChanged", function () {
+                    var keys = that.tool.GetModelList();
+                    that.driver.SetItems(keys);
                 });
 
                 window.Commands.On("LocalStorageRemove", function (key) {
-                    window.localStorage.removeItem(key);
-                    window.Commands.Execute("LocalStorageChanged", {});
+                    that.tool.RemoveModel(key);
                 });
 
                 window.Commands.On("LocalStorageRequested", function () {
@@ -31,47 +27,17 @@
 
                 window.Commands.On("LocalStorageSave", function () {
                     var key = appModel.BioModel.Name;
-                    if (window.localStorage.getItem(key) !== null) {
-                        if (confirm("Overwrite the file?")) 
-                            that.Save(key, appModel.Serialize());
-                    }
-                    else that.Save(key, appModel.Serialize());
+                    that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
                 });
 
                 window.Commands.On("LocalStorageOpen", function (key) {
-                    appModel.Reset(window.localStorage.getItem(key));
-                })
-            }
-
-            public Save(key: string, appModel: string) {
-                window.localStorage.setItem(key, appModel);
-                window.Commands.Execute("LocalStorageChanged", {});
-            }
-
-            public ParseItem(item): boolean {
-                var ml = JSON.parse(item);
-
-                if (ml === undefined || ml.model === undefined || ml.layout === undefined ||
-                    ml.model.variables === undefined ||
-                    ml.layout.variables === undefined ||
-                    ml.model.variables.length !== ml.layout.variables.length ||
-                    ml.layout.containers === undefined ||
-                    ml.model.relationships === undefined) {
-                    return false;
-                }
-                else return true;
-            }
-
-            public ScanLocalStorage(): any[] {
-                var keys = [];
-                for (var i = 0; i < window.localStorage.length; i++) {
-                    var key = window.localStorage.key(i);
-                    var item = window.localStorage.getItem(key);
-                    if (this.ParseItem(item)) {
-                        keys.push(key);
+                    if (that.tool.IsInRepo(key))
+                        appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
+                    else {
+                        alert("Model have been removed from outside");
+                        window.Commands.Execute("LocalStorageChanged", {});
                     }
-                }
-                return keys;
+                })
             }
         }
     }
