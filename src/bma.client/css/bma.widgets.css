@@ -95,16 +95,106 @@
         float:right;
     }
 
-    .labels-in-variables-editor {
+    /*.labels-in-variables-editor {
         width: 130px;
         margin-right: 5px;
         float: left;
+    }*/
+
+    .bma-variables-options-editor {
+        position: absolute;
+        width: 310px;
+        padding: 20px 15px 20px 15px;
+        z-index: 5;
+        background-color: Window;
+        border-radius: 5px;
+        box-shadow: 0 0 8px lightgray;
+        font-size: small;
+    }
+
+    .bma-variables-options-editor > *:nth-child(2)
+    {
+        display: inline-block;
+    }
+
+    .bma-variables-options-editor > *:nth-child(3){
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .bma-variables-options-editor > *:nth-child(3) input {
+        margin-left: 5px;
+    }
+
+    .bma-variables-options-editor > *:nth-child(4) textarea {
+        width: 85%;
+    }
+
+    .bma-variables-options-editor > *:nth-child(5), .bma-variables-options-editor > *:nth-child(6) {
+        display: table-cell;
+    }
+
+    .bma-variables-options-editor .list-of-functions ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .bma-variables-options-editor .list-of-functions ul > li {
+        margin-bottom: 5px;
+        background-color: gainsboro;
+        border-radius: 10px;
+        display: table;
+        padding: 0;
+        padding-left: 4px;
+        padding-right: 4px;
+        cursor: pointer;
+        text-align: center;
+        color: gray;
+    }
+
+    .bma-variables-options-editor .list-of-functions ul > li:first-child 
+    {
+        padding-right: 20px;
+    }
+
+    .bma-variables-options-editor .list-of-operators {
+        margin-left: 20px;
+    }
+
+    .bma-variables-options-editor .list-of-operators ul {
+        list-style: none;
+        margin-bottom: 0;
+        padding: 0;
+    }
+
+    .bma-variables-options-editor .list-of-operators ul:nth-child(3) {
+        margin-top: 0;
+    }
+
+    .bma-variables-options-editor .list-of-operators ul > li {
+        margin-bottom: 5px;
+        background-color: gainsboro;
+        border-radius: 10px;
+        padding: 0;
+        cursor: pointer;
+        display: inline-block;
+        margin-right: 10px;
+        padding-left: 4px;
+        padding-right: 4px;
+        color: gray;
+    }
+
+    .bma-variables-options-editor .list-of-operators ul > li:hover {
+        background-color: gray;
+        color: white;
+    }
+    .bma-variables-options-editor .list-of-functions ul > li:hover {
+        background-color: gray;
+        color: white;
     }
 
     .newWindow {
-        /*display:none;*/ 
         padding:10px;
-        /*background-color: rgba(0,0,0,0.5);*/
         background-color: Window;
         position:absolute;
         
@@ -709,15 +799,11 @@
        /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/ 
     }
 
-    .label-for-functions {
-        width:50px;
-        cursor:default;
-    }
 
     .functions-info {
-        width: 220px;
-        height: 80px;
-        background-color: lightgray;
+        color: gray;
+        width: 100%;
+        height: 40px;
         display: inline-block;
         margin-left: 10px;
         padding: 2px;
@@ -758,37 +844,24 @@
     }
 
     .inputs-list-header {
-        border: 1px solid gray;
-        width: 98px;
-        height: 15px;
-        padding-bottom: 2px;
-        padding-left: 2px;
+        padding-right: 10px;
     }
 
     .inputs-list-header::after{
         content: "";
         width: 0;
         height: 0;
-        border-left: 7px solid transparent;
-        border-right: 7px solid transparent;
-        border-top: 7px solid gray;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid gray;
         margin: 5px;
         position: absolute;
-        left: 90px;
-        
-    }
-
-    .inputs-list-header:hover{
-        outline: 1px solid darkturquoise;
     }
 
     .inputs-list-content {
-        position:absolute;
-        background-color: white;
-        border: 1px solid gray;
-        width: 100px;
-        border-radius: 3px;
-        margin-top: -5px;
+        margin-top: 5px;
+        text-align: left;
+        color: black;
     }
 
     .inputs-list-content > div {
