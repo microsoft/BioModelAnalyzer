@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>OneDrive access sample page</title>
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/wl.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            WL.init({ scope: liveSdkSample.defaultScopes }).then(
+                function (result) {
+                    if (result.status == "connected") {
+                        liveSdkSample.displayMe();
+                    }
+                    else {
+                        // Display the sign-in button.
+                        connectButton.style.display = "block";
+                        connectButton.onclick = function () {
+                            WL.login({
+                                scope: ["wl.signin", "wl.skydrive"]
+                            }).then(
+                                        function (result) {
+                                            if (result.status == "connected") {
+                                                // Don't display the sign-in button.
+                                                connectButton.style.display = "none";
+                                                liveSdkSample.displayMe();
+                                            }
+                                        }
+                                    );
+                        };
+                    }
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <button id="connectButton" style="display:none">
+        Connect with a Microsoft account
+    </button>
+</body>
+</html>

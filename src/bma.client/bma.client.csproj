@@ -121,6 +121,7 @@
     <Content Include="Global.asax" />
     <Content Include="help.html" />
     <Content Include="html\chartSample.html" />
+    <Content Include="html\OneDriveSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\20x20.gif" />
@@ -178,6 +179,7 @@
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
+    <Content Include="js\wl.js" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
     <Content Include="legacy\bma.js" />
