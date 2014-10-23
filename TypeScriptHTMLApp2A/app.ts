@@ -2,17 +2,17 @@
 
 var app = angular.module('myApp', ['ngRoute']);
 
-interface Car {
-    Make: string; 
-    Model: string;
+interface Result {
+    Status: boolean
+    Log: string
 }
 
 // The Model part of MVC?
 interface myAppScope extends ng.IScope {
     pgm : string
     debug_console : string
-    run_cars(): void
     run_foo(): void
+    run_bar(): void
 }
 
 // We don't really need routing...
@@ -31,34 +31,34 @@ app.config(function($routeProvider) {
         });
 });
 
-
 app.controller("mainController", ['$scope', '$http', ($scope: myAppScope, $http: ng.IHttpService) => {
-    var counter = [0, 1, 2];
     $scope.pgm = "test";
     $scope.debug_console = "dbg started";
-    $scope.run_cars = () => {
-        $scope.debug_console = "run_cars";
-        $http.get("api/api/cars") // Don't know why this is api/api. 
+    $scope.run_foo = () => {
+        $scope.debug_console = "run_foo";
+        $http.get("api/api/foo") // Don't know why this is api/api. 
             .error(x => {
                 console.log('error');
                 console.log("<=:" + x);
                 $scope.debug_console = "error";
             })
-            .success((c: Car) => {
+            .success((r: Result) => {
                 console.log('success');
-                console.log("<=:" + c)
-                $scope.debug_console = c.Make + c.Model;
+                console.log("<=:" + r)
+                $scope.debug_console = r.Status + ' ' + r.Log;
             })
     }
 
-    $scope.run_foo = () => {
-        $scope.debug_console = "run_foo";
-        $http.get("api/api/foo")
+    $scope.run_bar = () => {
+        $scope.debug_console = "run_bar";
+        $http.get("api/api/bar")
             .error(x => {
                 $scope.debug_console = "error";
             })
-            .success((c: Car) => {
-                $scope.debug_console = c.Make + c.Model;
+            .success((r: Result) => {
+                console.log('success');
+                console.log("<=:" + r)
+                $scope.debug_console = r.Status + ' ' + r.Log;
             })
     };
 

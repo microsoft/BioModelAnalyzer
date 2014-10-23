@@ -17,28 +17,29 @@ app.config(function ($routeProvider) {
 
 app.controller("mainController", [
     '$scope', '$http', function ($scope, $http) {
-        var counter = [0, 1, 2];
         $scope.pgm = "test";
         $scope.debug_console = "dbg started";
-        $scope.run_cars = function () {
-            $scope.debug_console = "run_cars";
-            $http.get("api/api/cars").error(function (x) {
-                console.log('error');
-                console.log("<=:" + x);
-                $scope.debug_console = "error";
-            }).success(function (c) {
-                console.log('success');
-                console.log("<=:" + c);
-                $scope.debug_console = c.Make + c.Model;
-            });
-        };
-
         $scope.run_foo = function () {
             $scope.debug_console = "run_foo";
             $http.get("api/api/foo").error(function (x) {
+                console.log('error');
+                console.log("<=:" + x);
                 $scope.debug_console = "error";
-            }).success(function (c) {
-                $scope.debug_console = c.Make + c.Model;
+            }).success(function (r) {
+                console.log('success');
+                console.log("<=:" + r);
+                $scope.debug_console = r.Status + ' ' + r.Log;
+            });
+        };
+
+        $scope.run_bar = function () {
+            $scope.debug_console = "run_bar";
+            $http.get("api/api/bar").error(function (x) {
+                $scope.debug_console = "error";
+            }).success(function (r) {
+                console.log('success');
+                console.log("<=:" + r);
+                $scope.debug_console = r.Status + ' ' + r.Log;
             });
         };
     }]);

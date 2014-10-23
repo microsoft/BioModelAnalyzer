@@ -124,17 +124,15 @@
     <None Include="fonts\glyphicons-halflings-regular.ttf" />
     <None Include="fonts\glyphicons-halflings-regular.svg" />
     <None Include="fonts\glyphicons-halflings-regular.eot" />
-    <Compile Include="Models\Car.fs" />
-    <Compile Include="Controllers\CarsController.fs" />
+    <Compile Include="Models\Result.fs" />
     <Compile Include="Controllers\FooController.fs" />
+    <Compile Include="Controllers\BarController.fs" />
     <Content Include="Web.config" />
     <Content Include="Global.asax" />
     <Compile Include="Global.asax.fs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Content Include="Index.html" />
     <Content Include="packages.config" />
-    <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

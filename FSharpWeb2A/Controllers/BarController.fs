@@ -6,9 +6,9 @@ open System.Net.Http
 open System.Web.Http
 open FSharpWeb2A.Models
 
-type FooController() =
+type BarController() =
     inherit ApiController()
 
-    // GET api/foo
-    member x.Get() = { Status=true; Log="Foo"}
+    // GET api/bar
+    member x.Get() = { Status=true; Log="Bar"}
 
