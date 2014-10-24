@@ -219,14 +219,17 @@
             //});
             //$(div1.children()[0]).click();
 
-            this.inputsList = inpUl.children().eq(0).addClass("inputs-list-header");
-            this.listOfInputs = $('<div class="inputs-list-content"></div>').appendTo(that.inputsList).hide();
+            this.inputsList = inpUl.children().eq(0).addClass("inputs-list-header-collapsed");
+            this.listOfInputs = $('<div class="inputs-list-content"></div>').width(this.inputsList.outerWidth()).appendTo(that.inputsList).hide();
+
 
             this.inputsList.bind("click", function () {
                 if (that.listOfInputs.is(":hidden") && that.listOfInputs.children().length !== 0) {
+                    that.inputsList.css("border-radius", "10px 10px 0 0");
                     that.listOfInputs.show();
                 }
                 else {
+                    that.inputsList.css("border-radius", "10px");
                     that.listOfInputs.hide();
                 }
             });
