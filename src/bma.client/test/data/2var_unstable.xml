@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="0" Name="2var_unstable" BioCheckVersion="3">
+  <Description>This is the default model.</Description>
+  <CreatedDate>2012-10-14T15:04:16.301427+01:00</CreatedDate>
+  <ModifiedDate>2012-10-14T15:04:16.301427+01:00</ModifiedDate>
+  <Layout>
+    <Columns>6</Columns>
+    <Rows>5</Rows>
+    <ZoomLevel>44.76</ZoomLevel>
+    <PanX>0</PanX>
+    <PanY>428</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1" Name="">
+      <PositionX>2</PositionX>
+      <PositionY>1</PositionY>
+      <Size>1</Size>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="1" Name="X">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Formula>var(Y)</Formula>
+      <PositionX>104</PositionX>
+      <PositionY>82</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="2" Name="Y">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Formula>var(X)</Formula>
+      <PositionX>204</PositionX>
+      <PositionY>182</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="0">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</Model>

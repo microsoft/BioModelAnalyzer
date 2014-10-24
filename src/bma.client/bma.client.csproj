@@ -312,6 +312,7 @@
     <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
+    <TypeScriptCompile Include="test\XmlParserTests.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
@@ -368,6 +369,7 @@
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="serviceTestPage.html" />
+    <Content Include="test\data\2var_unstable.xml" />
     <Content Include="tou.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
