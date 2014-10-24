@@ -43,7 +43,8 @@
          {"Path": "script/localRepository.ts"},
          { "Path": "script/localRepository.js" },
          {"Path": "script/SVGHelper.ts"},
-         {"Path": "script/SVGHelper.js" },
+         { "Path": "script/SVGHelper.js" },
+         { "Path": "script/ModelHelper.ts" },
 
          {"Path": "app.ts"},
          {"Path": "app.js"},
