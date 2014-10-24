@@ -2,27 +2,22 @@
     export module Presenters {
         export class FormulaValidationPresenter {
             private editorDriver: BMA.UIDrivers.IVariableEditor;
+            private ajax: BMA.UIDrivers.IServiceDriver;
 
-            constructor(editor: BMA.UIDrivers.IVariableEditor) {
+            constructor(editor: BMA.UIDrivers.IVariableEditor, ajax: BMA.UIDrivers.IServiceDriver) {
                 var that = this;
                 this.editorDriver = editor;
+                this.ajax = ajax;
 
                 window.Commands.On("FormulaEdited", function (formula) {
                     if (formula !== "")
-                        $.ajax({
-                            type: "POST",
-                            url: "api/Validate",
-                            data: {
-                                Formula: formula
-                            },
-                            success: function (res) {
+                        var result = that.ajax.Invoke("api/Validate", { Formula: formula })
+                            .done(function (res) {
                                 that.editorDriver.SetValidation(res.IsValid, res.Message);
-                                //$("#log").append("Validate success (for correct). IsValid: " + res.IsValid + "<br/>");
-                            },
-                            error: function (res) {
-                                //$("#log").append("Validate error: " + res.statusText + "<br/>");
-                            }
-                        });
+                            })
+                            .fail(function (res) {
+                                that.editorDriver.SetValidation(undefined, '');
+                            });
                     else {
                         that.editorDriver.SetValidation(undefined, '');
                     }

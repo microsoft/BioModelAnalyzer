@@ -115,7 +115,7 @@ module BMA {
 
             public set LineWidth(value: number) {
                 this.lineWidth = value;
-                console.log(this.lineWidth);
+                //console.log(this.lineWidth);
             }
 
             public get LabelSize(): number {
@@ -575,7 +575,7 @@ module BMA {
                             var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                             var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
 
-                            console.log(len1 + ", " + len2);
+                            //console.log(len1 + ", " + len2);
                             return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                         }
                     },
@@ -673,7 +673,7 @@ module BMA {
                             var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                             var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
 
-                            console.log(len1 + ", " + len2);
+                            //console.log(len1 + ", " + len2);
                             return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                         }
                     },

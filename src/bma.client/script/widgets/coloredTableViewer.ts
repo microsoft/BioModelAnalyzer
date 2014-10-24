@@ -97,8 +97,8 @@
                     }
                     break;
 
-                default:
-                    alert("undefined type of table");
+                //default:
+                //    alert("undefined type of table");
             }
         },
 

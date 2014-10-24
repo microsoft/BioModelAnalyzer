@@ -4,50 +4,56 @@
 
             private driver: BMA.UIDrivers.IFurtherTesting;
             private popupViewer: BMA.UIDrivers.IPopup;
+            private ajax: BMA.UIDrivers.IServiceDriver;
+            private messagebox: BMA.UIDrivers.IMessageServise;
             private num: number = 0;
             private data;
             private model;
             private result;
             private variables;
 
-            constructor(driver: BMA.UIDrivers.IFurtherTesting, popupViewer: BMA.UIDrivers.IPopup) {
+            constructor(
+                driver: BMA.UIDrivers.IFurtherTesting,
+                popupViewer: BMA.UIDrivers.IPopup,
+                ajax: BMA.UIDrivers.IServiceDriver,
+                messagebox: BMA.UIDrivers.IMessageServise
+            ) {
                 var that = this;
                 this.driver = driver;
                 this.popupViewer = popupViewer;
-
+                this.ajax = ajax;
+                this.messagebox = messagebox;
 
 
                 window.Commands.On("ProofFailed", function (param: { Model; Variables; Res }) {
-                    that.driver.ShowStartToggler();
-                    that.model = param.Model;
-                    that.result = param.Res;
-                    that.variables = param.Variables;
+                    if (param !== undefined) {
+                        that.driver.ShowStartFurtherTestingToggler();
+                        that.model = param.Model;
+                        that.result = param.Res;
+                        that.variables = param.Variables;
+                    }
+                    else {
+                        that.data = undefined;
+                    }
                 })
 
                 window.Commands.On("ProofRequested", function () {
-                    that.driver.HideStartToggler();
+                    that.driver.HideStartFurtherTestingToggler();
                     that.driver.HideResults();
                 })
 
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0 && that.model !== undefined && that.result !== undefined && that.variables !== undefined) {
                         that.driver.StandbyMode();
-                        $.ajax({
-                            type: "POST",
-                            url: "api/FurtherTesting",
-                            //callbackParameter: 'callback',
-                            //dataType: 'jsonp',
-                            //timeout: 10000,
-                            data: {
-                                Model: that.model,
-                                Analysis: that.result,
-                            },
-                            success: function (res2) {
+                        var result = that.ajax.Invoke("api/FurtherTesting", {
+                            Model: that.model,
+                            Analysis: that.result,
+                        })
+                            .done(function (res2) {
                                 that.driver.ActiveMode();
                                 if (res2.CounterExamples !== null) {
-                                    that.driver.HideStartToggler();
+                                    that.driver.HideStartFurtherTestingToggler();
 
-                                    //that.data = res2.CounterExamples;
                                     var bif = null, osc = null;
                                     for (var i = 0; i < res2.CounterExamples.length; i++) {
                                         switch (res2.CounterExamples[i].Status) {
@@ -81,28 +87,27 @@
                                         tabLabels.push(label);
                                     }
 
-                                    
                                     that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
                                     that.driver.ShowResults(that.data);
                                 }
                                 else {
-                                    alert(res2.Error);
                                     that.driver.ActiveMode();
+                                    that.messagebox.Show(res2.Error);
                                 }
-                            },
-                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            })
+                            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                                 that.driver.ActiveMode();
-                                alert(errorThrown);
-                            }
-                        });
+                                that.messagebox.Show(errorThrown);
+                            });
+
                     }
-                    else alert("No Variables");
+                    else that.messagebox.Show("No Variables");
                 })
 
                 window.Commands.On("Expand", (param) => {
                         switch (param) {
                             case "FurtherTesting":
-                                that.driver.HideStartToggler();
+                                that.driver.HideStartFurtherTestingToggler();
                                 that.driver.HideResults();
                                 var content = $('<div></div>').furthertesting();
                                 content.furthertesting("SetData", that.data);
@@ -110,7 +115,7 @@
                                 this.popupViewer.Show({ tab: param, content: content.children().eq(1).children().eq(1) });
                                 break;
                             default:
-                                //that.driver.ShowResults(that.data);
+                                that.driver.ShowResults(that.data);
                                 break;
                         }
                 })

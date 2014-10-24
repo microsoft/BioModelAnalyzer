@@ -18,10 +18,6 @@
            
             this.RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
             
-
-            
-
-
             this.table1 = $('<div></div>').width("40%").appendTo(that.element);
             this.table1.addClass("bma-simulation-table-expanded-scroll");
             this.progression = $('<div></div>').appendTo(that.element).progressiontable();//.addClass("bma-simulation-table")

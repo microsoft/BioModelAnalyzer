@@ -6,7 +6,7 @@ module BMA {
         export class AppModel {
             private model: BMA.Model.BioModel;
             private layout: BMA.Model.Layout;
-            private proofResult: BMA.Model.ProofResult;
+            private proofResult: BMA.Model.ProofResult = undefined;
 
             public get BioModel(): BMA.Model.BioModel {
                 return this.model;
@@ -48,7 +48,7 @@ module BMA {
                         ml.layout.containers === undefined ||
                         ml.model.relationships === undefined)
                     {
-                        alert("Invalid model");
+                        console.log("Invalid model");
                         return;
                     }
 
@@ -78,7 +78,7 @@ module BMA {
                     var relationships = [];
                     for (var i = 0; i < ml.model.relationships.length; i++) {
                         relationships.push(new BMA.Model.Relationship(
-                            ml.model.relationships[i].Id,
+                            ml.model.relationships[i].id,
                             ml.model.relationships[i].fromVariableId,
                             ml.model.relationships[i].toVariableId,
                             ml.model.relationships[i].type));

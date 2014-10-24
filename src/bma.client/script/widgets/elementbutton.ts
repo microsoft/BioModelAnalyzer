@@ -13,8 +13,6 @@
             toggle: false
         },
 
-        
-
         _resetElement: function () {
             this.element.empty();
             this.element.addClass("bma-elementtoolbar-element")

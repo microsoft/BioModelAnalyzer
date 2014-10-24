@@ -319,7 +319,6 @@ declare var Rx: any;
                     break;
                 case "zoom":
                     if (value !== undefined) {
-                        console.log(value);
                         if (that._plot.visibleRect.width !== value) {
 
                             var oldPlotRect = that._plot.visibleRect;
@@ -348,19 +347,6 @@ declare var Rx: any;
                     break;
             }
             this._super(key, value);
-        },
-
-        _getZoom: function () {
-            //var plotRect = this._plot.visibleRect;
-            ////console.log(plotRect.width);
-            //return 0;
-            if (this._gridLinesPlot.mapControl === undefined)
-
-                return InteractiveDataDisplay.Gestures.zoomLevelFactor;
-
-            else
-
-                return 3.0;
         },
 
         _setOptions: function (options) {

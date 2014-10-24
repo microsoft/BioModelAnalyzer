@@ -18,8 +18,11 @@ module BMA {
 
         export interface INavigationPanel {
             TurnNavigation(isOn: boolean);
-            //GetZoomSubject(): any;
             SetZoom(zoom: number);
+        }
+
+        export interface IServiceDriver {
+            Invoke(url, data): JQueryPromise<any>;
         }
 
         export interface IVariableEditor {
@@ -60,8 +63,8 @@ module BMA {
         }
 
         export interface IFurtherTesting {
-            ShowStartToggler();
-            HideStartToggler();
+            ShowStartFurtherTestingToggler();
+            HideStartFurtherTestingToggler();
             ShowResults(data);
             HideResults();
             GetViewer();
@@ -112,6 +115,11 @@ module BMA {
             SaveModel(id: string, model: JSON);
             IsInRepo(id: string);
             //OnRepositoryUpdated();
+        }
+
+        export interface IMessageServise {
+            Show(message: string);
+            Log(message: string);
         }
     }
 } 

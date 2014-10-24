@@ -3,53 +3,54 @@
         export class ProofPresenter { 
             private appModel: BMA.Model.AppModel;
             private viewer: BMA.UIDrivers.IProofResultViewer;
+            private ajax: BMA.UIDrivers.IServiceDriver;
+            private messagebox: BMA.UIDrivers.IMessageServise;
 
-            constructor(appModel: BMA.Model.AppModel, proofResultViewer: BMA.UIDrivers.IProofResultViewer, popupViewer: BMA.UIDrivers.IPopup) {
+            constructor(
+                appModel: BMA.Model.AppModel,
+                proofResultViewer: BMA.UIDrivers.IProofResultViewer,
+                popupViewer: BMA.UIDrivers.IPopup,
+                ajax: BMA.UIDrivers.IServiceDriver,
+                messagebox: BMA.UIDrivers.IMessageServise
+                ) {
+
                 this.appModel = appModel;
+                this.ajax = ajax;
+                this.messagebox = messagebox;
                 var that = this;
 
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
                     var proofInput = appModel.BioModel.GetJSON();
-
-                    $.ajax({
-                        type: "POST",
-                        url: "api/Analyze",
-                        //callbackParameter: 'callback',
-                        //dataType: 'jsonp',
-                        //timeout: 10000,
-                        data: proofInput,
-                        success: function (res) {
-                            console.log("Proof Result Status: " + res.Status);
+                    var result = that.ajax.Invoke("api/Analyze", proofInput)
+                        .done(function (res) {
+                            //console.log("Proof Result Status: " + res.Status);
                             if (res.Ticks !== null) {
                                 var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                                 if (res.Status === 5)
                                     window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
+                                else
+                                    window.Commands.Execute("ProofFailed", undefined);
                                 var st = that.Stability(res.Ticks);
                                 var variablesData = that.CreateTableView(st.variablesStability);
                                 var colorData = that.CreateColoredTable(res.Ticks);
-                                //var result = appModel.ProofResult;
-                                //var data = { numericData: numericData, colorData: undefined };
                                 window.Commands.Execute("DrawingSurfaceSetProofResults", st);
                                 proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
                             else {
-                                //alert("Error: " + res.Error);
                                 proofResultViewer.SetData({
                                     issucceeded: res.Status === 4,
                                     time: res.Time
                                 })
                                 proofResultViewer.ShowResult(appModel.ProofResult);
-                                //proofResultViewer.OnProofFailed();
                             }
-                        },
-                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        })
+                        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                             console.log("Proof Service Failed: " + errorThrown);
-                            alert("Error: " + errorThrown);
+                            that.messagebox.Show("Proof Service Failed: " + errorThrown);
                             proofResultViewer.OnProofFailed();
-                        } 
-                    });
+                        });
                 });
 
                 window.Commands.On("Expand", (param) => {
@@ -62,7 +63,10 @@
                                 }
                                 break;
                             case "ProofVariables":
-                                var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
+
+                                var st = that.Stability(this.appModel.ProofResult.Ticks);
+                                var variablesData = that.CreateTableView(st.variablesStability);
+                                //var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
                                 full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
                                 full.find("td").eq(0).width(150);
                                 full.find("td").eq(2).width(150);

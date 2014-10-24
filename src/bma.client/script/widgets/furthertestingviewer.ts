@@ -97,11 +97,17 @@
             this.toggler.show();
         },
 
-        SetData: function(arg) {
-            this.options.data = arg.data;
-            this.options.tableHeaders = arg.tableHeaders;
-            this.options.tabLabels = arg.tabLabels;
+        SetData: function (arg) {
+            if (arg !== undefined) {
+                this.options.data = arg.data;
+                this.options.tableHeaders = arg.tableHeaders;
+                this.options.tabLabels = arg.tabLabels;
+            }
+            else {
+                this.options.data = this.options.tableHeaders = this.options.tabLabels = undefined;
+            }
             this.refresh();
+            
         }, 
 
         HideStartToggler: function () {

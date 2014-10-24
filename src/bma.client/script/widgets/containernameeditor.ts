@@ -28,7 +28,6 @@
         _setOption: function (key, value) {
             var that = this;
             if (key === "name") {
-                console.log("change name");
                 this.options.name = value;
                 this.name.val(value);
             }

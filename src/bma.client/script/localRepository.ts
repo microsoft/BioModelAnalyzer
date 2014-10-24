@@ -1,6 +1,12 @@
 ﻿module BMA {
     export class LocalRepositoryTool implements BMA.UIDrivers.IModelRepository {
         
+        private messagebox: BMA.UIDrivers.IMessageServise;
+
+        constructor(messagebox: BMA.UIDrivers.IMessageServise) {
+            this.messagebox = messagebox;
+        }
+
         public IsInRepo(id: string) {
             return window.localStorage.getItem(id) !== null;
         }
@@ -12,7 +18,7 @@
             }
             catch (e) {
                 if (e === 'QUOTA_EXCEEDED_ERR') {
-                    alert("Error: Local repository is full");
+                    this.messagebox.Show("Error: Local repository is full");
                 }
             }
         }

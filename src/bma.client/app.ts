@@ -272,6 +272,8 @@ $(document).ready(function () {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+    var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
+    var messagebox = new BMA.UIDrivers.MessageBoxDriver();
 
     window.Commands.On("Commands.ToggleGrid", function (param) {
         visualSettings.GridVisibility = param;
@@ -288,15 +290,15 @@ $(document).ready(function () {
         accordionHider.Hide();
     });
 
-    var localRepositoryTool = new BMA.LocalRepositoryTool();
+    var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
 
     //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, contextMenuDriver);
-    var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver);
-    var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(furtherTestingDriver, popupDriver);
-    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver);
+    var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, ajaxServiceDriver, messagebox);
+    var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(furtherTestingDriver, popupDriver, ajaxServiceDriver, messagebox);
+    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver, ajaxServiceDriver);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
-    var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver);
-    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool);
+    var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, ajaxServiceDriver);
+    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox);
 });

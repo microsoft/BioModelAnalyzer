@@ -4,14 +4,16 @@
             private appModel: BMA.Model.AppModel;
             private compactViewer: BMA.UIDrivers.ISimulationViewer;
             private expandedViewer: BMA.UIDrivers.ISimulationExpanded;
+            private ajax: BMA.UIDrivers.IServiceDriver;
             private data;
             private colors;
             private initValues;
 
-            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup) {
+            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver) {
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
+                this.ajax = ajax;
                 this.data = [];
                 this.colors = [];
                 var that = this;
@@ -26,7 +28,6 @@
                     that.data = [];
                     that.initValues = param.data;
                     that.ClearColors();
-                    //that.AddData(that.initValues);
                     var stableModel = that.appModel.BioModel.GetJSON();
                     var variables = that.ConvertParam(param.data);
                     that.StartSimulation({ model: stableModel, variables: variables, num: param.num});
@@ -37,7 +38,6 @@
                     that.CreateColors();
                     that.ClearColors();
                     var variables = that.CreateVariablesView();
-                    //var prmin = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
                 });
 
@@ -47,7 +47,6 @@
                         var variables = this.appModel.BioModel.Variables;
                         switch (param) {
                             case "SimulationVariables":
-                                //that.ClearColors();
                                 that.expandedViewer.Set({ variables: variables, colors: that.colors, init: that.initValues });
                                 full = that.expandedViewer.GetViewer();//$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 break;
@@ -90,16 +89,10 @@
                 }
 
                 if (param.variables !== undefined && param.variables !== null)
-                    $.ajax({
-                        type: "POST",
-                        url: "api/Simulate",
-                        //callbackParameter: 'callback',
-                        //dataType: 'jsonp',
-                        //timeout: 10000,
-                        data: simulate,
-                        success: function (res) {
+
+                    var result = that.ajax.Invoke("api/Simulate", simulate)
+                        .done(function (res) {
                             if (res.Variables !== null) {
-                                //window.Commands.Execute("AddResult", that.ConvertResult(res));
                                 that.expandedViewer.AddResult(res);
                                 var d = that.ConvertResult(res);
                                 that.AddData(d);
@@ -107,20 +100,15 @@
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulation Error: " + res.ErrorMessages);
+                                console.log ("Simulation Error: " + res.ErrorMessages);
                             }
-                            //$("#log").append("Simulate success. Result variable count: " + res.Variables.Length + "<br/>");
-                        },
-                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        })
+                        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                             console.log(textStatus);
                             that.expandedViewer.ActiveMode();
                             alert("Simulate error: " + errorThrown);
                             return;
-                            //$("#log").append("Simulate error: " + res.statusText + "<br/>");
-                        }
-                    }).fail(function (arg) {
-                        console.log("Sim fail: ");
-                    });
+                        });
                 else return;
             }
 

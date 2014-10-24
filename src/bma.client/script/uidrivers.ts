@@ -168,16 +168,18 @@ module BMA {
                 return this.viewer;
             }
 
-            public ShowStartToggler() {
+            public ShowStartFurtherTestingToggler() {
                 this.viewer.furthertesting("ShowStartToggler");
             }
 
-            public HideStartToggler() {
+            public HideStartFurtherTestingToggler() {
                 this.viewer.furthertesting("HideStartToggler");
             }
 
             public ShowResults(data) {
-                this.viewer.furthertesting("SetData", { tabLabels: data.tabLabels, tableHeaders: data.tableHeaders, data: data.data });
+                if (data !== undefined)
+                    this.viewer.furthertesting("SetData", { tabLabels: data.tabLabels, tableHeaders: data.tableHeaders, data: data.data });
+                else { this.viewer.furthertesting("SetData", undefined) }
                 //var content = $('<div></div>')
                 //    .addClass("scrollable-results")
                 //    .coloredtableviewer({ numericData: data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
@@ -438,6 +440,28 @@ module BMA {
 
             public Hide() {
                 var coll = this.acc.children().filter('[aria-selected="true"]').trigger("click");
+            }
+        }
+
+        export class AjaxServiceDriver implements IServiceDriver {
+           
+            public Invoke(url, data): JQueryPromise<any> {
+                return $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: data
+                });
+            }
+        }
+
+        export class MessageBoxDriver implements IMessageServise {
+
+            public Show(message: string){
+                alert("message");
+            }
+
+            public Log(message: string) {
+                console.log("message");
             }
         }
     }
