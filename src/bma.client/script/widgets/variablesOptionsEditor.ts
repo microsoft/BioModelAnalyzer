@@ -168,8 +168,8 @@
                     var item = $('<li></li>').appendTo(inpUl);
                     var span = $('<span></span>').text(val).appendTo(item);
                     item.hover(
-                        function () { that._OnHoverFunction($(this), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this), that.infoTextArea) }
+                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
                         );
                     if (ind !== 0) {
                         item.click(function () {
@@ -185,8 +185,8 @@
                     var item = $('<li></li>').appendTo(opUl1);
                     var span = $('<span></span>').text(val).appendTo(item);
                     item.hover(
-                        function () { that._OnHoverFunction($(this), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this), that.infoTextArea) }
+                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
                         );
                     item.click(function () { 
                         var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
@@ -200,8 +200,8 @@
                     var item = $('<li></li>').appendTo(opUl2);
                     var span = $('<span></span>').text(val).appendTo(item);
                     item.hover(
-                        function () { that._OnHoverFunction($(this), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this), that.infoTextArea) }
+                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
                         );
                     item.click(function () {
                         var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
