@@ -92,7 +92,7 @@
         expect(neweditor.find("div.bma-formula-validation-message").text()).toEqual(error);
     });
 
-    it("should change functions option", () => {
+    xit("should change functions option", () => {
         var funs = editor.bmaeditor("option", "functions");//find(".labels-for-functions");
         expect(funs.length).toEqual(11);
 
@@ -168,7 +168,7 @@
         }
     });
 
-    it("should input function in formula correctly after choosing from the list", () => {
+    xit("should input function in formula correctly after choosing from the list", () => {
         var functions = editor.find(".label-for-functions");
         var textarea = editor.find("textarea");
         var insert = editor.find(".bma-insert-function-button");
@@ -192,7 +192,7 @@
         expect(textarea.val()).toEqual(inputs.eq(1).text());
     });
 
-    it("should input choosed variables and functions in formula", function () {
+    xit("should input choosed variables and functions in formula", function () {
         var functions = editor.find(".label-for-functions");
         var inputs = editor.find(".inputs-list-content").children();
         var textarea = editor.find("textarea");

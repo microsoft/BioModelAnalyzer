@@ -9,7 +9,9 @@
             name: "name",
             rangeFrom: 0,
             rangeTo: 0,
-            functions: ["var", "avg", "min", "max", "const", "plus", "minus", "times", "div", "ceil", "floor"],
+            functions: ["VAR", "CONST", "POS", "NEG"],//],
+            operators1: ["+", "-", "*", "/"], 
+            operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
             formula: "",
             approved: undefined
@@ -25,12 +27,12 @@
             inputs.forEach(function (val, ind) {
                 var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                 item.bind("click", function () {
-                    that.textarea.insertAtCaret($(this).text()).change();
+                    that.formulaTextArea.insertAtCaret($(this).text()).change();
                     that.listOfInputs.hide();
                 });
             });
 
-            this.textarea.val(that.options.formula);
+            this.formulaTextArea.val(that.options.formula);
             window.Commands.Execute("FormulaEdited", {});
         },
 
@@ -39,7 +41,6 @@
             var that = this;
             that.prooficon.removeClass("formula-failed");
             that.prooficon.removeClass("formula-validated");
-
             if (this.options.approved === true)
                 that.prooficon.addClass("formula-validated");
             else if (this.options.approved === false)
@@ -69,7 +70,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("newWindow");
+            this.element.addClass("bma-variables-options-editor");
             this.element.draggable({ containment: "parent", scroll: false  });
             this._appendInputs();
             this._processExpandingContent();
@@ -83,15 +84,21 @@
             closing.bind("click", function () {
                 that.element.hide();
             });
-            var div1 = $('<div style="height:20px"></div>').appendTo(that.element);
-            var nameLabel = $('<div class="labels-in-variables-editor"></div>').text("Name").appendTo(div1);
-            var rangeLabel = $('<div class="labels-in-variables-editor"></div>').text("Range").appendTo(div1);
-            var inputscontainer = $('<div class="inputs-container"></div>').appendTo(that.element);
-            this.expandLabel = $('<button class="editorExpander"></button>').appendTo(inputscontainer);
-            this.name = $('<input type="text" size="15">').appendTo(inputscontainer);
+            //var div1 = $('<div style="height:20px"></div>').appendTo(that.element);
+            //var nameLabel = $('<div class="labels-in-variables-editor"></div>').text("Name").appendTo(div1);
+            
+            //var inputscontainer = $('<div class="inputs-container"></div>').appendTo(that.element);
+            //this.expandLabel = $('<button class="editorExpander"></button>').appendTo(inputscontainer);
+            this.name = $('<input type="text" size="15">')
+                .attr("placeholder", "Variable Name")
+                .appendTo(that.element);
 
-            this.rangeFrom = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
-            var divtriangles1 = $('<div class="div-triangles"></div>').appendTo(inputscontainer);
+            var rangeDiv = $('<div></div>').appendTo(that.element);
+            var rangeLabel = $('<span class="labels-in-variables-editor"></span>').text("Range").appendTo(rangeDiv);
+            this.rangeFrom = $('<input type="text" min="0" max="100" size="1">')
+                .attr("placeholder", "min")
+                .appendTo(rangeDiv);
+            var divtriangles1 = $('<div class="div-triangles"></div>').appendTo(rangeDiv);
 
             var upfrom = $('<div></div>').addClass("triangle-up").appendTo(divtriangles1);
             upfrom.bind("click", function () {
@@ -106,8 +113,10 @@
                 window.Commands.Execute("VariableEdited", {});
             });
 
-            this.rangeTo = $('<input type="text" min="0" max="100" size="1">').appendTo(inputscontainer);
-            var divtriangles2 = $('<div class="div-triangles"></div>').appendTo(inputscontainer);
+            this.rangeTo = $('<input type="text" min="0" max="100" size="1">')
+                .attr("placeholder", "max")
+                .appendTo(rangeDiv);
+            var divtriangles2 = $('<div class="div-triangles"></div>').appendTo(rangeDiv);
 
             var upto = $('<div></div>').addClass("triangle-up").appendTo(divtriangles2);
             upto.bind("click", function () {
@@ -121,60 +130,132 @@
                 that._setOption("rangeTo", valu - 1);
                 window.Commands.Execute("VariableEdited", {});
             });
+
+            var formulaDiv = $('<div></div>').appendTo(that.element);
+            $('<div></div>').text("Target Function").appendTo(formulaDiv);
+
+            this.prooficon = $('<div><div>')
+                .addClass("bma-formula-validation-icon")
+                .appendTo(formulaDiv);
+
+            this.formulaTextArea = $('<textarea></textarea>').appendTo(formulaDiv);
+            
+            this.errorMessage = $('<div></div>')
+                .addClass("bma-formula-validation-message")
+                .appendTo(formulaDiv);
         },
 
         _processExpandingContent: function () {
             var that = this;
-            this.content = $('<div class="expanding"></div>').appendTo(this.element).hide();
-            var span = $('<div>Target Function</div>').appendTo(that.content);
+            //this.content = $('<div class="expanding"></div>').appendTo(this.element);
+            //var span = $('<div>Target Function</div>').appendTo(that.content);
 
-            var div = $('<div></div>').appendTo(that.content);
-            var div1 = $('<div class="bma-functions-list"></div>').appendTo(div);
-            var div2 = $('<div class="functions-info"></div>').appendTo(div);
+            var inputsDiv = $('<div></div>').addClass('list-of-functions').appendTo(that.element);
+            $('<div></div>').text("Inputs").appendTo(inputsDiv);
+            var inpUl = $('<ul></ul>').appendTo(inputsDiv);
+            var div = $('<div></div>').appendTo(that.element);
+            var operatorsDiv = $('<div></div>').addClass('list-of-operators').appendTo(div);
+            $('<div></div>').text("Operators").appendTo(operatorsDiv);
+            var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
+            var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
+
+            //var div1 = $('<div class="bma-functions-list"></div>').appendTo(div);
+            this.infoTextArea = $('<div class="functions-info"></div>').appendTo(div);
 
             var functions = this.options.functions;
             functions.forEach(
                 function (val, ind) {
-                    var item = $('<div class="label-for-functions"></div>').text(val).appendTo(div1);
-                    item.bind("click", function () {
-                        that.selected = $(this).addClass("ui-selected");
-                        div1.children().not(that.selected).removeClass("ui-selected");
-                        that._refreshText(div2);
-                    });
+                    var item = $('<li></li>').appendTo(inpUl);
+                    var span = $('<span></span>').text(val).appendTo(item);
+                    item.hover(
+                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
+                        );
+                    if (ind !== 0) {
+                        item.click(function () {
+                            var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
+                            that._InsertToFormula(about);
+                        })
+                    }
                 });
-            var insertButton = $('<button class="bma-insert-function-button">insert</button>').appendTo(div);
 
-            insertButton.bind("click", function () {
-                var about = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
-                var caret = that.getCaretPos(that.textarea) + about.Offset;
-                that.textarea.insertAtCaret(about.InsertText).change();
-                that.textarea[0].setSelectionRange(caret, caret);
-            });
-            $(div1.children()[0]).click();
+            var operators1 = this.options.operators1;
+            operators1.forEach(
+                function (val, ind) {
+                    var item = $('<li></li>').appendTo(opUl1);
+                    var span = $('<span></span>').text(val).appendTo(item);
+                    item.hover(
+                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
+                        );
+                    item.click(function () { 
+                        var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
+                        that._InsertToFormula(about);
+                    })
+                });
 
-            this.inputsList = $('<div class="inputs-list-header">Inputs</div>').appendTo(that.content);
+            var operators2 = this.options.operators2;
+            operators2.forEach(
+                function (val, ind) {
+                    var item = $('<li></li>').appendTo(opUl2);
+                    var span = $('<span></span>').text(val).appendTo(item);
+                    item.hover(
+                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
+                        );
+                    item.click(function () {
+                        var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
+                        that._InsertToFormula(about);
+                    })
+                });
 
-            this.listOfInputs = $('<div class="inputs-list-content"></div>').appendTo(that.content).hide();
+            //var insertButton = $('<button class="bma-insert-function-button">insert</button>').appendTo(div);
+
+            //insertButton.bind("click", function () {
+            //    var about = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
+            //    var caret = that.getCaretPos(that.formulaTextArea) + about.Offset;
+            //    that.formulaTextArea.insertAtCaret(about.InsertText).change();
+            //    that.formulaTextArea[0].setSelectionRange(caret, caret);
+            //});
+            //$(div1.children()[0]).click();
+
+            this.inputsList = inpUl.children().eq(0).addClass("inputs-list-header-collapsed");
+            this.listOfInputs = $('<div class="inputs-list-content"></div>').width(this.inputsList.outerWidth()).appendTo(that.inputsList).hide();
+
+
             this.inputsList.bind("click", function () {
-                if (that.listOfInputs.is(":hidden"))
+                if (that.listOfInputs.is(":hidden") && that.listOfInputs.children().length !== 0) {
+                    that.inputsList.css("border-radius", "10px 10px 0 0");
                     that.listOfInputs.show();
-                else that.listOfInputs.hide();
+                }
+                else {
+                    that.inputsList.css("border-radius", "10px");
+                    that.listOfInputs.hide();
+                }
             });
-
-            var inputs = this.options.inputs;
-            this.textarea = $('<textarea></textarea>').appendTo(that.content);
-            this.prooficon = $('<div><div>')
-                .addClass("bma-formula-validation-icon")
-                .appendTo(that.content);
-            this.errorMessage = $('<div></div>')
-                .addClass("bma-formula-validation-message")
-                .appendTo(that.content);
         },
 
-        _refreshText: function (div: JQuery) {
+        _OnHoverFunction: function (item: JQuery, textarea: JQuery) {
+            var selected = item.addClass("ui-selected");
+            item.parent().children().not(selected).removeClass("ui-selected");
+            this._refreshText(selected, textarea);
+        },
+
+        _OffHoverFunction: function (item: JQuery, textarea: JQuery) {
+            item.parent().children().removeClass("ui-selected");
+            textarea.text("");
+        },
+
+        _InsertToFormula: function (item: BMA.Functions.BMAFunction) {
+            var caret = this.getCaretPos(this.formulaTextArea) + item.Offset;
+            this.formulaTextArea.insertAtCaret(item.InsertText).change();
+            this.formulaTextArea[0].setSelectionRange(caret, caret);
+        },
+
+        _refreshText: function (selected: JQuery,div: JQuery) {
             var that = this;
             div.empty();
-            var fun = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
+            var fun = window.FunctionsRegistry.GetFunctionByName(selected.text());
             $('<p style="font-weight: bold">' + fun.Head + '</p>').appendTo(div);
             $('<p>' + fun.About + '</p>').appendTo(div);
         },
@@ -197,17 +278,17 @@
                 window.Commands.Execute("VariableEdited", {});
             });
 
-            this.expandLabel.bind("click", function () {
-                if (that.content.is(':hidden')) 
-                    that.content.show();
-                else
-                    that.content.hide();
-                $(this).toggleClass("editorExpanderChecked", "editorExpander");
-            });
+            //this.expandLabel.bind("click", function () {
+            //    if (that.content.is(':hidden')) 
+            //        that.content.show();
+            //    else
+            //        that.content.hide();
+            //    $(this).toggleClass("editorExpanderChecked", "editorExpander");
+            //});
 
-            this.textarea.bind("input change propertychange", function () {
-                //that._setOption("formula", that.textarea.val());
-                that.options.formula = that.textarea.val();
+            this.formulaTextArea.bind("input change propertychange", function () {
+                that._setOption("formula", that.formulaTextArea.val());
+                //that.options.formula = that.formulaTextArea.val();
                 window.Commands.Execute("VariableEdited", {});
             });
 
@@ -235,8 +316,8 @@
                 case "formula":
                     that.options.formula = value;
 
-                    if (this.textarea.val() !== that.options.formula)
-                        this.textarea.val(that.options.formula);
+                    if (this.formulaTextArea.val() !== that.options.formula)
+                        this.formulaTextArea.val(that.options.formula);
                     window.Commands.Execute("FormulaEdited", that.options.formula);
                     
                     break;
@@ -247,7 +328,7 @@
                     inputs.forEach(function (val, ind) {
                         var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                         item.bind("click", function () {
-                            that.textarea.insertAtCaret($(this).text()).change();
+                            that.formulaTextArea.insertAtCaret($(this).text()).change();
                             that.listOfInputs.hide();
                         });
                     });
