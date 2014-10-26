@@ -295,6 +295,7 @@
     <TypeScriptCompile Include="script\presenters\presenters.ts" />
     <TypeScriptCompile Include="script\uidrivers.interfaces.ts" />
     <TypeScriptCompile Include="script\uidrivers.ts" />
+    <TypeScriptCompile Include="script\XmlModelParser.ts" />
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\AnalyticsTest.ts" />
     <TypeScriptCompile Include="test\BiomodelTest.ts" />
@@ -371,8 +372,12 @@
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
+    <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
-    <Content Include="test\data\2var_unstable.xml" />
+    <Content Include="test\data\2var_unstable.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="tou.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
