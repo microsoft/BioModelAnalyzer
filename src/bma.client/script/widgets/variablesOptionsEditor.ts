@@ -39,12 +39,18 @@
         SetValidation: function (result: boolean, message: string) {
             this.options.approved = result;
             var that = this;
-            that.prooficon.removeClass("formula-failed");
-            that.prooficon.removeClass("formula-validated");
-            if (this.options.approved === true)
-                that.prooficon.addClass("formula-validated");
-            else if (this.options.approved === false)
-                that.prooficon.addClass("formula-failed");
+            that.prooficon.removeClass("formula-failed-icon");
+            that.prooficon.removeClass("formula-validated-icon");
+            this.formulaTextArea.removeClass("formula-failed-textarea");
+            this.formulaTextArea.removeClass("formula-validated-textarea");
+            if (this.options.approved === true) {
+                that.prooficon.addClass("formula-validated-icon");
+                this.formulaTextArea.addClass("formula-validated-textarea");
+            }
+            else if (this.options.approved === false) {
+                that.prooficon.addClass("formula-failed-icon");
+                this.formulaTextArea.addClass("formula-failed-textarea");
+            }
             that.errorMessage.text(message);
         },
 
@@ -138,7 +144,7 @@
                 .addClass("bma-formula-validation-icon")
                 .appendTo(formulaDiv);
 
-            this.formulaTextArea = $('<textarea></textarea>').appendTo(formulaDiv);
+            this.formulaTextArea = $('<textarea></textarea>').addClass("variablesOptionsEditor-formulaTextArea").appendTo(formulaDiv);
             
             this.errorMessage = $('<div></div>')
                 .addClass("bma-formula-validation-message")

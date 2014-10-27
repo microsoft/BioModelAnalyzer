@@ -1,6 +1,6 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\script\uidrivers.interfaces.ts"/>
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\..\script\uidrivers.interfaces.ts"/>
 
 module BMA {
     export module Test {

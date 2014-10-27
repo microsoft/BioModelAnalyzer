@@ -31,10 +31,8 @@
          {"Path": "script/widgets", "Include":"*.ts"},
 
          {"Path": "app.ts"},
-         {"Path": "app.js" },
 
-         {"Path": "test/BMA.TestComponents.ts"},
-         {"Path": "test/BMA.TestComponents.js"},
+         {"Path": "test/TestComponents/", "Include": "*.ts"}
      ],
      "Tests":  [{ "Include":  "*/test/*.ts" }]
 }

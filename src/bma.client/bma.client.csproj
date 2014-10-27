@@ -169,6 +169,8 @@
     <Content Include="images\title-help.png" />
     <Content Include="images\title-TOU.png" />
     <Content Include="images\undo.png" />
+    <Content Include="images\validation_failed.png" />
+    <Content Include="images\validation_succeeded.png" />
     <Content Include="images\variable.png" />
     <Content Include="images\visicon.png" />
     <Content Include="images\visicon2.png" />
@@ -298,12 +300,14 @@
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\AnalyticsTest.ts" />
     <TypeScriptCompile Include="test\BiomodelTest.ts" />
-    <TypeScriptCompile Include="test\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
     <TypeScriptCompile Include="test\BMASliderTest.ts" />
     <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
+    <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
     <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
     <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
     <TypeScriptCompile Include="test\ModelTest.ts" />
