@@ -104,6 +104,12 @@ module BMA {
                 window.Commands.Execute("ModelReset", undefined);
             }
 
+            public Reset2(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
+                this.model = model;
+                this.layout = layout;
+                window.Commands.Execute("ModelReset", undefined);
+            }
+
             public Serialize(): string {
                 return JSON.stringify({ model: this.model, layout: this.layout });
             }
