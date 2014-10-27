@@ -7,9 +7,13 @@
         var $variables = $xml.children("Model").children("Variables").children("Variable");
         var modelVars = <Model.Variable[]>($variables.map((idx, elt) => {
             var $elt = $(elt);
+
+            var containerId = $elt.children("ContainerId").text();
+            containerId = containerId === "" ? "-1" : containerId;
+
             return new Model.Variable(
                 parseInt($elt.attr("Id")),
-                parseInt($elt.children("ContainerId").text()),
+                parseInt(containerId),
                 $elt.children("Type").text(),
                 $elt.attr("Name"),
                 parseInt($elt.children("RangeFrom").text()),
@@ -30,22 +34,56 @@
         var $containers = $xml.children("Model").children("Containers").children("Container");
         var containers = <Model.ContainerLayout[]>($containers.map((idx, elt) => {
             var $elt = $(elt);
+
+            var size = $elt.children("Size").text();
+            size = size === "" ? "1" : size;
+
             return new Model.ContainerLayout(
                 parseInt($elt.attr("Id")),
-                parseInt($elt.children("Size").text()),
+                parseInt(size),
                 parseInt($elt.children("PositionX").text()),
                 parseInt($elt.children("PositionY").text()));
         }).get());
 
         var varLayouts = $variables.map((idx, elt) => {
             var $elt = $(elt);
+
+
+
+            var cellX = $elt.children("CellX").text();
+            var cellY = $elt.children("CellY").text();
+
+            if (cellX === "" || cellY === "") {
+                var cntID = $elt.children("ContainerId").text();
+                if (cntID !== "") {
+                    var containerId = parseInt(cntID);
+                    for (var i = 0; i < containers.length; i++) {
+                        if (containers[i].Id === containerId) {
+                            cellX = containers[i].PositionX.toString();
+                            cellY = containers[i].PositionY.toString();
+                            break;
+                        }
+                    }
+                } else {
+                    cellX = "0";
+                    cellY = "0";
+                }
+            }
+
+            var positionX = $elt.children("PositionX").text();
+            positionX = positionX === "" ? "0" : positionX;
+            var positionY = $elt.children("PositionY").text();
+            positionY = positionY === "" ? "0" : positionY;
+            var angle = $elt.children("Angle").text();
+            angle = angle === "" ? "0" : angle;
+
             return new Model.VarialbeLayout(
                 parseInt($elt.attr("Id")),
-                parseInt($elt.children("CellX").text()) * grid.xStep + grid.xOrigin + parseFloat($elt.children("PositionX").text()) * grid.xStep / 300,
-                parseInt($elt.children("CellY").text()) * grid.yStep + grid.yOrigin + parseFloat($elt.children("PositionY").text()) * grid.yStep / 350,
+                parseInt(cellX) * grid.xStep + grid.xOrigin + parseFloat(positionX) * grid.xStep / 300,
+                parseInt(cellY) * grid.yStep + grid.yOrigin + parseFloat(positionY) * (grid.yStep - 50) / 350 + 25,
                 Number.NaN,
                 Number.NaN,
-                parseFloat($elt.children("Angle").text()));
+                parseFloat(angle));
         }).get();
 
         return {
