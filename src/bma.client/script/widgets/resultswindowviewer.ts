@@ -88,7 +88,7 @@
                     break;
                 case "content":
                     if (this.options.content !== value) {
-                        this.options.content = value
+                        this.options.content = value;
                         this.refresh();
                     }
                     break;

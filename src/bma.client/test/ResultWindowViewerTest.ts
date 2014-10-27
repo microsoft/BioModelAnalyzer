@@ -2,13 +2,12 @@
 describe("ResultsWindowViewer", () => {
      
     var widget = $('<div></div>');
-
+    window.Commands = new BMA.CommandRegistry();
     afterEach(() => {
         widget.resultswindowviewer("destroy");
     })
 
     beforeEach(() => {
-        window.Commands = new BMA.CommandRegistry();
         widget.resultswindowviewer();
     })
 

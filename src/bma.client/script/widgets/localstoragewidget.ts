@@ -10,7 +10,6 @@
         },
 
         _create: function () {
-
             var that = this;
             var items = this.options.items;
             var header = $('<div></div>')
@@ -27,10 +26,7 @@
         },
 
         refresh: function () {
-            var that = this;
-            var items = this.options.items;
-            this._cteateHTML();
-            //this.table.coloredtableviewer({ header: ["Models"], numericData: that._createTableView(items) });
+            this._createHTML();
         },
 
         AddItem: function (item) {
@@ -38,10 +34,10 @@
             this.refresh();
         },
 
-        _cteateHTML: function (items) {
+        _createHTML: function (items) {
             var items = this.options.items;
             this.repo.empty();
-
+            var that = this;
             this.ol = $('<ol></ol>').appendTo(this.repo); 
             
             for (var i = 0; i < items.length; i++) {
@@ -50,33 +46,22 @@
                 removeBtn.bind("click", function () {
                     window.Commands.Execute("LocalStorageRemove", items[$(this).parent().index()]);
                 })
-                //var input = $('<input>').attr("type", "text").val(items[i]).appendTo(li);
-               
-                //input.dblclick(function (event) {
-                //    event.stopPropagation();
-                //    event.preventDefault();
-                //    window.Commands.Execute("LocalStorageOpen", items[$(this).parent().index()]);
-                //    $(this).parent().click();
-                //})
             }
 
             this.ol.selectable({
                 stop: function () {
-                    $(".ui-selected", this).each(function () {
-                        window.Commands.Execute("LocalStorageOpen", items[$(this).index()]);
-                    });
+                    console.log("STOP");
+                    //$(".ui-selected", this).each(function () {
+                    window.Commands.Execute("LocalStorageLoadModel", items[$(this).find(".ui-selected").eq(0).index()]);
+                    //});
                 }
             });
-        },
 
-        _createTableView: function (items) {
-            var table = [];
-            if (items !== undefined && items !== null && items.length !==0)
-                for (var i = 0; i < items.length; i++) {
-                    table[i] = [];
-                    table[i][0] = items[i];
-                }
-            return table;
+            //this.ol.on("selectablestop", function () {
+            //    $(".ui-selected", this).each(function () {
+            //        window.Commands.Execute("LocalStorageLoadModel", that.options.items[$(this).index()]);
+            //    });
+            //})
         },
 
         _setOption: function (key, value) {
@@ -92,6 +77,7 @@
 
         destroy: function () {
             $.Widget.prototype.destroy.call(this);
+            this.element.empty();
         }
 
     });

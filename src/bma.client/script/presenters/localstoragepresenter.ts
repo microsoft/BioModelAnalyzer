@@ -31,12 +31,12 @@
                     that.driver.Show();
                 });
 
-                window.Commands.On("LocalStorageSave", function () {
+                window.Commands.On("LocalStorageSaveModel", function () {
                     var key = appModel.BioModel.Name;
                     that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
                 });
 
-                window.Commands.On("LocalStorageOpen", function (key) {
+                window.Commands.On("LocalStorageLoadModel", function (key) {
                     if (that.tool.IsInRepo(key))
                         appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
                     else {

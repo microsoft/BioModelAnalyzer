@@ -17,9 +17,18 @@
 
             var command = this.element.attr("data-command");
 
-            var zoomplus = $('<img id="zoom-plus" class="hoverable" src="images/zoomplus.png">').appendTo(that.element);
-            this.zoomslider = $('<div class="bma-elementspanel-visibilityoptions-zoomslider"></div>')
+            var zoomplus = $('<img id="zoom-plus">')
+                .addClass("hoverable")
+                .attr("src", "images/zoomplus.png")
+                .appendTo(that.element);
+
+            this.zoomslider = $('<div></div>')
                 .addClass("bma-elementspanel-visibilityoptions-zoomslider")
+                .appendTo(that.element);
+
+            var zoomminus = $('<img id="zoom-minus">')
+                .addClass("hoverable")
+                .attr("src", "images/zoomminus.png")
                 .appendTo(that.element);
 
             this.zoomslider.slider({
@@ -31,34 +40,23 @@
                     var isExternal = Math.abs(that.options.value - ui.value) < 1 ||
                         that.options.value > that.options.max ||
                         that.options.value < that.options.min;
-
-                    that.options.value = ui.value;
-
+                    if (!isExternal)
+                        that.options.value = ui.value;
                     if (command !== undefined && command !== "") {
                         window.Commands.Execute(command, { value: ui.value, isExternal: isExternal });
                     }
             }
             });
-            var zoomminus = $('<img id="zoom-minus" class="hoverable" src="images/zoomminus.png">').appendTo(that.element);
+            
 
             zoomplus.bind("click", function () {
-                var val = that.zoomslider.slider("option", "value") - that.options.step;//that.zoomslider.slider("option", "step");
-
+                var val = that.zoomslider.slider("option", "value") - that.options.step;
                 that.zoomslider.slider("option", "value", val);
-
-                //if (command !== undefined && command !== "") {
-                //    window.Commands.Execute(command, { value: val });
-                //}
             });
 
             zoomminus.bind("click", function () {
-                var val = that.zoomslider.slider("option", "value") + that.options.step;//that.zoomslider.slider("option", "step");
-
+                var val = that.zoomslider.slider("option", "value") + that.options.step;
                 that.zoomslider.slider("option", "value", val);
-
-                //if (command !== undefined && command !== "") {
-                //    window.Commands.Execute(command, { value: val });
-                //}
             });
         },
 
@@ -85,6 +83,14 @@
                         this.zoomslider.slider("option", "value", value);
                     }
                     break;
+                case "min":
+                    this.options.min = value;
+                    this.zoomslider.slider("option", "min", value);
+                    break;
+                case "max":
+                    this.options.max = value;
+                    this.zoomslider.slider("option", "max", value);
+                    break;
             }
             this._super(key, value);
         }
@@ -94,7 +100,7 @@
 
 interface JQuery {
     bmazoomslider(): JQuery;
-    bmazoomslider(settings: Object): JQuery;
+    bmazoomslider(settings: any): JQuery;
     bmazoomslider(optionLiteral: string, optionName: string): any;
     bmazoomslider(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }

@@ -202,7 +202,7 @@ $(document).ready(function () {
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({icon: "min"});
 
     $("#localSaveBtn").click(function (args) {
-        window.Commands.Execute("LocalStorageSave", undefined);
+        window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
     $("#localStorageBtn").click(function (args) {
         window.Commands.Execute("LocalStorageRequested", undefined);

@@ -106,7 +106,7 @@ describe("ColoredTableViewer", () => {
     })
 
 
-    it("creates widget only with header", () => {
+    it("doesn't create table when widget has only header", () => {
         var header = [1, 2, 3];
         widget.coloredtableviewer({ header: header });
         expect(widget.find("tr").length).toEqual(0);

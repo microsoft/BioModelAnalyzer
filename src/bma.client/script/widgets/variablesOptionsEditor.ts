@@ -27,7 +27,7 @@
             inputs.forEach(function (val, ind) {
                 var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                 item.bind("click", function () {
-                    that.formulaTextArea.insertAtCaret($(this).text()).change();
+                    that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
                     that.listOfInputs.hide();
                 });
             });
@@ -334,7 +334,7 @@
                     inputs.forEach(function (val, ind) {
                         var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                         item.bind("click", function () {
-                            that.formulaTextArea.insertAtCaret($(this).text()).change();
+                            that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
                             that.listOfInputs.hide();
                         });
                     });

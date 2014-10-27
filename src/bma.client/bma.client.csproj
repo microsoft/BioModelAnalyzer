@@ -301,6 +301,7 @@
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\AnalyticsTest.ts" />
     <TypeScriptCompile Include="test\BiomodelTest.ts" />
+    <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
     <TypeScriptCompile Include="test\BMASliderTest.ts" />
