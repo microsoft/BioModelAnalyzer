@@ -4,50 +4,75 @@
 (function ($) {
     $.widget("BMA.simulationviewer", {
         options: {
-            data: undefined, // data{variables: [][], colorData: [][], plot: [][]}
+            data: undefined, // data{variables: [][], colorData: [][]}
             plot: undefined
         },
 
         refresh: function () {
             var that = this;
-
-            var options = this.options;
+            var data = this.options.data;
+            
             var container = $('<div></div>');
-            this.variables.resultswindowviewer();
-            that.plotDiv.resultswindowviewer();
-            if (options.data !== undefined && options.data.variables !== undefined && options.data.variables.length !== 0) {
+            
+            if (data !== undefined &&
+                data.variables !== undefined &&
+                data.variables.length !== 0) {
+
                 var variablestable = $('<div></div>')
                     .appendTo(container)
-                    .addClass("scrollable-results")
-                    .coloredtableviewer({ header: ["Graph", "Cell", "Name", "Range"], type: "graph-min", numericData: options.data.variables });
-                if (options.data.colorData !== undefined && options.data.colorData.length !== 0) {
-                    var colortable = $('<div id="Simulation-min-table"></div>')
+                    .addClass("scrollable-results");
+
+                variablestable.coloredtableviewer({
+                    header: ["Graph", "Cell", "Name", "Range"],
+                    type: "graph-min",
+                    numericData: data.variables
+                });
+
+                if (data.colorData !== undefined && data.colorData.length !== 0) {
+                    var colortable = $('<div></div>')
+                        .attr("id", "Simulation-min-table")
                         .appendTo(container)
-                        .coloredtableviewer({ type: "simulation-min", colorData: options.data.colorData });
+                        .coloredtableviewer({
+                            type: "simulation-min",
+                            colorData: data.colorData
+                        });
                 }
-                that.variables.resultswindowviewer({ header: "Variables", content: container, icon: "max", tabid: "SimulationVariables" });
+                that.variables.resultswindowviewer({
+                    header: "Variables",
+                    content: container,
+                    icon: "max",
+                    tabid: "SimulationVariables"
+                });
             }
-            else that.variables.resultswindowviewer("destroy");
+            else {
+                this.variables.resultswindowviewer();
+                that.variables.resultswindowviewer("destroy");
+            }
 
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
-                //that.plot.simulationplot({ colors: that.options.plot });
                 that.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
-                that.plotDiv.resultswindowviewer({ content: that.plot, icon: "max", tabid: "SimulationPlot" });
+                that.plotDiv.resultswindowviewer({
+                    content: that.plot,
+                    icon: "max",
+                    tabid: "SimulationPlot"
+                });
             }
-            else that.plotDiv.resultswindowviewer("destroy");
+            else {
+                that.plotDiv.resultswindowviewer();
+                that.plotDiv.resultswindowviewer("destroy");
+            }
         },
 
 
         _create: function () {
             var that = this;
-            var options = this.options;
             this.variables = $('<div></div>')
                 .appendTo(that.element)
                 .resultswindowviewer();
-            //this.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
+
             this.plotDiv = $('<div></div>')
                 .appendTo(that.element)
-                .resultswindowviewer();//{ content: this.plot, icon: "max", tabid: "SimulationPlot" });
+                .resultswindowviewer();
 
             this.refresh();
         },
