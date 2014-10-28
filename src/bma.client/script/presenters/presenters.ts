@@ -87,6 +87,8 @@ module BMA {
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
+                            window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
+                            that.RefreshOutput();
                         }
                     }
                 });
@@ -266,6 +268,8 @@ module BMA {
                         that.editingVariableId = id;
                         that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
+                        window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
+                        that.RefreshOutput();
                     }
 
                     that.contextElement = undefined;

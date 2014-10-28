@@ -270,6 +270,11 @@ $(document).ready(function () {
         accordionHider.Hide();
     });
 
+    window.Commands.On("DrawingSurfaceVariableEditorOpened", function () {
+        popupDriver.Hide();
+        accordionHider.Hide();
+    });
+
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
 
     //Loading presenters

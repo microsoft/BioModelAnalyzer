@@ -138,7 +138,7 @@
                 .addClass("bma-formula-validation-icon")
                 .appendTo(formulaDiv);
 
-            this.formulaTextArea = $('<textarea></textarea>').appendTo(formulaDiv);
+            this.formulaTextArea = $('<textarea></textarea>').attr("spellcheck", "false").appendTo(formulaDiv);
             
             this.errorMessage = $('<div></div>')
                 .addClass("bma-formula-validation-message")
