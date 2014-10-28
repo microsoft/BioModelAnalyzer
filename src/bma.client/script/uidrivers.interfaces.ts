@@ -19,6 +19,7 @@ module BMA {
         export interface INavigationPanel {
             TurnNavigation(isOn: boolean);
             SetZoom(zoom: number);
+            SetCenter(x: number, y: number);
         }
 
         export interface IServiceDriver {
