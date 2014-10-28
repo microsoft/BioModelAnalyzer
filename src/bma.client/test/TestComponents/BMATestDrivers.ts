@@ -5,6 +5,65 @@
 module BMA {
     export module Test {
 
+
+
+        export class ModelRepositoryTest implements BMA.UIDrivers.IModelRepository {
+
+            private modelsList = {};
+
+            //constructor() {
+            //    this.modelsList = [];
+            //}
+            GetModelList(): string[]{
+                var list: string[] = [];
+                for (var attr in this.modelsList) {
+                    list.push(this.modelsList[attr]);
+                }
+                return list;
+            }
+
+            LoadModel(id: string): JSON {
+                //var i = parseInt(id);
+                //if (i < this.modelsList.length) {
+                //    return JSON.parse('{"test": ' + this.modelsList[i] + '}');
+                //}
+                return JSON.parse('{"test": ' + this.modelsList[id] + '}');
+            }
+
+            RemoveModel(id: string) {
+                var newlist = [];
+                for (var i in this.modelsList) {
+                    if (i !== id)
+                        newlist.push(this.modelsList[i]);
+                }
+                this.modelsList = newlist;
+            }
+
+            SaveModel(id: string, model: JSON) {
+                this.modelsList[id] = JSON.stringify(model);
+            }
+
+            IsInRepo(id: string) {
+                return this.modelsList[id] !== undefined;
+            }
+            //OnRepositoryUpdated();
+        }
+
+        export class LocalStorageTestDriver implements BMA.UIDrivers.ILocalStorageDriver {
+
+            public AddItem(key, item) {
+            }
+
+            public Show() {
+            }
+
+            public Hide() {
+            }
+
+            public SetItems(keys) {
+            }
+        }
+
         export class VariableEditorTestDriver implements BMA.UIDrivers.IVariableEditor {
 
             private variable: BMA.Model.Variable;

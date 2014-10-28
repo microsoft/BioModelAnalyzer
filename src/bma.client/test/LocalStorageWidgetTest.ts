@@ -26,12 +26,12 @@
         }
     });
 
-    it("should execute 'LocalStorageRemove' command on removing item after click on appropriate button", () => {
+    it("should execute 'LocalStorageRemoveModel' command on removing item after click on appropriate button", () => {
 
         spyOn(window.Commands, "Execute");
         var list = widget.find("ol").children("li");
         list.eq(1).children("button").click();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("LocalStorageRemove", items[1]);
+        expect(window.Commands.Execute).toHaveBeenCalledWith("LocalStorageRemoveModel", items[1]);
     });
 
     xit("should execute 'LocalStorageLoadModel' command when item from list was selected", () => {

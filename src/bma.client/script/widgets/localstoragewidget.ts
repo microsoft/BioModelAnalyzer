@@ -44,7 +44,7 @@
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
                 var removeBtn = $('<button></button>').addClass("localstorage-remove-button").appendTo(li);
                 removeBtn.bind("click", function () {
-                    window.Commands.Execute("LocalStorageRemove", items[$(this).parent().index()]);
+                    window.Commands.Execute("LocalStorageRemoveModel", items[$(this).parent().index()]);
                 })
             }
 

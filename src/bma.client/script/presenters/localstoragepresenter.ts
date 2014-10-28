@@ -14,6 +14,7 @@
                 var that = this;
                 this.driver = editor;
                 this.tool = tool;
+                this.messagebox = messagebox;
                 var keys = that.tool.GetModelList();
                 this.driver.SetItems(keys);
                 this.driver.Hide();
@@ -23,7 +24,7 @@
                     that.driver.SetItems(keys);
                 });
 
-                window.Commands.On("LocalStorageRemove", function (key) {
+                window.Commands.On("LocalStorageRemoveModel", function (key) {
                     that.tool.RemoveModel(key);
                 });
 
