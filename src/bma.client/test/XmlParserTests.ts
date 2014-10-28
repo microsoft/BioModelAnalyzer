@@ -54,8 +54,8 @@
             expect(r.Layout.Variables.length).toBe(2);
             var vl = r.Layout.Variables[1];
             expect(vl.Id).toBe(2);
-            expect(vl.PositionX).toBe(636);
-            expect(vl.PositionY).toBe(656);
+            expect(vl.PositionX).toBe(625.2);
+            expect(vl.PositionY).toBe(655);
             expect(vl.Angle).toBe(0);
             done();
         });

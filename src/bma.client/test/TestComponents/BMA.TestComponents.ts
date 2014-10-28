@@ -51,6 +51,10 @@ module BMA {
             public HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string }[]) {
                 this.svgPlotDiv.drawingsurface({ rects: areas });
             }
+
+            public SetCenter(x: number, y: number) {
+
+            }
             
             //private svg: SVGElement[];
 

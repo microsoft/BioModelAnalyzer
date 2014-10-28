@@ -87,6 +87,8 @@ module BMA {
                             that.editingVariableId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
+                            window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
+                            that.RefreshOutput();
                         }
                     }
                 });
@@ -266,6 +268,8 @@ module BMA {
                         that.editingVariableId = id;
                         that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
+                        window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
+                        that.RefreshOutput();
                     }
 
                     that.contextElement = undefined;
@@ -280,8 +284,11 @@ module BMA {
                                 this.editingVariableId = undefined;
                             }
 
-                            if (args.status === "Set")
+                            if (args.status === "Set") {
                                 this.ResetVariableIdIndex();
+                                var center = this.GetLayoutCentralPoint();
+                                this.navigationDriver.SetCenter(center.x, center.y);
+                            }
                         }
 
                         if (that.editingVariableId !== undefined) {
@@ -436,6 +443,53 @@ module BMA {
                     }
                     that.contextElement = undefined;
                 }
+            }
+
+            private GetLayoutCentralPoint(): { x: number; y: number } {
+                var layout = this.undoRedoPresenter.Current.layout;
+                var model = this.undoRedoPresenter.Current.model;
+
+                var result = { x: 0, y: 0 };
+                var count = 0;
+
+                var containers = layout.Containers;
+
+                for (var i = 0; i < containers.length; i++) {
+                    result.x += containers[i].PositionX;
+                    result.y += containers[i].PositionY;
+                    count++;
+                }
+
+                var variables = layout.Variables;
+                var gridCells = [];
+
+                var existGS = function (gridCell) {
+                    for (var i = 0; i < gridCells.length; i++) {
+                        if (gridCell.x === gridCells[i].x && gridCell.y === gridCells[i].y) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                for (var i = 0; i < variables.length; i++) {
+                    if (model.Variables[i].Type === "Constant") {
+                        var gridCell = this.GetGridCell(variables[i].PositionX, variables[i].PositionY);
+                        if (!existGS(gridCell)) {
+                            gridCells.push(gridCell);
+                            result.x += gridCell.x;
+                            result.y += gridCell.y;
+                            count++;
+                        }
+                    }
+                }
+
+                if (count > 0) {
+                    result.x = (result.x / count + 0.5) * this.xStep + this.xOrigin;
+                    result.y = -(result.y / count + 0.5) * this.yStep + this.yOrigin;
+                }
+
+                return result;
             }
 
 

@@ -387,6 +387,11 @@ declare var Rx: any;
 
         getZoomSubject: function () {
             return this._zoomService;
+        },
+
+        setCenter: function (p) {
+            var plotRect = this._plot.visibleRect;
+            this._plot.navigation.setVisibleRect({ x: p.x - plotRect.width / 2, y: p.y - plotRect.height / 2, width: plotRect.width, height: plotRect.height }, false);
         }
 
     });

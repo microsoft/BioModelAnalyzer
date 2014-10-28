@@ -79,7 +79,7 @@
 
             return new Model.VarialbeLayout(
                 parseInt($elt.attr("Id")),
-                parseInt(cellX) * grid.xStep + grid.xOrigin + parseFloat(positionX) * grid.xStep / 300,
+                parseInt(cellX) * grid.xStep + grid.xOrigin + parseFloat(positionX) * (grid.xStep - 60) / 300 + 30,
                 parseInt(cellY) * grid.yStep + grid.yOrigin + parseFloat(positionY) * (grid.yStep - 50) / 350 + 25,
                 Number.NaN,
                 Number.NaN,
