@@ -20,7 +20,7 @@
             closing.bind("click", function () {
                 that.element.hide();
             });
-            that.element.draggable({ constraint: parent });
+            that.element.draggable({ constraint: parent, scroll: false });
             this.repo = $('<div></div>').addClass('localStorageWidget').appendTo(this.element);            
             this.refresh();
         },
