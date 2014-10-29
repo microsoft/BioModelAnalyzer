@@ -105,7 +105,7 @@
             switch(key) {
                 case "data":
                     this.options.data = value;
-                    if (value !== null && value !== undefined)
+                    //if (value !== null && value !== undefined)
                         if (options.interval !== undefined && options.interval.length !== 0) {
                             this.progression.progressiontable({ interval: options.interval, data: options.data });
                         }

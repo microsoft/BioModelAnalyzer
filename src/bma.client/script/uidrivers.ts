@@ -206,9 +206,14 @@ module BMA {
 
 
         export class PopupDriver implements IPopup {
-            private popupWindow;
-            constructor(popupWindow) {
+            private popupWindow: JQuery;
+            constructor(popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
+            }
+
+            public Seen() {
+                alert(this.popupWindow.is(":hidden"));
+                return !this.popupWindow.is(":hidden");
             }
 
             public Show(params: any) {
@@ -258,8 +263,14 @@ module BMA {
             public Set(data: { variables; colors; init }) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
-                var toAdd = this.CreatePlotView(data.colors);
-                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: toAdd });
+                //var toAdd = this.CreatePlotView(data.colors);
+                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });//, data: toAdd });
+                //this.viewer.simulationexpanded("option", "data", toAdd);
+            }
+
+            public SetData(data) {
+                var toAdd = this.CreatePlotView(data);
+                this.viewer.simulationexpanded("option", "data", toAdd);
             }
 
             public GetViewer(): JQuery {

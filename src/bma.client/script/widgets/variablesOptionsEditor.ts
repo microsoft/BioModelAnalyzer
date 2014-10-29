@@ -167,16 +167,16 @@
             var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
 
             //var div1 = $('<div class="bma-functions-list"></div>').appendTo(div);
-            this.infoTextArea = $('<div class="functions-info"></div>').appendTo(div);
+            this.infoTextArea = $('<div class="functions-info"></div>').appendTo(operatorsDiv);
 
             var functions = this.options.functions;
             functions.forEach(
                 function (val, ind) {
                     var item = $('<li></li>').appendTo(inpUl);
-                    var span = $('<span></span>').text(val).appendTo(item);
+                    var span = $('<button></button>').text(val).appendTo(item);
                     item.hover(
-                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
+                        function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
                         );
                     if (ind !== 0) {
                         item.click(function () {
@@ -190,10 +190,10 @@
             operators1.forEach(
                 function (val, ind) {
                     var item = $('<li></li>').appendTo(opUl1);
-                    var span = $('<span></span>').text(val).appendTo(item);
+                    var span = $('<button></button>').text(val).appendTo(item);
                     item.hover(
-                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
+                        function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
                         );
                     item.click(function () { 
                         var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
@@ -205,10 +205,10 @@
             operators2.forEach(
                 function (val, ind) {
                     var item = $('<li></li>').appendTo(opUl2);
-                    var span = $('<span></span>').text(val).appendTo(item);
+                    var span = $('<button></button>').text(val).appendTo(item);
                     item.hover(
-                        function () { that._OnHoverFunction($(this).children("span"), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this).children("span"), that.infoTextArea) }
+                        function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
+                        function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
                         );
                     item.click(function () {
                         var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
@@ -226,17 +226,18 @@
             //});
             //$(div1.children()[0]).click();
 
-            this.inputsList = inpUl.children().eq(0).addClass("inputs-list-header-collapsed");
+            this.inputsList = inpUl.children().eq(0);
+            this.inputsList.children("button").addClass("inputs-list-header-collapsed");
             this.listOfInputs = $('<div class="inputs-list-content"></div>').width(this.inputsList.outerWidth()).appendTo(that.inputsList).hide();
 
 
             this.inputsList.bind("click", function () {
                 if (that.listOfInputs.is(":hidden") && that.listOfInputs.children().length !== 0) {
-                    that.inputsList.css("border-radius", "10px 10px 0 0");
+                    that.inputsList.css("border-radius", "15px 15px 0 0");
                     that.listOfInputs.show();
                 }
                 else {
-                    that.inputsList.css("border-radius", "10px");
+                    that.inputsList.css("border-radius", "15px");
                     that.listOfInputs.hide();
                 }
             });

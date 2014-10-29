@@ -49,6 +49,7 @@ module BMA {
         }
 
         export interface IPopup {
+            Seen();
             Show(params);
             Hide();
         }
@@ -84,6 +85,7 @@ module BMA {
             AddResult(res);
             GetViewer();
             Set(data);
+            SetData(data);
             StandbyMode();
             ActiveMode();
         }

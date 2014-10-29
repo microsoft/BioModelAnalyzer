@@ -208,7 +208,7 @@ $(document).ready(function () {
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
-    popup.draggable({ constraint: parent, scroll: false });
+    popup.draggable({ containment: 'parent', scroll: false });
 
     $("#localSaveBtn").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
@@ -263,7 +263,7 @@ $(document).ready(function () {
 
     var localStorageWidget = $('<div></div>')
         .addClass('newWindow')
-        .appendTo('body')
+        .appendTo('#drawingSurceContainer')
         .localstoragewidget();
 
 
