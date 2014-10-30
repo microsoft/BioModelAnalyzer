@@ -211,6 +211,7 @@
     <Content Include="legacy\_images\variable.cur" />
     <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
+    <None Include="preloaded\VPC.bin" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />

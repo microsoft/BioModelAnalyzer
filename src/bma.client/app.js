@@ -32,6 +32,21 @@
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
 
+function getSearchParameters() {
+    var prmstr = window.location.search.substr(1);
+    return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+}
+
+function transformToAssocArray(prmstr) {
+    var params = {};
+    var prmarr = prmstr.split("&");
+    for (var i = 0; i < prmarr.length; i++) {
+        var tmparr = prmarr[i].split("=");
+        params[tmparr[0]] = tmparr[1];
+    }
+    return params;
+}
+
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -287,5 +302,19 @@ $(document).ready(function () {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, ajaxServiceDriver);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox);
+
+    //Loading model from URL
+    var params = getSearchParameters();
+    if (params.Model !== undefined) {
+        $.get(params.Model, function (fileContent) {
+            try  {
+                var model = BMA.ParseXmlModel(fileContent, window.GridSettings);
+                appModel.Reset2(model.Model, model.Layout);
+            } catch (exc) {
+                console.log(exc);
+                appModel.Reset(fileContent);
+            }
+        });
+    }
 });
 //# sourceMappingURL=app.js.map
