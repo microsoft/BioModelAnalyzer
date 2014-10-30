@@ -51,7 +51,7 @@
                 that.prooficon.addClass("formula-failed-icon");
                 this.formulaTextArea.addClass("formula-failed-textarea");
             }
-            //that.errorMessage.text(message);
+            that.errorMessage.text(message);
         },
 
 
@@ -147,9 +147,9 @@
             this.formulaTextArea = $('<textarea></textarea>').attr("spellcheck", "false").addClass("variablesOptionsEditor-formulaTextArea").appendTo(formulaDiv);
 
             
-            //this.errorMessage = $('<div></div>')
-            //    .addClass("bma-formula-validation-message")
-            //    .appendTo(formulaDiv);
+            this.errorMessage = $('<div></div>')
+                .addClass("bma-formula-validation-message")
+                .appendTo(formulaDiv);
         },
 
         _processExpandingContent: function () {

@@ -1117,7 +1117,6 @@
 .bma-formula-validation-message {
     color:red;
     max-height: 40px;
-    overflow-y:auto;
 }
 
 .variablesOptionsEditor-formulaTextArea {
