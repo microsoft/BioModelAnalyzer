@@ -8,7 +8,7 @@ open System
 open System.Collections.Generic
 open System.IO
 open Physics
-open Vector
+//open Vector
 open Interface
 open System.Xml.Linq
 open System.Runtime.Serialization.Formatters.Binary
@@ -194,7 +194,9 @@ let xmlTopRead (filename: string) =
 
     let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>);checkpointReport=checkpoint;searchType=searchType}
 
-    let sOrigin = {x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
+    let sOrigin = { Vector.Vector3D.x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;
+                    Vector.Vector3D.y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;
+                    Vector.Vector3D.z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
 //    let PBC = 
 //                { x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "PBC").Attribute(xn "X").Value) with _ -> failwith "Set an x PBC dimension")*1.<um>;
 //                y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "PBC").Attribute(xn "Y").Value) with _ -> failwith "Set a y PBC dimension")*1.<um>;
@@ -259,7 +261,7 @@ let xmlTopRead (filename: string) =
                          let dZ = try (float) (r.Element(xn "Dimensions").Attribute(xn "Z").Value) with _ -> failwith "Missing box dim Z"
                          let varID = try (int) (r.Element(xn "Var").Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                          let varState = try (int) (r.Element(xn "Var").Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
-                         yield ({origin={x=oX*1.<um>;y=oY*1.<um>;z=oZ*1.<um>};dimensions={x=dX*1.<um>;y=dY*1.<um>;z=dZ*1.<um>}},varID,varState)
+                         yield ({Vector.Cuboid.origin={Vector.Vector3D.x=oX*1.<um>;Vector.Vector3D.y=oY*1.<um>;Vector.Vector3D.z=oZ*1.<um>};Vector.Cuboid.dimensions={Vector.Vector3D.x=dX*1.<um>;Vector.Vector3D.y=dY*1.<um>;Vector.Vector3D.z=dZ*1.<um>}},varID,varState)
                          ]
     let clocks = [for r in xd.Element(xn "Topology").Element(xn "Interface").Elements(xn "Clock") do
                         let inputId = try (int) (r.Element(xn "Input").Attribute(xn "ID").Value) with _ -> failwith "Missing clock input ID"
@@ -354,11 +356,11 @@ let xmlTopRead (filename: string) =
                                     let xOrigin = try (float) (r.Attribute(xn "xOrigin").Value)  with _ -> failwith "No origin- X"
                                     let yOrigin = try (float) (r.Attribute(xn "yOrigin").Value)  with _ -> failwith "No origin- Y"
                                     let zOrigin = try (float) (r.Attribute(xn "zOrigin").Value)  with _ -> failwith "No origin- Z"
-                                    let origin = {x=(xOrigin*1.<Physics.um>);y=(yOrigin*1.<Physics.um>);z=(zOrigin*1.<Physics.um>)}
+                                    let origin = {Vector.Vector3D.x=(xOrigin*1.<Physics.um>);Vector.Vector3D.y=(yOrigin*1.<Physics.um>);Vector.Vector3D.z=(zOrigin*1.<Physics.um>)}
                                     let xVector = try (float) (r.Attribute(xn "xVector").Value)  with _ -> failwith "No vector- X"
                                     let yVector = try (float) (r.Attribute(xn "yVector").Value)  with _ -> failwith "No vector- Y"
                                     let zVector = try (float) (r.Attribute(xn "zVector").Value)  with _ -> failwith "No vector- Z"
-                                    let direction = {x=xVector;y=yVector;z=zVector}
+                                    let direction = {Vector.Vector3D.x=xVector;Vector.Vector3D.y=yVector;Vector.Vector3D.z=zVector}
                                     match growth with
                                     | "LinearGrowDivideVectorRate" ->
                                         Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (1.<um>) varID varState varName rng None false  
@@ -388,11 +390,11 @@ let xmlTopRead (filename: string) =
                                     let xOrigin = try (float) (r.Attribute(xn "xOrigin").Value)  with _ -> failwith "No origin- X"
                                     let yOrigin = try (float) (r.Attribute(xn "yOrigin").Value)  with _ -> failwith "No origin- Y"
                                     let zOrigin = try (float) (r.Attribute(xn "zOrigin").Value)  with _ -> failwith "No origin- Z"
-                                    let origin = {x=(xOrigin*1.<Physics.um>);y=(yOrigin*1.<Physics.um>);z=(zOrigin*1.<Physics.um>)}
+                                    let origin = {Vector.Vector3D.x=(xOrigin*1.<Physics.um>);Vector.Vector3D.y=(yOrigin*1.<Physics.um>);Vector.Vector3D.z=(zOrigin*1.<Physics.um>)}
                                     let xVector = try (float) (r.Attribute(xn "xVector").Value)  with _ -> failwith "No vector- X"
                                     let yVector = try (float) (r.Attribute(xn "yVector").Value)  with _ -> failwith "No vector- Y"
                                     let zVector = try (float) (r.Attribute(xn "zVector").Value)  with _ -> failwith "No vector- Z"
-                                    let direction = {x=xVector;y=yVector;z=zVector}
+                                    let direction = {Vector.Vector3D.x=xVector;Vector.Vector3D.y=yVector;Vector.Vector3D.z=zVector}
                                     match growth with
                                     | "LinearProbabilisticGrowDivideVectorRate" ->
                                         Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient (rate*1.<um/second>) (max*1.<um>) (sd*1.<um>) varID varState varName rng None true  

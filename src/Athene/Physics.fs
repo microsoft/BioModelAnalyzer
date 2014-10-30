@@ -1,6 +1,6 @@
 ﻿module Physics
 
-open Vector
+//open Vector
 open System
 open System.Collections.Generic
 open System.Linq
@@ -118,7 +118,7 @@ let gensym =
     (fun () -> incr x; !x)
 
 [<Serializable>]
-type Particle = { id:int; name:string; location:Vector3D<um>; velocity:Vector3D<um second^-1>; orientation: Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool; variableClock: Map<int,float<second>>} with
+type Particle = { id:int; name:string; location:Vector.Vector3D<um>; velocity:Vector.Vector3D<um second^-1>; orientation: Vector.Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool; variableClock: Map<int,float<second>>} with
     member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
     member this.mass = this.volume * this.density
     member this.frictioncoeff = this.mass / this.Friction
@@ -151,7 +151,7 @@ let p' = { p with loc = p.loc + 1 }
 *)
 
 let noForce (p1: Particle) (p2: Particle) = 
-    {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} 
+    {Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} 
 
 let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<second>) (cluster: Particle) =
     (*
@@ -181,7 +181,7 @@ let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<seco
     *)
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 2./cluster.frictioncoeff //We are considering the mass of half spheres now
-    let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}
+    let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * { Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}
     (cluster.orientation*cluster.radius*(3./4.)+sqrt(2.)*tV).norm
 
 
@@ -190,7 +190,7 @@ let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton>) (p1: 
     let displacement = ivec.len - optimum
     forceConstant * displacement * (p1.location - p2.location).norm
 
-let softSphereForce (repelPower: float) (repelConstant: float<zNewton>) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
+let softSphereForce (repelPower: float) (repelConstant: float<zNewton>) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) :Vector.Vector3D<zNewton> =
     //Not as hard as a typical hard sphere force (n^-13, where n is less than 1)
     //Repulsion now scales with a power of the absolute distance overlap
     let ivec = (p1.location - p2.location)
@@ -206,11 +206,11 @@ let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( 
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
-    | d when d > (attractCutOff+mindist)-> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} //can't see one another
+    | d when d > (attractCutOff+mindist)-> {Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} //can't see one another
     | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
     | _ -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
 
-let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
+let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
         match system with
         | head:: tail -> 
                             let dx = int ((head.location.x-minLoc.x)/cutOff)
@@ -250,7 +250,7 @@ let rec quickJoin (l1: Particle list) (l2: Particle list) =
             | head::tail -> quickJoin (head::l1) tail
             | [] -> l1
 
-let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector3D<um>) (cutOff:float<um>) =
+let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
          let rec quickJoinLoL (l: Particle list list) acc =
             match l with
             | head::tail -> quickJoinLoL tail (quickJoin acc head)
@@ -268,7 +268,7 @@ let collectSimpleNeighbours (p: Particle) (system: Particle list) (cutOff:float<
     |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
     |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
     //|> List.sortBy (fun (p:Particle)     -> p.id)                                      //Test associativity induced numerical errors
-let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) = 
+let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle list) (cutOff: float<um>) = 
     match mobileSystem with
     | head :: tail -> 
                             let dx = int ((head.location.x-sOrigin.x)/cutOff)
@@ -281,7 +281,7 @@ let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSys
 
     | [] -> accGrid
 
-let updateGrid (accGrid: Map<int*int*int,Particle list>) sOrigin (mobileSystem: Particle list) (cutOff: float<um>) =
+let updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle list) (cutOff: float<um>) =
     mobileSystem
     |> List.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
     |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
@@ -330,7 +330,7 @@ let unchunk s =
 
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) (search:searchType) staticGrid (staticSystem:Particle list) sOrigin (externalF: Vector3D<zNewton> list) threads = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) (search:searchType) staticGrid (staticSystem:Particle list) sOrigin (externalF: Vector.Vector3D<zNewton> list) threads = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | first_p::other_p -> sumForces p other_p (topology.[p.name].[first_p.name] first_p p) + acc
@@ -430,7 +430,7 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     let FrictionDrag = 1./cluster.frictioncoeff
     //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
     let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
-    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
+    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
@@ -441,7 +441,7 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F.force
-    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)}  //integral of velocities over the time
+    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
     let dP = dT * FrictionDrag * F.force + ThermalP
     let NewP = cluster.location + dP
     let NewO = thermalReorientation T rng dT cluster
@@ -452,7 +452,7 @@ let bdSystemUpdate (system: Particle list) (forces: forceEnv list) atomicIntegra
 
 let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um>) = 
     let forces = List.map (fun x->x.force) forceEnv
-    let (minV,maxV) = vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
+    let (minV,maxV) = Vector.vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
     let modifier = maxlength/maxV.len
     (*
     match (modifier=infinity*1.0<um/zNewton>) with
