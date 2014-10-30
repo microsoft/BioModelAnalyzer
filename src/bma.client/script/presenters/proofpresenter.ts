@@ -87,6 +87,7 @@
                                 full.find("td").eq(2).width(150);
                                 full.addClass("proof-expanded");
                                 proofResultViewer.Hide({ tab: param });
+                                popupViewer.Show({ tab: param, content: full });
                                 break;
                             default:
                                 full = undefined;
