@@ -823,7 +823,7 @@
     </Variable>
     <Variable Id="95" Name="AC">
       <ContainerId>17</ContainerId>
-      <Type>Constant</Type>
+      <Type>Default</Type>
       <RangeFrom>0</RangeFrom>
       <RangeTo>0</RangeTo>
       <Formula></Formula>

@@ -52,10 +52,15 @@
                         var variables = this.appModel.BioModel.Variables;
                         switch (param) {
                             case "SimulationVariables":
+                                popupViewer.Show({ tab: param, content: $("<div></div>") });
+
+                                //var d = $.Deferred();
+
                                 that.expandedViewer.Set({ variables: variables, colors: that.dataForPlot, init: that.initValues });
                                 full = that.expandedViewer.GetViewer();//$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 simulationViewer.Hide({ tab: param });
-                                popupViewer.Show({ tab: param, content: full });
+                                //full });
+
                                 if (popupViewer.Seen())
                                     for (var i = 0; i < that.results.length;i++) {
                                         that.expandedViewer.AddResult(that.results[i]);
