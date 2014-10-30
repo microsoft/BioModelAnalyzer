@@ -386,6 +386,7 @@ module BMA {
 
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
+                        that.driver.DrawLayer2(undefined);
 
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
                             this.TryAddStagingLineAsLink();
@@ -403,8 +404,6 @@ module BMA {
                                 that.RefreshOutput();
                             }
                         }
-
-                        that.driver.DrawLayer2(undefined);
                     });
             }
 
