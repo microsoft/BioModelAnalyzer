@@ -78,6 +78,7 @@
     .bma-accordion-container{
         position:relative;
         font: caption;
+        height: 100%;
     }
 
     .bma-accordion-header{
@@ -598,6 +599,8 @@
         border-bottom-right-radius: 15px;
         border: none;
         padding:20px;
+        max-height:600px;
+        overflow-y: auto;
     }
 
     .tabPanel > * {
