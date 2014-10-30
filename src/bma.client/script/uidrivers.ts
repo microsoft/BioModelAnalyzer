@@ -475,11 +475,11 @@ module BMA {
         export class MessageBoxDriver implements IMessageServise {
 
             public Show(message: string){
-                alert("message");
+                alert(message);
             }
 
             public Log(message: string) {
-                console.log("message");
+                console.log(message);
             }
         }
     }
