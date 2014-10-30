@@ -28,6 +28,7 @@
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
                     that.data = [];
+                    that.results = [];
                     that.initValues = param.data;
                     that.ClearColors();
                     var stableModel = that.appModel.BioModel.GetJSON();

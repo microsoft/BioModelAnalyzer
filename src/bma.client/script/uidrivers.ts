@@ -212,7 +212,6 @@ module BMA {
             }
 
             public Seen() {
-                alert(this.popupWindow.is(":hidden"));
                 return !this.popupWindow.is(":hidden");
             }
 
