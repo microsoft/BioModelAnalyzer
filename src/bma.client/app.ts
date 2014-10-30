@@ -47,6 +47,21 @@ interface Window {
     GridSettings: any;
 }
 
+function getSearchParameters(): any {
+    var prmstr = window.location.search.substr(1);
+    return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+}
+
+function transformToAssocArray(prmstr) {
+    var params = {};
+    var prmarr = prmstr.split("&");
+    for (var i = 0; i < prmarr.length; i++) {
+        var tmparr = prmarr[i].split("=");
+        params[tmparr[0]] = tmparr[1];
+    }
+    return params;
+}
+
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -68,15 +83,15 @@ $(document).ready(function () {
 
     window.GridSettings = {
         xOrigin: 0,
-        yOrigin: 0, 
+        yOrigin: 0,
         xStep: 250,
         yStep: 280
-    };  
+    };
 
     //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
-    $("#zoomslider").bmazoomslider({value: 50});
+    $("#zoomslider").bmazoomslider({ value: 50 });
     //$("#modelToolbarHeader").toolbarpanel();
     //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
@@ -154,7 +169,7 @@ $(document).ready(function () {
     $("#analytics").bmaaccordion({ position: "right" });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
-    
+
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
@@ -185,13 +200,13 @@ $(document).ready(function () {
                 top: Math.floor(ui.helper.height() / 2)
             });
             $('#' + $(this).attr("for")).click();
-    }
+        }
     });
 
     $("#modelelemtoolbar input").click(function (event) {
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
-        
+
     elementPanel.buttonset();
 
     //undo/redo panel
@@ -232,7 +247,7 @@ $(document).ready(function () {
 
 
     //Visual Settings Presenter
-    var visualSettings = new BMA.Model.AppVisualSettings(); 
+    var visualSettings = new BMA.Model.AppVisualSettings();
 
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
@@ -289,7 +304,7 @@ $(document).ready(function () {
         svgPlotDriver.SetGridVisibility(param);
     });
 
-    
+
     window.Commands.On("ZoomSliderBind", (value) => {
         $("#zoomslider").bmazoomslider({ value: value });
     });
@@ -315,4 +330,29 @@ $(document).ready(function () {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, ajaxServiceDriver);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox);
+
+
+    //Loading model from URL
+    var params = getSearchParameters();
+    if (params.Model !== undefined) {
+
+        var s = params.Model.split('.');
+        if (s[s.length - 1] == "json") {
+            $.getJSON(params.Model, function (fileContent) {
+                appModel.Reset(JSON.stringify(fileContent));
+            })
+        }
+        else {
+            $.get(params.Model, function (fileContent) {
+                try {
+                    var model = BMA.ParseXmlModel(fileContent, window.GridSettings);
+                    appModel.Reset2(model.Model, model.Layout);
+                }
+                catch (exc) {
+                    console.log(exc);
+                    appModel.Reset(fileContent);
+                }
+            });
+        }
+    }
 });

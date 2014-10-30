@@ -31,6 +31,7 @@
                 if (data.colorData !== undefined && data.colorData.length !== 0) {
                     var colortable = $('<div></div>')
                         .attr("id", "Simulation-min-table")
+                        .addClass("scrollable-results")
                         .appendTo(container)
                         .coloredtableviewer({
                             type: "simulation-min",

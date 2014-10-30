@@ -985,6 +985,7 @@
 .bma-simulation-table-expanded-scroll {
     max-height:550px;
     overflow-y:scroll;
+    white-space:nowrap;
 }
 
 .bma-simulation-table {

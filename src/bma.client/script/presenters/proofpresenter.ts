@@ -59,7 +59,22 @@
                         switch (param) {
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null) {
-                                    full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
+                                    popupViewer.Show({ tab: param, content: $('<div></div>') });
+
+                                    var f = function () {
+                                        var d = $.Deferred();
+                                        full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
+                                        d.resolve(full);
+                                        return d.promise();
+                                    };
+
+                                    $.when(f()).done(function (res) {
+                                         res.addClass("proof-expanded");
+                                         proofResultViewer.Hide({ tab: param });
+                                         popupViewer.Show({ tab: param, content: res });
+                                    });
+
+                                    
                                 }
                                 break;
                             case "ProofVariables":
@@ -70,17 +85,19 @@
                                 full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
                                 full.find("td").eq(0).width(150);
                                 full.find("td").eq(2).width(150);
+                                full.addClass("proof-expanded");
+                                proofResultViewer.Hide({ tab: param });
                                 break;
                             default:
                                 full = undefined;
                                 proofResultViewer.Show({ tab: undefined });
                                 break;
                         }
-                        if (full !== undefined) {
-                            full.addClass("proof-expanded");
-                            proofResultViewer.Hide({ tab: param });
-                            popupViewer.Show({ tab: param, content: full });
-                        }
+                        //if (full !== undefined) {
+                        //    full.addClass("proof-expanded");
+                        //    proofResultViewer.Hide({ tab: param });
+                        //    popupViewer.Show({ tab: param, content: full });
+                        //}
                     }
                 });
 

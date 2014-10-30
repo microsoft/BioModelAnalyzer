@@ -39,6 +39,7 @@
                 window.Commands.On("SimulationRequested", function (args) {
                     that.initValues = [];
                     that.results = [];
+                    that.data = [];
                     that.CreateColors();
                     that.ClearColors();
                     that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
@@ -52,19 +53,30 @@
                         var variables = this.appModel.BioModel.Variables;
                         switch (param) {
                             case "SimulationVariables":
+
                                 popupViewer.Show({ tab: param, content: $("<div></div>") });
-
-                                //var d = $.Deferred();
-
-                                that.expandedViewer.Set({ variables: variables, colors: that.dataForPlot, init: that.initValues });
-                                full = that.expandedViewer.GetViewer();//$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
                                 simulationViewer.Hide({ tab: param });
+                                
+                                var f = function () {
+                                    var d = $.Deferred();
+                                    that.expandedViewer.Set({ variables: variables, colors: that.dataForPlot, init: that.initValues });
+                                    full = that.expandedViewer.GetViewer();
+                                    d.resolve(full);
+                                    return d.promise();
+                                };
+
+                                $.when(f()).done(function (res) {
+                                    simulationViewer.Hide({ tab: param });
+                                    popupViewer.Show({ tab: param, content: res });
+                                });
+                                //$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
+                                
                                 //full });
 
-                                if (popupViewer.Seen())
-                                    for (var i = 0; i < that.results.length;i++) {
-                                        that.expandedViewer.AddResult(that.results[i]);
-                                    }
+                                //if (popupViewer.Seen())
+                                //    for (var i = 0; i < that.results.length;i++) {
+                                //        that.expandedViewer.AddResult(that.results[i]);
+                                //    }
                                 //that.expandedViewer.SetData(that.dataForPlot);
                                 break;
                             case "SimulationPlot":
