@@ -16,6 +16,11 @@ module BMA {
                 this.svgPlotDiv.drawingsurface({ svg: svg });
             }
 
+            public DrawLayer2(svg: SVGElement) {
+                this.svgPlotDiv.drawingsurface({ lightSvg: svg });
+            }
+
+
             public TurnNavigation(isOn: boolean) {
                 this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
             }

@@ -371,31 +371,16 @@ module BMA {
 
                             //Redraw only svg for better performance
                             if (that.svg !== undefined) {
-
-                                if (that.stagingLine.svg !== undefined) {
-                                    that.svg.remove(that.stagingLine.svg);
-                                }
-
-                                that.stagingLine.svg = that.svg.line(
-                                    that.stagingLine.x0,
-                                    that.stagingLine.y0,
-                                    that.stagingLine.x1,
-                                    that.stagingLine.y1,
-                                    {
-                                        stroke: "#808080",
-                                        strokeWidth: 2,
-                                        fill: "#808080",
-                                        "marker-end": "url(#" + that.selectedType + ")",
-                                        id: "stagingLine"
-                                    });
-
-                                that.driver.Draw(<SVGElement>that.GetCurrentSVG(that.svg));
+                                that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
                             }
 
                             return;
                         } else if (that.stagingVariable !== undefined) {
                             that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                            that.RefreshOutput();
+                            
+                            if (that.svg !== undefined) {
+                                that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
+                            }
                         }
                     });
 
@@ -405,9 +390,7 @@ module BMA {
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
                             this.TryAddStagingLineAsLink();
                             this.stagingLine = undefined;
-
                             this.RefreshOutput();
-                            //this.OnModelUpdated();
                         }
 
                         if (that.stagingVariable !== undefined) {
@@ -420,6 +403,8 @@ module BMA {
                                 that.RefreshOutput();
                             }
                         }
+
+                        that.driver.DrawLayer2(undefined);
                     });
             }
 
@@ -1109,10 +1094,7 @@ module BMA {
                     }));
                 }
 
-                if (this.stagingVariable !== undefined) {
-                    var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
-                    svgElements.push(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
-                }
+                
 
                 //constructing final svg image
                 this.svg.clear();
@@ -1124,6 +1106,40 @@ module BMA {
 
                 for (var i = 0; i < svgElements.length; i++) {
                     this.svg.add(svgElements[i]);
+                }
+
+                return $(this.svg.toSVG()).children();
+            }
+
+            private CreateStagingSvg(): any {
+                if (this.svg === undefined)
+                    return undefined;
+
+                this.svg.clear();
+                var defs = this.svg.defs("bmaDefs");
+                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
+                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
+                var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
+                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
+
+                if (this.stagingLine !== undefined) {
+                    this.svg.line(
+                        this.stagingLine.x0,
+                        this.stagingLine.y0,
+                        this.stagingLine.x1,
+                        this.stagingLine.y1,
+                        {
+                            stroke: "#808080",
+                            strokeWidth: 2,
+                            fill: "#808080",
+                            "marker-end": "url(#" + this.selectedType + ")",
+                            id: "stagingLine"
+                        });
+                }
+
+                if (this.stagingVariable !== undefined) {
+                    var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
+                    this.svg.add(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
                 }
 
                 return $(this.svg.toSVG()).children();

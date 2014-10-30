@@ -9,6 +9,7 @@ declare var Rx: any;
         _plot: null,
         _gridLinesPlot: null,
         _svgPlot: null,
+        _lightSvgPlot: null,
         _rectsPlot: null,
         _dragService: null,
         //_zoomObservable: undefined,
@@ -29,7 +30,15 @@ declare var Rx: any;
 
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
-                //this._svgPlot.svg.load("../images/svgtest.txt");
+                this._svgPlot.svg.clear();
+                this._svgPlot.svg.add(this.options.svg);
+            }
+        },
+
+        _lightSvgLoaded: function () {
+            if (this.options.lightSvg !== undefined && this._lightSvgPlot !== undefined) {
+                this._lightSvgPlot.svg.clear();
+                this._lightSvgPlot.svg.add(this.options.svg);
             }
         },
 
@@ -49,11 +58,17 @@ declare var Rx: any;
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
+
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
+
+            var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
+            this._lightSvgPlot = lightSvgPlot;
 
             this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
             //rectsPlot.draw({ rects: [{ x: 0, y: 0, width: 500, height: 500, fill: "red" }] })
@@ -66,6 +81,17 @@ declare var Rx: any;
                     svgPlot.svg.add(this.options.svg);
                 }
             }
+
+            if (this.options.lightSvg !== undefined) {
+                if (lightSvgPlot.svg === undefined) {
+                    lightSvgPlot.host.on("svgLoaded", this._lightSvgLoaded);
+                } else {
+                    lightSvgPlot.svg.clear();
+                    lightSvgPlot.svg.add(this.options.lightSvg);
+                }
+            }
+
+
 
             plotDiv.droppable({
                 drop: function (event, ui) {
@@ -288,6 +314,14 @@ declare var Rx: any;
                         this._svgPlot.svg.clear();
                         if (value !== undefined) {
                             this._svgPlot.svg.add(value);
+                        }
+                    }
+                    break;
+                case "lightSvg":
+                    if (this._lightSvgPlot !== undefined && this._lightSvgPlot.svg !== undefined) {
+                        this._lightSvgPlot.svg.clear();
+                        if (value !== undefined) {
+                            this._lightSvgPlot.svg.add(value);
                         }
                     }
                     break;
