@@ -586,6 +586,7 @@
 
     .bma-drawingsurfacecontainer {
         height: calc(100% - 40px);
+        overflow: hidden;
         position: relative;
     }
 
@@ -1457,4 +1458,8 @@
     background-color:transparent;
     height: 36px;
     width: 36px;
+}
+
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    padding: .2em .5em;
 }
