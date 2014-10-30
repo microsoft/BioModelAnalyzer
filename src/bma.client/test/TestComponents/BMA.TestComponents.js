@@ -12,6 +12,10 @@ var BMA;
                 this.svgPlotDiv.drawingsurface({ svg: svg });
             };
 
+            TestSVGPlotDriver.prototype.DrawLayer2 = function (svg) {
+                this.svgPlotDiv.drawingsurface({ lightSvg: svg });
+            };
+
             TestSVGPlotDriver.prototype.TurnNavigation = function (isOn) {
                 this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
             };
