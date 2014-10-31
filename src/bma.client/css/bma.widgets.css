@@ -78,6 +78,7 @@
     .bma-accordion-container{
         position:relative;
         font: caption;
+        height: 100%;
     }
 
     .bma-accordion-header{
@@ -103,13 +104,13 @@
 
     .bma-variables-options-editor {
         position: absolute;
-        width: 310px;
+        width: 400px;
         padding: 20px 15px 20px 15px;
         z-index: 5;
         background-color: Window;
         border-radius: 5px;
         box-shadow: 0 0 8px lightgray;
-        font-size: small;
+        font-size: medium;
     }
 
     .bma-variables-options-editor > *:nth-child(2)
@@ -119,15 +120,15 @@
 
     .bma-variables-options-editor > *:nth-child(3){
         display: inline-block;
-        margin-left: 10px;
+        margin-left: 50px;
     }
 
     .bma-variables-options-editor > *:nth-child(3) input {
         margin-left: 5px;
     }
 
-    .bma-variables-options-editor > *:nth-child(4) textarea {
-        width: 85%;
+    .bma-variables-options-editor > *:nth-child(4) {
+        margin-top: 10px;
     }
 
     .bma-variables-options-editor > *:nth-child(5), .bma-variables-options-editor > *:nth-child(6) {
@@ -141,25 +142,26 @@
 
     .bma-variables-options-editor .list-of-functions ul > li {
         margin-bottom: 5px;
-        background-color: gainsboro;
-        border-radius: 10px;
+        background-color: #e5e5e5;
+        border-radius: 15px;
         display: table;
+        position:relative;
         padding: 0;
         padding-left: 4px;
         padding-right: 4px;
         cursor: pointer;
         text-align: center;
-        color: gray;
+        color: #9b9c9f;
     }
 
-    .bma-variables-options-editor .list-of-functions ul > li:first-child 
+    .bma-variables-options-editor .list-of-functions ul > li:first-child > button
     {
-        width: 30px;
+        width: 50px;
         padding-right: 20px;
     }
 
     .bma-variables-options-editor .list-of-operators {
-        margin-left: 20px;
+        margin-left: 40px;
     }
 
     .bma-variables-options-editor .list-of-operators ul {
@@ -168,29 +170,57 @@
         padding: 0;
     }
 
+
+    .bma-variables-options-editor .list-of-functions ul > li > button {
+        border: none;
+        padding: 5px;
+        background-color: transparent;
+        cursor: pointer;
+        color: inherit;
+    }
+
+
+    .bma-variables-options-editor .list-of-operators ul > li > button {
+        border: none;
+        padding: 5px;
+        min-width: 17px;
+        background-color: transparent;
+        cursor: pointer;
+        color: inherit;
+    }
+
     .bma-variables-options-editor .list-of-operators ul:nth-child(3) {
         margin-top: 0;
     }
 
     .bma-variables-options-editor .list-of-operators ul > li {
         margin-bottom: 5px;
-        background-color: gainsboro;
-        border-radius: 10px;
+        background-color: #e5e5e5;
+        border-radius: 15px;
         padding: 0;
         cursor: pointer;
         display: inline-block;
-        margin-right: 10px;
+        margin-right: 5px;
         padding-left: 5px;
         padding-right: 5px;
-        color: gray;
+        color: #9b9c9f;
     }
 
     .bma-variables-options-editor .list-of-operators ul > li:hover {
+        color: white;
+        background-color: gray;
+    }
+
+    .bma-variables-options-editor .list-of-operators ul > li > button:hover {
+        color: white;
+    }
+
+    .bma-variables-options-editor .list-of-functions ul > li:hover {
         background-color: gray;
         color: white;
     }
-    .bma-variables-options-editor .list-of-functions ul > li:hover {
-        background-color: gray;
+
+    .bma-variables-options-editor .list-of-functions ul > li > button:hover {
         color: white;
     }
 
@@ -557,6 +587,7 @@
 
     .bma-drawingsurfacecontainer {
         height: calc(100% - 40px);
+        overflow: hidden;
         position: relative;
     }
 
@@ -568,6 +599,8 @@
         border-bottom-right-radius: 15px;
         border: none;
         padding:20px;
+        max-height:600px;
+        overflow-y: auto;
     }
 
     .tabPanel > * {
@@ -785,8 +818,8 @@
     }
 
     ::-webkit-scrollbar {
-        width: 18px;
-        height: 18px; 
+        width: 17px;
+        height: 17px; 
     }
  
     /*::-webkit-scrollbar-track {
@@ -806,7 +839,7 @@
         width: 100%;
         height: 40px;
         display: inline-block;
-        margin-left: 10px;
+        margin: 0;
         padding: 2px;
     }
 
@@ -844,9 +877,6 @@
         padding:0;
     }
 
-    .inputs-list-header-collapsed {
-        padding-right: 10px;
-    }
 
     .inputs-list-header-collapsed::after{
         content: "";
@@ -857,18 +887,22 @@
         border-top: 5px solid gray;
         margin: 5px;
         position: absolute;
+        top:5px;
+        right:5px;
     }
 
 
     .inputs-list-content {
         text-align: center;
-        left: 15px;
+        left: 0;
+        top: 25px;
         color: black;
         position:absolute;
         background-color: inherit;
-        border-radius: 0 0 10px 10px;
+        border-radius: 0 0 15px 15px;
         padding-bottom: 5px;
         overflow: hidden;
+        z-index:3;
     }
 
     /*.inputs-list-content  {
@@ -904,7 +938,7 @@
         margin-right: 3px;
     }
 
-    .expanding textarea{
+    /*.expanding textarea{
         display: inline-block;
         margin: 0;
         width: 80%;
@@ -912,7 +946,7 @@
 
     .expanding > *{
         margin-bottom: 5px;
-    }
+    }*/
 
 
 
@@ -955,6 +989,7 @@
 .bma-simulation-table-expanded-scroll {
     max-height:550px;
     overflow-y:scroll;
+    white-space:nowrap;
 }
 
 .bma-simulation-table {
@@ -1079,18 +1114,20 @@
 .bma-formula-validation-icon {
     width: 40px;
     height: 40px;
-    position: absolute;
-    right: 10px;
+    position: relative;
+    float: right;
+    margin: 12px 0;
 }
 
 .bma-formula-validation-message {
     color:red;
     max-height: 40px;
-    overflow-y:auto;
 }
 
 .variablesOptionsEditor-formulaTextArea {
     height: 40px;
+    margin: 10px 0;
+    width: 85%;
 }
 
 .formula-failed-icon {
@@ -1106,11 +1143,11 @@
 }
 
 .formula-failed-textarea {
-    border: 2px solid red;
+    border: 1px solid red;
 }
 
 .formula-validated-textarea {
-    border: 2px solid green;
+    border: 1px solid green;
 }
 
 .resultswindowviewer-header {
@@ -1227,7 +1264,7 @@
 	/*border:1px solid #4b8f29;*/
     position: absolute;
     right: 50px;
-    top: -20px;
+    top: -40px;
     color:#ffffff;
 	font-family:Verdana;
 	font-size:20px;
@@ -1247,7 +1284,7 @@
 	border-radius:8px;
     position: absolute;
     right: 50px;
-    top: -20px;
+    top: -40px;
     color:#ffffff;
 	font-family:Verdana;
 	font-size:20px;
@@ -1296,7 +1333,7 @@
     width: 300px;
     overflow-x: scroll;
     overflow-y: hidden;
-    margin-bottom: -18px;
+    margin-bottom: -17px;
 }
 
 .bma-highlighting-columns {
@@ -1424,4 +1461,8 @@
     background-color:transparent;
     height: 36px;
     width: 36px;
+}
+
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    padding: .2em .5em;
 }

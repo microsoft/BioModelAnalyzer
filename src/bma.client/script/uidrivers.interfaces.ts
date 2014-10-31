@@ -5,6 +5,7 @@ module BMA {
     export module UIDrivers {
         export interface ISVGPlot {
             Draw(svg: SVGElement);
+            DrawLayer2(svg: SVGElement);
             SetGrid(x0: number, y0: number, xStep: number, yStep: number);
             GetPlotX(left: number);
             GetPlotY(top: number);
@@ -49,6 +50,7 @@ module BMA {
         }
 
         export interface IPopup {
+            Seen();
             Show(params);
             Hide();
         }
@@ -84,6 +86,7 @@ module BMA {
             AddResult(res);
             GetViewer();
             Set(data);
+            SetData(data);
             StandbyMode();
             ActiveMode();
         }

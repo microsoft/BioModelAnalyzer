@@ -1,7 +1,7 @@
 ﻿module Interface
 
 open Physics
-open Vector
+//open Vector
 open Automata
 
 //open Microsoft.FSharp.Quotations
@@ -10,7 +10,7 @@ open Automata
 type cellDev = Shrink of float<Physics.um> | Growth of float<Physics.um>
 type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>) | Development of string*cellDev*Particle*Map<QN.var,int>
 type clock = {Input:int; InputThreshold:int; OutputID:int; OutputState:int; TimeLimit:float<Physics.second>}
-type interfaceTopology = {name:string; regions:((Cuboid<um>* int* int) list); clocks:(clock list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
+type interfaceTopology = {name:string; regions:((Vector.Cuboid<um>* int* int) list); clocks:(clock list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
 type floatMetric = Radius | Pressure | Age | Confluence | Force
 type limitMetric = RadiusLimit of float<Physics.um> | PressureLimit of float<Physics.zNewton Physics.um^-2> | AgeLimit of float<Physics.second> | ConfluenceLimit of int | ForceLimit of float<Physics.zNewton>
 type protectMetric =    RadiusMin of float<Physics.um>
@@ -326,15 +326,15 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     If the machine is within a box, the variable is set to something unusual
     ie if I'm here, then I get a signals
     *)
-    let withinCuboid (p: Particle) (c:Cuboid<um>) =
+    let withinCuboid (p: Particle) (c:Vector.Cuboid<um>) =
         let farCorner = c.origin+c.dimensions
         (p.location.x <= farCorner.x && p.location.y <= farCorner.y && p.location.z <= farCorner.z) && (p.location.x >= c.origin.x && p.location.y >= c.origin.y && p.location.z >= c.origin.z)
-    let regionSwitch (r:Cuboid<um>*int*int) (p: Particle) (m: Map<QN.var,int>) =
+    let regionSwitch (r:Vector.Cuboid<um>*int*int) (p: Particle) (m: Map<QN.var,int>) =
         let (regionBox,vID,vState) = r
         match (withinCuboid p regionBox) with
         | true ->  m.Add(vID,vState)
         | false -> m
-    let rec regionListSwitch (r: (Cuboid<um>*int*int) list) (p: Particle) (m: Map<QN.var,int>) =
+    let rec regionListSwitch (r: (Vector.Cuboid<um>*int*int) list) (p: Particle) (m: Map<QN.var,int>) =
         match r with
         | head::tail -> regionListSwitch tail p (regionSwitch head p m)
         | [] -> m

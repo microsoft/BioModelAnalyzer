@@ -40,6 +40,7 @@
                 window.Commands.On("ProofRequested", function () {
                     that.driver.HideStartFurtherTestingToggler();
                     that.driver.HideResults();
+                    that.data = undefined;
                 })
 
                 window.Commands.On("FurtherTestingRequested", function () {

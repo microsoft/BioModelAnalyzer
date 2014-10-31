@@ -15,6 +15,10 @@ module BMA {
                 this.svgPlotDiv.drawingsurface({ svg: svg });
             }
 
+            public DrawLayer2(svg: SVGElement) {
+                this.svgPlotDiv.drawingsurface({ lightSvg: svg });
+            }
+
             public TurnNavigation(isOn: boolean) {
                 this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
             }
@@ -206,9 +210,13 @@ module BMA {
 
 
         export class PopupDriver implements IPopup {
-            private popupWindow;
-            constructor(popupWindow) {
+            private popupWindow: JQuery;
+            constructor(popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
+            }
+
+            public Seen() {
+                return !this.popupWindow.is(":hidden");
             }
 
             public Show(params: any) {
@@ -260,6 +268,12 @@ module BMA {
                 var interval = this.CreateInterval(data.variables);
                 var toAdd = this.CreatePlotView(data.colors);
                 this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: toAdd });
+                //this.viewer.simulationexpanded("option", "data", toAdd);
+            }
+
+            public SetData(data) {
+                var toAdd = this.CreatePlotView(data);
+                this.viewer.simulationexpanded("option", "data", toAdd);
             }
 
             public GetViewer(): JQuery {
@@ -453,7 +467,9 @@ module BMA {
                 return $.ajax({
                     type: "POST",
                     url: url,
-                    data: data
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json"
                 });
             }
         }
@@ -461,11 +477,11 @@ module BMA {
         export class MessageBoxDriver implements IMessageServise {
 
             public Show(message: string){
-                alert("message");
+                alert(message);
             }
 
             public Log(message: string) {
-                console.log("message");
+                console.log(message);
             }
         }
     }
