@@ -129,7 +129,7 @@ module BMA {
                             showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
                         } else {
                             var variable = that.clipboard.Variables[0];
-                            showPaste = that.CanAddVariable(x, y, variable.m.Type);
+                            showPaste = that.CanAddVariable(x, y, variable.m.Type, undefined);
                         }
                     }
 
@@ -720,7 +720,7 @@ module BMA {
                 return true;
             }
 
-            private CanAddVariable(x: number, y: number, type: string): boolean {
+            private CanAddVariable(x: number, y: number, type: string, id: number): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
                 var variables = that.undoRedoPresenter.Current.model.Variables.slice(0);
@@ -734,6 +734,10 @@ module BMA {
                         if (canAdd === true) {
                             for (var i = 0; i < variableLayouts.length; i++) {
                                 var variable = variables[i];
+
+                                if (id !== undefined && id === variable.Id)
+                                    continue;
+
                                 var variableLayout = variableLayouts[i];
                                 var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
                                 if (this.Intersects(bbox, elementBBox))
@@ -756,6 +760,10 @@ module BMA {
 
                         for (var i = 0; i < variableLayouts.length; i++) {
                             var variable = variables[i];
+
+                            if (id !== undefined && id === variable.Id)
+                                continue;
+
                             var variableLayout = variableLayouts[i];
                             var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
                             if (that.Intersects(bbox, elementBBox))
@@ -777,6 +785,10 @@ module BMA {
 
                         for (var i = 0; i < variableLayouts.length; i++) {
                             var variable = variables[i];
+
+                            if (id !== undefined && id === variable.Id)
+                                continue;
+
                             var variableLayout = variableLayouts[i];
                             var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
                             if (that.Intersects(bbox, elementBBox))
@@ -826,7 +838,7 @@ module BMA {
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
 
-                        if (that.CanAddVariable(x, y, "Constant") !== true)
+                        if (that.CanAddVariable(x, y, "Constant", id) !== true)
                             return false;
 
                         if (id !== undefined) {
@@ -849,7 +861,7 @@ module BMA {
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
 
-                        if (that.CanAddVariable(x, y, "Default") !== true)
+                        if (that.CanAddVariable(x, y, "Default", id) !== true)
                             return false;
 
                         var gridCell = that.GetGridCell(x, y);
@@ -879,7 +891,7 @@ module BMA {
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
 
-                        if (that.CanAddVariable(x, y, "MembraneReceptor") !== true)
+                        if (that.CanAddVariable(x, y, "MembraneReceptor", id) !== true)
                             return false;
 
                         var gridCell = that.GetGridCell(x, y);
