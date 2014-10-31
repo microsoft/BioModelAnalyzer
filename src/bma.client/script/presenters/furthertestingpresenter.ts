@@ -113,7 +113,8 @@
                                 var content = $('<div></div>').furthertesting();
                                 content.furthertesting("SetData", that.data);
                                 content.find("*").removeClass("scrollable-results");
-                                this.popupViewer.Show({ tab: param, content: content.children().eq(1).children().eq(1) });
+                                var full = content.children().eq(1).children().eq(1).addClass("proof-expanded");
+                                this.popupViewer.Show({ tab: param, content: full });
                                 break;
                             default:
                                 that.driver.ShowResults(that.data);
