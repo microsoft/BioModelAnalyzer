@@ -129,7 +129,7 @@ module BMA {
                             showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
                         } else {
                             var variable = that.clipboard.Variables[0];
-                            showPaste = that.CanAddVariable(x, y, variable.m.Type);
+                            showPaste = that.CanAddVariable(x, y, variable.m.Type, undefined);
                         }
                     }
 
@@ -720,7 +720,7 @@ module BMA {
                 return true;
             }
 
-            private CanAddVariable(x: number, y: number, type: string): boolean {
+            private CanAddVariable(x: number, y: number, type: string, id: number): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
                 var variables = that.undoRedoPresenter.Current.model.Variables.slice(0);
@@ -734,6 +734,10 @@ module BMA {
                         if (canAdd === true) {
                             for (var i = 0; i < variableLayouts.length; i++) {
                                 var variable = variables[i];
+
+                                if (id !== undefined && id === variable.Id)
+                                    continue;
+
                                 var variableLayout = variableLayouts[i];
                                 var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
                                 if (this.Intersects(bbox, elementBBox))
@@ -756,6 +760,10 @@ module BMA {
 
                         for (var i = 0; i < variableLayouts.length; i++) {
                             var variable = variables[i];
+
+                            if (id !== undefined && id === variable.Id)
+                                continue;
+
                             var variableLayout = variableLayouts[i];
                             var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
                             if (that.Intersects(bbox, elementBBox))
@@ -777,6 +785,10 @@ module BMA {
 
                         for (var i = 0; i < variableLayouts.length; i++) {
                             var variable = variables[i];
+
+                            if (id !== undefined && id === variable.Id)
+                                continue;
+
                             var variableLayout = variableLayouts[i];
                             var elementBBox = (<BMA.Elements.BboxElement>window.ElementRegistry.GetElementByType(variable.Type)).GetBoundingBox(variableLayout.PositionX, variableLayout.PositionY);
                             if (that.Intersects(bbox, elementBBox))
@@ -826,7 +838,7 @@ module BMA {
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
 
-                        if (that.CanAddVariable(x, y, "Constant") !== true)
+                        if (that.CanAddVariable(x, y, "Constant", id) !== true)
                             return false;
 
                         if (id !== undefined) {
@@ -849,7 +861,7 @@ module BMA {
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
 
-                        if (that.CanAddVariable(x, y, "Default") !== true)
+                        if (that.CanAddVariable(x, y, "Default", id) !== true)
                             return false;
 
                         var gridCell = that.GetGridCell(x, y);
@@ -879,7 +891,7 @@ module BMA {
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
 
-                        if (that.CanAddVariable(x, y, "MembraneReceptor") !== true)
+                        if (that.CanAddVariable(x, y, "MembraneReceptor", id) !== true)
                             return false;
 
                         var gridCell = that.GetGridCell(x, y);
@@ -1098,8 +1110,8 @@ module BMA {
                 //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
-                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
-                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
+                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 4, "auto", { viewBox: "0 -2 4 4" });
+                this.svg.polyline(activatorMarker, [[0, 2], [4, 0], [0, -2]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
                 var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
                 this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
 
@@ -1116,8 +1128,8 @@ module BMA {
 
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
-                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 8, "auto", { viewBox: "0 -4 4 8" });
-                this.svg.polyline(activatorMarker, [[0, 4], [4, 0], [0, -4]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
+                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 4, "auto", { viewBox: "0 -2 4 4" });
+                this.svg.polyline(activatorMarker, [[0, 2], [4, 0], [0, -2]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
                 var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
                 this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
 

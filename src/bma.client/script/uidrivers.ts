@@ -467,7 +467,9 @@ module BMA {
                 return $.ajax({
                     type: "POST",
                     url: url,
-                    data: data
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json"
                 });
             }
         }
@@ -475,11 +477,11 @@ module BMA {
         export class MessageBoxDriver implements IMessageServise {
 
             public Show(message: string){
-                alert("message");
+                alert(message);
             }
 
             public Log(message: string) {
-                console.log("message");
+                console.log(message);
             }
         }
     }
