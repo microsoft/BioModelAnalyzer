@@ -7,8 +7,8 @@ open Automata
 //open Microsoft.FSharp.Quotations
 //open Microsoft.FSharp.Quotations.Typed
 //open Microsoft.FSharp.Quotations.Raw
-type cellDev = Shrink of float<Physics.um> | RadialGrowth of float<Physics.um>
-type growthType = RadialGrowthType of float<Physics.um/Physics.second> //| VolumeGrowth of float<Physics.um^3/Physics.second>
+type cellDev = Shrink of float<Physics.um> | RadialGrowth of float<Physics.um> | VolumeGrowth of float<Physics.um^3>
+type growthType = RadialGrowthType of float<Physics.um/Physics.second> | VolumeGrowthType of float<Physics.um^3/Physics.second>
 type particleModification = Death of string | Life of Particle*Map<QN.var,int> | Divide of string*(Particle*Map<QN.var,int>)*(Particle*Map<QN.var,int>) | Development of string*cellDev*Particle*Map<QN.var,int>
 type clock = {Input:int; InputThreshold:int; OutputID:int; OutputState:int; TimeLimit:float<Physics.second>}
 type interfaceTopology = {name:string; regions:((Vector.Cuboid<um>* int* int) list); clocks:(clock list); responses:((float<second>->Particle->Map<QN.var,int>->particleModification) list); randomMotors: (float<Physics.second>->Particle->Map<QN.var,int>->Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) list}
@@ -135,6 +135,21 @@ let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (
     //Now return a tuple of the QN and the force
     (m',force)
 
+let cubeRoot (f:float<'m^3>) : float<'m> = 
+    System.Math.Pow(float f, 1.0/3.0) |> LanguagePrimitives.FloatWithMeasure
+
+let growCell style p dt =
+    match style with 
+    | RadialGrowthType(rate) -> {p with radius = p.radius+rate*dt}
+    | VolumeGrowthType(rate) -> let volume' = p.volume + rate*dt
+                                let radius' = cubeRoot((3. * volume') / (4. * System.Math.PI))
+                                {p with radius = radius'}
+
+let developmentEvent style t =
+    match style with
+    | RadialGrowthType(r) -> RadialGrowth(r*t)
+    | VolumeGrowthType(r) -> VolumeGrowth(r*t)
+
 let limitedLinearGrow (rate: growthType) (property: limitMetric) (varID: int) (varState: int) (varName: string) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //Limit grow by an arbitrary property
     let overLimit = match property with
@@ -143,21 +158,22 @@ let limitedLinearGrow (rate: growthType) (property: limitMetric) (varID: int) (v
                                         | PressureLimit(n)   -> (p.pressure > n)
                                         | ForceLimit(n)      -> (p.forceMag > n)
                                         | ConfluenceLimit(n) -> (p.confluence > n)
-    match (m.[varID] = varState, overLimit, rate) with
-    | (_,true,_)  -> Life (p,m)
-    | (false,_,_) -> Life (p,m)
-    | (true,_,RadialGrowthType(rate))  -> Development (varName,RadialGrowth(rate*dt),{p with radius = p.radius+rate*dt},m)
+    match (m.[varID] = varState, overLimit) with
+    | (_,true)  -> Life (p,m)
+    | (false,_) -> Life (p,m)
+    | (true,_)  ->   Development (varName,(developmentEvent rate dt), (growCell rate p dt) , m)
     //Life ({p with radius = p.radius+rate*dt},m)//(Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
 
+//Todo: reimplement max(and sd) to be a limitMetric (to allow cells to divide against e.g. a volume limit)
 let linearGrowDivide (rate: growthType) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let max = if variation then max+(sd*p.gRand*rsqrt2) else max
-    match (m.[varID] = varState, limit, rate) with
-    | (false,_,_) -> Life (p,m) //Not in growth state
-    | (true,None,RadialGrowthType(rate)) ->
+    match (m.[varID] = varState, limit) with
+    | (false,_) -> Life (p,m) //Not in growth state
+    | (true,None) ->
             match (p.radius < max) with
-            | true -> Development (varName,RadialGrowth(rate*dt),{p with radius = p.radius+rate*dt},m)// Growing if below limit  (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
+            | true -> Development (varName,(developmentEvent rate dt),(growCell rate p dt),m)// Growing if below limit  (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
             | false -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
-    | (true,Some(l),RadialGrowthType(rate)) ->
+    | (true,Some(l)) ->
             let overLimit = match l with
                                         | RadiusLimit(n)     -> (p.radius > n)
                                         | AgeLimit(n)        -> (p.age > n)
@@ -166,16 +182,22 @@ let linearGrowDivide (rate: growthType) (max: float<um>) (sd: float<um>) (varID:
                                         | ConfluenceLimit(n) -> (p.confluence > n)
             match ((p.radius < max), overLimit) with
             | (_,true) -> Life (p,m)
-            | (true,_)  -> Development (varName,RadialGrowth(rate*dt),{p with radius = p.radius+rate*dt},m)
+            | (true,_)  -> Development (varName,(developmentEvent rate dt),(growCell rate p dt),m)
             | (false,_) -> Divide (varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
 
 let linearGrowDivideWithVectorDistanceDependence (origin: Vector.Vector3D<Physics.um>) (direction: Vector.Vector3D<1>) (gradient: float<Physics.second^-1>) (rate: growthType) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let projection =  (p.location - origin) * direction.norm
-    match rate with 
-    | RadialGrowthType(rate) ->
+    let rate' = match rate with 
+                | RadialGrowthType(rate) ->
                                 let rate' = projection * gradient + rate  
                                 let rate' = if (rate'< 0.<Physics.um/Physics.second>) then 0.<Physics.um/Physics.second> else rate' //Rate must be positive or zero
-                                linearGrowDivide (RadialGrowthType(rate')) max sd varID varState varName rng limit variation dt p m
+                                RadialGrowthType(rate')
+                | VolumeGrowthType(rate) ->
+                                let rate' = projection * gradient * 1.<um^2> + rate  
+                                let rate' = if (rate'< 0.<Physics.um^3/Physics.second>) then 0.<Physics.um^3/Physics.second> else rate' //Rate must be positive or zero
+                                VolumeGrowthType(rate')
+    
+    linearGrowDivide rate' max sd varID varState varName rng limit variation dt p m
 
 let testProtection (protection: protectMetric) (p: Physics.Particle) =
     match protection with 
