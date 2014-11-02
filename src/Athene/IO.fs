@@ -277,7 +277,10 @@ let xmlTopRead (filename: string) =
  
     let getGrowthBasics (r:XElement) =
                                     let growthStyle =   try (r.Attribute(xn "GrowthStyle").Value) with _ -> "Radial" 
-                                    let rate = Interface.RadialGrowthType((try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate")*1.<Physics.um/Physics.second>)
+                                    let rate =  match growthStyle with 
+                                                | "Radial" -> Interface.RadialGrowthType((try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate")*1.<Physics.um/Physics.second>)
+                                                | "Volume" -> Interface.VolumeGrowthType((try (float) (r.Attribute(xn "Rate").Value) with _ -> failwith "Missing growth rate")*1.<Physics.um^3/Physics.second>)
+                                                | a -> failwith ("Unrecognised growth type- " + a )
                                     let varID = try (int) (r.Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                                     let varState = try (int) (r.Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
                                     let varName = try r.Attribute(xn "Name").Value with _ -> failwith "Missing variable name" 
