@@ -19,9 +19,9 @@ Particle('E',{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<
 Particle("E",{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 0.7<um>, 1.3<pg um^-3>, 1.<second>, 1., false)
 *)
 [<Serializable>]
-type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
+type systemState = {Physical: Physics.Particle array; Formal: Map<QN.var,int> array}
 [<Serializable>]
-type systemStorage = {Physical: Physics.Particle list; LFormal: (QN.var*int) list list}
+type systemStorage = {Physical: Physics.Particle array; LFormal: (QN.var*int) array array}
 
 let convertObjectToByteArray(data)=
     let bf = new BinaryFormatter()
@@ -34,10 +34,10 @@ let readCheckpoint (filename) =
     let bf = new BinaryFormatter()
     let result = bf.Deserialize(fileStream)
     let state' = (result :?> systemStorage)
-    let mapped = state'.LFormal |> List.map (fun m -> Map.ofList m)
+    let mapped = state'.LFormal |> Array.map (fun m -> Map.ofArray m) 
     let p = state'.Physical
     //Read the maximum gensym and sync the current gensym to that
-    let maxG = p |> List.map (fun i -> i.id) |> List.max
+    let maxG = p |> Array.map (fun i -> i.id) |> Array.max
     let rec updateGensym (max:int) =
         let g' = Physics.gensym ()
         if (g' < max) then updateGensym max else ()
@@ -80,13 +80,13 @@ let interfaceEventWriteFrame (file:StreamWriter) (register : string list) =
     //file.Close()
     
     
-let xyzWriteFrame (file:StreamWriter) (machName: string) (system: Physics.Particle list)  =
+let xyzWriteFrame (file:StreamWriter) (machName: string) (system: Physics.Particle array)  =
         //use file = new StreamWriter(filename, true)
 //        let mSystem = [for p in system do match System.String.Equals(p.name,machName) with 
 //                                            | true -> yield p
 //                                            | false -> ()
 //                                            ]
-        let mSystem = List.filter (fun (p:Physics.Particle) -> p.name=machName) system
+        let mSystem = Array.filter (fun (p:Physics.Particle) -> p.name=machName) system
         file.WriteLine(sprintf "%A" mSystem.Length)
         file.WriteLine("Athene")
         ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure/1000000000.) p.confluence (p.forceMag/1000000000.))] 
@@ -98,11 +98,11 @@ let xyzWriteFrame (file:StreamWriter) (machName: string) (system: Physics.Partic
 //        |> Async.StartImmediate
         //file.Close()
 
-let csvWriteStates (file:StreamWriter) (machines: Map<QN.var,int> list) = 
+let csvWriteStates (file:StreamWriter) (machines: Map<QN.var,int> array) = 
         //use file = new StreamWriter(filename, true)
         //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
         //ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A" p.name p.location.x p.location.y p.location.z)]
-        file.WriteLine(String.concat "," (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
+        file.WriteLine(String.concat "," (Array.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
         //file.Close()
 
 let dumpSystem (filename: string) (state: systemState) = 
@@ -112,7 +112,7 @@ let dumpSystem (filename: string) (state: systemState) =
         //file.WriteLine(String.concat "," (seq { for p in particles -> p.ToString }) )
         //Create a mapless system state
         //This is because BinaryFormatter cannot serialize maps http://fpish.net/topic/None/59723
-        let mapless = state.Formal |> List.map (fun m -> Map.toList m)
+        let mapless = state.Formal |> Array.map (fun m -> Map.toArray m)
         let state' = {Physical=state.Physical;LFormal=mapless}
         let byteArray = convertObjectToByteArray(state')
         file.Write(byteArray,0,byteArray.Length)

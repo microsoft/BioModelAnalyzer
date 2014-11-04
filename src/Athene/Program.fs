@@ -4,7 +4,7 @@ open System.IO
 
 open IO
 
-type stateReporter = {EventWriter:(string list->unit);StateWriter:(Map<QN.var,int> list->unit);FrameWriter:(Physics.Particle list->unit)}
+type stateReporter = {EventWriter:(string list->unit);StateWriter:(Map<QN.var,int> array->unit);FrameWriter:(Physics.Particle array->unit)}
 //[<Serializable>]
 //type systemState = {Physical: Physics.Particle list; Formal: Map<QN.var,int> list}
 [<Serializable>]
@@ -15,7 +15,7 @@ type systemDefinition = {   Topology:Map<string,Map<string,Physics.Particle -> P
                             systemOrigin: Vector.Vector3D<Physics.um>;
                             machineName: string;
                             staticGrid: Map<int*int*int,Physics.Particle list>;
-                            staticSystem: Physics.Particle list;
+                            staticSystem: Physics.Particle array;
                             }//{system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName}
 [<Serializable>]
 type runningParameters = {  Temperature:            float<Physics.Kelvin>;
@@ -59,7 +59,7 @@ let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runn
     let pg = runInfo.PhysicalGranularity
     let eventLog = runInfo.EventLog
 
-    let (system', machineStates', machineForces, eventLog') = if (steps%ig=0) then (Interface.interfaceUpdate state.Physical state.Formal (runInfo.TimeStep*(float)ig) definition.Interface runInfo.Time eventLog ) else (state.Physical,state.Formal,(List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) state.Physical),eventLog)
+    let (system', machineStates', machineForces, eventLog') = if (steps%ig=0) then (Interface.interfaceUpdate state.Physical state.Formal (runInfo.TimeStep*(float)ig) definition.Interface runInfo.Time eventLog ) else (state.Physical,state.Formal,(Array.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) state.Physical),eventLog)
     let write = match (steps%freq) with 
                     | 0 ->  output.FrameWriter system'
                             output.StateWriter machineStates'
@@ -83,12 +83,6 @@ let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runn
     if steps > 0 then simulate state' definition {runInfo with Steps=(steps-1); Time=(runInfo.Time+runInfo.TimeStep); EventLog=eventLog'} output rand else ()       
 
 let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
-    let rec countCells acc (name: string) (s: Physics.Particle list) = 
-        match s with
-        | head::tail -> 
-                        if System.String.Equals(head.name,name) then countCells (acc+1) name tail
-                        else countCells acc name tail
-        | [] -> acc
     let (pTypes, nbTypes, (machName,machI0), interfaceTopology, (sOrigin,maxMove), rp, rng) = IO.xmlTopRead topfile
     let positions = IO.pdbRead cartFile rng
     // SI: consider defining a record type rather than tuple. 
@@ -100,13 +94,14 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
                     | _ -> {Physics.defaultParticle with  Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=(Vector.randomDirectionUnitVector rng);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}  
                     //Particle(cart.id,cart.name,cart.location,cart.velocity,(Vector.randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
                      ]
-    let staticGrid = Physics.gridFill (List.filter (fun (p: Physics.Particle) -> p.freeze) uCart) Map.empty sOrigin rp.nonBond 
+                     |> Array.ofList
+    let staticGrid = Physics.gridFillArray (Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart) sOrigin rp.nonBond 
     let qn = IO.bmaRead bmafile
-    let machineCount = countCells 0 machName uCart
+    let machineCount = Array.length uCart
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
     let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false; CheckPointFreq=rp.checkpointReport;SearchType=rp.searchType}
 
-    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid;staticSystem=(List.filter (fun (p: Physics.Particle) -> p.freeze) uCart)},runInfo,rng)
+    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid;staticSystem=(Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart)},runInfo,rng)
     //(uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, sOrigin, staticGrid, machName)
 
 //let seed = ref 1982
@@ -151,10 +146,13 @@ let rec parse_args args =
     | "-restart" :: tmp :: rest -> restart := tmp  ;  parse_args rest
     | x::rest -> failwith (sprintf "Bad command line args: %s" x)
 
-let rec equilibrate (system: Physics.Particle list) (topology) (steps: int) (maxlength: float<Physics.um>) searchType (staticGrid:Map<int*int*int,Physics.Particle list>) staticSystem (sOrigin:Vector.Vector3D<Physics.um>) (cutoff:float<Physics.um>) =
+let rec equilibrate (system: Physics.Particle array) (topology) (steps: int) (maxlength: float<Physics.um>) searchType (staticGrid:Map<int*int*int,Physics.Particle list>) staticSystem (sOrigin:Vector.Vector3D<Physics.um>) (cutoff:float<Physics.um>) =
     match steps with
     | 0 -> system
-    | _ -> equilibrate (Physics.steep system (Physics.forceUpdate topology cutoff system searchType staticGrid staticSystem sOrigin (List.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) system ) (!threads))  maxlength) topology (steps-1) maxlength searchType staticGrid staticSystem sOrigin cutoff
+    | _ ->  let zeroForces = Array.init (Array.length system) (fun index -> {Vector.Vector3D.x=0.<Physics.zNewton>;Vector.Vector3D.y=0.<Physics.zNewton>;Vector.Vector3D.z=0.<Physics.zNewton>}) 
+            let forceEnv = (Physics.forceUpdate topology cutoff system searchType staticGrid staticSystem sOrigin zeroForces (!threads))
+            let system' = (Physics.steep system forceEnv  maxlength)
+            equilibrate system topology (steps-1) maxlength searchType staticGrid staticSystem sOrigin cutoff
 
 let standardOptions pdb bma top  = 
     let cart = match !pdb with 
@@ -200,7 +198,8 @@ let main argv =
     printfn "Maximum number of threads: %A" runInfo.Threads
     
     //printfn "Static grid: %A" staticGrid
-    let (mSystem,sSystem) = List.partition (fun (p:Physics.Particle) -> not p.freeze) state.Physical
+    //Todo: define a discriminated union to test for mobile, static and unsorted systems to avoid repeated partitions/filters
+    let (mSystem,sSystem) = Array.partition (fun (p:Physics.Particle) -> not p.freeze) state.Physical
     printfn "Performing %A step pseudo steepest descent (max length %Aum)" !equil !equillength
     let eSystem = equilibrate mSystem definition.Topology !equil !equillength runInfo.SearchType definition.staticGrid definition.staticSystem definition.systemOrigin runInfo.NonBondedCutOff
     printfn "Completed pseudo SD. Running %A seconds of simulation (%A steps)" (runInfo.TimeStep*(float runInfo.Steps)) runInfo.Steps // (!dT*((float) !steps)) !steps

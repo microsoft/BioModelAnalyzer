@@ -16,15 +16,15 @@ let spawnMachines (qn: QN.node list) (number:int) (rng:System.Random) (init0:str
                         | "zero" -> List.fold (fun m (n:QN.node) -> Map.add n.var 0 m) Map.empty qn
                         | "random" -> List.fold (fun m (n:QN.node) -> Map.add n.var (rng.Next(0,(max+1))) m) Map.empty qn
                         | _ -> failwith "Cannot read the initial state of the machines"
-    [for machine in [0..(number-1)] -> initState init0]
+    [for machine in [0..(number-1)] -> initState init0] |> Array.ofList
 
-let updateMachines (qn: QN.node list) (machines: Map<QN.var,int> list) (threads:int) =
+let updateMachines (qn: QN.node list) (machines: Map<QN.var,int> array) (threads:int) =
     //[for automata in machines -> Simulate.tick qn automata]
-    machines
-    |> Physics.chunk threads
-    |> Microsoft.FSharp.Collections.PSeq.ordered
-    |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
-    |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun (automata: Map<QN.var,int>) -> Simulate.tick qn automata))
-    |> Microsoft.FSharp.Collections.PSeq.toList
-    |> Physics.unchunk
+    Array.Parallel.map (fun (automata: Map<QN.var,int>) -> Simulate.tick qn automata) machines
+//    |> Physics.chunk threads
+//    |> Microsoft.FSharp.Collections.PSeq.ordered
+//    |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
+//    |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun (automata: Map<QN.var,int>) -> Simulate.tick qn automata))
+//    |> Microsoft.FSharp.Collections.PSeq.toList
+//    |> Physics.unchunk
     //|> List.ofSeq

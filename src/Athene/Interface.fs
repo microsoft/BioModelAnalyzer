@@ -352,11 +352,11 @@ let divideSystem system machineName =
     let (n,s,m) = List.foldBack f system (machineName,[],[])
     (s,m)
 
-let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list) (dT:float<second>) (intTop:interfaceTopology) (systemTime:float<second>) (birthDeathRegister: string list )  =
+let interfaceUpdate (system: Particle array) (machineStates: Map<QN.var,int> array) (dT:float<second>) (intTop:interfaceTopology) (systemTime:float<second>) (birthDeathRegister: string list )  =
     let name = intTop.name
     let regions = intTop.regions
     let responses = intTop.responses
-    let (machineSystem,staticSystem) = List.partition (fun (p:Particle) -> not p.freeze) system
+    let (machineSystem,staticSystem) = Array.partition (fun (p:Particle) -> not p.freeze) system
     (*
     Regions in the interface set a variable state of a machine based on the machines physical location. 
     If the machine is within a box, the variable is set to something unusual
@@ -401,7 +401,8 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
                                     let machines' = List.map (fun (mf:Map<QN.var,int>*Vector.Vector3D<Physics.zNewton>) -> fst mf) machineForces'
                                     getMotorForces otherMotors system machines' dT forceAcc'
         | [] -> (forceAcc,machines)
-    
+    let machineSystem = List.ofArray machineSystem
+    let machineStates = List.ofArray machineStates
     //How do you fix the problem of physicsI update first or machineI update first?
     //Do I need to pass *both* new and old machines?
     //No, I'm going to update the physics first. The only way this could change things is by dividing across a region- this is not unreasonable
@@ -410,8 +411,10 @@ let interfaceUpdate (system: Particle list) (machineStates: Map<QN.var,int> list
     //let p' = List.map (fun (p,m) -> p) pm
     let pm' =   List.map (fun (p,m) -> (p,(regionListSwitch regions p m))) pm 
                 |> List.map (fun pm -> clockListUpdate intTop.clocks pm dT)
-    let p'= List.map (fun (p,m) -> p) pm'
+    let p'= List.map (fun (p,m) -> p) pm' 
     let m'= List.map (fun (p,m) -> m) pm'
     let (f,m'') = getMotorForces intTop.randomMotors p' m' dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) p')
-
+    let p' = Array.ofList p'
+    let m'' = Array.ofList m''
+    let f = Array.ofList f
     (p', m'', f, birthDeathRegister')

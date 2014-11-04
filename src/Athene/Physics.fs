@@ -223,6 +223,21 @@ let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (
                             gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
         | [] -> acc
 
+let gridFillArray (system: Particle array) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
+        let elementAdd (grid:Map<int*int*int,Particle list>) (p:Particle) =
+                            let dx = int ((p.location.x-minLoc.x)/cutOff)
+                            let dy = int ((p.location.y-minLoc.y)/cutOff)
+                            let dz = int ((p.location.z-minLoc.z)/cutOff)
+                            let newValue = match grid.ContainsKey (dx,dy,dz) with
+                                            | true  -> p::grid.[(dx,dy,dz)]
+                                            | false -> [p]
+                            grid
+        //(acc: Map<int*int*int,Particle list>)
+        let result = ref Map.empty
+        for i = 0 to Array.length system - 1 do
+            result := elementAdd !result system.[i]
+        !result
+
 let cube (n:int) = 
     let rec core (x:int) (y:int) (z:int) (n:int) (acc:(int*int*int) list) =
         match (x,y,z) with
@@ -263,10 +278,10 @@ let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (
          |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
          |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
          //|> List.sortBy (fun (p:Particle)     -> p.id)                                      //Test associativity induced numerical errors
-let collectSimpleNeighbours (p: Particle) (system: Particle list) (cutOff:float<um>) = 
+let collectSimpleNeighbours (p: Particle) (system: Particle array) (cutOff:float<um>) = 
     system
-    |> List.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
-    |> List.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
+    |> Array.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
+    |> Array.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
     //|> List.sortBy (fun (p:Particle)     -> p.id)                                      //Test associativity induced numerical errors
 let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle list) (cutOff: float<um>) = 
     match mobileSystem with
@@ -286,6 +301,11 @@ let updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3
     |> List.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
     |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
     //|> List.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
+
+let updateGridArray (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle array) (cutOff: float<um>) =
+    mobileSystem
+    |> Array.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
+    |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
 
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> ; interactors: (Particle*float<um>) list }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
@@ -330,7 +350,7 @@ let unchunk s =
 
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle list) (search:searchType) staticGrid (staticSystem:Particle list) sOrigin (externalF: Vector.Vector3D<zNewton> list) threads = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle array) (search:searchType) staticGrid (staticSystem:Particle array) sOrigin (externalF: Vector.Vector3D<zNewton> array) threads = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | first_p::other_p -> sumForces p other_p (topology.[p.name].[first_p.name] first_p p) + acc
@@ -373,14 +393,15 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
         |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
         |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     let calculateSimpleNonBonded system (nb: nonBonded) =
-        if nb.P.freeze then [] else (collectSimpleNeighbours nb.P system cutOff)                //Get neighbours
+        if nb.P.freeze then [||] else (collectSimpleNeighbours nb.P system cutOff)                //Get neighbours
+        |> List.ofArray
         |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
         |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     //add all the mobile particles to the staticGrid
-    let mobileSystem = (List.filter (fun (p:Particle) -> not p.freeze) system)
+    let mobileSystem = (Array.filter (fun (p:Particle) -> not p.freeze) system)
     
-    let nonBondedTerms = List.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> ; interactors = [] }) externalF
-                            |> List.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
+    let nonBondedTerms = Array.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> ; interactors = [] }) externalF
+                            |> Array.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
     
     //For testing purposes only- who is different?
 //    let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
@@ -398,22 +419,24 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
     //End of testing section
 
     match search with
-    | Grid ->       let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
+    | Grid ->       let nonBondedGrid = updateGridArray staticGrid sOrigin mobileSystem cutOff
                     nonBondedTerms 
-                                |> chunk threads
-                                |> Microsoft.FSharp.Collections.PSeq.ordered    
-                                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
-                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateGridNonBonded nonBondedGrid atom))
-                                |> Microsoft.FSharp.Collections.PSeq.toList
-                                |> unchunk
-    | Simple ->     let cSystem = quickJoin mobileSystem staticSystem
+                                |> Array.Parallel.map (fun atom -> calculateGridNonBonded nonBondedGrid atom)
+//                                |> chunk threads
+//                                |> Microsoft.FSharp.Collections.PSeq.ordered    
+//                                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
+//                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateGridNonBonded nonBondedGrid atom))
+//                                |> Microsoft.FSharp.Collections.PSeq.toList
+//                                |> unchunk
+    | Simple ->     let cSystem = Array.init (Array.length mobileSystem + Array.length staticSystem) (fun index -> if index < Array.length mobileSystem then mobileSystem.[index] else staticSystem.[Array.length mobileSystem + index]) //quickJoin mobileSystem staticSystem
                     nonBondedTerms 
-                                |> chunk threads
-                                |> Microsoft.FSharp.Collections.PSeq.ordered    
-                                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
-                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateSimpleNonBonded cSystem atom) )
-                                |> Microsoft.FSharp.Collections.PSeq.toList
-                                |> unchunk
+                                |> Array.Parallel.map (fun atom -> calculateSimpleNonBonded cSystem atom)
+//                                |> chunk threads
+//                                |> Microsoft.FSharp.Collections.PSeq.ordered    
+//                                |> (fun pseq -> if threads > 0 then Microsoft.FSharp.Collections.PSeq.withDegreeOfParallelism threads pseq else pseq)
+//                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateSimpleNonBonded cSystem atom) )
+//                                |> Microsoft.FSharp.Collections.PSeq.toList
+//                                |> unchunk
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
@@ -447,12 +470,13 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) 
     let NewO = thermalReorientation T rng dT cluster
     { cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT ; pressure=F.pressure; forceMag=F.absForceMag ; confluence=F.confluence}
 
-let bdSystemUpdate (system: Particle list) (forces: forceEnv list) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
-    List.map2 (fun (p:Particle) (f:forceEnv) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
+let bdSystemUpdate (system: Particle array) (forces: forceEnv array) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
+    Array.map2 (fun (p:Particle) (f:forceEnv) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
 
-let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um>) = 
-    let forces = List.map (fun x->x.force) forceEnv
-    let (minV,maxV) = Vector.vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
+let steep (system: Particle array) (forceEnv: forceEnv array) (maxlength: float<um>) = 
+    let forces = Array.map (fun x->x.force) forceEnv
+    //let (minV,maxV) = Vector.vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
+    let maxV = Array.max forces
     let modifier = maxlength/maxV.len
     (*
     match (modifier=infinity*1.0<um/zNewton>) with
@@ -463,13 +487,13 @@ let steep (system: Particle list) (forceEnv: forceEnv list) (maxlength: float<um
                                                         | true -> p ]
                                                         *)
     if (modifier=infinity*1.0<um/zNewton>) then system
-    else 
-      [for (p,f) in (List.zip system forces) -> 
-        if p.freeze then p 
-        //else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
-        else {p with location = p.location+(f*modifier)} ]
+    else Array.map2 (fun p f -> if p.freeze then p else {p with location=p.location+(f*modifier)}) system forces
+//      [for (p,f) in (List.zip system forces) -> 
+//        if p.freeze then p 
+//        //else Particle(p.id,p.name,(p.location+(f*modifier)),p.velocity,p.orientation,p.Friction, p.radius, p.density, p.age, p.gRand, p.freeze)]
+//        else {p with location = p.location+(f*modifier)} ]
 
-let rec integrate (system: Particle list) topology (searchType: searchType) staticGrid (staticSystem:Particle list) sOrigin (machineForces: Vector.Vector3D<zNewton> list) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand threads (F: forceEnv list option) = 
+let rec integrate (system: Particle array) topology (searchType: searchType) staticGrid (staticSystem:Particle array) sOrigin (machineForces: Vector.Vector3D<zNewton> array) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand threads (F: forceEnv array option) = 
     //Use previously caclulated forces from failed integration step if available
     let F = match F with
             | Some(F) -> F
@@ -478,8 +502,8 @@ let rec integrate (system: Particle list) topology (searchType: searchType) stat
     //let F = List.map (fun x -> x.force) Fenv
     //From the update, calculate if the maximum move is broken
     let system' = bdSystemUpdate system F bdOrientedAtomicUpdate T dT rand maxMove
-    let maxdP   = List.map2 (fun (s: Particle) (s': Particle) -> (s'.location - s.location).len) system system'
-                    |> List.max
+    let maxdP   = Array.map2 (fun (s: Particle) (s': Particle) -> (s'.location - s.location).len) system system'
+                    |> Array.max
     //system'
     match ((maxdP < maxMove),(steps=1),(vdt_depth>0)) with
     | (true,true,_)  -> system'
