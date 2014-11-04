@@ -287,11 +287,6 @@ let updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3
     |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
     //|> List.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
 
-let updateGridArray (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle array) (cutOff: float<um>) =
-    mobileSystem
-    |> Array.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
-    |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
-
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> ; interactors: (Particle*float<um>) list }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
 
@@ -413,7 +408,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
 //                                |> Microsoft.FSharp.Collections.PSeq.map (List.map (fun atom -> calculateGridNonBonded nonBondedGrid atom))
 //                                |> Microsoft.FSharp.Collections.PSeq.toList
 //                                |> unchunk
-    | Simple ->     let cSystem = Array.init (Array.length mobileSystem + Array.length staticSystem) (fun index -> if index < Array.length mobileSystem then mobileSystem.[index] else staticSystem.[Array.length mobileSystem + index]) //quickJoin mobileSystem staticSystem
+    | Simple ->     let cSystem = Array.init (Array.length mobileSystem + Array.length staticSystem) (fun index -> if index < Array.length mobileSystem then mobileSystem.[index] else staticSystem.[index - Array.length mobileSystem]) //quickJoin mobileSystem staticSystem
                     nonBondedTerms 
                                 |> Array.Parallel.map (fun atom -> calculateSimpleNonBonded cSystem atom)
 //                                |> chunk threads

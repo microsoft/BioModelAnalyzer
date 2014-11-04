@@ -153,7 +153,7 @@ let rec equilibrate (system: Physics.Particle array) (topology) (steps: int) (ma
     | _ ->  let zeroForces = Array.init (Array.length system) (fun index -> {Vector.Vector3D.x=0.<Physics.zNewton>;Vector.Vector3D.y=0.<Physics.zNewton>;Vector.Vector3D.z=0.<Physics.zNewton>}) 
             let forceEnv = (Physics.forceUpdate topology cutoff system searchType staticGrid staticSystem sOrigin zeroForces (!threads))
             let system' = (Physics.steep system forceEnv  maxlength)
-            equilibrate system topology (steps-1) maxlength searchType staticGrid staticSystem sOrigin cutoff
+            equilibrate system' topology (steps-1) maxlength searchType staticGrid staticSystem sOrigin cutoff
 
 let standardOptions pdb bma top  = 
     let cart = match !pdb with 
