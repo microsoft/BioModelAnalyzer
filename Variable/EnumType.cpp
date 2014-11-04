@@ -29,12 +29,12 @@ bool EnumType::operator==(const Type& other) const {
 		return false;
 	}
 
-	const EnumType& eOther{ dynamic_cast<const EnumType&>(other) };
-	if (_elements.size() != eOther._elements.size()) {
+	const EnumType* eOther{ dynamic_cast<const EnumType*>(&other) };
+	if (_elements.size() != eOther->_elements.size()) {
 		return false;
 	}
 	auto myIt = _elements.begin();
-	auto otherIt = eOther._elements.begin();
+	auto otherIt = eOther->_elements.begin();
 	while (myIt != _elements.end()) {
 		if ((*myIt) != (*otherIt)) {
 			return false;
@@ -45,7 +45,7 @@ bool EnumType::operator==(const Type& other) const {
 	return true;
 }
 
-EnumType::Value::Value(const EnumType& en, const string& val) 
+EnumType::Value::Value(const EnumType& en, const string& val)
 	: _myEnum(en)
 {
 	for (auto elemIt = _myEnum._elements.begin(); elemIt != _myEnum._elements.end(); ++elemIt) {
@@ -81,17 +81,18 @@ const Type& EnumType::Value::type() const {
 Type::Value* EnumType::Value::copy() const {
 	return new EnumType::Value(_myEnum, _it);
 }
-  
+
 
 bool EnumType::Value::operator==(const Type::Value& other) const {
 	if (typeid(*this) != typeid(other)) {
 		return false;
 	}
-	const Value& eOther{ dynamic_cast<const Value&>(other) };
-	if (this->_myEnum != eOther._myEnum) {
+//	const Value& eOther{ dynamic_cast<const Value&>(other) };
+	const Value *eOther ( dynamic_cast<const Value*>(&other) );
+	if (this->_myEnum != eOther->_myEnum) {
 		return false;
 	}
-	return this->_it == eOther._it;
+	return this->_it == eOther->_it;
 }
 
 bool EnumType::Value::operator()() const {

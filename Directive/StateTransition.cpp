@@ -49,6 +49,6 @@ std::pair<Event*,std::vector<Happening*>> StateTransition::apply(Cell* c,float d
 	//}
 	State* newState{ c->state() == nullptr ? nullptr : new State(*(c->state())) };
 	e = new ChangeState(duration, time, oldState, newState, c);
-	const Directive* d{ c->program()->bestDirective(c->state(),time-duration,time) };
+	// const Directive* d{ c->program()->bestDirective(c->state(),time-duration,time) };
 	return make_pair(e, vector < Happening* > {new Happening(time, _mean, _sd, c->program()->simulation(), c)});
 }
