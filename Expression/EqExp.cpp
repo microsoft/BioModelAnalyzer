@@ -14,6 +14,9 @@ EqExp::~EqExp()
 {
 }
 
+BoolExp* EqExp::copy() const {
+	return new EqExp(_var, _val);
+}
 pair<bool, unsigned int> EqExp::evaluate(const State* st, const Simulation* sim, float from, float to) const {
 	if (_var.find("[") != std::string::npos) {
 		if (sim->expressed(_var, from, to)) {

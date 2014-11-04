@@ -22,8 +22,11 @@ class State;
 class State {
 public:
 	State()=delete;
+	State& operator=(const State&) = delete;
+	State& operator=(State&&) = delete;
 	State(const std::string& initializer);
 	State(const State&);
+	State(State&&);
 	~State();
 
 	// std::pair<bool,unsigned int> evaluate(const Condition&) const;

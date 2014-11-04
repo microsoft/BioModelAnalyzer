@@ -10,8 +10,10 @@ class Variable
 {
 public:
 	Variable()=delete;
-	Variable(const Variable&) = delete;
+	Variable(const Variable&);
+	Variable(Variable&&);
 	Variable& operator=(const Variable&) = delete;
+	Variable& operator=(Variable&&) = delete;
 
 	Variable(const std::string&, bool val); // Create a Bool Variable
 	Variable(const std::string&/*, const Type& t*/, Type::Value*); // Create an Enumerated 

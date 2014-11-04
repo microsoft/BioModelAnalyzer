@@ -19,19 +19,28 @@ using std::make_pair;
 using std::pair;
 
 State::State(const string& initializer)
-: _vars{splitConjunction(initializer)}
+: _vars(splitConjunction(initializer))
 {
 }
 
 State::State(const State& other)
-: _vars{other._vars} // Check what does copy constructor do
+: _vars() // Check what does copy constructor do
 {
-	// TODO: Need to implement a deep copy of the variables!!!
+	for (auto strVar : other._vars) {
+		_vars.insert(make_pair(strVar.first, new Variable(*(strVar.second))));
+	}
 }
+
+State::State(State&& other)
+	: _vars(std::move(other._vars))
+{}
+
 
 State::~State() {
 	for (auto pair : _vars) {
-		delete pair.second;
+		if (pair.second) {
+			delete pair.second;
+		}
 	}
 }
 
@@ -62,7 +71,7 @@ bool State::set(const string& var, const Type::Value& val) {
 		return true;
 	}
 	// TODO: How do I get the type from a value???
-	_vars.insert(make_pair(var, new Variable(var/*, val.type()*/, val.duplicate())));
+	_vars.insert(make_pair(var, new Variable(var/*, val.type()*/, val.copy())));
 	return false;
 }
 

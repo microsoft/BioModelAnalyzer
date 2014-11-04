@@ -7,22 +7,26 @@
 class Type
 {
 public:
-	Type();
-	virtual ~Type();
+	Type() = default;
+	virtual ~Type() = default;
 
 	virtual bool operator==(const Type& other) const=0;
-	virtual bool operator!=(const Type& other) const;
+	virtual bool operator!=(const Type& other) const final;
 
 	class Value {
 	public:
-		Value();
-		virtual ~Value();
+		Value() = default;
+		virtual ~Value() = default;
+		Value(const Value&) = delete;
+		Value(Value&&) = delete;
+		Value& operator=(const Value&) = delete;
+		Value& operator=(Value&&) = delete;
 
 		virtual bool operator==(const Value&) const=0;
-		virtual bool operator!=(const Value&) const;
+		virtual bool operator!=(const Value&) const final;
 		virtual bool operator()() const=0;
 		virtual const Type& type() const=0;
-		virtual Type::Value* duplicate() const = 0;
+		virtual Type::Value* copy() const = 0;
 
 		virtual std::string toString() const=0;
 	};

@@ -27,6 +27,8 @@ typedef std::map<Condition*,Directive*,std::function<bool(Condition* a,Condition
 class CellProgram {
 public:
 	CellProgram() = delete;
+	CellProgram(const CellProgram&) = delete;
+	CellProgram(CellProgram&&) = delete;
 	CellProgram(const std::string& n, Simulation* s);
 	virtual ~CellProgram();
 

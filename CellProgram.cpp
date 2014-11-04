@@ -68,6 +68,7 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 	if (initialSD < 0.0) {
 		if (_defSD < 0.0) {
 			const string err{"Cell "+_name+" does not have a default standard devisation."};
+			throw err;
 		}
 		else {
 			initialSD=_defSD;

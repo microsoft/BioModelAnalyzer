@@ -7,6 +7,17 @@
 using std::string;
 using std::ostream;
 
+Variable::Variable(const Variable& other)
+	: _name(other._name), _type(other._type), _val(other._val->copy())
+{
+}
+
+Variable::Variable(Variable&& other) 
+	: _name(std::move(other._name)), _type(other._type), _val(other._val)
+{
+	other._val = nullptr;
+}
+
 Variable::Variable(const string& name, bool val) 
 	: _name(name), _type(BoolType::getInstance()), _val(new BoolType::Value(val))
 {
@@ -29,7 +40,9 @@ Variable::~Variable()
 {
 	// The type is not owned by the variable
 	// The value is owned by the variable
-	delete _val;
+	if (_val) {
+		delete _val;
+	}
 }
 
 void Variable::set(bool val) {
@@ -38,7 +51,9 @@ void Variable::set(bool val) {
 		error += _name;
 		throw error;
 	}
-	delete _val;
+	if (_val) {
+		delete _val;
+	}
 	_val=new BoolType::Value(val);
 }
 
@@ -50,8 +65,10 @@ void Variable::set(const Type::Value& val) {
 		error += _name;
 		throw error;
 	}
-	delete _val;
-	_val = val.duplicate();
+	if (_val) {
+		delete _val;
+	}
+	_val = val.copy();
 }
 
 const Type::Value* Variable::value() const {

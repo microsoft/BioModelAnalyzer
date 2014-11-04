@@ -16,13 +16,24 @@ using std::make_pair;
 using std::ostream;
 
 Condition::Condition(const string& initializer)
-: _def(false)
+	: _def(false), _conjunction(nullptr)
 {
 	if (removeSpace(initializer)=="DEFAULT") {
 		_def=true;
 		return;
 	}
 	_conjunction=parseBoolExp(initializer);
+}
+
+Condition::Condition(const Condition& other)
+	: _def(other._def), _conjunction(other._conjunction->copy())
+{
+}
+
+Condition::Condition(Condition&& other)
+	: _def(other._def), _conjunction(other._conjunction)
+{
+	other._conjunction = nullptr;
 }
 
 Condition::~Condition() {

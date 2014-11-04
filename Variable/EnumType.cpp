@@ -7,15 +7,6 @@ using std::string;
 using std::vector;
 using std::ostream;
 
-EnumType::EnumType()
-{
-}
-
-
-EnumType::~EnumType()
-{
-}
-
 void EnumType::addElem(const string& e) {
 	_elements.push_back(e);
 }
@@ -66,10 +57,11 @@ EnumType::Value::Value(const EnumType& en, const string& val)
 	_it = _myEnum._elements.end();
 }
 
-
-EnumType::Value::~Value() 
+EnumType::Value::Value(const EnumType& en, const std::vector < std::string > ::const_iterator& it)
+	: _myEnum(en), _it(it)
 {
 }
+
 
 string EnumType::Value::value() const {
 	if (_it == _myEnum._elements.end()) {
@@ -86,8 +78,8 @@ const Type& EnumType::Value::type() const {
 	return _myEnum;
 }
 
-Type::Value* EnumType::Value::duplicate() const {
-  return new EnumType::Value(*this);
+Type::Value* EnumType::Value::copy() const {
+	return new EnumType::Value(_myEnum, _it);
 }
   
 

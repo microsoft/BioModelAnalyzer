@@ -12,8 +12,12 @@ class BoolExp
 {
 public:
 	BoolExp();
+	BoolExp(const BoolExp&) = delete;
+	BoolExp(BoolExp&&) = delete;
+
 	virtual ~BoolExp();
 
+	virtual BoolExp* copy() const = 0;
 	virtual std::pair<bool, unsigned int> evaluate(const State* st, const Simulation* sim, float from, float to) const=0;
 	virtual std::string toString() const =0;
 };

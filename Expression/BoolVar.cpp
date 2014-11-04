@@ -14,6 +14,10 @@ BoolVar::~BoolVar()
 {
 }
 
+BoolExp* BoolVar::copy() const {
+	return new BoolVar(_var);
+}
+
 pair<bool,unsigned int> BoolVar::evaluate(const State* st, const Simulation* sim, float from, float to) const {
 	if (_var.find("[") != std::string::npos) {
 		if (sim->expressed(_var, from, to)) {
@@ -26,7 +30,7 @@ pair<bool,unsigned int> BoolVar::evaluate(const State* st, const Simulation* sim
 		return make_pair(false, 0);
 	}
 
-	if (st->value(_var).second->toString() == "true") {
+	if (st->value(_var).second->toString() == "TRUE") {
 		return make_pair(true, 1);
 	}
 

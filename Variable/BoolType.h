@@ -10,35 +10,41 @@ class BoolType :
 {
 public:
 	BoolType(const BoolType&) = delete;
+	BoolType(BoolType&&) = delete;
 	BoolType& operator=(const BoolType&) = delete;
+	BoolType& operator=(BoolType&&) = delete;
 
-	virtual ~BoolType();
+	virtual ~BoolType() = default;
 
-	virtual bool operator==(const Type& other) const;
+	bool operator==(const Type& other) const override;
 
 	static BoolType& getInstance();
 
 	class Value : public Type::Value {
 	public:
 		Value() = delete;
+		Value(const Value&) = delete;
+		Value(Value&&) = delete;
 		Value(const bool);
+		Value& operator=(const Value&) = delete;
+		Value& operator=(Value&&) = delete;
 
-		virtual ~Value();
+		virtual ~Value() = default;
 
 		bool value() const;
-		virtual bool operator==(const Type::Value& other) const;
-		virtual bool operator()() const;
+		bool operator==(const Type::Value& other) const override;
+		bool operator()() const override;
 
-		virtual const Type& type() const;
-		virtual Type::Value* duplicate() const;
+		const Type& type() const override;
+		Type::Value* copy() const override;
 
-		virtual std::string toString() const;
+		std::string toString() const override;
 	private:
 		bool _val;
 	};
 
 private:
-	BoolType();
+	BoolType() = default;
 };
 
 #endif 

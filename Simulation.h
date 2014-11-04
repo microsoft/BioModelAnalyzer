@@ -29,6 +29,8 @@ class Simulation;
 class Simulation {
 public:
 	Simulation();
+	Simulation(const Simulation&) = delete;
+	Simulation(Simulation&&) = delete;
 	Simulation(const std::string& filename);
 	virtual ~Simulation();
 

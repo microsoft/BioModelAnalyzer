@@ -13,6 +13,10 @@ NeqExp::~NeqExp()
 {
 }
 
+BoolExp* NeqExp::copy() const {
+	return new NeqExp(_var, _val);
+}
+
 pair<bool, unsigned int> NeqExp::evaluate(const State* st, const Simulation* sim, float from, float to) const {
 	if (EqExp::evaluate(st, sim, from, to).first) {
 		return make_pair(false, 0);

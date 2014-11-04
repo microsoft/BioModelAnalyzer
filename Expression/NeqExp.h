@@ -10,10 +10,15 @@ class NeqExp : public EqExp
 public:
 	NeqExp()=delete;
 	NeqExp(const std::string&, const std::string&);
+	NeqExp(const BoolExp&) = delete;
+	NeqExp(BoolExp&&) = delete;
+	NeqExp(const NeqExp&) = delete;
+	NeqExp(NeqExp&&) = delete;
 	~NeqExp();
 
-	virtual std::pair<bool, unsigned int> evaluate(const State* st, const Simulation* sim, float from, float to) const;
-	virtual std::string toString() const;
+	BoolExp* copy() const override;
+	std::pair<bool, unsigned int> evaluate(const State* st, const Simulation* sim, float from, float to) const override;
+	std::string toString() const override;
 };
 
 #endif

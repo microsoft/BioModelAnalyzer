@@ -8,8 +8,6 @@
 #ifndef CONDITION_H_
 #define CONDITION_H_
 
-class Condition;
-
 #include <iosfwd>
 #include <map>
 
@@ -23,6 +21,9 @@ class Condition {
 public:
 	Condition()=delete;
 	Condition(const std::string& initializer);
+	Condition(const Condition&);
+	Condition(Condition&&);
+
 	virtual ~Condition();
 
 	bool isDef() const;

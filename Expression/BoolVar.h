@@ -10,10 +10,16 @@ class BoolVar :
 public:
 	BoolVar()=delete;
 	BoolVar(const std::string&);
+	BoolVar(const BoolExp&) = delete;
+	BoolVar(BoolExp&&) = delete;
+	BoolVar(const BoolVar&) = delete;
+	BoolVar(BoolVar&&) = delete;
 	~BoolVar();
 
-	virtual std::pair<bool, unsigned int> evaluate(const State* st, const Simulation* sim, float from, float to) const;
-	virtual std::string toString() const;
+	BoolExp* copy() const override;
+	std::pair<bool, unsigned int> evaluate(const State* st, const Simulation* sim, float from, float to) const override;
+	std::string toString() const override;
+
 private:
 	std::string _var;
 };
