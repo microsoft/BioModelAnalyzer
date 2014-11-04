@@ -223,21 +223,6 @@ let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (
                             gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
         | [] -> acc
 
-let gridFillArray (system: Particle array) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
-        let elementAdd (grid:Map<int*int*int,Particle list>) (p:Particle) =
-                            let dx = int ((p.location.x-minLoc.x)/cutOff)
-                            let dy = int ((p.location.y-minLoc.y)/cutOff)
-                            let dz = int ((p.location.z-minLoc.z)/cutOff)
-                            let newValue = match grid.ContainsKey (dx,dy,dz) with
-                                            | true  -> p::grid.[(dx,dy,dz)]
-                                            | false -> [p]
-                            grid
-        //(acc: Map<int*int*int,Particle list>)
-        let result = ref Map.empty
-        for i = 0 to Array.length system - 1 do
-            result := elementAdd !result system.[i]
-        !result
-
 let cube (n:int) = 
     let rec core (x:int) (y:int) (z:int) (n:int) (acc:(int*int*int) list) =
         match (x,y,z) with
@@ -399,10 +384,10 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
         |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     //add all the mobile particles to the staticGrid
     let mobileSystem = (Array.filter (fun (p:Particle) -> not p.freeze) system)
-    
+    //printf "ms %A" mobileSystem
     let nonBondedTerms = Array.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> ; interactors = [] }) externalF
                             |> Array.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
-    
+    //printf "nb %A" nonBondedTerms
     //For testing purposes only- who is different?
 //    let nonBondedGrid = updateGrid staticGrid sOrigin mobileSystem cutOff
 //    let cSystem = quickJoin mobileSystem staticSystem
@@ -419,7 +404,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
     //End of testing section
 
     match search with
-    | Grid ->       let nonBondedGrid = updateGridArray staticGrid sOrigin mobileSystem cutOff
+    | Grid ->       let nonBondedGrid = updateGrid staticGrid sOrigin (List.ofArray mobileSystem) cutOff
                     nonBondedTerms 
                                 |> Array.Parallel.map (fun atom -> calculateGridNonBonded nonBondedGrid atom)
 //                                |> chunk threads
@@ -476,8 +461,8 @@ let bdSystemUpdate (system: Particle array) (forces: forceEnv array) atomicInteg
 let steep (system: Particle array) (forceEnv: forceEnv array) (maxlength: float<um>) = 
     let forces = Array.map (fun x->x.force) forceEnv
     //let (minV,maxV) = Vector.vecMinMax forces ((List.nth forces 0),(List.nth forces 0))
-    let maxV = Array.max forces
-    let modifier = maxlength/maxV.len
+    let maxV = Array.max (Array.map (fun (f:Vector.Vector3D<zNewton>) ->f.len) forces)
+    let modifier = maxlength/maxV
     (*
     match (modifier=infinity*1.0<um/zNewton>) with
     | true ->  system

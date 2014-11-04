@@ -95,13 +95,14 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
                     //Particle(cart.id,cart.name,cart.location,cart.velocity,(Vector.randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
                      ]
                      |> Array.ofList
-    let staticGrid = Physics.gridFillArray (Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart) sOrigin rp.nonBond 
+    let staticSystem = Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart
+    let staticGrid = Physics.gridFill (List.ofArray staticSystem) Map.empty sOrigin rp.nonBond 
     let qn = IO.bmaRead bmafile
-    let machineCount = Array.length uCart
+    let machineCount = Array.length (Array.filter  (fun (p: Physics.Particle) -> not p.freeze) uCart) 
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
     let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false; CheckPointFreq=rp.checkpointReport;SearchType=rp.searchType}
 
-    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid;staticSystem=(Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart)},runInfo,rng)
+    ({Physical=uCart;Formal=machineStates},{Topology=nbTypes;BMA=qn;machineName=machName;maxMove=(maxMove*1.<Physics.um>);Interface=interfaceTopology;systemOrigin=sOrigin;staticGrid=staticGrid;staticSystem=staticSystem},runInfo,rng)
     //(uCart, nbTypes, machineStates, qn, interfaceTopology, maxMove, sOrigin, staticGrid, machName)
 
 //let seed = ref 1982
