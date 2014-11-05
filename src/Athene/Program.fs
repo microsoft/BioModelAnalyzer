@@ -14,7 +14,7 @@ type systemDefinition = {   Topology:Map<string,Map<string,Physics.Particle -> P
                             maxMove: float<Physics.um>;
                             systemOrigin: Vector.Vector3D<Physics.um>;
                             machineName: string;
-                            staticGrid: Map<int*int*int,Physics.Particle list>;
+                            staticGrid: Dictionary<int*int*int,Physics.Particle list>;
                             staticSystem: Physics.Particle array;
                             }//{system, topology,machineStates,qn,iTop,maxMove,sOrigin,staticGrid,machName}
 [<Serializable>]
@@ -96,7 +96,8 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
                      ]
                      |> Array.ofList
     let staticSystem = Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart
-    let staticGrid = Physics.gridFill (List.ofArray staticSystem) Map.empty sOrigin rp.nonBond 
+    let blankGrid = new Dictionary<int*int*int,Physics.Particle list>()
+    let staticGrid = Physics.gridFillDict (List.ofArray staticSystem) blankGrid sOrigin rp.nonBond 
     let qn = IO.bmaRead bmafile
     let machineCount = Array.length (Array.filter  (fun (p: Physics.Particle) -> not p.freeze) uCart) 
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
@@ -147,7 +148,7 @@ let rec parse_args args =
     | "-restart" :: tmp :: rest -> restart := tmp  ;  parse_args rest
     | x::rest -> failwith (sprintf "Bad command line args: %s" x)
 
-let rec equilibrate (system: Physics.Particle array) (topology) (steps: int) (maxlength: float<Physics.um>) searchType (staticGrid:Map<int*int*int,Physics.Particle list>) staticSystem (sOrigin:Vector.Vector3D<Physics.um>) (cutoff:float<Physics.um>) =
+let rec equilibrate (system: Physics.Particle array) (topology) (steps: int) (maxlength: float<Physics.um>) searchType (staticGrid:Dictionary<int*int*int,Physics.Particle list>) staticSystem (sOrigin:Vector.Vector3D<Physics.um>) (cutoff:float<Physics.um>) =
     match steps with
     | 0 -> system
     | _ ->  let zeroForces = Array.init (Array.length system) (fun index -> new Vector.Vector3D<Physics.zNewton>() ) 

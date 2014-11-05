@@ -224,6 +224,20 @@ let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (
                             gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
         | [] -> acc
 
+let rec gridFillDict (system: Particle list) (acc: Dictionary<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
+        match system with
+        | head:: tail -> 
+                            let dx = int ((head.location.x-minLoc.x)/cutOff)
+                            let dy = int ((head.location.y-minLoc.y)/cutOff)
+                            let dz = int ((head.location.z-minLoc.z)/cutOff)
+                            let newValue = match acc.ContainsKey (dx,dy,dz) with
+                                            | true  -> head::acc.[(dx,dy,dz)]
+                                            | false -> [head]
+                            
+                            acc.[(dx,dy,dz)] <- newValue
+                            gridFillDict tail acc minLoc cutOff
+        | [] -> acc
+
 let cube (n:int) = 
     let rec core (x:int) (y:int) (z:int) (n:int) (acc:(int*int*int) list) =
         match (x,y,z) with
@@ -233,20 +247,21 @@ let cube (n:int) =
         | (_,_,_) -> core (x-1) y z n ((x,y,z)::acc)
     core (n-1) (n-1) (n-1) (n-1) []
 
-let existingNeighbourCells (box: int*int*int) (grid: Map<int*int*int,Particle list>) =
+let existingNeighbourCells (box: int*int*int) (grid: Dictionary<int*int*int,Particle list>) =
         let (x,y,z) = box
         cube 5
         |> List.map (fun (i:int,j:int,k:int) ->     (x-2+i,y-2+j,z-2+k) )
-        |> List.map (fun (key:int*int*int) ->   match grid.TryFind(key) with
-                                                | Some res -> res
-                                                | None -> []  )
+        |> List.map (fun (key:int*int*int) ->   if grid.ContainsKey(key) then grid.[key] else [] )
+//                                                match grid.TryFind(key) with
+//                                                | Some res -> res
+//                                                | None -> []  )
 
 let rec quickJoin (l1: Particle list) (l2: Particle list) =
             match l2 with
             | head::tail -> quickJoin (head::l1) tail
             | [] -> l1
 
-let collectGridNeighbours (p: Particle) (grid: Map<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
+let collectGridNeighbours (p: Particle) (grid: Dictionary<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
          let rec quickJoinLoL (l: Particle list list) acc =
             match l with
             | head::tail -> quickJoinLoL tail (quickJoin acc head)
@@ -277,6 +292,7 @@ let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Ve
 
     | [] -> accGrid
 
+//Note: Why don't I just reuse grid fill?
 let updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle list) (cutOff: float<um>) =
     mobileSystem
     |> List.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
@@ -325,7 +341,7 @@ let unchunk s =
 
 // SI:: use more specific names than head, tail.
 //      | top_particlar:: other_particles -> ... 
-let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle array) (search:searchType) staticGrid (staticSystem:Particle array) sOrigin (externalF: Vector.Vector3D<zNewton> array) threads = 
+let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vector3D<zNewton>>>) (cutOff: float<um>) (system: Particle array) (search:searchType) (staticGrid:Dictionary<int*int*int,Particle list>) (staticSystem:Particle array) sOrigin (externalF: Vector.Vector3D<zNewton> array) threads = 
     let rec sumForces (p: Particle) (neighbours: Particle list) (acc: Vector.Vector3D<zNewton>) =
         match neighbours with
         | first_p::other_p -> sumForces p other_p (topology.[p.name].[first_p.name] first_p p) + acc
@@ -392,9 +408,9 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
 //    let simpleF = populateForceEnvironment p simpleN {force = {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>} ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> }
 //    printfn "G: %A S: %A" gridF.force.len simpleF.force.len
     //End of testing section
-
+    let completeGrid = new Dictionary<int*int*int,Particle list>(staticGrid)
     match search with
-    | Grid ->       let nonBondedGrid = updateGrid staticGrid sOrigin (List.ofArray mobileSystem) cutOff
+    | Grid ->       let nonBondedGrid = gridFillDict (List.ofArray mobileSystem) completeGrid sOrigin cutOff  //updateGrid staticGrid sOrigin (List.ofArray mobileSystem) cutOff
                     nonBondedTerms 
                                 |> Array.Parallel.map (fun atom -> calculateGridNonBonded nonBondedGrid atom)
     | Simple ->     let cSystem = Array.init (Array.length mobileSystem + Array.length staticSystem) (fun index -> if index < Array.length mobileSystem then mobileSystem.[index] else staticSystem.[index - Array.length mobileSystem]) //quickJoin mobileSystem staticSystem
