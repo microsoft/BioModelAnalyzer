@@ -141,6 +141,7 @@ let defaultParticle = { id=0;
                         freeze=true}
 
 type searchType = Grid | Simple
+type systemGroup = Mobile of Particle array | Static of Particle array
 
 (*
 SI: implement Particle as a record. then can write update more concisely.
@@ -211,32 +212,21 @@ let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( 
     | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
     | _ -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
 
-let rec gridFill (system: Particle list) (acc: Map<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
-        match system with
-        | head:: tail -> 
-                            let dx = int ((head.location.x-minLoc.x)/cutOff)
-                            let dy = int ((head.location.y-minLoc.y)/cutOff)
-                            let dz = int ((head.location.z-minLoc.z)/cutOff)
+let gridFill (system: Particle array) (acc: Dictionary<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
+        let addElement (grid:Dictionary<int*int*int,Particle list>) p =
+                            let dx = int ((p.location.x-minLoc.x)/cutOff)
+                            let dy = int ((p.location.y-minLoc.y)/cutOff)
+                            let dz = int ((p.location.z-minLoc.z)/cutOff)
                             let newValue = match acc.ContainsKey (dx,dy,dz) with
-                                            | true  -> head::acc.[(dx,dy,dz)]
-                                            | false -> [head]
-                            
-                            gridFill tail (acc.Add((dx,dy,dz),newValue)) minLoc cutOff
-        | [] -> acc
-
-let rec gridFillDict (system: Particle list) (acc: Dictionary<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
-        match system with
-        | head:: tail -> 
-                            let dx = int ((head.location.x-minLoc.x)/cutOff)
-                            let dy = int ((head.location.y-minLoc.y)/cutOff)
-                            let dz = int ((head.location.z-minLoc.z)/cutOff)
-                            let newValue = match acc.ContainsKey (dx,dy,dz) with
-                                            | true  -> head::acc.[(dx,dy,dz)]
-                                            | false -> [head]
-                            
-                            acc.[(dx,dy,dz)] <- newValue
-                            gridFillDict tail acc minLoc cutOff
-        | [] -> acc
+                                            | true  -> p::grid.[(dx,dy,dz)]
+                                            | false -> [p]
+                            grid.[(dx,dy,dz)] <- newValue
+                            grid
+        let r = ref acc
+        for i=0 to Array.length system - 1 do
+            r:= addElement !r system.[i]
+        !r
+        //Array.fold (addElement) acc system
 
 let cube (n:int) = 
     let rec core (x:int) (y:int) (z:int) (n:int) (acc:(int*int*int) list) =
@@ -279,24 +269,6 @@ let collectSimpleNeighbours (p: Particle) (system: Particle array) (cutOff:float
     |> Array.filter (fun (pcomp:Particle) -> not (p.id = pcomp.id))                     //Filter out self interactions
     |> Array.filter (fun (pcomp:Particle) -> ((p.location-pcomp.location).len<=cutOff)) //Filter out interactions beyond the cutoff
     //|> List.sortBy (fun (p:Particle)     -> p.id)                                      //Test associativity induced numerical errors
-let rec _updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle list) (cutOff: float<um>) = 
-    match mobileSystem with
-    | head :: tail -> 
-                            let dx = int ((head.location.x-sOrigin.x)/cutOff)
-                            let dy = int ((head.location.y-sOrigin.y)/cutOff)
-                            let dz = int ((head.location.z-sOrigin.z)/cutOff)
-                            let newValue = match accGrid.ContainsKey (dx,dy,dz) with
-                                            | true  -> head::accGrid.[(dx,dy,dz)]
-                                            | false -> [head]
-                            _updateGrid (accGrid.Add((dx,dy,dz),newValue)) sOrigin tail cutOff
-
-    | [] -> accGrid
-
-//Note: Why don't I just reuse grid fill?
-let updateGrid (accGrid: Map<int*int*int,Particle list>) (sOrigin:Vector.Vector3D<um>) (mobileSystem: Particle list) (cutOff: float<um>) =
-    mobileSystem
-    |> List.map (fun p -> (p, ((int ((p.location.x-sOrigin.x)/cutOff)),(int ((p.location.y-sOrigin.y)/cutOff)),(int ((p.location.z-sOrigin.z)/cutOff)))))
-    |> Microsoft.FSharp.Collections.PSeq.fold (fun (acc:Map<int*int*int,Particle list>) (p,cart) -> if acc.ContainsKey cart then acc.Add(cart,p::acc.[cart]) else acc.Add(cart,[p])) accGrid
 
 type forceEnv = { force: Vector.Vector3D<zNewton>; confluence: int; absForceMag: float<zNewton>; pressure: float<zNewton um^-2> ; interactors: (Particle*float<um>) list }
 type nonBonded = {P: Particle ; Neighbours: Particle list ; Forces: forceEnv }
@@ -410,7 +382,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
     //End of testing section
     let completeGrid = new Dictionary<int*int*int,Particle list>(staticGrid)
     match search with
-    | Grid ->       let nonBondedGrid = gridFillDict (List.ofArray mobileSystem) completeGrid sOrigin cutOff  //updateGrid staticGrid sOrigin (List.ofArray mobileSystem) cutOff
+    | Grid ->       let nonBondedGrid = gridFill mobileSystem completeGrid sOrigin cutOff  //updateGrid staticGrid sOrigin (List.ofArray mobileSystem) cutOff
                     nonBondedTerms 
                                 |> Array.Parallel.map (fun atom -> calculateGridNonBonded nonBondedGrid atom)
     | Simple ->     let cSystem = Array.init (Array.length mobileSystem + Array.length staticSystem) (fun index -> if index < Array.length mobileSystem then mobileSystem.[index] else staticSystem.[index - Array.length mobileSystem]) //quickJoin mobileSystem staticSystem
