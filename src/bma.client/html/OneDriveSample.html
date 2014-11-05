@@ -8,7 +8,7 @@
 
     <script type="text/javascript">
 
-        WL.init({ client_id: "000000004C12BD9C", redirect_uri: "http://localhost:33584/index.html"/*window.location.toString()*/ });
+        WL.init({ client_id: "000000004C12BD9C", redirect_uri: "http://bmaclienttest2.azurewebsites.net/" });
         WL.Event.subscribe("auth.login", onLogin);
         WL.Event.subscribe("auth.sessionChange", onSessionChange);
 
@@ -43,8 +43,6 @@
     </script>
 </head>
 <body>
-    <button id="connectButton" style="display: none">
-        Connect with a Microsoft account
-    </button>
+    <div id="JsOutputDiv"></div>
 </body>
 </html>
