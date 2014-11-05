@@ -65,7 +65,19 @@ let getBias (metric:string) =
 
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
     //Particle(gensym(),name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
-    {Physics.defaultParticle with id=gensym();name=name;location={x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)};velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};orientation={x=1.;y=0.;z=0.};Friction= 1.<second>;radius=1.<um>;density=1.<pg um^-3>;age=0.<second>;gRand=(PRNG.gaussianMargalisPolar' rng);freeze=true} 
+    {Physics.defaultParticle with 
+        id=gensym();
+        name=name;
+        location= new Vector.Vector3D<um>((xr*1.<um>),(yr*1.<um>),(zr*1.<um>));
+        velocity= new Vector.Vector3D<um/second>()//{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
+        orientation= new Vector.Vector3D<1>(1.,0.,0.);//{x=1.;y=0.;z=0.};
+        Friction= 1.<second>;
+        radius=1.<um>;
+        density=1.<pg um^-3>;
+        age=0.<second>;
+        gRand=(PRNG.gaussianMargalisPolar' rng);
+        freeze=true
+        } 
 
 let interfaceEventWriteFrame (file:StreamWriter) (register : string list) = 
     let rec clear_buffer (file:StreamWriter) (events:string list) =
@@ -194,9 +206,9 @@ let xmlTopRead (filename: string) =
 
     let rp = {steps=steps;temperature=(temperature*1.<Physics.Kelvin>);timestep=(timestep*1.<Physics.second>);pg=pg;mg=mg;ig=ig;vdt=vdt;report=report;nonBond=(nonBond*1.<Physics.um>);checkpointReport=checkpoint;searchType=searchType}
 
-    let sOrigin = { Vector.Vector3D.x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>;
-                    Vector.Vector3D.y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>;
-                    Vector.Vector3D.z=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>}
+    let sOrigin = new Vector.Vector3D<um>(  (try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "X").Value) with _ -> failwith "Set an x origin")*1.<um>,
+                                            (try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Y").Value) with _ -> failwith "Set a y origin")*1.<um>,
+                                            (try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "Origin").Attribute(xn "Z").Value) with _ -> failwith "Set a z origin")*1.<um>)
 //    let PBC = 
 //                { x=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "PBC").Attribute(xn "X").Value) with _ -> failwith "Set an x PBC dimension")*1.<um>;
 //                y=(try (float) (xd.Element(xn "Topology").Element(xn "System").Element(xn "PBC").Attribute(xn "Y").Value) with _ -> failwith "Set a y PBC dimension")*1.<um>;
@@ -261,7 +273,7 @@ let xmlTopRead (filename: string) =
                          let dZ = try (float) (r.Element(xn "Dimensions").Attribute(xn "Z").Value) with _ -> failwith "Missing box dim Z"
                          let varID = try (int) (r.Element(xn "Var").Attribute(xn "Id").Value) with _ -> failwith "Missing variable ID"
                          let varState = try (int) (r.Element(xn "Var").Attribute(xn "State").Value) with _ -> failwith "Missing variable state"
-                         yield ({Vector.Cuboid.origin={Vector.Vector3D.x=oX*1.<um>;Vector.Vector3D.y=oY*1.<um>;Vector.Vector3D.z=oZ*1.<um>};Vector.Cuboid.dimensions={Vector.Vector3D.x=dX*1.<um>;Vector.Vector3D.y=dY*1.<um>;Vector.Vector3D.z=dZ*1.<um>}},varID,varState)
+                         yield ({Vector.Cuboid.origin= new Vector.Vector3D<um>(oX*1.<um>,oY*1.<um>,oZ*1.<um>);Vector.Cuboid.dimensions=new Vector.Vector3D<um>(dX*1.<um>,dY*1.<um>,dZ*1.<um>)},varID,varState)
                          ]
     let clocks = [for r in xd.Element(xn "Topology").Element(xn "Interface").Elements(xn "Clock") do
                         let inputId = try (int) (r.Element(xn "Input").Attribute(xn "ID").Value) with _ -> failwith "Missing clock input ID"
@@ -356,11 +368,11 @@ let xmlTopRead (filename: string) =
                                     let xOrigin = try (float) (r.Attribute(xn "xOrigin").Value)  with _ -> failwith "No origin- X"
                                     let yOrigin = try (float) (r.Attribute(xn "yOrigin").Value)  with _ -> failwith "No origin- Y"
                                     let zOrigin = try (float) (r.Attribute(xn "zOrigin").Value)  with _ -> failwith "No origin- Z"
-                                    let origin = {Vector.Vector3D.x=(xOrigin*1.<Physics.um>);Vector.Vector3D.y=(yOrigin*1.<Physics.um>);Vector.Vector3D.z=(zOrigin*1.<Physics.um>)}
+                                    let origin = new Vector.Vector3D<um>(xOrigin*1.<um>,yOrigin*1.<um>,zOrigin*1.<um>)//{Vector.Vector3D.x=(xOrigin*1.<Physics.um>);Vector.Vector3D.y=(yOrigin*1.<Physics.um>);Vector.Vector3D.z=(zOrigin*1.<Physics.um>)}
                                     let xVector = try (float) (r.Attribute(xn "xVector").Value)  with _ -> failwith "No vector- X"
                                     let yVector = try (float) (r.Attribute(xn "yVector").Value)  with _ -> failwith "No vector- Y"
                                     let zVector = try (float) (r.Attribute(xn "zVector").Value)  with _ -> failwith "No vector- Z"
-                                    let direction = {Vector.Vector3D.x=xVector;Vector.Vector3D.y=yVector;Vector.Vector3D.z=zVector}
+                                    let direction = new Vector.Vector3D<1>(xVector,yVector,zVector)//{Vector.Vector3D.x=xVector;Vector.Vector3D.y=yVector;Vector.Vector3D.z=zVector}
                                     match growth with
                                     | "LinearGrowDivideVectorRate" ->
                                         Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient growthInfo (max*1.<um>) (1.<um>) rng false  
@@ -387,11 +399,11 @@ let xmlTopRead (filename: string) =
                                     let xOrigin = try (float) (r.Attribute(xn "xOrigin").Value)  with _ -> failwith "No origin- X"
                                     let yOrigin = try (float) (r.Attribute(xn "yOrigin").Value)  with _ -> failwith "No origin- Y"
                                     let zOrigin = try (float) (r.Attribute(xn "zOrigin").Value)  with _ -> failwith "No origin- Z"
-                                    let origin = {Vector.Vector3D.x=(xOrigin*1.<Physics.um>);Vector.Vector3D.y=(yOrigin*1.<Physics.um>);Vector.Vector3D.z=(zOrigin*1.<Physics.um>)}
+                                    let origin = new Vector.Vector3D<um>(xOrigin*1.<um>,yOrigin*1.<um>,zOrigin*1.<um>)//{Vector.Vector3D.x=(xOrigin*1.<Physics.um>);Vector.Vector3D.y=(yOrigin*1.<Physics.um>);Vector.Vector3D.z=(zOrigin*1.<Physics.um>)}
                                     let xVector = try (float) (r.Attribute(xn "xVector").Value)  with _ -> failwith "No vector- X"
                                     let yVector = try (float) (r.Attribute(xn "yVector").Value)  with _ -> failwith "No vector- Y"
                                     let zVector = try (float) (r.Attribute(xn "zVector").Value)  with _ -> failwith "No vector- Z"
-                                    let direction = {Vector.Vector3D.x=xVector;Vector.Vector3D.y=yVector;Vector.Vector3D.z=zVector}
+                                    let direction = new Vector.Vector3D<1>(xVector,yVector,zVector)//{Vector.Vector3D.x=xVector;Vector.Vector3D.y=yVector;Vector.Vector3D.z=zVector}
                                     match growth with
                                     | "LinearProbabilisticGrowDivideVectorRate" ->
                                         Interface.linearGrowDivideWithVectorDistanceDependence origin direction gradient growthInfo (max*1.<um>) (sd*1.<um>) rng true  
