@@ -113,23 +113,22 @@
                 if (ticks === null) return undefined;
                 var variables = this.appModel.BioModel.Variables;
                 var stability = [];
-                for (var i = 0; i < variables.length; i++) {
-                    var ij = ticks[0].Variables[variables.length - 1 - i];
+                var l = ticks[0].Variables.length;
+                for (var i = 0; i < l; i++) {
+                    var ij = ticks[0].Variables[i];
                     var c = ij.Lo === ij.Hi;
                     var range = '';
                     if (c) {
                         range = ij.Lo;
-
                     }
                     else {
                         range = ij.Lo + ' - ' + ij.Hi;
                     }
-                    var id = ticks[0].Variables[variables.length - 1 - i].Id;
+                    var id = ij.Id;
                     stability[i] = { id: id, state: c, range: range };
                     var v = this.appModel.BioModel.GetVariableById(id);
                     if (v.ContainerId !== undefined &&  (!c || containers[v.ContainerId] === undefined)) 
                             containers[v.ContainerId] = c;
-                        
                 }
                 return {variablesStability: stability, containersStability: containers};
             }
@@ -138,23 +137,24 @@
             public CreateTableView(stability) {
                 var table = [];
                 if (stability === undefined) return { numericData: undefined, colorData: undefined };
-                var variables = this.appModel.BioModel.Variables;
+                var biomodel = this.appModel.BioModel;
                 var color = [];
-                for (var i = 0; i < variables.length; i++) {
+                for (var i = 0; i < stability.length; i++) {
+                    var st = stability[stability.length - 1 - i];
+                    var variable = biomodel.GetVariableById(st.id)
                     table[i] = [];
                     color[i] = [];
-                    table[i][0] = variables[i].Name;
-                    table[i][1] = variables[i].Formula;
+                    table[i][0] = variable.Name;
+                    table[i][1] = variable.Formula;
                     var range = '';
                     //var ij = ticks[0].Variables[variables.length - 1 - i];
-                    var c = stability[i].state;
+                    var c = st.state;
                     if (!c) {
                         for (var j = 0; j < 3; j++)
                             color[i][j] = c;
                     }
                     
-                    table[i][2] = stability[i].range;
-                    
+                    table[i][2] = st.range;
                 }
                 return {numericData: table, colorData:color};
             }

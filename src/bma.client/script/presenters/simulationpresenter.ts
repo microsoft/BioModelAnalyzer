@@ -225,7 +225,10 @@
 
             public CreateVariablesView() {
                 var table = [];
-                var variables = this.appModel.BioModel.Variables;
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                    var res = x.Id < y.Id ? -1 : 1;
+                    return res;
+                });
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
                     table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color; // color should be there
