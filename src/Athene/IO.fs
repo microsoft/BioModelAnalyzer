@@ -64,7 +64,6 @@ let getBias (metric:string) =
 
 
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
-    //Particle(gensym(),name,{x=(xr*1.<um>);y=(yr*1.<um>);z=(zr*1.<um>)},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 1.<second>, 1.<um>, 1.<pg um^-3>, 0.<second>, (PRNG.gaussianMargalisPolar' rng), true)
     {Physics.defaultParticle with 
         id=gensym();
         name=name;
@@ -89,33 +88,18 @@ let interfaceEventWriteFrame (file:StreamWriter) (register : string list) =
     register
     |> List.rev //Reverse the list order to ensure that backlogged events are correctly ordered. Need to test 150514
     |> clear_buffer file 
-    //file.Close()
+
     
     
 let xyzWriteFrame (file:StreamWriter) (machName: string) (system: Physics.Particle array)  =
-        //use file = new StreamWriter(filename, true)
-//        let mSystem = [for p in system do match System.String.Equals(p.name,machName) with 
-//                                            | true -> yield p
-//                                            | false -> ()
-//                                            ]
         let mSystem = Array.filter (fun (p:Physics.Particle) -> p.name=machName) system
         file.WriteLine(sprintf "%A" mSystem.Length)
         file.WriteLine("Athene")
         ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure/1000000000.) p.confluence (p.forceMag/1000000000.))] 
-//                
-//        async { file.WriteLine(sprintf "%A" mSystem.Length)
-//                file.WriteLine("Athene")
-//                ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure/1000000000.) p.confluence (p.forceMag/1000000000.))] 
-//                }
-//        |> Async.StartImmediate
-        //file.Close()
+
 
 let csvWriteStates (file:StreamWriter) (machines: Map<QN.var,int> array) = 
-        //use file = new StreamWriter(filename, true)
-        //[for p in system -> printfn "%A %A %A %A" 1 p.location.x p.location.y p.location.z]
-        //ignore [for p in system -> file.WriteLine(sprintf "%s %A %A %A" p.name p.location.x p.location.y p.location.z)]
         file.WriteLine(String.concat "," (Array.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) machines)) //This will be *impossible* to read. Must do better
-        //file.Close()
 
 let dumpSystem (filename: string) (state: systemState) = 
         use file = new FileStream(filename, FileMode.Create)//new StreamWriter(filename, false)
@@ -222,14 +206,12 @@ let xmlTopRead (filename: string) =
                                   | "true" -> true
                                   | "false" -> false
                                   | _ -> failwith "Cannot read freeze"
-                    //yield Particle(tName,{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},tFric*1.<second>, tRadius*1.<um>, tDensity*1.<pg um^-3>, tFreeze) ]
                     yield (tName,(tFric*1.<second>, tRadius*1.<um>, tDensity*1.<pg um^-3>, tFreeze)) ]
                     |> Map.ofList
     let nbTypes = [ for bi in xd.Element(xn "Topology").Element(xn "NonBonded").Elements(xn "Interaction") do
                     let biName = try bi.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
                     let biMap =  [ for bj in bi.Elements(xn "jInteraction") do 
                                     let bjName = try bj.Attribute(xn "Name").Value with _ -> failwith "Cannot read type"
-                                    //let bond = try (int) (bj.Element(xn "Type").Value) with _ -> failwith "Missing bond type"
                                     let bond = match (try (int) (bj.Element(xn "Type").Value) with _ -> failwith "Missing bond type") with
                                         // SI: consider storing descriptive text here, rather than 0-4.     
                                                 |0 -> noForce
@@ -247,7 +229,6 @@ let xmlTopRead (filename: string) =
                                                 |3 -> 
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
-                                                    //(repelPower: float) (repelConstant: float<zNewton>) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>)
                                                     softSphereForce rP (rC*1.<zNewton>) 1. 0.<zNewton> 0.<um>
                                                 |4 ->
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"

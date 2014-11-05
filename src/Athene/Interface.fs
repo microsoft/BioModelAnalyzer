@@ -54,24 +54,11 @@ let pSlice =
     if cache.ContainsKey((probability,timestep)) then cache.[(probability,timestep)] 
     else    let result = 1. - (1. - probability)**(timestep/time)
             cache.[(probability,timestep)] <- result
+            //Todo: Cap at 1/0 instead?
             assert(result>0.&&result<1.) //Fail rather than give a bogus probability
             result )
 
-//We need to find and sum a series of binomial coefficients to determine the per timestep probability
-//let fact (i:System.Numerics.BigInteger) = 
-//    let rec fact' (n:System.Numerics.BigInteger) acc = 
-//        if (n> (System.Numerics.BigInteger 1)) then fact' (n-(System.Numerics.BigInteger 1)) (n*acc) else acc
-//    fact' i (System.Numerics.BigInteger 1)
-//
-//let bigone = System.Numerics.BigInteger 1
-//
-//let binomialCoefficient n k = (fact n) / ((fact k)*(fact (n-k)))
-//
-//let listOfBinomialCoefficients n k =
-//    let rec s' n k acc =
-//        if k >= (uint64 0) then s' n (k-(uint64 1)) ((binomialCoefficient n k)::acc) else List.rev acc
-//    s' n k []
-//I want calculate an appropriate probability for a single cell per timestep
+
 
 let erf x =
     //Approximation of erf
@@ -100,18 +87,10 @@ let multiStepProbability_nonmem (time:float<second>) (dt:float<second>) (rate:fl
     //ie Adding n standard deviations to the mean should increase the population over the threshold by ( erf (n/(2.**0.5)) ) / 2
     // ( inverf (d*2.) ) * sqrt(2)
 
-    //we can work out what is the integer number of sigmas it lies away from the mean and do a cheap interpolation to get the rest
-//    let low_sigma = match (abs (totalProb-0.5)) with
-//                        | x when x < 0.341 -> x/0.341 //< 1 sigma
-//                        | x when x < 0.477 -> 1. + (x-0.341)/0.136 //< 2 sigma
-//                        | x when x < 0.498 -> 2. + (x-0.477)/0.021 //< 3 sigma
-//                        | x when x < 0.499 -> 3. + (x-0.498)/0.001 //< 4 sigma
-//                        | x -> 4. + (x-0.499)/0.001
     let d = abs(totalProb-0.5)
     let low_sigma = if (0.=d) then 0. else (inverf (d*2.) ) * sqrt(2.)
-    //printf "SD50: %A low_sigma %A " sd50 low_sigma
     let result = if (totalProb-0.5>0.) then (minimumStepsForSuccess+low_sigma*sd50)/steps else (minimumStepsForSuccess-low_sigma*sd50)/steps
-    //p50*(0.5/totalProb)
+    //Todo: Cap at 0/1?
     assert(result>0.&&result<1.) //Fail rather than giving a bogus probability
     result
 
@@ -157,7 +136,6 @@ let developmentEvent style t =
     | RadialGrowthType(r) -> RadialGrowth(r*t)
     | VolumeGrowthType(r) -> VolumeGrowth(r*t)
 
-//(rate: growthType) (property: limitMetric) (varID: int) (varState: int) (varName: string)
 let limitedLinearGrow (g:growthInfo) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //Limit grow by an arbitrary property
     let overLimit = match g.limit with
