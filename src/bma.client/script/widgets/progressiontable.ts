@@ -15,7 +15,7 @@
             var options = that.options;
 
             var randomise = $('<div></div>')
-                .addClass("bma-progressiontable-randimise")
+                .addClass("bma-progressiontable-randomise")
                 .appendTo(that.element.parent());
             
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);

@@ -17,14 +17,16 @@
             var options = that.options;
            
             this.RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
-            
-            this.table1 = $('<div></div>').width("40%").appendTo(that.element);
-            this.table1.addClass("bma-simulation-table-expanded-scroll");
-            this.progression = $('<div></div>').appendTo(that.element).progressiontable();//.addClass("bma-simulation-table")
-            this.progression.css("position", "absolute");
-            this.progression.css("left", "45%");
-            this.progression.css("top", 0);
-            this.progression.addClass("bma-simulation-table-expanded-scroll");
+
+            var tablesDiv = $('<div></div>')
+                .addClass("bma-simulation-table-expanded-scroll")
+                .appendTo(this.element);
+            this.table1 = $('<div></div>').width("40%").appendTo(tablesDiv);
+            this.progression = $('<div></div>').appendTo(tablesDiv).progressiontable();//.addClass("bma-simulation-table")
+            //this.progression.css("position", "relative");
+            //this.progression.css("left", "50px");
+            //this.progression.css("top", 0);
+            //this.progression.addClass("bma-simulation-table-expanded-scroll");
             if (options.variables !== undefined) {
                 this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
                 if (options.interval !== undefined && options.interval.length !== 0) {
