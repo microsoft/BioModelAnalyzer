@@ -59,7 +59,7 @@ let rec simulate (state:systemState) (definition:systemDefinition) (runInfo:runn
     let pg = runInfo.PhysicalGranularity
     let eventLog = runInfo.EventLog
 
-    let (system', machineStates', machineForces, eventLog') = if (steps%ig=0) then (Interface.interfaceUpdate state.Physical state.Formal (runInfo.TimeStep*(float)ig) definition.Interface runInfo.Time eventLog ) else (state.Physical,state.Formal,(Array.map (fun x -> {x=0.<Physics.zNewton>;y=0.<Physics.zNewton>;z=0.<Physics.zNewton>}) state.Physical),eventLog)
+    let (system', machineStates', machineForces, eventLog') = if (steps%ig=0) then (Interface.interfaceUpdate state.Physical state.Formal (runInfo.TimeStep*(float)ig) definition.Interface runInfo.Time eventLog ) else (state.Physical,state.Formal,(Array.map (fun x -> new Vector.Vector3D<Physics.zNewton>()) state.Physical),eventLog)
     let write = match (steps%freq) with 
                     | 0 ->  output.FrameWriter system'
                             output.StateWriter machineStates'
@@ -89,7 +89,7 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
     let uCart = [for cart in positions -> 
                     let (f,r,d,freeze) = pTypes.[cart.name]
                     match freeze with
-                    | true -> {Physics.defaultParticle with Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation={x=1.;y=0.;z=0.};Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}
+                    | true -> {Physics.defaultParticle with Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=new Vector.Vector3D<1>(1.,0.,0.);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}
                     //Physics.Particle(cart.id,cart.name,cart.location,cart.velocity,{x=1.;y=0.;z=0.},f,r,d,cart.age,cart.gRand,freeze) //use arbitrary orientation for freeze particles
                     | _ -> {Physics.defaultParticle with  Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=(Vector.randomDirectionUnitVector rng);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}  
                     //Particle(cart.id,cart.name,cart.location,cart.velocity,(Vector.randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
@@ -150,7 +150,7 @@ let rec parse_args args =
 let rec equilibrate (system: Physics.Particle array) (topology) (steps: int) (maxlength: float<Physics.um>) searchType (staticGrid:Map<int*int*int,Physics.Particle list>) staticSystem (sOrigin:Vector.Vector3D<Physics.um>) (cutoff:float<Physics.um>) =
     match steps with
     | 0 -> system
-    | _ ->  let zeroForces = Array.init (Array.length system) (fun index -> {Vector.Vector3D.x=0.<Physics.zNewton>;Vector.Vector3D.y=0.<Physics.zNewton>;Vector.Vector3D.z=0.<Physics.zNewton>}) 
+    | _ ->  let zeroForces = Array.init (Array.length system) (fun index -> new Vector.Vector3D<Physics.zNewton>() ) 
             let forceEnv = (Physics.forceUpdate topology cutoff system searchType staticGrid staticSystem sOrigin zeroForces (!threads))
             let system' = (Physics.steep system forceEnv  maxlength)
             equilibrate system' topology (steps-1) maxlength searchType staticGrid staticSystem sOrigin cutoff

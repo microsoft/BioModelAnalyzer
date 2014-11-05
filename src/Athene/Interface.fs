@@ -326,6 +326,7 @@ let rec dev (f : float<second>->Particle->Map<QN.var,int>->particleModification)
         | Divide(cause,(p1,m1),(p2,m2)) -> sprintf "Division by %s of P = %d at T = %f seconds (birth of P&P: %d %d)" cause p.id (systemTime*1.<second^-1>) p1.id p2.id 
         | Development(cause,d,p1,m1) -> match d with
                                         | RadialGrowth(c) -> sprintf "Growth by %f um due to  %s of P = %d at T = %f seconds" (c*1.<Physics.um^-1>) cause p1.id (systemTime*1.<second^-1>)
+                                        | VolumeGrowth(c) -> sprintf "Growth by %f um^3 due to  %s of P = %d at T = %f seconds" (c*1.<Physics.um^-3>) cause p1.id (systemTime*1.<second^-1>)
                                         | Shrink(c) -> sprintf "Shinkage by %f um due to  %s of P = %d at T = %f seconds" (c*1.<Physics.um^-1>) cause p1.id (systemTime*1.<second^-1>)
         | _ -> ""
     match pm with
@@ -413,7 +414,7 @@ let interfaceUpdate (system: Particle array) (machineStates: Map<QN.var,int> arr
                 |> List.map (fun pm -> clockListUpdate intTop.clocks pm dT)
     let p'= List.map (fun (p,m) -> p) pm' 
     let m'= List.map (fun (p,m) -> m) pm'
-    let (f,m'') = getMotorForces intTop.randomMotors p' m' dT (List.map (fun x -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}) p')
+    let (f,m'') = getMotorForces intTop.randomMotors p' m' dT (List.map ( fun x -> new Vector.Vector3D<zNewton>() ) p')
     let p' = Array.ofList p'
     let m'' = Array.ofList m''
     let f = Array.ofList f

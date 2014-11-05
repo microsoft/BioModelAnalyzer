@@ -126,9 +126,9 @@ type Particle = { id:int; name:string; location:Vector.Vector3D<um>; velocity:Ve
 
 let defaultParticle = { id=0;
                         name="X";
-                        location={x=0.<um>;y=0.<um>;z=0.<um>};
-                        velocity={x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
-                        orientation={x=1.;y=0.;z=0.};
+                        location= new Vector.Vector3D<um>(); //(){x=0.<um>;y=0.<um>;z=0.<um>};
+                        velocity= new Vector.Vector3D<um/second>(); //{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
+                        orientation= new Vector.Vector3D<1>(1.,0.,0.); //{x=1.;y=0.;z=0.};
                         Friction=1.<second>;
                         radius=0.<um>;
                         density=1.<pg/um^3>;
@@ -151,7 +151,8 @@ let p' = { p with loc = p.loc + 1 }
 *)
 
 let noForce (p1: Particle) (p2: Particle) = 
-    {Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} 
+    new Vector.Vector3D<zNewton>()
+    //{Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} 
 
 let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<second>) (cluster: Particle) =
     (*
@@ -181,7 +182,7 @@ let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<seco
     *)
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 2./cluster.frictioncoeff //We are considering the mass of half spheres now
-    let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * { Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}
+    let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * (new Vector.Vector3D<1>((List.nth rNum 0) , (List.nth rNum 1) , (List.nth rNum 2) ) )//{ Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}
     (cluster.orientation*cluster.radius*(3./4.)+sqrt(2.)*tV).norm
 
 
@@ -196,7 +197,7 @@ let softSphereForce (repelPower: float) (repelConstant: float<zNewton>) ( attrac
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
-    | d when d > (attractCutOff+mindist) -> {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
+    | d when d > (attractCutOff+mindist) -> ( new Vector.Vector3D<zNewton>() )// {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
     | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
     | _ -> repelConstant * ((ivec.len-mindist)*1.<um^-1>)**repelPower * (p1.location - p2.location).norm
 
@@ -206,7 +207,7 @@ let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( 
     let ivec = (p1.location - p2.location)
     let mindist = p1.radius + p2.radius
     match ivec.len with 
-    | d when d > (attractCutOff+mindist)-> {Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} //can't see one another
+    | d when d > (attractCutOff+mindist)-> ( new Vector.Vector3D<zNewton>() )//{Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} //can't see one another
     | d when d > mindist -> attractConstant * ((ivec.len - mindist)*1.<um^-1>)**attractPower * (p1.location - p2.location).norm
     | _ -> repelConstant * (-1./(ivec.len/mindist)**(repelForcePower)-1.) * (p1.location - p2.location).norm //overlapping
 
@@ -433,7 +434,7 @@ let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<K
     let FrictionDrag = 1./cluster.frictioncoeff
     //let ThermalV =  2. * Kb * T * dT * FrictionDrag * { x= (List.nth rNum 0) ; y= (List.nth rNum 1); z= (List.nth rNum 2)} //instantanous velocity from thermal motion
     let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
-    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
+    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * new Vector.Vector3D<1>(List.nth rNum 0, List.nth rNum 1, List.nth rNum 2) //{ Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
     let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
     //let NewV = NewP * (1. / dT)
     //printfn "Force %A %A %A" F.x F.y F.z
@@ -444,7 +445,7 @@ let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
     let NewV = FrictionDrag * F.force
-    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * { Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
+    let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * new Vector.Vector3D<1>(List.nth rNum 0, List.nth rNum 1, List.nth rNum 2) //{ Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
     let dP = dT * FrictionDrag * F.force + ThermalP
     let NewP = cluster.location + dP
     let NewO = thermalReorientation T rng dT cluster
