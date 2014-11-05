@@ -992,6 +992,11 @@
     white-space:nowrap;
 }
 
+.bma-simulation-table-expanded-scroll > div {
+    display: inline-block;
+    vertical-align: top;
+}
+
 .bma-simulation-table {
     margin: 0;
     width:auto;
@@ -999,6 +1004,7 @@
 
 .bma-simulation-table td {
     height: 26px;
+    padding: 0;
 }
 
 .bma-simulation-table tr:not(:first-child) td:first-child {
@@ -1045,10 +1051,9 @@
 }*/
 
 .bma-graph-max-table {
-    margin:0px;
-    margin-top: 5px;
+    margin:0;
     margin-bottom: 5px;
-    padding:0px;
+    padding:0;
 	border: none;
     border-collapse:collapse;
 }
@@ -1193,7 +1198,7 @@
     min-width: 20px;
     height: 26px;
     margin: 0;
-    padding: 1px 3px 1px 3px;
+    padding: 0 3px;
     font-size: 14px;
     position: relative;
     
@@ -1330,7 +1335,7 @@
 
 .bma-simulation-data-table {
     display: inline-block;
-    width: 300px;
+    max-width: 500px;
     overflow-x: scroll;
     overflow-y: hidden;
     margin-bottom: -17px;
@@ -1340,11 +1345,11 @@
     background-color: gainsboro;
 }
 
-.bma-progressiontable-randimise {
+.bma-progressiontable-randomise {
     width: 120px;
     position: absolute;
     top:-30px;
-    left: 45%;
+    left: 420px;
     cursor:pointer;
 }
 
