@@ -37,6 +37,7 @@ declare var Rx: any;
 
         _lightSvgLoaded: function () {
             if (this.options.lightSvg !== undefined && this._lightSvgPlot !== undefined) {
+                this._lightSvgPlot.svg.configure({ "pointer-events": "none" }, false);
                 this._lightSvgPlot.svg.clear();
                 this._lightSvgPlot.svg.add(this.options.svg);
             }
@@ -82,16 +83,14 @@ declare var Rx: any;
                 }
             }
 
-            if (this.options.lightSvg !== undefined) {
-                if (lightSvgPlot.svg === undefined) {
-                    lightSvgPlot.host.on("svgLoaded", this._lightSvgLoaded);
-                } else {
-                    lightSvgPlot.svg.clear();
+            if (lightSvgPlot.svg === undefined) {
+                lightSvgPlot.host.on("svgLoaded", this._lightSvgLoaded);
+            } else {
+                //lightSvgPlot.svg.configure({ style: "pointer-events:none;" }, false);
+                lightSvgPlot.svg.clear();
+                if (this.options.lightSvg !== undefined)
                     lightSvgPlot.svg.add(this.options.lightSvg);
-                }
             }
-
-
 
             plotDiv.droppable({
                 drop: function (event, ui) {
