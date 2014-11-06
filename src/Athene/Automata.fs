@@ -1,5 +1,8 @@
 ﻿module Automata
 
+open System
+open System.Collections.Generic
+
 let spawnMachines (qn: QN.node list) (number:int) (rng:System.Random) (init0:string) =
     let rec maximum acc (s: int list) =
         match s with 
@@ -18,6 +21,13 @@ let spawnMachines (qn: QN.node list) (number:int) (rng:System.Random) (init0:str
                         | _ -> failwith "Cannot read the initial state of the machines"
     [for machine in [0..(number-1)] -> initState init0] |> Array.ofList
 
-let updateMachines (qn: QN.node list) (machines: Map<QN.var,int> array) (threads:int) =
-    Array.Parallel.map (fun (automata: Map<QN.var,int>) -> Simulate.tick qn automata) machines
+let tickMemo =
+    let cache = Dictionary<Map<QN.var,int>,Map<QN.var,int>>()
+    fun qn m ->
+        if cache.ContainsKey(m) then cache.[m]
+        else    let m' = Simulate.tick qn m
+                cache.[m] <- m'
+                m'
 
+let updateMachines (qn: QN.node list) (machines: Map<QN.var,int> array) (threads:int) =
+    Array.Parallel.map (fun (automata: Map<QN.var,int>) -> tickMemo qn automata) machines
