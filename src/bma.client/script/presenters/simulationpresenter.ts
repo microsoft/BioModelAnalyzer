@@ -50,7 +50,11 @@
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full;
-                        var variables = this.appModel.BioModel.Variables;
+                        var variables = [];
+                        this.appModel.BioModel.Variables.forEach(function (val) { variables.push(val) });
+                        variables.sort((x, y) => {
+                            return x.Id < y.Id ? -1 : 1;
+                        });
                         switch (param) {
                             case "SimulationVariables":
 
@@ -225,9 +229,10 @@
 
             public CreateVariablesView() {
                 var table = [];
-                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
-                    var res = x.Id < y.Id ? -1 : 1;
-                    return res;
+                var variables = [];
+                this.appModel.BioModel.Variables.forEach(function (val) { variables.push(val) });
+                variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
                 });
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
