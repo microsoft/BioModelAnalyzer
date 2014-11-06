@@ -41,6 +41,7 @@
                 window.Commands.On("SimulationRequested", function (args) {
                     that.initValues = [];
                     that.results = [];
+                    that.expandedSimulationVariables = undefined;
                     //that.data = [];
                     that.CreateColors();
                     that.ClearColors();
@@ -51,58 +52,30 @@
 
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
-                        var full;
-                        //var variables = [];
-                        //this.appModel.BioModel.Variables.forEach(function (val) { variables.push(val) });
-                        //variables.sort((x, y) => {
-                        //    return x.Id < y.Id ? -1 : 1;
-                        //});
+                        var full: JQuery = undefined;
                         var variables = this.appModel.BioModel.Variables.sort((x, y) => {
                             return x.Id < y.Id ? -1 : 1;
                         });
                         switch (param) {
                             case "SimulationVariables":
-
-                                popupViewer.Show({ tab: param, content: $("<div></div>") });
-                                simulationViewer.Hide({ tab: param });
-                                
-                                var f = function () {
-                                    var d = $.Deferred();
+                                if (that.expandedSimulationVariables !== undefined) {
+                                    full = that.expandedSimulationVariables;
+                                }
+                                else {
                                     that.expandedViewer.Set({ variables: variables, colors: that.dataForPlot, init: that.initValues });
                                     full = that.expandedViewer.GetViewer();
-                                    d.resolve(full);
-                                    return d.promise();
-                                };
-
-                                $.when(f()).done(function (res) {
-                                    simulationViewer.Hide({ tab: param });
-                                    popupViewer.Show({ tab: param, content: res });
-                                });
-                                //$('<div id="SimulationExpanded"></div>').simulationexpanded({ data: { variables: that.CreateExpandedTable(), interval: that.CreateInterval(), init: that.initValues, data: that.data } });
-                                
-                                //full });
-
-                                //if (popupViewer.Seen())
-                                //    for (var i = 0; i < that.results.length;i++) {
-                                //        that.expandedViewer.AddResult(that.results[i]);
-                                //    }
-                                //that.expandedViewer.SetData(that.dataForPlot);
+                                }
                                 break;
                             case "SimulationPlot":
                                 full = $('<div id="SimulationPlot"></div>').height(600).simulationplot({ colors: that.dataForPlot });
-                                simulationViewer.Hide({ tab: param });
-                                popupViewer.Show({ tab: param, content: full });
                                 break;
                             default:
-                                full = undefined;
                                 simulationViewer.Show({ tab: undefined });
                         }
-                        
-                        //if (full !== undefined) {
-                        //    simulationViewer.Hide({ tab: param });
-                        //    popupViewer.Show({ tab: param, content: full });
-                        //}
-                        
+                        if (full !== undefined) {
+                            simulationViewer.Hide({ tab: param });
+                            popupViewer.Show({ tab: param, content: full });
+                        }
                     }
                 });
 
@@ -122,6 +95,7 @@
                     that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
+                    that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                     return;
                 }
                 var simulate = {
