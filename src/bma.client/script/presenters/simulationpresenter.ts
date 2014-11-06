@@ -50,9 +50,12 @@
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full;
-                        var variables = [];
-                        this.appModel.BioModel.Variables.forEach(function (val) { variables.push(val) });
-                        variables.sort((x, y) => {
+                        //var variables = [];
+                        //this.appModel.BioModel.Variables.forEach(function (val) { variables.push(val) });
+                        //variables.sort((x, y) => {
+                        //    return x.Id < y.Id ? -1 : 1;
+                        //});
+                        var variables = this.appModel.BioModel.Variables.sort((x, y) => {
                             return x.Id < y.Id ? -1 : 1;
                         });
                         switch (param) {
@@ -229,9 +232,7 @@
 
             public CreateVariablesView() {
                 var table = [];
-                var variables = [];
-                this.appModel.BioModel.Variables.forEach(function (val) { variables.push(val) });
-                variables.sort((x, y) => {
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
                     return x.Id < y.Id ? -1 : 1;
                 });
                 for (var i = 0; i < variables.length; i++) {
