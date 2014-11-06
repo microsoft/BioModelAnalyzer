@@ -5,18 +5,20 @@
             private compactViewer: BMA.UIDrivers.ISimulationViewer;
             private expandedViewer: BMA.UIDrivers.ISimulationExpanded;
             private ajax: BMA.UIDrivers.IServiceDriver;
-            private data;
+            //private data;
             private colors;
             private initValues;
             private dataForPlot;
             private results;
+            private expandedSimulationVariables: JQuery;
+            private expandedSimulationPlot: JQuery;
 
             constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver) {
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
                 this.ajax = ajax;
-                this.data = [];
+                //this.data = [];
                 this.colors = [];
                 var that = this;
 
@@ -27,7 +29,7 @@
 
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
-                    that.data = [];
+                    //that.data = [];
                     that.results = [];
                     that.initValues = param.data;
                     that.ClearColors();
@@ -39,7 +41,7 @@
                 window.Commands.On("SimulationRequested", function (args) {
                     that.initValues = [];
                     that.results = [];
-                    that.data = [];
+                    //that.data = [];
                     that.CreateColors();
                     that.ClearColors();
                     that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
@@ -155,7 +157,7 @@
             public AddData(d) {
                 if (d !== null) {
                     //this.data[this.data.length] = d;
-                    this.data.push(d);
+                    //this.data.push(d);
                     var variables = this.appModel.BioModel.Variables;
                     for (var i = 0; i < d.length; i++) {
                         var color = this.colors[this.GetColorById(variables[i].Id)];
@@ -176,9 +178,10 @@
             public CreateColors() {
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
-                    if (this.GetColorById(variables[i].Id) === undefined) 
+                    if (this.GetColorById(variables[i].Id) === undefined)
                         this.colors.push({
                             Id: variables[i].Id,
+                            Name: variables[i].Name,
                             Color: this.getRandomColor(),
                             Seen: true,
                             Plot: []
@@ -194,6 +197,7 @@
                 for (var i = 0; i < variables.length; i++) {
                     var color = this.GetColorById(variables[i].Id);
                     this.colors[color].Plot = [];
+                    this.colors[color].Name = variables[i].Name;
                     if (this.initValues[i] !== undefined)
                         this.colors[color].Plot[0] = this.initValues[i];
                 }
@@ -219,12 +223,13 @@
 
             public CreateProgressionMinTable() {
                 var table = [];
-                if (this.data.length < 1) return;
-                for (var i = 0; i < this.data[0].length; i++) {
+                if (this.results.length < 1) return;
+                for (var i = 0; i < this.results[0].Variables.length; i++) {
                     table[i] = [];
                     table[i][0] = false;
-                    for (var j = 1; j < this.data.length; j++) {
-                        table[i][j] = this.data[j][i] !== this.data[j-1][i];
+                    var l = this.results.length;
+                    for (var j = 1; j < l; j++) {
+                        table[i][j] = this.results[j].Variables[i].Value !== this.results[j-1].Variables[i].Value;
                     }
                 }
                 return table;

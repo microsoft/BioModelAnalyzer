@@ -5,6 +5,8 @@
             private viewer: BMA.UIDrivers.IProofResultViewer;
             private ajax: BMA.UIDrivers.IServiceDriver;
             private messagebox: BMA.UIDrivers.IMessageServise;
+            private expandedProofPropagation: JQuery;
+            private expandedProofVariables: JQuery;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -26,6 +28,7 @@
                         .done(function (res) {
                             //console.log("Proof Result Status: " + res.Status);
                             if (res.Ticks !== null) {
+                                that.expandedProofPropagation = $('<div></div>');
                                 var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                                 if (res.Status === 5)
                                     window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
@@ -34,6 +37,27 @@
                                 var st = that.Stability(res.Ticks);
                                 var variablesData = that.CreateTableView(st.variablesStability);
                                 var colorData = that.CreateColoredTable(res.Ticks);
+
+                                var deferredProofPropagation = function () {
+                                    var d = $.Deferred();
+                                    var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks).addClass("proof-expanded");
+                                    d.resolve(full);
+                                    return d.promise();
+                                }
+                                $.when(deferredProofPropagation()).done(function (res) {
+                                    that.expandedProofPropagation = res;
+                                })
+
+                                var deferredProofVariables = function () {
+                                    var d = $.Deferred();
+                                    var full = that.CreateExpandedProofVariables(variablesData);
+                                    d.resolve(full);
+                                    return d.promise();
+                                }
+                                $.when(deferredProofVariables()).done(function (res) {
+                                    that.expandedProofVariables = res;
+                                })
+
                                 window.Commands.Execute("DrawingSurfaceSetProofResults", st);
                                 proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
                                 proofResultViewer.ShowResult(appModel.ProofResult);
@@ -55,42 +79,36 @@
 
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
-                        var full;
+                        //var full;
                         switch (param) {
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null) {
                                     popupViewer.Show({ tab: param, content: $('<div></div>') });
 
-                                    var f = function () {
-                                        var d = $.Deferred();
-                                        full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
-                                        d.resolve(full);
-                                        return d.promise();
-                                    };
+                                    //var f = function () {
+                                    //    var d = $.Deferred();
+                                    //    full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
+                                    //    d.resolve(full);
+                                    //    return d.promise();
+                                    //};
 
-                                    $.when(f()).done(function (res) {
-                                         res.addClass("proof-expanded");
+                                    //$.when(f()).done(function (res) {
+                                         //res.addClass("proof-expanded");
                                          proofResultViewer.Hide({ tab: param });
-                                         popupViewer.Show({ tab: param, content: res });
-                                    });
+                                    popupViewer.Show({ tab: param, content: that.expandedProofPropagation });
+                                    //});
 
                                     
                                 }
                                 break;
                             case "ProofVariables":
 
-                                var st = that.Stability(this.appModel.ProofResult.Ticks);
-                                var variablesData = that.CreateTableView(st.variablesStability);
-                                //var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
-                                full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
-                                full.find("td").eq(0).width(150);
-                                full.find("td").eq(2).width(150);
-                                full.addClass("proof-expanded");
+                                
                                 proofResultViewer.Hide({ tab: param });
-                                popupViewer.Show({ tab: param, content: full });
+                                popupViewer.Show({ tab: param, content: that.expandedProofVariables });
                                 break;
                             default:
-                                full = undefined;
+                                //full = undefined;
                                 proofResultViewer.Show({ tab: undefined });
                                 break;
                         }
@@ -175,8 +193,19 @@
                 return color;
             }
 
-            public CreateExpandedResultTable(ticks) {
-                
+            public CreateExpandedProofVariables(variablesData) {
+                //var st = this.Stability(this.appModel.ProofResult.Ticks);
+                //var variablesData = this.CreateTableView(st.variablesStability);
+                //var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
+                var full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
+                full.find("td").eq(0).width(150);
+                full.find("td").eq(2).width(150);
+                full.addClass("proof-expanded");
+                return full;
+            }
+
+            public CreateExpandedProofPropagation(ticks) {
+                var d1, d0 = new Date().getTime();
                 var container = $('<div></div>');
                 if (ticks === null) return container;
                 var that = this;
@@ -210,6 +239,8 @@
                 container.coloredtableviewer({ header: header, numericData: table, colorData: color });
 
                 container.find("td").eq(0).width(150);
+                d1 = new Date().getTime();
+                console.log("created table: " + (d1 - d0).toString());
                 return container;
             }
         }
