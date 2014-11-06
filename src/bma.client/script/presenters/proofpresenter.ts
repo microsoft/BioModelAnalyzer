@@ -205,7 +205,6 @@
             }
 
             public CreateExpandedProofPropagation(ticks) {
-                var d1, d0 = new Date().getTime();
                 var container = $('<div></div>');
                 if (ticks === null) return container;
                 var that = this;
@@ -239,8 +238,6 @@
                 container.coloredtableviewer({ header: header, numericData: table, colorData: color });
 
                 container.find("td").eq(0).width(150);
-                d1 = new Date().getTime();
-                console.log("created table: " + (d1 - d0).toString());
                 return container;
             }
         }
