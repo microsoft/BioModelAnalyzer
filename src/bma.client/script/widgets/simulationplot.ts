@@ -22,9 +22,16 @@
             var that = this;
             var options = this.options;
             this.element.empty();
-            this.chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("100%").height("100%").appendTo(that.element);
-            //var leftAxis = $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "left").appendTo(this.chartdiv);
-            //var bottomAxis = $("<div></div>").attr("data-idd-axis", "labels").attr("data-idd-placement", "bottom").appendTo(this.chartdiv);
+
+            var legendDiv = $('<div></div>').width("30%").height("100%").css("background-color", "white").css("float", "left").css("overflow-y", "auto").appendTo(that.element);
+            var cnt = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("70%").height("100%").css("float", "left").appendTo(that.element);
+            this.chartdiv = $('<div id="chart"></div>')
+                .attr("data-idd-plot", "figure")
+                //.attr("data-idd-legend", "lg")
+                .width("100%")
+                .height("100%")
+                .appendTo(cnt);
+
             var gridLinesPlotDiv = $("<div></div>").attr("id","glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
             
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
@@ -33,7 +40,7 @@
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++)
-                    that._chart.polyline("polyline" + i, undefined);
+                    that._chart.polyline(options.colors[i].Name, undefined);
 
                 
                 that._chart.isAutoFitEnabled = true;
@@ -50,12 +57,43 @@
                         var y = options.colors[i].Plot;
                         var m = that.Max(y);
                         if (m > max) max = m;
-                        var polyline = that._chart.get("polyline" + i);
+                        var polyline = that._chart.get(options.colors[i].Name);
                         if (polyline !== undefined) {
                             polyline.stroke = options.colors[i].Color;
                             polyline.isVisible = options.colors[i].Seen;
                             polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
                         }
+
+                        //var legendContentLi = $("<li></li>").css("list-style-type", "none").css("margin", 0).appendTo(legendDiv);
+                        //var legendContentDiv = $("<div></div>").width(150).height(40).css("oveflow", "hidden").appendTo(legendContentLi);
+                        //$("<div></div>").width(20).height(20).css("background-color", options.colors[i].Color).css("float", "left").appendTo(legendContentDiv);
+                        //$("<div></div>").height(20).width(130).text(options.colors[i].Name).appendTo(legendContentDiv);
+
+                        var li = $("<li></li>").appendTo(legendDiv);
+                        var div = $("<div></div>").appendTo(li);
+                        var div2 = $("<div></div>").css("display", "table-cell").appendTo(div);
+                        var div4 = $("<div></div>").width(30).height(30).css("background-color", options.colors[i].Color).appendTo(div2);
+
+                        var div3 = $("<div></div>").text(options.colors[i].Name).width(120).height(30).css("display", "table-cell").css("padding-left", 5).css("vertical-align", "middle").appendTo(div);
+
+                        var color = options.colors[i].Color;
+                        li.hover(function () {
+                            var p = that.highlightPlot;
+                            if (p !== undefined) {
+                                p.stroke = options.colors[i].Color;
+                                p.isVisible = true;
+                                p.draw({ y: y, thickness: 8, lineJoin: 'round' });
+                            }
+                        });
+
+                        li.mouseover(function () {
+                            var p = that.highlightPlot;
+                            if (p !== undefined) {
+                                p.isVisible = false;
+                            }
+                        });
+
+
                     }
                     for (var i = 0; i < options.colors[0].Plot.length; i++) {
                         bottomLabels[i] = i.toString();
@@ -64,6 +102,9 @@
                         leftLabels[i] = i.toString();
                     }
                 }
+
+                this.highlightPlot = that._chart.polyline("_hightlightPlot", undefined);
+
                 var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
                 var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
