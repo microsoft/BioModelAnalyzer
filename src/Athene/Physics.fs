@@ -192,27 +192,33 @@ let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton>) (p1: 
     let displacement = ivec.len - optimum
     forceConstant * displacement * (p1.location - p2.location).norm
 
-let softSphereForce (repelPower: float) (repelConstant: float<zNewton>) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) :Vector.Vector3D<zNewton> =
+type powerTerm = FloatPower of float | IntPower of int
+
+let softSphereForce (repelPower: powerTerm) (repelConstant: float<zNewton>) ( attractPower:powerTerm ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) :Vector.Vector3D<zNewton> =
     //Not as hard as a typical hard sphere force (n^-13, where n is less than 1)
     //Repulsion now scales with a power of the absolute distance overlap
     let interactionVector = (p1.location - p2.location)
     let distance = interactionVector.len
     let mindist = p1.radius + p2.radius
-    match distance with 
-    | d when d > (attractCutOff+mindist) -> ( new Vector.Vector3D<zNewton>() )// {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
-    | d when d > mindist -> attractConstant * ((distance - mindist)*1.<um^-1>)**attractPower * interactionVector.norm
-    | _ -> repelConstant * ((distance-mindist)*1.<um^-1>)**repelPower * interactionVector.norm
+    match (distance, attractPower, repelPower) with 
+    | (d,_,_) when d > (attractCutOff+mindist)  -> ( new Vector.Vector3D<zNewton>() )// {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
+    | (d,FloatPower(x),_) when d > mindist      -> attractConstant * ((distance - mindist)*1.<um^-1>)**x * interactionVector.norm
+    | (d,IntPower(x),_) when d > mindist        -> attractConstant * pown ((distance - mindist)*1.<um^-1>) x * interactionVector.norm
+    | (_,_,FloatPower(x))                       -> repelConstant * ((distance-mindist)*1.<um^-1>)**x * interactionVector.norm
+    | (_,_,IntPower(x))                         -> repelConstant * pown ((distance-mindist)*1.<um^-1>) x * interactionVector.norm
 
-let hardSphereForce (repelForcePower: float) (repelConstant: float<zNewton> ) ( attractPower:float ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
+let hardSphereForce (repelForcePower: powerTerm) (repelConstant: float<zNewton> ) ( attractPower:powerTerm ) (attractConstant: float<zNewton>) (attractCutOff: float<um>) (p1: Particle) (p2: Particle) =
     //'Hard' spheres repel based on a (normalised overlap ** -n) Originally meant to be similar to lennard-jones potentials
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
     let interactionVector = (p1.location - p2.location)
     let distance = interactionVector.len 
     let mindist = p1.radius + p2.radius
-    match distance with 
-    | d when d > (attractCutOff+mindist)-> ( new Vector.Vector3D<zNewton>() )//{Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} //can't see one another
-    | d when d > mindist -> attractConstant * ((distance - mindist)*1.<um^-1>)**attractPower * interactionVector.norm
-    | _ -> repelConstant * (-1./(distance/mindist)**(repelForcePower)-1.) * interactionVector.norm //overlapping
+    match (distance, attractPower, repelForcePower) with 
+    | (d,_,_) when d > (attractCutOff+mindist)  -> ( new Vector.Vector3D<zNewton>() )//{Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} //can't see one another
+    | (d,FloatPower(x),_) when d > mindist      -> attractConstant * ((distance - mindist)*1.<um^-1>)**x * interactionVector.norm
+    | (d,IntPower(x),_) when d > mindist        -> attractConstant * pown ((distance - mindist)*1.<um^-1>) x * interactionVector.norm
+    | (_,_,FloatPower(x))                       -> repelConstant * (-1. + (-1./(distance/mindist)**x)) * interactionVector.norm //overlapping
+    | (_,_,IntPower(x))                         -> repelConstant * (-1. + (-1./(pown (distance/mindist) x))) * interactionVector.norm //overlapping
 
 let gridFill (system: Particle array) (acc: Dictionary<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
         let addElement (grid:Dictionary<int*int*int,Particle list>) p =

@@ -218,25 +218,56 @@ let xmlTopRead (filename: string) =
                                                 |1 -> 
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
-                                                    hardSphereForce rP (rC*1.<zNewton>) 1. 0.<zNewton> 0.<um>
+                                                    let powerType = try (bj.Element(xn "RepelPower").Attribute(xn "Type").Value) with _ -> failwith "Missing power type"
+                                                    let repelPower = match powerType with
+                                                                        | "Float" -> Physics.FloatPower(rP)
+                                                                        | "Int"   -> Physics.IntPower(int rP)
+                                                                        | a -> failwith "Unrecognised power type- %a" a
+                                                    
+                                                    hardSphereForce repelPower (rC*1.<zNewton>) (Physics.IntPower(1)) 0.<zNewton> 0.<um>
                                                 |2 ->
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
                                                     let aC = try (float) (bj.Element(xn "AttractCoeff").Value) with _ -> failwith "Missing attract constant"
                                                     let aP = try (float) (bj.Element(xn "AttractPower").Value) with _ -> failwith "Missing attract power"
                                                     let aCO = try (float) (bj.Element(xn "AttractCutOff").Value) with _ -> failwith "Missing attract cutoff"
-                                                    hardSphereForce rP (rC*1.<zNewton>) aP (aC*1.<zNewton>) (aCO*1.<um>)
+                                                    let repelPowerType = try (bj.Element(xn "RepelPower").Attribute(xn "Type").Value) with _ -> failwith "Missing power type"
+                                                    let repelPower = match repelPowerType with
+                                                                        | "Float" -> Physics.FloatPower(rP)
+                                                                        | "Int"   -> Physics.IntPower(int rP)
+                                                                        | a -> failwith "Unrecognised power type- %a" a
+                                                    let attractPowerType = try (bj.Element(xn "RepelPower").Attribute(xn "Type").Value) with _ -> failwith "Missing power type"
+                                                    let attractPower = match attractPowerType with
+                                                                        | "Float" -> Physics.FloatPower(rP)
+                                                                        | "Int"   -> Physics.IntPower(int rP)
+                                                                        | a -> failwith "Unrecognised power type- %a" a
+                                                    hardSphereForce repelPower (rC*1.<zNewton>) attractPower (aC*1.<zNewton>) (aCO*1.<um>)
                                                 |3 -> 
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
-                                                    softSphereForce rP (rC*1.<zNewton>) 1. 0.<zNewton> 0.<um>
+                                                    let repelPowerType = try (bj.Element(xn "RepelPower").Attribute(xn "Type").Value) with _ -> failwith "Missing power type"
+                                                    let repelPower = match repelPowerType with
+                                                                        | "Float" -> Physics.FloatPower(rP)
+                                                                        | "Int"   -> Physics.IntPower(int rP)
+                                                                        | a -> failwith "Unrecognised power type- %a" a
+                                                    softSphereForce repelPower (rC*1.<zNewton>) (Physics.IntPower(1)) 0.<zNewton> 0.<um>
                                                 |4 ->
                                                     let rC = try (float) (bj.Element(xn "RepelCoeff").Value) with _ -> failwith "Missing repel constant"
                                                     let rP = try (float) (bj.Element(xn "RepelPower").Value) with _ -> failwith "Missing repel power"
                                                     let aC = try (float) (bj.Element(xn "AttractCoeff").Value) with _ -> failwith "Missing attract constant"
                                                     let aP = try (float) (bj.Element(xn "AttractPower").Value) with _ -> failwith "Missing attract power"
                                                     let aCO = try (float) (bj.Element(xn "AttractCutOff").Value) with _ -> failwith "Missing attract cutoff"
-                                                    softSphereForce rP (rC*1.<zNewton>) aP (aC*1.<zNewton>) (aCO*1.<um>)
+                                                    let repelPowerType = try (bj.Element(xn "RepelPower").Attribute(xn "Type").Value) with _ -> failwith "Missing power type"
+                                                    let repelPower = match repelPowerType with
+                                                                        | "Float" -> Physics.FloatPower(rP)
+                                                                        | "Int"   -> Physics.IntPower(int rP)
+                                                                        | a -> failwith "Unrecognised power type- %a" a
+                                                    let attractPowerType = try (bj.Element(xn "RepelPower").Attribute(xn "Type").Value) with _ -> failwith "Missing power type"
+                                                    let attractPower = match attractPowerType with
+                                                                        | "Float" -> Physics.FloatPower(rP)
+                                                                        | "Int"   -> Physics.IntPower(int rP)
+                                                                        | a -> failwith "Unrecognised power type- %a" a                                                    
+                                                    softSphereForce repelPower (rC*1.<zNewton>) attractPower (aC*1.<zNewton>) (aCO*1.<um>)
                                                 |_ -> failwith "Incorrect type of nonbonded interaction"
                                     yield (bjName,bond) ] 
                                     |> Map.ofList
