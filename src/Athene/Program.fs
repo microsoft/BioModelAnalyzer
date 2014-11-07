@@ -215,7 +215,10 @@ let main argv =
                                 let io = (IO.readCheckpoint !restart)
                                 {Physical=io.Physical;Formal=io.Formal}
                         else initialState
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     simulate initialState definition runInfo recorders rand
+    stopWatch.Stop()
+    printfn "Simulation time = %f ms" stopWatch.Elapsed.TotalSeconds
     //Clean up and close files
     regFile.Close()
     xyzFile.Close()
