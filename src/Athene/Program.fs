@@ -218,7 +218,7 @@ let main argv =
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
     simulate initialState definition runInfo recorders rand
     stopWatch.Stop()
-    printfn "Simulation time = %f ms" stopWatch.Elapsed.TotalSeconds
+    printfn "Simulation time = %f seconds" stopWatch.Elapsed.TotalSeconds
     //Clean up and close files
     regFile.Close()
     xyzFile.Close()
