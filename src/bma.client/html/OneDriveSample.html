@@ -1,4 +1,52 @@
 ﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Client-Side JavaScript Code Sample</title>
+    <script src="//js.live.net/v5.0/wl.js"></script>
+</head>
+<body>
+    <div id="signin"></div>
+    <label id="info"></label>
+    <script>
+        WL.Event.subscribe("auth.login", onLogin);
+        WL.init({
+            client_id: "000000004C12BD9C",
+            redirect_uri: "http://bmaclienttest2.azurewebsites.net/html/callback.html",
+            scope: "wl.signin",
+            response_type: "token"
+        });
+        WL.ui({
+            name: "signin",
+            element: "signin"
+        });
+        function onLogin(session) {
+            if (!session.error) {
+                WL.api({
+                    path: "me",
+                    method: "GET"
+                }).then(
+                    function (response) {
+                        document.getElementById("info").innerText =
+                            "Hello, " + response.first_name + " " + response.last_name + "!";
+                    },
+                    function (responseFailed) {
+                        document.getElementById("info").innerText =
+                            "Error calling API: " + responseFailed.error.message;
+                    }
+                );
+            }
+            else {
+                document.getElementById("info").innerText =
+                    "Error signing in: " + session.error_description;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+<!--<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>OneDrive access sample page</title>
@@ -8,7 +56,7 @@
 
     <script type="text/javascript">
 
-        WL.init({ client_id: "000000004C12BD9C", redirect_uri: "http://bmaclienttest2.azurewebsites.net/" });
+        WL.init({ client_id: "000000004C12BD9C", redirect_uri: "http://bmaclienttest2.azurewebsites.net/bma.client/html/callback.html" });
         WL.Event.subscribe("auth.login", onLogin);
         WL.Event.subscribe("auth.sessionChange", onSessionChange);
 
@@ -45,4 +93,4 @@
 <body>
     <div id="JsOutputDiv"></div>
 </body>
-</html>
+</html>-->

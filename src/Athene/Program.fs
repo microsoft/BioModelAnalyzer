@@ -96,8 +96,8 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
                      ]
                      |> Array.ofList
     let staticSystem = Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart
-    let blankGrid = new Dictionary<int*int*int,Physics.Particle list>()
-    let staticGrid = Physics.gridFillDict (List.ofArray staticSystem) blankGrid sOrigin rp.nonBond 
+    let blankGrid = new Dictionary<int*int*int,Physics.Particle list>(HashIdentity.Structural)
+    let staticGrid = Physics.gridFill staticSystem blankGrid sOrigin rp.nonBond 
     let qn = IO.bmaRead bmafile
     let machineCount = Array.length (Array.filter  (fun (p: Physics.Particle) -> not p.freeze) uCart) 
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
