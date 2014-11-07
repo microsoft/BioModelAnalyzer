@@ -14,7 +14,7 @@
     <RootNamespace>bma.client</RootNamespace>
     <AssemblyName>bma.client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -120,6 +120,7 @@
     <Content Include="css\jquery.svg.css" />
     <Content Include="Global.asax" />
     <Content Include="help.html" />
+    <Content Include="html\callback.html" />
     <Content Include="html\chartSample.html" />
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\WidgetsSample.html" />
@@ -453,7 +454,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>33584</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:33584/</IISUrl>
+          <IISUrl>http://localhost</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

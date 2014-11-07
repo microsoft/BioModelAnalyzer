@@ -17,11 +17,11 @@ module BMA {
             }
 
             public get Variables(): Variable[] {
-                return this.variables;
+                return this.variables.slice(0);
             }
 
             public get Relationships(): Relationship[] {
-                return this.relationships;
+                return this.relationships.slice(0);
             }
 
             public Clone(): BioModel {
@@ -166,11 +166,11 @@ module BMA {
             private containers: ContainerLayout[];
 
             public get Containers(): ContainerLayout[] {
-                return this.containers;
+                return this.containers.slice(0);
             }
 
             public get Variables(): VarialbeLayout[] {
-                return this.variables;
+                return this.variables.slice(0);
             }
 
             public Clone(): Layout {

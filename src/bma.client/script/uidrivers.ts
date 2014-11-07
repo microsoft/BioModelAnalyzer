@@ -266,8 +266,8 @@ module BMA {
             public Set(data: { variables; colors; init }) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
-                var toAdd = this.CreatePlotView(data.colors);
-                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: toAdd });
+                //var toAdd = this.CreatePlotView(data.colors);
+                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });//, data: toAdd });
                 //this.viewer.simulationexpanded("option", "data", toAdd);
             }
 
