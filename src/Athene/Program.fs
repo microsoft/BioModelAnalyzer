@@ -89,19 +89,17 @@ let defineSystem (cartFile:string) (topfile:string) (bmafile:string) =
     let uCart = [for cart in positions -> 
                     let (f,r,d,freeze) = pTypes.[cart.name]
                     match freeze with
-                    //| true -> {Physics.defaultParticle with Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=new Vector.Vector3D<1>(1.,0.,0.);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}
-                    | true -> new Physics.Particle(cart.id,cart.name,cart.location,{Physics.defaultParticleInfo with Physics.velocity=cart.details.velocity;Physics.orientation=new Vector.Vector3D<1>(1.,0.,0.);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.details.age;Physics.gRand=cart.details.gRand;Physics.freeze=freeze})
+                    | true -> {Physics.defaultParticle with Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=new Vector.Vector3D<1>(1.,0.,0.);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}
                     //Physics.Particle(cart.id,cart.name,cart.location,cart.velocity,{x=1.;y=0.;z=0.},f,r,d,cart.age,cart.gRand,freeze) //use arbitrary orientation for freeze particles
-                    //| _ -> {Physics.defaultParticle with  Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=(Vector.randomDirectionUnitVector rng);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}  
-                    | _ -> new Physics.Particle(cart.id,cart.name,cart.location,{Physics.defaultParticleInfo with Physics.velocity=cart.details.velocity;Physics.orientation=(Vector.randomDirectionUnitVector rng);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.details.age;Physics.gRand=cart.details.gRand;Physics.freeze=freeze})  
+                    | _ -> {Physics.defaultParticle with  Physics.id=cart.id;Physics.name=cart.name;Physics.location=cart.location;Physics.velocity=cart.velocity;Physics.orientation=(Vector.randomDirectionUnitVector rng);Physics.Friction=f;Physics.radius=r;Physics.density=d;Physics.age=cart.age;Physics.gRand=cart.gRand;Physics.freeze=freeze}  
                     //Particle(cart.id,cart.name,cart.location,cart.velocity,(Vector.randomDirectionUnitVector rng),f,r,d,cart.age,cart.gRand,freeze)
                      ]
                      |> Array.ofList
-    let staticSystem = Array.filter (fun (p: Physics.Particle) -> p.details.freeze) uCart
+    let staticSystem = Array.filter (fun (p: Physics.Particle) -> p.freeze) uCart
     let blankGrid = new Dictionary<int*int*int,Physics.Particle list>(HashIdentity.Structural)
     let staticGrid = Physics.gridFill staticSystem blankGrid sOrigin rp.nonBond 
     let qn = IO.bmaRead bmafile
-    let machineCount = Array.length (Array.filter  (fun (p: Physics.Particle) -> not p.details.freeze) uCart) 
+    let machineCount = Array.length (Array.filter  (fun (p: Physics.Particle) -> not p.freeze) uCart) 
     let machineStates = Automata.spawnMachines qn machineCount rng machI0
     let runInfo = {Temperature=rp.temperature; Steps=rp.steps; Time=0.<Physics.second>; TimeStep=rp.timestep; InterfaceGranularity=rp.ig; PhysicalGranularity=rp.pg; MachineGranularity=rp.mg; VariableTimestepDepth=rp.vdt; ReportingFrequency=rp.report; EventLog=["Initialise system";]; NonBondedCutOff=rp.nonBond; Threads=0; CheckPointDisable=false; CheckPointFreq=rp.checkpointReport;SearchType=rp.searchType}
 
@@ -203,7 +201,7 @@ let main argv =
     
     //printfn "Static grid: %A" staticGrid
     //Todo: define a discriminated union to test for mobile, static and unsorted systems to avoid repeated partitions/filters
-    let (mSystem,sSystem) = Array.partition (fun (p:Physics.Particle) -> not p.details.freeze) state.Physical
+    let (mSystem,sSystem) = Array.partition (fun (p:Physics.Particle) -> not p.freeze) state.Physical
     printfn "Performing %A step pseudo steepest descent (max length %Aum)" !equil !equillength
     let eSystem = equilibrate mSystem definition.Topology !equil !equillength runInfo.SearchType definition.staticGrid definition.staticSystem definition.systemOrigin runInfo.NonBondedCutOff
     printfn "Completed pseudo SD. Running %A seconds of simulation (%A steps)" (runInfo.TimeStep*(float runInfo.Steps)) runInfo.Steps // (!dT*((float) !steps)) !steps

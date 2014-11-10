@@ -118,57 +118,15 @@ let gensym =
     (fun () -> incr x; !x)
 
 [<Serializable>]
-//type Particle = {     id:int; 
-//                        name:string; 
-//                        location:Vector.Vector3D<um>; 
-//                        velocity:Vector.Vector3D<um second^-1>; 
-//                        orientation: Vector.Vector3D<1>; 
-//                        Friction: float<second>; 
-//                        radius: float<um>; 
-//                        density: float<pg um^-3>; 
-//                        age: float<second>; 
-//                        pressure: float<zNewton um^-2>; 
-//                        forceMag: float<zNewton>; 
-//                        confluence: int; 
-//                        gRand:float; 
-//                        freeze: bool; 
-//                        variableClock: Map<int,float<second>>} with
-//    member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
-//    member this.mass = this.volume * this.density
-//    member this.frictioncoeff = this.mass / this.Friction
-//    member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.velocity.x*1.<second um^-1>) (this.velocity.y*1.<second um^-1>) (this.velocity.z*1.<second um^-1>) (this.orientation.x) (this.orientation.y) (this.orientation.z) (this.Friction*1.<second^-1>) (this.radius*1.<um^-1>) (this.density*1.<um^3/pg>) (this.age*1.<second^-1>) (this.gRand) this.freeze
+type Particle = { id:int; name:string; location:Vector.Vector3D<um>; velocity:Vector.Vector3D<um second^-1>; orientation: Vector.Vector3D<1>; Friction: float<second>; radius: float<um>; density: float<pg um^-3>; age: float<second>; pressure: float<zNewton um^-2>; forceMag: float<zNewton>; confluence: int; gRand:float; freeze: bool; variableClock: Map<int,float<second>>} with
+    member this.volume = 4. / 3. * System.Math.PI * this.radius * this.radius * this.radius //Ugly
+    member this.mass = this.volume * this.density
+    member this.frictioncoeff = this.mass / this.Friction
+    member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.velocity.x*1.<second um^-1>) (this.velocity.y*1.<second um^-1>) (this.velocity.z*1.<second um^-1>) (this.orientation.x) (this.orientation.y) (this.orientation.z) (this.Friction*1.<second^-1>) (this.radius*1.<um^-1>) (this.density*1.<um^3/pg>) (this.age*1.<second^-1>) (this.gRand) this.freeze
 
-type ParticleInfo = {   //id:int; 
-                        velocity:Vector.Vector3D<um second^-1>; 
-                        orientation: Vector.Vector3D<1>; 
-                        Friction: float<second>; 
-                        radius: float<um>; 
-                        density: float<pg um^-3>; 
-                        age: float<second>; 
-                        pressure: float<zNewton um^-2>; 
-                        forceMag: float<zNewton>; 
-                        confluence: int; 
-                        gRand:float; 
-                        freeze: bool; 
-                        variableClock: Map<int,float<second>>}
-
-[<Serializable>]
-type Particle =
-    struct
-        val name: string
-        val location: Vector.Vector3D<um>
-        val details: ParticleInfo
-        val id: int
-        new (initId:int,initName:string,initLocation:Vector.Vector3D<um>,initDetails:ParticleInfo) = {name=initName;location=initLocation;details=initDetails;id=initId}
-        member this.volume = 4. / 3. * System.Math.PI * this.details.radius * this.details.radius * this.details.radius
-        member this.mass = this.volume * this.details.density
-        member this.frictioncoeff = this.mass / this.details.Friction
-        //member this.ToString = sprintf "%d %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %b" this.details.id this.name (this.location.x*1.<um^-1>) (this.location.y*1.<um^-1>) (this.location.z*1.<um^-1>) (this.details.velocity.x*1.<second um^-1>) (this.details.velocity.y*1.<second um^-1>) (this.details.velocity.z*1.<second um^-1>) (this.details.orientation.x) (this.details.orientation.y) (this.details.orientation.z) (this.details.Friction*1.<second^-1>) (this.details.radius*1.<um^-1>) (this.details.density*1.<um^3/pg>) (this.details.age*1.<second^-1>) (this.gRand) this.details.freeze
-    end
-
-let defaultParticleInfo = { //id=0;
-                        //name="X";
-                        //location= new Vector.Vector3D<um>(); //(){x=0.<um>;y=0.<um>;z=0.<um>};
+let defaultParticle = { id=0;
+                        name="X";
+                        location= new Vector.Vector3D<um>(); //(){x=0.<um>;y=0.<um>;z=0.<um>};
                         velocity= new Vector.Vector3D<um/second>(); //{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
                         orientation= new Vector.Vector3D<1>(1.,0.,0.); //{x=1.;y=0.;z=0.};
                         Friction=1.<second>;
@@ -226,7 +184,7 @@ let thermalReorientation (T: float<Kelvin>) (rng: System.Random) (dT: float<seco
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 2./cluster.frictioncoeff //We are considering the mass of half spheres now
     let tV =  sqrt (2. * T * FrictionDrag * Kb * dT) * (new Vector.Vector3D<1>((List.nth rNum 0) , (List.nth rNum 1) , (List.nth rNum 2) ) )//{ Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}
-    (cluster.details.orientation*cluster.details.radius*(3./4.)+sqrt(2.)*tV).norm
+    (cluster.orientation*cluster.radius*(3./4.)+sqrt(2.)*tV).norm
 
 
 let harmonicBondForce (optimum: float<um>) (forceConstant: float<zNewton>) (p1: Particle) (p2: Particle) =
@@ -241,7 +199,7 @@ let softSphereForce (repelPower: powerTerm) (repelConstant: float<zNewton>) ( at
     //Repulsion now scales with a power of the absolute distance overlap
     let interactionVector = (p1.location - p2.location)
     let distance = interactionVector.len
-    let mindist = p1.details.radius + p2.details.radius
+    let mindist = p1.radius + p2.radius
     match (distance, attractPower, repelPower) with 
     | (d,_,_) when d > (attractCutOff+mindist)  -> ( new Vector.Vector3D<zNewton>() )// {x=0.<zNewton>;y=0.<zNewton>;z=0.<zNewton>}
     | (d,FloatPower(x),_) when d > mindist      -> attractConstant * ((distance - mindist)*1.<um^-1>)**x * interactionVector.norm
@@ -254,7 +212,7 @@ let hardSphereForce (repelForcePower: powerTerm) (repelConstant: float<zNewton> 
     //the force felt by p2 due to collisions with p1 (relative distances), or harmonic adhesion (absolute distances)
     let interactionVector = (p1.location - p2.location)
     let distance = interactionVector.len 
-    let mindist = p1.details.radius + p2.details.radius
+    let mindist = p1.radius + p2.radius
     match (distance, attractPower, repelForcePower) with 
     | (d,_,_) when d > (attractCutOff+mindist)  -> ( new Vector.Vector3D<zNewton>() )//{Vector.Vector3D.x=0.<zNewton>;Vector.Vector3D.y=0.<zNewton>;Vector.Vector3D.z=0.<zNewton>} //can't see one another
     | (d,FloatPower(x),_) when d > mindist      -> attractConstant * ((distance - mindist)*1.<um^-1>)**x * interactionVector.norm
@@ -263,7 +221,7 @@ let hardSphereForce (repelForcePower: powerTerm) (repelConstant: float<zNewton> 
     | (_,_,IntPower(x))                         -> repelConstant * (-1. + (-1./(pown (distance/mindist) x))) * interactionVector.norm //overlapping
 
 let gridFill (system: Particle array) (acc: Dictionary<int*int*int,Particle list>) (minLoc:Vector.Vector3D<um>) (cutOff:float<um>) =
-        let addElement (grid:Dictionary<int*int*int,Particle list>) (p:Particle) =
+        let addElement (grid:Dictionary<int*int*int,Particle list>) p =
                             let dx = int ((p.location.x-minLoc.x)/cutOff)
                             let dy = int ((p.location.y-minLoc.y)/cutOff)
                             let dz = int ((p.location.z-minLoc.z)/cutOff)
@@ -370,7 +328,7 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
         | [] -> acc
     let sphereIntersectionArea (p:Particle) (first_p:Particle) = 
         let d = (first_p.location - p.location).len
-        let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.details.radius - first_p.details.radius) * (-d - p.details.radius + first_p.details.radius) * (-d + p.details.radius + first_p.details.radius) * (d + p.details.radius + first_p.details.radius)  
+        let intersectionRadiusSq = 1./(4.*d*d) * (-d + p.radius - first_p.radius) * (-d - p.radius + first_p.radius) * (-d + p.radius + first_p.radius) * (d + p.radius + first_p.radius)  
         2.*System.Math.PI* intersectionRadiusSq
     let rec populateForceEnvironment (p: Particle) (neighbours: Particle list) (acc: forceEnv) =
         (*
@@ -384,10 +342,10 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
                                 let d = (first_p.location - p.location).len
                                 let fMag = f.len
                                 let interactors' = if fMag <> 0.<zNewton> then (first_p,d)::acc.interactors else acc.interactors
-                                let confluence = if (fMag>0.<zNewton> && not first_p.details.freeze) then 
+                                let confluence = if (fMag>0.<zNewton> && not first_p.freeze) then 
                                                                                         acc.confluence+1 else 
                                                                                         acc.confluence
-                                let pressure = if (d > (p.details.radius + first_p.details.radius)) then 
+                                let pressure = if (d > (p.radius + first_p.radius)) then 
                                                                                         acc.pressure else 
                                                                                         acc.pressure + fMag/(sphereIntersectionArea p first_p)
                                 let fMag' = acc.absForceMag + fMag;
@@ -402,16 +360,16 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
 
         | [] -> acc
     let calculateGridNonBonded nonBondedGrid (nb: nonBonded) = 
-        if nb.P.details.freeze then [] else (collectGridNeighbours nb.P nonBondedGrid sOrigin cutOff)   //Get neighbours
+        if nb.P.freeze then [] else (collectGridNeighbours nb.P nonBondedGrid sOrigin cutOff)   //Get neighbours
         |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
         |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     let calculateSimpleNonBonded system (nb: nonBonded) =
-        if nb.P.details.freeze then [||] else (collectSimpleNeighbours nb.P system cutOff)                //Get neighbours
+        if nb.P.freeze then [||] else (collectSimpleNeighbours nb.P system cutOff)                //Get neighbours
         |> List.ofArray
         |> (fun (non:nonBonded) (pl: Particle list) -> {nb with Neighbours=pl}) nb              //Update the record
         |> (fun x -> populateForceEnvironment x.P x.Neighbours x.Forces)                        //Caclulate the forces
     //add all the mobile particles to the staticGrid
-    let mobileSystem = (Array.filter (fun (p:Particle) -> not p.details.freeze) system)
+    let mobileSystem = (Array.filter (fun (p:Particle) -> not p.freeze) system)
     //printf "ms %A" mobileSystem
     let nonBondedTerms = Array.map (fun x -> { force = x ; confluence=0 ; absForceMag = 0.<zNewton>; pressure= 0.<zNewton um^-2> ; interactors = [] }) externalF
                             |> Array.map2 (fun s f -> {P=s;Neighbours=[];Forces=f}) system  
@@ -441,44 +399,40 @@ let forceUpdate (topology: Map<string,Map<string,Particle->Particle->Vector.Vect
 
 let bdAtomicUpdateNoThermal (cluster: Particle) (F: Vector.Vector3D<zNewton>) T (dT: float<second>) rng (maxMove: float<um>) = 
     let FrictionDrag = 1./cluster.frictioncoeff
-    let v' = FrictionDrag * F
+    let NewV = FrictionDrag * F
     // SI: use V' style rather than NewV
     // let V' = FrictionDrag * F
-    let p' = dT * v' + cluster.location
-    //{ cluster with location = NewP; velocity=NewV; age=cluster.age+dT }
-    new Particle(cluster.id,cluster.name,p',{cluster.details with age=cluster.details.age+dT; velocity=v'}) 
+    let NewP = dT * NewV + cluster.location
+    { cluster with location = NewP; velocity=NewV; age=cluster.age+dT }
 
 
 let bdAtomicUpdate (cluster: Particle) (F: Vector.Vector3D<zNewton>) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>)= 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
-    let v' = FrictionDrag * F //+ T * FrictionDrag * Kb
+    let NewV = FrictionDrag * F //+ T * FrictionDrag * Kb
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * new Vector.Vector3D<1>(List.nth rNum 0, List.nth rNum 1, List.nth rNum 2) //{ Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
-    let p' = dT * FrictionDrag * F + cluster.location + ThermalP
-    //{ cluster with location = NewP; velocity=NewV; age=cluster.age+dT }
-    new Particle(cluster.id,cluster.name,p',{cluster.details with age=cluster.details.age+dT;velocity=v'})
+    let NewP = dT * FrictionDrag * F + cluster.location + ThermalP
+    { cluster with location = NewP; velocity=NewV; age=cluster.age+dT }
 
 let bdOrientedAtomicUpdate (cluster: Particle) (F: forceEnv) (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) = 
     let rNum = PRNG.nGaussianRandomMP rng 0. 1. 3
     let FrictionDrag = 1./cluster.frictioncoeff
-    let v' = FrictionDrag * F.force
+    let NewV = FrictionDrag * F.force
     let ThermalP = sqrt (2. * T * FrictionDrag * Kb * dT) * new Vector.Vector3D<1>(List.nth rNum 0, List.nth rNum 1, List.nth rNum 2) //{ Vector.Vector3D.x= (List.nth rNum 0) ; Vector.Vector3D.y= (List.nth rNum 1); Vector.Vector3D.z= (List.nth rNum 2)}  //integral of velocities over the time
     let dP = dT * FrictionDrag * F.force + ThermalP
-    let p' = cluster.location + dP
-    let o' = thermalReorientation T rng dT cluster
-    //{ cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT ; pressure=F.pressure; forceMag=F.absForceMag ; confluence=F.confluence}
-    new Particle(cluster.id,cluster.name,p',{cluster.details with orientation=o';pressure=F.pressure;forceMag=F.absForceMag;confluence=F.confluence;velocity=v';age=cluster.details.age+dT})
+    let NewP = cluster.location + dP
+    let NewO = thermalReorientation T rng dT cluster
+    { cluster with location = NewP; velocity=NewV; orientation=NewO; age=cluster.age+dT ; pressure=F.pressure; forceMag=F.absForceMag ; confluence=F.confluence}
 
 let bdSystemUpdate (system: Particle array) (forces: forceEnv array) atomicIntegrator (T: float<Kelvin>) (dT: float<second>) (rng: System.Random) (maxMove: float<um>) =
-    Array.map2 (fun (p:Particle) (f:forceEnv) -> if p.details.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
+    Array.map2 (fun (p:Particle) (f:forceEnv) -> if p.freeze then p else (atomicIntegrator p f T dT rng maxMove) ) system forces
 
 let steep (system: Particle array) (forceEnv: forceEnv array) (maxlength: float<um>) = 
     let forces = Array.map (fun x->x.force) forceEnv
     let maxV = Array.max (Array.map (fun (f:Vector.Vector3D<zNewton>) ->f.len) forces)
     let modifier = maxlength/maxV
     if (modifier=infinity*1.0<um/zNewton>) then system
-    //else Array.map2 (fun (p:Particle) f -> if p.details.freeze then p else {p with location=p.location+(f*modifier)}) system forces
-    else Array.map2 (fun (p:Particle) f -> if p.details.freeze then p else new Particle(p.id,p.name,p.location+(f*modifier),p.details) ) system forces
+    else Array.map2 (fun p f -> if p.freeze then p else {p with location=p.location+(f*modifier)}) system forces
 
 let rec integrate (system: Particle array) topology (searchType: searchType) staticGrid (staticSystem:Particle array) sOrigin (machineForces: Vector.Vector3D<zNewton> array) (T: float<Kelvin>) (dT: float<second>) maxMove (vdt_depth: int) (nbCutOff:float<um>) steps rand threads (F: forceEnv array option) = 
     //Use previously caclulated forces from failed integration step if available

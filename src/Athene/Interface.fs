@@ -117,20 +117,19 @@ let probabilisticBinaryMotor (maxQN:int) (rangeProb:float*float) (probVar:int) (
                 | (_,rand) when rand <(1.-prob) -> (Map.add motorVar 0 m)
                 | (_,_) -> m
     //Then respond with a force dependent on the state of the motor
-    let force = (if (m'.[motorVar]>0) then 1. else 0.) * p.details.orientation*force 
+    let force = (if (m'.[motorVar]>0) then 1. else 0.) * p.orientation*force 
     //Now return a tuple of the QN and the force
     (m',force)
 
 let cubeRoot (f:float<'m^3>) : float<'m> = 
     System.Math.Pow(float f, 1.0/3.0) |> LanguagePrimitives.FloatWithMeasure
 
-let growCell style (p:Particle) dt =
+let growCell style p dt =
     match style with 
-    | RadialGrowthType(rate) -> new Particle(p.id,p.name,p.location,{p.details with radius=p.details.radius+rate*dt})//{p with radius = p.radius+rate*dt}
+    | RadialGrowthType(rate) -> {p with radius = p.radius+rate*dt}
     | VolumeGrowthType(rate) -> let volume' = p.volume + rate*dt
                                 let radius' = cubeRoot((3. * volume') / (4. * System.Math.PI))
-                                //{p with radius = radius'}
-                                new Particle(p.id,p.name,p.location,{p.details with radius=radius'})
+                                {p with radius = radius'}
 
 let developmentEvent style t =
     match style with
@@ -140,11 +139,11 @@ let developmentEvent style t =
 let limitedLinearGrow (g:growthInfo) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     //Limit grow by an arbitrary property
     let overLimit = match g.limit with
-                                        | RadiusLimit(n)     -> (p.details.radius > n)
-                                        | AgeLimit(n)        -> (p.details.age > n)
-                                        | PressureLimit(n)   -> (p.details.pressure > n)
-                                        | ForceLimit(n)      -> (p.details.forceMag > n)
-                                        | ConfluenceLimit(n) -> (p.details.confluence > n)
+                                        | RadiusLimit(n)     -> (p.radius > n)
+                                        | AgeLimit(n)        -> (p.age > n)
+                                        | PressureLimit(n)   -> (p.pressure > n)
+                                        | ForceLimit(n)      -> (p.forceMag > n)
+                                        | ConfluenceLimit(n) -> (p.confluence > n)
                                         | NoLimit            -> true
     match (m.[g.varID] = g.varState, overLimit) with
     | (_,true)  -> Life (p,m)
@@ -155,27 +154,26 @@ let limitedLinearGrow (g:growthInfo) (dt: float<second>) (p: Particle) (m: Map<Q
 //Todo: reimplement max(and sd) to be a limitMetric (to allow cells to divide against e.g. a volume limit)
 //let linearGrowDivide (rate: growthType) (max: float<um>) (sd: float<um>) (varID: int) (varState: int) (varName: string )(rng: System.Random) (limit: limitMetric option) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
 let linearGrowDivide (g:growthInfo) (max: float<um>) (sd: float<um>) (rng: System.Random) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
-    let max = if variation then max+(sd*p.details.gRand*rsqrt2) else max
+    let max = if variation then max+(sd*p.gRand*rsqrt2) else max
     match (m.[g.varID] = g.varState, g.limit) with
     | (false,_) -> Life (p,m) //Not in growth state
     | (true,NoLimit) ->
-            match (p.details.radius < max) with
+            match (p.radius < max) with
             | true -> Development (g.varName,(developmentEvent g.rate dt),(growCell g.rate p dt),m)// Growing if below limit  (Particle(p.id,p.name,p.location,p.velocity,p.orientation,p.Friction,(p.radius+rate*dt),p.density,p.age,p.gRand,p.freeze),m)
-            //| false -> Divide (g.varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
-            | false -> Divide (g.varName,(new Particle(p.id,p.name,p.location + p.details.orientation*(p.details.radius/(cbrt2)),{p.details with velocity = p.details.velocity*rsqrt2; radius = (p.details.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng }),m),(new Particle(gensym(),p.name,p.location - p.details.orientation*(p.details.radius/(cbrt2)),{p.details with velocity = p.details.velocity*rsqrt2; radius = (p.details.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng }),m))
+            | false -> Divide (g.varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
     | (true,_) ->
             let overLimit = match g.limit with
-                                        | RadiusLimit(n)     -> (p.details.radius > n)
-                                        | AgeLimit(n)        -> (p.details.age > n)
-                                        | PressureLimit(n)   -> (p.details.pressure > n)
-                                        | ForceLimit(n)      -> (p.details.forceMag > n)
-                                        | ConfluenceLimit(n) -> (p.details.confluence > n)
+                                        | RadiusLimit(n)     -> (p.radius > n)
+                                        | AgeLimit(n)        -> (p.age > n)
+                                        | PressureLimit(n)   -> (p.pressure > n)
+                                        | ForceLimit(n)      -> (p.forceMag > n)
+                                        | ConfluenceLimit(n) -> (p.confluence > n)
                                         | NoLimit            -> true
-            match ((p.details.radius < max), overLimit) with
+            match ((p.radius < max), overLimit) with
             | (_,true) -> Life (p,m)
             | (true,_)  -> Development (g.varName,(developmentEvent g.rate dt),(growCell g.rate p dt),m)
-            | (false,_) -> //Divide (g.varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
-                           Divide (g.varName,(new Particle(p.id,p.name,p.location + p.details.orientation*(p.details.radius/(cbrt2)),{p.details with velocity = p.details.velocity*rsqrt2; radius = (p.details.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng }),m),(new Particle(gensym(),p.name,p.location - p.details.orientation*(p.details.radius/(cbrt2)),{p.details with velocity = p.details.velocity*rsqrt2; radius = (p.details.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng }),m))
+            | (false,_) -> Divide (g.varName,({p with location = p.location+ p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m),({p with id = gensym(); location = p.location- p.orientation*(p.radius/(cbrt2)); velocity = p.velocity*rsqrt2; radius = (p.radius/(cbrt2)); age = 0.<second>; gRand = PRNG.gaussianMargalisPolar' rng },m))
+
 let linearGrowDivideWithVectorDistanceDependence (origin: Vector.Vector3D<Physics.um>) (direction: Vector.Vector3D<1>) (gradient: float<Physics.second^-1>) (g:growthInfo) (max: float<um>) (sd: float<um>) (rng: System.Random) (variation: bool) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let projection =  (p.location - origin) * direction.norm
     let rate' = match g.rate with 
@@ -192,16 +190,16 @@ let linearGrowDivideWithVectorDistanceDependence (origin: Vector.Vector3D<Physic
 
 let testProtection (protection: protectMetric) (p: Physics.Particle) =
     match protection with 
-                                        | RadiusMin(n)     -> (p.details.radius > n)
-                                        | AgeMin(n)        -> (p.details.age > n)
-                                        | PressureMin(n)   -> (p.details.pressure > n)
-                                        | ForceMin(n)      -> (p.details.forceMag > n)
-                                        | ConfluenceMin(n) -> (p.details.confluence > n)
-                                        | RadiusMax(n)     -> (p.details.radius < n)
-                                        | AgeMax(n)        -> (p.details.age < n)
-                                        | PressureMax(n)   -> (p.details.pressure < n)
-                                        | ForceMax(n)      -> (p.details.forceMag < n)
-                                        | ConfluenceMax(n) -> (p.details.confluence < n)
+                                        | RadiusMin(n)     -> (p.radius > n)
+                                        | AgeMin(n)        -> (p.age > n)
+                                        | PressureMin(n)   -> (p.pressure > n)
+                                        | ForceMin(n)      -> (p.forceMag > n)
+                                        | ConfluenceMin(n) -> (p.confluence > n)
+                                        | RadiusMax(n)     -> (p.radius < n)
+                                        | AgeMax(n)        -> (p.age < n)
+                                        | PressureMax(n)   -> (p.pressure < n)
+                                        | ForceMax(n)      -> (p.forceMag < n)
+                                        | ConfluenceMax(n) -> (p.confluence < n)
                                         | Unprotected      -> true
 
 let apoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -229,10 +227,9 @@ let limitedApoptosis (limit: int) =
 let shrinkingApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
     let allowDeath = testProtection protection p
     //Note: an alternative way to do this would be to just prevent *death* ie allow the cells to shrink but not die
-    match (m.[varID] = varState && allowDeath, p.details.radius <= minSize) with
+    match (m.[varID] = varState && allowDeath, p.radius <= minSize) with
     | (false,_)    -> Life (p,m)
-    | (true,false) -> //Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m) //Life ({p with radius=p.radius-shrinkRate*dt},m)
-                        Development (varName,Shrink(shrinkRate*dt),new Particle(p.id,p.name,p.location,{p.details with radius= p.details.radius-shrinkRate*dt}),m) //Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m) //Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true)  -> Death (varName)
 
 let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (rng: System.Random) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -242,11 +239,10 @@ let shrinkingRandomApoptosis (varID: int) (varState: int) (varName: string) (pro
                         | ModelledMultiple(p,pTime,mean) -> multiStepProbability pTime dt shrinkRate mean p//pSlice probability pTime dt
                         | _ -> failwith "Illegal probability type for a multiple step random death"
     //Note: an alternative way to do this would be to just prevent *death* ie allow the cells to shrink but not die
-    match (m.[varID] = varState, rng.NextDouble() < probability, p.details.radius <= minSize) with
+    match (m.[varID] = varState, rng.NextDouble() < probability, p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
-    | (true,true,false) -> //Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
-                            Development (varName,Shrink(shrinkRate*dt),new Particle(p.id,p.name,p.location,{p.details with radius = p.details.radius-shrinkRate*dt}),m)
+    | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
 let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) (protection: protectMetric) (minSize: float<Physics.um>) (shrinkRate: float<Physics.um second^-1>) (bias:floatMetric) (rng: System.Random) (sizePower:float) (refC:float<'a>) (refM:float) (pType:chance<Physics.um>) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -256,15 +252,15 @@ let shrinkingBiasRandomApoptosis (varID: int) (varState: int) (varName: string) 
                         | ModelledMultiple(p,pTime,mean) -> multiStepProbability pTime dt shrinkRate mean p//pSlice probability pTime dt
                         | _ -> failwith "Illegal probability type for a multiple step random death"
     let biasMetric = match bias with
-                        | Radius     -> float p.details.radius
-                        | Age        -> float p.details.age
-                        | Pressure   -> float p.details.pressure
-                        | Force      -> float p.details.forceMag
-                        | Confluence -> float p.details.confluence
-    match (m.[varID] = varState && allowDeath, rng.NextDouble() < probability*refM*((biasMetric-(float refC))**sizePower), p.details.radius <= minSize) with
+                        | Radius     -> float p.radius
+                        | Age        -> float p.age
+                        | Pressure   -> float p.pressure
+                        | Force      -> float p.forceMag
+                        | Confluence -> float p.confluence
+    match (m.[varID] = varState && allowDeath, rng.NextDouble() < probability*refM*((biasMetric-(float refC))**sizePower), p.radius <= minSize) with
     | (false,_,_)       -> Life (p,m)
     | (true,false,_)    -> Life (p,m)
-    | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),new Particle(p.id,p.name,p.location,{p.details with radius = p.details.radius-shrinkRate*dt}),m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
+    | (true,true,false) -> Development (varName,Shrink(shrinkRate*dt),{p with radius = p.radius-shrinkRate*dt},m)//Life ({p with radius=p.radius-shrinkRate*dt},m)
     | (true,true,true)  -> Death (varName)
 
 let certainDeath (varName) (dt: float<second>) (p: Particle) (m: Map<QN.var,int>) =
@@ -291,11 +287,11 @@ let randomBiasApoptosis (varID: int) (varState: int) (varName: string) (protecti
                         | _ -> failwith "Illegal probability type for a single step random death"
     assert(probability<=1.)
     let biasMetric = match bias with
-                        | Radius     -> float p.details.radius
-                        | Age        -> float p.details.age
-                        | Pressure   -> float p.details.pressure
-                        | Force      -> float p.details.forceMag
-                        | Confluence -> float p.details.confluence
+                        | Radius     -> float p.radius
+                        | Age        -> float p.age
+                        | Pressure   -> float p.pressure
+                        | Force      -> float p.forceMag
+                        | Confluence -> float p.confluence
     match (m.[varID] = varState && allowDeath, rng.NextDouble() < probability+dt*1.<second^-1>*refM*((biasMetric- (float refC) )**sizePower)) with
     | (false,_) -> Life (p,m)
     | (true,true) -> Death (varName)
@@ -339,7 +335,7 @@ let interfaceUpdate (system: Particle array) (machineStates: Map<QN.var,int> arr
     let name = intTop.name
     let regions = intTop.regions
     let responses = intTop.responses
-    let (machineSystem,staticSystem) = Array.partition (fun (p:Particle) -> not p.details.freeze) system
+    let (machineSystem,staticSystem) = Array.partition (fun (p:Particle) -> not p.freeze) system
     (*
     Regions in the interface set a variable state of a machine based on the machines physical location. 
     If the machine is within a box, the variable is set to something unusual
@@ -361,11 +357,11 @@ let interfaceUpdate (system: Particle array) (machineStates: Map<QN.var,int> arr
         let p,m = pm
         match (m.[clock.Input] >= clock.InputThreshold) with
         | false -> pm
-        | true  ->  let time =   match p.details.variableClock.TryFind(clock.Input) with
+        | true  ->  let time =   match p.variableClock.TryFind(clock.Input) with
                                     | None -> 0.<Physics.second>
                                     | Some(t) -> t + dt
                     let m = if time > clock.TimeLimit then m.Add(clock.OutputID,clock.OutputState) else m
-                    let p = new Particle(p.id,p.name,p.location,{p.details with variableClock=p.details.variableClock.Add(clock.Input,time)})
+                    let p = {p with variableClock=p.variableClock.Add(clock.Input,time)}
                     (p,m)
         
     let rec clockListUpdate (clocks:clock list) (pm:Physics.Particle*Map<QN.var,int>) dt =
