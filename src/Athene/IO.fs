@@ -64,19 +64,20 @@ let getBias (metric:string) =
 
 
 let cart2Particle ((name:string), (xr:float), (yr:float), (zr:float), (rng:System.Random)) = 
-    {Physics.defaultParticle with 
-        id=gensym();
-        name=name;
-        location= new Vector.Vector3D<um>((xr*1.<um>),(yr*1.<um>),(zr*1.<um>));
-        velocity= new Vector.Vector3D<um/second>()//{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
-        orientation= new Vector.Vector3D<1>(1.,0.,0.);//{x=1.;y=0.;z=0.};
-        Friction= 1.<second>;
-        radius=1.<um>;
-        density=1.<pg um^-3>;
-        age=0.<second>;
-        gRand=(PRNG.gaussianMargalisPolar' rng);
-        freeze=true
-        } 
+    new Particle(gensym(),name,new Vector.Vector3D<um>((xr*1.<um>),(yr*1.<um>),(zr*1.<um>)),
+                        {Physics.defaultParticleInfo with 
+                            //id=gensym();
+                            //name=name;
+                            //location= new Vector.Vector3D<um>((xr*1.<um>),(yr*1.<um>),(zr*1.<um>));
+                            velocity= new Vector.Vector3D<um/second>()//{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>};
+                            orientation= new Vector.Vector3D<1>(1.,0.,0.);//{x=1.;y=0.;z=0.};
+                            Friction= 1.<second>;
+                            radius=1.<um>;
+                            density=1.<pg um^-3>;
+                            age=0.<second>;
+                            gRand=(PRNG.gaussianMargalisPolar' rng);
+                            freeze=true
+                            } )
 
 let interfaceEventWriteFrame (file:StreamWriter) (register : string list) = 
     let rec clear_buffer (file:StreamWriter) (events:string list) =
@@ -95,7 +96,7 @@ let xyzWriteFrame (file:StreamWriter) (machName: string) (system: Physics.Partic
         let mSystem = Array.filter (fun (p:Physics.Particle) -> p.name=machName) system
         file.WriteLine(sprintf "%A" mSystem.Length)
         file.WriteLine("Athene")
-        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.radius p.age (p.pressure/1000000000.) p.confluence (p.forceMag/1000000000.))] 
+        ignore [for p in mSystem -> file.WriteLine(sprintf "%s %A %A %A %A %A %A %A %A" p.name p.location.x p.location.y p.location.z p.details.radius p.details.age (p.details.pressure/1000000000.) p.details.confluence (p.details.forceMag/1000000000.))] 
 
 
 let csvWriteStates (file:StreamWriter) (machines: Map<QN.var,int> array) = 
