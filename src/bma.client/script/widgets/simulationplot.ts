@@ -23,26 +23,27 @@
             var options = this.options;
             this.element.empty();
 
-            var legendDiv = $('<div></div>').width("30%").height("100%").css("background-color", "white").css("float", "left").css("overflow-y", "auto").appendTo(that.element);
             var cnt = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("70%").height("100%").css("float", "left").appendTo(that.element);
+            var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             this.chartdiv = $('<div id="chart"></div>')
                 .attr("data-idd-plot", "figure")
-                //.attr("data-idd-legend", "lg")
+            //.attr("data-idd-legend", "lg")
                 .width("100%")
                 .height("100%")
                 .appendTo(cnt);
 
-            var gridLinesPlotDiv = $("<div></div>").attr("id","glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
-            
+            var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
+
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
 
-            
+
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
-                for (var i = 0; i < that.options.colors.length; i++)
-                    that._chart.polyline(options.colors[i].Name, undefined);
+                for (var i = 0; i < that.options.colors.length; i++) {
+                    var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                    that._chart.polyline(plotName, undefined);
+                }
 
-                
                 that._chart.isAutoFitEnabled = true;
                 this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
                 this._gridLinesPlot.x0 = 0;
@@ -57,48 +58,56 @@
                         var y = options.colors[i].Plot;
                         var m = that.Max(y);
                         if (m > max) max = m;
-                        var polyline = that._chart.get(options.colors[i].Name);
+                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                        var polyline = that._chart.get(plotName);
                         if (polyline !== undefined) {
                             polyline.stroke = options.colors[i].Color;
                             polyline.isVisible = options.colors[i].Seen;
                             polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
                         }
 
-                        //var legendContentLi = $("<li></li>").css("list-style-type", "none").css("margin", 0).appendTo(legendDiv);
-                        //var legendContentDiv = $("<div></div>").width(150).height(40).css("oveflow", "hidden").appendTo(legendContentLi);
-                        //$("<div></div>").width(20).height(20).css("background-color", options.colors[i].Color).css("float", "left").appendTo(legendContentDiv);
-                        //$("<div></div>").height(20).width(130).text(options.colors[i].Name).appendTo(legendContentDiv);
+                        var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(legendDiv);
+                        var colorBoxContainer = $("<div></div>").addClass("simulationplot-legend-colorboxcontainer").appendTo(legendItem);
+                        var colorBox = $("<div></div>").addClass("simulationplot-legend-colorbox").css("background-color", options.colors[i].Color).appendTo(colorBoxContainer);
+                        var nameBox = $("<div></div>").text(options.colors[i].Name).addClass("simulationplot-legend-namebox").appendTo(legendItem);
 
-                        var li = $("<li></li>").appendTo(legendDiv);
-                        var div = $("<div></div>").appendTo(li);
-                        var div2 = $("<div></div>").css("display", "table-cell").appendTo(div);
-                        var div4 = $("<div></div>").width(30).height(30).css("background-color", options.colors[i].Color).appendTo(div2);
+                        legendItem.hover(
+                            function () {
+                                var index = parseInt($(this).attr("data-index"));
+                                var p = that.highlightPlot;
+                                if (p !== undefined) {
+                                    p.stroke = options.colors[index].Color;
+                                    p.isVisible = true;
+                                    p.draw({ y: options.colors[index].Plot, thickness: 8, lineJoin: 'round' });
 
-                        var div3 = $("<div></div>").text(options.colors[i].Name).width(120).height(30).css("display", "table-cell").css("padding-left", 5).css("vertical-align", "middle").appendTo(div);
+                                    for (var i = 0; i < options.colors.length; i++) {
+                                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                        var polyline = that._chart.get(plotName);
+                                        if (polyline !== undefined) {
+                                            polyline.stroke = "lightgray";
+                                        }
+                                    }
+                                }
+                            },
+                            function () {
+                                var p = that.highlightPlot;
+                                if (p !== undefined) {
+                                    p.isVisible = false;
 
-                        var color = options.colors[i].Color;
-                        li.hover(function () {
-                            var p = that.highlightPlot;
-                            if (p !== undefined) {
-                                p.stroke = options.colors[i].Color;
-                                p.isVisible = true;
-                                p.draw({ y: y, thickness: 8, lineJoin: 'round' });
-                            }
-                        });
-
-                        li.mouseover(function () {
-                            var p = that.highlightPlot;
-                            if (p !== undefined) {
-                                p.isVisible = false;
-                            }
-                        });
-
-
+                                    for (var i = 0; i < options.colors.length; i++) {
+                                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                        var polyline = that._chart.get(plotName);
+                                        if (polyline !== undefined) {
+                                            polyline.stroke = options.colors[i].Color;
+                                        }
+                                    }
+                                }
+                            });
                     }
                     for (var i = 0; i < options.colors[0].Plot.length; i++) {
                         bottomLabels[i] = i.toString();
                     }
-                    for (var i = 0; i < max+1; i++) {
+                    for (var i = 0; i < max + 1; i++) {
                         leftLabels[i] = i.toString();
                     }
                 }
@@ -117,7 +126,7 @@
                 var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
                 that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
             }
-            
+
         },
 
         Max: function (y) {
@@ -150,14 +159,14 @@
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
-                case "colors": 
+                case "colors":
                     this.options.colors = value;
                     break;
             }
             if (value !== null && value !== undefined)
                 this.refresh();
             this._super(key, value);
-            
+
         }
     });
 } (jQuery));
