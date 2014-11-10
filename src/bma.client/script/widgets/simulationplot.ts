@@ -22,20 +22,28 @@
             var that = this;
             var options = this.options;
             this.element.empty();
-            this.chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("100%").height("100%").appendTo(that.element);
-            //var leftAxis = $("<div></div>").attr("data-idd-axis", "numeric").attr("data-idd-placement", "left").appendTo(this.chartdiv);
-            //var bottomAxis = $("<div></div>").attr("data-idd-axis", "labels").attr("data-idd-placement", "bottom").appendTo(this.chartdiv);
-            var gridLinesPlotDiv = $("<div></div>").attr("id","glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
-            
+
+            var cnt = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("70%").height("100%").css("float", "left").appendTo(that.element);
+            var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
+            this.chartdiv = $('<div id="chart"></div>')
+                .attr("data-idd-plot", "figure")
+            //.attr("data-idd-legend", "lg")
+                .width("100%")
+                .height("100%")
+                .appendTo(cnt);
+
+            var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
+
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
 
-            
+
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
-                for (var i = 0; i < that.options.colors.length; i++)
-                    that._chart.polyline("polyline" + i, undefined);
+                for (var i = 0; i < that.options.colors.length; i++) {
+                    var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                    that._chart.polyline(plotName, undefined);
+                }
 
-                
                 that._chart.isAutoFitEnabled = true;
                 this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
                 this._gridLinesPlot.x0 = 0;
@@ -50,20 +58,62 @@
                         var y = options.colors[i].Plot;
                         var m = that.Max(y);
                         if (m > max) max = m;
-                        var polyline = that._chart.get("polyline" + i);
+                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                        var polyline = that._chart.get(plotName);
                         if (polyline !== undefined) {
                             polyline.stroke = options.colors[i].Color;
                             polyline.isVisible = options.colors[i].Seen;
                             polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
                         }
+
+                        var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(legendDiv);
+                        var colorBoxContainer = $("<div></div>").addClass("simulationplot-legend-colorboxcontainer").appendTo(legendItem);
+                        var colorBox = $("<div></div>").addClass("simulationplot-legend-colorbox").css("background-color", options.colors[i].Color).appendTo(colorBoxContainer);
+                        var nameBox = $("<div></div>").text(options.colors[i].Name).addClass("simulationplot-legend-namebox").appendTo(legendItem);
+
+                        legendItem.hover(
+                            function () {
+                                var index = parseInt($(this).attr("data-index"));
+                                var p = that.highlightPlot;
+                                if (p !== undefined) {
+                                    p.stroke = options.colors[index].Color;
+                                    p.isVisible = true;
+                                    p.draw({ y: options.colors[index].Plot, thickness: 8, lineJoin: 'round' });
+
+                                    for (var i = 0; i < options.colors.length; i++) {
+                                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                        var polyline = that._chart.get(plotName);
+                                        if (polyline !== undefined) {
+                                            polyline.stroke = "lightgray";
+                                        }
+                                    }
+                                }
+                            },
+                            function () {
+                                var p = that.highlightPlot;
+                                if (p !== undefined) {
+                                    p.isVisible = false;
+
+                                    for (var i = 0; i < options.colors.length; i++) {
+                                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                        var polyline = that._chart.get(plotName);
+                                        if (polyline !== undefined) {
+                                            polyline.stroke = options.colors[i].Color;
+                                        }
+                                    }
+                                }
+                            });
                     }
                     for (var i = 0; i < options.colors[0].Plot.length; i++) {
                         bottomLabels[i] = i.toString();
                     }
-                    for (var i = 0; i < max+1; i++) {
+                    for (var i = 0; i < max + 1; i++) {
                         leftLabels[i] = i.toString();
                     }
                 }
+
+                this.highlightPlot = that._chart.polyline("_hightlightPlot", undefined);
+
                 var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
                 var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
@@ -76,7 +126,7 @@
                 var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
                 that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
             }
-            
+
         },
 
         Max: function (y) {
@@ -96,7 +146,8 @@
         },
 
         ChangeVisibility: function (ind, check) {
-            var polyline = this._chart.get("polyline" + ind);
+            var plotName = this.options.colors[ind].Name === "" || this.options.colors[ind].Name === undefined ? "plot" + ind : this.options.colors[ind].Name;
+            var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
         },
@@ -109,14 +160,14 @@
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
-                case "colors": 
+                case "colors":
                     this.options.colors = value;
                     break;
             }
             if (value !== null && value !== undefined)
                 this.refresh();
             this._super(key, value);
-            
+
         }
     });
 } (jQuery));

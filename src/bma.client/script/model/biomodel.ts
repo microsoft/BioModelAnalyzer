@@ -28,6 +28,23 @@ module BMA {
                 return new BioModel(this.Name, this.variables.slice(0), this.relationships.slice(0));
             }
 
+            public SetVariableProperties(id: number, name: string, rangeFrom: number, rangeTo: number, formula: string) {
+                for (var i = 0; i < this.variables.length; i++) {
+                    if (this.variables[i].Id === id) {
+                        this.variables[i] = new BMA.Model.Variable(
+                            this.variables[i].Id,
+                            this.variables[i].ContainerId,
+                            this.variables[i].Type,
+                            name === undefined ? this.variables[i].Name : name,
+                            isNaN(rangeFrom) ? this.variables[i].RangeFrom : rangeFrom,
+                            isNaN(rangeTo) ? this.variables[i].RangeTo : rangeTo,
+                            formula === undefined ? this.variables[i].Formula : formula);
+
+                        return;
+                    }
+                }
+            }
+
             public GetVariableById(id: number) {
                 for (var i = 0; i < this.variables.length; i++) {
                     if (this.variables[i].Id === id) {
