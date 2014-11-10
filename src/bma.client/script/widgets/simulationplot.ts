@@ -146,7 +146,8 @@
         },
 
         ChangeVisibility: function (ind, check) {
-            var polyline = this._chart.get("polyline" + ind);
+            var plotName = this.options.colors[ind].Name === "" || this.options.colors[ind].Name === undefined ? "plot" + ind : this.options.colors[ind].Name;
+            var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
         },
