@@ -4,7 +4,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
-namespace bma.client { 
+namespace bma.client
+{
 
     public class Model
     {
@@ -23,7 +24,7 @@ namespace bma.client {
             {
                 v.Function = ReplaceVariableNames(v.Function, name =>
                 {
-                    var found = Variables.FirstOrDefault(vv => vv.Name == name);
+                    var found = Variables.Where(v1 => Relationships.Where(r => r.FromVariableId == v1.Id && r.ToVariableId == v.Id || r.FromVariableId == v.Id && r.ToVariableId == v1.Id).Count() > 0).FirstOrDefault(vv => vv.Name == name);
                     return found == null ? name : found.Id.ToString();
                 });
             }
