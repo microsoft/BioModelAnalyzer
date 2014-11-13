@@ -33,6 +33,7 @@ module BMA {
             private stagingLine = undefined;
             private stagingGroup = undefined;
             private stagingVariable: { model: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout; } = undefined;
+            private stagingContainer: any = undefined;
 
             private editingVariableId = undefined;
 
@@ -350,10 +351,15 @@ module BMA {
                             }
                         } else if (that.selectedType === undefined) {
                             var id = this.GetVariableAtPosition(gesture.x, gesture.y);
+                            var containerId = this.GetContainerAtPosition(gesture.x, gesture.y);
                             if (id !== undefined) {
                                 that.navigationDriver.TurnNavigation(false);
                                 var vl = that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id);
                                 that.stagingVariable = { model: vl.model, layout: vl.layout };
+                            } else if (containerId !== undefined) {
+                                that.navigationDriver.TurnNavigation(false);
+                                var cl = that.undoRedoPresenter.Current.layout.GetContainerById(containerId);
+                                that.stagingContainer = { container: cl };
                             } else {
                                 that.navigationDriver.TurnNavigation(true);
                             }
@@ -377,7 +383,13 @@ module BMA {
                             return;
                         } else if (that.stagingVariable !== undefined) {
                             that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                            
+
+                            if (that.svg !== undefined) {
+                                that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
+                            }
+                        } else if (this.stagingContainer !== undefined) {
+                            that.stagingContainer.position = { x: gesture.x1, y: gesture.y1 };
+
                             if (that.svg !== undefined) {
                                 that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
                             }
@@ -401,6 +413,16 @@ module BMA {
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
                             if (!that.TryAddVariable(x, y, type, id)) {
+                                that.RefreshOutput();
+                            }
+                        }
+
+                        if (that.stagingContainer !== undefined) {
+                            var cx = that.stagingContainer.position.x;
+                            var cy = that.stagingContainer.position.y;
+                            var cid = that.stagingContainer.container.Id;
+                            that.stagingContainer = undefined;
+                            if (!that.TryAddVariable(cx, cy, "Container", cid)) {
                                 that.RefreshOutput();
                             }
                         }
@@ -811,6 +833,8 @@ module BMA {
                 switch (type) {
                     case "Container":
                         var containerLayouts = layout.Containers.slice(0);
+                        var variables = model.Variables.slice(0);
+                        var variableLayouts = layout.Variables.slice(0);
 
                         var gridCell = that.GetGridCell(x, y);
                         var container = layout.GetContainerById(id);
@@ -820,7 +844,29 @@ module BMA {
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
                                     if (containerLayouts[i].Id === id) {
-                                        containerLayouts[i] = new BMA.Model.ContainerLayout(id, containerLayouts[i].Size, gridCell.x, gridCell.y)
+
+                                        var oldContainerOffset = {
+                                            x: containerLayouts[i].PositionX * that.Grid.xStep + that.Grid.x0,
+                                            y: containerLayouts[i].PositionY * that.Grid.yStep + that.Grid.y0,
+                                        }; 
+
+                                        containerLayouts[i] = new BMA.Model.ContainerLayout(id, containerLayouts[i].Size, gridCell.x, gridCell.y);
+
+                                        var newContainerOffset = {
+                                            x: gridCell.x * that.Grid.xStep + that.Grid.x0,
+                                            y: gridCell.y * that.Grid.yStep + that.Grid.y0,
+                                        };
+
+                                        for (var j = 0; j < variableLayouts.length; j++) {
+                                            if (variables[j].ContainerId === id) {
+                                                var vlX = variableLayouts[j].PositionX;
+                                                var vlY = variableLayouts[j].PositionY;
+
+                                                variableLayouts[j] = new BMA.Model.VarialbeLayout(variableLayouts[j].Id,
+                                                    vlX - oldContainerOffset.x + newContainerOffset.x,
+                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle); 
+                                            }
+                                        }
                                     }
                                 }
                             } else {
@@ -828,7 +874,7 @@ module BMA {
                             }
 
                             var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);
-                            var newlayout = new BMA.Model.Layout(containerLayouts, layout.Variables);
+                            var newlayout = new BMA.Model.Layout(containerLayouts, variableLayouts);
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
                             return true;
                         }
@@ -1151,6 +1197,23 @@ module BMA {
                 if (this.stagingVariable !== undefined) {
                     var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
                     this.svg.add(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
+                }
+
+                if (this.stagingContainer !== undefined) {
+                    var element = window.ElementRegistry.GetElementByType("Container");
+
+                    var x = (this.stagingContainer.container.PositionX + 0.5) * this.Grid.xStep + (this.stagingContainer.container.Size - 1) * this.Grid.xStep / 2;
+                    var y = (this.stagingContainer.container.PositionY + 0.5) * this.Grid.yStep + (this.stagingContainer.container.Size - 1) * this.Grid.yStep / 2;
+
+                    this.svg.add(element.RenderToSvg({
+                        layout: this.stagingContainer.container,
+                        grid: this.Grid,
+                        background: "none",
+                        translate: {
+                            x: this.stagingContainer.position.x - x,
+                            y: this.stagingContainer.position.y - y
+                        }
+                    }));
                 }
 
                 return $(this.svg.toSVG()).children();
