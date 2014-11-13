@@ -28,7 +28,7 @@
     }
 
     .visibility-header-only  {
-	    border-radius: 7px;
+        border-radius: 7px;
         border-color: lightgray;
         border-style: solid;
         border-width: 1px;
@@ -107,16 +107,24 @@
         width: 400px;
         padding: 20px 15px 20px 15px;
         z-index: 5;
-        background-color: Window;
+        background-color: white;
         border-radius: 5px;
-        box-shadow: 0 0 8px lightgray;
+        box-shadow: 2px 5px 10px 0px rgba(0,0,0,0.50);
+        font-family:'Segoe UI';
         font-size: medium;
     }
 
     .bma-variables-options-editor > *:nth-child(2)
     {
         display: inline-block;
-    }
+        font-size:14px;
+        line-height:19px;
+        padding-left:5px;
+        border:1px solid #979797;
+        box-shadow:none;
+    
+        height: 25px;
+}
 
     .bma-variables-options-editor > *:nth-child(3){
         display: inline-block;
@@ -124,12 +132,19 @@
     }
 
     .bma-variables-options-editor > *:nth-child(3) input {
-        margin-left: 5px;
+        margin-left: 10px;
+        height:25px;
+        font-size:14px;
+        padding-left:5px;
+        border:1px solid #979797;
+        box-shadow:none;
     }
 
     .bma-variables-options-editor > *:nth-child(4) {
-        margin-top: 10px;
-    }
+        margin-top: 15px;
+    
+        margin-bottom: 10px;
+}
 
     .bma-variables-options-editor > *:nth-child(5), .bma-variables-options-editor > *:nth-child(6) {
         display: table-cell;
@@ -141,17 +156,19 @@
     }
 
     .bma-variables-options-editor .list-of-functions ul > li {
-        margin-bottom: 5px;
+        margin-bottom: 10px;
         background-color: #e5e5e5;
         border-radius: 15px;
         display: table;
         position:relative;
         padding: 0;
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-left: 5px;
+        padding-right: 5px;
         cursor: pointer;
         text-align: center;
-        color: #9b9c9f;
+        color: #878787;
+
+        
     }
 
     .bma-variables-options-editor .list-of-functions ul > li:first-child > button
@@ -162,7 +179,9 @@
 
     .bma-variables-options-editor .list-of-operators {
         margin-left: 40px;
-    }
+    
+        padding-bottom: 10px;
+}
 
     .bma-variables-options-editor .list-of-operators ul {
         list-style: none;
@@ -177,7 +196,9 @@
         background-color: transparent;
         cursor: pointer;
         color: inherit;
-    }
+    
+        font-size: 13px;
+}
 
 
     .bma-variables-options-editor .list-of-operators ul > li > button {
@@ -187,24 +208,29 @@
         background-color: transparent;
         cursor: pointer;
         color: inherit;
-    }
+    
+        font-size: 13px;
+}
 
     .bma-variables-options-editor .list-of-operators ul:nth-child(3) {
         margin-top: 0;
     }
 
     .bma-variables-options-editor .list-of-operators ul > li {
-        margin-bottom: 5px;
+        
+        margin-bottom: 10px;
         background-color: #e5e5e5;
         border-radius: 15px;
         padding: 0;
         cursor: pointer;
         display: inline-block;
-        margin-right: 5px;
+        margin-right: 10px;
         padding-left: 5px;
         padding-right: 5px;
-        color: #9b9c9f;
-    }
+        color: #878787;
+        
+
+}
 
     .bma-variables-options-editor .list-of-operators ul > li:hover {
         color: white;
@@ -525,12 +551,12 @@
 
 
     .ui-accordion .ui-accordion-header {
-	    display: block;
-	    cursor: pointer;
-	    position: relative;
-	    /*margin-top: 2px;
-	    padding: .5em .5em .5em .7em;*/
-	    min-height: 0;
+        display: block;
+        cursor: pointer;
+        position: relative;
+        /*margin-top: 2px;
+        padding: .5em .5em .5em .7em;*/
+        min-height: 0;
     }
 
 
@@ -708,7 +734,7 @@
         content: ''; 
         position: absolute;
         top: -10px;
-        border: 10px solid transparent;	border-bottom: 20px solid gray;
+        border: 10px solid transparent; border-bottom: 20px solid gray;
        }*/
 
 
@@ -737,7 +763,7 @@
         /*content: ''; 
         position: absolute;*/
         background: transparent;
-        border: 10px solid transparent;	
+        border: 10px solid transparent; 
         border-bottom: 20px solid gray;
         border-radius: 0;
     }
@@ -837,7 +863,7 @@
     .functions-info {
         color: gray;
         width: 100%;
-        height: 40px;
+        min-height: 70px;
         display: inline-block;
         margin: 0;
         padding: 2px;
@@ -927,7 +953,9 @@
         width: 15px;
         display: inline-block;
         margin-bottom: -2px;
-    }
+        
+        margin-left: 5px;
+}
 
     .inputs-container{
         height: 25px;
@@ -951,12 +979,12 @@
 
 
 .bma-prooftable {
-	margin:0px;
+    margin:0px;
     margin-top: 5px;
     margin-bottom: 5px;
     padding:0px;
-	width:100%;
-	border:1px solid #cccccc;
+    width:100%;
+    border:1px solid #cccccc;
     border-collapse:collapse;
 }
 
@@ -966,24 +994,24 @@
 .bma-prooftable tr:nth-child(even)    { background-color:#ffffff; }
 
 .bma-prooftable td{
-	vertical-align:middle;
-	border:1px solid #cccccc;
-	text-align:center;
-	padding: 1px 3px 1px 3px;
-	font-size:14px;
-	color:#000000;
+    vertical-align:middle;
+    border:1px solid #cccccc;
+    text-align:center;
+    padding: 1px 3px 1px 3px;
+    font-size:14px;
+    color:#000000;
     height: 20px;
 }
                                                                       
 
 
 .bma-prooftable tr:first-child td{
-	background-color:#787878;
-	border:1px solid #cccccc;
-	text-align:center;
-	/*border-width:0px 0px 1px 1px;*/
-	font-size:14px;
-	color:#ffffff;
+    background-color:#787878;
+    border:1px solid #cccccc;
+    text-align:center;
+    /*border-width:0px 0px 1px 1px;*/
+    font-size:14px;
+    color:#ffffff;
 }
 
 .bma-simulation-table-expanded-scroll {
@@ -1043,18 +1071,18 @@
 }
 
 /*.bma-prooftable tr:first-child td:first-child{
-	border-width:0px 0px 1px 0px;
+    border-width:0px 0px 1px 0px;
 }
 
 .bma-prooftable tr:first-child td:last-child{
-	border-width:0px 0px 1px 1px;
+    border-width:0px 0px 1px 1px;
 }*/
 
 .bma-graph-max-table {
     margin:0;
     margin-bottom: 5px;
     padding:0;
-	border: none;
+    border: none;
     border-collapse:collapse;
 }
 
@@ -1063,12 +1091,12 @@
 .bma-graph-max-table tr:nth-child(even)    { background-color:#ffffff; }
 
 .bma-graph-max-table td{
-	vertical-align:middle;
-	border:1px solid #cccccc;
-	text-align:center;
-	padding:0;
-	font-size:14px;
-	color:#000000;
+    vertical-align:middle;
+    border:1px solid #cccccc;
+    text-align:center;
+    padding:0;
+    font-size:14px;
+    color:#000000;
     height: 26px;
 }
 
@@ -1077,12 +1105,12 @@
 }*/                                                                   
 
 .bma-graph-max-table tr:first-child td{
-	background-color:#787878;
-	border:1px solid #cccccc;
-	text-align:center;
-	/*border-width:0 0 1px 1px;*/
-	font-size:14px;
-	color:#ffffff;
+    background-color:#787878;
+    border:1px solid #cccccc;
+    text-align:center;
+    /*border-width:0 0 1px 1px;*/
+    font-size:14px;
+    color:#ffffff;
 }
 
 .bma-graph-max-table tr:first-child td:nth-child(1) {
@@ -1109,11 +1137,11 @@
 
 
 /*.bma-graph-max-table tr:first-child td:first-child{
-	border-width:0 0 1px 0;
+    border-width:0 0 1px 0;
 }
 
 .bma-graph-max-table tr:first-child td:last-child{
-	border-width:0 0 1px 1px;
+    border-width:0 0 1px 1px;
 }*/
 
 .bma-formula-validation-icon {
@@ -1127,12 +1155,16 @@
 .bma-formula-validation-message {
     color:red;
     max-height: 40px;
+    min-height: 15px;
+    font-size: 12px;
 }
 
 .variablesOptionsEditor-formulaTextArea {
     height: 40px;
     margin: 10px 0;
     width: 85%;
+    resize: vertical;
+    max-height: 150px;
 }
 
 .formula-failed-icon {
@@ -1265,16 +1297,16 @@
     width: 40px;
     height: 25px;
     background-color:#77b55a;
-	border-radius:8px;
-	/*border:1px solid #4b8f29;*/
+    border-radius:8px;
+    /*border:1px solid #4b8f29;*/
     position: absolute;
     right: 50px;
     top: -40px;
     color:#ffffff;
-	font-family:Verdana;
-	font-size:20px;
-	padding:5px 20px;
-	text-decoration:none;
+    font-family:Verdana;
+    font-size:20px;
+    padding:5px 20px;
+    text-decoration:none;
     cursor: pointer;
     z-index: 3;
 }
@@ -1286,15 +1318,15 @@
     background-image: url(../images/20x20.gif);
     background-repeat: no-repeat;
     background-position:center;
-	border-radius:8px;
+    border-radius:8px;
     position: absolute;
     right: 50px;
     top: -40px;
     color:#ffffff;
-	font-family:Verdana;
-	font-size:20px;
-	padding:5px 20px;
-	text-decoration:none;
+    font-family:Verdana;
+    font-size:20px;
+    padding:5px 20px;
+    text-decoration:none;
     cursor: pointer;
 }
 
@@ -1319,18 +1351,18 @@
 
 
 .steps-setting button {
-	background-color:#808184;
+    background-color:#808184;
     -moz-border-radius:8px;
     -webkit-border-radius:8px;
-	border-radius:8px;
+    border-radius:8px;
     border:none;
     display: inline-block;
     cursor: pointer;
-	color:#ffffff;
-	font-family:Verdana;
-	font-size:17px;
+    color:#ffffff;
+    font-family:Verdana;
+    font-size:17px;
     padding:4px 15px;
-	text-decoration:none;
+    text-decoration:none;
 }
 
 .bma-simulation-data-table {
@@ -1359,15 +1391,15 @@
     background-color:#d0451b;
     -moz - border-radius:8px;
     -webkit - border-radius:8px;
-	border-radius:8px;
+    border-radius:8px;
     border:1px solid #942911;
     display: inline - block;
     cursor: pointer;
-	color:#ffffff;
-	font-family:Verdana;
-	font-size:15px;
+    color:#ffffff;
+    font-family:Verdana;
+    font-size:15px;
             padding:8px 15px;
-	text-decoration:none;
+    text-decoration:none;
 }
 
 .bma-furthertesting-button-waiting {
@@ -1379,15 +1411,15 @@
     background-image: url(../images/20x20.gif);
     background-repeat: no-repeat;
     background-position:center;
-	border-radius:8px;
+    border-radius:8px;
     border:1px solid #942911;
     display: inline - block;
     cursor: pointer;
-	color:#ffffff;
-	font-family:Verdana;
-	font-size:15px;
+    color:#ffffff;
+    font-family:Verdana;
+    font-size:15px;
             padding:8px 15px;
-	text-decoration:none;
+    text-decoration:none;
 }
 
 .containernameeditor {
@@ -1399,7 +1431,7 @@
     border-radius:5px;
     box-shadow: 0 0 8px lightgray; /*#000;*/
     font-family:Verdana;
-	font-size: 17px;
+    font-size: 17px;
     z-index:5;
     width: 170px;
 }
@@ -1471,3 +1503,4 @@
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding: .2em .5em;
 }
+
