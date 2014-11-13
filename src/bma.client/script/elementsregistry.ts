@@ -196,9 +196,14 @@ module BMA {
                         var x = (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2;
                         var y = (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2;
 
+                        if (renderParams.translate !== undefined) {
+                            x += renderParams.translate.x;
+                            y += renderParams.translate.y;
+                        }
+
                         jqSvg.rect(
-                            renderParams.layout.PositionX * renderParams.grid.xStep + renderParams.grid.xStep / containerPaddingCoef,
-                            renderParams.layout.PositionY * renderParams.grid.yStep + renderParams.grid.yStep / containerPaddingCoef,
+                            renderParams.layout.PositionX * renderParams.grid.xStep + renderParams.grid.xStep / containerPaddingCoef + (renderParams.translate === undefined ? 0 : renderParams.translate.x),
+                            renderParams.layout.PositionY * renderParams.grid.yStep + renderParams.grid.yStep / containerPaddingCoef + (renderParams.translate === undefined ? 0 : renderParams.translate.y),
                             renderParams.grid.xStep * renderParams.layout.Size - 2 * renderParams.grid.xStep / containerPaddingCoef,
                             renderParams.grid.yStep * renderParams.layout.Size - 2 * renderParams.grid.yStep / containerPaddingCoef,
                             0,
@@ -222,8 +227,8 @@ module BMA {
                         });
 
                         jqSvg.ellipse(
-                            (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
-                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                            (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2 + (renderParams.translate === undefined ? 0 : renderParams.translate.x),
+                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2 + (renderParams.translate === undefined ? 0 : renderParams.translate.y),
                             containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "none", fill: "white" });
 
                         $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
