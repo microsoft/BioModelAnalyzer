@@ -15,7 +15,7 @@
             this.resultDiv.empty();
             this.successTable = $('<table></table>').appendTo(this.resultDiv);
 
-            if (options.issucceeded === undefined || options.time === undefined)
+            if (options.issucceeded === undefined)// || options.time === undefined)
                 return;
             
             var tr1 = $('<tr></tr>').appendTo(this.successTable); 

@@ -38,6 +38,7 @@
                 })
 
                 window.Commands.On("ProofRequested", function () {
+                    that.driver.ActiveMode();
                     that.driver.HideStartFurtherTestingToggler();
                     that.driver.HideResults();
                     that.data = undefined;
@@ -54,42 +55,46 @@
                                 that.driver.ActiveMode();
                                 if (res2.CounterExamples !== null) {
                                     that.driver.HideStartFurtherTestingToggler();
-
-                                    var bif = null, osc = null;
-                                    for (var i = 0; i < res2.CounterExamples.length; i++) {
-                                        switch (res2.CounterExamples[i].Status) {
-                                            case 0:
-                                                bif = res2.CounterExamples[i];
-                                                break;
-                                            case 1:
-                                                osc = res2.CounterExamples[i];
-                                                break;
+                                    if (res2.CounterExamples.length === 0) {
+                                        window.Commands.Execute("ProofSucceeded", {});
+                                    }
+                                    else {
+                                        var bif = null, osc = null;
+                                        for (var i = 0; i < res2.CounterExamples.length; i++) {
+                                            switch (res2.CounterExamples[i].Status) {
+                                                case 0:
+                                                    bif = res2.CounterExamples[i];
+                                                    break;
+                                                case 1:
+                                                    osc = res2.CounterExamples[i];
+                                                    break;
+                                            }
                                         }
-                                    }
 
-                                    var data = [];
-                                    var headers = [];
-                                    var tabLabels = [];
+                                        var data = [];
+                                        var headers = [];
+                                        var tabLabels = [];
 
-                                    if (bif !== null) {
-                                        var parseBifurcations = that.ParseBifurcations(bif.Variables);
-                                        var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
-                                        data.push(bifurcationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                        var label = $('<div></div>').addClass('bma-futhertesting-bifurcations-icon');
-                                        tabLabels.push(label);
-                                    }
-                                    if (osc !== null) {
-                                        var parseOscillations = that.ParseOscillations(osc.Variables);
-                                        var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
-                                        data.push(oscillationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                        var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
-                                        tabLabels.push(label);
-                                    }
+                                        if (bif !== null) {
+                                            var parseBifurcations = that.ParseBifurcations(bif.Variables);
+                                            var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
+                                            data.push(bifurcationsView);
+                                            headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
+                                            var label = $('<div></div>').addClass('bma-futhertesting-bifurcations-icon');
+                                            tabLabels.push(label);
+                                        }
+                                        if (osc !== null) {
+                                            var parseOscillations = that.ParseOscillations(osc.Variables);
+                                            var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
+                                            data.push(oscillationsView);
+                                            headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+                                            var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
+                                            tabLabels.push(label);
+                                        }
 
-                                    that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
-                                    that.driver.ShowResults(that.data);
+                                        that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                        that.driver.ShowResults(that.data);
+                                    }
                                 }
                                 else {
                                     that.driver.ActiveMode();

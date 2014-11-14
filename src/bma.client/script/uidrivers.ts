@@ -138,7 +138,12 @@ module BMA {
             }
 
             public SetData(params) {
-                this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded, time: params.time, data: params.data });
+                if (params.issucceeded !== undefined)
+                    this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded });
+                if (params.time !== undefined)
+                    this.proofContentViewer.proofresultviewer({ time: params.time });
+                if (params.data !== undefined)
+                    this.proofContentViewer.proofresultviewer({ data: params.data });
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {

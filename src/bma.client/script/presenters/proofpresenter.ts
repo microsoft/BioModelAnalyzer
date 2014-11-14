@@ -21,6 +21,10 @@
                 this.messagebox = messagebox;
                 var that = this;
 
+                window.Commands.On("ProofSucceeded", function () {
+                    proofResultViewer.SetData({ issucceeded: true });
+                });
+
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
                     var proofInput = appModel.BioModel.GetJSON();

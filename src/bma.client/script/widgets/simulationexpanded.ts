@@ -47,9 +47,7 @@
                 that._setOption("num", that.options.num - 10);
             })
 
-            that.element.css("margin-top", "30px");
-            that.element.css("margin-bottom", "40px");
-            that.element.css("position", "relative");
+            that.element.addClass("bma-simulation-expanded");
             //that.element.children().css("margin", "10px");
             this.refresh();
         },

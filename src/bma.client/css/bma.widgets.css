@@ -21,6 +21,7 @@
         background-image: url("/images/visicon2.png");
         background-repeat:no-repeat;
         background-position:center;
+        background-size:contain;
         width:50px;
         height:52px;
         display:block;
@@ -270,21 +271,22 @@
         padding-bottom: 70px;
         /* background-color: rgba(0,0,0,0.5); */
         background-color: white;
-        position: absolute;
-        left: calc(50% - 620px);
-        top: calc(50% - 300px);
+        position: fixed;
+        left: 15%;
+        top: 20%;
         border-radius: 20px;
         box-shadow: 0 0 8px lightgray;
         z-index: 10;
         font-size: x-large;
-        width: calc(100% - 400px - 450px);
+        width: 60%;
         min-width:800px;
+        height: 60%;
         max-height: 600px;
     }
 
     .proof-expanded {
         overflow: scroll;
-        max-height: inherit;
+        height: 100%;
         width: 100%;
         min-width: inherit;
         white-space: nowrap;
@@ -648,12 +650,13 @@
    
 
     .bma-elementspanel-elementstoolbar {
-        display: inline-block;
+        /*display: inline-block;*/
+        margin-left: calc(0.4 * (100% - 964px));
     }
 
     .bma-elementspanel-visibilityoptions {
-        float: right;
-        margin-right: 15px;
+        /*float: right;*/
+        margin-left: calc(0.3 * (100% - 964px));
     }
 
  
@@ -673,9 +676,10 @@
     }
 
     .zoomslider-container {
-        width: 400px;
-        position: relative;
-        float: right;
+        /*width: 400px;
+        position: relative;*/
+        /*float: right;*/
+        margin-left: calc(0.1 * (100% - 964px));
     }
 
     .zoomslider-container > * {
@@ -1014,8 +1018,17 @@
     color:#ffffff;
 }
 
+
+.bma-simulation-expanded {
+    margin-top: 30px;
+    margin-bottom: 40px;
+    position: relative;
+    height: 90%;
+}
+
+
 .bma-simulation-table-expanded-scroll {
-    max-height:550px;
+    height: 100%;
     overflow-y:scroll;
     white-space:nowrap;
 }
@@ -1266,23 +1279,24 @@
 
  .bma-elementspanel {
     display: table;
-    text-align: center;
+    /*text-align: center;*/
     clear: both;
     background-color: white;
     width: 100%;
+    /*min-width: 965px;*/
     padding-top: 15px;
     padding-bottom: 5px;
-    
-    /*white-space: nowrap;*/
+    white-space: nowrap;
 }
 .bma-elementspanel > * {
     display: inline-block;
+    vertical-align: top;
 }
 
 .bma-elementspanel-undoredotoolbar {
-    display: inline-block;
-    float: left;
-    margin-left: 50px;
+    /*display: inline-block;*/
+    /*float: left;*/
+    margin-left: calc(0.05 * (100% - 964px));
 }
 
 .randomize-button {
