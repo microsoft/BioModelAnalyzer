@@ -272,7 +272,7 @@
             var that = this;
 
             this.name.bind("input change", function () {
-                that._setOption("name", that.name.val());
+                that.options.name = that.name.val();
                 window.Commands.Execute("VariableEdited", {});
             });
 
