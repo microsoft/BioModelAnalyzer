@@ -400,6 +400,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AnalyzeController.cs" />
+    <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\FurtherTestingController.cs" />
     <Compile Include="Controllers\SimulateController.cs" />
     <Compile Include="Controllers\ValidateController.cs" />
