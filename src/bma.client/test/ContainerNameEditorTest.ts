@@ -13,10 +13,6 @@
     //})
 
 
-    it("creates a 'Container Name' label div", () => {
-        widget.containernameeditor();
-        expect(widget.children("div").eq(0).text()).toEqual("Container Name");
-    })
 
     it("creates an input with default name", () => {
         widget.containernameeditor();

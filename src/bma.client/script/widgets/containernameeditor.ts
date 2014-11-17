@@ -16,8 +16,11 @@
             });
             this.element.addClass("containernameeditor");
             this.element.draggable({ containment: "parent", scroll: false });
-            $('<div></div>').text("Container Name").appendTo(that.element);
-            this.name = $('<input type="text" size="15">').appendTo(that.element);
+            this.name = $('<input>')
+                .attr("type", "text")
+                .attr("size", 15)
+                .attr("placeholder", "Container Name")
+                .appendTo(that.element);
             this.name.bind("input change", function () {
                 that._setOption("name", that.name.val());
                 window.Commands.Execute("ContainerNameEdited", {});

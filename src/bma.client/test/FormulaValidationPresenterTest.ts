@@ -27,7 +27,7 @@
         spyOn(ajaxTestDriver, "Invoke");
         var formula = "test";
         //window.Commands.Execute("FormulaEdited", formula);
-        var r = ajaxTestDriver.Invoke("api/Validate", { Formula: formula });
+        var r = ajaxTestDriver.Invoke({ Formula: formula });
         
         r.done(function() {
             console.log("done");

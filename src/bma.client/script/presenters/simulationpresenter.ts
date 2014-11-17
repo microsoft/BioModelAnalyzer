@@ -105,7 +105,7 @@
 
                 if (param.variables !== undefined && param.variables !== null)
 
-                    var result = that.ajax.Invoke("api/Simulate", simulate)
+                    var result = that.ajax.Invoke(simulate)
                         .done(function (res) {
                             if (res.Variables !== null) {
                                 that.results.push(res);

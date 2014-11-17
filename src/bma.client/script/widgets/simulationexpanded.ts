@@ -21,7 +21,7 @@
             var tablesDiv = $('<div></div>')
                 .addClass("bma-simulation-table-expanded-scroll")
                 .appendTo(this.element);
-            this.table1 = $('<div></div>').width("40%").appendTo(tablesDiv);
+            this.table1 = $('<div></div>').appendTo(tablesDiv);
             this.progression = $('<div></div>').appendTo(tablesDiv).progressiontable();//.addClass("bma-simulation-table")
             //this.progression.css("position", "relative");
             //this.progression.css("left", "50px");

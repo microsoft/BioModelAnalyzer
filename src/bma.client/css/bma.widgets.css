@@ -71,9 +71,6 @@
 
     .visibility-table > ul > li > * {
         display: inline-block;
-        float: left;
-        margin: 3px;
-        padding: 0;
     }
 
     .bma-accordion-container{
@@ -454,7 +451,9 @@
 
     .optionsNames {
         width:100px;
-        height:20px;
+        text-overflow:ellipsis;
+        -ms-text-overflow:ellipsis;
+        -o-text-overflow:ellipsis;
     }
 
     .saveIcon {
@@ -651,12 +650,12 @@
 
     .bma-elementspanel-elementstoolbar {
         /*display: inline-block;*/
-        margin-left: calc(0.4 * (100% - 964px));
+        margin-left: calc(40% - 400px);
     }
 
     .bma-elementspanel-visibilityoptions {
         /*float: right;*/
-        margin-left: calc(0.3 * (100% - 964px));
+        margin-left: calc(40% - 400px);
     }
 
  
@@ -679,7 +678,7 @@
         /*width: 400px;
         position: relative;*/
         /*float: right;*/
-        margin-left: calc(0.1 * (100% - 964px));
+        margin-left: 0;
     }
 
     .zoomslider-container > * {
@@ -980,13 +979,20 @@
         margin-bottom: 5px;
     }*/
 
+.bma-proofstate-container > * {
+    display: inline-block;
+    vertical-align:text-top;
+    margin: 15px 3px;
+}
 
+.bma-proofstate-message {
+    font-size:small;
+    margin-bottom: 10px;
+}
 
 .bma-prooftable {
-    margin:0px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding:0px;
+    margin: 5px 0;
+    padding:0;
     width:100%;
     border:1px solid #cccccc;
     border-collapse:collapse;
@@ -1036,6 +1042,10 @@
 .bma-simulation-table-expanded-scroll > div {
     display: inline-block;
     vertical-align: top;
+}
+
+.bma-simulation-table-expanded-scroll > div:not(:first-child) {
+    margin-left:80px;
 }
 
 .bma-simulation-table {
@@ -1296,7 +1306,7 @@
 .bma-elementspanel-undoredotoolbar {
     /*display: inline-block;*/
     /*float: left;*/
-    margin-left: calc(0.05 * (100% - 964px));
+    margin-left: calc(5% - 50px);
 }
 
 .randomize-button {
@@ -1395,7 +1405,6 @@
     width: 120px;
     position: absolute;
     top:-30px;
-    left: 420px;
     cursor:pointer;
 }
 
@@ -1403,8 +1412,8 @@
     width:140px;
     height: 35px;
     background-color:#d0451b;
-    -moz - border-radius:8px;
-    -webkit - border-radius:8px;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
     border-radius:8px;
     border:1px solid #942911;
     display: inline - block;

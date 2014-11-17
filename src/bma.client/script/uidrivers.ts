@@ -167,12 +167,12 @@ module BMA {
             }
 
             public SetData(params) {
-                if (params.issucceeded !== undefined)
-                    this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded });
-                if (params.time !== undefined)
-                    this.proofContentViewer.proofresultviewer({ time: params.time });
-                if (params.data !== undefined)
-                    this.proofContentViewer.proofresultviewer({ data: params.data });
+                //if (params.issucceeded !== undefined)
+                //    this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded });
+                //if (params.time !== undefined)
+                //    this.proofContentViewer.proofresultviewer({ time: params.time });
+                if (params !== undefined)
+                    this.proofContentViewer.proofresultviewer(params);
             }
 
             public ShowResult(result: BMA.Model.ProofResult) {
@@ -495,18 +495,66 @@ module BMA {
             }
         }
 
-        export class AjaxServiceDriver implements IServiceDriver {
-           
-            public Invoke(url, data): JQueryPromise<any> {
+        export class FormulaValidationService implements IServiceDriver {
+            public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: url,
+                    url: "api/Validate",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
                 });
             }
         }
+
+        export class FurtherTestingService implements IServiceDriver {
+            public Invoke(data): JQueryPromise<any> {
+                return $.ajax({
+                    type: "POST",
+                    url: "api/FurtherTesting",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json"
+                });
+            }
+        }
+
+        export class ProofAnalyzeService implements IServiceDriver {
+            public Invoke(data): JQueryPromise<any> {
+                return $.ajax({
+                    type: "POST",
+                    url: "api/Analyze",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json"
+                });
+            }
+        }
+
+        export class SimulationService implements IServiceDriver {
+            public Invoke(data): JQueryPromise<any> {
+                return $.ajax({
+                    type: "POST",
+                    url: "api/Simulate",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json"
+                });
+            }
+        }
+
+        //export class AjaxServiceDriver implements IServiceDriver {
+           
+        //    public Invoke(url, data): JQueryPromise<any> {
+        //        return $.ajax({
+        //            type: "POST",
+        //            url: url,
+        //            data: JSON.stringify(data),
+        //            contentType: "application/json",
+        //            dataType: "json"
+        //        });
+        //    }
+        //}
 
         export class MessageBoxDriver implements IMessageServise {
 

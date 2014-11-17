@@ -6,35 +6,31 @@
         options: {
             issucceeded: true,
             time: 0,
-            data: undefined
+            data: undefined,
+            message: ''
         },
 
         refreshSuccess: function () {
             var that = this;
             var options = this.options;
             this.resultDiv.empty();
-            this.successTable = $('<table></table>').appendTo(this.resultDiv);
 
             if (options.issucceeded === undefined)// || options.time === undefined)
                 return;
-            
-            var tr1 = $('<tr></tr>').appendTo(this.successTable); 
-            var td1 = $('<td></td>').appendTo(tr1);
-            var td2 = $('<td></td>').appendTo(tr1);
             if (options.issucceeded) {
-                //this.furthertestingButton.hide();
-                //this.furtherTesting.hide();
-                $('<img src="../../images/succeeded.png">').appendTo(td1);
-                $('<h3 style="color: green; font-weight:bold"></h3>').text('Stabilizes').appendTo(td2);
-                $('<p style="font-size:small"></p>').text('BMA succeeded in checking every possible state of the model in ' + options.time + ' seconds. After stepping through separate interactions, the model eventually reached a single stable state.').appendTo(that.resultDiv);
+                $('<img src="../../images/succeeded.png">').appendTo(this.resultDiv);
+                $('<div style="color: green; font-weight:bold"></div>').text('Stabilizes').appendTo(this.resultDiv);
+                //$('<p style="font-size:small"></p>').text('BMA succeeded in checking every possible state of the model in ' + options.time + ' seconds. After stepping through separate interactions, the model eventually reached a single stable state.').appendTo(that.resultDiv);
             }
             else {
-                //this.furthertestingButton.show();
-                $('<img src="../../images/failed.png">').appendTo(td1);
-                $('<h3 style="color: red; font-weight:bold"></h3>').text('Failed to Stabilize').appendTo(td2);
-                $('<p style="font-size:small"></p>').text('After stepping through separate interactions in the model, the analisys failed to determine a final stable state').appendTo(that.resultDiv);
-                
+                $('<img src="../../images/failed.png">').appendTo(this.resultDiv);
+                $('<div style="color: red; font-weight:bold"></div>').text('Failed to Stabilize').appendTo(this.resultDiv);
+                //$('<p style="font-size:small"></p>').text('After stepping through separate interactions in the model, the analisys failed to determine a final stable state').appendTo(that.resultDiv);
             }
+        },
+
+        refreshMessage: function () {
+            this.proofmessage.text(this.options.message);
         },
 
         refreshData: function () {
@@ -96,8 +92,13 @@
             var that = this;
             var options = this.options;
             $('<h2></h2>').text('Proof Analysis').appendTo(that.element);
-            this.resultDiv = $('<div></div>').appendTo(that.element);
-            this.successTable = $('<table></table>').appendTo(this.resultDiv);
+            this.resultDiv = $('<div></div>')
+                .addClass("bma-proofstate-container")
+                .appendTo(that.element);
+
+            this.proofmessage = $('<p></p>').addClass("bma-proofstate-message").appendTo(that.element);
+
+
             this.compactvariables = $('<div id="ProofVariables"></div>')
                 .appendTo(that.element)
                 .resultswindowviewer();
@@ -106,33 +107,10 @@
                 .appendTo(that.element)
                 .resultswindowviewer();
 
-            //this.furthertestingButton = $('<button></button>')
-            //    .text("Further Testing")
-            //    .addClass('bma-furthertesting-button')
-            //    .appendTo(that.element)
-            //    .hide();
-
-            //this.furtherTesting = $('<div id="FurtherTesting"></div>')
-            //    .appendTo(that.element)
-            //    .hide()
-            //    .resultswindowviewer();
-
-            //this.furthertestingButton.bind("click", function () {
-            //    that.furthertestingButton.hide();
-            //    that.furtherTesting.show();
-            //    var d = [];
-            //    d[0] = [0, "fff", "sd", "1, 2, 3"];
-            //    options.data = { further: d };
-            //    var table = $('<div></div>')
-            //        .addClass("scrollable-results")
-            //        .coloredtableviewer({ numericData: options.data.further, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
-
-            //    that.furtherTesting.resultswindowviewer({ header: "Further Testing", content: table, icon: "max", tabid: "FurtherTesting" });
-            //})
-
             this.refreshSuccess();
+            this.refreshMessage();
             this.refreshData();
-
+            
         },
 
         _destroy: function () {
@@ -145,12 +123,17 @@
                 case "issucceeded": this.options.issucceeded = value;
                     this.refreshSuccess();
                     break;
-                case "time": this.options.time = value;
-                    this.refreshSuccess();
-                    break;
+                //case "time": this.options.time = value;
+                //    this.refreshSuccess();
+                //    break;
                 case "data":
                     this.options.data = value;
                     this.refreshData();
+                    break;
+                case "message":
+                    this.options.message = value;
+                    this.refreshMessage();
+                    break;
             }
 
             this._super(key, value);

@@ -100,17 +100,18 @@ module BMA {
 
 
         export class AjaxTestDriver implements BMA.UIDrivers.IServiceDriver {
-            public Invoke(url, data): JQueryPromise<any> {
+            public Invoke(data): JQueryPromise<any> {
                 var deferred = $.Deferred();
                 var result: { IsValid: boolean; Message: string };
-                switch (url) {
-                    case "api/Validate":
-                        if (data.Formula === "true")
-                            result = { IsValid: true, Message: "Ok" };
-                    default:
-                            result = { IsValid: false, Message: "Not Ok" };
+                //switch (url) {
+                //    case "api/Validate":
+                //        if (data.Formula === "true")
+                //            result = { IsValid: true, Message: "Ok" };
+                //    default:
+                //            result = { IsValid: false, Message: "Not Ok" };
                         
-                }
+                //}
+                result = { IsValid: true, Message: "Ok" };
                 console.log("result: " + result.IsValid);
                 deferred.resolve(result);
                 return deferred.promise();

@@ -24,7 +24,7 @@ module BMA {
         }
 
         export interface IServiceDriver {
-            Invoke(url, data): JQueryPromise<any>;
+            Invoke(data): JQueryPromise<any>;
         }
 
         export interface IVariableEditor {

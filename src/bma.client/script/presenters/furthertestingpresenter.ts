@@ -47,7 +47,7 @@
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0 && that.model !== undefined && that.result !== undefined && that.variables !== undefined) {
                         that.driver.StandbyMode();
-                        var result = that.ajax.Invoke("api/FurtherTesting", {
+                        var result = that.ajax.Invoke( {
                             Model: that.model,
                             Analysis: that.result,
                         })
@@ -56,7 +56,7 @@
                                 if (res2.CounterExamples !== null) {
                                     that.driver.HideStartFurtherTestingToggler();
                                     if (res2.CounterExamples.length === 0) {
-                                        window.Commands.Execute("ProofSucceeded", {});
+                                        window.Commands.Execute("ProofByFurtherTesting", { issucceeded: true, message: 'No bifurcations or cycles were found in your model. Therefore, by exclusion, your model stabilizes, but the stable state is not found by verification. To determine the final stable state, run a simulation.'});
                                     }
                                     else {
                                         var bif = null, osc = null;

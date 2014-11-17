@@ -11,7 +11,7 @@
 
                 window.Commands.On("FormulaEdited", function (formula) {
                     if (formula !== "")
-                        var result = that.ajax.Invoke("api/Validate", { Formula: formula })
+                        var result = that.ajax.Invoke({ Formula: formula })
                             .done(function (res) {
                                 that.editorDriver.SetValidation(res.IsValid, res.Message);
                             })

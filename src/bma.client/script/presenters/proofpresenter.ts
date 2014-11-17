@@ -21,14 +21,15 @@
                 this.messagebox = messagebox;
                 var that = this;
 
-                window.Commands.On("ProofSucceeded", function () {
-                    proofResultViewer.SetData({ issucceeded: true });
+                window.Commands.On("ProofByFurtherTesting", function ( param:{ issucceeded; message}) {
+                    proofResultViewer.SetData({ issucceeded: param.issucceeded, message: param.message });
+                    window.Commands.Execute("DrawingSurfaceSetProofResults", undefined);
                 });
 
                 window.Commands.On("ProofRequested", function (args) {
                     proofResultViewer.OnProofStarted();
                     var proofInput = appModel.BioModel.GetJSON();
-                    var result = that.ajax.Invoke("api/Analyze", proofInput)
+                    var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             //console.log("Proof Result Status: " + res.Status);
                             if (res.Ticks !== null) {
@@ -63,7 +64,7 @@
                                 })
 
                                 window.Commands.Execute("DrawingSurfaceSetProofResults", st);
-                                proofResultViewer.SetData({ issucceeded: result.IsStable, time: result.Time, data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
+                                proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
                             else {
@@ -128,6 +129,13 @@
                     proofResultViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
+            }
+
+            public CreateMessage(stable: boolean, time: number): string {
+                if (stable) {
+                    return 'BMA succeeded in checking every possible state of the model in ' + time + ' seconds. After stepping through separate interactions, the model eventually reached a single stable state.'
+                }
+                else return 'After stepping through separate interactions in the model, the analisys failed to determine a final stable state'
             }
 
             public Stability(ticks) {

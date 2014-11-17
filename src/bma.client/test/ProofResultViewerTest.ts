@@ -18,22 +18,22 @@ describe("ProofResultViewer", () => {
 
     it("should stabilizing", () => {
         var issucceeded = true;
-        var time = 23;
-        widget.proofresultviewer({ issucceeded: issucceeded, time: time });
-        var success = widget.find("h3").eq(0);
+        var msg = 'Test Message';
+        widget.proofresultviewer({ issucceeded: issucceeded, message: msg });
+        var success = widget.find(".bma-proofstate-container").children().eq(1);
         expect(success.text()).toEqual("Stabilizes");
         var p = widget.find("p").eq(0);
-        expect(p.text()).toEqual('BMA succeeded in checking every possible state of the model in ' + time + ' seconds. After stepping through separate interactions, the model eventually reached a single stable state.');
+        expect(p.text()).toEqual(msg);
     })
 
     it("should fail to stabilize", () => {
         var issucceeded = false;
-        var time = 55;
-        widget.proofresultviewer({ issucceeded: issucceeded, time: time });
-        var success = widget.find("h3").eq(0);
+        var msg = 'Test Message';
+        widget.proofresultviewer({ issucceeded: issucceeded, message: msg });
+        var success = widget.find(".bma-proofstate-container").children().eq(1);
         expect(success.text()).toEqual("Failed to Stabilize");
         var p = widget.find("p").eq(0);
-        expect(p.text()).toEqual('After stepping through separate interactions in the model, the analisys failed to determine a final stable state');
+        expect(p.text()).toEqual(msg);
     })
 
     it("should set data", () => {
