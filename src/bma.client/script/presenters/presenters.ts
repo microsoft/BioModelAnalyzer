@@ -18,9 +18,9 @@ module BMA {
 
             private selectedType: string;
             private driver: BMA.UIDrivers.ISVGPlot;
-            private highlightDriver: BMA.UIDrivers.IAreaHightlighter;
             private navigationDriver: BMA.UIDrivers.INavigationPanel;
             private variableEditor: BMA.UIDrivers.IVariableEditor;
+            private containerEditor: BMA.UIDrivers.IContainerEditor;
             private svg: any;
 
             private xOrigin = 0;
@@ -35,7 +35,7 @@ module BMA {
             private stagingVariable: { model: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout; } = undefined;
             private stagingContainer: any = undefined;
 
-            private editingVariableId = undefined;
+            private editingId = undefined;
 
             private contextMenu: BMA.UIDrivers.IContextMenu;
             private contextElement;
@@ -52,10 +52,10 @@ module BMA {
             constructor(appModel: BMA.Model.AppModel,
                 undoRedoPresenter: BMA.Presenters.UndoRedoPresenter,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
-                highlightDriver: BMA.UIDrivers.IAreaHightlighter,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
                 variableEditorDriver: BMA.UIDrivers.IVariableEditor,
+                containerEditorDriver: BMA.UIDrivers.IContainerEditor,
                 contextMenu: BMA.UIDrivers.IContextMenu) {
 
                 var that = this;
@@ -63,9 +63,9 @@ module BMA {
                 this.undoRedoPresenter = undoRedoPresenter;
 
                 this.driver = svgPlotDriver;
-                this.highlightDriver = highlightDriver;
                 this.navigationDriver = navigationDriver;
                 this.variableEditor = variableEditorDriver;
+                this.containerEditor = containerEditorDriver;
                 this.contextMenu = contextMenu;
 
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
@@ -85,23 +85,32 @@ module BMA {
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
-                            that.editingVariableId = id;
+                            that.editingId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                             that.RefreshOutput();
+                        } else {
+                            var cid = that.GetContainerAtPosition(args.x, args.y);
+                            if (cid !== undefined) {
+                                that.editingId = cid;
+                                that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(cid));
+                                that.containerEditor.Show(args.screenX, args.screenY);
+                                window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
+                                that.RefreshOutput();
+                            }
                         }
                     }
                 });
 
                 window.Commands.On("VariableEdited", () => {
                     var that = this;
-                    if (that.editingVariableId !== undefined) {
+                    if (that.editingId !== undefined) {
                         var model = this.undoRedoPresenter.Current.model;
                         var variables = model.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
-                            if (variables[i].Id === that.editingVariableId) {
+                            if (variables[i].Id === that.editingId) {
                                 editingVariableIndex = i;
                                 break;
                             }
@@ -109,6 +118,19 @@ module BMA {
                         if (editingVariableIndex !== -1) {
                             var params = that.variableEditor.GetVariableProperties();
                             model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);
+                            that.RefreshOutput();
+                        }
+                    }
+                });
+
+                window.Commands.On("ContainerNameEdited", () => {
+                    var that = this;
+
+                    if (that.editingId !== undefined) {
+                        var layout = this.undoRedoPresenter.Current.layout;
+                        var cnt = layout.GetContainerById(that.editingId);
+                        if (cnt !== undefined) {
+                            cnt.Name = that.containerEditor.GetContainerName();
                             that.RefreshOutput();
                         }
                     }
@@ -149,7 +171,7 @@ module BMA {
                         { name: "ResizeCellTo1x1", isVisible: true },
                         { name: "ResizeCellTo2x2", isVisible: true },
                         { name: "ResizeCellTo3x3", isVisible: true },
-                        { name: "Edit", isVisible: id !== undefined }
+                        { name: "Edit", isVisible: id !== undefined || containerId !== undefined }
                     ]);
 
                     that.contextMenu.EnableMenuItems([
@@ -207,7 +229,7 @@ module BMA {
 
                             var newContainerId = that.variableIndex++;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
-                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, clipboardContainer.Size, gridCell.x, gridCell.y));
+                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, clipboardContainer.Name, clipboardContainer.Size, gridCell.x, gridCell.y));
 
                             var oldContainerOffset = {
                                 x: clipboardContainer.PositionX * that.Grid.xStep + that.Grid.x0,
@@ -266,10 +288,17 @@ module BMA {
                 window.Commands.On("DrawingSurfaceEdit", () => {
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
-                        that.editingVariableId = id;
+                        that.editingId = id;
                         that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
+                        that.RefreshOutput();
+                    } else if (that.contextElement !== undefined && that.contextElement.type === "container") {
+                        var id = that.contextElement.id;
+                        that.editingId = id;
+                        that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(id));
+                        that.containerEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
+                        window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
                         that.RefreshOutput();
                     }
 
@@ -282,7 +311,7 @@ module BMA {
                         if (args !== undefined) {
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
                                 this.variableEditor.Hide();
-                                this.editingVariableId = undefined;
+                                this.editingId = undefined;
                             }
 
                             if (args.status === "Set") {
@@ -292,8 +321,13 @@ module BMA {
                             }
                         }
 
-                        if (that.editingVariableId !== undefined) {
-                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingVariableId).model, that.undoRedoPresenter.Current.model);
+                        if (that.editingId !== undefined) {
+                            var v = that.undoRedoPresenter.Current.model.GetVariableById(that.editingId);
+                            if (v !== undefined) {
+                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model, that.undoRedoPresenter.Current.model);
+                            } else {
+                                that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(that.editingId));
+                            }
                         }
 
                         that.RefreshOutput();
@@ -306,6 +340,15 @@ module BMA {
                         this.driver.Draw(drawingSvg);
                     }
                 });
+
+                window.Commands.On("DrawingSurfaceVariableEditorOpened", (args) => {
+                    this.containerEditor.Hide();
+                });
+
+                window.Commands.On("DrawingSurfaceContainerEditorOpened", (args) => {
+                    this.variableEditor.Hide();
+                });
+
 
                 var svgCnt = $("<div></div>");
                 svgCnt.svg({
@@ -504,8 +547,8 @@ module BMA {
             }
 
             private RemoveVariable(id: number) {
-                if (this.editingVariableId === this.contextElement.id) {
-                    this.editingVariableId = undefined;
+                if (this.editingId === id) {
+                    this.editingId = undefined;
                 }
 
                 var wasRemoved = false;
@@ -548,6 +591,10 @@ module BMA {
             }
 
             private RemoveContainer(id: number) {
+                if (this.editingId === id) {
+                    this.editingId = undefined;
+                }
+
                 var wasRemoved = false;
 
                 var model = this.undoRedoPresenter.Current.model;
@@ -579,8 +626,8 @@ module BMA {
                             newVL.push(variableLayouts[i]);
                         } else {
                             removed.push(variables[i].Id);
-                            if (this.editingVariableId === variables[i].Id) {
-                                this.editingVariableId = undefined;
+                            if (this.editingId === variables[i].Id) {
+                                this.editingId = undefined;
                             }
                         }
                     }
@@ -848,9 +895,9 @@ module BMA {
                                         var oldContainerOffset = {
                                             x: containerLayouts[i].PositionX * that.Grid.xStep + that.Grid.x0,
                                             y: containerLayouts[i].PositionY * that.Grid.yStep + that.Grid.y0,
-                                        }; 
+                                        };
 
-                                        containerLayouts[i] = new BMA.Model.ContainerLayout(id, containerLayouts[i].Size, gridCell.x, gridCell.y);
+                                        containerLayouts[i] = new BMA.Model.ContainerLayout(id, containerLayouts[i].Name, containerLayouts[i].Size, gridCell.x, gridCell.y);
 
                                         var newContainerOffset = {
                                             x: gridCell.x * that.Grid.xStep + that.Grid.x0,
@@ -864,13 +911,13 @@ module BMA {
 
                                                 variableLayouts[j] = new BMA.Model.VarialbeLayout(variableLayouts[j].Id,
                                                     vlX - oldContainerOffset.x + newContainerOffset.x,
-                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle); 
+                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle);
                                             }
                                         }
                                     }
                                 }
                             } else {
-                                containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, 1, gridCell.x, gridCell.y));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, "", 1, gridCell.x, gridCell.y));
                             }
 
                             var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);
@@ -1151,7 +1198,7 @@ module BMA {
                     }));
                 }
 
-                
+
 
                 //constructing final svg image
                 this.svg.clear();

@@ -201,21 +201,23 @@ module BMA {
                             y += renderParams.translate.y;
                         }
 
-                        jqSvg.rect(
-                            renderParams.layout.PositionX * renderParams.grid.xStep + renderParams.grid.xStep / containerPaddingCoef + (renderParams.translate === undefined ? 0 : renderParams.translate.x),
-                            renderParams.layout.PositionY * renderParams.grid.yStep + renderParams.grid.yStep / containerPaddingCoef + (renderParams.translate === undefined ? 0 : renderParams.translate.y),
+                        var g = jqSvg.group({
+                            transform: "translate(" + x + ", " + y + ")"
+                        });
+
+                        jqSvg.rect(g,
+                            - renderParams.grid.xStep * renderParams.layout.Size / 2 + renderParams.grid.xStep / containerPaddingCoef + (renderParams.translate === undefined ? 0 : renderParams.translate.x),
+                            - renderParams.grid.yStep * renderParams.layout.Size / 2 + renderParams.grid.yStep / containerPaddingCoef + (renderParams.translate === undefined ? 0 : renderParams.translate.y),
                             renderParams.grid.xStep * renderParams.layout.Size - 2 * renderParams.grid.xStep / containerPaddingCoef,
                             renderParams.grid.yStep * renderParams.layout.Size - 2 * renderParams.grid.yStep / containerPaddingCoef,
                             0,
                             0,
                             {
                                 stroke: "none",
-                                fill: renderParams.background !== undefined ? renderParams.background : "white"
+                                fill: renderParams.background !== undefined ? renderParams.background : "white",
                             });
 
-                        var g = jqSvg.group({
-                            transform: "translate(" + x + ", " + y + ") scale(" + 0.45 * renderParams.layout.Size + ") translate(-250, -290)"
-                        });
+                        var scale = 0.45 * renderParams.layout.Size;
 
                         var cellData = "M249,577 C386.518903,577 498,447.83415 498,288.5 C498,129.16585 386.518903,0 249,0 C111.481097,0 0,129.16585 0,288.5 C0,447.83415 111.481097,577 249,577 Z M262,563 C387.368638,563 489,440.102164 489,288.5 C489,136.897836 387.368638,14 262,14 C136.631362,14 35,136.897836 35,288.5 C35,440.102164 136.631362,563 262,563 Z";
                         var cellPath = jqSvg.createPath();
@@ -224,12 +226,26 @@ module BMA {
                             fill: "#FAAF40",
                             "fill-rule": "evenodd",
                             d: cellData,
+                            transform: "scale(" + scale + ") translate(-250, -290)"
                         });
 
-                        jqSvg.ellipse(
-                            (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2 + (renderParams.translate === undefined ? 0 : renderParams.translate.x),
-                            (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2 + (renderParams.translate === undefined ? 0 : renderParams.translate.y),
-                            containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "none", fill: "white" });
+                        if (renderParams.translate === undefined) {
+                            jqSvg.ellipse(g,
+                                containerInnerCenterOffset * renderParams.layout.Size,
+                                0,
+                                containerInnerEllipseWidth * renderParams.layout.Size,
+                                containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "none", fill: "white" });
+
+                            if (that.labelVisibility === true) {
+                                if (renderParams.layout.Name !== undefined && renderParams.layout.Name !== "") {
+                                    var textLabel = jqSvg.text(g, 0, 0, renderParams.layout.Name, {
+                                        transform: "translate(" + -(renderParams.layout.Size * renderParams.grid.xStep / 2 - 10 * renderParams.layout.Size) + ", " + -(renderParams.layout.Size * renderParams.grid.yStep / 2 - that.labelSize - 10 * renderParams.layout.Size) + ")",
+                                        "font-size": that.labelSize * renderParams.layout.Size,
+                                        "fill": "black"
+                                    });
+                                }
+                            }
+                        }
 
                         $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                         $(op).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
@@ -316,8 +332,8 @@ module BMA {
                         });
 
                         if (that.labelVisibility === true) {
-                            
-                            
+
+
 
                             var offset = 0;
 

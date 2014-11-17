@@ -128,6 +128,35 @@ module BMA {
             }
         }
 
+        export class ContainerEditorDriver implements IContainerEditor {
+            private containerEditor: JQuery;
+
+            constructor(containerEditor: JQuery) {
+                this.containerEditor = containerEditor;
+                this.containerEditor.containernameeditor();
+                this.containerEditor.hide();
+
+                this.containerEditor.click(function (e) { e.stopPropagation(); });
+            }
+
+            public GetContainerName(): string {
+                return this.containerEditor.containernameeditor('option', 'name');
+            }
+
+            Initialize(containerLayout: BMA.Model.ContainerLayout) {
+                this.containerEditor.containernameeditor('option', 'name', containerLayout.Name);
+            }
+
+            public Show(x: number, y: number) {
+                this.containerEditor.show();
+                this.containerEditor.css("left", x).css("top", y);
+            }
+
+            public Hide() {
+                this.containerEditor.hide();
+            }
+        }
+
         export class ProofViewer implements IProofResultViewer {
             private proofAccordion: JQuery;
             private proofContentViewer: JQuery;

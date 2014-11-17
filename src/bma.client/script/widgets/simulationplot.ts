@@ -23,14 +23,13 @@
             var options = this.options;
             this.element.empty();
 
-            var cnt = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("70%").height("100%").css("float", "left").appendTo(that.element);
-            var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             this.chartdiv = $('<div id="chart"></div>')
                 .attr("data-idd-plot", "figure")
-            //.attr("data-idd-legend", "lg")
-                .width("100%")
+                .width("70%")
                 .height("100%")
-                .appendTo(cnt);
+                .css("float", "left")
+                .appendTo(that.element);
+            var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
 
             var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
 

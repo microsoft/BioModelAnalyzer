@@ -37,6 +37,13 @@ module BMA {
             SetValidation(val: boolean, message: string);
         }
 
+        export interface IContainerEditor {
+            GetContainerName(): string;
+            Initialize(containerLayout: BMA.Model.ContainerLayout);
+            Show(x: number, y: number);
+            Hide();
+        }
+
         export interface IElementsPanel {
             GetDragSubject(): any;
         }

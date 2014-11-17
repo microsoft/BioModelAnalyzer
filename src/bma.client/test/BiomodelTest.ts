@@ -3,7 +3,7 @@
     describe("BMA.Model.Variable", () => {
 
         var id = 245, containerId = 312, type = "testtype", name = "testname", rangeFrom = 10, rangeTo = 15, formula = "testformula";
-       
+
         it("creates BMA.Model.Variable with right properties", () => {
             var variable = new BMA.Model.Variable(id, containerId, type, name, rangeFrom, rangeTo, formula);
             expect(variable.ContainerId).toEqual(containerId);
@@ -32,7 +32,7 @@
         var id = 245, fromVariableId = 312, toVariableId = 256, type = "testtype";
 
         it("creates BMA.Model.Relationship with right properties", () => {
-        
+
             var relationship = new BMA.Model.Relationship(id, fromVariableId, toVariableId, type);
 
             expect(relationship.Id).toEqual(id);
@@ -153,7 +153,7 @@
         var id = 134, size = 18, positionX = 64, positionY = 85;
 
         it("creates BMA.Model.ContainerLayout with right properties", () => {
-            var CL = new BMA.Model.ContainerLayout(id, size, positionX, positionY);
+            var CL = new BMA.Model.ContainerLayout(id, "", size, positionX, positionY);
 
             expect(CL.Id).toEqual(id);
             expect(CL.Size).toEqual(size);
@@ -166,8 +166,8 @@
         var VL1 = new BMA.Model.VarialbeLayout(15, 97, 0, 54, 32, 16);
         var VL2 = new BMA.Model.VarialbeLayout(62, 22, 41, 0, 3, 7);
         var VL3 = new BMA.Model.VarialbeLayout(9, 14, 75, 6, 4, 0);
-        var CL1 = new BMA.Model.ContainerLayout(7,5,1,6);
-        var CL2 = new BMA.Model.ContainerLayout(3, 24, 81, 56);
+        var CL1 = new BMA.Model.ContainerLayout(7, "", 5, 1, 6);
+        var CL2 = new BMA.Model.ContainerLayout(3, "", 24, 81, 56);
         var containers = [CL1, CL2];
         var varialbes = [VL1, VL2, VL3];
 

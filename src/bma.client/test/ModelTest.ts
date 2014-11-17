@@ -15,8 +15,8 @@
     var VL1 = new BMA.Model.VarialbeLayout(15, 97, 0, 54, 32, 16);
     var VL2 = new BMA.Model.VarialbeLayout(62, 22, 41, 0, 3, 7);
     var VL3 = new BMA.Model.VarialbeLayout(9, 14, 75, 6, 4, 0);
-    var CL1 = new BMA.Model.ContainerLayout(7, 5, 1, 6);
-    var CL2 = new BMA.Model.ContainerLayout(3, 24, 81, 56);
+    var CL1 = new BMA.Model.ContainerLayout(7, "", 5, 1, 6);
+    var CL2 = new BMA.Model.ContainerLayout(3, "", 24, 81, 56);
     var containers = [CL1, CL2];
     var varialbes = [VL1, VL2, VL3];
     var layout = new BMA.Model.Layout(containers, varialbes);
@@ -192,8 +192,8 @@
             },
             "layout": {
                 "containers": [
-                    { "id": 1, "size": 1, "positionX": 2, "positionY": -2 },
-                    { "id": 2, "size": 1, "positionX": 3, "positionY": -1 }
+                    { "id": 1, "name": "", "size": 1, "positionX": 2, "positionY": -2 },
+                    { "id": 2, "name": "", "size": 1, "positionX": 3, "positionY": -1 }
                 ],
                 "variables": [
                     { "id": 3, "positionX": 565.8333333333334, "positionY": -383.33333333333337, "cellX": 0, "cellY": 0, "angle": 0 },
@@ -247,6 +247,7 @@
         for (var i = 0; i < ml.layout.containers.length; i++) {
             containers.push(new BMA.Model.ContainerLayout(
                 ml.layout.containers[i].id,
+                ml.layout.containers[i].name,
                 ml.layout.containers[i].size,
                 ml.layout.containers[i].positionX,
                 ml.layout.containers[i].positionY));
@@ -423,7 +424,7 @@
         appModel.Layout = layout;
         appModel.ProofResult = proof;
 
-        var str = '{"model":{"name":"TestBioModel","variables":[{"id":34,"containerId":15,"type":"type1","rangeFrom":3,"rangeTo":7,"formula":"formula1","name":"name1"},{"id":38,"containerId":10,"type":"type2","rangeFrom":1,"rangeTo":14,"formula":"formula2","name":"name2"}],"relationships":[{"id":3,"fromVariableId":34,"toVariableId":38,"type":"type1"},{"id":3,"fromVariableId":38,"toVariableId":34,"type":"type2"},{"id":3,"fromVariableId":34,"toVariableId":34,"type":"type3"}]},"layout":{"containers":[{"id":7,"size":5,"positionX":1,"positionY":6},{"id":3,"size":24,"positionX":81,"positionY":56}],"variables":[{"id":15,"positionX":97,"positionY":0,"cellX":54,"cellY":32,"angle":16},{"id":62,"positionX":22,"positionY":41,"cellX":0,"cellY":3,"angle":7},{"id":9,"positionX":14,"positionY":75,"cellX":6,"cellY":4,"angle":0}]}}'
+        var str = '{"model":{"name":"TestBioModel","variables":[{"id":34,"containerId":15,"type":"type1","rangeFrom":3,"rangeTo":7,"formula":"formula1","name":"name1"},{"id":38,"containerId":10,"type":"type2","rangeFrom":1,"rangeTo":14,"formula":"formula2","name":"name2"}],"relationships":[{"id":3,"fromVariableId":34,"toVariableId":38,"type":"type1"},{"id":3,"fromVariableId":38,"toVariableId":34,"type":"type2"},{"id":3,"fromVariableId":34,"toVariableId":34,"type":"type3"}]},"layout":{"containers":[{"id":7,"name":"","size":5,"positionX":1,"positionY":6},{"id":3,"name":"","size":24,"positionX":81,"positionY":56}],"variables":[{"id":15,"positionX":97,"positionY":0,"cellX":54,"cellY":32,"angle":16},{"id":62,"positionX":22,"positionY":41,"cellX":0,"cellY":3,"angle":7},{"id":9,"positionX":14,"positionY":75,"cellX":6,"cellY":4,"angle":0}]}}'
 
         expect(appModel.Serialize()).toEqual(str);
     });

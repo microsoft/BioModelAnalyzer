@@ -226,6 +226,15 @@ module BMA {
             private size: number;
             private positionX: number;
             private positionY: number;
+            private name: string;
+
+            public get Name(): string {
+                return this.name;
+            }
+
+            public set Name(value: string) {
+                this.name = value;
+            }
 
             public get Id(): number {
                 return this.id;
@@ -243,8 +252,9 @@ module BMA {
                 return this.positionY;
             }
 
-            constructor(id: number, size: number, positionX: number, positionY: number) {
+            constructor(id: number, name: string, size: number, positionX: number, positionY: number) {
                 this.id = id;
+                this.name = name;
                 this.size = size;
                 this.positionX = positionX;
                 this.positionY = positionY;

@@ -88,6 +88,7 @@ module BMA {
                     for (var i = 0; i < ml.layout.containers.length; i++) {
                         containers.push(new BMA.Model.ContainerLayout(
                             ml.layout.containers[i].id,
+                            ml.layout.containers[i].name,
                             ml.layout.containers[i].size,
                             ml.layout.containers[i].positionX,
                             ml.layout.containers[i].positionY));

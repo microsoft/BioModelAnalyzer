@@ -40,6 +40,7 @@
 
             return new Model.ContainerLayout(
                 parseInt($elt.attr("Id")),
+                $elt.attr("Name"),
                 parseInt(size),
                 parseInt($elt.children("PositionX").text()),
                 parseInt($elt.children("PositionY").text()));

@@ -60,7 +60,7 @@ describe("SimulationPlotViewer", () => {
             Plot: [3, 5, 9]
         };
         widget.simulationplot({ colors: data });
-        expect(widget.children().eq(0).children().length).toEqual(4 + data.length);
+        expect(widget.children().eq(0).children().length).toEqual(5 + data.length);
     })
 
     it("should update polylines after setting another data", () => {
@@ -87,7 +87,7 @@ describe("SimulationPlotViewer", () => {
             Plot: [3, 5, 9]
         };
         widget.simulationplot({ colors: data2 });
-        expect(widget.children().eq(0).children().length).toEqual(4 + data2.length);
+        expect(widget.children().eq(0).children().length).toEqual(5 + data2.length);
     })
 
     it("should set proper options for polylines", () => {

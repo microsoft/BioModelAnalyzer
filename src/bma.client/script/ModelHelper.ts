@@ -92,9 +92,9 @@
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var cnt = containerLayouts[i];
                     if (cnt.Id === container.Id) {
-                        newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, containerSize, cnt.PositionX, cnt.PositionY));
+                        newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, containerSize, cnt.PositionX, cnt.PositionY));
                     } else if (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY) {
-                        newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX,
+                        newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX,
                             cnt.PositionY > container.PositionY ? cnt.PositionY + sizeDiff : cnt.PositionY));
                     } else
                         newCnt.push(cnt);
