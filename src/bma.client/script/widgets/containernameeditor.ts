@@ -22,7 +22,7 @@
                 .attr("placeholder", "Container Name")
                 .appendTo(that.element);
             this.name.bind("input change", function () {
-                that._setOption("name", that.name.val());
+                that.options.name = that.name.val();
                 window.Commands.Execute("ContainerNameEdited", {});
             });
             this.name.val(that.options.name);
