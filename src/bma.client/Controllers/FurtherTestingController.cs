@@ -33,7 +33,7 @@ namespace bma.client.Controllers
             stream2.Position = 0;
             var outputXml = XDocument.Load(stream2);
 
-            //var log = new DefaultLogService();
+            var log = new DefaultLogService();
 
             try
             {
@@ -41,21 +41,20 @@ namespace bma.client.Controllers
 
                 var analyisStartTime = DateTime.Now;
 
-                // Call the Analyzer and get the Counter Examples Xml
-                //if (input.EnableLogging)
-                //{
-                //    analyzer.LoggingOn(log);
-                //}
-                //else
-                //{
+               if (input.EnableLogging)
+                {
+                    analyzer.LoggingOn(log);
+                }
+                else
+                {
                     analyzer.LoggingOff();
-                //    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
-                //}
+                    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                }
 
                 var cexBifurcatesXml = analyzer.findCExBifurcates(inputXml, outputXml);
                 var cexCyclesXml = analyzer.findCExCycles(inputXml, outputXml);
 
-                //log.LogDebug(string.Format("Finding Counter Examples took {0} seconds to run.", (DateTime.Now - analyisStartTime).TotalSeconds));
+                log.LogDebug(string.Format("Finding Counter Examples took {0} seconds to run.", (DateTime.Now - analyisStartTime).TotalSeconds));
 
                 var furtherTestingOutput = new FurtherTestingOutput();
                 List<CounterExampleOutput> counterExamples = new List<CounterExampleOutput>();
@@ -111,20 +110,20 @@ namespace bma.client.Controllers
                 }
 
                 furtherTestingOutput.CounterExamples = counterExamples.ToArray();
-                furtherTestingOutput.ErrorMessages = new string[0]; //log.ErrorMessages;
+                furtherTestingOutput.ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null;
+                furtherTestingOutput.DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null;
                 //furtherTestingOutput.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
 
                 return furtherTestingOutput;
             }
             catch (Exception ex)
             {
+                log.LogError(ex.ToString());
                 var furtherTestingOutput = new FurtherTestingOutput
                 {
-                    Error = ex.ToString(),
-                    ErrorMessages = new string[0]//log.ErrorMessages,
-                  //  ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
                 };
-
                 return furtherTestingOutput;
             }
         }

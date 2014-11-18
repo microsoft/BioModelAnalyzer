@@ -29,7 +29,7 @@ namespace bma.client.Controllers
 
             string engineName = input.Engine;
 
-            //var log = new DefaultLogService();
+            var log = new DefaultLogService();
 
             // var azureLogService = new LogService();
 
@@ -43,16 +43,15 @@ namespace bma.client.Controllers
 
                     var analyisStartTime = DateTime.Now;
 
-                    // Call the Analyzer and get the Output Xml
-                    // if (input.EnableLogging)
-                    // {
-                    //     analyzer.LoggingOn(log);
-                    // }
-                    // else
-                    // {
-                    analyzer.LoggingOff();
-                    //    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
-                    // }
+                    if (input.EnableLogging)
+                    {
+                        analyzer.LoggingOn(log);
+                    }
+                    else
+                    {
+                        analyzer.LoggingOff();
+                        log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                    }
 
                     var outputXml = analyzer.checkStability(inputXml);
 
@@ -61,7 +60,7 @@ namespace bma.client.Controllers
                     //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
 
                     var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
-                    //log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
+                    log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
 
                     // Convert to the Output Data
                     var outputStream = new MemoryStream();
@@ -69,13 +68,14 @@ namespace bma.client.Controllers
                     outputStream.Position = 0;
                     XmlSerializer outputSerializer = new XmlSerializer(typeof(AnalysisOutput));
                     var output = (AnalysisOutput)outputSerializer.Deserialize(outputStream);
-                    //if (output.Status != StatusType.Stabilizing && output.Status != StatusType.NotStabilizing)
-                    //{
-                    //    var error = outputXml.Descendants("Error").FirstOrDefault();
-                    //    output.Error = error != null ? error.AttributeString("Msg") : "There was an error in the analyzer";
-                    //}
+                    if (output.Status != StatusType.Stabilizing && output.Status != StatusType.NotStabilizing)
+                    {
+                        var error = outputXml.Descendants("Error").FirstOrDefault();
+                        log.LogError(error != null ? error.Attribute(XName.Get("Msg")).Value : "There was an error in the analyzer");
+                    }
                     output.Time = (int)time;
-                    //outputData.ErrorMessages = log.ErrorMessages;
+                    output.ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null;
+                    output.DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null;
                     //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
                     //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
 
@@ -85,18 +85,20 @@ namespace bma.client.Controllers
                 {
                     //  azureLogService.Debug("Analyze Exception", ex.ToString());
 
+                    log.LogError(ex.ToString());
+
                     // Return an Unknown if fails
                     var outputData = new AnalysisOutput
                     {
-                        Status = StatusType.Unknown
-                        /* StatusTypes.Unknown,
-                        Error = ex.ToString(),
-                        ErrorMessages = log.ErrorMessages,
-                        ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))*/
+                        Status = StatusType.Unknown,
+                        ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
+                        DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
                     };
                     return outputData;
                 }
-            }/*
+            }
+            
+            /*
             else if (engineName == "CAV")
             {
                 // LTL Proof
@@ -213,7 +215,12 @@ namespace bma.client.Controllers
                 }
             }
             // Normal proof, LTL or SYN*/
-            return new AnalysisOutput() { Status = StatusType.Unknown };
+            log.LogError(String.Concat("Unknown engine name:", input.Engine, ". Only VMCAI is supported now"));
+            return new AnalysisOutput() 
+            { 
+                Status = StatusType.Unknown,
+                ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
+            };
         }
     }
 }

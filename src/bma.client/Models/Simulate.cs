@@ -13,6 +13,8 @@ namespace bma.client
         public Model Model { get; set; }
 
         public SimulationVariable[] Variables { get; set; }
+
+        public bool EnableLogging { get; set; }
     }
 
     public class SimulationOutput
@@ -20,5 +22,7 @@ namespace bma.client
         public SimulationVariable[] Variables { get; set; }
 
         public string[] ErrorMessages { get; set; }
+
+        public string[] DebugMessages { get; set; }
     }
 }

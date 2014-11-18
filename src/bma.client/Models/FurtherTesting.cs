@@ -9,6 +9,8 @@ namespace bmaclient
         public AnalysisInput Model { get; set; }
 
         public AnalysisOutput Analysis { get; set; }
+
+        public bool EnableLogging { get; set; }
     }
 
     public enum CounterExampleType
@@ -119,8 +121,8 @@ namespace bmaclient
     {
         public CounterExampleOutput[] CounterExamples { get; set; }
 
-        public string Error { get; set; }
-
         public string[] ErrorMessages { get; set; }
+
+        public string[] DebugMessages { get; set; }
     }
 }

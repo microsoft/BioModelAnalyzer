@@ -5,6 +5,10 @@ namespace bma.client
     {
         public int Time { get; set; }
 
+        public string[] ErrorMessages { get; set; }
+
+        public string[] DebugMessages { get; set; }
+
         // DebugMessages and ErrorMessages go here
     }
 
@@ -14,5 +18,8 @@ namespace bma.client
         public string ModelName { get; set; }
 
         public string Engine { get; set; }
+
+        [XmlIgnore]
+        public bool EnableLogging { get; set; }
     }
 }

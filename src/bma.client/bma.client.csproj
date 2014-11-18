@@ -407,6 +407,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Logs\DefaultLogService.cs" />
     <Compile Include="Models\Analysis.cs" />
     <Compile Include="Models\FurtherTesting.cs" />
     <Compile Include="Models\Model.cs" />

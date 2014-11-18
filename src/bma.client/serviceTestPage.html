@@ -2,12 +2,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Service test page</title>
+    <style>
+        .debug-message { 
+            font-size:smaller;
+            font-family: Courier New, Courier, monospace;
+            color: blue
+        }
+
+        .error-message { 
+            font-size:smaller;
+            font-family: Courier New, Courier, monospace;
+            color: red
+        }
+    </style>
     <script src="Scripts/jquery-2.1.1.min.js"></script>
     <script type="text/javascript">
 
         var stableModel = {
             "ModelName": "ToyModelStable",
             "Engine": "VMCAI",
+            "EnableLogging": true,
 
             "Variables": [
               {
@@ -56,8 +70,9 @@
         }
                
         var unstableModel = {
-            "ModelName": "ToyModelUntable",
+            "ModelName": "ToyModelUnstable",
             "Engine": "VMCAI",
+            "EnableLogging": true,
 
             "Variables": [
               {
@@ -109,6 +124,7 @@
         var bifurcatingModel = {
             "ModelName": "BifurcatingModel",
             "Engine": "VMCAI",
+            "EnableLogging": true,
             "Variables": [
                 { "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Function": "", "Name":"a" }
             ],
@@ -123,11 +139,23 @@
                 { "Id": 1, "Value": 2 },
                 { "Id": 2, "Value": 2 },
                 { "Id": 3, "Value": 2 },
-            ]
+            ],
+            "EnableLogging": true
         }
 
         var correctFormula = "max( (avg(var(x),var(y),var(z),var(w),var(v),var(u)) - avg(var(a),var(b),var(c),var(d))), 0)";
      
+        function appendMessages(log, cls) {
+            if(log && log.length)
+                for (var i = 0; i < log.length; i++)
+                    $("#log").append("<span class=\'" + cls + "\'>&nbsp;&nbsp;&nbsp;&nbsp;" + log[i] + "</span><br/>");
+        }
+
+        function appendLog(res) {
+            appendMessages(res.DebugMessages, "debug-message");
+            appendMessages(res.ErrorMessages, "error-message");
+        }
+
         $(function () {
             $("#log").append("Invoking api/Analyze (for stable model)...<br/>");
             $.ajax({
@@ -136,9 +164,11 @@
                 data: stableModel,
                 success: function (res) {
                     $("#log").append("Analyze success. Analysis result (for stable): " + res.Status + "<br/>");
+                    appendLog(res);
                 },
                 error: function (res) {
                     $("#log").append("Analyze error: " + res.statusText + "<br/>");
+                    appendLog(res);
                 }
             });
 
@@ -149,6 +179,7 @@
                 data: unstableModel,
                 success: function (res) {
                     $("#log").append("Analyze success. Analysis result (for unstable): " + res.Status + "<br/>");
+                    appendLog(res);
                     $("#log").append("Invoking api/FurtherTesting...<br/>");
                     $.ajax({
                         type: "POST",
@@ -156,17 +187,21 @@
                         data: {
                             Model: unstableModel,
                             Analysis: res,
+                            EnableLogging: true,
                         },
                         success: function (res2) {
                             $("#log").append("FurtherTesting success. Counter examples found: " + res2.CounterExamples.length + "<br/>");
+                            appendLog(res2);
                         },
                         error: function (res2) {
                             $("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
+                            appendLog(res2);
                         }
                     });
                 },
                 error: function (res) {
                     $("#log").append("Analyze error: " + res.statusText + "<br/>");
+                    appendLog(res);
                 }
             });
 
@@ -177,6 +212,7 @@
                 data: bifurcatingModel,
                 success: function (res) {
                     $("#log").append("Analyze success. Analysis result (for bifurcating): " + res.Status + "<br/>");
+                    appendLog(res);
                     $("#log").append("Invoking api/FurtherTesting...<br/>");
                     $.ajax({
                         type: "POST",
@@ -184,17 +220,21 @@
                         data: {
                             Model: bifurcatingModel,
                             Analysis: res,
+                            EnableLogging: true
                         },
                         success: function (res2) {
                             $("#log").append("FurtherTesting success. Counter examples found: " + res2.CounterExamples.length + "<br/>");
+                            appendLog(res2);
                         },
                         error: function (res2) {
                             $("#log").append("FurtherTesting error: " + res2.statusText + "<br/>");
+                            appendLog(res2);
                         }
                     });
                 },
                 error: function (res) {
                     $("#log").append("Analyze error: " + res.statusText + "<br/>");
+                    appendLog(res);
                 }
             });
 
@@ -206,9 +246,11 @@
                 data: simulate,
                 success: function (res) {
                     $("#log").append("Simulate success. Result variable count: " + res.Variables.length + "<br/>");
+                    appendLog(res);
                 },
                 error: function (res) {
                     $("#log").append("Simulate error: " + res.statusText + "<br/>");
+                    appendLog(res);
                 }
             });
 

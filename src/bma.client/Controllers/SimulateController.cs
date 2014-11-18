@@ -21,6 +21,7 @@ namespace bma.client.Controllers
             input.Model.ReplaceVariableNamesWithIDs();
             input.Model.NullifyDefaultFunction();
 
+            var log = new DefaultLogService();
 
             try {
                 var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));
@@ -35,22 +36,19 @@ namespace bma.client.Controllers
                 stream.Position = 0;
                 var inputXml = XDocument.Load(stream);
 
-                //var log = new DefaultLogService();
-
                 IAnalyzer2 analyzer = new UIMain.Analyzer2();
 
                 var analyisStartTime = DateTime.Now;
 
-                // Call the Analyzer and get the Output Xml
-                //if (input.EnableLogging)
-                //{
-                //    analyzer.LoggingOn(log);
-                //}
-                //else
-                //{
-                //    analyzer.LoggingOff();
-                //    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
-                //}
+                if (input.EnableLogging)
+                {
+                    analyzer.LoggingOn(log);
+                }
+                else
+                {
+                    analyzer.LoggingOff();
+                    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                }
 
                 var inputDictionary = new Dictionary<int, int>();
 
@@ -67,7 +65,8 @@ namespace bma.client.Controllers
                         Id = pair.Key,
                         Value = pair.Value
                     }).ToArray(),
-                    ErrorMessages = null
+                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null,
                 };
 
                 //outputData.ErrorMessages = log.ErrorMessages;
@@ -75,11 +74,11 @@ namespace bma.client.Controllers
             }
             catch (Exception ex)
             {
-                // Return an error message if fails
+                log.LogError(ex.ToString());
                 return new SimulationOutput
                 {
-                    ErrorMessages = new string[] { ex.Message }
-//                    ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
+                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
                 };
             }
         }
