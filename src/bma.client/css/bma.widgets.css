@@ -1327,7 +1327,7 @@
     right: 50px;
     top: -40px;
     color:#ffffff;
-    font-family:Verdana;
+    font-family:'Segoe UI';
     font-size:20px;
     padding:5px 20px;
     text-decoration:none;
@@ -1347,7 +1347,7 @@
     right: 50px;
     top: -40px;
     color:#ffffff;
-    font-family:Verdana;
+    font-family:'Segoe UI';
     font-size:20px;
     padding:5px 20px;
     text-decoration:none;
@@ -1359,7 +1359,7 @@
     font-size: large;
     position: relative;
     float:right;
-    font-family: Verdana;
+    font-family: 'Segoe UI';
 }
 
 .steps-setting > *:first-child {
@@ -1383,7 +1383,7 @@
     display: inline-block;
     cursor: pointer;
     color:#ffffff;
-    font-family:Verdana;
+    font-family:'Segoe UI';
     font-size:17px;
     padding:4px 15px;
     text-decoration:none;
@@ -1416,10 +1416,10 @@
     -webkit-border-radius:8px;
     border-radius:8px;
     border:1px solid #942911;
-    display: inline - block;
+    display: inline-block;
     cursor: pointer;
     color:#ffffff;
-    font-family:Verdana;
+    font-family:'Segoe UI';
     font-size:15px;
             padding:8px 15px;
     text-decoration:none;
@@ -1429,17 +1429,17 @@
     width:140px;
     height: 35px;
     background-color:#d0451b;
-    -moz - border-radius:8px;
-    -webkit - border-radius:8px;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
     background-image: url(../images/20x20.gif);
     background-repeat: no-repeat;
     background-position:center;
     border-radius:8px;
     border:1px solid #942911;
-    display: inline - block;
+    display: inline-block;
     cursor: pointer;
     color:#ffffff;
-    font-family:Verdana;
+    font-family:'Segoe UI';
     font-size:15px;
             padding:8px 15px;
     text-decoration:none;
@@ -1453,7 +1453,7 @@
     top: 100px;
     border-radius:5px;
     box-shadow: 2px 5px 10px 0px rgba(0,0,0,0.50);
-    font-family:Verdana;
+    font-family:'Segoe UI';
     font-size: 17px;
     z-index:5;
     width: 180px;
