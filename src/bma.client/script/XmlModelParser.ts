@@ -49,7 +49,7 @@
         var varLayouts = $variables.map((idx, elt) => {
             var $elt = $(elt);
 
-
+            var id = parseInt($elt.attr("Id"));
 
             var cellX = $elt.children("CellX").text();
             var cellY = $elt.children("CellY").text();
@@ -75,13 +75,39 @@
             positionX = positionX === "" ? "0" : positionX;
             var positionY = $elt.children("PositionY").text();
             positionY = positionY === "" ? "0" : positionY;
+
+            var x = parseInt(cellX) * grid.xStep + grid.xOrigin + parseFloat(positionX) * (grid.xStep - 60) / 300 + 30;
+            var y = parseInt(cellY) * grid.yStep + grid.yOrigin + parseFloat(positionY) * (grid.yStep - 50) / 350 + 25;
+
+            if (modelVars[idx].Type === "MembraneReceptor") {
+                var cID = parseInt($elt.children("ContainerId").text());
+                var cnt = undefined;
+                for (var i = 0; i < containers.length; i++) {
+                    if (containers[i].Id === cID) {
+                        cnt = containers[i];
+                        break;
+                    }
+                }
+
+                var p = SVGHelper.GeEllipsePoint(
+                    (cnt.PositionX + 0.5) * grid.xStep + grid.xOrigin + (cnt.Size - 1) * grid.xStep / 2  + 2.5 * cnt.Size,
+                    (cnt.PositionY + 0.5) * grid.yStep + grid.yOrigin + (cnt.Size - 1) * grid.yStep / 2,
+                    107 * cnt.Size,
+                    127 * cnt.Size,
+                    x,
+                    y);
+
+                x = p.x;
+                y = p.y;
+            }
+            
             var angle = $elt.children("Angle").text();
             angle = angle === "" ? "0" : angle;
 
             return new Model.VarialbeLayout(
-                parseInt($elt.attr("Id")),
-                parseInt(cellX) * grid.xStep + grid.xOrigin + parseFloat(positionX) * (grid.xStep - 60) / 300 + 30,
-                parseInt(cellY) * grid.yStep + grid.yOrigin + parseFloat(positionY) * (grid.yStep - 50) / 350 + 25,
+                id,
+                x,
+                y,
                 Number.NaN,
                 Number.NaN,
                 parseFloat(angle));
