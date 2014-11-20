@@ -294,6 +294,8 @@
         right: 0;
         top: 0;
         cursor: pointer;
+        width:20px;
+        height:20px;
     }
 
     input {
@@ -320,7 +322,8 @@
         
 
     #analytics > div{
-        box-shadow: -5px 0px 8px lightgray;
+        -moz-box-shadow: -5px 5px 8px rgba(0,0,0,0.4);
+        box-shadow: -5px 5px 8px rgba(0,0,0,0.4);
     }
 
     /*#modelToolbarSlider ul {
@@ -517,7 +520,7 @@
     }
 
     .analyze-header-icon {
-        background-color:Window;
+        background-color:white;
         background-position:center;
         background-repeat:no-repeat;
         width: 80px;
@@ -621,7 +624,7 @@
     .tabPanel {
         width: 400px;
         min-height: 150px;
-        background-color: Window;
+        background-color: white;
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
         border: none;
@@ -638,6 +641,9 @@
 
     .tabPanel h2 {
         margin: 0;
+        font-size: 20px;
+        line-height: 27px;
+        font-weight: normal;
     }
 
     .ui-widget button{
@@ -986,12 +992,15 @@
 }
 
 .bma-proofstate-message {
-    font-size:small;
+    font-size:13px;
+
     margin-bottom: 10px;
 }
 
 .bma-prooftable {
-    margin: 5px 0;
+    font-size:13px;
+    line-height: 17px;
+    margin: 5px 0 15px 0px;
     padding:0;
     width:100%;
     border:1px solid #cccccc;
@@ -999,7 +1008,7 @@
 }
 
 
-.bma-prooftable tr:nth-child(odd){ background-color:#f5f5f5; }
+.bma-prooftable tr:nth-child(odd){ background-color:#ededed; }
 
 .bma-prooftable tr:nth-child(even)    { background-color:#ffffff; }
 
@@ -1016,11 +1025,10 @@
 
 
 .bma-prooftable tr:first-child td{
-    background-color:#787878;
-    border:1px solid #cccccc;
+    background-color:#606060;
+    border:1px solid #606060;
     text-align:center;
     /*border-width:0px 0px 1px 1px;*/
-    font-size:14px;
     color:#ffffff;
 }
 
@@ -1213,7 +1221,8 @@
 .resultswindowviewer-header {
     display: table-cell;
     vertical-align: bottom;
-    font-size: larger;
+    font-size: 15px;
+    line-height: 20px;
 }
 
 .resultswindowviewer-content {
