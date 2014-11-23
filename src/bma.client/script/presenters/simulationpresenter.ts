@@ -210,6 +210,7 @@
             }
 
             public CreateVariablesView() {
+                var that = this;
                 var table = [];
                 var variables = this.appModel.BioModel.Variables.sort((x, y) => {
                     return x.Id < y.Id ? -1 : 1;
@@ -217,7 +218,10 @@
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
                     table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color; // color should be there
-                    table[i][1] = variables[i].ContainerId;
+                    table[i][1] = (function () {
+                        var cont = that.appModel.Layout.GetContainerById(variables[i].ContainerId);
+                        return cont !== undefined ? cont.Name : '';
+                    })();
                     table[i][2] = variables[i].Name;
                     table[i][3] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
                 }
