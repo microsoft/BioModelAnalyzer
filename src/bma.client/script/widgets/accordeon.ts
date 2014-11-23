@@ -24,7 +24,7 @@
             var options = this.options;
 
             this.prevShow = this.prevHide = $();
-            this.element.addClass("ui-accordion ui-widget ui-helper-reset")
+            this.element.addClass("ui-accordion")
             // ARIA
                 .attr("role", "tablist");
 

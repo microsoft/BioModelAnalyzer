@@ -69,149 +69,177 @@
     <script src="script/widgets/simulationviewer.js"></script>
     <script src="script/widgets/variablesOptionsEditor.js"></script>
     <script src="script/widgets/visibilitysettings.js"></script>
+    <body>
+        <div id="tools" class="bma-elementspanel">
+            <a id="downloadLink" style="display: none"></a>
+            <input style="display:none;" type="file" accept="text/csv" id="fileLoader">
 
+            <div id="undoredotoolbar" class="bma-elementspanel-undoredotoolbar">
+                <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
+                <label for="button-pointer">
+                    <img src="images/pointer.png" title="Selection tool" />
+                </label>
+
+                <div style="display: inline-block;">
+                    <div style="position: relative">
+                        <div class="bma-verticalline"></div>
+                    </div>
+                </div>
+
+                <button id="button-undo">
+                    <img src="images/undo.png" title="Undo" />
+                </button>
+                <button id="button-redo">
+                    <img src="images/redo.png" title="Redo" />
+                </button>
+            </div>
+
+            <div id="modelelemtoolbar" class="bma-elementspanel-elementstoolbar"></div>
+
+            <!--<div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>-->
+            <!--<img id="zoom-minus" src="images/zoomminus.png">
+            <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
+            <img id="zoom-plus" src="images/zoomplus.png">-->
+
+
+            <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
+                <button id="visibilityOptionsHeader" class="visibility-icon"></button>
+                <div style="position: relative">
+                    <div id="visibilityOptionsContent" class="visibility-table visibility-shadow">
+                        <ul>
+                            <li id="li1">
+                                <div class="optionsNames">Text Labels</div>
+                                <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
+                                <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
+                            </li>
+                            <!--<li id="li2">
+                                <div class="optionsNames">Icons</div>
+                                <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
+                                <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
+                            </li>-->
+                            <li id="li3">
+                                <div class="optionsNames">Grid</div>
+                                <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
+                            </li>
+                            <!--<li id="li4">
+                                <div class="optionsNames">Line Width</div>
+                                <div data-behavior="increment" data-command="Commands.LineWidth" data-default="10" style="float: left;"></div>
+                            </li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="zoomslider" data-command="ZoomSliderChanged"></div>
+
+        </div>
+
+        <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer" style="position: relative;">
+
+
+            <div id="drawingSurface" class="bma-drawingsurface"></div>
+
+            <div class="bma-modeltoolbarcontainer">
+                <div id="modelToolbarSlider">
+                    <div id="modelToolbarHeader" class="skinModelContainer">
+                        <ul>
+                            <li>
+                                <div class="skinModel">
+                                    <input id="modelNameEditor" type="text" value="Model 1">
+                                </div>
+                            <li>
+                                <div class="saveIcon"></div>
+                        </ul>
+                    </div>
+                    <div id="modelToolbarContent" class="toolbarContainer">
+                        <ul>
+                            <li>
+                                <div id="localSaveBtn" data-command="LocalStorageSaveModel">
+                                    <div class="localSaveButton modelToolbarBtns"></div>
+                                    <span>SAVE</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div id="localStorageBtn" data-command="LocalStorageRequested">
+                                    <div class="localStorageButton modelToolbarBtns"></div>
+                                    <span>REPO</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div id="newModelBtn" data-command="NewModel">
+                                    <div class="newButton modelToolbarBtns"></div>
+                                    <span>NEW</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div id="importModelBtn" data-command="ImportModel">
+                                    <div class="saveButton modelToolbarBtns"></div>
+                                    <span>IMPORT</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div id="exportModelBtn" data-command="ExportModel">
+                                    <div class="openButton modelToolbarBtns"></div>
+                                    <span>EXPORT</span>
+                                </div>
+                            </li>
+                            <!--<li><span id="localStorageBtn" class="localStorageButton" data-command="LocalStorageRequested">REPO</span></li>
+                            <li><span id="newModelBtn" class="newButton" data-command="NewModel">NEW</span></li>
+                            <li><span id="importModelBtn" class="saveButton" data-command="ImportModel">IMPORT</span></li>
+                            <li><span id="exportModelBtn" class="openButton" data-command="ExportModel">EXPORT</span></li>-->
+                            <!--<li><span class="exportButton" data-command="export">EXPORT</span></li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bma-analyticstoolbarcontainer">
+                <div id="analytics">
+                    <div id="icon1" data-command="ProofRequested" class="analyze-header-icon ">
+                        <!--<div class="iconAnalyze"></div>-->
+                        <img src="images/analyze.png" class="iconAnalyze">
+                    </div>
+                    <div id="tabs-1" class="tabPanel ">
+                        <div id="Proof-Analysis"></div>
+                        <div id="Further-Testing"></div>
+                    </div>
+                    <div id="icon2" data-command="SimulationRequested" class="analyze-header-icon " style="top: 80px">
+                        <img src="images/graphic.png" class="iconAnalyze">
+                    </div>
+                    <div id="tabs-2" class="tabPanel ">
+                        <h2>Simulation</h2>
+                        <!--<div id="Div1" style="height: 50px">
+                            <span>Variables</span>
+                            <button class="expandButton"></button>
+                        </div>
+                        <div id="Div2" style="height: 50px">
+                            <button class="expandButton"></button>
+                        </div>-->
+                    </div>
+                </div>
+
+
+            </div>
+            <div id="editor"></div>
+            <div id="containerEditor"></div>
+        </div>
+
+        <div class="bma-footer">
+            <div class="bma-pagefooter-msrlogo">
+                <a href="http://research.microsoft.com/en-us/" target="_blank">
+                    <img src="images/MSR-logo.png" alt="Logo" />
+                </a>
+            </div>
+            <div class="bma-pagefooter-linkcontainer">
+                <a href="about.html" class="bma-pagefooter-links" target="_blank">About</a> - <a href="help.html" class="bma-pagefooter-links" target="_blank">Help</a> - <a href="tou.html" class="bma-pagefooter-links" target="_blank">Terms of Use</a>
+            </div>
+            <div class="bma-pagefooter-logo">
+                <img src="images/logo-crop.png" alt="Logo" />
+            </div>
+        </div>
+
+    </body>
     <script src="app.js"></script>
 </head>
-<body>
-    <div id="tools" class="bma-elementspanel">
-        <a id="downloadLink" style="display: none"></a>
-        <input style="display:none;" type="file" accept="text/csv" id="fileLoader">
 
-        <div id="undoredotoolbar" class="bma-elementspanel-undoredotoolbar">
-            <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
-            <label for="button-pointer">
-                <img src="images/pointer.png" title="Selection tool" />
-            </label>
-
-            <div style="display: inline-block;">
-                <div style="position: relative">
-                    <div class="bma-verticalline"></div>
-                </div>
-            </div>
-
-            <button id="button-undo">
-                <img src="images/undo.png" title="Undo" />
-            </button>
-            <button id="button-redo">
-                <img src="images/redo.png" title="Redo" />
-            </button>
-        </div>
-
-        <div id="modelelemtoolbar" class="bma-elementspanel-elementstoolbar"></div>
-
-        <!--<div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>-->
-        
-        <!--<img id="zoom-minus" src="images/zoomminus.png">
-        <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
-        <img id="zoom-plus" src="images/zoomplus.png">-->
-
-
-        <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
-            <button id="visibilityOptionsHeader" class="visibility-icon"></button>
-            <div style="position: relative">
-                <div id="visibilityOptionsContent" class="visibility-table visibility-shadow">
-                    <ul>
-                        <li id="li1">
-                            <div class="optionsNames">Text Labels</div>
-                            <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
-                            <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
-                        </li>
-                        <!--<li id="li2">
-                            <div class="optionsNames">Icons</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
-                            <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
-                        </li>-->
-                        <li id="li3">
-                            <div class="optionsNames">Grid</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
-                        </li>
-                        <!--<li id="li4">
-                            <div class="optionsNames">Line Width</div>
-                            <div data-behavior="increment" data-command="Commands.LineWidth" data-default="10" style="float: left;"></div>
-                        </li>-->
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="zoomslider" data-command="ZoomSliderChanged"></div>
-
-    </div>
-
-    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer" style="position: relative;">
-        
-
-        <div id="drawingSurface" class="bma-drawingsurface"></div>
-
-        <div class="bma-modeltoolbarcontainer">
-            <div id="modelToolbarSlider">
-                <div id="modelToolbarHeader" class="skinModelContainer">
-                    <ul>
-                        <li>
-                            <div class="skinModel">
-                                <input id="modelNameEditor" type="text" value="Model 1">
-                            </div>
-                        <li>
-                            <div class="saveIcon"></div>
-                    </ul>
-                </div>
-                <div id="modelToolbarContent" class="toolbarContainer">
-                    <ul>
-                        <li><span id="localSaveBtn" class="localSaveButton" data-command="LocalStorageSaveModel">SAVE</span></li>
-                        <li><span id="localStorageBtn" class="localStorageButton" data-command="LocalStorageRequested">REPO</span></li>
-                        <li><span id="newModelBtn" class="newButton" data-command="NewModel">NEW</span></li>
-                        <li><span id="importModelBtn" class="saveButton" data-command="ImportModel">IMPORT</span></li>
-                        <li><span id="exportModelBtn" class="openButton" data-command="ExportModel">EXPORT</span></li>
-                        <!--<li><span class="exportButton" data-command="export">EXPORT</span></li>-->
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="bma-analyticstoolbarcontainer">
-            <div id="analytics">
-                <div id="icon1" data-command="ProofRequested" class="analyze-header-icon ">
-                    <!--<div class="iconAnalyze"></div>-->
-                    <img src="images/analyze.png" class="iconAnalyze">
-                </div>
-                <div id="tabs-1" class="tabPanel ">
-                    <div id="Proof-Analysis"></div>
-                    <div id="Further-Testing"></div>
-                </div>
-                <div id="icon2" data-command="SimulationRequested" class="analyze-header-icon " style="top: 80px">
-                    <img src="images/graphic.png" class="iconAnalyze">
-                </div>
-                <div id="tabs-2" class="tabPanel ">
-                    <h2>Simulation</h2>
-                    <!--<div id="Div1" style="height: 50px">
-                        <span>Variables</span>
-                        <button class="expandButton"></button>
-                    </div>
-                    <div id="Div2" style="height: 50px">
-                        <button class="expandButton"></button>
-                    </div>-->
-                </div>
-            </div>
-
-
-        </div>
-        <div id="editor"></div>
-        <div id="containerEditor"></div>
-    </div>
-
-    <div class="bma-footer">
-        <div class="bma-pagefooter-msrlogo">
-            <a href="http://research.microsoft.com/en-us/" target="_blank">
-                <img src="images/MSR-logo.png" alt="Logo" />
-            </a>
-        </div>
-        <div class="bma-pagefooter-linkcontainer">
-            <a href="about.html" class="bma-pagefooter-links" target="_blank">About</a> - <a href="help.html" class="bma-pagefooter-links" target="_blank">Help</a> - <a href="tou.html" class="bma-pagefooter-links" target="_blank">Terms of Use</a>
-        </div>
-        <div class="bma-pagefooter-logo">
-            <img src="images/logo-crop.png" alt="Logo" />
-        </div>
-    </div>
-
-</body>
 </html>

@@ -222,7 +222,7 @@ $(document).ready(function () {
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
-    var popup = $('<div class="popup-window"></div>').appendTo("#drawingSurceContainer").hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
     //popup.draggable({ containment: 'parent', scroll: false });
 
     $("#localSaveBtn").click(function (args) {
@@ -362,4 +362,35 @@ $(document).ready(function () {
             });
         }
     }
+
+    function popup_position() {
+        var my_popup = $('.popup-window'), // наш попап
+            my_popup_w = my_popup.outerWidth(), // ширина попапа
+            my_popup_h = my_popup.outerHeight(), // высота попапа
+            
+            win_w = $(window).outerWidth(), // ширина окна
+            win_h = $(window).outerHeight(), // высота окна
+            popup_half_w = (win_w - my_popup_w) / 2,
+            popup_half_h = (win_h - my_popup_h) / 2;
+        if (win_w > my_popup_w) { // если ширина окна больше ширины попапа
+            my_popup.css({ 'left': popup_half_w });
+        }
+        if (win_w < my_popup_w) { // если ширина окна меньше ширины попапа                  
+            my_popup.css({ 'left': 5,});
+        }
+        if (win_h > my_popup_h) { // если высота окна больше ширины попапа
+            my_popup.css({ 'top': popup_half_h});
+        }
+        if (win_h < my_popup_h) { // если высота окна меньше ширины попапа
+            my_popup.css({ 'top': 5 });
+        }
+
+       
+    }
+    $(document).ready(function () {
+        popup_position();
+    });
+    $(window).resize(function () {
+        popup_position();
+    });
 });

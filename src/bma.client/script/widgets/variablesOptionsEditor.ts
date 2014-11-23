@@ -100,11 +100,14 @@
                 .appendTo(that.element);
 
             var rangeDiv = $('<div></div>').appendTo(that.element);
-            var rangeLabel = $('<span class="labels-in-variables-editor"></span>').text("Range").appendTo(rangeDiv);
+            var rangeLabel = $('<span></span>')
+                .addClass("labels-in-variables-editor variables-editor-headers")
+                .text("Range")
+                .appendTo(rangeDiv);
             this.rangeFrom = $('<input type="text" min="0" max="100" size="1">')
                 .attr("placeholder", "min")
                 .appendTo(rangeDiv);
-            var divtriangles1 = $('<div class="div-triangles"></div>').appendTo(rangeDiv);
+            var divtriangles1 = $('<div></div>').addClass("div-triangles").appendTo(rangeDiv);
 
             var upfrom = $('<div></div>').addClass("triangle-up").appendTo(divtriangles1);
             upfrom.bind("click", function () {
@@ -122,7 +125,7 @@
             this.rangeTo = $('<input type="text" min="0" max="100" size="1">')
                 .attr("placeholder", "max")
                 .appendTo(rangeDiv);
-            var divtriangles2 = $('<div class="div-triangles"></div>').appendTo(rangeDiv);
+            var divtriangles2 = $('<div></div>').addClass("div-triangles").appendTo(rangeDiv);
 
             var upto = $('<div></div>').addClass("triangle-up").appendTo(divtriangles2);
             upto.bind("click", function () {
@@ -138,13 +141,19 @@
             });
 
             var formulaDiv = $('<div></div>').appendTo(that.element);
-            $('<div></div>').text("Target Function").appendTo(formulaDiv);
+            $('<div></div>')
+                .addClass("variables-editor-headers")
+                .text("Target Function")
+                .appendTo(formulaDiv);
 
             this.prooficon = $('<div><div>')
                 .addClass("bma-formula-validation-icon")
                 .appendTo(formulaDiv);
 
-            this.formulaTextArea = $('<textarea></textarea>').attr("spellcheck", "false").addClass("variablesOptionsEditor-formulaTextArea").appendTo(formulaDiv);
+            this.formulaTextArea = $('<textarea></textarea>')
+                .attr("spellcheck", "false")
+                .addClass("variablesOptionsEditor-formulaTextArea")
+                .appendTo(formulaDiv);
 
             
             this.errorMessage = $('<div></div>')
@@ -158,11 +167,17 @@
             //var span = $('<div>Target Function</div>').appendTo(that.content);
 
             var inputsDiv = $('<div></div>').addClass('list-of-functions').appendTo(that.element);
-            $('<div></div>').text("Inputs").appendTo(inputsDiv);
+            $('<div></div>')
+                .addClass("variables-editor-headers")
+                .text("Inputs")
+                .appendTo(inputsDiv);
             var inpUl = $('<ul></ul>').appendTo(inputsDiv);
             var div = $('<div></div>').appendTo(that.element);
             var operatorsDiv = $('<div></div>').addClass('list-of-operators').appendTo(div);
-            $('<div></div>').text("Operators").appendTo(operatorsDiv);
+            $('<div></div>')
+                .addClass("variables-editor-headers")
+                .text("Operators")
+                .appendTo(operatorsDiv);
             var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
             var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
 

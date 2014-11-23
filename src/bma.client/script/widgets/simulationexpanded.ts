@@ -23,7 +23,7 @@
                 .appendTo(this.element);
             this.table1 = $('<div></div>').appendTo(tablesDiv);
             this.progression = $('<div></div>').appendTo(tablesDiv).progressiontable();//.addClass("bma-simulation-table")
-            //this.progression.css("position", "relative");
+            this.progression.css("width", "calc(100% - 361px - 60px)");
             //this.progression.css("left", "50px");
             //this.progression.css("top", 0);
             //this.progression.addClass("bma-simulation-table-expanded-scroll");
