@@ -1332,7 +1332,7 @@
 
 .bma-run-button-waiting {
     width: 40px;
-    height: 25px;
+    height: 20px;
     background-color:  #77b55a;
     background-image: url(../images/20x20.gif);
     background-repeat: no-repeat;
@@ -1345,6 +1345,7 @@
     padding:5px 20px;
     text-decoration:none;
     cursor: pointer;
+    z-index: 3;
 }
 
 

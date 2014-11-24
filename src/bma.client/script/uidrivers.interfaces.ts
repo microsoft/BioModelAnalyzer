@@ -132,5 +132,10 @@ module BMA {
             Show(message: string);
             Log(message: string);
         }
+
+        export interface ICheckChanges {
+            Snapshot(model);
+            IsChanged(model);
+        }
     }
 } 

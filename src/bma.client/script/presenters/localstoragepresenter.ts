@@ -1,20 +1,26 @@
 ﻿module BMA {
     export module Presenters {
         export class LocalStoragePresenter {
+            private appModel: BMA.Model.AppModel;
             private driver: BMA.UIDrivers.ILocalStorageDriver;
             private tool: BMA.UIDrivers.IModelRepository;
             private messagebox: BMA.UIDrivers.IMessageServise;
+            private checker: BMA.UIDrivers.ICheckChanges;
 
             constructor(
                 appModel: BMA.Model.AppModel,
                 editor: BMA.UIDrivers.ILocalStorageDriver,
                 tool: BMA.UIDrivers.IModelRepository,
-                messagebox: BMA.UIDrivers.IMessageServise
+                messagebox: BMA.UIDrivers.IMessageServise,
+                checker: BMA.UIDrivers.ICheckChanges
                 ) {
                 var that = this;
+                this.appModel = appModel;
                 this.driver = editor;
                 this.tool = tool;
                 this.messagebox = messagebox;
+                this.checker = checker;
+
                 var keys = that.tool.GetModelList();
                 this.driver.SetItems(keys);
                 this.driver.Hide();
@@ -35,14 +41,25 @@
                 window.Commands.On("LocalStorageSaveModel", function () {
                     var key = appModel.BioModel.Name;
                     that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
+                    that.checker.Snapshot(that.appModel);
                 });
 
                 window.Commands.On("LocalStorageLoadModel", function (key) {
-                    if (that.tool.IsInRepo(key))
-                        appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
-                    else {
-                        that.messagebox.Show("The model was removed from outside");
-                        window.Commands.Execute("LocalStorageChanged", {});
+                    if (that.checker.IsChanged(that.appModel)) {
+                        if (confirm("The model was changed, load file anyway?"))
+                            load();
+                    }
+                    else load();
+
+                    function load() {
+                        if (that.tool.IsInRepo(key)) {
+                            appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
+                            that.checker.Snapshot(that.appModel);
+                        }
+                        else {
+                            that.messagebox.Show("The model was removed from outside");
+                            window.Commands.Execute("LocalStorageChanged", {});
+                        }
                     }
                 })
             }

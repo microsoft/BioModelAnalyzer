@@ -16,7 +16,6 @@
 /// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\changeschecker.ts"/>
-
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>
@@ -34,21 +33,7 @@
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
 
-declare var saveTextAs: any;
-
-interface JQuery {
-    contextmenu(): JQueryUI.Widget;
-    contextmenu(settings: Object): JQueryUI.Widget;
-    contextmenu(optionLiteral: string, optionName: string): any;
-    contextmenu(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-}
-
-interface Window {
-    PlotSettings: any;
-    GridSettings: any;
-}
-
-function getSearchParameters(): any {
+function getSearchParameters() {
     var prmstr = window.location.search.substr(1);
     return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
 }
@@ -73,7 +58,6 @@ $(document).ready(function () {
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
 
-
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 
@@ -93,6 +77,7 @@ $(document).ready(function () {
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
+
     //$("#modelToolbarHeader").toolbarpanel();
     //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
@@ -126,7 +111,7 @@ $(document).ready(function () {
                 title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
                     { title: "2x2", cmd: "ResizeCellTo2x2" },
-                    { title: "3x3", cmd: "ResizeCellTo3x3" },
+                    { title: "3x3", cmd: "ResizeCellTo3x3" }
                 ],
                 uiIcon: "ui-icon-arrow-4-diag"
             },
@@ -145,7 +130,7 @@ $(document).ready(function () {
             });
         },
         select: function (event, ui) {
-            var args: any = {};
+            var args = {};
             var commandName = "DrawingSurface";
             if (ui.cmd === "ResizeCellTo1x1") {
                 args.size = 1;
@@ -176,25 +161,17 @@ $(document).ready(function () {
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
         var elem = elements[i];
-        $("<input></input>")
-            .attr("type", "radio")
-            .attr("id", "btn-" + elem.Type)
-            .attr("name", "drawing-button")
-            .attr("data-type", elem.Type)
-            .appendTo(elementPanel);
+        $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
 
         var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
     }
 
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
-
         helper: function (event, ui) {
             return $(this).children().clone().appendTo('body');
         },
-
         scroll: false,
-
         start: function (event, ui) {
             $(this).draggable("option", "cursorAt", {
                 left: Math.floor(ui.helper.width() / 2),
@@ -216,16 +193,20 @@ $(document).ready(function () {
     });
 
     $("#undoredotoolbar").buttonset();
-    $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
-    $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
+    $("#button-undo").click(function () {
+        window.Commands.Execute("Undo", undefined);
+    });
+    $("#button-redo").click(function () {
+        window.Commands.Execute("Redo", undefined);
+    });
 
     $("#editor").bmaeditor();
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
-    //popup.draggable({ containment: 'parent', scroll: false });
 
+    //popup.draggable({ containment: 'parent', scroll: false });
     $("#localSaveBtn").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
@@ -246,7 +227,6 @@ $(document).ready(function () {
     });
     var expandedSimulation = $('<div></div>').simulationexpanded();
 
-
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
 
@@ -265,23 +245,16 @@ $(document).ready(function () {
     //window.Commands.On("Commands.ToggleIcons", function (param) {
     //    visualSettings.IconsVisibility = param;
     //});
-
     //window.Commands.On("Commands.IconsSize", function (param) {
     //    visualSettings.IconsSize = param;
     //});
-
-
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
         window.ElementRegistry.LineWidth = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
 
-    var localStorageWidget = $('<div></div>')
-        .addClass('newWindow')
-        .appendTo('#drawingSurceContainer')
-        .localstoragewidget();
-
+    var localStorageWidget = $('<div></div>').addClass('newWindow').appendTo('#drawingSurceContainer').localstoragewidget();
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -298,6 +271,7 @@ $(document).ready(function () {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
 
@@ -306,17 +280,16 @@ $(document).ready(function () {
         svgPlotDriver.SetGridVisibility(param);
     });
 
-
-    window.Commands.On("ZoomSliderBind", (value) => {
+    window.Commands.On("ZoomSliderBind", function (value) {
         $("#zoomslider").bmazoomslider({ value: value });
     });
 
-    window.Commands.On("AppModelChanged", () => {
+    window.Commands.On("AppModelChanged", function () {
         popupDriver.Hide();
         accordionHider.Hide();
     });
 
-    window.Commands.On("DrawingSurfaceVariableEditorOpened", () => {
+    window.Commands.On("DrawingSurfaceVariableEditorOpened", function () {
         popupDriver.Hide();
         accordionHider.Hide();
     });
@@ -325,7 +298,7 @@ $(document).ready(function () {
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
 
-    //Loaing ServiсeDrivers 
+    //Loaing ServiсeDrivers
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
     var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
@@ -341,24 +314,20 @@ $(document).ready(function () {
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool);
 
-
     //Loading model from URL
     var params = getSearchParameters();
     if (params.Model !== undefined) {
-
         var s = params.Model.split('.');
         if (s[s.length - 1] == "json") {
             $.getJSON(params.Model, function (fileContent) {
                 appModel.Reset(JSON.stringify(fileContent));
-            })
-        }
-        else {
+            });
+        } else {
             $.get(params.Model, function (fileContent) {
-                try {
+                try  {
                     var model = BMA.ParseXmlModel(fileContent, window.GridSettings);
                     appModel.Reset2(model.Model, model.Layout);
-                }
-                catch (exc) {
+                } catch (exc) {
                     console.log(exc);
                     appModel.Reset(fileContent);
                 }
@@ -367,28 +336,19 @@ $(document).ready(function () {
     }
 
     function popup_position() {
-        var my_popup = $('.popup-window'), // наш попап
-            my_popup_w = my_popup.outerWidth(), // ширина попапа
-            my_popup_h = my_popup.outerHeight(), // высота попапа
-            
-            win_w = $(window).outerWidth(), // ширина окна
-            win_h = $(window).outerHeight(), // высота окна
-            popup_half_w = (win_w - my_popup_w) / 2,
-            popup_half_h = (win_h - my_popup_h) / 2;
-        if (win_w > my_popup_w) { // если ширина окна больше ширины попапа
+        var my_popup = $('.popup-window'), my_popup_w = my_popup.outerWidth(), my_popup_h = my_popup.outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
+        if (win_w > my_popup_w) {
             my_popup.css({ 'left': popup_half_w });
         }
-        if (win_w < my_popup_w) { // если ширина окна меньше ширины попапа                  
-            my_popup.css({ 'left': 5,});
+        if (win_w < my_popup_w) {
+            my_popup.css({ 'left': 5 });
         }
-        if (win_h > my_popup_h) { // если высота окна больше ширины попапа
-            my_popup.css({ 'top': popup_half_h});
+        if (win_h > my_popup_h) {
+            my_popup.css({ 'top': popup_half_h });
         }
-        if (win_h < my_popup_h) { // если высота окна меньше ширины попапа
+        if (win_h < my_popup_h) {
             my_popup.css({ 'top': 5 });
         }
-
-       
     }
     $(document).ready(function () {
         popup_position();
@@ -397,3 +357,4 @@ $(document).ready(function () {
         popup_position();
     });
 });
+//# sourceMappingURL=app.js.map

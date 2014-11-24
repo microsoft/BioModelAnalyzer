@@ -566,5 +566,7 @@ module BMA {
                 console.log(message);
             }
         }
+
+        
     }
 } 

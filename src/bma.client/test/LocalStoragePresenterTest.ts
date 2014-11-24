@@ -29,16 +29,17 @@
     var localStorageTestDriver = new BMA.Test.LocalStorageTestDriver();
     var modelRepositoryTest = new BMA.Test.ModelRepositoryTest();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
+    var checker = new BMA.ChangesChecker();
 
     
 
     it("should be defined", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         expect(localStorageTestPresenter).toBeDefined();
     });
 
     it("should GetModelList and SetItems on 'LocalStorageChanged' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(modelRepositoryTest, "GetModelList");
         spyOn(localStorageTestDriver, "SetItems");
         window.Commands.Execute("LocalStorageChanged", {});
@@ -48,7 +49,7 @@
     });
 
     it("should RemoveModel on 'LocalStorageRemoveModel' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(modelRepositoryTest, "RemoveModel");
         var key = "3";
         window.Commands.Execute("LocalStorageRemoveModel", key);
@@ -56,21 +57,21 @@
     });
 
     it("should Show storage viewer on 'LocalStorageRequested' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(localStorageTestDriver, "Show");
         window.Commands.Execute("LocalStorageRequested", {});
         expect(localStorageTestDriver.Show).toHaveBeenCalledWith();
     });
 
     it("should SaveModel on 'LocalStorageSaveModel' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(modelRepositoryTest, "SaveModel");
         window.Commands.Execute("LocalStorageSaveModel", {});
         expect(modelRepositoryTest.SaveModel).toHaveBeenCalledWith(name, JSON.parse(appModel.Serialize()));
     });
 
     it("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(appModel, "Reset");
         //var key = '4';
         window.Commands.Execute("LocalStorageSaveModel", {});
@@ -79,7 +80,7 @@
     });
 
     it("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(appModel, "Reset");
         var key = 'testkey';
         window.Commands.Execute("LocalStorageLoadModel", key);
