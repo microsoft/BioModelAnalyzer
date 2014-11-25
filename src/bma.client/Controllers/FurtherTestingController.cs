@@ -53,6 +53,7 @@ namespace bma.client.Controllers
 
                 var cexBifurcatesXml = analyzer.findCExBifurcates(inputXml, outputXml);
                 var cexCyclesXml = analyzer.findCExCycles(inputXml, outputXml);
+                var cexFixPointsXml = analyzer.findCExFixpoint(inputXml, outputXml);
 
                 log.LogDebug(string.Format("Finding Counter Examples took {0} seconds to run.", (DateTime.Now - analyisStartTime).TotalSeconds));
 
@@ -108,6 +109,31 @@ namespace bma.client.Controllers
                         }).ToArray()
                     });
                 }
+
+                if (cexFixPointsXml != null)
+                {
+                    XmlSerializer cyclesSerializer = new XmlSerializer(typeof(CounterExampleOutputXML));
+
+                    var counterExampleOutput = (CounterExampleOutputXML)cyclesSerializer.Deserialize(new StringReader("<?xml version=\"1.0\"?>" + cexFixPointsXml.ToString()));
+                    if (counterExampleOutput.Status != CounterExampleType.Fixpoint)
+                    {
+                        var error = cexCyclesXml.Descendants("Error").FirstOrDefault();
+                        counterExampleOutput.Error = error != null ? error.Attribute("Msg").Value : "There was an error in the analyzer";
+                    }
+
+                    //counterExampleOutput.ZippedXml = ZipHelper.Zip(cexCyclesXml.ToString());
+                    counterExamples.Add(new CycleCounterExample
+                    {
+                        Status = CounterExampleType.Fixpoint,
+                        Error = counterExampleOutput.Error,
+                        Variables = counterExampleOutput.Variables[0].Variables.Select(v => new CycleCounterExample.CycleVariable
+                        {
+                            Id = v.Id,
+                            Value = v.Value
+                        }).ToArray()
+                    });
+                }
+
 
                 furtherTestingOutput.CounterExamples = counterExamples.ToArray();
                 furtherTestingOutput.ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null;

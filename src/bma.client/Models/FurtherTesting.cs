@@ -15,7 +15,7 @@ namespace bmaclient
 
     public enum CounterExampleType
     {
-        Bifurcation, Cycle
+        Bifurcation, Cycle, Fixpoint
     }
 /*
     public class BifurcatingVariableOutput
@@ -61,7 +61,7 @@ namespace bmaclient
             public int Value { get; set; }
         }
 
-        // [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumConverter))]
         public CounterExampleType Status { get; set; }
 
         public string Error { get; set; }

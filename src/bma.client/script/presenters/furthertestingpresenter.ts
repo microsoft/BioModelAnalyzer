@@ -62,11 +62,14 @@
                                         var bif = null, osc = null;
                                         for (var i = 0; i < res2.CounterExamples.length; i++) {
                                             switch (res2.CounterExamples[i].Status) {
-                                                case 0:
+                                                case "Bifurcation":
                                                     bif = res2.CounterExamples[i];
                                                     break;
-                                                case 1:
+                                                case "Cycle":
                                                     osc = res2.CounterExamples[i];
+                                                    break;
+                                                case "Fixpoint":
+                                                    // TODO: add fix point handling here
                                                     break;
                                             }
                                         }
