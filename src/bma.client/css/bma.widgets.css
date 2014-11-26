@@ -1466,6 +1466,7 @@
     background-repeat: no-repeat;
     background-position:center;
     border-radius:8px;
+    border: none;
     display: inline-block;
     cursor: pointer;
     color:#ffffff;

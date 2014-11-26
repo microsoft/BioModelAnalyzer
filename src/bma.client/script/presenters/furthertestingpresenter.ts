@@ -59,7 +59,7 @@
                                         window.Commands.Execute("ProofByFurtherTesting", { issucceeded: true, message: 'No bifurcations or cycles were found in your model. Therefore, by exclusion, your model stabilizes, but the stable state is not found by verification. To determine the final stable state, run a simulation.'});
                                     }
                                     else {
-                                        var bif = null, osc = null;
+                                        var bif = null, osc = null, fix = null;
                                         for (var i = 0; i < res2.CounterExamples.length; i++) {
                                             switch (res2.CounterExamples[i].Status) {
                                                 case "Bifurcation":
@@ -70,6 +70,7 @@
                                                     break;
                                                 case "Fixpoint":
                                                     // TODO: add fix point handling here
+                                                    fix = res2.CounterExamples[i];
                                                     break;
                                             }
                                         }
@@ -93,6 +94,11 @@
                                             headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
                                             var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
                                             tabLabels.push(label);
+                                        }
+
+                                        if (fix !== null) {
+                                            var parseFix = that.ParseOscillations(osc.Variables);
+                                            alert(parseFix);
                                         }
 
                                         that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
@@ -139,6 +145,19 @@
                     }
                 })
             }
+
+            //public CreateFixView(variables, results) {
+            //    var table = [];
+            //    for (var i = 0; i < variables.length; i++) {
+            //        var resid = results[variables[i].Id];
+            //        table[i] = [];
+            //        table[i][0] = variables[i].ContainerId;
+            //        table[i][1] = variables[i].Name;
+            //        table[i][2] = resid.min + '-' + resid.max;
+            //        table[i][3] = resid.oscillations;
+            //    }
+            //    return table;
+            //}
 
             public CreateOscillationsView(variables, results) {
                 var table = [];

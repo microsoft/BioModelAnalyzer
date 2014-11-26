@@ -18,7 +18,7 @@
                 });
 
                 window.Commands.On("ImportModel", (args) => {
-
+                    
                     if (checker.IsChanged(appModel)) {
                         if (confirm("The model was changed, load file anyway?"))
                             load();
@@ -32,18 +32,20 @@
                                 var fileContent = fileReader.result;
 
                                 try {
-                                    var data = $.parseXML(fileContent);
-                                    var model = BMA.ParseXmlModel(data, window.GridSettings);
-                                    appModel.Reset2(model.Model, model.Layout);
+                                var data = $.parseXML(fileContent);
+                                var model = BMA.ParseXmlModel(data, window.GridSettings);
+                                appModel.Reset2(model.Model, model.Layout);
+                                
                                 }
                                 catch (exc) {
                                     console.log(exc);
                                     appModel.Reset(fileReader.result);
                                 }
+                                checker.Snapshot(appModel);
                             };
                             fileReader.readAsText(fileName);
                         });
-                        checker.Snapshot(appModel);
+                        
                     }
                 });
 
