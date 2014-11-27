@@ -8,6 +8,8 @@
             private expandedProofPropagation: JQuery;
             private expandedProofVariables: JQuery;
             private currentModel: BMA.Model.BioModel;
+            private st;
+            private colorData;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -24,9 +26,25 @@
 
                 var that = this;
 
-                window.Commands.On("ProofByFurtherTesting", function ( param:{ issucceeded; message}) {
-                    proofResultViewer.SetData({ issucceeded: param.issucceeded, message: param.message });
-                    window.Commands.Execute("DrawingSurfaceSetProofResults", undefined);
+                window.Commands.On("ProofByFurtherTesting", function (param: { issucceeded; message; fixPoint}) {
+                    
+                    var st = that.st.variablesStability;
+                    param.fixPoint.forEach((val, ind) => {
+                        var i = that.getIndById(st, val.Id);
+                        st[i].state = true;
+                        st[i].range = val.Value;
+                        that.st.containersStability[st[i].id] = true;
+                    });
+                    var variablesData = that.CreateTableView(that.st.variablesStability);
+                    that.AddPropagationColumn(st);
+
+                    proofResultViewer.SetData({
+                        issucceeded: param.issucceeded,
+                        message: param.message,
+                        data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData }
+                    });
+                    
+                    window.Commands.Execute("DrawingSurfaceSetProofResults", that.st);
                 });
 
                 window.Commands.On("ProofStarting", function () {
@@ -43,9 +61,9 @@
                                     window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                                 else
                                     window.Commands.Execute("ProofFailed", undefined);
-                                var st = that.Stability(res.Ticks);
-                                var variablesData = that.CreateTableView(st.variablesStability);
-                                var colorData = that.CreateColoredTable(res.Ticks);
+                                that.st = that.Stability(res.Ticks);
+                                var variablesData = that.CreateTableView(that.st.variablesStability);
+                                that.colorData = that.CreateColoredTable(res.Ticks);
 
                                 var deferredProofPropagation = function () {
                                     var d = $.Deferred();
@@ -67,8 +85,8 @@
                                     that.expandedProofVariables = res;
                                 })
 
-                                window.Commands.Execute("DrawingSurfaceSetProofResults", st);
-                                proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: colorData } });
+                                window.Commands.Execute("DrawingSurfaceSetProofResults", that.st);
+                                proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
                             else {
@@ -192,6 +210,15 @@
                 return {variablesStability: stability, containersStability: containers};
             }
 
+            public getIndById(array, id) {
+                for (var i = 0; i < array.length; i++) {
+                    var q = array[i].id.toString();
+                    var p = id.toString();
+                    if (q === p)
+                        return i;
+                }
+                return undefined;
+            }
 
             public CreateTableView(stability) {
                 var table = [];
@@ -232,6 +259,15 @@
                     }
                 }
                 return color;
+            }
+
+            public AddPropagationColumn(st) {
+                var trs = this.expandedProofPropagation.find('tr');
+                $('<td></td>').text('Fix Point').appendTo(trs.eq(0));
+                for (var i = 0; i < st.length; i++) {
+                    $('<td></td>').text(st[i].range).appendTo(trs.eq(i + 1));
+                    this.colorData[i].push(st[i].state);
+                }
             }
 
             public CreateExpandedProofVariables(variablesData) {

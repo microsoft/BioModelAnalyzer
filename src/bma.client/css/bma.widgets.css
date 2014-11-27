@@ -168,7 +168,7 @@
 
     .bma-variables-options-editor .list-of-functions ul > li:first-child > button
     {
-        width: 50px;
+        /*width: 50px;*/
         padding-right: 20px;
     }
 
@@ -462,8 +462,8 @@
         background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAsCAIAAACc+L0RAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAG4SURBVFhHY/z//z/DwAEmKD1AYNT6AQToSe/6jRsXL1yCsG/eug1hEA/U1VShLAYGfQM9TQ0NKAcHQPf9p4+fyLAVE7x9927VqrVAz0D5OAC670+ePLVj5+76umogu7GpFUgC2RAGBECkMAFcMYT769evpUuXP3r8JCwsGE8Y0Cru2djYoqMj5WRl8IcBDZMeMS6gbcon6AKaZzz8LqC59UCA7IL79+9DRcGAHtYDAcQFQMarV68hIhBAlPXA7ARHUCHSAdAFUBYSYIHSuAFypqc6oFPg4wTAUg8ZnDhxsqGxBcqhNgCaDDQfygGDAfb9qPUDCAhnPGAVfObsuTdv3kL5RAMREWETYyNzczMoHxsgYP3OnbtPnDwFLC893F2hQkSDa9euA5sOHz58dMetF5/1b96+BdptYW6GRz8eAPQ3xPXGJkYiwsJQUVSAL+7v3rkLJB0d7SFcMoCVlQWQhJiDFRBOeljLaiIBLy8vlIUDjOb7AQSj1g8gGLV+AMEAW4+9hwvppgM7ycB6FrnLTgYAdteBNa+wkBCEDaw5katgfMMLtABoYw7o1tMZjKb8AQQDaj0DAwA0MCU0P0nOVgAAAABJRU5ErkJggg==') /*images/saveicon.png*/;
         background-repeat:no-repeat;
         background-position:center;
-        /*border-bottom-right-radius: 10px;
-        border-top-right-radius: 10px;*/
+        border-bottom-right-radius: 12px;
+        border-top-right-radius: 12px;
     }
 
     .skinModelContainer{
@@ -922,7 +922,7 @@
     .inputs-list-content {
         text-align: center;
         left: 0;
-        top: 25px;
+        top: 24px;
         /*color: black;*/
         position:absolute;
         background-color: inherit;

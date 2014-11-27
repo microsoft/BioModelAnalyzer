@@ -55,8 +55,8 @@
                         .coloredtableviewer({ colorData: options.data.colorData, type: "color" });
                     this.proofPropagation.resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max", tabid: "ProofPropagation" });
                 }
-                else 
-                    this.proofPropagation.resultswindowviewer("destroy");
+                //else 
+                //    this.proofPropagation.resultswindowviewer("destroy");
             }
             else {
                 this.compactvariables.resultswindowviewer("destroy");

@@ -13,7 +13,7 @@
             var that = this;
             var items = this.options.items;
             var header = $('<div></div>')
-                .text("Models")
+                .text("Repository")
                 .addClass('localStorageWidget-header')
                 .appendTo(that.element);
             var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);

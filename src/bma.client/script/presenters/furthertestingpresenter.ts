@@ -37,11 +37,15 @@
                     }
                 })
 
-                window.Commands.On("ProofStarting", function () {
+                function OnProofStarting() {
                     that.driver.ActiveMode();
                     that.driver.HideStartFurtherTestingToggler();
                     that.driver.HideResults();
                     that.data = undefined;
+                }
+
+                window.Commands.On("ProofStarting", function () {
+                    OnProofStarting();
                 })
 
                 window.Commands.On("FurtherTestingRequested", function () {
@@ -56,7 +60,7 @@
                                 if (res2.CounterExamples !== null) {
                                     that.driver.HideStartFurtherTestingToggler();
                                     if (res2.CounterExamples.length === 0) {
-                                        window.Commands.Execute("ProofByFurtherTesting", { issucceeded: true, message: 'No bifurcations or cycles were found in your model. Therefore, by exclusion, your model stabilizes, but the stable state is not found by verification. To determine the final stable state, run a simulation.'});
+                                        
                                     }
                                     else {
                                         var bif = null, osc = null, fix = null;
@@ -71,6 +75,8 @@
                                                 case "Fixpoint":
                                                     // TODO: add fix point handling here
                                                     fix = res2.CounterExamples[i];
+                                                    
+                                                    
                                                     break;
                                             }
                                         }
@@ -96,12 +102,20 @@
                                             tabLabels.push(label);
                                         }
 
-                                        if (fix !== null) {
-                                            var parseFix = that.ParseOscillations(osc.Variables);
+                                        if (fix !== null && bif === null && osc === null) {
+                                            var parseFix = that.ParseFixPoint(fix.Variables);
+                                            window.Commands.Execute("ProofByFurtherTesting", {
+                                                issucceeded: true,
+                                                message: 'No bifurcations or cycles were found in your model. Therefore, by exclusion, your model stabilizes, but the stable state is not found by verification. To determine the final stable state, run a simulation.',
+                                                fixPoint: parseFix
+                                            });
+                                            OnProofStarting();
                                         }
+                                        else {
 
-                                        that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
-                                        that.driver.ShowResults(that.data);
+                                            that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                            that.driver.ShowResults(that.data);
+                                        }
                                     }
                                 }
                                 else {
@@ -210,6 +224,18 @@
                     }
                 }
                 return result;
+            }
+
+            private ParseFixPoint(variables) {
+                var fixPoints = [];
+                var that = this;
+                variables.forEach((val,ind) => {
+                    fixPoints.push({
+                        "Id": that.ParseId(val.Id)[0],
+                        "Value": val.Value
+                    })
+                })
+                return fixPoints;
             }
 
             private ParseOscillations(variables) {
