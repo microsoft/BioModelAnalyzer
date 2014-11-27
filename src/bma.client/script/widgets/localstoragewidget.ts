@@ -13,7 +13,7 @@
             var that = this;
             var items = this.options.items;
             var header = $('<div></div>')
-                .text("Name")
+                .text("Models")
                 .addClass('localStorageWidget-header')
                 .appendTo(that.element);
             var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
@@ -21,6 +21,8 @@
                 that.element.hide();
             });
             that.element.draggable({ containment: "parent", scroll: false });
+            this.message = $('<div></div>').addClass('localStorageWidget-message').appendTo(this.element);
+
             this.repo = $('<div></div>').addClass('localStorageWidget').appendTo(this.element);            
             this.refresh();
         },
@@ -62,6 +64,10 @@
             //        window.Commands.Execute("LocalStorageLoadModel", that.options.items[$(this).index()]);
             //    });
             //})
+        },
+
+        Message: function (msg) {
+            this.message.text(msg);
         },
 
         _setOption: function (key, value) {

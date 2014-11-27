@@ -27,6 +27,9 @@
 
                 window.Commands.On("LocalStorageChanged", function () {
                     var keys = that.tool.GetModelList();
+                    if (keys.length == 0) 
+                        that.driver.Message("The model repository is empty");
+                    else that.driver.Message('');
                     that.driver.SetItems(keys);
                 });
 
@@ -61,7 +64,9 @@
                             window.Commands.Execute("LocalStorageChanged", {});
                         }
                     }
-                })
+                });
+
+                window.Commands.Execute("LocalStorageChanged", {});
             }
         }
     }

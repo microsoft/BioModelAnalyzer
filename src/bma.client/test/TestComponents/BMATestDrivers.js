@@ -50,6 +50,9 @@ var BMA;
         var LocalStorageTestDriver = (function () {
             function LocalStorageTestDriver() {
             }
+            LocalStorageTestDriver.prototype.Message = function (msg) {
+            };
+
             LocalStorageTestDriver.prototype.AddItem = function (key, item) {
             };
 

@@ -103,6 +103,7 @@ module BMA {
             AddItem(key, item);
             Show();
             Hide();
+            Message(msg: string);
         }
 
         export interface IFileLoader {
@@ -125,6 +126,7 @@ module BMA {
             RemoveModel(id: string);
             SaveModel(id: string, model: JSON);
             IsInRepo(id: string);
+            
             //OnRepositoryUpdated();
         }
 

@@ -1542,6 +1542,10 @@
     cursor:pointer;
 }
 
+.localStorageWidget-message{
+    margin: 13px 0;
+}
+
 .bma-futhertesting-bifurcations-icon {
     background-image: url("../images/bifurcations.png");
     background-position:center;

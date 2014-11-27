@@ -51,6 +51,8 @@ module BMA {
 
         export class LocalStorageTestDriver implements BMA.UIDrivers.ILocalStorageDriver {
 
+            public Message(msg: string) { }
+
             public AddItem(key, item) {
             }
 

@@ -426,6 +426,10 @@ module BMA {
             public SetItems(keys) {
                 this.widget.localstoragewidget({ items: keys });
             }
+
+            public Message(msg: string) {
+                this.widget.localstoragewidget("Message", msg);
+            }
         }
 
 

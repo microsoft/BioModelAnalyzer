@@ -20,7 +20,7 @@
                 this.appModel = appModel;
                 this.ajax = ajax;
                 this.messagebox = messagebox;
-                this.Snapshot();
+                //this.Snapshot();
 
                 var that = this;
 
@@ -146,10 +146,12 @@
             }
 
             public CurrentModelChanged() {
-                var c = JSON.stringify(this.currentModel.GetJSON());
-                var a = JSON.stringify(this.appModel.BioModel.GetJSON());
-                var res = c !== a;
-                return res;
+                if (this.currentModel === undefined) {
+                    this.Snapshot();
+                    return true;
+                }
+                else
+                    return JSON.stringify(this.currentModel.GetJSON()) !== JSON.stringify(this.appModel.BioModel.GetJSON());
             }
 
             public Snapshot() {
