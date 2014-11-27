@@ -7,6 +7,7 @@
             private messagebox: BMA.UIDrivers.IMessageServise;
             private expandedProofPropagation: JQuery;
             private expandedProofVariables: JQuery;
+            private currentModel: BMA.Model.BioModel;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -19,6 +20,8 @@
                 this.appModel = appModel;
                 this.ajax = ajax;
                 this.messagebox = messagebox;
+                this.Snapshot();
+
                 var that = this;
 
                 window.Commands.On("ProofByFurtherTesting", function ( param:{ issucceeded; message}) {
@@ -26,7 +29,7 @@
                     window.Commands.Execute("DrawingSurfaceSetProofResults", undefined);
                 });
 
-                window.Commands.On("ProofRequested", function (args) {
+                window.Commands.On("ProofStarting", function () {
                     proofResultViewer.OnProofStarted();
                     var proofInput = appModel.BioModel.GetJSON();
                     var result = that.ajax.Invoke(proofInput)
@@ -74,12 +77,23 @@
                                 })
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
+                            that.Snapshot();
                         })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                             console.log("Proof Service Failed: " + errorThrown);
                             that.messagebox.Show("Proof Service Failed: " + errorThrown);
                             proofResultViewer.OnProofFailed();
                         });
+                })
+
+
+                window.Commands.On("ProofRequested", function (args) {
+                    if (that.CurrentModelChanged()) {
+                        window.Commands.Execute("ProofStarting", {});
+                    }
+                    else {
+                        proofResultViewer.ShowResult(appModel.ProofResult);
+                    }
                 });
 
                 window.Commands.On("Expand", (param) => {
@@ -129,6 +143,17 @@
                     proofResultViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
+            }
+
+            public CurrentModelChanged() {
+                var c = JSON.stringify(this.currentModel.GetJSON());
+                var a = JSON.stringify(this.appModel.BioModel.GetJSON());
+                var res = c !== a;
+                return res;
+            }
+
+            public Snapshot() {
+                this.currentModel = this.appModel.BioModel.Clone();
             }
 
             public CreateMessage(stable: boolean, time: number): string {

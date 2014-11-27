@@ -37,7 +37,7 @@
                     }
                 })
 
-                window.Commands.On("ProofRequested", function () {
+                window.Commands.On("ProofStarting", function () {
                     that.driver.ActiveMode();
                     that.driver.HideStartFurtherTestingToggler();
                     that.driver.HideResults();
@@ -98,7 +98,6 @@
 
                                         if (fix !== null) {
                                             var parseFix = that.ParseOscillations(osc.Variables);
-                                            alert(parseFix);
                                         }
 
                                         that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
