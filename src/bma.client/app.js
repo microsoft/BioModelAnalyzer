@@ -83,7 +83,7 @@ $(document).ready(function () {
     //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
     $("#modelToolbarContent").buttonset();
-    $("#modelToolbarSlider").bmaaccordion({ position: "left" });
+    $("#modelToolbarSlider").bmaaccordion({ position: "left", z_index: 1 });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
 
@@ -153,7 +153,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#analytics").bmaaccordion({ position: "right" });
+    $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
 

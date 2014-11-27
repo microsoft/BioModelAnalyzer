@@ -9,7 +9,7 @@
             name: "name",
             rangeFrom: 0,
             rangeTo: 0,
-            functions: ["VAR", "CONST", "POS", "NEG"],//],
+            functions: ["VAR", "CONST"],//, "POS", "NEG"],//],
             operators1: ["+", "-", "*", "/"], 
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],

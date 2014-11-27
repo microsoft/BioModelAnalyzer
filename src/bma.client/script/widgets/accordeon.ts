@@ -14,6 +14,7 @@
             activate: null,
             beforeActivate: null,
             contentLoaded: { ind: "", val: true },
+            z_index: 0
         },
 
         hideProps: {},
@@ -101,9 +102,9 @@
             this.hideProps[that.options.position] = "-=" + distantion;
             this.showProps[that.options.position] = "+=" + distantion;
             //context.show().css("z-index",1);
-            context.css("z-index", 1);
+            context.css("z-index", that.options.z_index + 1);
             //this.headers.next().not(context).hide().css("z-index", 0);
-            this.headers.next().not(context).css("z-index", 0);
+            this.headers.next().not(context).css("z-index", that.options.z_index);//0);
         },
 
         _setOption: function (key, value) {
@@ -401,8 +402,8 @@
                 window.Commands.Execute(clicked.attr("data-command"), {});
             }
 
-            eventData.newHeader.css("z-index", 2);
-            this.headers.not(eventData.newHeader).css("z-index", 0);
+            eventData.newHeader.css("z-index", this.options.z_index + 2);
+            this.headers.not(eventData.newHeader).css("z-index", this.options.z_index);//0);
             // when the call to ._toggle() comes after the class changes
             // it causes a very odd bug in IE 8 (see #6720)
 
@@ -562,8 +563,8 @@
             //this.headers.next().not(context).hide()
             //toHide.hide().css("z-index", 0);
             //toShow.show().css("z-index", 1);
-            toHide.css("z-index", 0);
-            toShow.css("z-index", 1);
+            toHide.css("z-index", that.options.z_index);//0);
+            toShow.css("z-index", that.options.z_index + 1);
             this._toggleComplete(data);
         },
 
@@ -574,7 +575,7 @@
             //toHide.hide();
             //toShow.show();
 
-            data.newPanel.css("z-index", 1);
+            data.newPanel.css("z-index", this.options.z_index + 1);
 
             toHide
                 .removeClass("ui-accordion-content-active")
