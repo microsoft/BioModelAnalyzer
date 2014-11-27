@@ -35,9 +35,10 @@
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             //console.log("Proof Result Status: " + res.Status);
+                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
                             if (res.Ticks !== null) {
                                 that.expandedProofPropagation = $('<div></div>');
-                                var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
+                                
                                 if (res.Status === 5)
                                     window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                                 else
@@ -73,7 +74,8 @@
                             else {
                                 proofResultViewer.SetData({
                                     issucceeded: res.Status === 4,
-                                    time: res.Time
+                                    message: that.CreateMessage(result.IsStable, result.Time),
+                                    data: undefined
                                 })
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }

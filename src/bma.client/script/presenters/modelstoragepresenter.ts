@@ -6,8 +6,21 @@
 
                 window.Commands.On("NewModel", (args) => {
                     if (checker.IsChanged(appModel)) {
-                        if (confirm("The model was changed, load file anyway?"))
-                            load();
+                        var userDialog = $('<div id="usrdialog"></div>').appendTo('body').userdialog({
+                            message: "Do you want to save changes?",
+                            functions: [
+                                function () {
+                                    $('#usrdialog').detach();
+                                },
+                                function () {
+                                    load();
+                                    $('#usrdialog').detach();
+                                },
+                                function () {
+                                    $('#usrdialog').detach();
+                                }
+                            ]
+                        });
                     }
                     else load()
 
@@ -20,8 +33,21 @@
                 window.Commands.On("ImportModel", (args) => {
                     
                     if (checker.IsChanged(appModel)) {
-                        if (confirm("The model was changed, load file anyway?"))
-                            load();
+                        var userDialog = $('<div id="usrdialog"></div>').appendTo('body').userdialog({
+                            message: "Do you want to save changes?",
+                            functions: [
+                                function () {
+                                    $('#usrdialog').detach();
+                                },
+                                function () {
+                                    load();
+                                    $('#usrdialog').detach();
+                                },
+                                function () {
+                                    $('#usrdialog').detach();
+                                }
+                            ]
+                        });
                     }
                     else load();
 
@@ -51,7 +77,7 @@
 
                 window.Commands.On("ExportModel", (args) => {
                     var data = appModel.Serialize();
-                    saveTextAs(data, appModel.BioModel.Name + ".json");
+                    var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
                     checker.Snapshot(appModel);
                 });
             }

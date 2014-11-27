@@ -295,6 +295,7 @@
     <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
     <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
     <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\userdialog.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
     <Content Include="js\rx.jQuery.js" />

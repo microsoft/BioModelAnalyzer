@@ -24,6 +24,7 @@
 /// <reference path="script\widgets\visibilitysettings.ts"/>
 /// <reference path="script\widgets\elementbutton.ts"/>
 /// <reference path="script\widgets\bmaslider.ts"/>
+/// <reference path="script\widgets\userdialog.ts"/>
 /// <reference path="script\widgets\variablesOptionsEditor.ts"/>
 /// <reference path="script\widgets\progressiontable.ts"/>
 /// <reference path="script\widgets\proofresultviewer.ts"/>
@@ -336,19 +337,22 @@ $(document).ready(function () {
     }
 
     function popup_position() {
-        var my_popup = $('.popup-window'), my_popup_w = my_popup.outerWidth(), my_popup_h = my_popup.outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
-        if (win_w > my_popup_w) {
-            my_popup.css({ 'left': popup_half_w });
-        }
-        if (win_w < my_popup_w) {
-            my_popup.css({ 'left': 5 });
-        }
-        if (win_h > my_popup_h) {
-            my_popup.css({ 'top': popup_half_h });
-        }
-        if (win_h < my_popup_h) {
-            my_popup.css({ 'top': 5 });
-        }
+        var my_popup = $('.popup-window, .bma-userdialog');
+        my_popup.each(function () {
+            var my_popup_w = $(this).outerWidth(), my_popup_h = $(this).outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
+            if (win_w > my_popup_w) {
+                my_popup.css({ 'left': popup_half_w });
+            }
+            if (win_w < my_popup_w) {
+                my_popup.css({ 'left': 5 });
+            }
+            if (win_h > my_popup_h) {
+                my_popup.css({ 'top': popup_half_h });
+            }
+            if (win_h < my_popup_h) {
+                my_popup.css({ 'top': 5 });
+            }
+        });
     }
     $(document).ready(function () {
         popup_position();

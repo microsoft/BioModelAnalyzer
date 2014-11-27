@@ -1575,3 +1575,27 @@
     font-size: 20px;
     line-height: 27px;
 }
+
+.bma-userdialog{
+    font-size: 20px;
+    padding:15px;
+    background-color: Window;
+    position:absolute;
+    border-radius:5px;
+    box-shadow: 0px 0px 8px lightgray; 
+    z-index:5;
+    width: 300px;
+}
+
+.bma-userdialog-btns-container{
+    float: right;
+    margin-top: 15px;
+}
+
+.bma-userdialog button {
+    border: none;
+    border-radius: 8px;
+    margin: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}

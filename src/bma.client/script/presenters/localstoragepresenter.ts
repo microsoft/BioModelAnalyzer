@@ -49,8 +49,22 @@
 
                 window.Commands.On("LocalStorageLoadModel", function (key) {
                     if (that.checker.IsChanged(that.appModel)) {
-                        if (confirm("The model was changed, load file anyway?"))
-                            load();
+                        var userDialog = $('<div id="usrdialog"></div>').appendTo('body').userdialog({
+                            message: "Do you want to save changes?",
+                            functions: [
+                                function () {
+                                    window.Commands.Execute("LocalStorageSaveModel", {});
+                                    $('#usrdialog').detach();
+                                },
+                                function () {
+                                    load();
+                                    $('#usrdialog').detach();
+                                },
+                                function () {
+                                    $('#usrdialog').detach();
+                                }
+                            ]
+                        });
                     }
                     else load();
 
