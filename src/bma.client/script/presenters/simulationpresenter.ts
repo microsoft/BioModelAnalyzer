@@ -12,6 +12,7 @@
             private results;
             private expandedSimulationVariables: JQuery;
             private expandedSimulationPlot: JQuery;
+            private currentModel: BMA.Model.BioModel;
 
             constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver) {
                 this.appModel = appModel;
@@ -39,15 +40,20 @@
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
-                    that.initValues = [];
-                    that.results = [];
-                    that.expandedSimulationVariables = undefined;
-                    //that.data = [];
-                    that.CreateColors();
-                    that.ClearColors();
-                    that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
-                    var variables = that.CreateVariablesView();
-                    that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
+                    if (that.CurrentModelChanged()) {
+                        that.initValues = [];
+                        that.results = [];
+                        that.expandedSimulationVariables = undefined;
+                        //that.data = [];
+                        that.CreateColors();
+                        that.ClearColors();
+                        that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                        var variables = that.CreateVariablesView();
+                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
+                    }
+                    //else {
+                    
+
                 });
 
                 window.Commands.On("Expand", (param) => {
@@ -85,6 +91,20 @@
                 });
 
 
+            }
+
+
+            public CurrentModelChanged() {
+                if (this.currentModel === undefined) {
+                    this.Snapshot();
+                    return true;
+                }
+                else
+                    return JSON.stringify(this.currentModel.GetJSON()) !== JSON.stringify(this.appModel.BioModel.GetJSON());
+            }
+
+            public Snapshot() {
+                this.currentModel = this.appModel.BioModel.Clone();
             }
 
             public StartSimulation(param) {
