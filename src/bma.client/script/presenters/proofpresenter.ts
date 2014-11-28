@@ -36,6 +36,7 @@
                         that.st.containersStability[st[i].id] = true;
                     });
                     var variablesData = that.CreateTableView(that.st.variablesStability);
+                    that.expandedProofVariables =  that.CreateExpandedProofVariables(variablesData);
                     that.AddPropagationColumn(st);
 
                     proofResultViewer.SetData({
@@ -264,10 +265,16 @@
             public AddPropagationColumn(st) {
                 var trs = this.expandedProofPropagation.find('tr');
                 $('<td></td>').text('Fix Point').appendTo(trs.eq(0));
+                //var trs2 = this.expandedProofVariables.find('tr').not(':first-child').children(':last-child');
+                var colors = this.expandedProofPropagation.coloredtableviewer("option", "colorData");
+
                 for (var i = 0; i < st.length; i++) {
+                    colors[i][0] = st[i].state;
                     $('<td></td>').text(st[i].range).appendTo(trs.eq(i + 1));
                     this.colorData[i].push(st[i].state);
+                    colors[i].push(st[i].state);
                 }
+                this.expandedProofPropagation.coloredtableviewer("option", "colorData", colors);
             }
 
             public CreateExpandedProofVariables(variablesData) {
@@ -299,15 +306,17 @@
                     table[j] = [];
                     color[j] = [];
                     table[j][0] = biomodel.GetVariableById(ticks[0].Variables[variables.length - 1 - j].Id).Name;
-                    for (var i = 0; i < l; i++) {
-                        var ij = ticks[l-i-1].Variables[variables.length - 1 - j];
+                    var v = ticks[0].Variables[variables.length - 1 - j];
+                    color[j][0] = v.Lo === v.Hi;
+                    for (var i = 1; i < l+1; i++) {
+                        var ij = ticks[l-i].Variables[variables.length - 1 - j];
                         if (ij.Lo === ij.Hi) {
-                            table[j][i + 1] = ij.Lo;
-                            color[j][i + 1] = true;
+                            table[j][i] = ij.Lo;
+                            color[j][i] = true;
                         }
                         else {
-                            table[j][i + 1] = ij.Lo + ' - ' + ij.Hi;
-                            color[j][i + 1] = false;
+                            table[j][i] = ij.Lo + ' - ' + ij.Hi;
+                            color[j][i] = false;
                         }
                     }
                 }

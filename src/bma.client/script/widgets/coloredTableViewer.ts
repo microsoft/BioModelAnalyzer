@@ -110,7 +110,13 @@
             var that = this;
             if (key === "header") this.options.header = value;
             if (key === "numericData") this.options.numericData = value;
-            if (key === "colorData") this.options.colorData = value;
+            if (key === "colorData") {
+                this.options.colorData = value;
+                if (this.options.colorData !== undefined) {
+                    this.paintTable(this.options.colorData);
+                    return;
+                    }
+            }
 
             this._super(key, value);
             if (value !== null && value !== undefined)
