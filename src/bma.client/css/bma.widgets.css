@@ -470,6 +470,14 @@
         border-bottom-right-radius: 8px;
         border-top-right-radius: 8px;
     }
+    .ui-accordion-header-active .saveIcon
+    {
+        -ms-transform: scaleX(-1);
+        -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+    }
 
     .skinModelContainer{
             
@@ -1603,4 +1611,8 @@
     margin: 5px;
     padding: 5px 10px;
     cursor: pointer;
+}
+
+.ui-menu {
+    white-space: nowrap;
 }

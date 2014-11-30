@@ -57,8 +57,8 @@
                                     $('#usrdialog').detach();
                                 },
                                 function () {
-                                    load();
                                     $('#usrdialog').detach();
+                                    load();
                                 },
                                 function () {
                                     $('#usrdialog').detach();
@@ -73,7 +73,7 @@
                             appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
                             that.checker.Snapshot(that.appModel);
                         }
-                        else {
+                        else if (key !== "bma") {
                             that.messagebox.Show("The model was removed from outside");
                             window.Commands.Execute("LocalStorageChanged", {});
                         }

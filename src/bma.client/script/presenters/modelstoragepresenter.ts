@@ -13,8 +13,8 @@
                                     $('#usrdialog').detach();
                                 },
                                 function () {
-                                    load();
                                     $('#usrdialog').detach();
+                                    load();
                                 },
                                 function () {
                                     $('#usrdialog').detach();
@@ -40,8 +40,8 @@
                                     $('#usrdialog').detach();
                                 },
                                 function () {
-                                    load();
                                     $('#usrdialog').detach();
+                                    load();
                                 },
                                 function () {
                                     $('#usrdialog').detach();
