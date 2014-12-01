@@ -523,7 +523,7 @@ module BMA {
 
                         var lineRef = undefined;
                         var lw = that.lineWidth === 0 ? 1 : that.lineWidth > 0 ? that.lineWidth : 1 / Math.abs(that.lineWidth);
-                        
+
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
                             var x0 = renderParams.layout.start.PositionX;
@@ -547,15 +547,36 @@ module BMA {
                             };
                             var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
 
+                            var isRevers = dirLen / 2 < Math.sqrt(dir.x * dir.x * that.relationshipBboxOffset * that.relationshipBboxOffset + dir.y * dir.y * that.relationshipBboxOffset * that.relationshipBboxOffset);
+
                             dir.x /= dirLen;
                             dir.y /= dirLen;
 
-                            lineRef = jqSvg.line(
-                                renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
-                                renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
-                                renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
-                                renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
-                                { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
+                            var start = {
+                                x: renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
+                                y: renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset
+                            };
+
+                            var end = {
+                                x: renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
+                                y: renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset
+                            };
+
+                            if (!isRevers) {
+                                lineRef = jqSvg.line(
+                                    start.x,
+                                    start.y,
+                                    end.x,
+                                    end.y,
+                                    { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
+                            } else {
+                                lineRef = jqSvg.line(
+                                    end.x,
+                                    end.y,
+                                    start.x,
+                                    start.y,
+                                    { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
+                            }
                         }
 
                         if (lineRef !== undefined) {
@@ -644,15 +665,36 @@ module BMA {
                             };
                             var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
 
+                            var isRevers = dirLen / 2 < Math.sqrt(dir.x * dir.x * that.relationshipBboxOffset * that.relationshipBboxOffset + dir.y * dir.y * that.relationshipBboxOffset * that.relationshipBboxOffset);
+
                             dir.x /= dirLen;
                             dir.y /= dirLen;
 
-                            lineRef = jqSvg.line(
-                                renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
-                                renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
-                                renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
-                                renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
-                                { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
+                            var start = {
+                                x: renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
+                                y: renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset
+                            };
+
+                            var end = {
+                                x: renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
+                                y: renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset
+                            };
+
+                            if (!isRevers) {
+                                lineRef = jqSvg.line(
+                                    start.x,
+                                    start.y,
+                                    end.x,
+                                    end.y,
+                                    { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
+                            } else {
+                                lineRef = jqSvg.line(
+                                    end.x,
+                                    end.y,
+                                    start.x,
+                                    start.y,
+                                    { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
+                            }
                         }
 
                         if (lineRef !== undefined) {
