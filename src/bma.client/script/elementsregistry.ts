@@ -522,7 +522,8 @@ module BMA {
                         jqSvg.clear();
 
                         var lineRef = undefined;
-
+                        var lw = that.lineWidth === 0 ? 1 : that.lineWidth > 0 ? that.lineWidth : 1 / Math.abs(that.lineWidth);
+                        
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
                             var x0 = renderParams.layout.start.PositionX;
@@ -536,7 +537,7 @@ module BMA {
                             var path = jqSvg.createPath();
                             lineRef = jqSvg.path(path.move(x1, y0 - h)
                                 .arc(ew, eh, 0, true, true, x1, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Activator)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
 
                         } else {
 
@@ -554,7 +555,7 @@ module BMA {
                                 renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
-                                { stroke: "#808080", strokeWidth: 2, "marker-end": "url(#Activator)" });
+                                { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
                         }
 
                         if (lineRef !== undefined) {
@@ -612,6 +613,7 @@ module BMA {
                         jqSvg.clear();
 
                         var lineRef = undefined;
+                        var lw = that.lineWidth === 0 ? 1 : that.lineWidth > 0 ? that.lineWidth : 1 / Math.abs(that.lineWidth);
 
                         if (renderParams.layout.start.Id === renderParams.layout.end.Id) {
 
@@ -626,7 +628,7 @@ module BMA {
                             var path = jqSvg.createPath();
                             lineRef = jqSvg.path(path.move(x1, y0 - h)
                                 .arc(ew, eh, 0, true, true, x1, y0 + h),
-                                { fill: 'none', stroke: '#808080', strokeWidth: that.lineWidth + 1, "marker-end": "url(#Inhibitor)" });
+                                { fill: 'none', stroke: '#808080', strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
 
                             /*
                             jqSvg.ellipse(
@@ -650,7 +652,7 @@ module BMA {
                                 renderParams.layout.start.PositionY + dir.y * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionX - dir.x * that.relationshipBboxOffset,
                                 renderParams.layout.end.PositionY - dir.y * that.relationshipBboxOffset,
-                                { stroke: "#808080", strokeWidth: 2, "marker-end": "url(#Inhibitor)" });
+                                { stroke: "#808080", strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
                         }
 
                         if (lineRef !== undefined) {
