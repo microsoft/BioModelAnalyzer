@@ -134,6 +134,8 @@ $(document).ready(function () {
             { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" }
         ],
         beforeOpen: function (event, ui) {
+            ui.menu.zIndex(50);
+
             var left = event.pageX - $(".bma-drawingsurface").offset().left;
             var top = event.pageY - $(".bma-drawingsurface").offset().top;
 
