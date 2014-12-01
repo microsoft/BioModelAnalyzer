@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
 EndProject
@@ -23,6 +23,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BackEndTests", "..\..\src\BackEndTests\BackEndTests.fsproj", "{5BB237C7-EDA2-4558-883E-A50CE6C096E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyModelsImporter", "..\..\src\LegacyModelsImporter\LegacyModelsImporter.csproj", "{68041FBC-F127-4770-93D3-DCA3AE200A64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,12 @@ Global
 		{5BB237C7-EDA2-4558-883E-A50CE6C096E6}.nuget|Any CPU.Build.0 = Release|Any CPU
 		{5BB237C7-EDA2-4558-883E-A50CE6C096E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BB237C7-EDA2-4558-883E-A50CE6C096E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68041FBC-F127-4770-93D3-DCA3AE200A64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68041FBC-F127-4770-93D3-DCA3AE200A64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68041FBC-F127-4770-93D3-DCA3AE200A64}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{68041FBC-F127-4770-93D3-DCA3AE200A64}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{68041FBC-F127-4770-93D3-DCA3AE200A64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68041FBC-F127-4770-93D3-DCA3AE200A64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

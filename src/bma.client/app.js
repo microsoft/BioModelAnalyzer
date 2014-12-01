@@ -34,6 +34,40 @@
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
 
+function onSilverlightError(sender, args) {
+    var appSource = "";
+    if (sender != null && sender != 0) {
+        appSource = sender.getHost().Source;
+    }
+
+    var errorType = args.ErrorType;
+    var iErrorCode = args.ErrorCode;
+
+    if (errorType == "ImageError" || errorType == "MediaError") {
+        return;
+    }
+
+    var errMsg = "Unhandled Error in Silverlight Application " + appSource + "\n";
+
+    errMsg += "Code: " + iErrorCode + "    \n";
+    errMsg += "Category: " + errorType + "       \n";
+    errMsg += "Message: " + args.ErrorMessage + "     \n";
+
+    if (errorType == "ParserError") {
+        errMsg += "File: " + args.xamlFile + "     \n";
+        errMsg += "Line: " + args.lineNumber + "     \n";
+        errMsg += "Position: " + args.charPosition + "     \n";
+    } else if (errorType == "RuntimeError") {
+        if (args.lineNumber != 0) {
+            errMsg += "Line: " + args.lineNumber + "     \n";
+            errMsg += "Position: " + args.charPosition + "     \n";
+        }
+        errMsg += "MethodName: " + args.methodName + "     \n";
+    }
+
+    alert(errMsg);
+}
+
 function getSearchParameters() {
     var prmstr = window.location.search.substr(1);
     return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};

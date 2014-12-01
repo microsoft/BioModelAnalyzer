@@ -20,6 +20,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
+    <SilverlightApplicationList>{68041FBC-F127-4770-93D3-DCA3AE200A64}|..\LegacyModelsImporter\LegacyModelsImporter.csproj|ClientBin|False</SilverlightApplicationList>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,8 +49,13 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\LegacyModelsImporter\Bin\Debug\LegacyModelsImporter.xap">
+      <Link>LegacyModelsImporter.xap</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="about.html" />
     <Content Include="app.css" />
+    <Content Include="ClientBin\LegacyModelsImporter.xap" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -208,6 +214,8 @@
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
     <Content Include="js\wl.js" />
+    <Content Include="LegacyModelsImporterTestPage.aspx" />
+    <Content Include="LegacyModelsImporterTestPage.html" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
     <Content Include="legacy\bma.js" />
@@ -412,6 +420,7 @@
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
+    <Content Include="Silverlight.js" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
     <Content Include="test\data\2var_unstable.xml">
