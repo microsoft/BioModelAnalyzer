@@ -25,33 +25,34 @@
 
             this.repo = $('<div></div>').addClass('localStorageWidget').appendTo(this.element);   
 
-            var slWidget = $('<div></div>').appendTo(this.element);
+            if (Silverlight.isInstalled()) {
+                var slWidget = $('<div></div>').appendTo(this.element);
 
-            var getSilverlightMethodCall =
-                "javascript:Silverlight.getSilverlight(\"5.0.61118.0\");"
+                var getSilverlightMethodCall =
+                    "javascript:Silverlight.getSilverlight(\"5.0.61118.0\");"
                         var installImageUrl =
-                "http://go.microsoft.com/fwlink/?LinkId=161376";
-            var imageAltText = "Get Microsoft Silverlight";
-            var altHtml =
-                "<a href='{1}' style='text-decoration: none;'>" +
-                "<img src='{2}' alt='{3}' " +
-                "style='border-style: none'/></a>";
-            altHtml = altHtml.replace('{1}', getSilverlightMethodCall);
-            altHtml = altHtml.replace('{2}', installImageUrl);
-            altHtml = altHtml.replace('{3}', imageAltText);
+                    "http://go.microsoft.com/fwlink/?LinkId=161376";
+                var imageAltText = "Get Microsoft Silverlight";
+                var altHtml =
+                    "<a href='{1}' style='text-decoration: none;'>" +
+                    "<img src='{2}' alt='{3}' " +
+                    "style='border-style: none'/></a>";
+                altHtml = altHtml.replace('{1}', getSilverlightMethodCall);
+                altHtml = altHtml.replace('{2}', installImageUrl);
+                altHtml = altHtml.replace('{3}', imageAltText);
 
-            Silverlight.createObject(
-                "ClientBin/LegacyModelsImporter.xap",
-                slWidget[0], "slPlugin",
-                {
-                    width: "300", height: "50",
-                    background: "white", alt: altHtml,
-                    version: "5.0.61118.0"
-                },
-                // See the event handlers in the full example.
-                { onError: onSilverlightError },
-                "param1=value1,param2=value2", "row3");
-            
+                Silverlight.createObject(
+                    "ClientBin/LegacyModelsImporter.xap",
+                    slWidget[0], "slPlugin",
+                    {
+                        width: "300", height: "50",
+                        background: "white", alt: altHtml,
+                        version: "5.0.61118.0"
+                    },
+                    // See the event handlers in the full example.
+                    { onError: onSilverlightError },
+                    "param1=value1,param2=value2", "row3");
+            }
                      
             this.refresh();
         },
