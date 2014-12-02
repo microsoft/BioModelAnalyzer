@@ -14,7 +14,7 @@
     <RootNamespace>bma.client</RootNamespace>
     <AssemblyName>bma.client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -49,13 +49,9 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="..\LegacyModelsImporter\Bin\Debug\LegacyModelsImporter.xap">
-      <Link>LegacyModelsImporter.xap</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="about.html" />
     <Content Include="app.css" />
-    <Content Include="ClientBin\LegacyModelsImporter.xap" />
+    <Content Include="ClientBin\BioCheck.xap" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -214,8 +210,6 @@
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
     <Content Include="js\wl.js" />
-    <Content Include="LegacyModelsImporterTestPage.aspx" />
-    <Content Include="LegacyModelsImporterTestPage.html" />
     <Content Include="legacy\bma.css" />
     <Content Include="legacy\bma.html" />
     <Content Include="legacy\bma.js" />
@@ -493,7 +487,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>33584</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:33584/</IISUrl>
+          <IISUrl>http://localhost</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -7,6 +7,7 @@
     d:DesignHeight="50" d:DesignWidth="300" Background="Green">
 
     <Grid x:Name="LayoutRoot" Background="White">
-        <HyperlinkButton VerticalAlignment="Center" HorizontalAlignment="Center">Download old models</HyperlinkButton>
+        <HyperlinkButton x:Name="importModelsLink" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" Click="importModelsLink_Click">Download legacy models from version 1.0</HyperlinkButton>
+        <TextBlock x:Name="errorMessage" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray" FontStyle="Italic">No legacy models found</TextBlock>
     </Grid>
 </UserControl>

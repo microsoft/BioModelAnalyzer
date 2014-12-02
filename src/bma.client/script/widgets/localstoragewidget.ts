@@ -42,7 +42,7 @@
                 altHtml = altHtml.replace('{3}', imageAltText);
 
                 Silverlight.createObject(
-                    "ClientBin/LegacyModelsImporter.xap",
+                    "ClientBin/BioCheck.xap",
                     slWidget[0], "slPlugin",
                     {
                         width: "300", height: "50",
