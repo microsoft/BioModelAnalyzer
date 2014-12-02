@@ -24,7 +24,8 @@ namespace bma.client
             {
                 v.Function = ReplaceVariableNames(v.Function, name =>
                 {
-                    var found = Variables.Where(v1 => Relationships.Where(r => r.FromVariableId == v1.Id && r.ToVariableId == v.Id || r.FromVariableId == v.Id && r.ToVariableId == v1.Id).Count() > 0).FirstOrDefault(vv => vv.Name == name);
+                    var fromRelationships = Variables.Where(v1 => Relationships.Where(r => r.FromVariableId == v1.Id && r.ToVariableId == v.Id || r.FromVariableId == v.Id && r.ToVariableId == v1.Id).Count() > 0).FirstOrDefault(vv => vv.Name == name);
+                    var found = fromRelationships;
                     return found == null ? name : found.Id.ToString();
                 });
             }

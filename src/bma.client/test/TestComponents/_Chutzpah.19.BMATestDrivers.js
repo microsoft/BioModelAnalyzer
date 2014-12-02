@@ -3,7 +3,6 @@
 /// <reference path="..\..\script\uidrivers.interfaces.ts"/>
 var BMA;
 (function (BMA) {
-    var Test;
     (function (Test) {
         var ModelRepositoryTest = (function () {
             function ModelRepositoryTest() {
@@ -19,6 +18,7 @@ var BMA;
                 }
                 return list;
             };
+
             ModelRepositoryTest.prototype.LoadModel = function (id) {
                 //var i = parseInt(id);
                 //if (i < this.modelsList.length) {
@@ -26,6 +26,7 @@ var BMA;
                 //}
                 return JSON.parse('{"test": ' + this.modelsList[id] + '}');
             };
+
             ModelRepositoryTest.prototype.RemoveModel = function (id) {
                 var newlist = [];
                 for (var i in this.modelsList) {
@@ -34,31 +35,39 @@ var BMA;
                 }
                 this.modelsList = newlist;
             };
+
             ModelRepositoryTest.prototype.SaveModel = function (id, model) {
                 this.modelsList[id] = JSON.stringify(model);
             };
+
             ModelRepositoryTest.prototype.IsInRepo = function (id) {
                 return this.modelsList[id] !== undefined;
             };
             return ModelRepositoryTest;
         })();
         Test.ModelRepositoryTest = ModelRepositoryTest;
+
         var LocalStorageTestDriver = (function () {
             function LocalStorageTestDriver() {
             }
             LocalStorageTestDriver.prototype.Message = function (msg) {
             };
+
             LocalStorageTestDriver.prototype.AddItem = function (key, item) {
             };
+
             LocalStorageTestDriver.prototype.Show = function () {
             };
+
             LocalStorageTestDriver.prototype.Hide = function () {
             };
+
             LocalStorageTestDriver.prototype.SetItems = function (keys) {
             };
             return LocalStorageTestDriver;
         })();
         Test.LocalStorageTestDriver = LocalStorageTestDriver;
+
         var VariableEditorTestDriver = (function () {
             function VariableEditorTestDriver() {
             }
@@ -69,6 +78,7 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+
             Object.defineProperty(VariableEditorTestDriver.prototype, "Model", {
                 get: function () {
                     return this.model;
@@ -76,6 +86,7 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+
             VariableEditorTestDriver.prototype.GetVariableProperties = function () {
                 return {
                     name: this.variable.Name,
@@ -84,25 +95,31 @@ var BMA;
                     rangeTo: this.variable.RangeTo
                 };
             };
+
             VariableEditorTestDriver.prototype.Initialize = function (variable, model) {
                 this.variable = variable;
                 this.model = model;
             };
+
             VariableEditorTestDriver.prototype.Show = function (x, y) {
             };
+
             VariableEditorTestDriver.prototype.Hide = function () {
             };
+
             VariableEditorTestDriver.prototype.SetValidation = function (val, message) {
             };
             return VariableEditorTestDriver;
         })();
         Test.VariableEditorTestDriver = VariableEditorTestDriver;
+
         var AjaxTestDriver = (function () {
             function AjaxTestDriver() {
             }
             AjaxTestDriver.prototype.Invoke = function (data) {
                 var deferred = $.Deferred();
                 var result;
+
                 //switch (url) {
                 //    case "api/Validate":
                 //        if (data.Formula === "true")
@@ -118,6 +135,6 @@ var BMA;
             return AjaxTestDriver;
         })();
         Test.AjaxTestDriver = AjaxTestDriver;
-    })(Test = BMA.Test || (BMA.Test = {}));
+    })(BMA.Test || (BMA.Test = {}));
+    var Test = BMA.Test;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=BMATestDrivers.js.map

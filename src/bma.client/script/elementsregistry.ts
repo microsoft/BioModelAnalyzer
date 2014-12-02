@@ -547,10 +547,11 @@ module BMA {
                             };
                             var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
 
-                            var isRevers = dirLen / 2 < Math.sqrt(dir.x * dir.x * that.relationshipBboxOffset * that.relationshipBboxOffset + dir.y * dir.y * that.relationshipBboxOffset * that.relationshipBboxOffset);
-
                             dir.x /= dirLen;
                             dir.y /= dirLen;
+
+                            var isRevers = dirLen / 2 < Math.sqrt(dir.x * dir.x * that.relationshipBboxOffset * that.relationshipBboxOffset + dir.y * dir.y * that.relationshipBboxOffset * that.relationshipBboxOffset);
+
 
                             var start = {
                                 x: renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
@@ -665,10 +666,11 @@ module BMA {
                             };
                             var dirLen = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
 
-                            var isRevers = dirLen / 2 < Math.sqrt(dir.x * dir.x * that.relationshipBboxOffset * that.relationshipBboxOffset + dir.y * dir.y * that.relationshipBboxOffset * that.relationshipBboxOffset);
-
                             dir.x /= dirLen;
                             dir.y /= dirLen;
+
+                            var isRevers = dirLen / 2 < Math.sqrt(dir.x * dir.x * that.relationshipBboxOffset * that.relationshipBboxOffset + dir.y * dir.y * that.relationshipBboxOffset * that.relationshipBboxOffset);
+
 
                             var start = {
                                 x: renderParams.layout.start.PositionX + dir.x * that.relationshipBboxOffset,
