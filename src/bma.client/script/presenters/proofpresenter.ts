@@ -55,6 +55,7 @@
                         .done(function (res) {
                             //console.log("Proof Result Status: " + res.Status);
                             var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
+                            
                             if (res.Ticks !== null) {
                                 that.expandedProofPropagation = $('<div></div>');
                                 
@@ -91,11 +92,19 @@
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
                             else {
-                                proofResultViewer.SetData({
-                                    issucceeded: res.Status === "Stabilizing",
-                                    message: that.CreateMessage(result.IsStable, result.Time),
-                                    data: undefined
-                                })
+                                if (res.Status == "Error") {
+                                    proofResultViewer.SetData({
+                                        issucceeded: res.Status === "Stabilizing",
+                                        message: res.ErrorMessages[0],
+                                        data: undefined
+                                    })
+                                }
+                                else
+                                    proofResultViewer.SetData({
+                                        issucceeded: res.Status === "Stabilizing",
+                                        message: that.CreateMessage(result.IsStable, result.Time),
+                                        data: undefined
+                                    })
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
                             that.Snapshot();

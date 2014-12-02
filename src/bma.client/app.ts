@@ -407,7 +407,18 @@ $(document).ready(function () {
     }
 
     function popup_position() {
-        var my_popup = $('.popup-window, .bma-userdialog'); // наш попап
+        var my_popup = $('.popup-window, .bma-userdialog'); 
+        var analytic_tabs = $('.tabPanel');
+        analytic_tabs.each(function () {
+            var tab_h = $(this).outerHeight();
+            var win_h = $(window).outerHeight()*0.8;
+            if (win_h > tab_h) 
+                $(this).css({ 'max-height': win_h*0.8 });
+            
+            else 
+                $(this).css({ 'max-height': '600px' });
+        });
+
         my_popup.each(function () {
             var my_popup_w = $(this).outerWidth(), // ширина попапа
                 my_popup_h = $(this).outerHeight(), // высота попапа

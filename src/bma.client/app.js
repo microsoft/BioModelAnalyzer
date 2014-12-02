@@ -328,7 +328,16 @@ $(document).ready(function () {
         }
     }
     function popup_position() {
-        var my_popup = $('.popup-window, .bma-userdialog'); // наш попап
+        var my_popup = $('.popup-window, .bma-userdialog');
+        var analytic_tabs = $('.tabPanel');
+        analytic_tabs.each(function () {
+            var tab_h = $(this).outerHeight();
+            var win_h = $(window).outerHeight() * 0.8;
+            if (win_h > tab_h)
+                $(this).css({ 'max-height': win_h * 0.8 });
+            else
+                $(this).css({ 'max-height': '600px' });
+        });
         my_popup.each(function () {
             var my_popup_w = $(this).outerWidth(), my_popup_h = $(this).outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
             if (win_w > my_popup_w) {
