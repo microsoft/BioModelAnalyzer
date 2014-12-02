@@ -27,6 +27,7 @@ namespace bma.client {
         }
 
         // [JsonProperty(ItemConverterType = typeof(StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumConverter))]
         public StatusType Status { get; set; }
 
         [XmlElement("Tick", Type = typeof(Tick))]

@@ -54,11 +54,11 @@
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             //console.log("Proof Result Status: " + res.Status);
-                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === 4, res.Time, res.Ticks);
+                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
                             if (res.Ticks !== null) {
                                 that.expandedProofPropagation = $('<div></div>');
                                 
-                                if (res.Status === 5)
+                                if (res.Status === "NotStabilizing")
                                     window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                                 else
                                     window.Commands.Execute("ProofFailed", undefined);
@@ -92,7 +92,7 @@
                             }
                             else {
                                 proofResultViewer.SetData({
-                                    issucceeded: res.Status === 4,
+                                    issucceeded: res.Status === "Stabilizing",
                                     message: that.CreateMessage(result.IsStable, result.Time),
                                     data: undefined
                                 })
