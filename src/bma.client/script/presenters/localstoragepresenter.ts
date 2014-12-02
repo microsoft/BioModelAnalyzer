@@ -25,6 +25,8 @@
                 this.driver.SetItems(keys);
                 this.driver.Hide();
 
+                var reserved_key = "A7F3068A-390C-44F1-A98A-118264E40D7B";
+
                 window.Commands.On("LocalStorageChanged", function () {
                     var keys = that.tool.GetModelList();
                     if (keys.length == 0) 
@@ -73,7 +75,7 @@
                             appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
                             that.checker.Snapshot(that.appModel);
                         }
-                        else if (key !== "bma") {
+                        else if (key !== reserved_key) {
                             that.messagebox.Show("The model was removed from outside");
                             window.Commands.Execute("LocalStorageChanged", {});
                         }

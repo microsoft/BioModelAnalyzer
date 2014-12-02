@@ -2,6 +2,7 @@
     export class LocalRepositoryTool implements BMA.UIDrivers.IModelRepository {
         
         private messagebox: BMA.UIDrivers.IMessageServise;
+        private reserved_key = "A7F3068A-390C-44F1-A98A-118264E40D7B";
 
         constructor(messagebox: BMA.UIDrivers.IMessageServise) {
             this.messagebox = messagebox;
@@ -65,7 +66,7 @@
             for (var i = 0; i < window.localStorage.length; i++) {
                 var key = window.localStorage.key(i);
                 var item = window.localStorage.getItem(key);
-                if (this.ParseItem(item)) {
+                if (key  !== this.reserved_key && this.ParseItem(item)) {
                     keys.push(key);
                 }
             }

@@ -448,13 +448,13 @@ $(document).ready(function () {
         popup_position();
     });
 
-
+    var reserved_key = "A7F3068A-390C-44F1-A98A-118264E40D7B";
 
     window.onunload = function () {
-        window.localStorage.setItem("bma", appModel.Serialize());
+        window.localStorage.setItem(reserved_key, appModel.Serialize());
     };
 
     window.onload = function () {
-        window.Commands.Execute("LocalStorageLoadModel", "bma");
+        window.Commands.Execute("LocalStorageLoadModel", reserved_key);
     };
 });
