@@ -76,6 +76,7 @@
     <Compile Include="..\BioCheckAnalyzer32\QN.fs">
       <Link>QN.fs</Link>
     </Compile>
+    <None Include="Skin1D.json" />
     <Compile Include="..\BioCheckAnalyzer32\Result.fs">
       <Link>Result.fs</Link>
     </Compile>
@@ -173,8 +174,13 @@
       <Link>PathFinder.fs</Link>
     </Compile>
     <None Include="ModelSchema.xsd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Data">
+      <HintPath>..\..\ext\nuget\FSharp.Data.2.1.0\lib\net40\FSharp.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
       <HintPath>..\..\ext\dotNET\64bit\Microsoft.Z3.dll</HintPath>
