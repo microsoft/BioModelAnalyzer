@@ -1,30 +1,35 @@
-﻿var __extends = this.__extends || function (d, b) {
+/******************************************************************************
+
+  Copyright 2014 Microsoft Corporation.  All Rights Reserved.
+
+  Core BMA web UI
+
+******************************************************************************/
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="../Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="../Scripts/typings/jqueryui/jqueryui.d.ts" />
 var svg;
-
 window.onload = function () {
     var svgjq = $("#svgroot");
-
+    // Indirection via <any> to stop compiler complaining :-|
     svg = svgjq[0];
     svgjq.mousedown(startDrag);
     svgjq.mousemove(doDrag);
     svgjq.mouseup(drawItemOrStopDrag);
-
     $("#general-tools").buttonset();
     $("#drawing-tools").buttonset();
     $("#prover-tools").buttonset();
-
     var b = $("#button-undo");
     b.button("option", "disabled", true);
     b.click(ModelStack.undo);
     b = $("#button-redo");
     b.button("option", "disabled", true);
     b.click(ModelStack.redo);
-
     $("#drawing-tools input").click(drawingToolClick);
     $("img.draggable-button").each(function (i) {
         $(this).draggable({
@@ -36,52 +41,54 @@ window.onload = function () {
             }
         });
     });
-
     $("#design-surface").droppable({ drop: doDropFromDrawingTool });
-
     $("#zoom-slider").slider({
         min: -2,
         max: 3,
         value: SvgViewBoxManager.zoomLevel,
         step: 0.1,
-        slide: function (e, ui) {
+        // TODO - define slider args type - see http://stackoverflow.com/questions/17999653/jquery-ui-widgets-in-typescript
+        slide: function (e, ui /*: JQueryUI.SliderUIParams */) {
             SvgViewBoxManager.zoomLevel = ui.value;
         }
     });
     $("#button-zoomtofit").button().click(SvgViewBoxManager.zoomToFit);
-
     document.body.onmousewheel = doWheel;
-
     ModelStack.set(new Model());
 };
-
 function drawingToolClick(e) {
     var target = e.target;
     drawingItem = ItemType[$(target).attr("data-type")];
     dragMode = 0 /* None */;
     dragObject = null;
     dragFromButton = false;
-
+    // Draggable causes the cursor to be set on the body, so override that
+    // here. Note that the default behaviour of jQueryUI's drop seems to be to
+    // return the cursor to "auto" hence caching cursor here to reapply
+    // explicitly on drop.
     document.body.style.cursor = bodyCursor = getCursorUrl(target);
 }
-
 function doWheel(e) {
     var x = e.clientX, y = e.clientY;
     var p = screenToSvg(x, y);
-
+    // TODO - check for keyboard modifiers and scroll if ctrl/shift
     var zoom = $("#zoom-slider");
-
+    // TypeScript of slider API doesn't include single arg fn, hence <any> cast
     zoom.slider("value", zoom.slider("value") + (e.wheelDelta > 0 ? 0.1 : -0.1));
-
+    // Indirecting via the slider control automatically applies range limits
     SvgViewBoxManager.scaleAroundPoint(zoom.slider("value"), p.x, p.y);
 }
-
 function startDrag(e) {
+    //var sx = window.event.x, sy = window.event.y;
+    //var pt = screenToSvg(sx, sy);
+    //var circ = createSvgElement("circle", pt.x, pt.y);
+    //circ.setAttribute("fill", "red");
+    //circ.setAttribute("r", "2px");
+    //svg.appendChild(circ);
+    //return;
     if (e.button != 0)
         return;
-
     dragMode = 0 /* None */;
-
     var src = e.originalEvent.srcElement || e.originalEvent.originalTarget;
     var elem = null;
     if (src && (src.tagName == "path" || src.tagName == "g")) {
@@ -90,37 +97,41 @@ function startDrag(e) {
             node = node.parentNode;
         elem = node;
     }
-
+    // Mouse down for drawing lines *doesn't* trigger a drag
     if (elem && (drawingItem == 5 /* Activate */ || drawingItem == 6 /* Inhibit */)) {
+        // Bit naughty to cast to Variable, but not accessing any specific
+        // properties of Variable until after the type (which is common) has
+        // been validated
         var item = elem.item;
         if (item.type == 2 /* Variable */ || item.type == 3 /* Constant */ || item.type == 4 /* Receptor */) {
             var pt = getTranslation(elem);
             drawingLineSource = item;
             drawingLine = addLink(item, drawingItem);
         }
-    } else {
+    }
+    else {
         dragObject = elem;
         dragMode = dragObject ? 2 /* DragStart */ : 1 /* Panning */;
         lastX = e.clientX;
         lastY = e.clientY;
     }
 }
-
-function doDrag(e) {
+function doDrag(e /*: JQueryMouseEventObject*/) {
+    // e.button isn't set while mouse-moving, but e.buttons is, but only in
+    // IE is seems (!?) so rely on explicit flags set on mouse down operations
+    // rather than asking for the state here
+    //if (e.buttons != 1) return;
     if (dragMode != 1 /* Panning */ && !dragObject && !dragFromButton && !drawingLine)
         return;
-
     var x = e.clientX, y = e.clientY;
-
+    // Min movement distance before enabling dragging, to avoid jittery clicks
     if (dragMode == 2 /* DragStart */) {
         if (Math.abs(x - lastX) < 5 && Math.abs(y - lastY) < 5)
             return;
         dragMode = 3 /* Dragging */;
         ModelStack.dup();
     }
-
     var p = screenToSvg(x, y);
-
     if (drawingLine) {
         var line = drawingLine.element.firstChild.firstChild;
         line.x2.baseVal.value = p.x;
@@ -130,81 +141,95 @@ function doDrag(e) {
         parent.appendChild(line);
         return;
     }
-
     var p0 = screenToSvg(lastX, lastY);
     lastX = x;
     lastY = y;
     var dx = p.x - p0.x, dy = p.y - p0.y;
-
     if (dragMode == 1 /* Panning */) {
+        // Panning the design surface, obviously
         var origin = SvgViewBoxManager.origin;
         origin.x -= dx;
         origin.y -= dy;
         SvgViewBoxManager.origin = origin;
-    } else {
+    }
+    else {
+        // Determine if drag over background or on cell, etc
+        // TODO - remove currently dragged object from hit testing
         var hit = getEventElementAndPart(e.originalEvent);
         console.log(hit && hit.type);
         if (dragObject) {
+            // Dragging an object
+            //translateBy(dragObject, dx, dy);
             dragObject.item.moveBy(dx, dy);
-        } else {
+        }
+        else {
         }
     }
 }
-
-function drawItemOrStopDrag(e) {
+function drawItemOrStopDrag(e /*: JQueryMouseEventObject*/) {
     if (drawingLine) {
+        // If over a suitable item, persist line, otherwise throw it away
         var deleteIt = true;
         var hit = getEventElementAndPart(e.originalEvent);
         if (hit) {
             var item = hit.elem.item;
             if (item.type == 2 /* Variable */ || item.type == 3 /* Constant */ || item.type == 4 /* Receptor */) {
+                // TODO - check if link already present and handle self-links
                 var target = item;
-
+                // The below are already done (in addLink)
+                //drawingLine.source = drawingLineSource;
+                //drawingLineSource.fromLinks.push(drawingLine);
                 drawingLine.target = target;
                 target.toLinks.push(drawingLine);
                 deleteIt = false;
             }
         }
         if (deleteIt) {
-            ModelStack.undo();
+            //svg.removeChild(drawingLine.element);
+            ModelStack.undo(); // Get rid of the nascent line - bit heavyweight!
             ModelStack.truncate();
         }
-    } else if (drawingItem) {
+    }
+    else if (drawingItem) {
         var pt = screenToSvg(e.clientX, e.clientY);
         addItem(drawingItem, pt, getEventElementAndPart(e.originalEvent));
-    } else {
+    }
+    else {
+        // Verify that new placement is valid, revert to initial location if not
         var item = dragObject.item;
         var hit = getEventElementAndPart(e.originalEvent);
-
+        // TODO - need to get past the current element itself
         if (true || item.isValidNewPlacement(hit)) {
             if (item.type == 2 /* Variable */ || item.type == 4 /* Receptor */) {
             }
-        } else {
+        }
+        else {
             ModelStack.undo();
             ModelStack.truncate();
         }
     }
-
+    // Reset *everything* to clear any draggy operation
     dragMode = 0 /* None */;
     dragObject = null;
     dragFromButton = false;
     drawingLine = null;
     drawingLineSource = null;
 }
-
-function doDropFromDrawingTool(e, ui) {
+function doDropFromDrawingTool(e /*: JQueryEventObject*/, ui) {
     var type = ItemType[$(ui.draggable).attr("data-type")];
-
     document.body.style.cursor = bodyCursor;
-
     var sx = e.clientX, sy = e.clientY;
     var pt = screenToSvg(sx, sy);
-
+    // Determine if drop on background or on cell, etc
     var hit = getEventElementAndPart(e.originalEvent.originalEvent);
-
+    // Small spot to check drop location calculation
+    //var circ = createSvgElement("circle", pt.x, pt.y);
+    //circ.setAttribute("fill", "red");
+    //circ.setAttribute("r", "2px");
+    //svg.appendChild(circ);
     addItem(type, pt, hit);
 }
-
+// TODO - incorporate drag from button instead of flagging that separately
 var DragMode;
 (function (DragMode) {
     DragMode[DragMode["None"] = 0] = "None";
@@ -212,7 +237,6 @@ var DragMode;
     DragMode[DragMode["DragStart"] = 2] = "DragStart";
     DragMode[DragMode["Dragging"] = 3] = "Dragging";
 })(DragMode || (DragMode = {}));
-
 var dragMode;
 var lastX, lastY;
 var dragObject;
@@ -220,21 +244,25 @@ var drawingItem;
 var dragFromButton;
 var drawingLineSource;
 var drawingLine;
-
 var bodyCursor = "auto";
-
 function getCursorUrl(elem) {
     var type = elem.getAttribute("data-type");
     return type ? "url(_images/" + type + ".cur), pointer" : "auto";
 }
-
+// getIntersectionList not available in FireFox, so can't use this mechanism
+//function hitTest(x: number, y: number) {
+//    var o = $("#design-surface").offset();
+//    var r = svg.createSVGRect();
+//    r.width = r.height = 1;
+//    r.x = x - o.left; r.y = y - o.top;
+//    return svg.getIntersectionList(r, null);
+//}
 function getEventElementAndPart(e) {
     var src = e.srcElement || e.originalTarget;
     if (!src || (src.tagName != "path" && src.tagName != "g"))
         return null;
-
     var node = src;
-    var nodeClass = node.getAttribute("class");
+    var nodeClass = node.getAttribute("class"); // TODO - use hasclass
     var itemClass = nodeClass;
     while (nodeClass != "object") {
         node = node.parentNode;
@@ -244,14 +272,14 @@ function getEventElementAndPart(e) {
             itemClass = nodeClass;
         nodeClass = node.getAttribute("class");
     }
-
     if (node) {
+        // TODO - better split job, currently fingers crossed that the class of interest is at the start! Maybe use something other than class?
         itemClass = itemClass.split(" ")[0];
         return { elem: node, type: itemClass };
-    } else
+    }
+    else
         return null;
 }
-
 var ModelStack = (function () {
     function ModelStack() {
     }
@@ -269,7 +297,6 @@ var ModelStack = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(ModelStack, "canUndo", {
         get: function () {
             return ModelStack.index > 0;
@@ -284,7 +311,6 @@ var ModelStack = (function () {
         enumerable: true,
         configurable: true
     });
-
     ModelStack.undo = function () {
         if (ModelStack.canUndo) {
             ModelStack.current.deleteSvg();
@@ -294,7 +320,6 @@ var ModelStack = (function () {
         $("#button-undo").button("option", "disabled", !ModelStack.canUndo);
         $("#button-redo").button("option", "disabled", false);
     };
-
     ModelStack.redo = function () {
         if (ModelStack.canRedo) {
             ModelStack.current.deleteSvg();
@@ -304,7 +329,6 @@ var ModelStack = (function () {
         $("#button-undo").button("option", "disabled", false);
         $("#button-redo").button("option", "disabled", !ModelStack.canRedo);
     };
-
     ModelStack.set = function (m) {
         if (ModelStack.hasModel)
             ModelStack.current.deleteSvg();
@@ -314,10 +338,11 @@ var ModelStack = (function () {
         $("#button-undo").button("option", "disabled", true);
         $("#button-redo").button("option", "disabled", true);
     };
-
     ModelStack.dup = function () {
         ModelStack.truncate();
-
+        // Because the caller may have references to items in the model, place
+        // the duplicate *second* on the stack; also means the SVG resources
+        // don't need to be torn down and rebuilt
         var orig = ModelStack.current;
         ModelStack.models[ModelStack.index] = orig.clone();
         ModelStack.models.push(orig);
@@ -325,16 +350,14 @@ var ModelStack = (function () {
         $("#button-undo").button("option", "disabled", false);
         $("#button-redo").button("option", "disabled", true);
     };
-
     ModelStack.truncate = function () {
         ModelStack.models.length = ModelStack.index + 1;
     };
-
     ModelStack.models = [];
     ModelStack.index = -1;
     return ModelStack;
 })();
-
+// Assumes (and requires) that horizontal and vertical scales are the same
 var SvgViewBoxManager = (function () {
     function SvgViewBoxManager() {
     }
@@ -348,25 +371,29 @@ var SvgViewBoxManager = (function () {
         enumerable: true,
         configurable: true
     });
-
-
+    // TODO: use overloading rather than optional arguments because want x & y
+    // to be present or absent together
     SvgViewBoxManager.scaleAroundPoint = function (zoomLevel, xc, yc) {
+        // The equation used here is that
+        //    (xc - xo) * s = constant
+        // where xc is the offset to the zoom centre (normalised by scale),
+        //       xo is the viewbox offset, and s the scale.
+        // Thus, to move from scale s1 to s2 keeping xc fixed, we have:
+        //    xo2 = xc - (xc - xo1) * s1 / s2
+        // (and, obviously, the same for y)
         var box = svg.viewBox.baseVal;
         var xo1 = box.x, yo1 = box.y;
         var s1 = 2000 / box.width;
         var s2 = SvgViewBoxManager.zoomLevelToScale(zoomLevel);
-
+        // In the absence of a pointer location, zoom centre is window centre
         if (typeof xc === "undefined") {
             xc = box.width / 2 + box.x;
             yc = box.height / 2 + box.y;
         }
-
         var xo2 = xc - (xc - xo1) * s1 / s2;
         var yo2 = yc - (yc - yo1) * s1 / s2;
-
         SvgViewBoxManager.setViewBox(xo2, yo2, 2000 / s2, 1000 / s2);
     };
-
     Object.defineProperty(SvgViewBoxManager, "origin", {
         get: function () {
             var box = svg.viewBox.baseVal;
@@ -379,13 +406,10 @@ var SvgViewBoxManager = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     SvgViewBoxManager.moveBy = function (dx, dy) {
         var box = svg.viewBox.baseVal;
         SvgViewBoxManager.setViewBox(box.x + dx, box.y + dy, box.width, box.height);
     };
-
     SvgViewBoxManager.zoomToFit = function () {
         var left = Number.MAX_VALUE, right = Number.MIN_VALUE, top = Number.MAX_VALUE, bottom = Number.MIN_VALUE;
         if (!ModelStack.current.children.length) {
@@ -393,7 +417,8 @@ var SvgViewBoxManager = (function () {
             right = 2000;
             top = 0;
             bottom = 1000;
-        } else {
+        }
+        else {
             for (var i = 0; i < ModelStack.current.children.length; ++i) {
                 var elem = ModelStack.current.children[i].element;
                 var box = getTrueBBox(elem);
@@ -408,34 +433,32 @@ var SvgViewBoxManager = (function () {
             }
         }
         var width = right - left, height = bottom - top;
-
+        // Add a bit of a margin
         left -= 20;
         width += 40;
         top -= 20;
         height += 40;
-
+        // Need to keep a consistent zoom level across both axes
         var sx = 2000 / width, sy = 1000 / height;
         var s = sx < sy ? sx : sy;
-
+        // Limit to range available via the UI, and keep the UI in step
+        // TODO - too much coupling
         var zoom = $("#zoom-slider");
         zoom.slider("value", SvgViewBoxManager.scaleToZoomLevel(s));
-
+        // Reading back from the slider control automatically applies limits
         s = SvgViewBoxManager.zoomLevelToScale(zoom.slider("value"));
-
+        // Adjust offsets to centre the display
         var displayWidth = 2000 / s, displayHeight = 1000 / s;
         left += 0.5 * (width - displayWidth);
         top += 0.5 * (height - displayHeight);
         SvgViewBoxManager.setViewBox(left, top, displayWidth, displayHeight);
     };
-
     SvgViewBoxManager.zoomLevelToScale = function (v) {
         return Math.exp(v);
     };
-
     SvgViewBoxManager.scaleToZoomLevel = function (v) {
         return Math.log(v);
     };
-
     SvgViewBoxManager.setViewBox = function (x, y, w, h) {
         svg.viewBox.baseVal.x = x;
         svg.viewBox.baseVal.y = y;
@@ -444,11 +467,15 @@ var SvgViewBoxManager = (function () {
     };
     return SvgViewBoxManager;
 })();
-
+// The objects on display are represented as a "group" (SVG "g") with class
+// "object" and which contains two sub elements: a group representing the
+// graphical layout of the object and a text element giving its name. The
+// first group will be a list of paths, the first of which is normally
+// invisible but which can be lit up to indicate hover, selection, etc.
 function createSvgElement(type, x, y, scale) {
-    if (typeof scale === "undefined") { scale = 1.0; }
+    if (scale === void 0) { scale = 1.0; }
     var elem = document.createElementNS("http://www.w3.org/2000/svg", type);
-
+    // TODO - combine into matrix? Easier to adjust later? (And to incorporate rotation for receptor)
     var transform = "";
     if (scale != 1.0)
         transform += "scale(" + scale + "," + scale + ")";
@@ -458,69 +485,65 @@ function createSvgElement(type, x, y, scale) {
         elem.setAttribute("transform", transform);
     return elem;
 }
-
+// Debug hackery
 function drawSpot(x, y, radius, fill) {
-    if (typeof radius === "undefined") { radius = 2; }
-    if (typeof fill === "undefined") { fill = "red"; }
+    if (radius === void 0) { radius = 2; }
+    if (fill === void 0) { fill = "red"; }
     var circ = createSvgElement("circle", x, y);
     circ.setAttribute("fill", fill);
     circ.setAttribute("r", radius + "px");
     svg.appendChild(circ);
 }
-
 function createSvgPath(data, color, x, y, scale) {
-    if (typeof x === "undefined") { x = 0; }
-    if (typeof y === "undefined") { y = 0; }
-    if (typeof scale === "undefined") { scale = 1.0; }
+    if (x === void 0) { x = 0; }
+    if (y === void 0) { y = 0; }
+    if (scale === void 0) { scale = 1.0; }
     var elem = createSvgElement("path", x, y, scale);
     elem.setAttribute("d", data);
     elem.setAttribute("fill", color);
     return elem;
 }
-
 function createSvgText(text, x, y) {
     var elem = createSvgElement("text", x, y);
-
+    // TODO set colour, size & font
     elem.textContent = text;
     return elem;
 }
-
 function createSvgGroup(children, x, y, scale) {
-    if (typeof scale === "undefined") { scale = 1.0; }
+    if (scale === void 0) { scale = 1.0; }
     var elem = createSvgElement("g", x, y, scale);
     for (var i in children)
         elem.appendChild(children[i]);
     return elem;
 }
-
+// Requires that first element be a strokeless path, and that path be the
+// outermost, since its stroke is manipulated to make a highlight outline
 function createHighlightableSvgGroup(children, x, y, scale) {
-    if (typeof scale === "undefined") { scale = 1.0; }
+    if (scale === void 0) { scale = 1.0; }
     var highlightPath = children[0];
     highlightPath.setAttribute("stroke-width", (3 / scale) + "px");
     highlightPath.setAttribute("stroke", "transparent");
     var group = createSvgGroup(children, x, y, scale);
     group.setAttribute("onmouseover", "svgAddClass(this.childNodes[0], 'svg-highlight')");
     group.setAttribute("onmouseout", "svgRemoveClass(this.childNodes[0], 'svg-highlight')");
-
+    // Allow the invisible stroke to still participate in hit testing
     group.setAttribute("pointer-events", "all");
     svgAddClass(group, "shape");
     return group;
 }
-
 function createTopGroupAndAdd(children, x, y) {
     var elem = createSvgGroup(children, x, y);
     svgAddClass(elem, "object");
     svg.appendChild(elem);
     return elem;
 }
-
 function applyNewTranslation(elem, x, y) {
     var transform = svg.createSVGTransform();
     transform.setTranslate(x, y);
     elem.transform.baseVal.appendItem(transform);
 }
-
 function translateSvgElement(elem, x, y) {
+    // TODO - matrix manipulation instead
     var transformList = elem.transform.baseVal;
     for (var i in transformList) {
         var transform = transformList.getItem(i);
@@ -529,11 +552,11 @@ function translateSvgElement(elem, x, y) {
             return;
         }
     }
-
+    // Getting here means no translation was present
     applyNewTranslation(elem, x, y);
 }
-
 function getTranslation(elem) {
+    // TODO - matrix manipulation instead
     var transformList = elem.transform.baseVal;
     for (var i = 0; i < transformList.numberOfItems; ++i) {
         var transform = transformList.getItem(i);
@@ -542,21 +565,23 @@ function getTranslation(elem) {
     }
     return { x: 0, y: 0 };
 }
-
+// getBBox doesn't take transformations into account; this function looks at
+// the currently applied translation (note, doesn't walk any further up the
+// tree, nor does it take scale into account so only useful for top level
+// objects)
 function getTrueBBox(elem) {
     var box = elem.getBBox();
     var tr = getTranslation(elem);
     return { x: box.x + tr.x, y: box.y + tr.y, width: box.width, height: box.height };
 }
-
+// SVG class seems to be treated as a "normal" string attribute in all but the
+// most recent IE, so roll our own class manipulation
 function stringInString(s, find) {
     return s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
 }
-
 function svgHasClass(elem, c) {
     return stringInString(elem.className.baseVal, c);
 }
-
 function svgAddClass(elem, c) {
     var s = elem.className.baseVal;
     if (!s)
@@ -564,15 +589,13 @@ function svgAddClass(elem, c) {
     else if (!stringInString(s, c))
         elem.className.baseVal = s + " " + c;
 }
-
 function svgRemoveClass(elem, c) {
     var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
-
+    // TODO - coalesce spaces
     if (s == " ")
         s = null;
     elem.className.baseVal = s;
 }
-
 function addItem(type, pt, elemAndPart) {
     switch (type) {
         case 1 /* Container */:
@@ -594,7 +617,6 @@ function addItem(type, pt, elemAndPart) {
     }
     return null;
 }
-
 function addContainer(x, y) {
     ModelStack.dup();
     var container = new Container(x, y);
@@ -602,7 +624,6 @@ function addContainer(x, y) {
     container.createSvgElement();
     return container;
 }
-
 function addVariable(x, y, container) {
     ModelStack.dup();
     var variable = new Variable(2 /* Variable */, x, y);
@@ -611,7 +632,6 @@ function addVariable(x, y, container) {
     variable.createSvgElement();
     return variable;
 }
-
 function addConstant(x, y) {
     ModelStack.dup();
     var constant = new Variable(3 /* Constant */, x, y);
@@ -619,7 +639,6 @@ function addConstant(x, y) {
     constant.createSvgElement();
     return constant;
 }
-
 function addReceptor(x, y, container) {
     ModelStack.dup();
     var receptor = new Variable(4 /* Receptor */, x, y);
@@ -628,7 +647,6 @@ function addReceptor(x, y, container) {
     receptor.createSvgElement();
     return receptor;
 }
-
 function addLink(source, type) {
     ModelStack.dup();
     var link = new Link(type);
@@ -637,7 +655,6 @@ function addLink(source, type) {
     link.createSvgElement();
     return link;
 }
-
 var ItemType;
 (function (ItemType) {
     ItemType[ItemType["Invalid"] = 0] = "Invalid";
@@ -649,7 +666,6 @@ var ItemType;
     ItemType[ItemType["Inhibit"] = 6] = "Inhibit";
     ItemType[ItemType["Model"] = 7] = "Model";
 })(ItemType || (ItemType = {}));
-
 var Item = (function () {
     function Item(type, x, y) {
         this.type = type;
@@ -658,37 +674,38 @@ var Item = (function () {
         this.id = getNextId();
         this.name = ItemType[type] + this.id;
     }
+    // Create the SVG structures that correspond to this particular item
     Item.prototype.createSvgElement = function () {
         throw new Error("Cannot create SVG element for item " + this.name + " (" + this.id + ")");
     };
-
+    // Delete all the SVG structures corresponding to this item
     Item.prototype.deleteSvgElement = function () {
         if (this.element) {
             this.element.parentNode.removeChild(this.element);
             this.element = null;
         }
     };
-
+    // Make a deep copy of this model data, excluding any SVG structures
     Item.prototype.clone = function (variableMap, linkList) {
         throw new Error("Cannot clone item " + this.name + " (" + this.id + ")");
     };
-
+    // Move to absolute coordinates on the screen
     Item.prototype.moveTo = function (x, y) {
         moveBy(x - this.x, y - this.y);
     };
-
+    // Move to relative coordinate
     Item.prototype.moveBy = function (dx, dy) {
         this.x += dx;
         this.y += dy;
         translateSvgElement(this.element, this.x, this.y);
     };
-
+    // Check if this item can be placed at the locaton specified
+    // TODO - snapping?
     Item.prototype.isValidNewPlacement = function (elemAndPart) {
         return false;
     };
     return Item;
 })();
-
 var Variable = (function (_super) {
     __extends(Variable, _super);
     function Variable(type, x, y) {
@@ -717,20 +734,18 @@ var Variable = (function (_super) {
         }
         var graphic = createHighlightableSvgGroup([path], 0, 0, scale);
         svgAddClass(graphic, "shape");
-        var text = createSvgText(this.name, 0, 50);
+        var text = createSvgText(this.name, 0, 50); // offset...
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         elem.item = this;
         for (var i = 0; i < this.toLinks.length; ++i)
             this.toLinks[i].createSvgElement();
     };
-
     Variable.prototype.deleteSvgElement = function () {
         for (var i = 0; i < this.toLinks.length; ++i)
             this.toLinks[i].deleteSvgElement();
         _super.prototype.deleteSvgElement.call(this);
     };
-
     Variable.prototype.clone = function (variableMap, linkList) {
         var v = new Variable(this.type, this.x, this.y);
         v.id = this.id;
@@ -738,14 +753,13 @@ var Variable = (function (_super) {
         for (var i = 0; i < this.fromLinks.length; ++i) {
             var link = new Link(this.fromLinks[i].type);
             link.source = v;
-            link.target = this.fromLinks[i].target;
+            link.target = this.fromLinks[i].target; // This is the OLD target, will be patched up later
             v.fromLinks.push(link);
             linkList.push(link);
         }
         variableMap[this.id] = v;
         return v;
     };
-
     Variable.prototype.moveBy = function (dx, dy) {
         _super.prototype.moveBy.call(this, dx, dy);
         for (var i = 0; i < this.fromLinks.length; ++i) {
@@ -753,7 +767,7 @@ var Variable = (function (_super) {
             line.x1.baseVal.value = this.x;
             line.y1.baseVal.value = this.y;
             var parent = line.parentNode;
-
+            // Need to do this to cause IE to redraw lines with markers
             parent.removeChild(line);
             parent.appendChild(line);
         }
@@ -766,11 +780,9 @@ var Variable = (function (_super) {
             parent.appendChild(line);
         }
     };
-
     Variable.prototype.isValidNewPlacement = function (elemAndPart) {
         return Variable.isValidPlacement(this.type, elemAndPart);
     };
-
     Variable.isValidPlacement = function (type, elemAndPart) {
         switch (type) {
             case 2 /* Variable */:
@@ -783,7 +795,6 @@ var Variable = (function (_super) {
     };
     return Variable;
 })(Item);
-
 var Container = (function (_super) {
     __extends(Container, _super);
     function Container(x, y) {
@@ -797,20 +808,18 @@ var Container = (function (_super) {
         svgAddClass(innerPath, "cell-inner");
         var graphic = createHighlightableSvgGroup([outerPath, innerPath], 0, 0, 2.5);
         svgAddClass(graphic, "shape");
-        var text = createSvgText(this.name, -100, -125);
+        var text = createSvgText(this.name, -100, -125); // offset...
         var elem = createTopGroupAndAdd([graphic, text], this.x, this.y);
         this.element = elem;
         elem.item = this;
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].createSvgElement();
     };
-
     Container.prototype.deleteSvgElement = function () {
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].deleteSvgElement();
         _super.prototype.deleteSvgElement.call(this);
     };
-
     Container.prototype.clone = function (variableMap, linkList) {
         var c = new Container(this.x, this.y);
         c.id = this.id;
@@ -819,28 +828,26 @@ var Container = (function (_super) {
             c.children.push(this.children[i].clone(variableMap, linkList));
         return c;
     };
-
     Container.prototype.moveBy = function (dx, dy) {
         _super.prototype.moveBy.call(this, dx, dy);
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].moveBy(dx, dy);
     };
-
     Container.prototype.isValidNewPlacement = function (elemAndPart) {
         return Container.isValidPlacement(elemAndPart);
     };
-
     Container.isValidPlacement = function (elemAndPart) {
         return elemAndPart == null;
     };
     return Container;
 })(Item);
-
 var Link = (function () {
     function Link(type) {
         this.type = type;
     }
     Link.prototype.createSvgElement = function () {
+        // TODO - need to shorten and re-angle to allow gap
+        // TODO - need to handle self-links
         var line = createSvgElement("line", 0, 0);
         var v = this.source;
         line.x1.baseVal.value = v.x;
@@ -851,16 +858,19 @@ var Link = (function () {
         line.y2.baseVal.value = v.y;
         line.setAttribute("stroke-width", "3px");
         line.setAttribute("stroke", "black");
-
+        // TODO - use classes instead
+        // Ack - serious problem with IE - marker-ended lines don't draw properly
+        // http://connect.microsoft.com/IE/feedback/details/801938/dynamically-updated-svg-path-with-a-marker-end-does-not-update
+        // http://connect.microsoft.com/IE/feedback/details/781964/svg-marker-is-not-updated-when-the-svg-element-is-moved-using-the-dom
+        // http://stackoverflow.com/questions/17654578/svg-marker-does-not-work-in-ie9-10 suggests remove and re-add as solution
         line.setAttribute("marker-end", this.type == 5 /* Activate */ ? "url('#link-activate')" : "url('#link-inhibit')");
-
+        // TODO - highlight
         var graphic = createSvgGroup([line], 0, 0, 1);
         svgAddClass(graphic, "shape");
         var elem = createTopGroupAndAdd([graphic], 0, 0);
         this.element = elem;
         elem.item = this;
     };
-
     Link.prototype.deleteSvgElement = function () {
         if (this.element) {
             this.element.parentNode.removeChild(this.element);
@@ -869,7 +879,6 @@ var Link = (function () {
     };
     return Link;
 })();
-
 var Model = (function () {
     function Model() {
         this.children = [];
@@ -878,12 +887,10 @@ var Model = (function () {
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].createSvgElement();
     };
-
     Model.prototype.deleteSvg = function () {
         for (var i = 0; i < this.children.length; ++i)
             this.children[i].deleteSvgElement();
     };
-
     Model.prototype.clone = function () {
         var m = new Model();
         m.name = this.name;
@@ -891,7 +898,6 @@ var Model = (function () {
         var linkList = [];
         for (var i = 0; i < this.children.length; ++i)
             m.children.push(this.children[i].clone(variableMap, linkList));
-
         for (i = 0; i < linkList.length; ++i) {
             var link = linkList[i];
             link.target = variableMap[link.target.id];
@@ -901,7 +907,6 @@ var Model = (function () {
     };
     return Model;
 })();
-
 function getMaxId(node, v) {
     if (node.id)
         v = Math.max(v, node.id);
@@ -910,11 +915,9 @@ function getMaxId(node, v) {
             v = getMaxId(node.children[i], v);
     return v;
 }
-
 function getNextId() {
     return getMaxId(ModelStack.current, 0) + 1;
 }
-
 function screenToSvg(x, y) {
     var screenPt = svg.createSVGPoint();
     screenPt.x = x;
@@ -922,3 +925,4 @@ function screenToSvg(x, y) {
     var ctm = svg.getScreenCTM();
     return screenPt.matrixTransform(ctm.inverse());
 }
+//# sourceMappingURL=bma.js.map
