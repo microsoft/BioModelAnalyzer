@@ -22,7 +22,6 @@
                 this.appModel = appModel;
                 this.ajax = ajax;
                 this.messagebox = messagebox;
-                //this.Snapshot();
 
                 var that = this;
 
@@ -128,26 +127,12 @@
 
                 window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
-                        //var full;
                         switch (param) {
                             case "ProofPropagation":
                                 if (this.appModel.ProofResult.Ticks !== null) {
                                     popupViewer.Show({ tab: param, content: $('<div></div>') });
-
-                                    //var f = function () {
-                                    //    var d = $.Deferred();
-                                    //    full = that.CreateExpandedResultTable(appModel.ProofResult.Ticks);
-                                    //    d.resolve(full);
-                                    //    return d.promise();
-                                    //};
-
-                                    //$.when(f()).done(function (res) {
-                                         //res.addClass("proof-expanded");
-                                         proofResultViewer.Hide({ tab: param });
+                                    proofResultViewer.Hide({ tab: param });
                                     popupViewer.Show({ tab: param, content: that.expandedProofPropagation });
-                                    //});
-
-                                    
                                 }
                                 break;
                             case "ProofVariables":
@@ -157,15 +142,9 @@
                                 popupViewer.Show({ tab: param, content: that.expandedProofVariables });
                                 break;
                             default:
-                                //full = undefined;
                                 proofResultViewer.Show({ tab: undefined });
                                 break;
                         }
-                        //if (full !== undefined) {
-                        //    full.addClass("proof-expanded");
-                        //    proofResultViewer.Hide({ tab: param });
-                        //    popupViewer.Show({ tab: param, content: full });
-                        //}
                     }
                 });
 
@@ -243,7 +222,6 @@
                     table[i][0] = variable.Name;
                     table[i][1] = variable.Formula;
                     var range = '';
-                    //var ij = ticks[0].Variables[variables.length - 1 - i];
                     var c = st.state;
                     if (!c) {
                         for (var j = 0; j < 3; j++)
@@ -274,7 +252,6 @@
             public AddPropagationColumn(st) {
                 var trs = this.expandedProofPropagation.find('tr');
                 $('<td></td>').text('Fix Point').appendTo(trs.eq(0));
-                //var trs2 = this.expandedProofVariables.find('tr').not(':first-child').children(':last-child');
                 var colors = this.expandedProofPropagation.coloredtableviewer("option", "colorData");
 
                 for (var i = 0; i < st.length; i++) {
@@ -287,9 +264,6 @@
             }
 
             public CreateExpandedProofVariables(variablesData) {
-                //var st = this.Stability(this.appModel.ProofResult.Ticks);
-                //var variablesData = this.CreateTableView(st.variablesStability);
-                //var variablesData = that.CreateTableView(appModel.ProofResult.Ticks);
                 var full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
                 full.find("td").eq(0).width(150);
                 full.find("td").eq(2).width(150);

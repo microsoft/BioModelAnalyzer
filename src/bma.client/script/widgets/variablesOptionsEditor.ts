@@ -90,11 +90,6 @@
             closing.bind("click", function () {
                 that.element.hide();
             });
-            //var div1 = $('<div style="height:20px"></div>').appendTo(that.element);
-            //var nameLabel = $('<div class="labels-in-variables-editor"></div>').text("Name").appendTo(div1);
-            
-            //var inputscontainer = $('<div class="inputs-container"></div>').appendTo(that.element);
-            //this.expandLabel = $('<button class="editorExpander"></button>').appendTo(inputscontainer);
             this.name = $('<input type="text" size="15">')
                 .attr("placeholder", "Variable Name")
                 .appendTo(that.element);
@@ -163,8 +158,6 @@
 
         _processExpandingContent: function () {
             var that = this;
-            //this.content = $('<div class="expanding"></div>').appendTo(this.element);
-            //var span = $('<div>Target Function</div>').appendTo(that.content);
 
             var inputsDiv = $('<div></div>').addClass('list-of-functions').appendTo(that.element);
             $('<div></div>')
@@ -181,7 +174,6 @@
             var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
             var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
 
-            //var div1 = $('<div class="bma-functions-list"></div>').appendTo(div);
             this.infoTextArea = $('<div class="functions-info"></div>').appendTo(operatorsDiv);
 
             var functions = this.options.functions;
@@ -232,16 +224,6 @@
                 });
 
             operatorsDiv.width(opUl2.width());
-
-            //var insertButton = $('<button class="bma-insert-function-button">insert</button>').appendTo(div);
-
-            //insertButton.bind("click", function () {
-            //    var about = window.FunctionsRegistry.GetFunctionByName(that.selected.text());
-            //    var caret = that.getCaretPos(that.formulaTextArea) + about.Offset;
-            //    that.formulaTextArea.insertAtCaret(about.InsertText).change();
-            //    that.formulaTextArea[0].setSelectionRange(caret, caret);
-            //});
-            //$(div1.children()[0]).click();
 
             this.inputsList = inpUl.children().eq(0);
             this.inputsList.children("button").addClass("inputs-list-header-collapsed");
@@ -303,17 +285,8 @@
                 window.Commands.Execute("VariableEdited", {});
             });
 
-            //this.expandLabel.bind("click", function () {
-            //    if (that.content.is(':hidden')) 
-            //        that.content.show();
-            //    else
-            //        that.content.hide();
-            //    $(this).toggleClass("editorExpanderChecked", "editorExpander");
-            //});
-
             this.formulaTextArea.bind("input change propertychange", function () {
                 that._setOption("formula", that.formulaTextArea.val());
-                //that.options.formula = that.formulaTextArea.val();
                 window.Commands.Execute("VariableEdited", {});
             });
 

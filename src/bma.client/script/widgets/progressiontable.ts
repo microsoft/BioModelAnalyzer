@@ -133,19 +133,6 @@
             return init;
         },
 
-        //getLast: function () {
-        //    var init = [];
-        //    var tds;
-        //    if (this.element.find("tr:not(:first-child)").eq(0).children("td").length <= 2)
-        //        tds = this.element.find("tr:not(:first-child)").children("td:first-child")
-        //    else
-        //        tds = this.element.find("tr:not(:first-child)").children("td:last-child");
-        //    tds.each(function (ind, val) {
-        //        init[ind] = parseInt($(this).text());
-        //    })
-        //    return init;
-        //},
-
         ClearData: function () {
             this.data.empty();
         },

@@ -83,17 +83,9 @@
             this.ol.selectable({
                 stop: function () {
                     console.log("STOP");
-                    //$(".ui-selected", this).each(function () {
                     window.Commands.Execute("LocalStorageLoadModel", items[$(this).find(".ui-selected").eq(0).index()]);
-                    //});
                 }
             });
-
-            //this.ol.on("selectablestop", function () {
-            //    $(".ui-selected", this).each(function () {
-            //        window.Commands.Execute("LocalStorageLoadModel", that.options.items[$(this).index()]);
-            //    });
-            //})
         },
 
         Message: function (msg) {

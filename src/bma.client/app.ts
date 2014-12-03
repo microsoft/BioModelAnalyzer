@@ -131,8 +131,6 @@ $(document).ready(function () {
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
-    //$("#modelToolbarHeader").toolbarpanel();
-    //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
     $("#modelToolbarContent").buttonset();
     $("#modelToolbarSlider").bmaaccordion({ position: "left", z_index: 1 });
@@ -420,23 +418,23 @@ $(document).ready(function () {
         });
 
         my_popup.each(function () {
-            var my_popup_w = $(this).outerWidth(), // ширина попапа
-                my_popup_h = $(this).outerHeight(), // высота попапа
+            var my_popup_w = $(this).outerWidth(), 
+                my_popup_h = $(this).outerHeight(),
 
-                win_w = $(window).outerWidth(), // ширина окна
-                win_h = $(window).outerHeight(), // высота окна
+                win_w = $(window).outerWidth(), 
+                win_h = $(window).outerHeight(),
                 popup_half_w = (win_w - my_popup_w) / 2,
                 popup_half_h = (win_h - my_popup_h) / 2;
-            if (win_w > my_popup_w) { // если ширина окна больше ширины попапа
+            if (win_w > my_popup_w) { 
                 my_popup.css({ 'left': popup_half_w });
             }
-            if (win_w < my_popup_w) { // если ширина окна меньше ширины попапа                  
+            if (win_w < my_popup_w) {                 
                 my_popup.css({ 'left': 5, });
             }
-            if (win_h > my_popup_h) { // если высота окна больше ширины попапа
+            if (win_h > my_popup_h) {
                 my_popup.css({ 'top': popup_half_h });
             }
-            if (win_h < my_popup_h) { // если высота окна меньше ширины попапа
+            if (win_h < my_popup_h) {
                 my_popup.css({ 'top': 5 });
             }
         })
@@ -448,13 +446,13 @@ $(document).ready(function () {
         popup_position();
     });
 
-    var reserved_key = "A7F3068A-390C-44F1-A98A-118264E40D7B";
+    var reserved_key = "InitialModel";
 
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
     };
 
     window.onload = function () {
-        window.Commands.Execute("LocalStorageLoadModel", reserved_key);
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
 });

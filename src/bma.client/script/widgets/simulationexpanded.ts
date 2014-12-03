@@ -24,9 +24,6 @@
             this.table1 = $('<div></div>').appendTo(tablesDiv);
             this.progression = $('<div></div>').appendTo(tablesDiv).progressiontable();//.addClass("bma-simulation-table")
             this.progression.css("width", "calc(100% - 361px - 60px)");
-            //this.progression.css("left", "50px");
-            //this.progression.css("top", 0);
-            //this.progression.addClass("bma-simulation-table-expanded-scroll");
             if (options.variables !== undefined) {
                 this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
                 if (options.interval !== undefined && options.interval.length !== 0) {
@@ -48,7 +45,6 @@
             })
 
             that.element.addClass("bma-simulation-expanded");
-            //that.element.children().css("margin", "10px");
             this.refresh();
         },
 

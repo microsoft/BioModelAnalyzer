@@ -76,10 +76,7 @@
                                                     osc = res2.CounterExamples[i];
                                                     break;
                                                 case "Fixpoint":
-                                                    // TODO: add fix point handling here
                                                     fix = res2.CounterExamples[i];
-                                                    
-                                                    
                                                     break;
                                             }
                                         }
@@ -162,19 +159,6 @@
                 })
             }
 
-            //public CreateFixView(variables, results) {
-            //    var table = [];
-            //    for (var i = 0; i < variables.length; i++) {
-            //        var resid = results[variables[i].Id];
-            //        table[i] = [];
-            //        table[i][0] = variables[i].ContainerId;
-            //        table[i][1] = variables[i].Name;
-            //        table[i][2] = resid.min + '-' + resid.max;
-            //        table[i][3] = resid.oscillations;
-            //    }
-            //    return table;
-            //}
-
             public CreateOscillationsView(variables, results) {
                 var that = this;
                 var table = [];
@@ -250,10 +234,8 @@
             }
 
             private ParseOscillations(variables) {
-                //var variables = ex[1].Variables;
                 var table = [];
                 for (var j = 0; j < variables.length; j++) {
-                    //table[i][j] = ex[i].Variables[j].Id + " " + ex[i].Variables[j].Value;
                     var parse = this.ParseId(variables[j].Id);
                     if (table[parseInt(parse[0])] === undefined) 
                         table[parseInt(parse[0])] = [];

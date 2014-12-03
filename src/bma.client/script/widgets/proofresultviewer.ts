@@ -20,12 +20,10 @@
             if (options.issucceeded) {
                 $('<img src="../../images/succeeded.png">').appendTo(this.resultDiv);
                 $('<div style="color: green; font-weight:bold"></div>').text('Stabilizes').appendTo(this.resultDiv);
-                //$('<p style="font-size:small"></p>').text('BMA succeeded in checking every possible state of the model in ' + options.time + ' seconds. After stepping through separate interactions, the model eventually reached a single stable state.').appendTo(that.resultDiv);
             }
             else {
                 $('<img src="../../images/failed.png">').appendTo(this.resultDiv);
                 $('<div style="color: red; font-weight:bold"></div>').text('Failed to Stabilize').appendTo(this.resultDiv);
-                //$('<p style="font-size:small"></p>').text('After stepping through separate interactions in the model, the analisys failed to determine a final stable state').appendTo(that.resultDiv);
             }
         },
 
@@ -123,9 +121,6 @@
                 case "issucceeded": this.options.issucceeded = value;
                     this.refreshSuccess();
                     break;
-                //case "time": this.options.time = value;
-                //    this.refreshSuccess();
-                //    break;
                 case "data":
                     this.options.data = value;
                     this.refreshData();

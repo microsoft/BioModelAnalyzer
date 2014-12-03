@@ -96,9 +96,6 @@
                         
                     }
                     break;
-
-                //default:
-                //    alert("undefined type of table");
             }
         },
 
@@ -257,31 +254,10 @@
             }
         },
 
-        //paintSimulationTable: function (color) {
-        //    var that = this;
-        //    var table = that.table;//.clone();
-        //    var over = 0;
-        //    if (that.options.header !== undefined && that.options.header.length !== 0) over = 1;
-        //    if (color.length > table.find("tr").length) { console.log("Incompatible sizes of numeric and color data"); return };
-
-        //    for (var i = 0; i < color.length; i++) {
-        //        if (color[i].length > table.find("tr").eq(i + over).children().length) { console.log("Incompatible sizes of numeric and color data-2"); return };
-
-        //        for (var j = 0; j < color[i].length; j++) {
-
-        //            var td = table.find("tr").eq(i + over).children("td").eq(j);
-        //            if (color[i][j] !== undefined) {
-        //                if (color[i][j]) td.css("background-color", "#CCFF99");
-        //                else td.css("background-color", "#FFADAD");
-        //            }
-        //        }
-        //    }
-        //    return table;
-        //},
-
+        
         paintTable: function (color) {
             var that = this;
-            var table = that.table;//.clone();
+            var table = that.table;
             var over = 0;
             if (that.options.header !== undefined && that.options.header.length !== 0) over = 1;
             //if (color.length > table.find("tr").length) { console.log("Incompatible sizes of numeric and color data"); return };

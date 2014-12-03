@@ -5,7 +5,6 @@
             private compactViewer: BMA.UIDrivers.ISimulationViewer;
             private expandedViewer: BMA.UIDrivers.ISimulationExpanded;
             private ajax: BMA.UIDrivers.IServiceDriver;
-            //private data;
             private colors;
             private initValues;
             private dataForPlot;
@@ -19,7 +18,6 @@
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
                 this.ajax = ajax;
-                //this.data = [];
                 this.colors = [];
                 var that = this;
 
@@ -30,7 +28,6 @@
 
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
-                    //that.data = [];
                     that.results = [];
                     that.initValues = param.data;
                     that.ClearColors();
@@ -44,16 +41,12 @@
                         that.initValues = [];
                         that.results = [];
                         that.expandedSimulationVariables = undefined;
-                        //that.data = [];
                         that.CreateColors();
                         that.ClearColors();
                         that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
                     }
-                    //else {
-                    
-
                 });
 
                 window.Commands.On("Expand", (param) => {
@@ -89,8 +82,6 @@
                     simulationViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
-
-
             }
 
 
@@ -136,7 +127,7 @@
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                console.log ("Simulation Error: " + res.ErrorMessages);
+                                alert ("Simulation Error: " + res.ErrorMessages);
                             }
                         })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
@@ -150,8 +141,6 @@
 
             public AddData(d) {
                 if (d !== null) {
-                    //this.data[this.data.length] = d;
-                    //this.data.push(d);
                     var variables = this.appModel.BioModel.Variables;
                     for (var i = 0; i < d.length; i++) {
                         var color = this.colors[this.GetColorById(variables[i].Id)];
@@ -267,8 +256,6 @@
                     data[i] = res.Variables[i].Value;
                 return data;
             }
-
-            
         }
     }
 }

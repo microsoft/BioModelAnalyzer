@@ -13,7 +13,6 @@
         _create: function () {
             var that = this;
             this.element.addClass("zoomslider-container");
-            //var options = this.options;
 
             var command = this.element.attr("data-command");
 

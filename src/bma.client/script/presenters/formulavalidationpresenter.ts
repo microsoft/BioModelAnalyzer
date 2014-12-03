@@ -21,7 +21,6 @@
                     else {
                         that.editorDriver.SetValidation(undefined, '');
                     }
-                    
                 })
             }
         }

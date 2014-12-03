@@ -2,7 +2,6 @@
     export class LocalRepositoryTool implements BMA.UIDrivers.IModelRepository {
         
         private messagebox: BMA.UIDrivers.IMessageServise;
-        private reserved_key = "A7F3068A-390C-44F1-A98A-118264E40D7B";
 
         constructor(messagebox: BMA.UIDrivers.IMessageServise) {
             this.messagebox = messagebox;
@@ -41,9 +40,9 @@
         public SaveModel(id: string, model: JSON) {
             if (window.localStorage.getItem(id) !== null) {
                 if (confirm("Overwrite the file?"))
-                    this.Save(id, JSON.stringify(model));
+                    this.Save("user." + id, JSON.stringify(model));
             }
-            else this.Save(id, JSON.stringify(model));
+            else this.Save("user." + id, JSON.stringify(model));
         }
 
         public RemoveModel(id: string) {
@@ -65,12 +64,22 @@
             var keys = [];
             for (var i = 0; i < window.localStorage.length; i++) {
                 var key = window.localStorage.key(i);
-                var item = window.localStorage.getItem(key);
-                if (key  !== this.reserved_key && this.ParseItem(item)) {
-                    keys.push(key);
+                var usrkey = this.IsUserKey(key);
+                if (usrkey !== undefined) {
+                    var item = window.localStorage.getItem(key);
+                    if (this.ParseItem(item)) {
+                        keys.push(usrkey);
+                    }
                 }
             }
             return keys;
+        }
+
+        private IsUserKey(key: string): string {
+            var sp = key.split('.', 2);
+            if (sp[0] === "user")
+                return sp[1];
+            else return undefined;
         }
     }
 }

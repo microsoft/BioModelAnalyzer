@@ -25,8 +25,6 @@
                 this.driver.SetItems(keys);
                 this.driver.Hide();
 
-                var reserved_key = "A7F3068A-390C-44F1-A98A-118264E40D7B";
-
                 window.Commands.On("LocalStorageChanged", function () {
                     var keys = that.tool.GetModelList();
                     if (keys.length == 0) 
@@ -55,8 +53,8 @@
                             message: "Do you want to save changes?",
                             functions: [
                                 function () {
-                                    window.Commands.Execute("LocalStorageSaveModel", {});
                                     $('#usrdialog').detach();
+                                    window.Commands.Execute("LocalStorageSaveModel", {});
                                 },
                                 function () {
                                     $('#usrdialog').detach();
@@ -75,10 +73,17 @@
                             appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
                             that.checker.Snapshot(that.appModel);
                         }
-                        else if (key !== reserved_key) {
+                        else {
                             that.messagebox.Show("The model was removed from outside");
                             window.Commands.Execute("LocalStorageChanged", {});
                         }
+                    }
+                });
+
+                window.Commands.On("LocalStorageInitModel", function (key) {
+                    if (that.tool.IsInRepo(key)) {
+                        appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
+                        that.checker.Snapshot(that.appModel);
                     }
                 });
 

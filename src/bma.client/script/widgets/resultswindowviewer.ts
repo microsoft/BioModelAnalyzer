@@ -37,7 +37,6 @@
                 if (options.icon === "min")
                     window.Commands.Execute("Collapse", that.options.tabid);
             });
-            //this.head.css("min-height", this.button.height());
         },
 
         refresh: function () {
@@ -46,8 +45,6 @@
             this.content.detach();
             if (options.content !== undefined) {
                 this.content = options.content.appendTo(that.element); 
-                //this.content.html(options.content);
-                
             }
             
         },
@@ -97,10 +94,7 @@
                     this.reseticon();
                     break;
             }
-
-                
             this._super(key, value);
-            //this.refresh();
         }
     });
 } (jQuery));
