@@ -231,6 +231,8 @@
                     })
                 });
 
+            operatorsDiv.width(opUl2.width());
+
             //var insertButton = $('<button class="bma-insert-function-button">insert</button>').appendTo(div);
 
             //insertButton.bind("click", function () {

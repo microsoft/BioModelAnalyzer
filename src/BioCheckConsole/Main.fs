@@ -21,10 +21,19 @@ let engine_of_string s =
     | "Simulate" | "simulate" -> Some EngineSimulate
     | _ -> None 
 
+// json currently not working with Garvit engine
+type ModelFormat = ModelFormatJson | ModelFormatXML
+let modelformat_of_string s = 
+    match s with
+    | "json" | "JSON" -> Some ModelFormatJson
+    | "xml" | "XML" -> Some ModelFormatXML
+    | _ -> None
+
 // Command-line args
 // -- General
 let engine = ref None 
 let model  = ref "" // input model filename 
+let model_format = ref None
 let run_tests = ref false 
 let logging = ref false 
 let logging_level = ref 0
@@ -48,7 +57,7 @@ let state  = ref "" // input csv describing starting state
 let state' = ref "" // input csv describing destination state 
 
 let usage i = 
-    Printf.printfn "Usage: BioCheckConsole.exe -model input_analysis_file.xml"
+    Printf.printfn "Usage: BioCheckConsole.exe -model input_analysis_file.json -model_format json"
     Printf.printfn "                           -modelsdir model_directory"
     Printf.printfn "                           -log "
     Printf.printfn "                           -loglevel n"
@@ -61,6 +70,7 @@ let usage i =
 let rec parse_args args = 
     match args with 
     | [] -> ()
+    | "-model_format" :: f :: rest -> model_format := modelformat_of_string f; parse_args rest 
     | "-model" :: m :: rest -> model := m; parse_args rest  
     | "-model2" :: m :: rest -> model' := m; parse_args rest
     | "-state" :: s :: rest -> state := s; parse_args rest
@@ -212,7 +222,8 @@ let main args =
             res := -1
 
         else 
-            let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+            let qn = Marshal.model_of_json (!modelsdir + "\\" + !model) 
+            //let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
             
             let parameters_were_ok = 
                 match !engine with
