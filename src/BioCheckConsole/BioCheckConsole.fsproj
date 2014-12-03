@@ -65,13 +65,8 @@
     <Compile Include="Test.fs" />
     <Compile Include="UnitTests.fs" />
     <Compile Include="Main.fs" />
-    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Data">
-      <HintPath>..\..\ext\nuget\FSharp.Data.2.1.0\lib\net40\FSharp.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
