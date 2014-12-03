@@ -520,181 +520,181 @@ let cex_result_of_xml (xd:XDocument) =
 
 
 
+////
+////json format parsing via F#.Data
+////
 //
-//json format parsing via F#.Data
+//// 1. Fix Garvit parsing. 
+//open FSharp.Data
 //
-
-// 1. Fix Garvit parsing. 
-open FSharp.Data
-
-// the typeprovider need an example to get going. 
-type M = JsonProvider<"Skin1D.json">
-
-let model_of_json fname = 
-    let fcontent = System.IO.File.ReadAllText fname
-    let m = M.Parse(fcontent)
-    let m = m.Model
-
-// Garvit parsing
-//    let cc = 
-//        if ((xd.Element(xn "AnalysisInput").Element(xn "Cells") <> null) && (xd.Element(xn "AnalysisInput").Element(xn "Cells").Element(xn "Cell") <> null)) then
-//            xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") 
-//        else Seq.empty 
-//            
-//    let ccNames = if Seq.isEmpty cc then ["SingleCell"] 
-//                  else [for cell in cc do yield try (string)(cell.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(-1, "Bad Cell Name"))]
-
-    // Get vars
-    let vv = m.Variables 
-
-    // Get the max of all the variable ids to create safe ids for internal use
-    for v in vv do
-        maxNumber := max !maxNumber v.Id
-
-    let v = vv.[0]
-    let f = v.Formula
-    Printf.printf "f is %s" (match f.String with Some x -> x | None -> "none")
-
-    let vars =
-            seq { for v in vv do
-                    let id = v.Id
-                    let name = v.Name
-                    let min = v.RangeFrom
-                    let max = v.RangeTo
-
-    //                // Garvit's Shrink-Cut 
-    //                // if no number given than generate a safe number
-    //                let number = 
-    //                    // try (int) (v.Element(xn "Number").Value) with _ -> mk_number_safe()
-    //                    if (v.Element(xn "Number") <> null) then 
-    //                        (int)(v.Element(xn "Number").Value) 
-    //                    else mk_number_safe()
-    //                let tt = 
-    //                    // try v.Element(xn "Tags").Elements(xn "Tag") with _ -> Seq.empty
-    //                    if (v.Element(xn "Tags") <> null && v.Element(xn "Tags").Elements(xn "Tag") <> null) then 
-    //                        v.Element(xn "Tags").Elements(xn "Tag") 
-    //                    else Seq.empty
-    //                let tags = [for tag in tt do
-    //                                    let tagId = try (int)(tag.Attribute(xn "Id").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Id"))
-    //                                    let tagName = try (string)(tag.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Name"))
-    //                                    // this cell must have been declared in the cell names
-    //                                    if tagName <> "_" && (not (List.exists (fun v -> v=tagName) ccNames)) then raise(MarshalInFailed(id, "No cell with that name"))
-    //                                    yield (tagId, tagName)] 
-    //                // by default each node is related to all cells
-    //                let defaultTags = [for pos in 1 .. ccNames.Length do
-    //                                        yield (pos, List.nth ccNames (pos-1))]
-    //                // if no tags specified then replace with default tags
-    //                let tags = if Seq.isEmpty tt then defaultTags else tags
-                    let dummy_number = mk_number_safe()
-                    let dummy_tags = []
-    //                // Garvit
-
-                    // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
-                    let t = match v.Formula.String with Option.None -> None | Option.Some(x) -> Some(x)
-                    //let t = if Option.get v.Formula.String = "" then None else Some(Option.get v.Formula.String)
-                    let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
-                    let parse_error f line col msg = 
-                        "Failed to parse " + name + "'s function: " + f + ". " +
-                        "Exception: " + msg + ". " +
-                        "Will use default function."
-                    let fparsec t = 
-                        match ParsecExpr.parse_expr t with
-                        | ParsecExpr.ParseOK(f) -> Some f 
-                        | ParsecExpr.ParseErr(err) -> 
-                            Log.log_error(parse_error t err.line err.col err.msg) 
-                            raise(MarshalInFailed(id,exn_msg t))
-                    let f =
-                            match t with
-                            | Some t when t="" -> None
-                            | Some t -> fparsec t
-                            | None -> None
-                    yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f; Vnumber=dummy_number; Vtags=dummy_tags } }
-
-    let vars_map = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid v map) Map.empty vars
-
-    // Get inputs
-    let rr = m.Relationships
-    let io = seq { for r in rr do
-                    let id = r.Id
-                    let source = r.FromVariableId
-                    let target = r.ToVariableId
-                    let parsed_rel = r.Type
-                    let rel_ty =
-                        match parsed_rel with
-                        | "Activator" -> RTActivator
-                        | "Inhibitor" -> RTInhibitor
-                        | _ -> raise(MarshalInFailed(id,"Bad relationship descriptor"))
-                    yield { Rid= id; Rfr= source; Rto= target; Rrel_ty=rel_ty } }
-    // The inputs to a variable. "x depends upon ({act0,act1,...}, {inh0,inh1,...})"
-    let inputs = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid ([],[]) map) Map.empty vars
-    let inputs' =
-        Seq.fold
-            (fun inputs (io:ui_rel) ->
-                let v = io.Rto
-                let v_acts, v_inhs = Map.find v inputs
-                Map.add
-                    v
-                    (match io.Rrel_ty with
-                     | RTActivator -> io.Rfr :: v_acts, v_inhs
-                     | RTInhibitor -> v_acts          , io.Rfr :: v_inhs)
-                    inputs)
-            inputs
-            io
-
-   // v->f map
-    let v_to_f = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid v.Vf map) Map.empty vars
-    let v_to_frto = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid (v.Vfr,v.Vto) map) Map.empty vars
-
-    // var->node map
-    // This could be simpler if we'd worked out inputs (and so been able to
-    // synthesize default target functions) *before* making the vars_map.
-    let qn_map =
-        Map.map
-            (fun v (ii,oo) ->
-                let (min,max) = Map.find v v_to_frto
-                let v = Map.find v vars_map
-                let t =
-                    // Use f if defined, or else synthesize a default one.
-                    match v.Vf with
-                    | Some f -> f
-                    | None ->
-                       // Changing default target function to a meaningful target function
-                        match ii, oo with
-                        | [], [] -> Expr.Const(min)
-                        // If there are no positive influences and there are negative influences 
-                        // 1. It should just be the constant min of range of the varialbe
-                        // 2. The constituent value (with no inhibition) is the maximum. So the target function is max-ave(neg)
-                        // 3. The target function is the general default function ave(pos)-ave(neg), where ave(pos) is replaced with
-                        //    the min of the range of the variable as the list of pos is empty 
-                        | [], _  -> Expr.Const(min) 
-                                    // Expr.Minus(Expr.Const(max), Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
-                                    // Expr.Max(Expr.Const(min), 
-                                    //         Expr.Minus(Expr.Const(min),
-                                    //                    Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
-                        | _ , [] -> Expr.Min(Expr.Const(max), Expr.Ave(List.map (fun i -> Expr.Var(i)) ii))
-                                    // SI: Garvit's was:  Expr.Ave(List.map (fun i -> Expr.Var(i)) ii)
-                        | _ , _  -> 
-                                    Expr.Max(Expr.Const(min),
-                                     Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),
-                                                Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
-                                    // SI: " Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
-                let nature = 
-                    // map describing the nature of inputs : activating/inhibiting
-                    List.fold
-                        (fun map i -> Map.add i QN.Act map)
-                        (List.fold
-                            (fun map o -> Map.add o QN.Inh map)
-                            Map.empty
-                            oo)
-                        ii
-                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; 
-                    QN.nature= nature; QN.defaultF = Option.isNone v.Vf; QN.number = v.Vnumber; QN.tags = v.Vtags } )
-            inputs'
-
-    // Final result
-    let qn = Map.toList qn_map |> List.map (fun (_v,n) -> n)
-    QN.qn_wf qn
-    qn
+//// the typeprovider need an example to get going. 
+//type M = JsonProvider<"Skin1D.json">
+//
+//let model_of_json fname = 
+//    let fcontent = System.IO.File.ReadAllText fname
+//    let m = M.Parse(fcontent)
+//    let m = m.Model
+//
+//// Garvit parsing
+////    let cc = 
+////        if ((xd.Element(xn "AnalysisInput").Element(xn "Cells") <> null) && (xd.Element(xn "AnalysisInput").Element(xn "Cells").Element(xn "Cell") <> null)) then
+////            xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") 
+////        else Seq.empty 
+////            
+////    let ccNames = if Seq.isEmpty cc then ["SingleCell"] 
+////                  else [for cell in cc do yield try (string)(cell.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(-1, "Bad Cell Name"))]
+//
+//    // Get vars
+//    let vv = m.Variables 
+//
+//    // Get the max of all the variable ids to create safe ids for internal use
+//    for v in vv do
+//        maxNumber := max !maxNumber v.Id
+//
+//    let v = vv.[0]
+//    let f = v.Formula
+//    Printf.printf "f is %s" (match f.String with Some x -> x | None -> "none")
+//
+//    let vars =
+//            seq { for v in vv do
+//                    let id = v.Id
+//                    let name = v.Name
+//                    let min = v.RangeFrom
+//                    let max = v.RangeTo
+//
+//    //                // Garvit's Shrink-Cut 
+//    //                // if no number given than generate a safe number
+//    //                let number = 
+//    //                    // try (int) (v.Element(xn "Number").Value) with _ -> mk_number_safe()
+//    //                    if (v.Element(xn "Number") <> null) then 
+//    //                        (int)(v.Element(xn "Number").Value) 
+//    //                    else mk_number_safe()
+//    //                let tt = 
+//    //                    // try v.Element(xn "Tags").Elements(xn "Tag") with _ -> Seq.empty
+//    //                    if (v.Element(xn "Tags") <> null && v.Element(xn "Tags").Elements(xn "Tag") <> null) then 
+//    //                        v.Element(xn "Tags").Elements(xn "Tag") 
+//    //                    else Seq.empty
+//    //                let tags = [for tag in tt do
+//    //                                    let tagId = try (int)(tag.Attribute(xn "Id").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Id"))
+//    //                                    let tagName = try (string)(tag.Attribute(xn "Name").Value) with _ -> raise(MarshalInFailed(id, "Bad Tag Name"))
+//    //                                    // this cell must have been declared in the cell names
+//    //                                    if tagName <> "_" && (not (List.exists (fun v -> v=tagName) ccNames)) then raise(MarshalInFailed(id, "No cell with that name"))
+//    //                                    yield (tagId, tagName)] 
+//    //                // by default each node is related to all cells
+//    //                let defaultTags = [for pos in 1 .. ccNames.Length do
+//    //                                        yield (pos, List.nth ccNames (pos-1))]
+//    //                // if no tags specified then replace with default tags
+//    //                let tags = if Seq.isEmpty tt then defaultTags else tags
+//                    let dummy_number = mk_number_safe()
+//                    let dummy_tags = []
+//    //                // Garvit
+//
+//                    // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
+//                    let t = match v.Formula.String with Option.None -> None | Option.Some(x) -> Some(x)
+//                    //let t = if Option.get v.Formula.String = "" then None else Some(Option.get v.Formula.String)
+//                    let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
+//                    let parse_error f line col msg = 
+//                        "Failed to parse " + name + "'s function: " + f + ". " +
+//                        "Exception: " + msg + ". " +
+//                        "Will use default function."
+//                    let fparsec t = 
+//                        match ParsecExpr.parse_expr t with
+//                        | ParsecExpr.ParseOK(f) -> Some f 
+//                        | ParsecExpr.ParseErr(err) -> 
+//                            Log.log_error(parse_error t err.line err.col err.msg) 
+//                            raise(MarshalInFailed(id,exn_msg t))
+//                    let f =
+//                            match t with
+//                            | Some t when t="" -> None
+//                            | Some t -> fparsec t
+//                            | None -> None
+//                    yield { Vid= id; Vname= name; Vfr= min; Vto= max; Vf= f; Vnumber=dummy_number; Vtags=dummy_tags } }
+//
+//    let vars_map = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid v map) Map.empty vars
+//
+//    // Get inputs
+//    let rr = m.Relationships
+//    let io = seq { for r in rr do
+//                    let id = r.Id
+//                    let source = r.FromVariableId
+//                    let target = r.ToVariableId
+//                    let parsed_rel = r.Type
+//                    let rel_ty =
+//                        match parsed_rel with
+//                        | "Activator" -> RTActivator
+//                        | "Inhibitor" -> RTInhibitor
+//                        | _ -> raise(MarshalInFailed(id,"Bad relationship descriptor"))
+//                    yield { Rid= id; Rfr= source; Rto= target; Rrel_ty=rel_ty } }
+//    // The inputs to a variable. "x depends upon ({act0,act1,...}, {inh0,inh1,...})"
+//    let inputs = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid ([],[]) map) Map.empty vars
+//    let inputs' =
+//        Seq.fold
+//            (fun inputs (io:ui_rel) ->
+//                let v = io.Rto
+//                let v_acts, v_inhs = Map.find v inputs
+//                Map.add
+//                    v
+//                    (match io.Rrel_ty with
+//                     | RTActivator -> io.Rfr :: v_acts, v_inhs
+//                     | RTInhibitor -> v_acts          , io.Rfr :: v_inhs)
+//                    inputs)
+//            inputs
+//            io
+//
+//   // v->f map
+//    let v_to_f = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid v.Vf map) Map.empty vars
+//    let v_to_frto = Seq.fold (fun map (v:ui_variable) -> Map.add v.Vid (v.Vfr,v.Vto) map) Map.empty vars
+//
+//    // var->node map
+//    // This could be simpler if we'd worked out inputs (and so been able to
+//    // synthesize default target functions) *before* making the vars_map.
+//    let qn_map =
+//        Map.map
+//            (fun v (ii,oo) ->
+//                let (min,max) = Map.find v v_to_frto
+//                let v = Map.find v vars_map
+//                let t =
+//                    // Use f if defined, or else synthesize a default one.
+//                    match v.Vf with
+//                    | Some f -> f
+//                    | None ->
+//                       // Changing default target function to a meaningful target function
+//                        match ii, oo with
+//                        | [], [] -> Expr.Const(min)
+//                        // If there are no positive influences and there are negative influences 
+//                        // 1. It should just be the constant min of range of the varialbe
+//                        // 2. The constituent value (with no inhibition) is the maximum. So the target function is max-ave(neg)
+//                        // 3. The target function is the general default function ave(pos)-ave(neg), where ave(pos) is replaced with
+//                        //    the min of the range of the variable as the list of pos is empty 
+//                        | [], _  -> Expr.Const(min) 
+//                                    // Expr.Minus(Expr.Const(max), Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
+//                                    // Expr.Max(Expr.Const(min), 
+//                                    //         Expr.Minus(Expr.Const(min),
+//                                    //                    Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
+//                        | _ , [] -> Expr.Min(Expr.Const(max), Expr.Ave(List.map (fun i -> Expr.Var(i)) ii))
+//                                    // SI: Garvit's was:  Expr.Ave(List.map (fun i -> Expr.Var(i)) ii)
+//                        | _ , _  -> 
+//                                    Expr.Max(Expr.Const(min),
+//                                     Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),
+//                                                Expr.Ave(List.map (fun o -> Expr.Var(o)) oo)))
+//                                    // SI: " Expr.Minus(Expr.Ave(List.map (fun i -> Expr.Var(i)) ii),Expr.Ave(List.map (fun o -> Expr.Var(o)) oo))
+//                let nature = 
+//                    // map describing the nature of inputs : activating/inhibiting
+//                    List.fold
+//                        (fun map i -> Map.add i QN.Act map)
+//                        (List.fold
+//                            (fun map o -> Map.add o QN.Inh map)
+//                            Map.empty
+//                            oo)
+//                        ii
+//                { QN.var= v.Vid; QN.range= (v.Vfr,v.Vto); QN.f= t; QN.inputs= ii@oo; QN.name= v.Vname; 
+//                    QN.nature= nature; QN.defaultF = Option.isNone v.Vf; QN.number = v.Vnumber; QN.tags = v.Vtags } )
+//            inputs'
+//
+//    // Final result
+//    let qn = Map.toList qn_map |> List.map (fun (_v,n) -> n)
+//    QN.qn_wf qn
+//    qn
 
 
 

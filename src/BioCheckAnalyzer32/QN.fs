@@ -101,19 +101,21 @@ let env_complete_wrt_qn (qn:qn) (env:env) =
         env_wrt_qn && qn_wrt_env && env_bounded
     else false
 
-
-let list_of_inputs_excluding_node (n : node) (network : node list) =
-    List.concat [ for var in n.inputs do
-                    yield (List.filter (fun (x:node) -> ((x.var = var) && not (x.var = n.var))) network) ]
-
-
-let list_of_inputs_with_node_in_head (n : node) (network : node list) =
-    let list_of_inputs = list_of_inputs_excluding_node n network
-    n :: list_of_inputs
-
+// Used by Garvit ShrinkCut
 let get_node_from_var (nv : var) (network : node list) = 
     List.find (fun n -> n.var = nv) network
 
 
-
+/// Knockout the node [var] by replacing it's function with [c]
+// Could be a more general function to replace a node's target function. Will then need to call expr parser here. 
+let ko qn var c = 
+    // Get the n and the rest
+    let nn,qn_sub_n = List.partition (fun n -> n.var = var) qn
+    // There should be only one nn
+    let n' = 
+        match nn with 
+        | [n] -> { n with f = (Expr.Const(c)) } 
+        | _ -> failwith("Non-existent or duplicate node " + (string)var + " in qn")
+    // Add new n back to qn
+    n' :: qn_sub_n
 
