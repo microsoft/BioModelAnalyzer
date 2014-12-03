@@ -244,6 +244,7 @@
     <Content Include="preloaded\ToyModelStable.json" />
     <Content Include="preloaded\ToyModelUnstable.json" />
     <Content Include="preloaded\VPC.json" />
+    <Content Include="preloaded\SkinModel.json" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
