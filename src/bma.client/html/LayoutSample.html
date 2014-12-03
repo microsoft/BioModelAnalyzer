@@ -1,29 +1,45 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
-    <title>Layout sample</title>
-    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
-    <script src="../Scripts/jquery-2.1.1.min.js"></script>
-    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
-    <script src="../js/rx.js"></script>
-    <script src="../js/rx.jQuery.js"></script>
-    <script src="../js/idd.js"></script>
+    <meta charset="utf-8">
+    <title>File API</title>
+
+    <!--<link rel="stylesheet" href="style.css">-->
 
     <script type="text/javascript">
-        $(document).ready(function () {
-            for (var i = 0; i < 10; i++) {
-                var li = $("<li></li>").appendTo($("#ul1"));
-                var div = $("<div></div>").css("margin", 10).appendTo(li);
+    window.onload = function () {
+        var fileInput = document.getElementById('fileInput');
+        var fileDisplayArea = document.getElementById('fileDisplayArea');
 
-                var div2 = $("<div></div>").width(20).height(20).css("background-color", "red").css("display", "table-cell").appendTo(div);
-                var div3 = $("<div></div>").text("alotoftexthereblablabla").width(120).height(20).css("display", "table-cell").css("padding-left", 5).css("vertical-align", "middle").appendTo(div);
-            }
+        fileInput.addEventListener('change', function (e) {
+            var file = fileInput.files[0];
+            var textType = /text.*/;
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    fileDisplayArea.innerText = reader.result;
+                }
+
+                reader.readAsText(file);
         });
+    }
     </script>
-    <style>
-    </style>
+
 </head>
-<body style="font-family: 'Segoe UI Light'">
-    <ul id="ul1" style="list-style-type:none;"></ul>
+<body>
+    <div id="page-wrapper">
+
+        <h1>Text File Reader</h1>
+        <div>
+            Select a text file:
+            <input type="file" id="fileInput">
+        </div>
+        <pre id="fileDisplayArea"><pre>
+
+    </div>
+
+    <script src="text.js"></script>
 </body>
 </html>
+

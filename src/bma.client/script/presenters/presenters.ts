@@ -1175,10 +1175,20 @@ module BMA {
                     var variableLayout = variableLayouts[i];
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+
+                    var container: any = variable.Type === "MembraneReceptor" ? this.undoRedoPresenter.Current.layout.GetContainerById(variable.ContainerId) : undefined;
+                    var sizeCoef = undefined;
+                    var gridCell = undefined;
+                    if (container !== undefined) {
+                        sizeCoef = container.Size;
+                        gridCell = { x: container.PositionX, y: container.PositionY };
+                    }
                     svgElements.push(element.RenderToSvg({
                         model: variable,
                         layout: variableLayout,
                         grid: this.Grid,
+                        gridCell: gridCell,
+                        sizeCoef: sizeCoef,
                         valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
                         labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
                     }));

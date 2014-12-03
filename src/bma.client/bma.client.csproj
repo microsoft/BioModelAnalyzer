@@ -240,7 +240,6 @@
     <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
     <Content Include="preloaded\diabetes_new_mod.json" />
-    <Content Include="preloaded\SkinModel.json" />
     <Content Include="preloaded\ToyModelStable.json" />
     <Content Include="preloaded\ToyModelUnstable.json" />
     <Content Include="preloaded\VPC.json" />
