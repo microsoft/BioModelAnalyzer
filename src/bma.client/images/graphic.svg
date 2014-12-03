@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1.1 (8761) - http://www.bohemiancoding.com/sketch -->
+    <title>graphic</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Analysis-Tabs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="graphic" sketch:type="MSArtboardGroup">
+            <path d="M2.5,36.5 L12.5,24.5 L23,33.5 L26.5,18 L39,25.5 L43.5,10" id="Path-3" stroke="#B9BBBD" stroke-width="3" sketch:type="MSShapeGroup"></path>
+            <rect id="Rectangle-5" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="32" width="3" height="6"></rect>
+            <path d="M3,3.5 L3,45.5029761 L45.5000001,45.5029761" id="Path-2" stroke="#484646" stroke-width="2" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>
