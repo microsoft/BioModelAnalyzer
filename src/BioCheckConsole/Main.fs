@@ -38,6 +38,15 @@ let run_tests = ref false
 let logging = ref false 
 let logging_level = ref 0
 
+// -- QN transformations 
+// ---- KO
+let ko : (QN.var * int) list ref = ref [] // KO each of these vars, replacing their f's with the const. 
+let ko_of_string v c =
+    let v = try (int)v with _ -> failwith("-ko id const: id has to be integer identifier of var in qn")
+    let c = try (int)c with _ -> failwith("-ko id const: const has to be integer value")
+    (v,c)
+let dump_after_qn_xform = ref false
+
 // -- related to VMCAI engine
 let proof_output = ref "proof_output" // output filename 
 // -- related to CAV engine
@@ -65,6 +74,8 @@ let usage i =
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
     Printf.printfn "                           -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
+    Printf.printfn "                           -ko id const"
+    Printf.printfn "                           -dump_after_ko_xform"
 
 
 let rec parse_args args = 
@@ -86,6 +97,8 @@ let rec parse_args args =
     | "-proof" :: rest -> output_proof := true; parse_args rest
     | "-path" :: i :: rest -> number_of_steps := (int)i; parse_args rest
     | "-modelsdir" :: d :: rest -> modelsdir := d; parse_args rest
+    | "-ko" :: id :: konst :: rest -> ko := (ko_of_string id konst) :: !ko; parse_args rest 
+    | "-dump_after_ko_xform" :: rest -> dump_after_qn_xform := true; parse_args rest 
     | "-tests" :: rest -> run_tests := true; parse_args rest
     | "-log" :: rest -> logging := true; parse_args rest
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
@@ -222,9 +235,19 @@ let main args =
             res := -1
 
         else 
-            let qn = Marshal.model_of_json (!modelsdir + "\\" + !model) 
-            //let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-            
+            //let qn = Marshal.model_of_json (!modelsdir + "\\" + !model) 
+            let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
+        
+            // Apply an QN transformations
+            let qn = List.fold
+                        (fun current_qn (var,c) -> QN.ko current_qn var c)
+                        qn
+                        !ko
+
+            if (!dump_after_qn_xform) then
+                List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
+
+
             let parameters_were_ok = 
                 match !engine with
                 | Some EnginePath -> 
