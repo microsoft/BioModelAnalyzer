@@ -33,7 +33,7 @@
          {"Path": "script/widgets", "Include":"*.ts"},
 
          {"Path": "app.ts"},
-
+         {"Path": "Silverlight.js"},
          {"Path": "test/TestComponents/", "Include": "*.ts"}
      ],
      "Tests":  [{ "Include":  "*/test/*.ts" }]

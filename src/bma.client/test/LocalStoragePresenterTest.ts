@@ -70,7 +70,7 @@
         expect(modelRepositoryTest.SaveModel).toHaveBeenCalledWith(name, JSON.parse(appModel.Serialize()));
     });
 
-    it("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
+    xit("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(appModel, "Reset");
         //var key = '4';
@@ -79,7 +79,7 @@
         expect(appModel.Reset).toHaveBeenCalledWith(JSON.stringify(modelRepositoryTest.LoadModel(name)));
     });
 
-    it("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
+    xit("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker);
         spyOn(appModel, "Reset");
         var key = 'testkey';

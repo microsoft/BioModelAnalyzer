@@ -67,6 +67,7 @@
         },
 
         _createHTML: function (items) {
+            console.log("createHTML");
             var items = this.options.items;
             this.repo.empty();
             var that = this;
@@ -76,14 +77,14 @@
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
                 var removeBtn = $('<button></button>').addClass("localstorage-remove-button").appendTo(li);
                 removeBtn.bind("click", function () {
-                    window.Commands.Execute("LocalStorageRemoveModel", items[$(this).parent().index()]);
+                    window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
                 })
             }
 
             this.ol.selectable({
                 stop: function () {
                     console.log("STOP");
-                    window.Commands.Execute("LocalStorageLoadModel", items[$(this).find(".ui-selected").eq(0).index()]);
+                    window.Commands.Execute("LocalStorageLoadModel", "user."+items[$(this).find(".ui-selected").eq(0).index()]);
                 }
             });
         },

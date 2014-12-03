@@ -135,6 +135,7 @@
     <Content Include="images\activate.png" />
     <Content Include="images\activate.svg" />
     <Content Include="images\analyze.png" />
+    <Content Include="images\analyze.svg" />
     <Content Include="images\bifurcations.png" />
     <Content Include="images\check.png" />
     <Content Include="images\close.png" />
@@ -153,6 +154,7 @@
     <Content Include="images\formula_not_validated.png" />
     <Content Include="images\formula_validated.png" />
     <Content Include="images\graphic.png" />
+    <Content Include="images\graphic.svg" />
     <Content Include="images\inhibit.png" />
     <Content Include="images\inhibitor-ON.svg" />
     <Content Include="images\inhibitor.svg" />
@@ -204,7 +206,9 @@
     <Content Include="images\visicon2.png" />
     <Content Include="images\visicon2.svg" />
     <Content Include="images\zoomminus.png" />
+    <Content Include="images\zoomminus.svg" />
     <Content Include="images\zoomplus.png" />
+    <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />

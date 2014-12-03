@@ -184,15 +184,6 @@
             expect(textarea.val()).toEqual("const()");
         });
 
-        it("should input POS", () => {
-            functions.eq(2).click();
-            expect(textarea.val()).toEqual("pos()");
-        });
-
-        it("should input NEG", () => {
-            functions.eq(3).click();
-            expect(textarea.val()).toEqual("neg()");
-        });
     });
 
     describe("input operators", () => {

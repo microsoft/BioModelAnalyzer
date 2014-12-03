@@ -1,3 +1,38 @@
+/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="script\model\biomodel.ts"/>
+/// <reference path="script\model\model.ts"/>
+/// <reference path="script\model\visualsettings.ts"/>
+/// <reference path="script\commands.ts"/>
+/// <reference path="script\elementsregistry.ts"/>
+/// <reference path="script\functionsregistry.ts"/>
+/// <reference path="script\localRepository.ts"/>
+/// <reference path="script\uidrivers.interfaces.ts"/>
+/// <reference path="script\uidrivers.ts"/>
+/// <reference path="script\presenters\undoredopresenter.ts"/>
+/// <reference path="script\presenters\presenters.ts"/>
+/// <reference path="script\presenters\furthertestingpresenter.ts"/>
+/// <reference path="script\presenters\simulationpresenter.ts"/>
+/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
+/// <reference path="script\SVGHelper.ts"/>
+/// <reference path="script\changeschecker.ts"/>
+/// <reference path="script\widgets\drawingsurface.ts"/>
+/// <reference path="script\widgets\simulationplot.ts"/>
+/// <reference path="script\widgets\simulationviewer.ts"/>
+/// <reference path="script\widgets\simulationexpanded.ts"/>
+/// <reference path="script\widgets\accordeon.ts"/>
+/// <reference path="script\widgets\visibilitysettings.ts"/>
+/// <reference path="script\widgets\elementbutton.ts"/>
+/// <reference path="script\widgets\bmaslider.ts"/>
+/// <reference path="script\widgets\userdialog.ts"/>
+/// <reference path="script\widgets\variablesOptionsEditor.ts"/>
+/// <reference path="script\widgets\progressiontable.ts"/>
+/// <reference path="script\widgets\proofresultviewer.ts"/>
+/// <reference path="script\widgets\furthertestingviewer.ts"/>
+/// <reference path="script\widgets\localstoragewidget.ts"/>
+/// <reference path="script\widgets\resultswindowviewer.ts"/>
+/// <reference path="script\widgets\coloredtableviewer.ts"/>
+/// <reference path="script\widgets\containernameeditor.ts"/>
 function onSilverlightError(sender, args) {
     var appSource = "";
     if (sender != null && sender != 0) {
@@ -40,9 +75,13 @@ function transformToAssocArray(prmstr) {
     return params;
 }
 $(document).ready(function () {
+    //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
+    //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
+    //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
+    //Creating model and layout
     var appModel = new BMA.Model.AppModel();
     window.PlotSettings = {
         MaxWidth: 3200,
@@ -54,6 +93,7 @@ $(document).ready(function () {
         xStep: 250,
         yStep: 280
     };
+    //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
@@ -131,6 +171,7 @@ $(document).ready(function () {
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+    //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
@@ -161,6 +202,7 @@ $(document).ready(function () {
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
     elementPanel.buttonset();
+    //undo/redo panel
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
@@ -176,6 +218,7 @@ $(document).ready(function () {
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    //popup.draggable({ containment: 'parent', scroll: false });
     $("#localSaveBtn").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
@@ -192,6 +235,7 @@ $(document).ready(function () {
         window.Commands.Execute("ExportModel", undefined);
     });
     var expandedSimulation = $('<div></div>').simulationexpanded();
+    //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
@@ -203,12 +247,19 @@ $(document).ready(function () {
         window.ElementRegistry.LabelSize = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
+    //window.Commands.On("Commands.ToggleIcons", function (param) {
+    //    visualSettings.IconsVisibility = param;
+    //});
+    //window.Commands.On("Commands.IconsSize", function (param) {
+    //    visualSettings.IconsSize = param;
+    //});
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
         window.ElementRegistry.LineWidth = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
     var localStorageWidget = $('<div></div>').addClass('newWindow').appendTo('#drawingSurceContainer').localstoragewidget();
+    //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
@@ -223,6 +274,7 @@ $(document).ready(function () {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+    //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     window.Commands.On("Commands.ToggleGrid", function (param) {
         visualSettings.GridVisibility = param;
@@ -242,10 +294,12 @@ $(document).ready(function () {
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
+    //Loaing ServiсeDrivers 
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
     var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
+    //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox);
@@ -254,6 +308,7 @@ $(document).ready(function () {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool);
+    //Loading model from URL
     var params = getSearchParameters();
     if (params.Model !== undefined) {
         var s = params.Model.split('.');
@@ -317,3 +372,4 @@ $(document).ready(function () {
     };
     $("label[for='button-pointer']").click();
 });
+//# sourceMappingURL=app.js.map

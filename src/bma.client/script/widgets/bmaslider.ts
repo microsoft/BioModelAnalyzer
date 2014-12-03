@@ -18,7 +18,7 @@
 
             var zoomplus = $('<img id="zoom-plus">')
                 .addClass("hoverable")
-                .attr("src", "images/zoomplus.png")
+                .attr("src", "images/zoomplus.svg")
                 .appendTo(that.element);
 
             this.zoomslider = $('<div></div>')
@@ -27,7 +27,7 @@
 
             var zoomminus = $('<img id="zoom-minus">')
                 .addClass("hoverable")
-                .attr("src", "images/zoomminus.png")
+                .attr("src", "images/zoomminus.svg")
                 .appendTo(that.element);
 
             this.zoomslider.slider({

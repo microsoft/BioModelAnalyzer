@@ -112,9 +112,6 @@ $(document).ready(function () {
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
-
-    //$("#modelToolbarHeader").toolbarpanel();
-    //$("#modelToolbarContent").toolbarpanel();
     $("#modelToolbarHeader").buttonset();
     $("#modelToolbarContent").buttonset();
     $("#modelToolbarSlider").bmaaccordion({ position: "left", z_index: 1 });
@@ -201,12 +198,18 @@ $(document).ready(function () {
         $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
 
         var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
-        var img = $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
+        var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
 
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
         helper: function (event, ui) {
-            return $(this).children().clone().appendTo('body');
+            //var h = $(this).children().children().clone().appendTo('body');
+            //console.log(h.attr("class"));
+            var classes = $(this).children().children().attr("class").split(" ");
+
+            //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
+            //console.log();
+            return $('<div></div>').addClass(classes[0]).addClass("bma-draggable-helper-element").appendTo('body');
         },
         scroll: false,
         start: function (event, ui) {
@@ -374,6 +377,16 @@ $(document).ready(function () {
 
     function popup_position() {
         var my_popup = $('.popup-window, .bma-userdialog');
+        var analytic_tabs = $('.tabPanel');
+        analytic_tabs.each(function () {
+            var tab_h = $(this).outerHeight();
+            var win_h = $(window).outerHeight() * 0.8;
+            if (win_h > tab_h)
+                $(this).css({ 'max-height': win_h * 0.8 });
+            else
+                $(this).css({ 'max-height': '600px' });
+        });
+
         my_popup.each(function () {
             var my_popup_w = $(this).outerWidth(), my_popup_h = $(this).outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
             if (win_w > my_popup_w) {
@@ -397,11 +410,14 @@ $(document).ready(function () {
         popup_position();
     });
 
+    var reserved_key = "InitialModel";
+
     window.onunload = function () {
-        window.localStorage.setItem("bma", appModel.Serialize());
+        window.localStorage.setItem(reserved_key, appModel.Serialize());
     };
 
     window.onload = function () {
-        window.Commands.Execute("LocalStorageLoadModel", "bma");
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
+    $("label[for='button-pointer']").click();
 });
