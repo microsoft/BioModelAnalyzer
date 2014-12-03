@@ -222,13 +222,18 @@ $(document).ready(function () {
             .appendTo(elementPanel);
 
         var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
-        var img = $("<img></img>").attr("src", elem.IconURL).attr("title", elem.Description).appendTo(label);
+        var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
 
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
 
         helper: function (event, ui) {
-            return $(this).children().clone().appendTo('body');
+            //var h = $(this).children().children().clone().appendTo('body');
+            //console.log(h.attr("class"));
+            var classes = $(this).children().children().attr("class").split(" ");
+            //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
+            //console.log();
+            return $('<div></div>').addClass(classes[0]).addClass("bma-draggable-helper-element").appendTo('body');
         },
 
         scroll: false,
@@ -252,7 +257,7 @@ $(document).ready(function () {
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
-
+    
     $("#undoredotoolbar").buttonset();
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
@@ -455,4 +460,5 @@ $(document).ready(function () {
     window.onload = function () {
         window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
+    $("label[for='button-pointer']").click();
 });

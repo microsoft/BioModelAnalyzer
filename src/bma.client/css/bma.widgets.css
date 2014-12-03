@@ -22,7 +22,7 @@
     }
 
     .visibility-icon{
-        background-image: url("/images/visicon2.png");
+        background-image: url("/images/visicon2.svg");
         background-repeat:no-repeat;
         background-position:center;
         background-size:contain;
@@ -548,7 +548,7 @@
         background: white;
     }
 
-    #tools .ui-button:hover {
+    #tools .ui-button:not(.ui-state-active):hover {
         background-color: WhiteSmoke;
     }
 
@@ -557,7 +557,7 @@
     }
 
     #tools .ui-state-active {
-        background-color: WhiteSmoke;
+        background-color: darkgray;
     }
 
 
@@ -699,6 +699,7 @@
     }
 
 #tools .zoomslider-container img {
+    width: 25px;
     height: 25px;
 }
 
@@ -1620,4 +1621,83 @@
 
 .ui-menu {
     white-space: nowrap;
+}
+
+#tools span > img {
+    width: 0;
+    height: 0;
+    padding: 18px 18px 18px 18px;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    border: none;
+}
+
+#tools .PointerImg {
+    background-image: url("../images/pointer.svg");
+}
+
+#tools label[aria-pressed='true'] .PointerImg {
+    background-image: url("../images/pointer ON.svg");
+}
+
+
+.bma-container-img {
+    background-image: url("../images/container.svg");
+}
+
+label[aria-pressed='true'] .bma-container-img {
+    background-image: url("../images/container-ON.svg");
+}
+
+.bma-constant-img {
+    background-image: url("../images/constant.svg");
+}
+
+label[aria-pressed='true'] .bma-constant-img {
+    background-image: url("../images/constant-ON.svg");
+}
+
+.bma-variable-img {
+    background-image: url("../images/variable.svg");
+}
+
+label[aria-pressed='true'] .bma-variable-img {
+    background-image: url("../images/variable-ON.svg");
+}
+
+.bma-receptor-img {
+    background-image: url("../images/receptor.svg");
+}
+
+label[aria-pressed='true'] .bma-receptor-img {
+    background-image: url("../images/receptor-ON.svg");
+}
+
+.bma-activate-img {
+    background-image: url("../images/activate.svg");
+}
+
+label[aria-pressed='true'] .bma-activate-img {
+    background-image: url("../images/activate-ON.svg");
+}
+
+.bma-inhibit-img {
+    background-image: url("../images/inhibitor.svg");
+}
+
+label[aria-pressed='true'] .bma-inhibit-img {
+    background-image: url("../images/inhibitor-ON.svg");
+}
+
+/*#modelelemtoolbar img {
+    width:37;
+    height:0;
+}*/
+
+.bma-draggable-helper-element {
+    width: 36px;
+    height: 36px;
+    background-repeat: no-repeat;
+    background-size: contain;
 }

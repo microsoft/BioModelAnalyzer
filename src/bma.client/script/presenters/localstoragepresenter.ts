@@ -27,7 +27,7 @@
 
                 window.Commands.On("LocalStorageChanged", function () {
                     var keys = that.tool.GetModelList();
-                    if (keys.length == 0) 
+                    if (keys === undefined || keys.length == 0) 
                         that.driver.Message("The model repository is empty");
                     else that.driver.Message('');
                     that.driver.SetItems(keys);

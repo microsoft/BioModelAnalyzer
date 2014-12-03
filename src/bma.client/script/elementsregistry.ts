@@ -9,7 +9,7 @@ module BMA {
             private renderToSvg: (renderParams: any) => SVGElement;
             private contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean;
             private description: string;
-            private iconUrl: string;
+            private iconClass: string;
 
             public get Type(): string {
                 return this.type;
@@ -23,8 +23,8 @@ module BMA {
                 return this.description;
             }
 
-            public get IconURL(): string {
-                return this.iconUrl;
+            public get IconClass(): string {
+                return this.iconClass;
             }
 
             public get Contains(): (pointerX: number, pointerY: number, elementX, elementY) => boolean {
@@ -36,13 +36,13 @@ module BMA {
                 renderToSvg: (renderParams: any) => SVGElement,
                 contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean,
                 description: string,
-                iconUrl: string) {
+                iconClass: string) {
 
                 this.type = type;
                 this.renderToSvg = renderToSvg;
                 this.contains = contains;
                 this.description = description;
-                this.iconUrl = iconUrl;
+                this.iconClass = iconClass;
 
             }
         }
@@ -60,9 +60,9 @@ module BMA {
                 contains: (pointerX: number, pointerY: number, elementX, elementY) => boolean,
                 getBbox: (x: number, y: number) => { x: number; y: number; width: number; height: number },
                 description: string,
-                iconUrl: string) {
+                iconClass: string) {
 
-                super(type, renderToSvg, contains, description, iconUrl);
+                super(type, renderToSvg, contains, description, iconClass);
 
                 this.getBbox = getBbox;
             }
@@ -87,9 +87,9 @@ module BMA {
                 intersectsBorder: (pointerX: number, pointerY: number, elementX: number, elementY: number, elementParams: any) => boolean,
                 containsBBox: (bbox: { x: number; y: number; width: number; height: number }, elementX: number, elementY: number, elementParams: any) => boolean,
                 description: string,
-                iconUrl: string) {
+                iconClass: string) {
 
-                super(type, renderToSvg, contains, description, iconUrl);
+                super(type, renderToSvg, contains, description, iconClass);
 
                 this.intersectsBorder = intersectsBorder;
                 this.containsBBox = containsBBox;
@@ -307,7 +307,7 @@ module BMA {
                         return leftTop && leftBottom && rightTop && rightBottom;
                     },
                     "Cell",
-                    "images/container.png"));
+                    "bma-container-img"));
 
                 this.elements.push(new BboxElement(
                     "Constant",
@@ -381,7 +381,7 @@ module BMA {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
                     "Extracellular Protein",
-                    "images/constant.png"));
+                    "bma-constant-img"));
 
                 this.elements.push(new BboxElement(
                     "Default",
@@ -440,7 +440,7 @@ module BMA {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
                     "Intracellular Protein",
-                    "images/variable.png"));
+                    "bma-variable-img"));
 
                 this.elements.push(new BboxElement(
                     "MembraneReceptor",
@@ -531,7 +531,7 @@ module BMA {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
                     "Membrane Receptor",
-                    "images/receptor.png"));
+                    "bma-receptor-img"));
 
                 this.elements.push(new Element(
                     "Activator",
@@ -644,7 +644,7 @@ module BMA {
                         }
                     },
                     "Activating Relationship",
-                    "images/activate.png"));
+                    "bma-activate-img"));
 
                 this.elements.push(new Element(
                     "Inhibitor",
@@ -765,7 +765,7 @@ module BMA {
                         }
                     },
                     "Inhibiting Relationship",
-                    "images/inhibit.png"));
+                    "bma-inhibit-img"));
             }
         }
     }

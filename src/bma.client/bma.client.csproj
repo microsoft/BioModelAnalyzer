@@ -247,7 +247,9 @@
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2 - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\bmaclienttest2 - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jasmine-html.js" />

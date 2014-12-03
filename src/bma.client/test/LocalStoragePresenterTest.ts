@@ -75,7 +75,7 @@
         spyOn(appModel, "Reset");
         //var key = '4';
         window.Commands.Execute("LocalStorageSaveModel", {});
-        window.Commands.Execute("LocalStorageLoadModel", name);
+        window.Commands.Execute("LocalStorageLoadModel", "user." + name);
         expect(appModel.Reset).toHaveBeenCalledWith(JSON.stringify(modelRepositoryTest.LoadModel(name)));
     });
 
