@@ -124,7 +124,7 @@ module BMA {
                     Name: this.name,
                     RangeFrom: this.rangeFrom,
                     RangeTo: this.rangeTo,
-                    Function: this.formula
+                    formula: this.formula
                 };
             }
 

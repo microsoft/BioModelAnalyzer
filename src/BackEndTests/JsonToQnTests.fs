@@ -1,4 +1,4 @@
-﻿namespace UnitTestProject1
+﻿namespace BackEndTests
 
 open System
 open System.Linq
@@ -34,13 +34,13 @@ type JsonToQnTests() =
         // ... and they should be equal       
         assertQNsAreEqual xqn1 xqn2
 
-    [<TestMethod>]
-    [<DeploymentItem("Skin2D_5X2_AI.xml")>]
-    [<DeploymentItem("Skin2D_5X2_Analysis.json")>]
-    member x.``Converts JSON to QN for Skin2D_5X2`` () = 
-        let xqn = Marshal.model_of_xml(XDocument.Load("Skin2D_5X2_AI.xml"))
-        let reader = new System.IO.StreamReader("Skin2D_5X2_Analysis.json")        
-        let input = JsonSerializer.Create().Deserialize(reader, typedefof<bma.client.AnalysisInput>)
-        reader.Close()
-        let jqn = List.empty<QN.node> // Temporary solution
-        assertQNsAreEqual xqn jqn
+//    [<TestMethod>]
+//    [<DeploymentItem("Skin2D_5X2_AI.xml")>]
+//    [<DeploymentItem("Skin2D_5X2_Analysis.json")>]
+//    member x.``Converts JSON to QN for Skin2D_5X2`` () = 
+//        let xqn = Marshal.model_of_xml(XDocument.Load("Skin2D_5X2_AI.xml"))
+//        let reader = new System.IO.StreamReader("Skin2D_5X2_Analysis.json")        
+//        let input = JsonSerializer.Create().Deserialize(reader, typedefof<bma.client.AnalysisInput>)
+//        reader.Close()
+//        let jqn = List.empty<QN.node> // Temporary solution
+//        assertQNsAreEqual xqn jqn

@@ -1,4 +1,5 @@
 ﻿using BioCheckAnalyzerCommon;
+using BioModelAnalyzer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,58 +14,51 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
+    public class SimulationInput
+    {
+        public Model Model { get; set; }
+
+        public SimulationVariable[] Variables { get; set; }
+
+        public bool EnableLogging { get; set; }
+    }
+
+    public class SimulationOutput
+    {
+        public SimulationVariable[] Variables { get; set; }
+
+        public string[] ErrorMessages { get; set; }
+
+        public string[] DebugMessages { get; set; }
+    }
+
     public class SimulateController : ApiController
     {
         // POST api/Analyze
         public SimulationOutput Post([FromBody]SimulationInput input)
-        {
-            input.Model.ReplaceVariableNamesWithIDs();
-            input.Model.NullifyDefaultFunction();
-
+        {           
             var log = new DefaultLogService();
 
-            try {
-                var xmlSerializer = new XmlSerializer(typeof(AnalysisInput));
-                var ai = new AnalysisInput
-                {
-                    Cells = input.Model.Cells,
-                     Variables = input.Model.Variables,
-                     Relationships = input.Model.Relationships
-                };
-                var stream = new MemoryStream();
-                xmlSerializer.Serialize(stream, ai);
-                stream.Position = 0;
-                var inputXml = XDocument.Load(stream);
-
-                IAnalyzer2 analyzer = new UIMain.Analyzer2();
+            try 
+            {         
+                IVMCAIAnalyzer analyzer = new VMCAIAnalyzerAdapter(new UIMain.Analyzer2());
 
                 var analyisStartTime = DateTime.Now;
 
-                if (input.EnableLogging)
-                {
-                    analyzer.LoggingOn(log);
-                }
-                else
-                {
-                    analyzer.LoggingOff();
+                if (!input.EnableLogging)
                     log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
-                }
 
                 var inputDictionary = new Dictionary<int, int>();
-
                 foreach (var variable in input.Variables)
                 {
                     inputDictionary.Add(variable.Id, (int)variable.Value);
                 }
 
-                var outputDictionary = analyzer.simulate_tick(inputXml, inputDictionary);
+                var output = analyzer.Simulate(input.Model, input.Variables, input.EnableLogging ? log : null);
 
                 return new SimulationOutput
                 {
-                    Variables = outputDictionary.Select(pair => new SimulationVariable {
-                        Id = pair.Key,
-                        Value = pair.Value
-                    }).ToArray(),
+                    Variables = output,
                     ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null,
                 };

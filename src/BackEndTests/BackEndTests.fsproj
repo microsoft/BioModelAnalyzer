@@ -68,6 +68,7 @@
   </Target>
   <ItemGroup>
     <Compile Include="JsonToQnTests.fs" />
+    <Compile Include="JsonPreprocessTests.fs" />
     <None Include="App.config" />
     <None Include="MSTest.runsettings" />
     <Content Include="Skin2D_5X2_AI.xml">
@@ -77,6 +78,30 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="packages.config" />
+    <None Include="SSkin2D_3cells_2layers.json" />
+    <Content Include="SSkin2D_3cells_2layers.xml" />
+    <Content Include="SkinModel.xml" />
+    <None Include="SkinModel.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ToyModelStable.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ToyModelUnstable.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="VMCAI_Analyze.fs" />
+    <Compile Include="VMCAI_FurtherTesting.fs" />
+    <None Include="Race.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SimpleBifurcation.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ion channel.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="VMCAI_Simulate.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />

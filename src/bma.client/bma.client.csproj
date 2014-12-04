@@ -474,13 +474,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Logs\DefaultLogService.cs" />
-    <Compile Include="Models\Analysis.cs" />
-    <Compile Include="Models\FurtherTesting.cs" />
-    <Compile Include="Models\Model.cs" />
-    <Compile Include="Models\ServiceMessages.cs" />
-    <Compile Include="Models\Simulate.cs" />
-    <Compile Include="Models\StatusType.cs" />
-    <Compile Include="Models\Validate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
