@@ -1624,9 +1624,6 @@
 }
 
 #tools span > img {
-    width: 0;
-    height: 0;
-    padding: 18px 18px 18px 18px;
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: center;
