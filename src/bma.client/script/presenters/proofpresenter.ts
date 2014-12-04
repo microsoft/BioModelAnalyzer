@@ -27,16 +27,20 @@
 
                 window.Commands.On("ProofByFurtherTesting", function (param: { issucceeded; message; fixPoint}) {
                     
-                    var st = that.st.variablesStability;
+                    //var st = that.st.variablesStability;
                     param.fixPoint.forEach((val, ind) => {
-                        var i = that.getIndById(st, val.Id);
-                        st[i].state = true;
-                        st[i].range = val.Value;
-                        that.st.containersStability[st[i].id] = true;
+                        var i = that.getIndById(that.st.variablesStability, val.Id);
+                        that.st.variablesStability[i].state = true;
+                        that.st.variablesStability[i].range = val.Value;
+                        var id = that.st.variablesStability[i].id;
+                        var cont = that.appModel.BioModel.GetVariableById(id).ContainerId;
+                        if (cont !== undefined) {
+                            that.st.containersStability[cont] = true;
+                        }
                     });
                     var variablesData = that.CreateTableView(that.st.variablesStability);
                     that.expandedProofVariables =  that.CreateExpandedProofVariables(variablesData);
-                    that.AddPropagationColumn(st);
+                    that.AddPropagationColumn(that.st.variablesStability);
 
                     proofResultViewer.SetData({
                         issucceeded: param.issucceeded,
