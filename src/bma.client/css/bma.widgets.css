@@ -1055,12 +1055,17 @@
     height: 100%;
     overflow-y:scroll;
     white-space:nowrap;
+    position: relative;
 }
 
 .bma-simulation-table-expanded-scroll > div {
     display: inline-block;
     vertical-align: top;
     position: relative;
+}
+
+.bma-simulation-table-expanded-scroll > div:first-child{
+    width: 30%;
 }
 
 .bma-simulation-table-expanded-scroll > div:not(:first-child) {
@@ -1413,7 +1418,7 @@
 .bma-progressiontable-randomise {
     position: absolute;
     top:-30px;
-    left: 420px;
+    left: calc(30% + 60px);
     cursor:pointer;
     font-size: 18px;
     line-height: 25px;

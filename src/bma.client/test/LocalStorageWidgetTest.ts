@@ -31,7 +31,7 @@
         spyOn(window.Commands, "Execute");
         var list = widget.find("ol").children("li");
         list.eq(1).children("button").click();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("LocalStorageRemoveModel", items[1]);
+        expect(window.Commands.Execute).toHaveBeenCalledWith("LocalStorageRemoveModel", "user."+items[1]);
     });
 
     xit("should execute 'LocalStorageLoadModel' command when item from list was selected", () => {

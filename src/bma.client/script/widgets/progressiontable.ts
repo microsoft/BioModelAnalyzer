@@ -65,7 +65,7 @@
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
-                    var input = $('<input type="text">').height("100%").width("100%").appendTo(td);
+                    var input = $('<input type="text">').height("24px").width("100%").appendTo(td);
                     var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
                     if (Array.isArray(init)) 
                         input.val(init[0]);

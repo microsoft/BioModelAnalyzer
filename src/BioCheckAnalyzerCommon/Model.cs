@@ -89,10 +89,9 @@ namespace BioModelAnalyzer
             if (Variables == null)
                 return;
 
-            // Remove spaces in formula. Syntax allows this simple code
             foreach (var v in Variables)
                 if (v.Function != null)
-                    v.Function = v.Function.Replace(" ", "");
+                    v.Function = v.Function.Trim();
 
             NullifyDefaultFunction();
             ReplaceVariableNamesWithIDs();
