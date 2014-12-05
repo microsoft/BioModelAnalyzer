@@ -530,8 +530,6 @@ let cex_result_of_xml (xd:XDocument) =
 
 let QN_of_Model (model:Model) = 
 
-    let x = 42 
-
 // SI: no Garvit stuff right now. 
 //    // Get cells
 //    //let cc = try xd.Element(xn "AnalysisInput").Element(xn "Cells").Elements(xn "Cell") with _ -> Seq.empty
