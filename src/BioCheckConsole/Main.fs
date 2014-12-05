@@ -35,6 +35,7 @@ let logging = ref false
 let logging_level = ref 0
 
 // -- QN transformations 
+let dump_before_xforms = ref false
 // ---- KO
 let ko : (QN.var * int) list ref = ref [] // KO each of these vars, replacing their f's with the const. 
 let ko_of_string v c =
@@ -78,6 +79,7 @@ let usage i =
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
     Printf.printfn "                           -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
+    Printf.printfn "                           -dump_before_xforms"
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
     Printf.printfn "                           -ko_edge id id' const -dump_after_ko_edge_xforms"
 
@@ -100,6 +102,7 @@ let rec parse_args args =
     | "-proof" :: rest -> output_proof := true; parse_args rest
     | "-path" :: i :: rest -> number_of_steps := (int)i; parse_args rest
     | "-modelsdir" :: d :: rest -> modelsdir := d; parse_args rest
+    | "-dump_before_xforms" :: rest -> dump_before_xforms := true; parse_args rest 
     | "-ko" :: id :: konst :: rest -> ko := (ko_of_string id konst) :: !ko; parse_args rest 
     | "-dump_after_ko_xforms" :: rest -> dump_after_ko_xforms := true; parse_args rest 
     | "-ko_edge" :: id :: id' :: konst :: rest -> ko_edge := (ko_edge_of_string id id' konst) :: !ko_edge; parse_args rest
@@ -253,6 +256,11 @@ let main args =
             // model to QN
             let qn = Marshal.QN_of_Model model
 
+            // Apply QN xforms 
+            if !dump_before_xforms then    
+                List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
+                Printf.printf "\n"
+
             // Apply QN xforms: ko
             let qn = List.fold
                         (fun current_qn (var,c) -> QN.ko current_qn var c)
@@ -261,7 +269,8 @@ let main args =
             
             if (!dump_after_ko_xforms) then
                 List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
-            
+                Printf.printf "\n"
+
             // Apply QN xforms: ko_edge
             let qn = List.fold 
                         (fun current_qn (x,y,c) -> QN.ko_edge current_qn x y c)
@@ -270,6 +279,7 @@ let main args =
             
             if (!dump_after_ko_edge_xforms) then 
                 List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
+                Printf.printf "\n"
 
             let parameters_were_ok = 
                 match !engine with
