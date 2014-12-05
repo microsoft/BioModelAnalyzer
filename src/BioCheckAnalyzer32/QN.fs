@@ -61,6 +61,13 @@ let str_of_env env =
     let l = Map.toList env
     String.concat ", " (List.map (fun (v,i) -> sprintf "(%d,%d)" v i) l)
 
+
+// Next var, given current qn. 
+// Safe way to ctor a node. 
+let next_var qn = 
+    let max_var = List.fold (fun max_so_far n -> max max_so_far n.var) 0 qn
+    max_var + 1
+
 /// Well-formed QN network
 /// Raises exn if qn isn't wf.
 let qn_wf qn =
@@ -111,11 +118,35 @@ let get_node_from_var (nv : var) (network : node list) =
 let ko qn var c = 
     // Get the n and the rest
     let nn,qn_sub_n = List.partition (fun n -> n.var = var) qn
-    // There should be only one nn
     let n' = 
         match nn with 
+        // There should be only one nn
         | [n] -> { n with f = (Expr.Const(c)) } 
         | _ -> failwith("Non-existent or duplicate node " + (string)var + " in qn")
     // Add new n back to qn
-    n' :: qn_sub_n
+    let qn' = n' :: qn_sub_n
+    qn_wf qn'
+    qn'
 
+
+// Knockout edge. 
+// Suppose src->dst \in qn, and x is new in qn. Then knockout src for dst (and only for dst) by 
+// substituting (dst.f)[ x/src ] and adding an edge x->dst, where x.f=c .
+let ko_edge qn src dst c = 
+    let srcs,qn_sub_srcs = List.partition (fun n -> n.var = src) qn
+    let dsts,qn_sub_srcs_dsts = List.partition (fun n -> n.var = dst) qn_sub_srcs
+    let src,x,dst' = 
+        match srcs,dsts with 
+        // There should be only 1 src and 1 dst. 
+        | [src],[dst] -> 
+            let v = next_var qn 
+            let x = { var= v; f= (Expr.Const(c)); inputs= []; range=(c,c); name= ("ko" + (string)(v));
+                      // SI: no Garvit stuff right now.                
+                      nature= Map.empty; defaultF=false; number= src.number; tags=[] } 
+            let dst' = { dst with f= (Expr.subst_var dst.f src.var v); inputs= (v :: dst.inputs) }
+            src,x,dst'
+
+        | _ -> failwith("Non-existent or duplicate node " + (string)src + " or " + (string)dst + " in qn")
+    let qn' = src :: x :: dst' :: qn_sub_srcs_dsts
+    qn_wf qn'
+    qn'

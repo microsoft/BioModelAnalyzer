@@ -39,9 +39,17 @@ let logging_level = ref 0
 let ko : (QN.var * int) list ref = ref [] // KO each of these vars, replacing their f's with the const. 
 let ko_of_string v c =
     let v = try (int)v with _ -> failwith("-ko id const: id has to be integer identifier of var in qn")
-    let c = try (int)c with _ -> failwith("-ko id const: const has to be integer value")
+    let c = try (int)c with _ -> failwith("-ko id const: const has to be an integer")
     (v,c)
-let dump_after_qn_xform = ref false
+let dump_after_ko_xforms = ref false
+// ---- KO_edge
+let ko_edge : (QN.var * QN.var * int) list ref = ref []
+let ko_edge_of_string x y c = 
+    let x = try (int)x with _ -> failwith("-ko_edge id id' const: id has to be integer identifier of var in qn")
+    let y = try (int)y with _ -> failwith("-ko_edge id id' const: id' has to be integer identifier of var in qn")
+    let c = try (int)c with _ -> failwith("-ko_edge id id' const: const has to be an integer")
+    (x,y,c)
+let dump_after_ko_edge_xforms = ref false
 
 // -- related to VMCAI engine
 let proof_output = ref "proof_output" // output filename 
@@ -70,8 +78,8 @@ let usage i =
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
     Printf.printfn "                           -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
-    Printf.printfn "                           -ko id const"
-    Printf.printfn "                           -dump_after_ko_xform"
+    Printf.printfn "                           -ko id const -dump_after_ko_xforms"
+    Printf.printfn "                           -ko_edge id id' const -dump_after_ko_edge_xforms"
 
 
 let rec parse_args args = 
@@ -93,7 +101,9 @@ let rec parse_args args =
     | "-path" :: i :: rest -> number_of_steps := (int)i; parse_args rest
     | "-modelsdir" :: d :: rest -> modelsdir := d; parse_args rest
     | "-ko" :: id :: konst :: rest -> ko := (ko_of_string id konst) :: !ko; parse_args rest 
-    | "-dump_after_ko_xform" :: rest -> dump_after_qn_xform := true; parse_args rest 
+    | "-dump_after_ko_xforms" :: rest -> dump_after_ko_xforms := true; parse_args rest 
+    | "-ko_edge" :: id :: id' :: konst :: rest -> ko_edge := (ko_edge_of_string id id' konst) :: !ko_edge; parse_args rest
+    | "-dump_after_ko_edge_xforms" :: rest -> dump_after_ko_edge_xforms := true; parse_args rest
     | "-tests" :: rest -> run_tests := true; parse_args rest
     | "-log" :: rest -> logging := true; parse_args rest
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
@@ -237,18 +247,29 @@ let main args =
             let model = (jobj.["model"] :?> JObject).ToObject<Model>()           
             model.Preprocess();
 
+            
+            
+
             // model to QN
             let qn = Marshal.QN_of_Model model
 
-            // Apply an QN transformations
+            // Apply QN xforms: ko
             let qn = List.fold
                         (fun current_qn (var,c) -> QN.ko current_qn var c)
                         qn
                         !ko
-
-            if (!dump_after_qn_xform) then
+            
+            if (!dump_after_ko_xforms) then
                 List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
-
+            
+            // Apply QN xforms: ko_edge
+            let qn = List.fold 
+                        (fun current_qn (x,y,c) -> QN.ko_edge current_qn x y c)
+                        qn
+                        !ko_edge
+            
+            if (!dump_after_ko_edge_xforms) then 
+                List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
 
             let parameters_were_ok = 
                 match !engine with

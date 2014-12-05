@@ -399,3 +399,18 @@ and is_increasing = memoize is_increasing_int
 and is_decreasing = memoize is_decreasing_int
 
 
+let rec subst_var e x x' = 
+    match e with
+    | Var(v) -> if v=x then Var(x') else Var(v)
+    | Const(_) -> e
+    | Plus(e1,e2) -> Plus(subst_var e1 x x',subst_var e2 x x')
+    | Minus(e1,e2) -> Minus(subst_var e1 x x',subst_var e2 x x')
+    | Times(e1,e2) -> Times(subst_var e1 x x',subst_var e2 x x')
+    | Div(e1,e2) -> Div(subst_var e1 x x',subst_var e2 x x')
+    | Max(e1,e2) -> Max(subst_var e1 x x',subst_var e2 x x')
+    | Min(e1,e2) -> Min(subst_var e1 x x',subst_var e2 x x')
+    | Ceil(e1) -> Ceil(subst_var e1 x x')
+    | Floor(e1) -> Floor(subst_var e1 x x')
+    | Ave(ee) -> Ave(List.map (fun e1 -> subst_var e1 x x') ee)
+    | Sum(ee) -> Sum(List.map (fun e1 -> subst_var e1 x x') ee)
+    | Abs(e1) -> Abs(subst_var e1 x x')
