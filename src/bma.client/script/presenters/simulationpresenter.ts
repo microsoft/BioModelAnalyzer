@@ -13,7 +13,7 @@
             private expandedSimulationPlot: JQuery;
             private currentModel: BMA.Model.BioModel;
 
-            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver) {
+            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver, logService: BMA.ISessionLog) {
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
@@ -33,6 +33,7 @@
                     that.ClearColors();
                     var stableModel = that.appModel.BioModel.GetJSON();
                     var variables = that.ConvertParam(param.data);
+                    logService.LogSimulationRun();
                     that.StartSimulation({ model: stableModel, variables: variables, num: param.num});
                 });
 

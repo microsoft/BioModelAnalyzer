@@ -1,3 +1,6 @@
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\..\script\uidrivers.interfaces.ts"/>
 var BMA;
 (function (BMA) {
     var Test;
@@ -88,3 +91,4 @@ var BMA;
         Test.TestVariableEditor = TestVariableEditor;
     })(Test = BMA.Test || (BMA.Test = {}));
 })(BMA || (BMA = {}));
+//# sourceMappingURL=BMA.TestComponents.js.map

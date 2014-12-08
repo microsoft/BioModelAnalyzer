@@ -12,14 +12,15 @@
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
     </Endpoints>
     <Imports>
-      <Import moduleName="Diagnostics" />
       <!--<Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />-->
     </Imports>
-    <Startup></Startup>
+    <Startup>
+    </Startup>
     <ConfigurationSettings>
       <Setting name="DataConnectionString" />
     </ConfigurationSettings>
-    <Certificates></Certificates>
+    <Certificates>
+    </Certificates>
   </WebRole>
 </ServiceDefinition>
