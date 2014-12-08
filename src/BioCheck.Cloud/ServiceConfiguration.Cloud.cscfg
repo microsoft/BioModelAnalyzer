@@ -3,7 +3,6 @@
   <Role name="BioCheck.Web">
     <Instances count="2" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" />
       <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" />
     </ConfigurationSettings>
   </Role>

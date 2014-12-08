@@ -1,7 +1,7 @@
 ﻿module BMA {
     export module Presenters {
         export class ModelStoragePresenter {
-            constructor(appModel: BMA.Model.AppModel, fileLoaderDriver: BMA.UIDrivers.IFileLoader, checker: BMA.UIDrivers.ICheckChanges) {
+            constructor(appModel: BMA.Model.AppModel, fileLoaderDriver: BMA.UIDrivers.IFileLoader, checker: BMA.UIDrivers.ICheckChanges, logService: BMA.ISessionLog) {
                 var that = this;
 
                 window.Commands.On("NewModel", (args) => {
@@ -31,7 +31,7 @@
                 });
 
                 window.Commands.On("ImportModel", (args) => {
-                    
+
                     if (checker.IsChanged(appModel)) {
                         var userDialog = $('<div id="usrdialog"></div>').appendTo('body').userdialog({
                             message: "Do you want to save changes?",
@@ -49,7 +49,10 @@
                             ]
                         });
                     }
-                    else load();
+                    else {
+                        logService.LogImportModel();
+                        load();
+                    }
 
                     function load() {
                         fileLoaderDriver.OpenFileDialog().done(function (fileName) {

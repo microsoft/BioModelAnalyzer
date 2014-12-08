@@ -19,8 +19,10 @@
 
          {"Path": "Scripts/rx.js" },
 
+
          {"Path": "js/jquery.ui-contextmenu.js" },
          {"Path": "js/jquery.svg.js" },
+         {"Path": "js/jquery.cookie.js" },
          {"Path": "js/rx.jQuery.js" },
          {"Path": "js/idd.js"},
          {"Path": "js/svgplot.js"},

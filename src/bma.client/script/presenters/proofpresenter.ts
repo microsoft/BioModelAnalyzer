@@ -10,18 +10,21 @@
             private currentModel: BMA.Model.BioModel;
             private st;
             private colorData;
+            private logService: BMA.ISessionLog;
 
             constructor(
                 appModel: BMA.Model.AppModel,
                 proofResultViewer: BMA.UIDrivers.IProofResultViewer,
                 popupViewer: BMA.UIDrivers.IPopup,
                 ajax: BMA.UIDrivers.IServiceDriver,
-                messagebox: BMA.UIDrivers.IMessageServise
+                messagebox: BMA.UIDrivers.IMessageServise,
+                logService: BMA.ISessionLog
                 ) {
 
                 this.appModel = appModel;
                 this.ajax = ajax;
                 this.messagebox = messagebox;
+                this.logService = logService;
 
                 var that = this;
 
@@ -54,6 +57,7 @@
                 window.Commands.On("ProofStarting", function () {
                     proofResultViewer.OnProofStarted();
                     var proofInput = appModel.BioModel.GetJSON();
+                    that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             //console.log("Proof Result Status: " + res.Status);

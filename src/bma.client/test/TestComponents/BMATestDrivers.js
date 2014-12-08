@@ -1,3 +1,6 @@
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\..\script\uidrivers.interfaces.ts"/>
 var BMA;
 (function (BMA) {
     var Test;
@@ -6,6 +9,9 @@ var BMA;
             function ModelRepositoryTest() {
                 this.modelsList = {};
             }
+            //constructor() {
+            //    this.modelsList = [];
+            //}
             ModelRepositoryTest.prototype.GetModelList = function () {
                 var list = [];
                 for (var attr in this.modelsList) {
@@ -14,6 +20,10 @@ var BMA;
                 return list;
             };
             ModelRepositoryTest.prototype.LoadModel = function (id) {
+                //var i = parseInt(id);
+                //if (i < this.modelsList.length) {
+                //    return JSON.parse('{"test": ' + this.modelsList[i] + '}');
+                //}
                 return JSON.parse('{"test": ' + this.modelsList[id] + '}');
             };
             ModelRepositoryTest.prototype.RemoveModel = function (id) {
@@ -93,6 +103,13 @@ var BMA;
             AjaxTestDriver.prototype.Invoke = function (data) {
                 var deferred = $.Deferred();
                 var result;
+                //switch (url) {
+                //    case "api/Validate":
+                //        if (data.Formula === "true")
+                //            result = { IsValid: true, Message: "Ok" };
+                //    default:
+                //            result = { IsValid: false, Message: "Not Ok" };
+                //}
                 result = { IsValid: true, Message: "Ok" };
                 console.log("result: " + result.IsValid);
                 deferred.resolve(result);
@@ -103,3 +120,4 @@ var BMA;
         Test.AjaxTestDriver = AjaxTestDriver;
     })(Test = BMA.Test || (BMA.Test = {}));
 })(BMA || (BMA = {}));
+//# sourceMappingURL=BMATestDrivers.js.map

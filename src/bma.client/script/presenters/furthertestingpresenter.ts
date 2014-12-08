@@ -18,7 +18,8 @@
                 driver: BMA.UIDrivers.IFurtherTesting,
                 popupViewer: BMA.UIDrivers.IPopup,
                 ajax: BMA.UIDrivers.IServiceDriver,
-                messagebox: BMA.UIDrivers.IMessageServise
+                messagebox: BMA.UIDrivers.IMessageServise,
+                logService: BMA.ISessionLog
             ) {
                 var that = this;
                 this.appModel = appModel;
@@ -54,6 +55,7 @@
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0 && that.model !== undefined && that.result !== undefined && that.variables !== undefined) {
                         that.driver.StandbyMode();
+                        logService.LogFurtherTestingRun();
                         var result = that.ajax.Invoke( {
                             Model: that.model,
                             Analysis: that.result,
