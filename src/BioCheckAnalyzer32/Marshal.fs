@@ -521,14 +521,15 @@ let cex_result_of_xml (xd:XDocument) =
     | x -> raise(MarshalInFailed(-1,"Bad status descriptor: "+x))
 
 
+//
+// SI: The json vs xml battle was fought: json won. 
+//     
 
 //
 // Model to QN translation
 //
-
-// SI: no Garvit stuff right now. Need to work out how to test for C# nulls.
-
 let QN_of_Model (model:Model) = 
+// SI: no Garvit stuff right now. Need to work out how to test for C# nulls.
 
 // SI: no Garvit stuff right now. 
 //    // Get cells
@@ -692,3 +693,63 @@ let QN_of_Model (model:Model) =
     let qn = Map.toList qn_map |> List.map (fun (_v,n) -> n)
     QN.qn_wf qn
     qn
+
+
+
+// Return AnalysisResults back to IAnalyzer-pulling frontend
+let AnalysisResult_of_error id msg = 
+    let r = new AnalysisResult()
+    r.Status <- StatusType.Error
+    r.Error <- (string)id + msg
+    r
+
+let stability_result_of_AnalysisResult (ar:AnalysisResult) = 
+    let parse_tick (tick:AnalysisResult.Tick) =
+        let time = tick.Time
+        let variables = tick.Variables
+        let bounds =
+            Seq.fold
+                (fun (bb:QN.interval) (v:AnalysisResult.Tick.Variable) ->
+                    let id = v.Id
+                    let lo = (int)v.Lo
+                    let hi = (int)v.Hi
+                    Map.add id (lo,hi) bb)
+                Map.empty
+                variables
+        (time,bounds)
+    let status = ar.Status
+    match status with
+    | StatusType.Stabilizing ->
+        let ticks = ar.Ticks
+        let history = Seq.fold (fun h tick -> (parse_tick tick) :: h) [] ticks
+        Result.SRStabilizing(history)
+    | StatusType.NotStabilizing ->
+        let ticks = ar.Ticks
+        let history = Seq.fold (fun h tick -> (parse_tick tick) :: h) [] ticks
+        Result.SRNotStabilizing(history)
+    | x -> raise(MarshalInFailed(-1,"Bad status descriptor: "+x.ToString()))
+
+
+// stubs
+let BifurcationCounterExample_of_CExBifurcation fix1 fix2 =
+    let cex = new BifurcationCounterExample()
+    cex.Status <- CounterExampleType.Bifurcation
+    cex.Error <- ""
+    //cex.Variables 
+    cex 
+
+let CycleCounterExample_of_CExCycle cyc = 
+    let cs_cex = new CycleCounterExample()
+    cs_cex.Status <- CounterExampleType.Cycle
+    cs_cex
+
+let FixPointCounterExample_of_CExFixpoint fix = 
+    let cs_cex = new FixPointCounterExample()
+    cs_cex.Status <- CounterExampleType.Fixpoint
+    cs_cex
+
+let AnalysisResult_of_stability_result (sr:Result.stability_result) = 
+    let r = new AnalysisResult()
+    r
+
+
