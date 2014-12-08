@@ -211,6 +211,7 @@
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
     <Content Include="js\idd.js" />
+    <Content Include="js\jquery.cookie.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
@@ -282,6 +283,7 @@
     <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />
     <TypeScriptCompile Include="script\SVGHelper.ts" />
+    <TypeScriptCompile Include="script\UserLog.ts" />
     <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
     <TypeScriptCompile Include="script\widgets\coloredtableviewer.ts" />
     <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
@@ -466,6 +468,7 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AnalyzeController.cs" />
+    <Compile Include="Controllers\ClientIdController.cs" />
     <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\FurtherTestingController.cs" />
     <Compile Include="Controllers\SimulateController.cs" />

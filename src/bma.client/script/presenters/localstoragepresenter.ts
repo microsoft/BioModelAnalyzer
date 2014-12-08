@@ -12,7 +12,8 @@
                 editor: BMA.UIDrivers.ILocalStorageDriver,
                 tool: BMA.UIDrivers.IModelRepository,
                 messagebox: BMA.UIDrivers.IMessageServise,
-                checker: BMA.UIDrivers.ICheckChanges
+                checker: BMA.UIDrivers.ICheckChanges,
+                logService: BMA.ISessionLog
                 ) {
                 var that = this;
                 this.appModel = appModel;
@@ -42,6 +43,7 @@
                 });
 
                 window.Commands.On("LocalStorageSaveModel", function () {
+                    logService.LogSaveModel();
                     var key = appModel.BioModel.Name;
                     that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
                     that.checker.Snapshot(that.appModel);
