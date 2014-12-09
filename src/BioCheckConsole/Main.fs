@@ -7,8 +7,6 @@ module Main
 // Garvit Juniwal; Shrink-Cut-Merge (SCM)
 // Cook, Fisher, Krepska, Piterman; Proving stabilization of biological systems; VMCAI 2011.
 // Claessen, Fisher, Ishtiaq, Piterman, Wang; Model-Checking Signal Transduction Networks through Decreasing Reachability Sets; CAV 2013.
-open System.Xml
-open System.Xml.Linq
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
@@ -78,7 +76,7 @@ let usage i =
     Printf.printfn "                         [ -engine [ VMCAI | SCM | SYN ] –prove output_file_name.xml |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
-    Printf.printfn "                           -engine PATH –model2 model_input_filename.xml –state initial_state.csv –state2 target_state.csv ]"
+    Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
     Printf.printfn "                           -dump_before_xforms"
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
     Printf.printfn "                           -ko_edge id id' const -dump_after_ko_edge_xforms"
@@ -112,6 +110,16 @@ let rec parse_args args =
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
     | _ -> failwith "Bad command line args" 
 
+let read_ModelFile_as_QN model_fname = 
+    // Read file
+    let jobj = JObject.Parse(System.IO.File.ReadAllText(model_fname))
+    // Extract model from json
+    let model = (jobj.["model"] :?> JObject).ToObject<Model>()           
+    model.Preprocess();
+    // model to QN
+    let qn = Marshal.QN_of_Model model
+    qn
+
 let runSCMEngine qn = 
     Log.log_debug "Running the proof"
     Log.log_debug (sprintf "Num of nodes %d" (List.length qn))
@@ -120,12 +128,9 @@ let runSCMEngine qn =
     let (stablePoint, cex) = Prover.ProveStability qn
     match (stablePoint, cex) with
     | (Some p, None) -> 
-        //Log.log_debug(sprintf "Single Stable Point %s" (Expr.str_of_env p))
         printf "Single Stable Point %s" (Expr.str_of_env p)
-        //let stable_res_xml = Marshal.xml_of_smap p
-        //stable_res_xml.Save(!proof_output)
-    | (None, Some (Prover.Bifurcation(p1, p2))) -> printf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2)//Log.log_debug(sprintf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2))
-    | (None, Some (Prover.Cycle(p, len))) -> printf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len //Log.log_debug(sprintf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len)
+    | (None, Some (Prover.Bifurcation(p1, p2))) -> printf "Multi Stable Points: \n %s \n %s" (Expr.str_of_env p1) (Expr.str_of_env p2)
+    | (None, Some (Prover.Cycle(p, len))) -> printf "Cycle starting at \n %s \n of length %d" (Expr.str_of_env p) len 
     | _ -> failwith "Bad results from prover"
 
 let runSYNEngine qn =
@@ -213,7 +218,7 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
 
 let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
     Log.log_debug "Running path search"
-    let qnY = XDocument.Load(modelsdir + "\\" + other_model_name) |> Marshal.model_of_xml
+    let qnY = read_ModelFile_as_QN (modelsdir + "\\" + other_model_name)
     let X   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines start_state)
     let Y   = Array.fold (fun m (l:string) -> let ss = l.Split(',') in  Map.add ((int)ss.[0]) ((int)ss.[1]) m) Map.empty (System.IO.File.ReadAllLines dest_state)
     match (PathFinder.routes qnX qnY X Y) with
@@ -243,18 +248,7 @@ let main args =
             res := -1
 
         else 
-            //let qn = XDocument.Load(!modelsdir + "\\" + !model) |> Marshal.model_of_xml
-            let jobj = JObject.Parse(System.IO.File.ReadAllText(!modelsdir + "\\" + !model))
-
-            // Extract model from json
-            let model = (jobj.["model"] :?> JObject).ToObject<Model>()           
-            model.Preprocess();
-
-            
-            
-
-            // model to QN
-            let qn = Marshal.QN_of_Model model
+            let qn = read_ModelFile_as_QN (!modelsdir + "\\" + !model) 
 
             // Apply QN xforms 
             if !dump_before_xforms then    
