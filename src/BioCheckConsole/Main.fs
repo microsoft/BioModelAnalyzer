@@ -129,6 +129,13 @@ let print_qn qn postfix =
     List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
     Printf.printf "%s" postfix
 
+let write_json_to_file (fn:string) o =
+    let ser = JsonSerializer ()
+    let sw = new System.IO.StreamWriter(fn)
+    let writer = new JsonTextWriter(sw)
+    ser.Serialize(writer,o)
+    writer.Close()
+
 //
 // engine wrappers
 //
@@ -179,14 +186,21 @@ let runVMCAIEngine qn (proof_output : string) =
     let (sr,cex_o) = Stabilize.stabilization_prover qn
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
+        // (xml-writing-deprecated 
         let stable_res_xml = Marshal.xml_of_stability_result sr
         stable_res_xml.Save(proof_output)
+        // )
+        write_json_to_file (proof_output + ".json") sr
     | (Result.SRNotStabilizing(_), Some(cex)) -> 
+        // (xml-writing-deprecated 
         let unstable_res_xml = Marshal.xml_of_stability_result sr
         unstable_res_xml.Save(proof_output)
         let cex_xml = Marshal.xml_of_cex_result cex
         let filename,ext = System.IO.Path.GetFileNameWithoutExtension proof_output, System.IO.Path.GetExtension proof_output
         cex_xml.Save(filename + "_cex." + ext)
+        // )
+        write_json_to_file (proof_output + ".json") sr
+        write_json_to_file (filename + "_cex " + ext + ".json") cex
     | (Result.SRNotStabilizing(_), None) -> ()
     | _ -> failwith "Bad result from prover"
 
