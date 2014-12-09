@@ -67,7 +67,6 @@
         },
 
         _createHTML: function (items) {
-            console.log("createHTML");
             var items = this.options.items;
             this.repo.empty();
             var that = this;
@@ -83,7 +82,6 @@
 
             this.ol.selectable({
                 stop: function () {
-                    console.log("STOP");
                     window.Commands.Execute("LocalStorageLoadModel", "user."+items[$(this).find(".ui-selected").eq(0).index()]);
                 }
             });
