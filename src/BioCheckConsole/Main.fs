@@ -190,7 +190,7 @@ let runVMCAIEngine qn (proof_output : string) =
         let stable_res_xml = Marshal.xml_of_stability_result sr
         stable_res_xml.Save(proof_output)
         // )
-        write_json_to_file (proof_output + ".json") sr
+        write_json_to_file (proof_output + ".json") (Marshal.AnalysisResult_of_stability_result sr)
     | (Result.SRNotStabilizing(_), Some(cex)) -> 
         // (xml-writing-deprecated 
         let unstable_res_xml = Marshal.xml_of_stability_result sr
@@ -199,7 +199,7 @@ let runVMCAIEngine qn (proof_output : string) =
         let filename,ext = System.IO.Path.GetFileNameWithoutExtension proof_output, System.IO.Path.GetExtension proof_output
         cex_xml.Save(filename + "_cex." + ext)
         // )
-        write_json_to_file (proof_output + ".json") sr
+        write_json_to_file (proof_output + ".json") (Marshal.AnalysisResult_of_stability_result sr)
         write_json_to_file (filename + "_cex " + ext + ".json") cex
     | (Result.SRNotStabilizing(_), None) -> ()
     | _ -> failwith "Bad result from prover"

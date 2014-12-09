@@ -696,13 +696,7 @@ let QN_of_Model (model:Model) =
 
 
 
-// Return AnalysisResults back to IAnalyzer-pulling frontend
-let AnalysisResult_of_error id msg = 
-    let r = new AnalysisResult()
-    r.Status <- StatusType.Error
-    r.Error <- (string)id + msg
-    r
-
+// C# AnalysisResult = F# stability_result
 let stability_result_of_AnalysisResult (ar:AnalysisResult) = 
     let parse_tick (tick:AnalysisResult.Tick) =
         let time = tick.Time
@@ -729,9 +723,47 @@ let stability_result_of_AnalysisResult (ar:AnalysisResult) =
         Result.SRNotStabilizing(history)
     | x -> raise(MarshalInFailed(-1,"Bad status descriptor: "+x.ToString()))
 
+let AnalysisResult_of_stability_result (sr:Result.stability_result) = 
+    let Tick_of_tick (a:AnalysisResult.Tick[]) i (t:(int * QN.interval)) = 
+        let (time,interval) = t
+        a.[i] <- new AnalysisResult.Tick()
+        a.[i].Time <- time
+        a.[i].Variables <- 
+            let vv = Array.zeroCreate (interval.Count)
+            let vi = ref 0
+            Map.iter 
+                (fun v (lo,hi) -> 
+                    let v' = new AnalysisResult.Tick.Variable ()
+                    v'.Id <- v; v'.Lo <- (double)lo; v'.Hi <- (double)hi
+                    vv.[!vi] <- v'
+                    incr vi)
+                interval
+            vv
+    let mk_AnalysisResult st err hist = 
+        let ar = new AnalysisResult ()
+        let ticks = Array.zeroCreate (List.length hist)
+        List.iteri (Tick_of_tick ar.Ticks) hist
+        ar.Status <- st
+        ar.Error <- err
+        ar.Ticks <- ticks 
+        ar
+    match sr with 
+    | Result.SRStabilizing(hist) -> 
+        mk_AnalysisResult StatusType.Stabilizing "" hist
+    | Result.SRNotStabilizing(hist) -> 
+        mk_AnalysisResult StatusType.NotStabilizing "" hist
+        
 
+let AnalysisResult_of_error id msg = 
+    let r = new AnalysisResult()
+    r.Status <- StatusType.Error
+    r.Error <- (string)id + msg
+    r
+
+// C# CounterExampleOutput = F# cex_result
 // stubs
 let BifurcationCounterExample_of_CExBifurcation fix1 fix2 =
+    assert(false)
     let cex = new BifurcationCounterExample()
     cex.Status <- CounterExampleType.Bifurcation
     cex.Error <- ""
@@ -739,17 +771,16 @@ let BifurcationCounterExample_of_CExBifurcation fix1 fix2 =
     cex 
 
 let CycleCounterExample_of_CExCycle cyc = 
+    assert(false)
     let cs_cex = new CycleCounterExample()
     cs_cex.Status <- CounterExampleType.Cycle
     cs_cex
 
 let FixPointCounterExample_of_CExFixpoint fix = 
+    assert(false)
     let cs_cex = new FixPointCounterExample()
     cs_cex.Status <- CounterExampleType.Fixpoint
     cs_cex
 
-let AnalysisResult_of_stability_result (sr:Result.stability_result) = 
-    let r = new AnalysisResult()
-    r
 
 
