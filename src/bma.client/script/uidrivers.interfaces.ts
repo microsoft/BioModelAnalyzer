@@ -130,7 +130,7 @@ module BMA {
             //OnRepositoryUpdated();
         }
 
-        export interface IMessageServise {
+        export interface IMessageServiсe {
             Show(message: string);
             Log(message: string);
         }

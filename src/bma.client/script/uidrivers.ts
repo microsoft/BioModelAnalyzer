@@ -586,7 +586,7 @@ module BMA {
         //    }
         //}
 
-        export class MessageBoxDriver implements IMessageServise {
+        export class MessageBoxDriver implements IMessageServiсe {
 
             public Show(message: string){
                 alert(message);
