@@ -1,9 +1,9 @@
 ﻿module BMA {
     export class LocalRepositoryTool implements BMA.UIDrivers.IModelRepository {
         
-        private messagebox: BMA.UIDrivers.IMessageServise;
+        private messagebox: BMA.UIDrivers.IMessageServiсe;
 
-        constructor(messagebox: BMA.UIDrivers.IMessageServise) {
+        constructor(messagebox: BMA.UIDrivers.IMessageServiсe) {
             this.messagebox = messagebox;
         }
 

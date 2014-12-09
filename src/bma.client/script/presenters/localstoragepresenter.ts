@@ -4,14 +4,14 @@
             private appModel: BMA.Model.AppModel;
             private driver: BMA.UIDrivers.ILocalStorageDriver;
             private tool: BMA.UIDrivers.IModelRepository;
-            private messagebox: BMA.UIDrivers.IMessageServise;
+            private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
 
             constructor(
                 appModel: BMA.Model.AppModel,
                 editor: BMA.UIDrivers.ILocalStorageDriver,
                 tool: BMA.UIDrivers.IModelRepository,
-                messagebox: BMA.UIDrivers.IMessageServise,
+                messagebox: BMA.UIDrivers.IMessageServiсe,
                 checker: BMA.UIDrivers.ICheckChanges,
                 logService: BMA.ISessionLog
                 ) {

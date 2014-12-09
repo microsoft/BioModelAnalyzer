@@ -4,7 +4,7 @@
             private appModel: BMA.Model.AppModel;
             private viewer: BMA.UIDrivers.IProofResultViewer;
             private ajax: BMA.UIDrivers.IServiceDriver;
-            private messagebox: BMA.UIDrivers.IMessageServise;
+            private messagebox: BMA.UIDrivers.IMessageServiсe;
             private expandedProofPropagation: JQuery;
             private expandedProofVariables: JQuery;
             private currentModel: BMA.Model.BioModel;
@@ -17,7 +17,7 @@
                 proofResultViewer: BMA.UIDrivers.IProofResultViewer,
                 popupViewer: BMA.UIDrivers.IPopup,
                 ajax: BMA.UIDrivers.IServiceDriver,
-                messagebox: BMA.UIDrivers.IMessageServise,
+                messagebox: BMA.UIDrivers.IMessageServiсe,
                 logService: BMA.ISessionLog
                 ) {
 

@@ -5,7 +5,7 @@
             private driver: BMA.UIDrivers.IFurtherTesting;
             private popupViewer: BMA.UIDrivers.IPopup;
             private ajax: BMA.UIDrivers.IServiceDriver;
-            private messagebox: BMA.UIDrivers.IMessageServise;
+            private messagebox: BMA.UIDrivers.IMessageServiсe;
             private appModel: BMA.Model.AppModel;
             private num: number = 0;
             private data;
@@ -18,7 +18,7 @@
                 driver: BMA.UIDrivers.IFurtherTesting,
                 popupViewer: BMA.UIDrivers.IPopup,
                 ajax: BMA.UIDrivers.IServiceDriver,
-                messagebox: BMA.UIDrivers.IMessageServise,
+                messagebox: BMA.UIDrivers.IMessageServiсe,
                 logService: BMA.ISessionLog
             ) {
                 var that = this;
@@ -108,7 +108,7 @@
                                             var parseFix = that.ParseFixPoint(fix.Variables);
                                             window.Commands.Execute("ProofByFurtherTesting", {
                                                 issucceeded: true,
-                                                message: 'No bifurcations or cycles were found in your model. Therefore, by exclusion, your model stabilizes, but the stable state is not found by verification. To determine the final stable state, run a simulation.',
+                                                message: 'Further testing has been determined the model to be stable with the following stable state',
                                                 fixPoint: parseFix
                                             });
                                             OnProofStarting();
