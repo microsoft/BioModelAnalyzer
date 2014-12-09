@@ -767,7 +767,11 @@ let BifurcationCounterExample_of_CExBifurcation fix1 fix2 =
     let cex = new BifurcationCounterExample()
     cex.Status <- CounterExampleType.Bifurcation
     cex.Error <- ""
-    //cex.Variables 
+    //cex.Variables
+    // [A] X [B] -> [A X B]
+    let vv = Array.zeroCreate (max (List.length fix1) (List.length fix2))
+
+    cex.Variables <- vv
     cex 
 
 let CycleCounterExample_of_CExCycle cyc = 
