@@ -13,6 +13,9 @@ open Newtonsoft.Json.Linq
 
 open BioModelAnalyzer 
 
+//
+// CL Parsing
+//
 type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN | EnginePath
 let engine_of_string s = 
     match s with 
@@ -81,7 +84,6 @@ let usage i =
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
     Printf.printfn "                           -ko_edge id id' const -dump_after_ko_edge_xforms"
 
-
 let rec parse_args args = 
     match args with 
     | [] -> ()
@@ -110,6 +112,9 @@ let rec parse_args args =
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
     | _ -> failwith "Bad command line args" 
 
+//
+// QN parsing and printing
+//
 let read_ModelFile_as_QN model_fname = 
     // Read file
     let jobj = JObject.Parse(System.IO.File.ReadAllText(model_fname))
@@ -120,6 +125,13 @@ let read_ModelFile_as_QN model_fname =
     let qn = Marshal.QN_of_Model model
     qn
 
+let print_qn qn postfix =     
+    List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
+    Printf.printf "%s" postfix
+
+//
+// engine wrappers
+//
 let runSCMEngine qn = 
     Log.log_debug "Running the proof"
     Log.log_debug (sprintf "Num of nodes %d" (List.length qn))
@@ -164,7 +176,6 @@ let runSimulateEngine qn (simul_output : string) start_state_file simulation_tim
 
 let runVMCAIEngine qn (proof_output : string) =
     Log.log_debug "Running the proof"
-//        Log.log_debug (sprintf "Num of nodes %d" (List.length qn))
     let (sr,cex_o) = Stabilize.stabilization_prover qn
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
@@ -227,9 +238,9 @@ let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
                                     printf "%s" (String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) L.safe))
 
 
-//type IA = BioCheckAnalyzerCommon.IAnalyzer2
-//let analyzer = UIMain.Analyzer2()
-
+//
+// main
+//
 [<EntryPoint>]
 let main args = 
     let res = ref 0
@@ -251,29 +262,21 @@ let main args =
             let qn = read_ModelFile_as_QN (!modelsdir + "\\" + !model) 
 
             // Apply QN xforms 
-            if !dump_before_xforms then    
-                List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
-                Printf.printf "\n"
+            if !dump_before_xforms then print_qn qn "\n"
 
             // Apply QN xforms: ko
             let qn = List.fold
                         (fun current_qn (var,c) -> QN.ko current_qn var c)
                         qn
-                        !ko
-            
-            if (!dump_after_ko_xforms) then
-                List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
-                Printf.printf "\n"
+                        !ko            
+            if (!dump_after_ko_xforms) then print_qn qn "\n"
 
             // Apply QN xforms: ko_edge
             let qn = List.fold 
                         (fun current_qn (x,y,c) -> QN.ko_edge current_qn x y c)
                         qn
-                        !ko_edge
-            
-            if (!dump_after_ko_edge_xforms) then 
-                List.iter (fun n -> Printf.printf "%s" (QN.str_of_node n)) qn 
-                Printf.printf "\n"
+                        !ko_edge            
+            if (!dump_after_ko_edge_xforms) then print_qn qn "\n"
 
             let parameters_were_ok = 
                 match !engine with
