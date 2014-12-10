@@ -37,24 +37,37 @@ namespace bma.client.Controllers
 
             try
             {
-                IVMCAIAnalyzer analyzer = new VMCAIAnalyzerAdapter(new UIMain.Analyzer2());
+                IAnalyzer analyzer = new UIMain.Analyzer();
 
                 var analyisStartTime = DateTime.Now;
 
-                if(!input.EnableLogging)
+                if (!input.EnableLogging)
                     log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
 
-                var cexBifurcates = analyzer.FindBifurcationCex(input.Model, input.Analysis, input.EnableLogging ? log : null);
-                var cexCycles = analyzer.FindCycleCex(input.Model, input.Analysis, input.EnableLogging ? log : null);
-                var cexFixPoints = analyzer.FindFixPointCex(input.Model, input.Analysis, input.EnableLogging ? log : null);
+                var logger = input.EnableLogging ? log : null;
+                if (logger != null)
+                {
+                    analyzer.LoggingOn(log);
+                }
+                else
+                {
+                    analyzer.LoggingOff();
+                }
+
+                // Prepare model for analysis
+                var model = (Model)input.Model;
+                model.Preprocess();
+
+                // SI: these all return a single CEx, not an array of them. 
+                var cexBifurcates = analyzer.findCExBifurcates(model, input.Analysis);
+                var cexCycles = analyzer.findCExCycles(model, input.Analysis);
+                var cexFixPoints = analyzer.findCExFixpoint(model, input.Analysis);
 
                 log.LogDebug(string.Format("Finding Counter Examples took {0} seconds to run.", (DateTime.Now - analyisStartTime).TotalSeconds));
 
                 return new FurtherTestingOutput 
                 {
-                    CounterExamples = cexBifurcates.Cast<CounterExampleOutput>().
-                                                    Concat(cexCycles.Cast<CounterExampleOutput>()).
-                                                    Concat(cexFixPoints.Cast<CounterExampleOutput>()).ToArray(),
+                    CounterExamples = new CounterExampleOutput[] { cexBifurcates, cexCycles, cexFixPoints }, 
                     ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
                 };
