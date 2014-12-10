@@ -314,8 +314,10 @@ type Analyzer () =
             Map.iter 
                 (fun k v -> 
                     let i = !idx 
-                    env'.[i].Id <- k
-                    env'.[i].Value <- v
+                    let v' = new SimulationVariable ()
+                    v'.Id <- k
+                    v'.Value <- v
+                    env'.[i] <- v'
                     incr idx) 
                 m'
             env'
