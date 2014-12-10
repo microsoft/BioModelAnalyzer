@@ -762,29 +762,72 @@ let AnalysisResult_of_error id msg =
 
 // C# CounterExampleOutput = F# cex_result
 // stubs
-let BifurcationCounterExample_of_CExBifurcation fix1 fix2 =
-    assert(false)
+let BifurcationCounterExample_of_CExBifurcation (fix1:Map<string, int>) (fix2:Map<string, int>) =
+    assert(fix1.Count = fix2.Count)
     let cex = new BifurcationCounterExample()
     cex.Status <- CounterExampleType.Bifurcation
     cex.Error <- ""
     //cex.Variables
     // [A] X [B] -> [A X B]
-    let vv = Array.zeroCreate (max (List.length fix1) (List.length fix2))
-
+    let len = fix1.Count
+    let vv = Array.zeroCreate (len)
+    let vv_idx = ref 0
+    Map.iter
+        (fun k v ->
+            let bv =  new BifurcationCounterExample.BifurcatingVariable()
+            bv.Id <- k
+            bv.Fix1 <- v 
+            bv.Fix2 <- Map.find k fix2
+            vv.[!vv_idx] <- bv
+            incr vv_idx)
+        fix1 
     cex.Variables <- vv
     cex 
 
-let CycleCounterExample_of_CExCycle cyc = 
-    assert(false)
-    let cs_cex = new CycleCounterExample()
-    cs_cex.Status <- CounterExampleType.Cycle
-    cs_cex
+let CycleCounterExample_of_CExCycle (cyc:Map<string, int>) = 
+    let cex = new CycleCounterExample()
+    cex.Status <- CounterExampleType.Cycle
+    cex.Error <- ""
+    let vv = Array.zeroCreate (cyc.Count)
+    let vv_idx = ref 0
+    Map.iter 
+        (fun k v ->
+            let cv = new CycleCounterExample.Variable ()
+            cv.Id <- k
+            cv.Value <- v
+            vv.[!vv_idx] <- cv
+            incr vv_idx)
+        cyc
+    cex
 
-let FixPointCounterExample_of_CExFixpoint fix = 
-    assert(false)
-    let cs_cex = new FixPointCounterExample()
-    cs_cex.Status <- CounterExampleType.Fixpoint
-    cs_cex
+let FixPointCounterExample_of_CExFixpoint (fix:Map<string, int>) = 
+    let cex = new FixPointCounterExample()
+    cex.Status <- CounterExampleType.Fixpoint
+    cex.Error <- ""
+    let vv = Array.zeroCreate (fix.Count)
+    let vv_idx = ref 0
+    Map.iter 
+        (fun k v ->
+            let cv = new FixPointCounterExample.Variable ()
+            cv.Id <- k
+            cv.Value <- v
+            vv.[!vv_idx] <- cv
+            incr vv_idx)
+        fix
+    cex
 
+let CounterExampleOutput_of_cex_result cr = 
+    match cr with 
+    | Result.CExBifurcation(fix1,fix2) -> 
+        (BifurcationCounterExample_of_CExBifurcation fix1 fix2)  :> CounterExampleOutput
+    | Result.CExCycle(cyc) -> 
+        (CycleCounterExample_of_CExCycle cyc) :> CounterExampleOutput
+    | Result.CExFixpoint(fix) -> 
+        (FixPointCounterExample_of_CExFixpoint fix) :> CounterExampleOutput
+    | Result.CExUnknown -> 
+        let cex = new CounterExampleOutput()
+        cex.Status <- CounterExampleType.Unknown
+        cex.Error <- "CExUnknown"
+        cex
 
 

@@ -6,7 +6,7 @@ namespace BioModelAnalyzer
 {
     public enum CounterExampleType
     {
-        Bifurcation, Cycle, Fixpoint
+        Bifurcation, Cycle, Fixpoint, Unknown
     }
 
     public class CounterExampleOutput    

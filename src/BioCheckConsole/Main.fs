@@ -200,7 +200,7 @@ let runVMCAIEngine qn (proof_output : string) =
         cex_xml.Save(filename + "_cex." + ext)
         // )
         write_json_to_file (proof_output + ".json") (Marshal.AnalysisResult_of_stability_result sr)
-        write_json_to_file (filename + "_cex " + ext + ".json") cex
+        write_json_to_file (filename + "_cex " + ext + ".json") (Marshal.CounterExampleOutput_of_cex_result cex)
     | (Result.SRNotStabilizing(_), None) -> ()
     | _ -> failwith "Bad result from prover"
 
