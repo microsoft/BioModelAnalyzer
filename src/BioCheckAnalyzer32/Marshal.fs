@@ -742,7 +742,7 @@ let AnalysisResult_of_stability_result (sr:Result.stability_result) =
     let mk_AnalysisResult st err hist = 
         let ar = new AnalysisResult ()
         let ticks = Array.zeroCreate (List.length hist)
-        List.iteri (Tick_of_tick ar.Ticks) hist
+        List.iteri (Tick_of_tick ticks) hist
         ar.Status <- st
         ar.Error <- err
         ar.Ticks <- ticks 
