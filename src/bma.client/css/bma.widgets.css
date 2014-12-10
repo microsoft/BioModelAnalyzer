@@ -467,8 +467,6 @@
         background-image: url('../images/expand-collapse.svg');
         background-repeat:no-repeat;
         background-position:center;
-        border-bottom-right-radius: 8px;
-        border-top-right-radius: 8px;
     }
     .ui-accordion-header-active .saveIcon
     {
@@ -661,12 +659,12 @@
 
     .bma-elementspanel-elementstoolbar {
         /*display: inline-block;*/
-        margin-left: calc(40% - 400px);
+        margin-left: calc(40% - 390px);
     }
 
     .bma-elementspanel-visibilityoptions {
         /*float: right;*/
-        margin-left: calc(40% - 400px);
+        margin-left: calc(40% - 390px);
     }
 
  
