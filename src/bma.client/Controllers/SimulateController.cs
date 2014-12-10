@@ -41,20 +41,37 @@ namespace bma.client.Controllers
 
             try 
             {         
-                IVMCAIAnalyzer analyzer = new VMCAIAnalyzerAdapter(new UIMain.Analyzer2());
+                IAnalyzer analyzer = new UIMain.Analyzer();
 
                 var analyisStartTime = DateTime.Now;
 
                 if (!input.EnableLogging)
                     log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
 
+                var logger = input.EnableLogging ? log : null;
+                if (logger != null)
+                {
+                    analyzer.LoggingOn(log);
+                }
+                else
+                {
+                    analyzer.LoggingOff();
+                } 
+                
+                // SI: never used? 
                 var inputDictionary = new Dictionary<int, int>();
                 foreach (var variable in input.Variables)
                 {
+                    // SI: why the cast? 
                     inputDictionary.Add(variable.Id, (int)variable.Value);
                 }
 
-                var output = analyzer.Simulate(input.Model, input.Variables, input.EnableLogging ? log : null);
+
+                // Prepare model for analysis
+                var model = (Model)input.Model;
+                model.Preprocess();
+
+                var output = analyzer.simulate_tick(model, input.Variables);
 
                 return new SimulationOutput
                 {
