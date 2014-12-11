@@ -467,6 +467,7 @@
         background-image: url('../images/expand-collapse.svg');
         background-repeat:no-repeat;
         background-position:center;
+        border-radius: 0 8px 8px 0;
     }
     .ui-accordion-header-active .saveIcon
     {
@@ -475,6 +476,7 @@
         -o-transform: scaleX(-1);
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
+        border-radius: 0;
     }
 
     .skinModelContainer{
