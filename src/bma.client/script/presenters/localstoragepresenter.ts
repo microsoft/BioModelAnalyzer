@@ -39,6 +39,8 @@
                 });
 
                 window.Commands.On("LocalStorageRequested", function () {
+                    var keys = that.tool.GetModelList();
+                    that.driver.SetItems(keys);
                     that.driver.Show();
                 });
 
