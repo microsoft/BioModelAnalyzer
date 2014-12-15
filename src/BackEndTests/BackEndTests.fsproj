@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\..\..\ext\nuget\MSBuild.Extension.Pack.1.3.0\tools\net40\MSBuild.ExtensionPack.dll" TaskName="MSBuild.ExtensionPack.FileSystem.File" />
   <PropertyGroup>
@@ -90,8 +90,8 @@
     <None Include="ToyModelUnstable.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="VMCAI_Analyze.fs" />
-    <Compile Include="VMCAI_FurtherTesting.fs" />
+    <Compile Include="Analyzer_checkStability.fs" />
+    <Compile Include="Analyzer_findCEx.fs" />
     <None Include="Race.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -101,7 +101,7 @@
     <None Include="ion channel.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="VMCAI_Simulate.fs" />
+    <Compile Include="Analyzer_Simulate.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
