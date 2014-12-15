@@ -18,9 +18,10 @@ type VMCAISimulateTests() =
 
         // Extract model from json
         let model = (jobj.["model"] :?> JObject).ToObject<Model>()
+        model.Preprocess()
 
         // Create analyzer
-        let vmcai = VMCAIAnalyzerAdapter(UIMain.Analyzer2())
+        let analyzer = UIMain.Analyzer() :> BioCheckAnalyzerCommon.IAnalyzer
 
         let v1 = SimulationVariable()
         v1.Id <- 1
@@ -33,7 +34,7 @@ type VMCAISimulateTests() =
         v3.Value <- 3
         let mutable state = [| v1; v2; v3 |]
         for i in [0..9] do
-             state <- vmcai.Simulate(model, state ,null)
+             state <- analyzer.simulate_tick(model, state)
 
         let pickId id (v : SimulationVariable) = if v.Id = id then Some(v) else None
 
