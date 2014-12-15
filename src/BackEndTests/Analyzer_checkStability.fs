@@ -2,11 +2,8 @@
 
 open System
 open System.Linq
-open System.IO
 open System.Xml.Linq
 open System.Xml.Serialization
-open System.ComponentModel.Composition
-open System.Collections.Generic
 
 open Newtonsoft.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
@@ -29,8 +26,8 @@ type VMCAIAnalyzeTests() =
 
         // Create analyzer. 
         // Have to static cast to get IAnalyzer functions.   
-        let analyzer = UIMain.Analyzer () :> BioCheckAnalyzerCommon.IAnalyzer
-        let result = analyzer.checkStability(model)
+        let analyzer = UIMain.Analyzer () 
+        let result = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model)
 
         Assert.AreEqual(result.Status, StatusType.Stabilizing)
 
@@ -46,6 +43,6 @@ type VMCAIAnalyzeTests() =
 
         // Create analyzer
         // Have to static cast to get IAnalyzer functions.   
-        let analyzer = UIMain.Analyzer()  :> BioCheckAnalyzerCommon.IAnalyzer
-        let result = analyzer.checkStability(model) 
+        let analyzer = UIMain.Analyzer() 
+        let result = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model) 
         Assert.AreEqual(result.Status, StatusType.NotStabilizing)

@@ -21,7 +21,7 @@ type VMCAISimulateTests() =
         model.Preprocess()
 
         // Create analyzer
-        let analyzer = UIMain.Analyzer() :> BioCheckAnalyzerCommon.IAnalyzer
+        let analyzer = UIMain.Analyzer()
 
         let v1 = SimulationVariable()
         v1.Id <- 1
@@ -34,7 +34,7 @@ type VMCAISimulateTests() =
         v3.Value <- 3
         let mutable state = [| v1; v2; v3 |]
         for i in [0..9] do
-             state <- analyzer.simulate_tick(model, state)
+             state <- (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).simulate_tick(model, state)
 
         let pickId id (v : SimulationVariable) = if v.Id = id then Some(v) else None
 
