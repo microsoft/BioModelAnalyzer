@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
+using Microsoft.FSharp.Core;
+
 using BioModelAnalyzer;
 
 namespace BioCheckAnalyzerCommon
@@ -82,9 +84,9 @@ namespace BioCheckAnalyzerCommon
         // checkStability takes a analyzer input model, and returns whether the model stabilizes or not.
         AnalysisResult checkStability(Model input_model);
         // In case the model doesn't stabilize, then find a counter-example. 
-        BifurcationCounterExample findCExBifurcates(Model input_model, AnalysisResult notstabilizing_result);
-        CycleCounterExample findCExCycles(Model input_model, AnalysisResult notstabilizing_result);
-        FixPointCounterExample findCExFixpoint(Model input_model, AnalysisResult notstabilizing_result);
+        FSharpOption<BifurcationCounterExample> findCExBifurcates(Model input_model, AnalysisResult notstabilizing_result);
+        FSharpOption<CycleCounterExample> findCExCycles(Model input_model, AnalysisResult notstabilizing_result);
+        FSharpOption<FixPointCounterExample> findCExFixpoint(Model input_model, AnalysisResult notstabilizing_result);
 
         // 2. CAV interface
         XDocument checkLTL(Model input_model, string formula, string num_of_steps);

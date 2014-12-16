@@ -209,20 +209,21 @@ type Analyzer () =
         member this.findCExBifurcates(model:Model, analysis_result:AnalysisResult ) = 
             let cex_o = find_cex model analysis_result Stabilize.find_cex_bifurcates            
             match cex_o with 
-            | Some(Result.CExBifurcation(fix1,fix2)) -> Marshal.BifurcationCounterExample_of_CExBifurcation fix1 fix2
-            | _ -> failwith "IAnalyzer expected CExBifurcation"
+            | Some(Result.CExBifurcation(fix1,fix2)) -> Some(Marshal.BifurcationCounterExample_of_CExBifurcation fix1 fix2)
+            | _ -> None
+            //| _ -> failwith "IAnalyzer expected CExBifurcation"
 
         member this.findCExCycles(model:Model, analysis_result:AnalysisResult ) = 
             let cex_o = find_cex model analysis_result Stabilize.find_cex_cycles
             match cex_o with 
-            | Some(Result.CExCycle(cyc)) -> Marshal.CycleCounterExample_of_CExCycle cyc
-            | _ -> failwith "IAnalyzer expected CExCycle"
+            | Some(Result.CExCycle(cyc)) -> Some(Marshal.CycleCounterExample_of_CExCycle cyc)
+            | _ -> None
 
         member this.findCExFixpoint(model:Model, analysis_result:AnalysisResult ) = 
             let cex_o = find_cex model analysis_result Stabilize.find_cex_fixpoint            
             match cex_o with
-            | Some(Result.CExFixpoint(fix)) -> Marshal.FixPointCounterExample_of_CExFixpoint fix 
-            | _ -> failwith "IAnalyzer expected CExFixpoint"
+            | Some(Result.CExFixpoint(fix)) -> Some(Marshal.FixPointCounterExample_of_CExFixpoint fix)
+            | _ -> None
 
         // SI: Remove xml types from here. 
         // 2. CAV interface
