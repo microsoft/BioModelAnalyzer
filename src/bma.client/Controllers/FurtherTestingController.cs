@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Linq;
+using Microsoft.FSharp.Core;
 using BioModelAnalyzer;
 
 namespace bma.client.Controllers
@@ -63,11 +64,25 @@ namespace bma.client.Controllers
                 var cexCycles = analyzer.findCExCycles(model, input.Analysis);
                 var cexFixPoints = analyzer.findCExFixpoint(model, input.Analysis);
 
+                var cexs = new List<CounterExampleOutput>();
+                if (FSharpOption<BifurcationCounterExample>.get_IsSome(cexBifurcates))
+                { 
+                    cexs.Add(cexBifurcates.Value); 
+                }
+                if (FSharpOption<CycleCounterExample>.get_IsSome(cexCycles))
+                {
+                    cexs.Add(cexCycles.Value);
+                }
+                if (FSharpOption<FixPointCounterExample>.get_IsSome(cexFixPoints))
+                {
+                    cexs.Add(cexFixPoints.Value);
+                }
+
                 log.LogDebug(string.Format("Finding Counter Examples took {0} seconds to run.", (DateTime.Now - analyisStartTime).TotalSeconds));
 
                 return new FurtherTestingOutput 
                 {
-                    CounterExamples = new CounterExampleOutput[] { cexBifurcates, cexCycles, cexFixPoints }, 
+                    CounterExamples = cexs.ToArray(), 
                     ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
                 };
