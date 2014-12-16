@@ -798,6 +798,7 @@ let CycleCounterExample_of_CExCycle (cyc:Map<string, int>) =
             vv.[!vv_idx] <- cv
             incr vv_idx)
         cyc
+    cex.Variables <- vv
     cex
 
 let FixPointCounterExample_of_CExFixpoint (fix:Map<string, int>) = 
@@ -814,6 +815,7 @@ let FixPointCounterExample_of_CExFixpoint (fix:Map<string, int>) =
             vv.[!vv_idx] <- cv
             incr vv_idx)
         fix
+    cex.Variables <- vv
     cex
 
 let CounterExampleOutput_of_cex_result cr = 

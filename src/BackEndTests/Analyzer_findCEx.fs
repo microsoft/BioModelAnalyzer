@@ -27,7 +27,8 @@ type VMCAIFurtherTestingTests() =
         Assert.AreEqual(result.Status, StatusType.NotStabilizing)
 
         // Find bifurcations
-        let result = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExBifurcates(model, result)
+        let resulto = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExBifurcates(model, result)
+        let result = resulto.Value
         Assert.AreEqual(result.Variables.[0].Id, "3^0")
         Assert.AreEqual(result.Variables.[0].Fix1, 0)
         Assert.AreEqual(result.Variables.[0].Fix2, 1)
@@ -49,7 +50,8 @@ type VMCAIFurtherTestingTests() =
         Assert.AreEqual(result.Status, StatusType.NotStabilizing)
 
         // Find bifurcations
-        let result2 = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
+        let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
+        let result2 = result2o.Value
         Assert.AreEqual(result2.Variables.Length, 12)
         Assert.AreEqual(result2.Variables.[7].Id, "4^1")
         Assert.AreEqual(result2.Variables.[7].Value, 1)
@@ -72,10 +74,11 @@ type VMCAIFurtherTestingTests() =
         Assert.AreEqual(result.Status, StatusType.NotStabilizing)
 
         // Find bifurcations
-        let result2 = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
+        let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
+        let result2 = result2o.Value
         Assert.AreEqual(result2.Variables.Length, 2)
-        Assert.AreEqual(result2.Variables.[0].Id, "3^0")
-        Assert.AreEqual(result2.Variables.[1].Id, "2^0")
+        Assert.AreEqual(result2.Variables.[0].Id, "2^0")
+        Assert.AreEqual(result2.Variables.[1].Id, "3^0")
         Assert.AreEqual(result2.Variables.[0].Value, 0)
         Assert.AreEqual(result2.Variables.[1].Value, 0)
 
