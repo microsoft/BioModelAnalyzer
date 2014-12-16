@@ -130,6 +130,7 @@
                     }
                     else {
                         proofResultViewer.ShowResult(appModel.ProofResult);
+                        window.Commands.Execute("DrawingSurfaceSetProofResults", that.st);
                     }
                 });
 
