@@ -29,9 +29,15 @@ type VMCAIFurtherTestingTests() =
         // Find bifurcations
         let resulto = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExBifurcates(model, result)
         let result = resulto.Value
-        Assert.AreEqual(result.Variables.[0].Id, "3^0")
-        Assert.AreEqual(result.Variables.[0].Fix1, 0)
-        Assert.AreEqual(result.Variables.[0].Fix2, 1)
+//        Assert.AreEqual(result.Variables.[0].Id, "3^0")
+//        Assert.AreEqual(result.Variables.[0].Fix1, 0)
+//        Assert.AreEqual(result.Variables.[0].Fix2, 1)
+        let var3_0 = result.Variables |> Seq.pick (fun v -> if v.Id = "3^0" then Some(v) else None) 
+        Assert.AreEqual(var3_0.Id, "3^0")
+        Assert.AreEqual(var3_0.Fix1, 0)
+        Assert.AreEqual(var3_0.Fix2, 1)
+
+
 
     [<TestMethod>]
     [<DeploymentItem("Race.json")>]
@@ -53,8 +59,9 @@ type VMCAIFurtherTestingTests() =
         let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
         let result2 = result2o.Value
         Assert.AreEqual(result2.Variables.Length, 12)
-        Assert.AreEqual(result2.Variables.[7].Id, "4^1")
-        Assert.AreEqual(result2.Variables.[7].Value, 1)
+        let var4_1 = result2.Variables |> Seq.pick (fun v -> if v.Id = "4^1" then Some(v) else None) 
+        Assert.AreEqual(var4_1.Value, 1)
+
 
     [<TestMethod>]
     [<DeploymentItem("ion channel.json")>]
@@ -77,8 +84,11 @@ type VMCAIFurtherTestingTests() =
         let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
         let result2 = result2o.Value
         Assert.AreEqual(result2.Variables.Length, 2)
-        Assert.AreEqual(result2.Variables.[0].Id, "2^0")
-        Assert.AreEqual(result2.Variables.[1].Id, "3^0")
-        Assert.AreEqual(result2.Variables.[0].Value, 0)
-        Assert.AreEqual(result2.Variables.[1].Value, 0)
+        // Check that var(2^0) exists and has value 0. 
+        let var2_0 = result2.Variables |> Seq.pick (fun v -> if v.Id = "2^0" then Some(v) else None) 
+        Assert.AreEqual(var2_0.Value, 0)
+        // Check that var(3^0) exists and has value 0. 
+        let var3_0 = result2.Variables |> Seq.pick (fun v -> if v.Id = "3^0" then Some(v) else None) 
+        Assert.AreEqual(var3_0.Value, 0)
+
 
