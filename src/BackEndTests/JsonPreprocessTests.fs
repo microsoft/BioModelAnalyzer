@@ -23,4 +23,4 @@ type JsonPreprocessTests() =
         let var5 = model.Variables |> Array.pick (fun v -> match v.Id with
                                                             | 5 -> Some(v)
                                                             | _ -> None)        
-        Assert.AreEqual(var5.Function, "min(var(12),var(45))")
+        Assert.AreEqual(var5.Function, "min(var(12), var(45))")
