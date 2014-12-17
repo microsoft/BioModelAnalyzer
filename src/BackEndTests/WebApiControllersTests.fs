@@ -184,9 +184,8 @@ type WebApiControllersTests() =
             
             let variables = (Seq.head counterExamples).["Variables"] :?> JArray
             Assert.AreEqual(variables.Count, 12)
-            let var = variables.[7]
-            Assert.AreEqual(var.["Id"].ToString(), "4^1")
-            Assert.AreEqual(var.["Value"].ToString(), "1")
+            let var4_1 = variables |> Seq.pick (fun v -> if v.["Id"].ToString() = "4^1" then Some(v) else None)
+            Assert.AreEqual(var4_1.["Value"].ToString(), "1")
         } |> Async.RunSynchronously
 
     [<TestMethod>]
@@ -226,8 +225,8 @@ type WebApiControllersTests() =
             
             let variables = (Seq.head counterExamples).["Variables"] :?> JArray
             Assert.AreEqual(variables.Count, 2)
-            Assert.AreEqual(variables.[0].["Id"].ToString(), "3^0")
-            Assert.AreEqual(variables.[0].["Value"].ToString(), "0")
-            Assert.AreEqual(variables.[1].["Id"].ToString(), "2^0")
-            Assert.AreEqual(variables.[1].["Value"].ToString(), "0")
+            let var3_0 = variables |> Seq.pick (fun v -> if v.["Id"].ToString() = "3^0" then Some(v) else None)
+            Assert.AreEqual(var3_0.["Value"].ToString(), "0")
+            let var2_0 = variables |> Seq.pick (fun v -> if v.["Id"].ToString() = "2^0" then Some(v) else None)
+            Assert.AreEqual(var2_0.["Value"].ToString(), "0")
         } |> Async.RunSynchronously
