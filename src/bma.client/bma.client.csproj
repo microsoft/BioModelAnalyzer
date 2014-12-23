@@ -117,6 +117,12 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
     <Content Include="css\bma.css" />
     <Content Include="css\bma.widgets.css" />
+    <Content Include="css\BMA_less.css">
+      <DependentUpon>BMA_less.less</DependentUpon>
+    </Content>
+    <Content Include="css\BMA_less.min.css">
+      <DependentUpon>BMA_less.css</DependentUpon>
+    </Content>
     <Content Include="css\help.css" />
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
@@ -250,6 +256,10 @@
     <Content Include="preloaded\ToyModelUnstable.json" />
     <Content Include="preloaded\VPC.json" />
     <Content Include="preloaded\SkinModel.json" />
+    <Content Include="css\BMA_less.less" />
+    <Content Include="css\BMA_less.css.map">
+      <DependentUpon>BMA_less.css</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />

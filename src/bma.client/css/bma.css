@@ -42,7 +42,7 @@
 
 }
 
-body {
+/*body {
     padding-bottom: 0;
     padding-top: 4px;
     padding-left: 4px;
@@ -51,46 +51,46 @@ body {
     background-color: #E4E4E6;
     height: calc(100% - 40px);
     font-family: 'Segoe UI';
-}
+}*/
 
-html {
+/*html {
     height: 100%;
-}
+}*/
 
 
-.bma-drawingsurfacecontainer {
+/*.bma-drawingsurfacecontainer {
     height: calc(100% - 100px - 4px);
     position: relative;
-}
+}*/
 
-.bma-drawingsurface {
+/*.bma-drawingsurface {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-}
+}*/
 
-.bma-modeltoolbarcontainer {
+/*.bma-modeltoolbarcontainer {
     position: absolute;
     top: 50px;
     width: 100%;
-}
+}*/
 
-.bma-analyticstoolbarcontainer {
+/*.bma-analyticstoolbarcontainer {
     position: absolute;
     top: 50px;
     width: 100%;
-}
+}*/
 
-.bma-footer {
+/*.bma-footer {
     clear: both;
     position: relative;
     height: 3em;
     text-align: center;
-}
+}*/
 
-.bma-pagefooter-linkcontainer {
+/*.bma-pagefooter-linkcontainer {
     position: relative;
     z-index: 8;
     background-color: white;
@@ -109,27 +109,30 @@ html {
     -ms-box-shadow: 5px 5px 10px #C6C6C6;
     -o-box-shadow: 5px 5px 10px #C6C6C6;
     box-shadow: 5px 5px 10px #C6C6C6;
-}
+}*/
 
-.bma-pagefooter-links {
+/*.bma-pagefooter-links {
     color: #82BD82;
-}
+}*/
 
-.bma-pagefooter-logo {
+/*.bma-pagefooter-logo {
     position: absolute;
     left: 3px;
     bottom: 3px;
-}
+}*/
 
-.bma-pagefooter-msrlogo {
-    position: absolute;
+/*.bma-pagefooter-msrlogo {
+    position: relative;
+    float: right;
     right: 10px;
     padding-top: 3px;
-}
+    height: 40px;
+}*/
 
-    .bma-pagefooter-msrlogo img {
+
+    /*.bma-pagefooter-msrlogo img {
         height: 33px;
-    }
+    }*/
 
 
 

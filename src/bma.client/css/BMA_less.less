@@ -1,2 +1,129 @@
-﻿body {
+﻿@element-icon-height: 50px;
+@font-family-body: 'Segoe UI';
+@footer-height: 40px;
+@font-size-general: 13px;
+@line-height-general: 17px;
+@color-general: #606060;
+
+html {
+    height: 100%;
 }
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #E4E4E6;
+    position: relative;
+    height: 100%;
+    overflow:hidden;
+    font-family: @font-family-body;
+    font-size: @font-size-general;
+    line-height: @line-height-general;
+    color: @color-general;
+}
+
+* {
+    /*outline-style: none;*/
+    outline:0 none;
+}
+
+.bma-drawingsurfacecontainer {
+    /*height: calc(~"100% - 70px" - @footer-height);*/
+    .calc(height, ~"100% - 70px" - @footer-height);
+    position: relative;
+}
+
+.bma-drawingsurface {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+
+@slider-panel: bma-modeltoolbarcontainer, bma-analyticstoolbarcontainer;
+
+.@{slider-panel} {
+    position: absolute;
+    top: 50px;
+    width: 100%;
+}
+
+.calc(@prop; @val) {
+  @{prop}: calc(@val);
+  @{prop}: -moz-calc(@val);
+  @{prop}: -webkit-calc(@val);
+  @{prop}: -o-calc(@val);
+}
+
+.bma-footer {
+    height: @footer-height;
+    text-align: center;
+}
+
+.bma-pagefooter-msrlogo {
+    position: absolute;
+    right: 10px;
+    height: @footer-height;
+
+    img {
+        height: 35px;
+    }
+}
+
+.bma-pagefooter-logo {
+    position: absolute;
+    left: 0;
+}
+
+.bma-pagefooter-linkcontainer {
+    position: absolute;
+    bottom: 0;
+    background-color: white;
+    @color: #82BD82;
+    color: @color;
+    height: @footer-height - 10px;
+    line-height: 30px;
+    @width: 220px;
+    width: @width;
+
+    .calc(left, ~"50%" - @width / 2);
+    .box-shadow(5px 5px 10px, #C6C6C6);
+    .border-radius(10px 10px 0 0);
+
+    a {
+        color: @color;
+    }
+}
+
+.border-radius(@a){
+    -moz-border-radius: @a;
+    -webkit-border-radius: @a;
+    -ms-border-radius: @a;
+    -o-border-radius: @a;
+    border-radius: @a;
+}
+
+.box-shadow(@a, @color){
+    -webkit-box-shadow: @a @color;
+    -moz-box-shadow: @a @color;
+    -ms-box-shadow: @a @color;
+    -o-box-shadow: @a @color;
+    box-shadow: @a @color;
+}
+
+.bma-elementspanel {
+    background-color: white;
+    padding: 10px 0;
+    white-space: nowrap;
+    display: table;
+    width: 100%;
+
+    * {
+        display: inline-block;
+        vertical-align: top;
+    }
+}
+
+

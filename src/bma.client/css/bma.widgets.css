@@ -1,4 +1,4 @@
-﻿    body {
+﻿    /*body {
         margin:0;
         padding:0;
         overflow:hidden;
@@ -11,7 +11,7 @@
     * {
         outline-style: none;
         outline:0 none;
-    }
+    }*/
 
     .hoverable:hover{
         cursor: pointer;
@@ -574,15 +574,15 @@
 
     
 
-    .bma-pagefooter-linkcontainer {
+    /*.bma-pagefooter-linkcontainer {
         position: absolute;
         z-index: 8;
         background-color: white;
-        /*color: #82BD82;*/
-        /*line-height: 35px;*/
+        /*color: #82BD82;
+        /*line-height: 35px;
         width: 220px;
         height: 35px;
-        /*margin: 0 auto 0 auto;*/
+        /*margin: 0 auto 0 auto;
         -moz-border-radius: 10px 10px 0px 0px;
         -webkit-border-radius: 10px 10px 0px 0px;
         -ms-border-radius: 10px 10px 0px 0px;
@@ -593,39 +593,39 @@
         -ms-box-shadow: 5px 5px 10px #C6C6C6;
         -o-box-shadow: 5px 5px 10px #C6C6C6;
         box-shadow: 5px 5px 10px #C6C6C6;
-        bottom: 0;
+        /*bottom: 0;
         left: calc(50% - 110px);
     }
 
     .bma-pagefooter-links {
-        /*color: #82BD82;*/
-    }
+        /*color: #82BD82;
+    }*/
 
-    .bma-pagefooter-logo {
+    /*.bma-pagefooter-logo {
         position: absolute;
         left: 3px;
         bottom: 0px;
         height: 40px;
-    }
+    }*/
 
-    .bma-pagefooter-msrlogo {
+    /*.bma-pagefooter-msrlogo {
         position: absolute;
         right: 10px;
         bottom: 0;
-        /*padding-top: 3px;*/
+        padding-top: 3px;
         height: 40px;
     }
 
     .bma-pagefooter-msrlogo img {
         height: 33px;
-    }
+    }*/
 
 
-    .bma-drawingsurfacecontainer {
+    /*.bma-drawingsurfacecontainer {
         height: calc(100% - 40px);
         overflow: hidden;
         position: relative;
-    }
+    }*/
 
     .tabPanel {
         width: 400px;
@@ -722,7 +722,7 @@
         border-bottom: none;
     }
 
-    .bma-footer {
+    /*.bma-footer {
         width: 100%;
         clear: both;
         position: absolute;
@@ -730,7 +730,7 @@
         text-align: center;
         background-color: #E4E4E6;
         height: 40px;
-    }
+    }*/
 
     .bma-pagefooter-msrlogo > a > img {
         border: none;
@@ -1307,21 +1307,22 @@
     background-position:center;
 }
 
- .bma-elementspanel {
+ /*.bma-elementspanel {
     display: table;
-    /*text-align: center;*/
+    /*text-align: center;
     clear: both;
     background-color: white;
     width: 100%;
-    /*min-width: 965px;*/
+    /*min-width: 965px;
     padding-top: 15px;
     padding-bottom: 5px;
     white-space: nowrap;
-}
-.bma-elementspanel > * {
+}*/
+
+/*.bma-elementspanel > * {
     display: inline-block;
     vertical-align: top;
-}
+}*/
 
 .bma-elementspanel-undoredotoolbar {
     /*display: inline-block;*/
