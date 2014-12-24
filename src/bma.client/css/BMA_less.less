@@ -5,6 +5,29 @@
 @line-height-general: 17px;
 @color-general: #606060;
 
+.calc(@prop; @val) {
+  @{prop}: calc(@val);
+  @{prop}: -moz-calc(@val);
+  @{prop}: -webkit-calc(@val);
+  @{prop}: -o-calc(@val);
+}
+
+.border-radius(@a){
+    -moz-border-radius: @a;
+    -webkit-border-radius: @a;
+    -ms-border-radius: @a;
+    -o-border-radius: @a;
+    border-radius: @a;
+}
+
+.box-shadow(@a, @color){
+    -webkit-box-shadow: @a @color;
+    -moz-box-shadow: @a @color;
+    -ms-box-shadow: @a @color;
+    -o-box-shadow: @a @color;
+    box-shadow: @a @color;
+}
+
 html {
     height: 100%;
 }
@@ -23,13 +46,12 @@ body {
 }
 
 * {
-    /*outline-style: none;*/
     outline:0 none;
 }
 
 .bma-drawingsurfacecontainer {
-    /*height: calc(~"100% - 70px" - @footer-height);*/
-    .calc(height, ~"100% - 70px" - @footer-height);
+    height: calc(~"100% - 70px" - @footer-height);
+    /*.calc(height, ~"100% - 70px" - @footer-height);*/
     position: relative;
 }
 
@@ -50,12 +72,7 @@ body {
     width: 100%;
 }
 
-.calc(@prop; @val) {
-  @{prop}: calc(@val);
-  @{prop}: -moz-calc(@val);
-  @{prop}: -webkit-calc(@val);
-  @{prop}: -o-calc(@val);
-}
+
 
 .bma-footer {
     height: @footer-height;
@@ -97,21 +114,7 @@ body {
     }
 }
 
-.border-radius(@a){
-    -moz-border-radius: @a;
-    -webkit-border-radius: @a;
-    -ms-border-radius: @a;
-    -o-border-radius: @a;
-    border-radius: @a;
-}
 
-.box-shadow(@a, @color){
-    -webkit-box-shadow: @a @color;
-    -moz-box-shadow: @a @color;
-    -ms-box-shadow: @a @color;
-    -o-box-shadow: @a @color;
-    box-shadow: @a @color;
-}
 
 .bma-elementspanel {
     background-color: white;
@@ -120,10 +123,46 @@ body {
     display: table;
     width: 100%;
 
-    * {
+    & > * {
         display: inline-block;
         vertical-align: top;
     }
 }
 
+.bma-elementspanel-undoredotoolbar {
+    margin-left: calc(~"5% - 50px");
+}
 
+#tools {
+    .ui-button {
+        background: white;
+    }
+    .ui-button:not(.ui-state-active):hover {
+        background-color: WhiteSmoke;
+    }
+    .ui-state-default {
+        /*background-color: white;*/
+    }
+    .ui-state-active {
+        background-color: darkgray;
+    }
+    
+    .zoomslider-container img {
+        width: 25px;
+        height: 25px;
+    }
+
+    
+}
+
+#tools .bma-elementspanel-visibilityoptions-zoomslider .ui-state-default + .ui-state-active {
+    background: transparent;
+}
+
+.bma-elementspanel-visibilityoptions {
+    margin-left: calc(~"40% - 390px");
+}
+
+.bma-elementspanel-elementstoolbar {
+    margin-left: calc(~"40% - 390px");
+}
