@@ -81,21 +81,17 @@
 </head>
 
 <body>
-    <div id="tools" class="bma-elementspanel">
+    <div id="tools" class="bma-toolbarpanel">
         <a id="downloadLink" style="display: none"></a>
         <input style="display: none;" type="file" id="fileLoader">
 
-        <div id="undoredotoolbar" class="bma-elementspanel-undoredotoolbar">
+        <div id="undoredotoolbar" class="bma-toolbarpanel-undoredotoolbar">
             <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
             <label for="button-pointer">
                 <div class="PointerImg" title="Selection tool"></div>
             </label>
 
-            <div style="display: inline-block;">
-                <div style="position: relative">
-                    <div class="bma-verticalline"></div>
-                </div>
-            </div>
+            <div class="bma-toolbarpanel-verticalline"></div>
 
             <button id="button-undo">
                 <img src="images/undo.svg" title="Undo" />
@@ -105,18 +101,14 @@
             </button>
         </div>
 
-        <div id="modelelemtoolbar" class="bma-elementspanel-elementstoolbar"></div>
+        <div id="modelelemtoolbar" class="bma-toolbarpanel-elementstoolbar"></div>
 
-        <!--<div class="bma-elementspanel-visibilityoptions-zoomslider">Visual options toolbar</div>-->
-        <!--<img id="zoom-minus" src="images/zoomminus.png">
-        <div class="bma-elementspanel-visibilityoptions-zoomslider"></div>
-        <img id="zoom-plus" src="images/zoomplus.png">-->
+   
 
-
-        <div class="bma-elementspanel-visibilityoptions" id="visibilityOptionsSlider">
-            <button id="visibilityOptionsHeader" class="visibility-icon"></button>
+        <div class="bma-toolbarpanel-visibilityoptions" id="visibilityOptionsSlider">
+            <button id="visibilityOptionsHeader" class="visibility-options-icon"></button>
             <div style="position: relative">
-                <div id="visibilityOptionsContent" class="visibility-table visibility-shadow">
+                <div id="visibilityOptionsContent" class="visibility-options-table accordion-shadow">
                     <ul>
                         <li id="li1">
                             <div class="optionsNames">Text Labels</div>
@@ -124,10 +116,10 @@
                             <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
                         </li>
                         <!--<li id="li2">
-                            <div class="optionsNames">Icons</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
-                            <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
-                        </li>-->
+                <div class="optionsNames">Icons</div>
+                <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
+                <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
+            </li>-->
                         <li id="li3">
                             <div class="optionsNames">Grid</div>
                             <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>

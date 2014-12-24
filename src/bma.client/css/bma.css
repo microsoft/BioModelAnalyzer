@@ -137,17 +137,17 @@
 
 
 
-#tools .ui-button {
+/*#tools .ui-button {
     width: 50px;
     height: 50px;
     margin-left: 0.2em;
     margin-right: 0.2em;
     border-radius: 7px;
     background-color: white;
-}
+}*/
 
 
-#tools span > div {
+/*#tools span > div {
     width: 36px;
     height: 36px;
     background-repeat: no-repeat;
@@ -155,29 +155,29 @@
     background-position-y: center;
     border: none;
     margin: auto;
-}
+}*/
 
 
-#tools .ui-button-text {
+/*#tools .ui-button-text {
     padding-left: 0;
     padding-right: 0;
-}
+}*/
 
-.bma-verticalline {
+/*.bma-verticalline {
     width: 1px;
     background-color: lightgray;
     height: 30px;
     position: absolute;
     top: -20px;
-}
+}*/
 
-#modelToolbarSlider ul {
+/*#modelToolbarSlider ul {
     display: table-row-group;
 }
 
-    #modelToolbarSlider ul > li {
-        display: table-cell;
-    }
+#modelToolbarSlider ul > li {
+    display: table-cell;
+}*/
 
 .modeldesigner-element-cell {
     stroke-width: 1px;

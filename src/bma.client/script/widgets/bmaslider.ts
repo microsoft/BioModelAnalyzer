@@ -22,7 +22,7 @@
                 .appendTo(that.element);
 
             this.zoomslider = $('<div></div>')
-                .addClass("bma-elementspanel-visibilityoptions-zoomslider")
+                .addClass("bma-toolbarpanel-visibilityoptions-zoomslider")
                 .appendTo(that.element);
 
             var zoomminus = $('<img id="zoom-minus">')

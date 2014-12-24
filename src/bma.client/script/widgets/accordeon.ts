@@ -282,8 +282,8 @@
                         break;
                     case "center":
                         that.headers
-                            .removeClass("visibility-header-with-table-show")
-                            .addClass("visibility-header-only");
+                            .removeClass("accordion-expanded")
+                            .addClass("accordion-collapsed");
                         that.headers.next().hide();
                         return;
                 }
@@ -462,15 +462,15 @@
                 //if (this.options.context.is(":hidden"))
                 if (data.newHeader.next().is(":hidden")) {
                     data.newHeader
-                        .removeClass("visibility-header-with-table-show")
-                        .removeClass("visibility-shadow")
-                        .addClass("visibility-header-only");
+                        .removeClass("accordion-expanded")
+                        .removeClass("accordion-shadow")
+                        .addClass("accordion-collapsed");
                 }
                 else {
                     data.newHeader
-                        .removeClass("visibility-header-only")
-                        .addClass("visibility-header-with-table-show")
-                        .addClass("visibility-shadow");
+                        .removeClass("accordion-collapsed")
+                        .addClass("accordion-expanded")
+                        .addClass("accordion-shadow");
                 }
                 that._toggleComplete(data);
             }
