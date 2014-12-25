@@ -313,12 +313,12 @@
 
         
 
-    #analytics > div{
+    /*#analytics > div{
         -moz-box-shadow: -3px 3px 6px lightgray;
         box-shadow: -3px 3px 6px lightgray;
-    }
+    }*/
 
-    #modelToolbarSlider ul {
+    /*#modelToolbarSlider ul {
         display: inline-block;
         margin:0;
         padding:0;
@@ -345,7 +345,7 @@
     background-position-x: center;
     background-position-y: center;
     background-repeat: no-repeat;
-}
+}*/
 
 
     /*.toolbarUL > ul
@@ -361,16 +361,16 @@
     }*/
 
         
-    .toolbarContainer > ul > li > * {
+    /*.toolbarContainer > ul > li > * {
         border: none;
         display:inline-block;
         text-align:center;
         padding: 0 5px 10px 5px;
         cursor: pointer;
         font-size: 12px;
-}
+}*/
 
-    .openButton{
+    /*.openButton{
         background-image: url('../images/open.svg');
     }
 
@@ -380,18 +380,18 @@
 
     .saveButton{
         background-image: url('../images/save.svg');
-    }
+    }*/
 
     /*.exportButton{
         background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEQAAABdCAIAAACTqFe2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAMlSURBVHhe7ZrfS1NRHMDXDxi0oTNZb0skhUQULWFvsbeRjEzI1yZYPiSkZrA9tfW2QYI9GGb5YLAngw3xDzDfBgqCLBirWYig24zh9rDe+uI5jbGWne2ec++38f0w3Pd8L4P78dzzvee7uwtfvqZNzcJF/t4UkAxWSAYrJIMVksEKyWClqWREN5pbW1s8apSenpt2+zU+UIOozKOJCR41is1m8/l9Sn3qk+nt7bVarSwjTrFYTCQSEKj2qU8mEAw6HA6WEefg4OBlMMhipT66FgAwyefz4VA4m83wlFR0lYE5UeqjqwxcXUp99L7PKPUx4KapzscAGUCRjzEygAofw2QA6T5GygByfQyWAST6GC8DyPK59HR6mofnsr6+Dn9dLldrayvLiHN6evppcxMCW1vb97+Qy+WuWCzf9vdLpdLO9s7grUGLxcI+Lo7eG01BYJZezc/zgTB6yMDM7O7u8sG/+HFysrGxAcH7lRWWEUcPmbooT2MDMigKgCxIBiskgxWSwQrJYIVksHKZv9cPdB2xaIzFsHvv7+/v6+urytvt9qvt7QMDAy0tLSxTebTM48lJHmmj8ZkplX7G43E43esdHZnj49cLC7FotDIPZLPZD6urz2Zn9/b2Kj9VLBbZUC6Nzwzj9tAQ7KPdbnckEoGt+93h4co8BA+93jeLi6Dq8/u7u7vZ0QdjYyp239LWDDu5TKa64zWbzU+mpiBIp4V6DS3IkYH2a2d7G9rDmv9v8HE6nZ/PHtEwoGOBBom9tD+TK6NV5uPa2vO5OVgVh4eH3vFxnq1FoVDgkcnk8Xjg8mOvzs5OntWMVhk4lXsjI7AeXgQCrJrVJJlMQrnjg7MVdec3EhePVhl2WrCyy8X3T6DK5fP5G11dfKwMaQWgiqOjo1QqBevh3fIyVDm4rs6ZN1moknm7tBQOheAmA7eU6ZmZ+6Oj/IBK6NsZrJAMVkgGKySDFZLBSlPJ1LedaezHc3VR/qWd8idneqJQRmJzKwi0STwSRlTmv4CqGVZIBiskgxWSwQrJYIVksEIyWCEZrJAMVkgGKySDFZLBShPJmEy/AKJFk2cNHKAwAAAAAElFTkSuQmCC') images/export.png
     }*/
 
-    .localStorageButton {
+    /*.localStorageButton {
         background-image: url("../images/local.svg");
     }
     .localSaveButton {
         background-image: url("../images/savelocally.svg");
-    }
+    }*/
 
         
 
@@ -458,7 +458,7 @@
         -o-text-overflow:ellipsis;
     }
 
-    .saveIcon {
+    /*.saveIcon {
         right:0;
         width: 50px;
         height: 50px;
@@ -477,56 +477,47 @@
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
         border-radius: 0;
-    }
+    }*/
 
-    .skinModelContainer{
+    /*.skinModelContainer{
             
         display:inline-block;
-        /*height: 60px;*/
+        /*height: 60px;
         border-bottom-right-radius: 8px;
         border-top-right-radius: 8px;
         border-bottom-left-radius: 0;
         border-top-left-radius: 0;
         margin:0;
         padding:0;
-        /*top:0;*/
+        /*top:0;
         position:absolute;
         overflow: hidden;
-    }
+    }*/
 
-    .toolbarContainer {
+    /*.toolbarContainer {
         overflow:hidden;
         display:inline-block;
         border-bottom-right-radius:8px;
         background-color:  gainsboro; 
         margin:0;
         padding:0;
-    }
+    }*/
 
 
-.skinModel {
-    width: 150px;
-    background-image: -moz-linear-gradient(left, gainsboro 0, white 50%);
-    background-image: -webkit-linear-gradient(left,gainsboro 0, white 50%);
-    background-image: -ms-linear-gradient(left, gainsboro 0,  white 50%);
-    background-image: -webkit-gradient(linear,left,gainsboro 0, white 50%);
-    height: 50px;
+
+/*.modelstorage-toolbar-content {
+    overflow:hidden;
+    display:inline-block;
+    margin:0;
+    padding:0;
+    background-color:  gainsboro; 
+    /*@r: @bma-toolbar-icon-border-radius;
+    border-bottom-right-radius: 7px;
+}*/
+
     
-}
 
-
-    .skinModel input {
-        width: 100%;
-        text-align:center; 
-        top: 10px;
-        border: none;
-        background-color: transparent;
-        font-size: 20px;
-        line-height: 27px;
-        position: absolute;
-    }
-
-    .analyze-header-icon {
+    /*.analyze-header-icon {
         background-color:white;
         background-position:center;
         background-repeat:no-repeat;
@@ -542,7 +533,7 @@
     .iconAnalyze{
         border:hidden;
         margin: 11px;
-    }
+    }*/
 
     /*#tools .ui-button {
         background: white;

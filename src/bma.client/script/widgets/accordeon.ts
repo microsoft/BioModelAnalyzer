@@ -507,16 +507,17 @@
 
 
         _showLoading: function (clicked) {
+            var imgloading = $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
             clicked.animate({ width: "+=60px" });
-            $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
 
         _hideLoading: function (toHide) {
             toHide.each(function () {
                 var load = $(this).children().filter(".loading");
                 if (load.length) {
+                    var w = load.width();
                     load.detach();
-                    $(this).animate({ width: "-=60px" });
+                    $(this).animate({ width: "-="+w });
                 }
             })
         },

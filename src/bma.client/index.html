@@ -144,52 +144,57 @@
 
         <div class="bma-modeltoolbarcontainer">
             <div id="modelToolbarSlider">
-                <div id="modelToolbarHeader" class="skinModelContainer">
+                <div id="modelToolbarHeader" class="modelstorage-toolbar-header">
                     <ul>
                         <li>
-                            <div class="skinModel">
+                            <div class="modelstorage-toolbar-modelname">
                                 <input id="modelNameEditor" type="text" value="Model 1">
                             </div>
                         <li>
-                            <div class="saveIcon"></div>
+                            <div class="modelstorage-toolbar-expand-bttn"></div>
                     </ul>
                 </div>
-                <div id="modelToolbarContent" class="toolbarContainer">
+                <div id="modelToolbarContent" class="modelstorage-toolbar-content">
                     <ul>
                         <li>
                             <div id="localSaveBtn" data-command="LocalStorageSaveModel">
-                                <div class="localSaveButton modelToolbarBtns"></div>
-                                <span>SAVE</span>
+                                <button class="localSaveButton">
+                                    SAVE
+                                </button>
                             </div>
                         </li>
                         <li>
                             <div id="newModelBtn" data-command="NewModel">
-                                <div class="newButton modelToolbarBtns"></div>
-                                <span>NEW</span>
+                                <button class="newButton">
+                                    NEW
+                                </button>
                             </div>
                         </li>
                         <li>
                             <div id="localStorageBtn" data-command="LocalStorageRequested">
-                                <div class="localStorageButton modelToolbarBtns"></div>
-                                <span>MODELS</span>
+                                <button class="localStorageButton">
+                                    MODELS
+                                </button>
                             </div>
                         </li>
                         <li>
                             <div id="importModelBtn" data-command="ImportModel">
-                                <div class="openButton modelToolbarBtns"></div>
-                                <span>IMPORT</span>
+                                <button class="openButton">
+                                    IMPORT
+                                </button>
                             </div>
                         </li>
                         <li>
                             <div id="exportModelBtn" data-command="ExportModel">
-                                <div class="saveButton modelToolbarBtns"></div>
-                                <span>EXPORT</span>
+                                <button class="saveButton">
+                                    EXPORT
+                                </button>
                             </div>
                         </li>
                         <!--<li><span id="localStorageBtn" class="localStorageButton" data-command="LocalStorageRequested">REPO</span></li>
-                        <li><span id="newModelBtn" class="newButton" data-command="NewModel">NEW</span></li>
-                        <li><span id="importModelBtn" class="saveButton" data-command="ImportModel">IMPORT</span></li>
-                        <li><span id="exportModelBtn" class="openButton" data-command="ExportModel">EXPORT</span></li>-->
+            <li><span id="newModelBtn" class="newButton" data-command="NewModel">NEW</span></li>
+            <li><span id="importModelBtn" class="saveButton" data-command="ImportModel">IMPORT</span></li>
+            <li><span id="exportModelBtn" class="openButton" data-command="ExportModel">EXPORT</span></li>-->
                         <!--<li><span class="exportButton" data-command="export">EXPORT</span></li>-->
                     </ul>
                 </div>
@@ -198,16 +203,16 @@
 
         <div class="bma-analyticstoolbarcontainer">
             <div id="analytics">
-                <div id="icon1" data-command="ProofRequested" class="analyze-header-icon ">
+                <div id="icon1" data-command="ProofRequested" class="analytics-header">
                     <!--<div class="iconAnalyze"></div>-->
-                    <img src="images/analyze.svg" class="iconAnalyze">
+                    <img src="images/analyze.svg">
                 </div>
                 <div id="tabs-1" class="tabPanel ">
                     <div id="Proof-Analysis"></div>
                     <div id="Further-Testing"></div>
                 </div>
-                <div id="icon2" data-command="SimulationRequested" class="analyze-header-icon " style="top: 80px">
-                    <img src="images/graphic.svg" class="iconAnalyze">
+                <div id="icon2" data-command="SimulationRequested" class="analytics-header" style="top: 80px">
+                    <img src="images/graphic.svg">
                 </div>
                 <div id="tabs-2" class="tabPanel ">
                     <h2>Simulation</h2>
