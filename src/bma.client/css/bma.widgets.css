@@ -281,14 +281,14 @@
         white-space: nowrap;
     }
 
-    .togglePopUpWindow {
+    /*.togglePopUpWindow {
         position: absolute;
         right: 0;
         top: 0;
         cursor: pointer;
         width:20px;
         height:20px;
-    }
+    }*/
 
     input {
         margin: 0;
@@ -618,7 +618,7 @@
         position: relative;
     }*/
 
-    .tabPanel {
+    /*.tabPanel {
         width: 400px;
         min-height: 150px;
         background-color: white;
@@ -640,7 +640,7 @@
         margin: 0;
         font-size: 20px;
         line-height: 27px;
-    }
+    }*/
 
     .ui-widget button{
         font-size:13px;
@@ -880,10 +880,10 @@
         padding: 2px;
     }
 
-    .functions-info > h2, p {
+    /*.functions-info > h2, p {
         margin-top: 0;
         margin-bottom: 0;
-    }
+    }*/
 
     .bma-insert-function-button {
         position: absolute;
@@ -988,21 +988,20 @@
     }*/
 
 
-.bma-proofstate-container > * {
+/*.bma-proofstate-container > * {
     display: inline-block;
     vertical-align: middle;
     margin: 15px 3px;
     font-size: 20px;
     line-height: 27px;
-}
+}*/
 
 
-.bma-proofstate-message {
+/*.bma-proofstate-message {
     margin-bottom: 10px;
-}
+}*/
 
 .bma-prooftable {
-    margin: 5px 0 15px 0px;
     padding:0;
     width:100%;
     border:1px solid #cccccc;
@@ -1222,12 +1221,12 @@
     border: 1px solid green;
 }
 
-.resultswindowviewer-header {
+/*.resultswindowviewer-header {
     /*display: table-cell;
-    vertical-align: bottom;*/
+    vertical-align: bottom;
     font-size: 20px;
     line-height: 20px;
-}
+}*/
 
 .resultswindowviewer-content {
     height: 120px;
@@ -1286,11 +1285,11 @@
 }
 
 
-.scrollable-results {
+/*.scrollable-results {
     max-height: 160px;
     overflow-y:scroll;
     margin-bottom: 15px;
-}
+}*/
 
 .addVariableToPlot{
     background-image: url("../images/check.png");

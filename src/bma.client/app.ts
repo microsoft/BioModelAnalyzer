@@ -413,7 +413,7 @@ $(document).ready(function () {
 
     function popup_position() {
         var my_popup = $('.popup-window, .bma-userdialog'); 
-        var analytic_tabs = $('.tabPanel');
+        var analytic_tabs = $('.analytics-tabpanel');
         analytic_tabs.each(function () {
             var tab_h = $(this).outerHeight();
             var win_h = $(window).outerHeight()*0.8;

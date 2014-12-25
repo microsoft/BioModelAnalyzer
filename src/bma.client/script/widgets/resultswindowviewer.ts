@@ -14,7 +14,7 @@
         reseticon: function () {
             var that = this;
             var options = this.options;
-            that.icontd.empty();
+            //that.icon.empty();
             var url = "";
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
@@ -22,15 +22,9 @@
                 if (this.options.icon === "min")
                     url = "../../images/minimize.png";
                 else url = this.options.icon;
-
-            this.button = $('<img src=' + url + '>').addClass('togglePopUpWindow');
-            var img = new Image();
-            img.onload = function () {
-                that.head.css("min-height", this.height);
-                that.header.css("height", Math.max(this.height,that.header.height()));
-            }
-            img.src = url;
-            this.button.appendTo(that.icontd);
+            var div = $('<div></div>').appendTo(that.header);
+            this.button = $('<img src=' + url + '>').addClass('expand-window-icon');
+            this.button.appendTo(div);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.tabid);
@@ -53,15 +47,15 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            this.head = $('<div></div>').appendTo(this.element);
-            this.head.css("position", "relative");
             this.header = $('<div></div>')
-                .text(options.header)
                 .addClass('resultswindowviewer-header')
-                .appendTo(this.head);
-            this.icontd = $('<div></div>').appendTo(this.head);
+                .appendTo(this.element);
+            $('<span></span>')
+                .text(options.header)
+                .appendTo(this.header);
+            //this.icon = $('<div></div>').appendTo(this.header);
             this.content = $('<div></div>').appendTo(this.element);
-            this.reseticon();
+            //this.reseticon();
             this.refresh();
         },
 
@@ -81,7 +75,7 @@
             var that = this;
             switch (key) {
                 case "header":
-                    this.header.text(value);
+                    this.header.children("span").text(value);
                     break;
                 case "content":
                     if (this.options.content !== value) {
