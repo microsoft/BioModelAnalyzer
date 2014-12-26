@@ -14,7 +14,7 @@
         reseticon: function () {
             var that = this;
             var options = this.options;
-            //that.icon.empty();
+            this.buttondiv.empty();
             var url = "";
             if (this.options.icon === "max")
                 url = "../../images/maximize.png";
@@ -22,9 +22,9 @@
                 if (this.options.icon === "min")
                     url = "../../images/minimize.png";
                 else url = this.options.icon;
-            var div = $('<div></div>').appendTo(that.header);
+            
             this.button = $('<img src=' + url + '>').addClass('expand-window-icon');
-            this.button.appendTo(div);
+            this.button.appendTo(this.buttondiv);
             this.button.bind("click", function () {
                 if (options.icon === "max")
                     window.Commands.Execute("Expand", that.options.tabid);
@@ -53,9 +53,10 @@
             $('<span></span>')
                 .text(options.header)
                 .appendTo(this.header);
+            this.buttondiv = $('<div></div>').appendTo(that.header);
             //this.icon = $('<div></div>').appendTo(this.header);
             this.content = $('<div></div>').appendTo(this.element);
-            //this.reseticon();
+            this.reseticon();
             this.refresh();
         },
 

@@ -194,7 +194,7 @@
     stroke-width: 3px;
 }
 
-.simulationplot-legend-legendcontainer {
+/*.simulationplot-legend-legendcontainer {
     width: 30%;
     height: calc(100% - 20px);
     background-color: white;
@@ -224,4 +224,4 @@
     padding-left: 5px;
     vertical-align: middle;
     white-space: nowrap;
-}
+}*/

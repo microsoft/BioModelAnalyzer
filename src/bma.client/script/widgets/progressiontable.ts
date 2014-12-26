@@ -20,10 +20,10 @@
             
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
             var randomLabel = $('<div></div>').text("Randomise").addClass("randomize-button").appendTo(randomise);
-
+            that.element.addClass('simulation-progression-table-container');
             this.init = $('<div></div>')
                 .appendTo(that.element);
-            this.init.css("display", "inline-block");
+            //this.init.css("display", "inline-block");
             this.RefreshInit();
             this.data = $('<div></div>')
                 .addClass("bma-simulation-data-table")
@@ -53,8 +53,8 @@
             var options = this.options;
             this.init.empty();
             var table = $('<table></table>')
-                .addClass("bma-prooftable")
-                .addClass("bma-simulation-table")
+                .addClass("bma-table")
+                .addClass("bma-simulation-init")
                 .appendTo(that.init);
             var tr0 = $('<tr></tr>').appendTo(table);
 
@@ -65,7 +65,7 @@
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
-                    var input = $('<input type="text">').height("24px").width("100%").appendTo(td);
+                    var input = $('<input type="text">').width("100%").appendTo(td);
                     var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
                     if (Array.isArray(init)) 
                         input.val(init[0]);

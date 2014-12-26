@@ -12,7 +12,7 @@
             var that = this;
             var data = this.options.data;
             
-            var container = $('<div></div>');
+            var container = $('<div></div>').addClass("marginable");
             
             if (data !== undefined &&
                 data.variables !== undefined &&

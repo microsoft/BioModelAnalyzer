@@ -73,7 +73,7 @@
                 tabs.removeClass("ui-widget ui-widget-content ui-corner-all");
                 tabs.children("ul").removeClass("ui-helper-reset ui-widget-header ui-corner-all");
                 tabs.children("div").removeClass("ui-tabs-panel ui-widget-content ui-corner-bottom");
-                
+
                 this.results.resultswindowviewer({ header: that.options.header, content: tabs, icon: "max", tabid: that.options.tabid });
             }
             

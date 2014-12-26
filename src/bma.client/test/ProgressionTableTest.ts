@@ -16,9 +16,9 @@ describe("ProgressionTable", () => {
         expect(widget.find("tr").eq(0).children("td").eq(0).text()).toEqual("Initial Value");
     })
 
-    it("should addClass 'bma-prooftable'"), () => {
+    it("should addClass 'bma-table'"), () => {
         widget.progressiontable();
-        expect(widget.find("table").hasClass('bma-prooftable')).toBeTruthy();
+        expect(widget.find("table").hasClass('bma-table')).toBeTruthy();
     }
 
     it("should create column with initial values from interval", () => {

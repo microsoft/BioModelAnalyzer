@@ -26,7 +26,7 @@
 
                 case "standart":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-prooftable");
+                        this.table.addClass("bma-table");
                         this.createHeader(options.header);
                         this.arrayToTable(options.numericData);
 
@@ -50,14 +50,14 @@
                             }
                         }
 
-                        this.table.addClass("bma-color-prooftable");
+                        this.table.addClass("bma-color-table");
 
                     }
                     break;
 
                 case "graph-min":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-prooftable");
+                        this.table.addClass("bma-table");
                         this.createHeader(options.header);
                         this.arrayToTableGraphMin(options.numericData);
 
@@ -68,7 +68,7 @@
 
                 case "graph-max":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-graph-max-table");
+                        this.table.addClass("bma-graph-max-table bma-table");
                         this.createHeader(options.header);
                         var tr0 = that.table.find("tr").eq(0);
                         tr0.children("td").eq(0).attr("colspan", "2");
@@ -80,7 +80,7 @@
                     }
                     break;
                 case "simulation-min":
-                    this.table.addClass("bma-color-prooftable bma-color-simulationtable");
+                    this.table.addClass("bma-color-table bma-color-simulationtable");
                     if (options.colorData !== undefined && options.colorData.length !== 0) {
                         var that = this;
                         var color = options.colorData;

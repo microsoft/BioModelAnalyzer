@@ -16,7 +16,7 @@
             var that = this;
             var options = that.options;
            
-            this.RunButton = $('<div></div>').text("Run").addClass("bma-run-button").appendTo(that.element);
+            this.RunButton = $('<div></div>').text("Run").addClass("bma-simulation-run-button").appendTo(that.element);
 
             var tablesDiv = $('<div></div>')
                 .addClass("bma-simulation-table-expanded-scroll")
@@ -53,8 +53,8 @@
             var toAddClass = "", toRemoveClass = "", text = "";
             switch (this.options.buttonMode) {
                 case "ActiveMode":
-                    toAddClass = "bma-run-button";
-                    toRemoveClass = "bma-run-button-waiting";
+                    toAddClass = "bma-simulation-run-button";
+                    toRemoveClass = "bma-simulation-run-button-waiting";
                     text = "Run";
                     this.RunButton.bind("click", function () {
                         that.progression.progressiontable("ClearData");
@@ -62,8 +62,8 @@
                     })
                     break;
                 case "StandbyMode":
-                    toAddClass = "bma-run-button-waiting";
-                    toRemoveClass = "bma-run-button";
+                    toAddClass = "bma-simulation-run-button-waiting";
+                    toRemoveClass = "bma-simulation-run-button";
                     this.RunButton.unbind("click");
                     break;
             }

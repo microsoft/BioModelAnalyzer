@@ -487,10 +487,10 @@ label[aria-pressed='true'] .bma-inhibit-img {
     border-bottom-right-radius: @r;
     .modelstorage-toolbar-shadow();
 
-    button {
+    &>ul>li>div {
         background-color: transparent;
         width: 60px;
-        height: 110px;
+        height: 105px;
         padding-bottom: 5px;
         background-position-x: center;
         background-position-y: top;
@@ -498,6 +498,8 @@ label[aria-pressed='true'] .bma-inhibit-img {
         display: table-cell;
         vertical-align: bottom;
         border: none;
+        text-align: center;
+        cursor: pointer;
     }
 }
 
@@ -563,6 +565,9 @@ label[aria-pressed='true'] .bma-inhibit-img {
     img {
             border:hidden;
             float: left;
+            margin: 5px;
+            width: 60px;
+            height: 60px;
         }
     img:nth-child(1) {
         @w: @bma-toolbar-icon-height;
@@ -594,6 +599,10 @@ label[aria-pressed='true'] .bma-inhibit-img {
     & > div {
         position: relative;
     }
+
+    & > div:not(:first-child) {
+        margin-top: 10px;
+    }
     #ProofVariables, #ProofPropagation {
         margin-top: 10px;
     }
@@ -608,19 +617,19 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 .resultswindowviewer-header {
     .big-font();
+    min-height: @big-line-height;
     position: relative;
+    padding-bottom: 5px;
 
     div {
-        position: absolute;
-        right: 0;
-        top: 0;
+        float: right;
     }
 }
 
-.scrollable-results {
-    max-height: 160px;
-    overflow-y:scroll;
-    padding-top: 5px;
+.marginable {
+    & > div:not(:first-child) {
+        margin-top: 10px;
+    }
 }
 
 
@@ -634,4 +643,388 @@ label[aria-pressed='true'] .bma-inhibit-img {
     margin-bottom: 0;
 }*/
 
+@scrollable-resurts-height: 160px;
+
+.scrollable-results {
+    max-height: @scrollable-resurts-height;
+    overflow-y:scroll;
+}
 /// Analytics panel ending
+
+
+///BMA Tables
+
+@table-line-height: 20px;
+
+.bma-tbl(){
+    width:100%;
+    border-collapse:collapse;
+    
+    td {
+        border: 1px solid #cccccc;
+        text-align: center;
+        line-height: 22px;
+        padding: 0;
+    }
+}
+
+.bma-table {
+    .bma-tbl();
+    tr:nth-child(odd) { background-color:#ededed; }
+    tr:nth-child(even) { background-color:#ffffff; }
+}
+
+/*.bma-table tr:nth-child(odd) { background-color:#ededed; }
+
+.bma-table tr:nth-child(even) { background-color:#ffffff; }*/
+
+.bma-table tr:first-child{
+    background-color:#606060;
+    color:#ffffff;
+}
+
+/*.bma-table td {
+    border: 1px solid #cccccc;
+    text-align: center;
+    line-height: @table-line-height;
+}*/
+
+            
+
+.bma-color-table {
+    .bma-tbl();
+    height: @scrollable-resurts-height;
+}
+
+.bma-color-table td {
+    border: 1px solid white;
+}
+                  
+
+.bma-graph-max-table {
+    tr:first-child {
+        td:nth-child(1) { width:20%; }
+        td:nth-child(3) { width:25%; }
+    }
+    tr:not(:first-child) {
+        td:nth-child(1) { width: 20px; }
+        td:nth-child(2) { width: 50px; }
+        td:nth-child(n+4) {
+            text-align:right;
+            padding-right: 3px;
+        }
+    } 
+}
+
+
+
+.bma-simulation-data-table {
+    max-width: calc(~"100% - 122px");
+    overflow-x: scroll;
+    overflow-y: hidden;
+    margin-bottom: -17px;
+}
+/*
+.bma-simulation-table {
+    margin: 0;
+    width:auto;
+}
+
+.bma-simulation-table td {
+    height: 26px;
+    padding: 0;
+}*/
+
+.simulation-progression-table-container {
+    & > div {
+        display: inline-block;
+        white-space: nowrap;
+        vertical-align: bottom;
+    }   
+}
+
+.bma-simulation-init {
+    width:auto;
+}
+
+.bma-simulation-init tr:not(:first-child) td:first-child {
+    width: 70px;
+    border-right: none;
+    text-align: right;
+    padding:0
+}
+.bma-simulation-init tr:not(:first-child) td:nth-child(2) {
+    border-left: none;
+}
+.bma-simulation-init tr:not(:first-child) td:nth-child(n+2) {
+    width: 20px;
+}
+
+.bma-simulation-init input {
+    border: none;
+    text-align: center;
+    background-color: transparent;
+}
+            
+.bma-random-icon1 {
+    background-image: url(../images/random1.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-x: center;
+    width: 20px;
+    height: 20px;
+}
+
+.bma-progressiontable {
+    .bma-tbl();
+    td{ padding: 0 5px }
+    td:first-child { border-left:none; }
+    tr:nth-child(even) { background-color:#ededed; }
+    tr:nth-child(odd) { background-color:#ffffff; }
+}
+
+                          
+///BMA Tables ending
+
+
+/// Further testing
+
+.bma-furthertesting-button {
+    width: 150px;
+    height: 30px;
+    padding: 0;
+    background-color:#d0451b;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 17px;
+    line-height: 25px;
+    .border-radius(@bma-toolbar-icon-border-radius);
+
+}
+
+.bma-furthertesting-button-waiting {
+    .bma-furthertesting-button;
+    background-image: url(../images/20x20.gif);
+    background-repeat: no-repeat;
+    background-position:center;
+}
+
+.bma-furthertesting-tabs-headers() {
+    background-position:center;
+    background-repeat:no-repeat;
+    background-color:transparent;
+    background-size: contain;
+    height: 25px;
+    width: 50px;
+}
+
+.ui-tabs > div {
+    border: 1px solid lightgray;
+}
+
+.bma-futhertesting-bifurcations-icon {
+    background-image: url("../images/bifurcations.png");
+    .bma-furthertesting-tabs-headers();
+}
+
+.bma-futhertesting-oscillations-icon {
+    background-image: url("../images/oscillations.png");
+    .bma-furthertesting-tabs-headers();
+}
+
+.ui-tabs-vertical { width: 55em; }
+.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
+.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
+
+/// Further testing ending
+
+
+///Simulation compact 
+
+.bma-color-simulationtable tr:nth-child(even) { background-color:#f5f5f5; }
+
+.bma-color-simulationtable tr:nth-child(odd) { background-color:#ffffff; }
+
+.simulationplot-legend-legendcontainer {
+    width: 30%;
+    height: calc(100% - 20px);
+    background-color: white;
+    float: left;
+    overflow-y: auto;
+}
+
+.simulationplot-legend-legenditem {
+    cursor: pointer;
+    padding-left: 5px;
+}
+
+
+.simulationplot-legend-colorboxcontainer {
+    display: table-cell;
+}
+
+.simulationplot-legend-colorbox {
+    width: 30px;
+    height: 30px;
+}
+
+.simulationplot-legend-namebox {
+    width: 120px;
+    height: 30px;
+    display: table-cell;
+    padding-left: 5px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+///Simulation compact ending
+
+
+///Simulation expanded 
+
+@simulation-bttns-top: 30px;
+
+.bma-simulation-run-button {
+    width: 55px;
+    background-color: #77b55a;
+    border-radius: 7px;
+    position: absolute;
+    right: 50px;
+    top: -@simulation-bttns-top;
+    color: #ffffff;
+    text-align: center;
+    padding: 2px  20px 5px;
+    cursor: pointer;
+    z-index: 3;
+    .big-font();
+    height: @big-font-size + 5px;
+}
+
+.bma-simulation-run-button-waiting {
+    .bma-simulation-run-button;
+    background-image: url(../images/20x20.gif);
+    background-repeat: no-repeat;
+    background-position:center;
+}
+
+.bma-simulation-expanded {
+    position: relative;
+    width: 100%;
+    height: 90%;
+    margin-top: @simulation-bttns-top;
+}
+
+.bma-simulation-table-expanded-scroll {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    white-space:nowrap;
+    overflow-y:scroll;
+
+    & > div {
+        display: inline-block;
+        vertical-align: top;
+        position: relative;
+    }
+    & > div:first-child{
+        width: 30%;
+    }
+    & > div:not(:first-child) {
+        margin-left:60px;
+    }
+}
+
+
+/*.bma-simulation-table-expanded-scroll > div {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+}*/
+
+/*.bma-simulation-table-expanded-scroll > div:first-child{
+    width: 30%;
+}*/
+
+/*.bma-simulation-table-expanded-scroll > div:not(:first-child) {
+    margin-left:60px;
+}*/
+
+.bma-progressiontable-randomise {
+    position: absolute;
+    top:-@simulation-bttns-top;
+    left: calc(~"30% + 60px - 2px");
+    cursor:pointer;
+    font-size: 18px;
+    line-height: 26px;
+
+    div {
+        display: inline-block;
+        vertical-align: bottom;
+    }
+}
+
+
+///Simulation expanded ending
+
+
+///Popup windows 
+
+.closing-bttn (@a: 20px, @right: 15px, @top: 15px) {
+    cursor:pointer;
+    position: absolute;
+    right: @right;
+    top: @top;
+    width: @a;
+}
+
+/*.closing-bttn (@a: 20px) {
+    .closing-bttn();
+    width: @a;
+}
+
+.closing-bttn (@right: 15px, @top: 15px) {
+    right: @right;
+    top: @top;
+}*/
+
+.closing-button {
+    .closing-bttn();
+}
+
+.popup-window-shadow(){
+    box-shadow: 2px 5px 10px 0 rgba(0,0,0,0.50);
+}
+
+///Popup windows ending
+
+
+/// Containernameeditor
+
+.containernameeditor {
+    padding:10px;
+    background-color: white;
+    position:absolute;
+    z-index:5;
+    width: 180px;
+    .popup-window-shadow();
+    border-radius:@bma-toolbar-icon-border-radius;
+}
+.containernameeditor div {
+    cursor:default;
+}
+
+.containernameeditor input {
+    display: inline-block;
+    border:1px solid #979797;
+    box-shadow:none;
+    width:140px;
+    height: 25px;
+}
+
+///Containernameeditor ending
