@@ -36,11 +36,19 @@
                 //step: that.options.step,
                 value: that.options.value,
                 change: function (event, ui) {
-                    var isExternal = Math.abs(that.options.value - ui.value) < 1 ||
-                        that.options.value > that.options.max ||
-                        that.options.value < that.options.min;
-                    if (!isExternal)
+                    var isExternal = //Math.abs(that.options.value - ui.value) < 1 ||
+                        ui.value > that.options.max ||
+                        ui.value < that.options.min;
+                    if (!isExternal) {
                         that.options.value = ui.value;
+                        if (that.zoomslider.slider("option", "value") !== ui.value)
+                            that.zoomslider.slider("option", "value", ui.value);
+                    }
+                    else {
+                        var newval = ui.value > that.options.max ? that.options.max : that.options.min;
+                        that.options.value = newval;
+                        that.zoomslider.slider("option", "value", newval);
+                    }
                     if (command !== undefined && command !== "") {
                         window.Commands.Execute(command, { value: ui.value, isExternal: isExternal });
                     }
