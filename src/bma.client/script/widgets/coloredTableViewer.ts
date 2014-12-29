@@ -153,12 +153,12 @@
                 var buttontd = $('<td></td>').appendTo(tr);
                 if (array[i][1] && array[i][0] !== undefined) {
                     td0.css("background-color", array[i][0]);
-                    buttontd.addClass("addVariableToPlot hoverable");
+                    buttontd.addClass("add-variable-to-plot-checker hoverable");
                 }
 
                 buttontd.bind("click", function () {
-                    $(this).toggleClass("addVariableToPlot");
-                    var check = $(this).hasClass("addVariableToPlot");
+                    $(this).toggleClass("add-variable-to-plot-checker");
+                    var check = $(this).hasClass("add-variable-to-plot-checker");
                     if (check) {
                         $(this).prev().css("background-color", array[$(this).parent().index() - 1][0]);
                         that.alldiv.attr("checked", that.checkAllButtons());
@@ -179,7 +179,7 @@
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
             tdall0.css("background-color", "white");
-            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("addVariableToPlot hoverable")
+            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("add-variable-to-plot-checker hoverable")
             this.allcheck.css("border-right", "none");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
@@ -192,13 +192,13 @@
                 
                 if (that.alldiv.attr("checked")) {
                     that.buttons.each( function () {
-                        if (!$(this).hasClass("addVariableToPlot"))
+                        if (!$(this).hasClass("add-variable-to-plot-checker"))
                             $(this).click();
                     })
                 }
                 else {
                     that.buttons.each(function () {
-                        if ($(this).hasClass("addVariableToPlot"))
+                        if ($(this).hasClass("add-variable-to-plot-checker"))
                             $(this).click();
                     })
                 }
@@ -213,7 +213,7 @@
                 var tds = this.table.find("tr:not(:first-child)").children("td: nth-child(2)");
                 var data = [];
                 tds.each(function (ind, val) {
-                    if ($(this).hasClass("addVariableToPlot"))
+                    if ($(this).hasClass("add-variable-to-plot-checker"))
                         data[ind] = that.options.data.variables[ind].color;
                 })
             }
@@ -232,7 +232,7 @@
             var that = this;
             var l = that.buttons.length;
             for (var i = 0; i < l; i++) {
-                if (!that.buttons.eq(i).hasClass("addVariableToPlot"))
+                if (!that.buttons.eq(i).hasClass("add-variable-to-plot-checker"))
                     return false;
             }
             return true;

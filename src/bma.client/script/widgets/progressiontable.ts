@@ -19,7 +19,7 @@
                 .appendTo(that.element.parent().parent());
             
             var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
-            var randomLabel = $('<div></div>').text("Randomise").addClass("randomize-button").appendTo(randomise);
+            var randomLabel = $('<div></div>').text("Randomise").appendTo(randomise);//.addClass("randomize-button")
             that.element.addClass('simulation-progression-table-container');
             this.init = $('<div></div>')
                 .appendTo(that.element);

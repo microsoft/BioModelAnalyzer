@@ -39,19 +39,26 @@
         SetValidation: function (result: boolean, message: string) {
             this.options.approved = result;
             var that = this;
-            that.prooficon.removeClass("formula-failed-icon");
-            that.prooficon.removeClass("formula-validated-icon");
-            this.formulaTextArea.removeClass("formula-failed-textarea");
-            this.formulaTextArea.removeClass("formula-validated-textarea");
+            
+            if (this.options.approved === undefined) {
+                that.element.removeClass('bmaeditor-expanded');
+                that.prooficon.removeClass("formula-failed-icon");
+                that.prooficon.removeClass("formula-validated-icon");
+                this.formulaTextArea.removeClass("formula-failed-textarea");
+                this.formulaTextArea.removeClass("formula-validated-textarea");
+            }
             if (this.options.approved === true) {
                 that.prooficon.addClass("formula-validated-icon");
                 this.formulaTextArea.addClass("formula-validated-textarea");
+                that.element.removeClass('bmaeditor-expanded');
             }
             else if (this.options.approved === false) {
                 that.prooficon.addClass("formula-failed-icon");
                 this.formulaTextArea.addClass("formula-failed-textarea");
+                that.element.addClass('bmaeditor-expanded');
             }
             that.errorMessage.text(message);
+            
         },
 
 
@@ -76,7 +83,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("bma-variables-options-editor");
+            this.element.addClass("new-window bma-variables-options-editor");
             this.element.draggable({ containment: "parent", scroll: false  });
             this._appendInputs();
             this._processExpandingContent();
@@ -90,11 +97,15 @@
             closing.bind("click", function () {
                 that.element.hide();
             });
+
+            var namerangeDiv = $('<div></div>')
+                .addClass('bmaeditor-namerange-container')
+                .appendTo(that.element);
             this.name = $('<input type="text" size="15">')
                 .attr("placeholder", "Variable Name")
-                .appendTo(that.element);
+                .appendTo(namerangeDiv);
 
-            var rangeDiv = $('<div></div>').appendTo(that.element);
+            var rangeDiv = $('<div></div>').appendTo(namerangeDiv);
             var rangeLabel = $('<span></span>')
                 .addClass("labels-in-variables-editor variables-editor-headers")
                 .text("Range")
@@ -135,22 +146,20 @@
                 window.Commands.Execute("VariableEdited", {});
             });
 
-            var formulaDiv = $('<div></div>').appendTo(that.element);
+            var formulaDiv = $('<div></div>')
+                .addClass('bmaeditor-formula-container')
+                .appendTo(that.element);
             $('<div></div>')
                 .addClass("variables-editor-headers")
                 .text("Target Function")
                 .appendTo(formulaDiv);
-
-            this.prooficon = $('<div><div>')
-                .addClass("bma-formula-validation-icon")
-                .appendTo(formulaDiv);
-
             this.formulaTextArea = $('<textarea></textarea>')
                 .attr("spellcheck", "false")
                 .addClass("variablesOptionsEditor-formulaTextArea")
                 .appendTo(formulaDiv);
-
-            
+            this.prooficon = $('<div></div>')
+                .addClass("bma-formula-validation-icon")
+                .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("bma-formula-validation-message")
                 .appendTo(formulaDiv);
@@ -165,8 +174,8 @@
                 .text("Inputs")
                 .appendTo(inputsDiv);
             var inpUl = $('<ul></ul>').appendTo(inputsDiv);
-            var div = $('<div></div>').appendTo(that.element);
-            var operatorsDiv = $('<div></div>').addClass('list-of-operators').appendTo(div);
+            //var div = $('<div></div>').appendTo(that.element);
+            var operatorsDiv = $('<div></div>').addClass('list-of-operators').appendTo(that.element);
             $('<div></div>')
                 .addClass("variables-editor-headers")
                 .text("Operators")
@@ -174,7 +183,7 @@
             var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
             var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
 
-            this.infoTextArea = $('<div class="functions-info"></div>').appendTo(operatorsDiv);
+            this.infoTextArea = $('<div></div>').addClass('functions-info').appendTo(operatorsDiv);
 
             var functions = this.options.functions;
             functions.forEach(
@@ -226,18 +235,26 @@
             operatorsDiv.width(opUl2.width());
 
             this.inputsList = inpUl.children().eq(0);
-            this.inputsList.children("button").addClass("inputs-list-header-collapsed");
-            this.listOfInputs = $('<div class="inputs-list-content"></div>').width(this.inputsList.outerWidth()).appendTo(that.inputsList).hide();
+            var inpbttn = this.inputsList.children("button").addClass("inputs-list-header");
+            var expandinputsbttn = $('<div></div>')
+                .addClass('inputs-expandbttn')
+                .appendTo(inpbttn);
+            this.listOfInputs = $('<div></div>')
+                .addClass("inputs-list-content")
+                //.width(this.inputsList.outerWidth())
+                .appendTo(that.inputsList).hide();
 
 
             this.inputsList.bind("click", function () {
-                if (that.listOfInputs.is(":hidden") && that.listOfInputs.children().length !== 0) {
+                if (that.listOfInputs.is(":hidden")) {
                     that.inputsList.css("border-radius", "15px 15px 0 0");
                     that.listOfInputs.show();
+                    inpbttn.addClass('inputs-list-header-expanded');
                 }
                 else {
                     that.inputsList.css("border-radius", "15px");
                     that.listOfInputs.hide();
+                    inpbttn.removeClass('inputs-list-header-expanded');
                 }
             });
         },
@@ -263,8 +280,8 @@
             var that = this;
             div.empty();
             var fun = window.FunctionsRegistry.GetFunctionByName(selected.text());
-            $('<p style="font-weight: bold">' + fun.Head + '</p>').appendTo(div);
-            $('<p>' + fun.About + '</p>').appendTo(div);
+            $('<h3></h3>').text(fun.Head).appendTo(div);
+            $('<p></p>').text(fun.About).appendTo(div);
         },
 
         _bindExpanding: function () {

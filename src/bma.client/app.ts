@@ -263,6 +263,7 @@ $(document).ready(function () {
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
     $("#editor").bmaeditor();
+
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
@@ -321,7 +322,7 @@ $(document).ready(function () {
     });
 
     var localStorageWidget = $('<div></div>')
-        .addClass('newWindow')
+        .addClass('new-window')
         .appendTo('#drawingSurceContainer')
         .localstoragewidget();
 

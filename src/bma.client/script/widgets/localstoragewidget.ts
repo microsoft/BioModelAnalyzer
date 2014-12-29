@@ -14,16 +14,16 @@
             var items = this.options.items;
             var header = $('<div></div>')
                 .text("Repository")
-                .addClass('localStorageWidget-header')
+                .addClass('localstorage-widget-header')
                 .appendTo(that.element);
             var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
             closing.bind("click", function () {
                 that.element.hide();
             });
             that.element.draggable({ containment: "parent", scroll: false });
-            this.message = $('<div></div>').addClass('localStorageWidget-message').appendTo(this.element);
+            this.message = $('<div></div>').addClass('localstorage-widget-message').appendTo(this.element);
 
-            this.repo = $('<div></div>').addClass('localStorageWidget').appendTo(this.element);   
+            this.repo = $('<div></div>').addClass('localstorage-widget').appendTo(this.element);   
 
             if (Silverlight.isInstalled()) {
                 var slWidget = $('<div></div>').appendTo(this.element);
