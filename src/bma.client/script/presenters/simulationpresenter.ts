@@ -91,8 +91,11 @@
                     this.Snapshot();
                     return true;
                 }
-                else
-                    return JSON.stringify(this.currentModel.GetJSON()) !== JSON.stringify(this.appModel.BioModel.GetJSON());
+                else {
+                    var q = JSON.stringify(this.currentModel.GetJSON());
+                    var w = JSON.stringify(this.appModel.BioModel.GetJSON());
+                    return q !== w;
+                }
             }
 
             public Snapshot() {
@@ -108,6 +111,7 @@
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
                     that.expandedSimulationVariables = that.expandedViewer.GetViewer();
+                    this.Snapshot();
                     return;
                 }
                 var simulate = {

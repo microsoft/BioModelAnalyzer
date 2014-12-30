@@ -251,7 +251,8 @@ body {
 }
 
 .bma-toolbarpanel-undoredotoolbar {
-    margin-left: calc(~"5% - 50px");
+    .calc(margin-left, ~"5% - 40px");
+    /*margin-left: calc(~"5% - 40px");*/
 }
 
 .bma-toolbarpanel-verticalline {
@@ -272,11 +273,13 @@ label[aria-pressed='true'] .PointerImg {
 }
 
 .bma-toolbarpanel-visibilityoptions {
-    margin-left: calc(~"40% - 390px");
+    .calc(margin-left, ~"40% - 387px");
+    /*margin-left: calc(~"40% - 387px");*/
 }
 
 .bma-toolbarpanel-elementstoolbar {
-    margin-left: calc(~"40% - 390px");
+    .calc(margin-left, ~"40% - 390px");
+    /*margin-left: calc(~"40% - 390px");*/
 }
 
 .bma-container-img {
@@ -383,8 +386,8 @@ label[aria-pressed='true'] .bma-inhibit-img {
     display:block;
     background-color: white;
     @w: @bma-toolbar-icon-height;
-    width:@w;
-    height:@w;
+    width:@w+2px;
+    height:@w+2px;
 }
 
 
@@ -837,7 +840,17 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 .bma-progressiontable {
     .bma-tbl();
-    td{ padding: 0 5px }
+    td{ 
+        position:relative;
+        padding: 0 5px;
+        div {
+            width: 100%;
+            height: 22px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
     td:first-child { border-left:none; }
     tr:nth-child(even) { background-color:@odd-item-color; }
     tr:nth-child(odd) { background-color:@even-item-color; }
@@ -1479,6 +1492,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 .bma-userdialog button {
     border: none;
     border-radius: @buttons-border-radius;
+    line-height: @big-line-height;
     margin: 5px;
     cursor: pointer;
     &:hover {
