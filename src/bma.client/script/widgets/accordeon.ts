@@ -263,7 +263,7 @@
             this.element.css(position, 0);
             this.headers = that.element.children().filter(':even');
             this.headers
-            .addClass("bma-accordion-header");
+                .addClass("bma-accordion-header");
             //var loading = that.options.showLoading;
             this.loadingList = [];
             this.headers.each(function (ind) {
@@ -275,9 +275,11 @@
                     case "left":
                     case "right":
                         distantion = child.outerWidth();
+                        $(this).css("top", ($(this).outerHeight() + 10) * ind);
                         break;
                     case "top":
                     case "bottom":
+                        $(this).css("left", ($(this).outerHeight() + 10) * ind);
                         distantion = child.outerHeight();
                         break;
                     case "center":
@@ -301,7 +303,7 @@
             this.active = $();
             this.active.next()
                 .addClass("ui-accordion-content-active")
-                //.show();
+            //.show();
             var that = this;
             this.headers
                 .attr("role", "tab")
@@ -426,7 +428,7 @@
                 return;
             }
 
-            
+
             this._toggle(eventData);
 
             // switch classes
@@ -445,7 +447,7 @@
         },
 
         _toggle: function (data) {
-            
+
             var toShow = data.newPanel,
                 toHide = this.prevShow.length ? this.prevShow : data.oldPanel;
             var that = this;
@@ -507,17 +509,16 @@
 
 
         _showLoading: function (clicked) {
-            var imgloading = $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
             clicked.animate({ width: "+=60px" });
+            $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
 
         _hideLoading: function (toHide) {
             toHide.each(function () {
                 var load = $(this).children().filter(".loading");
                 if (load.length) {
-                    var w = load.width();
                     load.detach();
-                    $(this).animate({ width: "-="+w });
+                    $(this).animate({ width: "-=60px" });
                 }
             })
         },
