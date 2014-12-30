@@ -344,6 +344,10 @@ $(document).ready(function () {
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
 
+    var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
+    var changesCheckerTool = new BMA.ChangesChecker();
+    changesCheckerTool.Snapshot(appModel);
+
     window.Commands.On("Commands.ToggleGrid", function (param) {
         visualSettings.GridVisibility = param;
         svgPlotDriver.SetGridVisibility(param);
@@ -355,8 +359,11 @@ $(document).ready(function () {
     });
 
     window.Commands.On("AppModelChanged", () => {
-        popupDriver.Hide();
-        accordionHider.Hide();
+        if (changesCheckerTool.IsChanged) {
+            popupDriver.Hide();
+            accordionHider.Hide();
+            window.Commands.Execute("Expand", '');
+        }
     });
 
     window.Commands.On("DrawingSurfaceVariableEditorOpened", () => {
@@ -364,9 +371,7 @@ $(document).ready(function () {
         accordionHider.Hide();
     });
 
-    var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
-    var changesCheckerTool = new BMA.ChangesChecker();
-    changesCheckerTool.Snapshot(appModel);
+    
     
 
     //Loaing ServiсeDrivers 

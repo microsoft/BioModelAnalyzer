@@ -451,12 +451,12 @@
         padding: 0;
     }*/
 
-    .optionsNames {
+    /*.optionsNames {
         width:100px;
         text-overflow:ellipsis;
         -ms-text-overflow:ellipsis;
         -o-text-overflow:ellipsis;
-    }
+    }*/
 
     /*.saveIcon {
         right:0;
@@ -642,7 +642,7 @@
         line-height: 27px;
     }*/
 
-    .ui-widget button{
+    /*.ui-widget button{
         font-size:13px;
     }
 
@@ -651,9 +651,9 @@
    
 
     .bma-toolbarpanel-elementstoolbar {
-        /*display: inline-block;*/
+        /*display: inline-block;
         margin-left: calc(40% - 390px);
-    }
+    }*/
 
     /*.bma-elementspanel-visibilityoptions {
         /*float: right;
@@ -812,7 +812,7 @@
     margin-left: 300px;
 }*/
 
-    .editorExpander {
+    /*.editorExpander {
         background-image: url("../images/editorExpander.png");
         width: 30px;
         height: 30px;
@@ -837,9 +837,9 @@
         background-position:center;
         background-color: transparent;
         margin-top: -5px;
-    }
+    }*/
 
-    .bma-functions-list{
+    /*.bma-functions-list{
         background-color: lightgray;
         height: 80px;
         overflow-y:scroll;
@@ -847,30 +847,16 @@
         width:60px;
         float: left;
         padding: 2px;
-    }
+    }*/
 
 
-    .ui-selected {
-        background-color: gray;
-    }
+   
 
-    ::-webkit-scrollbar {
-        width: 17px;
-        height: 17px; 
-    }
- 
-    /*::-webkit-scrollbar-track {
+      /*::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
         border-radius: 10px;
     }*/
  
-    ::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background-color: gray;
-       /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/ 
-    }
-
-
     /*.functions-info {
         /*color: gray;
         width: 100%;
@@ -1564,20 +1550,20 @@
     width: 36px;
 }*/
 
-.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+/*.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding: .2em .5em;
 }
 
 .idd-axis {
     font-size: 12px;
-}
+}*/
 
 /*.variables-editor-headers{
     font-size: 20px;
     line-height: 27px;
 }*/
 
-.bma-userdialog{
+/*.bma-userdialog{
     font-size: 20px;
     padding:15px;
     background-color: Window;
@@ -1603,14 +1589,14 @@
 
 .ui-menu {
     white-space: nowrap;
-}
+}*/
 
-#tools span > img {
+/*#tools span > img {
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: center;
     border: none;
-}
+}*/
 
 /*#tools .PointerImg {
     background-image: url("../images/pointer.svg");
