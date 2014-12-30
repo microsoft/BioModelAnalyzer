@@ -452,11 +452,22 @@ $(document).ready(function () {
             }
         })
     }
+
+    var toolsdivs = $('#tools').children('div');
+
+    function resize_header_tools() {
+        toolsdivs.each(function () {
+            $(this).toggleClass('box-sizing');//.css('box-sizing', 'border-box');
+        });
+    }
+
+
     $(document).ready(function () {
         popup_position();
     });
     $(window).resize(function () {
         popup_position();
+        resize_header_tools();
     });
 
     var reserved_key = "InitialModel";
