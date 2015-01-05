@@ -74,7 +74,7 @@
             spyOn(window.Commands, "Execute");
             slider.bmazoomslider({ value: newvalue });
             minusButton.click();
-            expect(window.Commands.Execute).toHaveBeenCalledWith(command, { value: newvalue, isExternal: true });
+            expect(window.Commands.Execute).toHaveBeenCalledWith(command, { value: newvalue + slider.bmazoomslider("option", "step"), isExternal: true });
             expect(slider.bmazoomslider("option", "value")).toEqual(max);
         });
 
@@ -83,7 +83,7 @@
             spyOn(window.Commands, "Execute");
             slider.bmazoomslider({ value: newvalue });
             plusButton.click();
-            expect(window.Commands.Execute).toHaveBeenCalledWith(command, { value: newvalue, isExternal: true });
+            expect(window.Commands.Execute).toHaveBeenCalledWith(command, { value: newvalue - slider.bmazoomslider("option", "step"), isExternal: true });
             expect(slider.bmazoomslider("option", "value")).toEqual(min);
         });
 

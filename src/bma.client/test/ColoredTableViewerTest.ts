@@ -160,7 +160,7 @@ describe("ColoredTableViewer", () => {
             else
                 expect(tds.eq(0).css("background-color")).toEqual('');
 
-            expect(tds.eq(1).hasClass("addVariableToPlot")).toEqual(numericData[i - 1][0] !== undefined);
+            expect(tds.eq(1).hasClass("add-variable-to-plot-checker")).toEqual(numericData[i - 1][0] !== undefined);
 
             for (var j = 2; j < tds.length; j++) {
                 expect(tds.eq(j).text()).toEqual(numericData[i - 1][j].toString());
@@ -181,13 +181,13 @@ describe("ColoredTableViewer", () => {
         widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
         var trs = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
         var all = widget.coloredtableviewer("getAllButton");
-        expect(all.hasClass("addVariableToPlot")).toBeTruthy();
+        expect(all.hasClass("add-variable-to-plot-checker")).toBeTruthy();
         all.click();
-        expect(all.hasClass("addVariableToPlot")).toBeTruthy();
-        expect(trs.hasClass("addVariableToPlot")).toBeTruthy();
+        expect(all.hasClass("add-variable-to-plot-checker")).toBeTruthy();
+        expect(trs.hasClass("add-variable-to-plot-checker")).toBeTruthy();
         expect(window.Commands.Execute).toHaveBeenCalled();
         all.click();
-        expect(trs.hasClass("addVariableToPlot")).toBeFalsy();
+        expect(trs.hasClass("add-variable-to-plot-checker")).toBeFalsy();
         expect(window.Commands.Execute).toHaveBeenCalled();
     })
 
@@ -205,10 +205,10 @@ describe("ColoredTableViewer", () => {
         var buttons = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
         
         buttons.eq(0).click();
-        expect(buttons.eq(0).hasClass("addVariableToPlot")).toBeFalsy();
+        expect(buttons.eq(0).hasClass("add-variable-to-plot-checker")).toBeFalsy();
         expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 0, check: false });
         buttons.eq(1).click();
-        expect(buttons.eq(1).hasClass("addVariableToPlot")).toBeTruthy();
+        expect(buttons.eq(1).hasClass("add-variable-to-plot-checker")).toBeTruthy();
         expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 1, check: true });
     })
 

@@ -36,21 +36,20 @@
                 //step: that.options.step,
                 value: that.options.value,
                 change: function (event, ui) {
+                    var val = that.zoomslider.slider("option", "value");
                     var isExternal = //Math.abs(that.options.value - ui.value) < 1 ||
-                        ui.value > that.options.max ||
-                        ui.value < that.options.min;
+                        val > that.options.max ||
+                        val < that.options.min;
                     if (!isExternal) {
-                        that.options.value = ui.value;
-                        if (that.zoomslider.slider("option", "value") !== ui.value)
-                            that.zoomslider.slider("option", "value", ui.value);
+                        that.options.value = val;
                     }
                     else {
-                        var newval = ui.value > that.options.max ? that.options.max : that.options.min;
+                        var newval = val > that.options.max ? that.options.max : that.options.min;
                         that.options.value = newval;
                         that.zoomslider.slider("option", "value", newval);
                     }
                     if (command !== undefined && command !== "") {
-                        window.Commands.Execute(command, { value: ui.value, isExternal: isExternal });
+                        window.Commands.Execute(command, { value: val, isExternal: isExternal });
                     }
             }
             });

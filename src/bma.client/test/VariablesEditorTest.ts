@@ -164,7 +164,11 @@
             textarea.val('');
         });
 
-        it("shouldn't show inputs list on click on 'var()' function when it is no inputs", () => {
+        afterEach(() => {
+            editor.bmaeditor("destroy");
+        })
+
+        xit("shouldn't show inputs list on click on 'var()' function when it is no inputs", () => {
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
             functions.eq(0).click();
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
@@ -180,6 +184,8 @@
         })
 
         it("should input CONST", () => {
+            var inputs = ["htr", "asdas"];
+            editor.bmaeditor({ inputs: inputs });
             functions.eq(1).click();
             expect(textarea.val()).toEqual("const()");
         });
