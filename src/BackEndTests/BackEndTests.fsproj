@@ -63,14 +63,13 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <Target Name="AfterBuild">
+  <!--<Target Name="AfterBuild">
     <MSBuild.ExtensionPack.FileSystem.File TaskAction="Replace" RegexPattern="&lt;dependentAssembly&gt;([\s]+.)&lt;assemblyIdentity name=&quot;FSharp\.Core&quot; publicKeyToken=&quot;b03f5f7f11d50a3a&quot; culture=&quot;neutral&quot; \/&gt;([\s\S]+?)&lt;\/dependentAssembly&gt;" RegexOptionList="IgnoreCase|Singleline" Replacement="&lt;dependentAssembly&gt;&#xD;&#xA;        &lt;assemblyIdentity name=&quot;FSharp.Core&quot; publicKeyToken=&quot;b03f5f7f11d50a3a&quot; culture=&quot;neutral&quot; /&gt;&#xD;&#xA;        &lt;bindingRedirect oldVersion=&quot;0.0.0.0-$(TargetFSharpCoreVersion)&quot; newVersion=&quot;$(TargetFSharpCoreVersion)&quot;/&gt;&#xD;&#xA;      &lt;/dependentAssembly&gt;" Files="$(TargetPath).config" />
-  </Target>
+  </Target>-->
   <ItemGroup>
     <Compile Include="WebApiControllersTests.fs" />
     <Compile Include="JsonToQnTests.fs" />
     <Compile Include="JsonPreprocessTests.fs" />
-    <None Include="App.config" />
     <None Include="MSTest.runsettings" />
     <Content Include="Skin2D_5X2_AI.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -103,8 +102,24 @@
     <Compile Include="Analyzer_checkStability.fs" />
     <Compile Include="Analyzer_findCEx.fs" />
     <Compile Include="Analyzer_Simulate.fs" />
+    <Content Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
+      <Name>FParsec</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\BMAWebApi\BMAWebApi.csproj">
+      <Name>BMAWebApi</Name>
+      <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\ext\nuget\FSharp.Data.2.1.0\lib\net40\FSharp.Data.dll</HintPath>
     </Reference>
@@ -144,16 +159,6 @@
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
-      <Name>FParsec</Name>
-      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
-      <Name>FParsecCS</Name>
-      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
       <Name>BioCheckAnalyzer64</Name>
       <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
@@ -162,11 +167,6 @@
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Name>BioCheckAnalyzerCommon</Name>
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\bma.client\bma.client.csproj">
-      <Name>bma.client</Name>
-      <Project>{a314f5c8-d91b-4ac0-a9ce-22bd7696dbff}</Project>
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">

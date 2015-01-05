@@ -19,6 +19,8 @@ namespace bma.client
         {
             GlobalConfiguration.Configuration.Formatters.XmlFormatter.UseXmlSerializer = true; 
             
+            // Force controllers assembly to be loaded
+            var assembly = typeof(bma.client.Controllers.AnalyzeController).Assembly;
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"                    
