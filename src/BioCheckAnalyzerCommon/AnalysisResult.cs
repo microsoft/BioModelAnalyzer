@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
+// SI: comments on these classes. 
+// 1. Why are Lo, Hi doubles? They should just be int? 
+
 namespace BioModelAnalyzer
 {
     public class AnalysisResult

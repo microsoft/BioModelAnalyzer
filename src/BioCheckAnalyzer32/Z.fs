@@ -462,6 +462,7 @@ let find_cycle_steps_optimized network bounds =
                 let res = Some(model_to_fixpoint (!model))
                 if (!model) <> null then (!model).Dispose()
                 res
+        | LBool.Undef -> None
      
     let cfg = new Config()
     cfg.SetParamValue("MODEL", "true")

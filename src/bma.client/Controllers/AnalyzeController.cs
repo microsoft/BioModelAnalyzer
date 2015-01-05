@@ -41,13 +41,22 @@ namespace bma.client.Controllers
             // Standard Proof
             try
             {
-                IVMCAIAnalyzer analyzer = new VMCAIAnalyzerAdapter(new UIMain.Analyzer2());
+                IAnalyzer analyzer = new UIMain.Analyzer();
                 var analyisStartTime = DateTime.Now;
 
-                if (!input.EnableLogging)
-                    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
+                var logger = input.EnableLogging ? log : null;
+                if (logger != null)
+                {
+                    analyzer.LoggingOn(log);
+                }
+                else
+                {
+                    analyzer.LoggingOff();
+                }
 
-                var result = analyzer.CheckStability(input, input.EnableLogging ? log : null);
+                var model = (Model)input;
+                model.Preprocess();
+                var result = analyzer.checkStability(model);
 
                 //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
 

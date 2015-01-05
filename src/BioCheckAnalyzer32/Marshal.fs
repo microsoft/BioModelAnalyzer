@@ -521,14 +521,15 @@ let cex_result_of_xml (xd:XDocument) =
     | x -> raise(MarshalInFailed(-1,"Bad status descriptor: "+x))
 
 
+//
+// SI: The json vs xml battle was fought: json won. 
+//     
 
 //
 // Model to QN translation
 //
-
-// SI: no Garvit stuff right now. Need to work out how to test for C# nulls.
-
 let QN_of_Model (model:Model) = 
+// SI: no Garvit stuff right now. Need to work out how to test for C# nulls.
 
 // SI: no Garvit stuff right now. 
 //    // Get cells
@@ -692,3 +693,143 @@ let QN_of_Model (model:Model) =
     let qn = Map.toList qn_map |> List.map (fun (_v,n) -> n)
     QN.qn_wf qn
     qn
+
+
+
+// C# AnalysisResult = F# stability_result
+let stability_result_of_AnalysisResult (ar:AnalysisResult) = 
+    let parse_tick (tick:AnalysisResult.Tick) =
+        let time = tick.Time
+        let variables = tick.Variables
+        let bounds =
+            Seq.fold
+                (fun (bb:QN.interval) (v:AnalysisResult.Tick.Variable) ->
+                    let id = v.Id
+                    let lo = (int)v.Lo
+                    let hi = (int)v.Hi
+                    Map.add id (lo,hi) bb)
+                Map.empty
+                variables
+        (time,bounds)
+    let status = ar.Status
+    match status with
+    | StatusType.Stabilizing ->
+        let ticks = ar.Ticks
+        let history = Seq.fold (fun h tick -> (parse_tick tick) :: h) [] ticks
+        Result.SRStabilizing(history)
+    | StatusType.NotStabilizing ->
+        let ticks = ar.Ticks
+        let history = Seq.fold (fun h tick -> (parse_tick tick) :: h) [] ticks
+        Result.SRNotStabilizing(history)
+    | x -> raise(MarshalInFailed(-1,"Bad status descriptor: "+x.ToString()))
+
+let AnalysisResult_of_stability_result (sr:Result.stability_result) = 
+    let Tick_of_tick (a:AnalysisResult.Tick[]) i (t:(int * QN.interval)) = 
+        let (time,interval) = t
+        a.[i] <- new AnalysisResult.Tick()
+        a.[i].Time <- time
+        a.[i].Variables <- 
+            let vv = Array.zeroCreate (interval.Count)
+            let vi = ref 0
+            Map.iter 
+                (fun v (lo,hi) -> 
+                    let v' = new AnalysisResult.Tick.Variable ()
+                    v'.Id <- v; v'.Lo <- (double)lo; v'.Hi <- (double)hi
+                    vv.[!vi] <- v'
+                    incr vi)
+                interval
+            vv
+    let mk_AnalysisResult st err hist = 
+        let ar = new AnalysisResult ()
+        let ticks = Array.zeroCreate (List.length hist)
+        List.iteri (Tick_of_tick ticks) hist
+        ar.Status <- st
+        ar.Error <- err
+        ar.Ticks <- ticks 
+        ar
+    match sr with 
+    | Result.SRStabilizing(hist) -> 
+        mk_AnalysisResult StatusType.Stabilizing "" hist
+    | Result.SRNotStabilizing(hist) -> 
+        mk_AnalysisResult StatusType.NotStabilizing "" hist
+        
+
+let AnalysisResult_of_error id msg = 
+    let r = new AnalysisResult()
+    r.Status <- StatusType.Error
+    r.Error <- (string)id + msg
+    r
+
+// C# CounterExampleOutput = F# cex_result
+// stubs
+let BifurcationCounterExample_of_CExBifurcation (fix1:Map<string, int>) (fix2:Map<string, int>) =
+    assert(fix1.Count = fix2.Count)
+    let cex = new BifurcationCounterExample()
+    cex.Status <- CounterExampleType.Bifurcation
+    cex.Error <- ""
+    //cex.Variables
+    // [A] X [B] -> [A X B]
+    let len = fix1.Count
+    let vv = Array.zeroCreate (len)
+    let vv_idx = ref 0
+    Map.iter
+        (fun k v ->
+            let bv =  new BifurcationCounterExample.BifurcatingVariable()
+            bv.Id <- k
+            bv.Fix1 <- v 
+            bv.Fix2 <- Map.find k fix2
+            vv.[!vv_idx] <- bv
+            incr vv_idx)
+        fix1 
+    cex.Variables <- vv
+    cex 
+
+let CycleCounterExample_of_CExCycle (cyc:Map<string, int>) = 
+    let cex = new CycleCounterExample()
+    cex.Status <- CounterExampleType.Cycle
+    cex.Error <- ""
+    let vv = Array.zeroCreate (cyc.Count)
+    let vv_idx = ref 0
+    Map.iter 
+        (fun k v ->
+            let cv = new CycleCounterExample.Variable ()
+            cv.Id <- k
+            cv.Value <- v
+            vv.[!vv_idx] <- cv
+            incr vv_idx)
+        cyc
+    cex.Variables <- vv
+    cex
+
+let FixPointCounterExample_of_CExFixpoint (fix:Map<string, int>) = 
+    let cex = new FixPointCounterExample()
+    cex.Status <- CounterExampleType.Fixpoint
+    cex.Error <- ""
+    let vv = Array.zeroCreate (fix.Count)
+    let vv_idx = ref 0
+    Map.iter 
+        (fun k v ->
+            let cv = new FixPointCounterExample.Variable ()
+            cv.Id <- k
+            cv.Value <- v
+            vv.[!vv_idx] <- cv
+            incr vv_idx)
+        fix
+    cex.Variables <- vv
+    cex
+
+let CounterExampleOutput_of_cex_result cr = 
+    match cr with 
+    | Result.CExBifurcation(fix1,fix2) -> 
+        (BifurcationCounterExample_of_CExBifurcation fix1 fix2)  :> CounterExampleOutput
+    | Result.CExCycle(cyc) -> 
+        (CycleCounterExample_of_CExCycle cyc) :> CounterExampleOutput
+    | Result.CExFixpoint(fix) -> 
+        (FixPointCounterExample_of_CExFixpoint fix) :> CounterExampleOutput
+    | Result.CExUnknown -> 
+        let cex = new CounterExampleOutput()
+        cex.Status <- CounterExampleType.Unknown
+        cex.Error <- "CExUnknown"
+        cex
+
+

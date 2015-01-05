@@ -3,9 +3,13 @@
 open System
 open System.Linq
 open System.Xml.Linq
+open System.Xml.Serialization
+
 open Newtonsoft.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open Newtonsoft.Json.Linq
+
+open BioCheckAnalyzerCommon
 open BioModelAnalyzer
 
 [<TestClass>]
@@ -18,12 +22,15 @@ type VMCAIAnalyzeTests() =
 
         // Extract model from json
         let model = (jobj.["model"] :?> JObject).ToObject<Model>()
+        model.Preprocess()
 
-        // Create analyzer
-        let vmcai = VMCAIAnalyzerAdapter(UIMain.Analyzer2())
+        // Create analyzer. 
+        // Have to static cast to get IAnalyzer functions.   
+        let analyzer = UIMain.Analyzer () 
+        let result = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model)
 
-        let result = vmcai.CheckStability(model, null)
         Assert.AreEqual(result.Status, StatusType.Stabilizing)
+
 
     [<TestMethod>]
     [<DeploymentItem("ToyModelUnstable.json")>]
@@ -32,9 +39,10 @@ type VMCAIAnalyzeTests() =
 
         // Extract model from json
         let model = (jobj.["model"] :?> JObject).ToObject<Model>()
+        model.Preprocess() 
 
         // Create analyzer
-        let vmcai = VMCAIAnalyzerAdapter(UIMain.Analyzer2())
-
-        let result = vmcai.CheckStability(model, null)
+        // Have to static cast to get IAnalyzer functions.   
+        let analyzer = UIMain.Analyzer() 
+        let result = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model) 
         Assert.AreEqual(result.Status, StatusType.NotStabilizing)
