@@ -21,10 +21,10 @@ namespace BioModelAnalyzer
                 public int Id { get; set; }
 
                 [XmlAttribute]
-                public double Lo { get; set; }
+                public int Lo { get; set; }
 
                 [XmlAttribute]
-                public double Hi { get; set; }
+                public int Hi { get; set; }
             }
 
             public int Time { get; set; }

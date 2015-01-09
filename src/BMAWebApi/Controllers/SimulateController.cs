@@ -58,15 +58,6 @@ namespace bma.client.Controllers
                     analyzer.LoggingOff();
                 } 
                 
-                // SI: never used? 
-                var inputDictionary = new Dictionary<int, int>();
-                foreach (var variable in input.Variables)
-                {
-                    // SI: why the cast? 
-                    inputDictionary.Add(variable.Id, (int)variable.Value);
-                }
-
-
                 // Prepare model for analysis
                 var model = (Model)input.Model;
                 model.Preprocess();

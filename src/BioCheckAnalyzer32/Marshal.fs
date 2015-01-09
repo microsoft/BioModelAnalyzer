@@ -734,7 +734,7 @@ let AnalysisResult_of_stability_result (sr:Result.stability_result) =
             Map.iter 
                 (fun v (lo,hi) -> 
                     let v' = new AnalysisResult.Tick.Variable ()
-                    v'.Id <- v; v'.Lo <- (double)lo; v'.Hi <- (double)hi
+                    v'.Id <- v; v'.Lo <- lo; v'.Hi <- hi
                     vv.[!vi] <- v'
                     incr vi)
                 interval
