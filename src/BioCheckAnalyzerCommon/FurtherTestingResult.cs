@@ -33,13 +33,7 @@ namespace BioModelAnalyzer
 
     public class CounterExampleOutput    
     {
-        public class CounterExampleVariables
-        {
-            [XmlElement("Variable", Type = typeof(CounterExampleVariable))]
-            public CounterExampleVariable[] Variables { get; set; }
-        }
-
-        public class CounterExampleVariable
+        public class Variable
         {
             [XmlAttribute]
             public string Id { get; set; }
@@ -56,29 +50,11 @@ namespace BioModelAnalyzer
 
     public class CycleCounterExample : CounterExampleOutput
     {
-        public class Variable
-        {
-            [XmlAttribute]
-            public string Id { get; set; }
-
-            [XmlAttribute]
-            public int Value { get; set; }
-        }
-
         public Variable[] Variables { get; set; }
     }
 
     public class FixPointCounterExample : CounterExampleOutput
     {
-        public class Variable
-        {
-            [XmlAttribute]
-            public string Id { get; set; }
-
-            [XmlAttribute]
-            public int Value { get; set; }
-        }
-
         public Variable[] Variables { get; set; }
     }
 

@@ -792,7 +792,7 @@ let CycleCounterExample_of_CExCycle (cyc:Map<string, int>) =
     let vv_idx = ref 0
     Map.iter 
         (fun k v ->
-            let cv = new CycleCounterExample.Variable ()
+            let cv = new CounterExampleOutput.Variable ()
             cv.Id <- k
             cv.Value <- v
             vv.[!vv_idx] <- cv
@@ -809,7 +809,7 @@ let FixPointCounterExample_of_CExFixpoint (fix:Map<string, int>) =
     let vv_idx = ref 0
     Map.iter 
         (fun k v ->
-            let cv = new FixPointCounterExample.Variable ()
+            let cv = new CounterExampleOutput.Variable ()
             cv.Id <- k
             cv.Value <- v
             vv.[!vv_idx] <- cv
