@@ -23,7 +23,7 @@
                 Name: name,
                 RangeFrom: rangeFrom,
                 RangeTo: rangeTo,
-                Function: formula
+                formula: formula
             })
         });
     });
