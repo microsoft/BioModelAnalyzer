@@ -179,7 +179,7 @@
     display: table-cell;
 }*/
 
-.modeldesigner-element-cell {
+/*.modeldesigner-element-cell {
     stroke-width: 1px;
     stroke: transparent;
 }
@@ -192,7 +192,7 @@
 
 .modeldesigner-line-hover {
     stroke-width: 3px;
-}
+}*/
 
 /*.simulationplot-legend-legendcontainer {
     width: 30%;
