@@ -187,6 +187,8 @@
                 var containers = [];
                 if (ticks === null) return undefined;
                 var variables = this.appModel.BioModel.Variables;
+                var allconts = this.appModel.Layout.Containers;
+
                 var stability = [];
                 var l = ticks[0].Variables.length;
                 for (var i = 0; i < l; i++) {
@@ -204,6 +206,12 @@
                     var v = this.appModel.BioModel.GetVariableById(id);
                     if (v.ContainerId !== undefined &&  (!c || containers[v.ContainerId] === undefined)) 
                             containers[v.ContainerId] = c;
+                }
+
+                for (var i = 0; i < allconts.length; i++) {
+                    if (containers[allconts[i].Id] === undefined)
+                        containers[allconts[i].Id] = true;
+
                 }
                 return {variablesStability: stability, containersStability: containers};
             }
