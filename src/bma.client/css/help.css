@@ -2,7 +2,7 @@
 
 html,body{
 background-color:#E4E4E6;
-background-image:url(_images/background.png);
+background-image:url(../images/background.png);
 background-repeat:no-repeat;
 background-position:50% 30%;
 background-attachment:fixed;
