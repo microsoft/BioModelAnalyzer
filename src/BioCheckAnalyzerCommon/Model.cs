@@ -34,12 +34,12 @@ namespace BioModelAnalyzer
             [JsonProperty(PropertyName = "formula")]
             public string Function { get; set; }
 
-            public int? Number { get; set; }
+            //public int? Number { get; set; }
 
-            public bool ShouldSerializeNumber()
-            {
-                return Number != null;
-            }
+            //public bool ShouldSerializeNumber()
+            //{
+            //    return Number != null;
+            //}
 
             public Tag[] Tags { get; set; }
         }
