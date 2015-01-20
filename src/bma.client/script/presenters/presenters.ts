@@ -32,7 +32,7 @@ module BMA {
 
             private stagingLine = undefined;
             private stagingGroup = undefined;
-            private stagingVariable: { model: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout; } = undefined;
+            private stagingVariable: { model: BMA.Model.Variable; layout: BMA.Model.VariableLayout; } = undefined;
             private stagingContainer: any = undefined;
 
             private editingId = undefined;
@@ -44,7 +44,7 @@ module BMA {
                 Container: BMA.Model.ContainerLayout;
                 Variables: {
                     m: BMA.Model.Variable;
-                    l: BMA.Model.VarialbeLayout
+                    l: BMA.Model.VariableLayout
                 }[];
                 Realtionships: BMA.Model.Relationship[]
             };
@@ -248,7 +248,7 @@ module BMA {
                                 var offsetX = variableLayout.PositionX - oldContainerOffset.x;
                                 var offsetY = variableLayout.PositionY - oldContainerOffset.y;
                                 variables.push(new BMA.Model.Variable(that.variableIndex, newContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                                variableLayouts.push(new BMA.Model.VarialbeLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle));
+                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle));
                             }
 
                             for (var i = 0; i < that.clipboard.Realtionships.length; i++) {
@@ -268,7 +268,7 @@ module BMA {
                             var variables = model.Variables.slice(0);
                             var variableLayouts = layout.Variables.slice(0);
                             variables.push(new BMA.Model.Variable(that.variableIndex, variable.ContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
+                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
@@ -425,7 +425,7 @@ module BMA {
 
                             return;
                         } else if (that.stagingVariable !== undefined) {
-                            that.stagingVariable.layout = new BMA.Model.VarialbeLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                            that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
 
                             if (that.svg !== undefined) {
                                 that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
@@ -909,7 +909,7 @@ module BMA {
                                                 var vlX = variableLayouts[j].PositionX;
                                                 var vlY = variableLayouts[j].PositionY;
 
-                                                variableLayouts[j] = new BMA.Model.VarialbeLayout(variableLayouts[j].Id,
+                                                variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id,
                                                     vlX - oldContainerOffset.x + newContainerOffset.x,
                                                     vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle);
                                             }
@@ -937,12 +937,12 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
                                 }
                             }
                         } else {
                             variables.push(new BMA.Model.Variable(this.variableIndex, 0, type, "", 0, 1, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
+                            variableLayouts.push(new BMA.Model.VariableLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
@@ -967,12 +967,12 @@ module BMA {
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
                                 }
                             }
                         } else {
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, x, y, 0, 0, 0));
+                            variableLayouts.push(new BMA.Model.VariableLayout(this.variableIndex++, x, y, 0, 0, 0));
                         }
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
@@ -1017,13 +1017,13 @@ module BMA {
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VarialbeLayout(id, x, y, 0, 0, angle);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle);
                                 }
                             }
                         } else {
                             var pos = SVGHelper.GeEllipsePoint(containerX + 2.5 * container.Size, containerY, 107 * container.Size, 127 * container.Size, x, y);
                             variables.push(new BMA.Model.Variable(this.variableIndex, container.Id, type, "", 0, 1, ""));
-                            variableLayouts.push(new BMA.Model.VarialbeLayout(this.variableIndex++, pos.x, pos.y, 0, 0, angle));
+                            variableLayouts.push(new BMA.Model.VariableLayout(this.variableIndex++, pos.x, pos.y, 0, 0, angle));
                         }
 
                         var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
@@ -1067,7 +1067,7 @@ module BMA {
             //    return result;
             //}
 
-            private GetConstantsFromGridCell(gridCell: { x: number; y: number }): { container: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout }[] {
+            private GetConstantsFromGridCell(gridCell: { x: number; y: number }): { container: BMA.Model.Variable; layout: BMA.Model.VariableLayout }[] {
                 var result = [];
                 var variables = this.undoRedoPresenter.Current.model.Variables;
                 var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
@@ -1113,7 +1113,7 @@ module BMA {
                 return { x0: this.xOrigin, y0: this.yOrigin, xStep: this.xStep, yStep: this.yStep };
             }
 
-            private GetVariableById(layout: BMA.Model.Layout, model: BMA.Model.BioModel, id: number): { model: BMA.Model.Variable; layout: BMA.Model.VarialbeLayout } {
+            private GetVariableById(layout: BMA.Model.Layout, model: BMA.Model.BioModel, id: number): { model: BMA.Model.Variable; layout: BMA.Model.VariableLayout } {
                 var variableLayouts = layout.Variables;
                 var variables = model.Variables;
                 for (var i = 0; i < variableLayouts.length; i++) {

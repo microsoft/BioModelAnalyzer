@@ -104,7 +104,7 @@
             var angle = $elt.children("Angle").text();
             angle = angle === "" ? "0" : angle;
 
-            return new Model.VarialbeLayout(
+            return new Model.VariableLayout(
                 id,
                 x,
                 y,

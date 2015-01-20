@@ -12,9 +12,9 @@
     var relationships = [r1, r2, r3];
     var biomodel = new BMA.Model.BioModel(name, variables, relationships);
 
-    var VL1 = new BMA.Model.VarialbeLayout(15, 97, 0, 54, 32, 16);
-    var VL2 = new BMA.Model.VarialbeLayout(62, 22, 41, 0, 3, 7);
-    var VL3 = new BMA.Model.VarialbeLayout(9, 14, 75, 6, 4, 0);
+    var VL1 = new BMA.Model.VariableLayout(15, 97, 0, 54, 32, 16);
+    var VL2 = new BMA.Model.VariableLayout(62, 22, 41, 0, 3, 7);
+    var VL3 = new BMA.Model.VariableLayout(9, 14, 75, 6, 4, 0);
     var CL1 = new BMA.Model.ContainerLayout(7, "", 5, 1, 6);
     var CL2 = new BMA.Model.ContainerLayout(3, "", 24, 81, 56);
     var containers = [CL1, CL2];
@@ -225,7 +225,7 @@
 
         var variableLayouts = [];
         for (var i = 0; i < ml.layout.variables.length; i++) {
-            variableLayouts.push(new BMA.Model.VarialbeLayout(
+            variableLayouts.push(new BMA.Model.VariableLayout(
                 ml.layout.variables[i].id,
                 ml.layout.variables[i].positionX,
                 ml.layout.variables[i].positionY,

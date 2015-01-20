@@ -73,63 +73,7 @@ module BMA {
                     Relationships: rels
                 };
             }
-
-            // Returns object whose JSON representation matches external format:
-            // 1) Variables are identified by IDs
-            // 2) Default function avg(pos)-avg(neg) is replaced with null formula
-            public GetExternalRepresentation() {
-                return {
-                    ModelName: this.name,
-                    Variables: this.variables.map(v => this.GetExternalVarRepresentation(v)),
-                    Relationships: this.relationships.map(r => this.GetExternalRelRepresentation(r))
-                }
-            }
-
-            private GetExternalVarRepresentation(v: Variable) {
-                return {
-                    Id: v.Id,
-                    RangeFrom: v.RangeFrom,
-                    RangeTo: v.RangeTo,
-                    Function: this.TransformFunction(v.Formula)
-                }
-            }
-
-            private TransformFunction(f: string): string {
-                if (f != null) {
-                    f = f.trim();
-                    // Convert default function to null
-                    if (f.toLowerCase() == "avg(pos)-avg(neg)")
-                        return null;
-                    // Replace variable names with IDs
-                    var varPrefix = "var(";
-                    var startPos = 0;
-                    var index : number;
-                    while ((index = f.indexOf(varPrefix, startPos)) >= 0) {
-                        var endIndex = f.indexOf(")", index);
-                        if (endIndex < 0)
-                            break;
-                        var varName = f.substring(index + varPrefix.length, endIndex - index - varPrefix.length);
-                        f = f.substring(0, index + varPrefix.length) +
-                        this.GetIdByName(varName).toString() +
-                        f.substr(endIndex - index - varPrefix.length);
-                        startPos = index + 1;
-                    }
-                }
-                return f;
-            }
-
-            private GetIdByName(name: string): number {
-                return -1;
-            }
-
-            private GetExternalRelRepresentation(r: Relationship) {
-                return r.GetJSON();
-            }
-
-
-
-
-
+           
             constructor(name: string, variables: Variable[], relationships: Relationship[]) {
                 this.name = name;
                 this.variables = variables;
@@ -235,14 +179,14 @@ module BMA {
         }
 
         export class Layout {
-            private variables: VarialbeLayout[];
+            private variables: VariableLayout[];
             private containers: ContainerLayout[];
 
             public get Containers(): ContainerLayout[] {
                 return this.containers.slice(0);
             }
 
-            public get Variables(): VarialbeLayout[] {
+            public get Variables(): VariableLayout[] {
                 return this.variables.slice(0);
             }
 
@@ -271,7 +215,7 @@ module BMA {
             }
 
 
-            constructor(containers: ContainerLayout[], varialbes: VarialbeLayout[]) {
+            constructor(containers: ContainerLayout[], varialbes: VariableLayout[]) {
                 this.containers = containers;
                 this.variables = varialbes;
             }
@@ -317,7 +261,7 @@ module BMA {
             }
         }
 
-        export class VarialbeLayout {
+        export class VariableLayout {
             private id: number;
             private positionX: number;
             private positionY: number;
