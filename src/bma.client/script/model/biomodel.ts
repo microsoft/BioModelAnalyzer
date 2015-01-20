@@ -73,7 +73,7 @@ module BMA {
                     Relationships: rels
                 };
             }
-
+           
             constructor(name: string, variables: Variable[], relationships: Relationship[]) {
                 this.name = name;
                 this.variables = variables;
@@ -179,14 +179,14 @@ module BMA {
         }
 
         export class Layout {
-            private variables: VarialbeLayout[];
+            private variables: VariableLayout[];
             private containers: ContainerLayout[];
 
             public get Containers(): ContainerLayout[] {
                 return this.containers.slice(0);
             }
 
-            public get Variables(): VarialbeLayout[] {
+            public get Variables(): VariableLayout[] {
                 return this.variables.slice(0);
             }
 
@@ -215,7 +215,7 @@ module BMA {
             }
 
 
-            constructor(containers: ContainerLayout[], varialbes: VarialbeLayout[]) {
+            constructor(containers: ContainerLayout[], varialbes: VariableLayout[]) {
                 this.containers = containers;
                 this.variables = varialbes;
             }
@@ -261,7 +261,7 @@ module BMA {
             }
         }
 
-        export class VarialbeLayout {
+        export class VariableLayout {
             private id: number;
             private positionX: number;
             private positionY: number;

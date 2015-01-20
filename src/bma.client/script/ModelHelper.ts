@@ -4,7 +4,7 @@
             Container: BMA.Model.ContainerLayout;
             Variables: {
                 m: BMA.Model.Variable;
-                l: BMA.Model.VarialbeLayout
+                l: BMA.Model.VariableLayout
             }[];
             Realtionships: BMA.Model.Relationship[]
         } {
@@ -107,10 +107,10 @@
                     var v = variables[i];
                     var vl = variableLayouts[i];
                     if (variables[i].ContainerId === container.Id) {
-                        newVL.push(new BMA.Model.VarialbeLayout(vl.Id, cntX + (vl.PositionX - cntX) * containerSize / container.Size, cntY + (vl.PositionY - cntY) * containerSize / container.Size, 0, 0, vl.Angle));
+                        newVL.push(new BMA.Model.VariableLayout(vl.Id, cntX + (vl.PositionX - cntX) * containerSize / container.Size, cntY + (vl.PositionY - cntY) * containerSize / container.Size, 0, 0, vl.Angle));
                     } else {
                         if (v.Type === "Constant") {
-                            newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
+                            newVL.push(new BMA.Model.VariableLayout(vl.Id,
                                 vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX,
                                 vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY,
                                 0, 0, vl.Angle));
@@ -122,7 +122,7 @@
                             var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
                             var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
 
-                            newVL.push(new BMA.Model.VarialbeLayout(vl.Id,
+                            newVL.push(new BMA.Model.VariableLayout(vl.Id,
                                 unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX,
                                 unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY,
                                 0, 0, vl.Angle));

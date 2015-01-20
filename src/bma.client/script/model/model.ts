@@ -66,7 +66,7 @@ module BMA {
                     
                     var variableLayouts = [];
                     for (var i = 0; i < ml.layout.variables.length; i++) {
-                        variableLayouts.push(new BMA.Model.VarialbeLayout(
+                        variableLayouts.push(new BMA.Model.VariableLayout(
                             ml.layout.variables[i].id,
                             ml.layout.variables[i].positionX,
                             ml.layout.variables[i].positionY,

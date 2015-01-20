@@ -279,6 +279,7 @@
     <TypeScriptCompile Include="script\changeschecker.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />
     <TypeScriptCompile Include="script\ModelHelper.ts" />
+    <TypeScriptCompile Include="script\model\exportimport.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
@@ -356,6 +357,7 @@
     <TypeScriptCompile Include="script\XmlModelParser.ts" />
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\AnalyticsTest.ts" />
+    <TypeScriptCompile Include="test\ExportImportTest.ts" />
     <TypeScriptCompile Include="test\BiomodelTest.ts" />
     <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
     <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
