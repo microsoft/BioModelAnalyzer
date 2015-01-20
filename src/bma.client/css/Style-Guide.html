@@ -1,0 +1,2938 @@
+<html>
+	<head>
+		
+		
+		<link href="partials/X-rayHTML.css" rel="stylesheet">
+		<link rel="stylesheet" href="BMA-Styles.css">
+		
+
+
+
+	</head>
+	<body class="language-html">
+		
+		<h1>BMA Style Guide</h1><br>
+
+	<hr>
+
+<!-- Style Guide Navigation -->
+<div class="style-guide-nav">
+	<a href="#colors">Colors</a><br>
+	<a href="#toolbars">Toolbars</a><br>
+	<a href="#typography">Typography</a><br>
+		<ul>
+			<li><a href="#buttons">Buttons</a></li>
+			<li><a href="#tables">Tables</a></li>
+		</ul>
+	<a href="#windows">Windows</a><br>
+		<ul>
+			<li><a href="#dialog">Dialog</a></li>
+			<li><a href="#variable-editor">Variable Editor</a></li>
+			<li><a href="#tables">Tables</a></li>
+			<li><a href="#container-name">Container Name</a></li>
+			<li><a href="#proof-analysis">Proof Analysis</a></li>
+			<li><a href="#simulation">Simulation Analysis</a></li>
+			<li><a href=""></a></li>
+		</ul>
+	
+</div>
+
+
+<!-- 		Color Swatches -->
+<a name="colors"></a>
+<h2>Colors</h2>
+<div class="element">
+	<div class="element-item">
+		<div class="element">
+			<div class="element-item">
+				<div class="color-swatch red"></div>
+			</div>
+			<div class="element-caption">
+				@red: #FEB6B2;
+			</div>
+		</div>
+		
+		<div class="element">
+			<div class="element-item">
+				<div class="color-swatch lightgreen"></div>
+			</div>
+			<div class="element-caption">
+				@lightgreen: #D9FFB6;
+			</div>
+		</div>
+		
+		<div class="element">
+			<div class="element-item">
+				<div class="color-swatch green"></div>
+			</div>
+			<div class="element-caption">
+				@green: #81BB83;
+			</div>
+		</div>
+	</div>
+	
+	<div class="element-caption">
+		<div class="element">
+			<div class="element-item">
+				<div class="color-swatch lightgrey"></div>
+			</div>
+			<div class="element-caption">
+				@lightgrey: #EDEDED;
+			</div>
+		</div>
+		
+		<div class="element">
+			<div class="element-item">
+				<div class="color-swatch midgrey"></div>
+			</div>
+			<div class="element-caption">
+				@midgrey: #AAA;
+			</div>
+		</div>
+		
+		<div class="element">
+			<div class="element-item">
+				<div class="color-swatch darkgrey"></div>
+			</div>
+			<div class="element-caption">
+				@darkgrey: #606060;
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Toolbars -->
+
+<hr>
+<a name="toolbars"></a>
+<h2>Toolbars</h2>
+
+<p class="guide-text">Undo/Redo Toolbar<br>active state with <code>.active</code></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet">
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="pointer-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="undo-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="redo-icon" title="pointer"></div>
+		</span>
+	</div>
+	<br><br>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="pointer-icon" title="pointer"></div>
+		</span>
+	</div>
+	</div>
+	</div>
+
+<p class="guide-text">Model Elements Toolbar<br>active state with <code>.active</code></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet">
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="cell-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="variable-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="constant-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="receptor-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="activate-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="inhibit-icon" title="pointer"></div>
+		</span>
+	</div>
+	<br><Br>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="cell-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="variable-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="constant-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="receptor-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="activate-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="inhibit-icon" title="pointer"></div>
+		</span>
+	</div>
+
+	</div>
+	</div>
+</div>
+
+<p class="guide-text">View Options</code></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet">
+	<div class="tool-icon">
+		<span class="ui-button-text">
+		<div class="view-options-icon" title="pointer"></div>
+		</span>
+	</div>
+	<div class="tool-icon active">
+		<span class="ui-button-text">
+		<div class="view-options-icon" title="pointer"></div>
+		</span>
+	</div>
+	<br><br>
+	<div class="zoomslider-container">
+		<img id="zoom-plus" class="hoverable" src="../images/zoomplus.svg">
+		<div class="zoomslider-bar">
+		<a class="zoomslider-pointer" href="#"></a>
+		</div>
+		<img id="zoom-minus" class="hoverable" src="../images/zoomminus.svg">
+	</div>
+	</div>
+</div>
+
+
+
+<!-- Typography -->
+<hr>
+<a name="typography"></a>
+<h2>Typography</h2>
+<p class="guide-text">Default Text</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></div>
+</div>
+
+<!-- Links -->
+<p class="guide-text">Links</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet">
+	<a href="#">Link</a><br>
+	<a href="#" class="website-link">Website Link</a></div>
+</div>
+
+<!-- Toolptip -->
+<p class="guide-text">Tooltip</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><div class="tooltip">Tooltip</div></div>
+</div>
+
+<!-- Heading -->
+<p class="guide-text">Window Title</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet"><span class="window-title">Lorem ipsum</span></div>
+</div>
+
+<!-- Buttons -->
+<a name="buttons"></a>
+<h3>Buttons &amp; Forms</h3>
+<span class="bug-note">Text does not turn white on hover on rounded corners</span><br><br>
+
+<!-- Button List -->
+<p class="guide-text">Button List<br></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li><button>CANCEL</button></li>
+		<li><button>NO</button></li>
+		<li><button>YES</button></li>
+	</ul></div>
+</div>
+
+<!-- Big Action Button -->
+<p class="guide-text">Big Action Button<br>This is used for actions such as "RUN" in the simul;ation popout.<br>Color can be changed with <code>.action-button(@c)</code> mixin</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li class="action-button green"><button>RUN</button></li>
+	</ul></div>
+</div>
+
+<!-- Input Fields -->
+<p class="guide-text">Input Field</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><input type="text" placeholder="Lorem Ipsum"></div>
+</div>
+
+<p class="guide-text">Title Input Field<br>used for variable and container name</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="item-name-field">
+	<input type="text" placeholder="Lorem Ipsum">
+</div>
+</div>
+</div>
+
+<!-- Tables -->
+<a name="tables"></a>
+<h3>Tables</h3>
+<p class="guide-text">
+Table Title</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><span class="analysis-title">lorem ipsum</span></div>
+</div>
+
+<!-- Variable Table -->
+<p class="guide-text">
+Variables Table</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<table class="variables-table">
+<tbody>
+	<tr>
+		<td>Name</td>
+		<td>Formula</td>
+		<td>Range</td>
+	</tr>
+	<tr>
+		<td>Mpk1</td>
+		<td>4-var(BUD)</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td>Mpk1</td>
+		<td>4-var(BUD)</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td>Mpk1</td>
+		<td>4-var(BUD)</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td>Mpk1</td>
+		<td>4-var(BUD)</td>
+		<td>4</td>
+	</tr>
+</tbody>
+</table>
+	</div>
+</div>
+
+<!-- Proof overview -->
+<p class="guide-text">Proof Propagation Overview</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<table class="proof-propagation-overview">
+	<tbody>
+		<tr> 
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td> 
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+		<tr>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-red"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+			<td class="propagation-cell-green"></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+</div>
+
+<!-- Proof Propagation -->
+<p class="guide-text">Proof Propagation Table</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<table class="proof-propagation-table">
+	<tbody>      
+		<tr>
+		    <td class="c1">Name</td>
+		    <td>T = 0</td>
+		    <td>T = 1</td>
+		    <td>T = 2</td>
+		    <td>T = 3</td>
+		    <td>T = 4</td>
+		    <td>T = 5</td>
+		    <td>T = 6</td>
+		    <td>T = 7</td>
+		    <td>T = 8</td>
+		    <td>T = 9</td>
+		    <td>T = 10</td>
+		    <td>T = 11</td>
+      </tr>
+		  
+		<tr>
+		    <td class="propagation-cell-green">Mass</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">SBF</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>	      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Clb2</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>	      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Swe1</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>	      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Hsl1</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>	      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">BUD</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Mpk1</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Mih1</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>	      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Mass</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">SBF</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Clb2</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+		    <td class="propagation-cell-green">0</td>
+      </tr>
+		  <tr>
+		    <td class="propagation-cell-green">Swe1</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-red">0 - 4</td>
+		    <td class="propagation-cell-green">0</td>
+      </tr>
+
+	</tbody>
+</table>
+</div>
+</div>
+
+<!-- WINDOWS -->
+
+<hr>
+<a name="windows"></a>
+<h2>Windows</h2>
+
+<a name="dialog"></a>
+<h3>Dialog Window</h3>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window dialog">
+<span class="window-title">Do you want to save changes?</span><br>
+<ul class="button-list">
+	<li><button>CANCEL</button></li>
+	<li><button>NO</button></li>
+	<li><button>YES</button></li>
+</ul>
+<div style="clear:both"></div>
+</div></div>
+</div>
+
+<!-- Variable Editor -->
+<a name="variable-editor"></a>
+<h3>Variable Editor</h3>
+<p class="guide-text">
+</p>
+
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window variable-editor">
+		<div class="variable-name">
+			<input class="item-name" type="text" size="15" placeholder="Variable Name">
+		</div>
+		<span>Range:</span>
+		<input type="text" min="0" max="100" size="1" placeholder="min">
+		<div class="div-triangles">
+			<div class="triangle-up"></div>
+			<div class="triangle-down"></div>
+		</div>
+
+		<input type="text" min="0" max="100" size="1" placeholder="max">
+		<div class="div-triangles">
+			<div class="triangle-up"></div>
+			<div class="triangle-down"></div>
+		</div>
+
+		<div class="close-icon">
+			<img src="../images/close.png">
+		</div>
+		
+		<div class="target-function">
+			<span class="window-title">Target Function</span><br>
+			<textarea spellcheck="false" class="formula-text-area"></textarea>
+		</div>
+
+		<div class="operators">
+			<span class="window-title">Operators</span><br>
+			<ul class="button-list">
+				<li><button>AVG</button></li>
+				<li><button class="ui-selected">MIN</button></li>
+				<li><button>MAX</button></li>
+				<li><button>CEIL</button></li>
+			</ul>
+		</div>
+
+		<div class="operators-info">
+			<p>
+				<span class="bold">avg(x,y,z)</span><br>
+				The average of a list of expressions.<br>
+				E.g. avg(var(X);var(Y); 22;var(Z)*2)
+			</p>
+
+		</div>
+
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Container Name Dialog -->
+<a name="container-name"></a>
+<h3>Container Name</h3>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window container-name">
+	<input class="item-name" type="text" size="15" placeholder="Container Name">
+	<div class="close-icon">
+		<img src="../images/close.png">
+	</div>
+</div>
+</div>
+</div>
+
+<!-- Proof Analysis -->
+<a name="proof-analysis"></a>
+<h3>Proof Analysis</h3>
+
+<!-- Proof Tab -->
+<p class="guide-text">Proof Tab<br>Tables are wrapped in a <code>.scrollable-results</code> div to manage height and scrollbars</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="tab-right">
+	<span class="window-title">Proof Analysis</span><br>
+	<div class="proof-state">
+		<img src="../images/succeeded.png">
+		Stabilizes<br>
+	</div>
+	<p>BMA succeeded in checking every possible state of the model in 0 seconds. After stepping through separate interactions, the model eventually reached a single stable state.</p><br>
+	<div class="proof-variables">
+		<span class="analysis-title">Variables</span>
+		<div class="popout-icon">
+			<img src="../images/maximize.png">
+		</div><br>
+		<div class="scrollable-results">
+			<table class="variables-table">
+				<tbody>
+					<tr>
+						<td>Name</td>
+						<td>Formula</td>
+						<td>Range</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td>Mpk1</td>
+						<td>4-var(BUD)</td>
+						<td>4</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="proof-propagation">
+		<span class="analysis-title">proof propagation</span>
+		<div class="popout-icon">
+			<img src="../images/maximize.png">
+		</div><br>
+			
+				<div class="scrollable-results">
+					<table class="proof-propagation-overview">
+						<tbody>
+							<tr> 
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td> 
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+							<tr>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-red"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+								<td class="propagation-cell-green"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+	</div>
+</div>
+</div>
+</div>
+
+<!-- Proof Variable Popout -->
+
+<p class="guide-text">Proof Variables popout</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window proof-variables-popout">
+	<span class="window-title">Variables</span>
+	<div class="popout-icon">
+		<img src="../images/minimize.png">
+	</div><br>
+	<div class="scrollable-results">
+		<table class="variables-table">
+			<tbody>
+			<tr><td>Name</td><td>Formula</td><td>Range</td></tr><tr><td>Tfdp1</td><td>var(E2f)</td><td>0</td></tr><tr><td>E2f</td><td>max(var(PPARg)-var(E2f6),0)</td><td>0</td></tr><tr><td>KLF15</td><td>0</td><td>0</td></tr><tr><td>Nrip1</td><td>2</td><td>2</td></tr><tr><td>Gabpb2</td><td>0</td><td>0</td></tr><tr><td>LXRa</td><td>max(((avg(var(PGC1b),var(PPARg),var(NcoA1),var(RXRa),var(PPARa)))-(var(Nrip1))),0)</td><td>0</td></tr><tr><td>PGC1b</td><td>0</td><td>0</td></tr><tr><td>PPARa</td><td>max(((avg(var(PGC1b),var(NcoA1)))-(avg(var(Nrip1),var(NcoR1)))),0)</td><td>0</td></tr><tr><td>HoxA5</td><td>0</td><td>0</td></tr><tr><td>PPARg</td><td>max(((avg(var(PGC1b),var(KLF15)))-var(Nrip1)),0)</td><td>0</td></tr><tr><td>E2f6</td><td>0</td><td>0</td></tr><tr><td>NcoR1</td><td>2-var(PPARg)</td><td>2</td></tr><tr><td>NcoA1</td><td>0</td><td>0</td></tr><tr><td>RXRa</td><td>max(var(NcoA1)-var(NcoR1),0)</td><td>0</td></tr><tr><td>MLXIPL</td><td>max(((avg(var(Glucose),var(NcoA1),var(PGC1b),var(LXRa),var(Tfdp1),var(KLF15),var(HoxA5),var(Gabpb2)))-(avg(var(14-3-3),var(NcoR1),var(Nrip1)))),0)</td><td>0</td></tr><tr><td>14-3-3</td><td>0</td><td>0</td></tr><tr><td>Glut4</td><td>avg(var(Rab),var(MLXIPL))</td><td>0</td></tr><tr><td>Glucose</td><td>avg(min(var(Glycogen),var(PYGL)),var(Glut4))</td><td>0</td></tr><tr><td>PYGL</td><td>max(var(MLXIPL)-var(PP1),0)</td><td>0</td></tr><tr><td>PP1</td><td>2-var(PP4R1)</td><td>2</td></tr><tr><td>PP4R1</td><td>0</td><td>0</td></tr><tr><td>Glycogen</td><td>1</td><td>1</td></tr><tr><td>TBC1D4</td><td>2-var(14-3-3)</td><td>2</td></tr><tr><td>Rab</td><td>2-var(TBC1D4)</td><td>0</td></tr><tr><td>PFKB1</td><td>0</td><td>0</td></tr><tr><td>ALDOA</td><td>0</td><td>0</td></tr><tr><td>Fructose-6-P</td><td>avg(min(var(Glucose),var(PFK)),min(var(Fructose-2,6-bP),var(PFKB1)))</td><td>0</td></tr><tr><td>PFK</td><td>var(Fructose-2,6-bP)</td><td>0</td></tr><tr><td>Fructose-1,6-bP</td><td>var(Fructose-6-P)</td><td>0</td></tr><tr><td>Fructose-2,6-bP</td><td>min(var(Fructose-6-P),var(PFKB1))</td><td>0</td></tr><tr><td>Dihydroxyacetone-P</td><td>min(var(Fructose-1,6-bP),var(ALDOA))</td><td>0</td></tr><tr><td>G3PD1</td><td>0</td><td>0</td></tr><tr><td>Glycerol-3-P</td><td>min(var(Dihydroxyacetone-P),var(G3PD1))</td><td>0</td></tr><tr><td>1,3-bP-Glycerate</td><td>var(Dihydroxyacetone-P)</td><td>0</td></tr><tr><td>BPGM</td><td>2</td><td>2</td></tr><tr><td>2,3-bP-Glycerate</td><td>min(var(1,3-bP-Glycerate),var(BPGM))</td><td>0</td></tr><tr><td>Pyruvate</td><td>var(1,3-bP-Glycerate)</td><td>0</td></tr><tr><td>Acetyl CoA</td><td>avg(min(var(CoA),min(var(Pyruvate),var(PDH))),min(var(CoA1),var(CRAT)),min(var(Citrate),min(var(CoA2),var(ACLY))),min(var(CoA3),var(ACSL1)))</td><td>0</td></tr><tr><td>PDH</td><td>0</td><td>0</td></tr><tr><td>CoA</td><td>avg(min(var(Biosynthesis),min(var(COASY),var(PANK1))),min(var(Acetyl CoA),var(CRAT)))</td><td>0</td></tr><tr><td>Biosynthesis</td><td>1</td><td>1</td></tr><tr><td>PANK1</td><td>0</td><td>0</td></tr><tr><td>COASY</td><td>0</td><td>0</td></tr><tr><td>CRAT</td><td>0</td><td>0</td></tr><tr><td>ACSL1</td><td>0</td><td>0</td></tr><tr><td>ACLY</td><td>0</td><td>0</td></tr><tr><td>Citrate</td><td>min(var(Acetyl CoA),min(var(CS),var(Oxaloacetate)))</td><td>0</td></tr><tr><td>Oxaloacetate</td><td>avg(min(var(Malate),var(MDH2)),min(var(CoA),min(var(Citrate),var(ACLY))))</td><td>0</td></tr><tr><td>Isocitrate</td><td>min(var(Citrate),var(ACO2))</td><td>0</td></tr><tr><td>ACO2</td><td>0</td><td>0</td></tr><tr><td>a-Ketoglutarate</td><td>min(var(Isocitrate),var(IDH))</td><td>0</td></tr><tr><td>IDH</td><td>2</td><td>2</td></tr><tr><td>OGDH</td><td>0</td><td>0</td></tr><tr><td>Succinyl-CoA</td><td>min(var(a-Ketoglutarate),var(OGDH))</td><td>0</td></tr><tr><td>Succinate</td><td>min(var(Succinyl-CoA),var(DLST))</td><td>0</td></tr><tr><td>DLST</td><td>0</td><td>0</td></tr><tr><td>SDH</td><td>0</td><td>0</td></tr><tr><td>FH1</td><td>0</td><td>0</td></tr><tr><td>Fumarate</td><td>min(var(Succinate),var(SDH))</td><td>0</td></tr><tr><td>MDH2</td><td>0</td><td>0</td></tr><tr><td>Malate</td><td>min(var(Fumarate),var(FH1))</td><td>0</td></tr><tr><td>CS</td><td>0</td><td>0</td></tr><tr><td>Acetoacetyl CoA</td><td>avg(min(var(Acetyl CoA),var(ACAT2)),min(var(Acetoacetate),min(var(AACS),var(CoA))))</td><td>0</td></tr><tr><td>Acetoacetate</td><td>1</td><td>1</td></tr><tr><td>AACS</td><td>0</td><td>0</td></tr><tr><td>ACAT2</td><td>0</td><td>0</td></tr><tr><td>Sterols and Steroids</td><td>min(var(Acetoacetyl CoA),min(var(PMVK),var(FDFT1)))</td><td>0</td></tr><tr><td>PMVK</td><td>0</td><td>0</td></tr><tr><td>FDFT1</td><td>0</td><td>0</td></tr><tr><td>Malonyl CoA</td><td>min(var(Acetyl CoA),var(ACAC))</td><td>0</td></tr><tr><td>ACAC</td><td>var(MLXIPL)</td><td>0</td></tr><tr><td>FASN</td><td>var(MLXIPL)</td><td>0</td></tr><tr><td>Fatty Acids</td><td>min(var(FASN),var(Malonyl CoA))</td><td>0</td></tr><tr><td>Metabolism in Peroxisomes</td><td>min(var(Fatty Acids),var(PXMP2))</td><td>0</td></tr><tr><td>PXMP2</td><td>0</td><td>0</td></tr><tr><td>Long chain fatty acids</td><td>min(var(Fatty Acids),var(ELOVL6))</td><td>0</td></tr><tr><td>ELOVL6</td><td>var(MLXIPL)</td><td>0</td></tr><tr><td>CPT1A</td><td>var(MLXIPL)</td><td>0</td></tr><tr><td>CPT2</td><td>0</td><td>0</td></tr><tr><td>Metabolism in Mitochondria</td><td>avg(min(var(Fatty Acids),min(var(CPT1A),var(CPT2))),min(var(Long chain fatty acids),min(var(CPT1A1),(0))))</td><td>0</td></tr><tr><td>Lyso-phosphatidate</td><td>avg(min(var(Fatty Acids),var(AGPAT2)),min(var(Long chain fatty acids),(0)))</td><td>0</td></tr><tr><td>AGPAT2</td><td>0</td><td>0</td></tr><tr><td>Tri-acyl-glycerols</td><td>var(Lyso-phosphatidate)</td><td>0</td></tr><tr><td>CoA1</td><td>var(CoA)</td><td>0</td></tr><tr><td>CoA2</td><td>var(CoA)</td><td>0</td></tr><tr><td>CoA3</td><td>var(CoA)</td><td>0</td></tr><tr><td>CPT1A1</td><td>var(CPT1A)</td><td>0</td></tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</div>
+</div>
+
+
+<!-- Proof Propagation Popout Popout -->
+
+<p class="guide-text">Proof Variables popout</p>
+<p class="bug-note">Scrollbar spacing and overflow problem, needs 10px between table and scrollbar</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window proof-propagation-popout">
+	<span class="window-title">Proof Propagation</span>
+	<div class="popout-icon">
+	<img src="../images/minimize.png">
+	</div><br>
+	<div class="scrollable-results">
+	<table class="proof-propagation-table">
+		<tbody>      
+			<tr>
+			    <td class="c1">Name</td>
+			    <td>T = 0</td>
+			    <td>T = 1</td>
+			    <td>T = 2</td>
+			    <td>T = 3</td>
+			    <td>T = 4</td>
+			    <td>T = 5</td>
+			    <td>T = 6</td>
+			    <td>T = 7</td>
+			    <td>T = 8</td>
+			    <td>T = 9</td>
+			    <td>T = 10</td>
+			    <td>T = 11</td>
+			    <td>T = 12</td>
+			    <td>T = 13</td>
+			    <td>T = 14</td>
+			    <td>T = 15</td>
+			    <td>T = 16</td>
+			    <td>T = 17</td>
+			    <td>T = 18</td>
+			    <td>T = 19</td>
+			    <td>T = 20</td>
+			    <td>T = 21</td>
+			    <td>T = 22</td>
+			    <td>T = 23</td>
+			    <td>T = 24</td>
+			    <td>T = 25</td>
+			    <td>T = 26</td>      </tr>
+			  
+			<tr>
+			    <td class="propagation-cell-green">Mass</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">SBF</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Clb2</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Swe1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Hsl1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">BUD</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mpk1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mih1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mass</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">SBF</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Clb2</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Swe1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Hsl1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">BUD</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mpk1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mih1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			    <tr>
+			    <td class="propagation-cell-green">Mass</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">SBF</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Clb2</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Swe1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Hsl1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">BUD</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mpk1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mih1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mass</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">SBF</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Clb2</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Swe1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Hsl1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">BUD</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mpk1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>
+			    <td class="propagation-cell-green">4</td>      </tr>
+			  <tr>
+			    <td class="propagation-cell-green">Mih1</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-red">0 - 4</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>
+			    <td class="propagation-cell-green">0</td>      </tr>
+		</tbody>
+	</table>
+	</div>
+	</div>
+</div>
+</div>
+</div>
+
+<!-- Simulation Analysis -->
+<a name="simulation"></a>
+<h3>Simulation Analysis</h3><br>
+
+<!-- Simulation Tab -->
+
+<p class="guide-text">Simulation Tab</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="tab-right">
+	<span class="window-title">Simulation</span>
+	<br>
+
+	<div class="simulation-variables">
+		<span class="analysis-title">Variables</span>
+		<div class="popout-icon">
+			<img src="../images/maximize.png">
+		</div><br>
+		<div class="scrollable-results">
+			<table class="variables-table">
+				
+				<tbody><tr><td>Graph</td><td>Cell</td><td>Name</td><td>Range</td></tr><tr><td style="background-color: rgb(11, 108, 231);"></td><td></td><td>Mass</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(16, 205, 48);"></td><td></td><td>SBF</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(94, 92, 251);"></td><td></td><td>Clb2</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(49, 110, 5);"></td><td></td><td>Swe1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(32, 64, 82);"></td><td></td><td>Hsl1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(3, 110, 11);"></td><td></td><td>BUD</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(189, 250, 65);"></td><td></td><td>Mpk1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(53, 41, 188);"></td><td></td><td>Mih1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(48, 79, 55);"></td><td></td><td>Mass</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(200, 94, 168);"></td><td></td><td>SBF</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(166, 217, 73);"></td><td></td><td>Clb2</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(177, 243, 13);"></td><td></td><td>Swe1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(67, 212, 126);"></td><td></td><td>Hsl1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(130, 203, 201);"></td><td></td><td>BUD</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(23, 231, 201);"></td><td></td><td>Mpk1</td><td>0 - 4</td></tr><tr><td style="background-color: rgb(244, 75, 248);"></td><td></td><td>Mih1</td><td>0 - 4</td></tr></tbody>
+					
+			</table>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+
+<!-- Simulation Popout -->
+
+<p class="guide-text">Simulation Tab</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window simulation-popout">
+	<span class="window-title">Simulation Progression</span>
+	<div class="popout-icon">
+		<img src="../images/minimize.png">
+	</div><br>
+
+	<div class="scrollable-results">
+		<div class="small-simulation-popout-table">
+			<table class="variables-table">
+				<tbody>
+					<tr>
+						<td colspan="2">Graph</td>
+						<td>Name</td>
+						<td colspan="2">Range</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(226, 76, 207);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Mass</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(107, 131, 27);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>SBF</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(88, 9, 38);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Clb2</td>
+						<td>0</td>
+						<td>4</td>
+						</tr>
+					<tr>
+						<td style="background-color: rgb(99, 193, 230);"></td>
+						<td class="hoverable addVariableToPlot"></td>
+						<td>Swe1</td>
+						<td>0</td>
+						<td>4</td>
+						</tr>
+					<tr>
+						<td style="background-color: rgb(219, 169, 50);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Hsl1</td>
+						<td>0</td>
+						<td>4</td>
+						</tr>
+					<tr>
+						<td style="background-color: rgb(170, 40, 138);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>BUD</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(101, 224, 0);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Mpk1</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(34, 67, 90);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Mih1</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(206, 202, 231);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Mass</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(15, 176, 39);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>SBF</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(191, 29, 244);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Clb2</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(251, 210, 111);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Swe1</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(18, 248, 161);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Hsl1</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(199, 76, 227);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>BUD</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(220, 211, 28);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Mpk1</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="background-color: rgb(2, 162, 29);"></td>
+						<td class="addVariableToPlot hoverable"></td>
+						<td>Mih1</td>
+						<td>0</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td style="border: none; background-color: rgb(255, 255, 255);"></td>
+						<td id="allcheck" class="addVariableToPlot hoverable" style="border-right-style: none;"></td>
+						<td style="border-left-style: none;"><div checked="checked">ALL</div></td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+		<div class="big-simulation-popout-table">
+			<table class="variables-table">
+				<tbody>
+					<tr>
+					<td colspan="2">Initial Value</td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td style="background-color: transparent;"><input type="text"></td>
+					<td class="bma-random-icon1 hoverable" style="background-color: transparent;"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td><input type="text"></td>
+					<td class="bma-random-icon1 hoverable"></td>
+					</tr>
+					<tr>
+					<td style="background-color: transparent;"><input type="text"></td>
+					<td class="bma-random-icon1 hoverable" style="background-color: transparent;"></td>
+					</tr>
+					<tr>
+					<td style="background-color: transparent;"><input type="text"></td>
+					<td class="bma-random-icon1 hoverable" style="background-color: transparent;"></td>
+					</tr>
+					<tr>
+					<td style="background-color: transparent;"><input type="text"></td>
+					<td class="bma-random-icon1 hoverable" style="background-color: transparent;"></td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<ul class="button-list">
+		<li><button>- 10</button></li>
+		<li class="steps"><button>STEPS: 10</button></li>
+		<li><button>+ 10</button></li>
+		<li class="run"><button>RUN</button></li>
+	</ul>
+	<div style="clear:both"></div>
+
+</div>
+</div>
+</div>
+
+
+
+
+		
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="js/X-rayHTML.js" type="text/javascript"></script>
+	</body>
+</html>

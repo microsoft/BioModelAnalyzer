@@ -1,0 +1,130 @@
+/*  Style Guide  */
+
+/* 
+
+These are styles for the style guide page itself. 
+code that isn't relevant to the tool goes here 
+
+*/
+
+html{
+	height: initial;
+}
+
+body{
+	margin:50px 10px 0px 50px;
+	padding: 0;
+	.default-text();
+
+	overflow: initial;
+	height: initial;
+
+}
+
+// Navigation 
+	.style-guide-nav{
+		position: fixed;
+		z-index:99;
+		top:20px;
+		padding: 10px;
+		right:0px;
+		width: 200px;
+		background-color: white;
+		color: @midgrey;
+		font-size: 16px;
+		line-height: 110%;
+		a{	
+			color: @midgrey;
+			font-size: 16px;
+			line-height: 120%;
+		}
+		ul{
+			list-style-type: none;
+			padding-left:10px;
+			margin-top: 5px;
+		}
+	}
+
+// Elements Layout
+	.element{
+		margin: 0px 0px 0px 0px;
+	}
+
+	.element-right{
+		.element;
+		float: right;
+		clear: both;
+	}
+
+	.element-item{
+		display: table-cell;
+		text-align: left;
+	}
+
+	.element-caption{
+		.element-item;
+		padding: 0px 30px 0px 30px;
+		color: @midgrey;
+	}
+
+
+// Typography
+
+	.heading-init(){
+		margin:0px;
+		padding:0px;
+		color: @midgrey;
+	}
+
+	h1{
+		.heading-init;
+		font-size: 3em;
+		line-height: 120%;
+		font-family: 'Segoe-UI-Bold';
+		}
+	h2{
+		.heading-init;
+		display: block;
+		margin:30px 0px 30px 0px;
+		font-size: 2em;
+		line-height: 120%;
+		font-family: 'Segoe-UI-Bold';
+		
+	}
+	h3{
+		.heading-init;
+		margin: 0px 0px 5px 0px;
+		font-size: 1.5em;
+		line-height: 120%;
+		font-family: 'Segoe-UI';
+	}
+	
+	p.guide-text{
+		margin:0px 0px 10px 0px;
+		color: @midgrey;
+	}
+
+	.bug-note{
+		color:red;
+	}
+
+	hr{
+		margin-top: 20px;
+	}
+
+	code{
+		background-color: @lightgrey;
+	}
+
+// Color Swatches
+
+	.color-swatch{
+			width:50px;
+			height:50px;
+	}
+	.green{background-color:@green;}
+	.lightgreen{background-color:@lightgreen;}
+	.red{background-color:@red;}
+	.lightgrey{background-color:@lightgrey;}
+	.midgrey{background-color:@midgrey;}
+	.darkgrey{background-color:@darkgrey;}
