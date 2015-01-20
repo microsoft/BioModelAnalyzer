@@ -152,10 +152,10 @@ void timeOverlap(Simulation* s,bool rawData) {
 		std::for_each (vec.begin(), vec.end(), [&](const float f) {
 			accum += (f - mean) * (f - mean);
 		});
-		float stdev = std::sqrt(accum / (vec.size()-1));
-		float q1(vec.size()%4 ? (vec[vec.size()/4-1]+vec[vec.size()/4])/2 : vec[vec.size()/4]);
-		float median(vec.size()%2 ? (vec[vec.size()/2-1]+vec[vec.size()/2])/2: vec[vec.size()/2]);
-		float q3(vec.size()%4 ? (vec[3*vec.size()/4-1]+vec[3*vec.size()/4])/2 : vec[3*vec.size()/4]);
+		float stdev = std::sqrt(accum / vec.size());
+		float q1(vec.size() % 4 ? vec[vec.size() / 4] : (vec[vec.size() / 4 - 1] + vec[vec.size() / 4]) / 2);
+		float median(vec.size() % 2 ? vec[vec.size() / 2] : (vec[vec.size() / 2 - 1] + vec[vec.size() / 2]) / 2 );
+		float q3(vec.size() % 4 ? vec[3 * vec.size() / 4] : (vec[3 * vec.size() / 4 - 1] + vec[3 * vec.size() / 4]) / 2);
 		return vector<float> {min,max,mean,stdev,q1,median,q3};
 	};
 
