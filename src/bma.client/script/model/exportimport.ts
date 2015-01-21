@@ -29,9 +29,9 @@
         export function ExportBioModel(model: BioModel) {
           
             function GetIdByName(id: number, name: string): number {
-                var results = this.variables.filter(function (v2: Variable) {
+                var results = model.Variables.filter(function (v2: Variable) {
                     return v2.Name == name &&
-                        this.relationships.some(function (r: Relationship) {
+                        model.Relationships.some(function (r: Relationship) {
                             return r.FromVariableId == id && r.ToVariableId == v2.Id ||
                                 r.ToVariableId == id && r.FromVariableId == v2.Id;
                         });

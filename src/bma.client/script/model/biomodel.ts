@@ -81,6 +81,11 @@ module BMA {
             }
         }
 
+        export class VariableTypes {
+            public static get Default() { return "Default" } // Intracellular
+            public static get Constant() { return "Constant" } // Extracellular
+        }
+
         export class Variable {
             private id: number;
             private containerId: number;
@@ -137,6 +142,11 @@ module BMA {
                 this.formula = formula;
                 this.name = name;
             }
+        }
+
+        export class RelationshipTypes {
+            public static get Activator() { return "Activator"; }
+            public static get Inhibitor() { return "Inhibitor"; }
         }
 
         export class Relationship {

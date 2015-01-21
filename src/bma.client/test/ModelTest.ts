@@ -3,11 +3,11 @@
     var appModel: BMA.Model.AppModel;
 
     var name = "TestBioModel";
-    var v1 = new BMA.Model.Variable(34, 15, "type1", "name1", 3, 7, "formula1");
-    var v2 = new BMA.Model.Variable(38, 10, "type2", "name2", 1, 14, "formula2");
-    var r1 = new BMA.Model.Relationship(3, 34, 38, "type1");
-    var r2 = new BMA.Model.Relationship(3, 38, 34, "type2");
-    var r3 = new BMA.Model.Relationship(3, 34, 34, "type3");
+    var v1 = new BMA.Model.Variable(34, 15, BMA.Model.VariableTypes.Default, "name1", 3, 7, "formula1");
+    var v2 = new BMA.Model.Variable(38, 10, BMA.Model.VariableTypes.Constant, "name2", 1, 14, "formula2");
+    var r1 = new BMA.Model.Relationship(3, 34, 38, BMA.Model.RelationshipTypes.Activator);
+    var r2 = new BMA.Model.Relationship(3, 38, 34, BMA.Model.RelationshipTypes.Activator);
+    var r3 = new BMA.Model.Relationship(3, 34, 34, BMA.Model.RelationshipTypes.Inhibitor);
     var variables = [v1, v2];
     var relationships = [r1, r2, r3];
     var biomodel = new BMA.Model.BioModel(name, variables, relationships);
@@ -424,7 +424,7 @@
         appModel.Layout = layout;
         appModel.ProofResult = proof;
 
-        var str = '{"model":{"name":"TestBioModel","variables":[{"id":34,"containerId":15,"type":"type1","rangeFrom":3,"rangeTo":7,"formula":"formula1","name":"name1"},{"id":38,"containerId":10,"type":"type2","rangeFrom":1,"rangeTo":14,"formula":"formula2","name":"name2"}],"relationships":[{"id":3,"fromVariableId":34,"toVariableId":38,"type":"type1"},{"id":3,"fromVariableId":38,"toVariableId":34,"type":"type2"},{"id":3,"fromVariableId":34,"toVariableId":34,"type":"type3"}]},"layout":{"containers":[{"id":7,"name":"","size":5,"positionX":1,"positionY":6},{"id":3,"name":"","size":24,"positionX":81,"positionY":56}],"variables":[{"id":15,"positionX":97,"positionY":0,"cellX":54,"cellY":32,"angle":16},{"id":62,"positionX":22,"positionY":41,"cellX":0,"cellY":3,"angle":7},{"id":9,"positionX":14,"positionY":75,"cellX":6,"cellY":4,"angle":0}]}}'
+        var str = '{"model":{"name":"TestBioModel","variables":[{"id":34,"containerId":15,"type":"Default","rangeFrom":3,"rangeTo":7,"formula":"formula1","name":"name1"},{"id":38,"containerId":10,"type":"Constant","rangeFrom":1,"rangeTo":14,"formula":"formula2","name":"name2"}],"relationships":[{"id":3,"fromVariableId":34,"toVariableId":38,"type":"Activator"},{"id":3,"fromVariableId":38,"toVariableId":34,"type":"Activator"},{"id":3,"fromVariableId":34,"toVariableId":34,"type":"Inhibitor"}]},"layout":{"containers":[{"id":7,"name":"","size":5,"positionX":1,"positionY":6},{"id":3,"name":"","size":24,"positionX":81,"positionY":56}],"variables":[{"id":15,"positionX":97,"positionY":0,"cellX":54,"cellY":32,"angle":16},{"id":62,"positionX":22,"positionY":41,"cellX":0,"cellY":3,"angle":7},{"id":9,"positionX":14,"positionY":75,"cellX":6,"cellY":4,"angle":0}]}}'
 
         expect(appModel.Serialize()).toEqual(str);
     });
