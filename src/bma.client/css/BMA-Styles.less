@@ -107,6 +107,13 @@
 		font-family: 'Segoe-UI-Bold';
 	}
 
+	ul{
+		list-style-type: none;
+		padding:0;
+		margin:0;
+
+	}
+
 	// Links
 
 		a {
@@ -138,11 +145,13 @@
 		}
 
 	// Buttons
+		
+		button{
+			margin:0px;
+		}
 
-		ul.button-list{
-			margin: 10px 0px 0px 0px;
-			padding: 0px;
-			li{
+		.default-button{
+			
 				margin-bottom: 10px;
 				background-color: @lightgrey;
 				border-radius: 15px;
@@ -150,8 +159,7 @@
 				cursor: pointer;
 				display: inline-block;
 				margin-right: 5px;
-				padding-left: 5px;
-				padding-right: 5px;
+				padding: 0px 5px 0px 5px;
 
 
 				&:hover {
@@ -177,7 +185,19 @@
 						outline: none;
 					}
 				}
+			
+		}	
+
+
+
+		ul.button-list{
+			margin: 10px 0px 0px 0px;
+			padding: 0px;
+			li{
+				.default-button;
 			}
+			
+			
 		}
 
 		// Buttons > Dialog
@@ -218,7 +238,51 @@
 			}
 		}
 
+		// Pill Button
 
+			.pill-button-box{	
+				display: inline-block;
+				.pill-button{
+					.default-button;
+					font-size: 1.5em;
+					&:first-child{
+						border-top-right-radius: 0px;
+						border-bottom-right-radius: 0px;
+						margin-right: 0px;
+					}
+					&:last-child{
+						border-top-left-radius: 0px;
+						border-bottom-left-radius: 0px;
+
+					}
+				}
+			}
+
+		// ON/OFF button
+			
+			.onoff{
+				width:27px;
+				text-align: center;
+				&.green{
+					background-color: @green;
+					&:hover{
+						background-color:@midgrey;
+					}
+					button{
+						color:white;
+					}
+				}
+				&.grey{
+					background-color: @midgrey;
+					&:hover{
+						background-color:@green;
+					}
+					button{
+						color:white;
+					}
+				}
+				
+			}
 
 
 		// Simulation Popout Buttons 
@@ -626,109 +690,123 @@
 
 	// Main Toolbar 
 
-	.tool-icon{
-		width: @toolbar-icon-height;
-        height: @toolbar-icon-height;
-        margin-left: 0.2em;
-        margin-right: 0.2em;
-        border:1px solid @midgrey;
-        .border-radius(@toolbar-icon-border-radius);
-        background: none;
-        background-color: white;
-        display: inline-block;
-		vertical-align: top;
+		.tool-icon{
+			width: @toolbar-icon-height;
+	        height: @toolbar-icon-height;
+	        margin-left: 0.2em;
+	        margin-right: 0.2em;
+	        border:1px solid @midgrey;
+	        .border-radius(@toolbar-icon-border-radius);
+	        background: none;
+	        background-color: white;
+	        display: inline-block;
+			vertical-align: top;
 
-		span > div {
-            width: 100%;
-        	height: 100%;
-            background-repeat: no-repeat;
-            background-position-x: center;
-            background-position-y: center;
-            border: none;
-            margin: auto;
-        }
+			span > div {
+	            width: 100%;
+	        	height: 100%;
+	            background-repeat: no-repeat;
+	            background-position-x: center;
+	            background-position-y: center;
+	            border: none;
+	            margin: auto;
+	        }
 
-        &:not(.ui-state-active):hover {
-	        background-color: @lightgrey;
-	        cursor: pointer;
-	    }
+	        &:not(.ui-state-active):hover {
+		        background-color: @lightgrey;
+		        cursor: pointer;
+		    }
 
-	    .ui-state-active {
-	        background-color: @darkgrey;
-	    }
+		    .ui-state-active {
+		        background-color: @darkgrey;
+		    }
 
-        .pointer-icon{background-image: url("../images/pointer.svg");}
-        .undo-icon{background-image: url("../images/undo.svg");}
-        .redo-icon{background-image: url("../images/redo.svg");}
-        .cell-icon{background-image: url("../images/container.svg");}
-        .variable-icon{background-image: url("../images/variable.svg");}
-        .constant-icon{background-image: url("../images/constant.svg");}
-		.receptor-icon{background-image: url("../images/receptor.svg");}
-		.activate-icon{background-image: url("../images/activate.svg");}
-		.inhibit-icon{background-image: url("../images/inhibitor.svg");}
-		.view-options-icon{
-			background-image: url("../images/visicon2.svg");
-			background-size: 45px;
+	        .pointer-icon{background-image: url("../images/pointer.svg");}
+	        .undo-icon{background-image: url("../images/undo.svg");}
+	        .redo-icon{background-image: url("../images/redo.svg");}
+	        .cell-icon{background-image: url("../images/container.svg");}
+	        .variable-icon{background-image: url("../images/variable.svg");}
+	        .constant-icon{background-image: url("../images/constant.svg");}
+			.receptor-icon{background-image: url("../images/receptor.svg");}
+			.activate-icon{background-image: url("../images/activate.svg");}
+			.inhibit-icon{background-image: url("../images/inhibitor.svg");}
+			.view-options-icon{
+				background-image: url("../images/visicon2.svg");
+				background-size: 45px;
+			}
 		}
-	}
-	
-	.tool-icon.active{
-		background-color: @darkgrey;
-		border-color: @darkgrey;
-
-		&:hover{
+		
+		.tool-icon.active{
 			background-color: @darkgrey;
-		}
+			border-color: @darkgrey;
 
-		.pointer-icon{background-image: url("../images/pointer ON.svg");}
-		.cell-icon{background-image: url("../images/container-ON.svg");}
-		.variable-icon{background-image: url("../images/variable-ON.svg");}
-        .constant-icon{background-image: url("../images/constant-ON.svg");}
-		.receptor-icon{background-image: url("../images/receptor-ON.svg");}
-		.activate-icon{background-image: url("../images/activate-ON.svg");}
-		.inhibit-icon{background-image: url("../images/inhibitor-ON.svg");}
-		.view-options-icon{background-image: url("../images/visicon2-ON.svg");}
-	}
-
-	.zoomslider-container{
-		display: table;
-		width:@zoomslider-width;
-		> * {
-			display: table-cell;
-		}
-
-		img{
-			margin: 2px;
-		}
-
-		.zoomslider-bar{
-			width: 100%;
-			border: 1px solid @darkgrey;
-			border-bottom: 0px;
-			text-align: center;
-			position: relative;
-			&:after{
-				content:"";
-    			position: absolute;
-    			height:70%;
-    			z-index: -1;
-    			top: 0;
-    			bottom: 0;
-    			left: 50%;
-    			border-left: 1px solid @darkgrey;
+			&:hover{
+				background-color: @darkgrey;
 			}
-			.zoomslider-pointer{
-				position: absolute;
-				top:-10px;
-				border: 10px solid transparent;
-				border-bottom: 20px solid @darkgrey;
-				border-radius: 0;
+
+			.pointer-icon{background-image: url("../images/pointer ON.svg");}
+			.cell-icon{background-image: url("../images/container-ON.svg");}
+			.variable-icon{background-image: url("../images/variable-ON.svg");}
+	        .constant-icon{background-image: url("../images/constant-ON.svg");}
+			.receptor-icon{background-image: url("../images/receptor-ON.svg");}
+			.activate-icon{background-image: url("../images/activate-ON.svg");}
+			.inhibit-icon{background-image: url("../images/inhibitor-ON.svg");}
+			.view-options-icon{
+				background-image: url("../images/visicon2-ON.svg");
+				border-bottom-left-radius: 0px;
 			}
 		}
 
+	// Zoom Slider
+		.zoomslider-container{
+			display: table;
+			width:@zoomslider-width;
+			> * {
+				display: table-cell;
+			}
 
-	}
+			img{
+				margin: 2px;
+			}
+
+			.zoomslider-bar{
+				width: 100%;
+				border: 1px solid @darkgrey;
+				border-bottom: 0px;
+				text-align: center;
+				position: relative;
+				&:after{
+					content:"";
+	    			position: absolute;
+	    			height:70%;
+	    			z-index: -1;
+	    			top: 0;
+	    			bottom: 0;
+	    			left: 50%;
+	    			border-left: 1px solid @darkgrey;
+				}
+				.zoomslider-pointer{
+					position: absolute;
+					top:-10px;
+					border: 10px solid transparent;
+					border-bottom: 20px solid @darkgrey;
+					border-radius: 0;
+				}
+			}
+
+		}
 	
+	// Visibility Options dialog
+		.window.vis-options{
+			width:205px;
+			border-top-left-radius: 0px;
+			.option-name{
+				display: inline-block;
+				width:90px;
+
+			}
+		}
+
 	
 
 	
@@ -1011,7 +1089,7 @@
 		}
 
 /* File I/O Tab */
-
+/* 
 	.modelstorage-toolbar-shadow() {
 		.box-shadow(@x:5px; @y:5px; @blur:5px; @color:@shadow)
 	}
@@ -1117,8 +1195,8 @@
 	    background-image: url("../images/local.svg");
 	}
 	.localSaveButton {
-	    background-image: url("../images/savelocally.svg");
-	}
+	    background-image: url("../images/savelocally.svg"); 
+	}*/
 
 /* Footer */  // THIS CAN BE NESTED: bma-footer > bma-logo + link-container + msr-logo
 

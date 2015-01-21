@@ -18,7 +18,7 @@
 <!-- Style Guide Navigation -->
 <div class="style-guide-nav">
 	<a href="#colors">Colors</a><br>
-	<a href="#toolbars">Toolbars</a><br>
+	<a href="#toolbar">Toolbar</a><br>
 	<a href="#typography">Typography</a><br>
 		<ul>
 			<li><a href="#buttons">Buttons</a></li>
@@ -28,7 +28,6 @@
 		<ul>
 			<li><a href="#dialog">Dialog</a></li>
 			<li><a href="#variable-editor">Variable Editor</a></li>
-			<li><a href="#tables">Tables</a></li>
 			<li><a href="#container-name">Container Name</a></li>
 			<li><a href="#proof-analysis">Proof Analysis</a></li>
 			<li><a href="#simulation">Simulation Analysis</a></li>
@@ -104,8 +103,8 @@
 <!-- Toolbars -->
 
 <hr>
-<a name="toolbars"></a>
-<h2>Toolbars</h2>
+<a name="toolbar"></a>
+<h2>Toolbar</h2>
 
 <p class="guide-text">Undo/Redo Toolbar<br>active state with <code>.active</code></p>
 <div data-xrayhtml class="data-xrayhtml method-flip">
@@ -203,6 +202,18 @@
 	</div>
 </div>
 
+<p class="guide-text">Zoom Bar</code></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="zoomslider-container">
+	<img id="zoom-plus" class="hoverable" src="../images/zoomplus.svg">
+	<div class="zoomslider-bar">
+		<a class="zoomslider-pointer" href="#"></a>
+	</div>
+	<img id="zoom-minus" class="hoverable" src="../images/zoomminus.svg">
+	</div></div>
+</div>
+
 <p class="guide-text">View Options</code></p>
 <div data-xrayhtml class="data-xrayhtml method-flip">
 	<div class="snippet">
@@ -217,15 +228,31 @@
 		</span>
 	</div>
 	<br><br>
-	<div class="zoomslider-container">
-		<img id="zoom-plus" class="hoverable" src="../images/zoomplus.svg">
-		<div class="zoomslider-bar">
-		<a class="zoomslider-pointer" href="#"></a>
-		</div>
-		<img id="zoom-minus" class="hoverable" src="../images/zoomminus.svg">
-	</div>
+	
 	</div>
 </div>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet">
+<div class="window vis-options">
+	<div class="option-name">Text Labels</div> 
+	<div class="default-button onoff green"><button>ON</button></div>
+	<div class="pill-button-box">
+		<div class="pill-button"><button >-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div></br>
+	<div class="option-name">Grid</div> 
+	<div class="default-button onoff grey"><button>OFF</button></div><br>
+	<div class="option-name">Arrow Width</div> 
+	<div class="pill-button-box">
+		<div class="pill-button"><button >-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div>
+	
+</div>
+	
+</div>
+</div>
+
 
 
 
@@ -263,6 +290,13 @@
 <h3>Buttons &amp; Forms</h3>
 <span class="bug-note">Text does not turn white on hover on rounded corners</span><br><br>
 
+<p class="guide-text">Default Button<br></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+	<div class="default-button"><button>LOREM</button></div>
+</div>
+</div>
+
 <!-- Button List -->
 <p class="guide-text">Button List<br></p>
 <div data-xrayhtml class="data-xrayhtml method-flip">
@@ -272,6 +306,28 @@
 		<li><button>YES</button></li>
 	</ul></div>
 </div>
+
+<!-- Pill +/- Button -->
+<p class="guide-text">Pill +/- Button</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill-button-box">
+	<div class="pill-button"><button >-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div>
+</div>
+</div>
+
+<!-- ON/OFF Button -->
+<p class="guide-text">ON/OFF Button</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="default-button onoff green"><button>ON</button></div>
+<div class="default-button onoff grey"><button>OFF</button></div>
+</div>
+</div>
+
+
 
 <!-- Big Action Button -->
 <p class="guide-text">Big Action Button<br>This is used for actions such as "RUN" in the simul;ation popout.<br>Color can be changed with <code>.action-button(@c)</code> mixin</p>
