@@ -1,10 +1,6 @@
-﻿describe("model", () => {
+﻿describe("model transformation", () => {
 
-    describe("export and import", () => {
-
-        it("maps variable names correctly", () => {
-            expect(BMA.Model.MapVariableNames("var(a)-var(b)", s => s.toUpper())).toBe("var(A)-var(B)");
-        });
-
-    })
+    it("maps variable names correctly", () => {
+        expect(BMA.Model.MapVariableNames("var(a)-var(b)", s => s.toUpperCase())).toBe("var(A)-var(B)");
+    });
 });

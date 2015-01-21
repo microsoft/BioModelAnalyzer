@@ -15,8 +15,8 @@
                     var endIndex = f.indexOf(")", index);
                     if (endIndex < 0)
                         break;
-                    var varName = f.substring(index + varPrefix.length, endIndex - index - varPrefix.length);
-                    f = f.substring(0, index + varPrefix.length) + mapper(varName) + f.substr(endIndex - index - varPrefix.length);
+                    var varName = f.substring(index + varPrefix.length, endIndex);
+                    f = f.substring(0, index + varPrefix.length) + mapper(varName) + f.substr(endIndex);
                     startPos = index + 1;
                 }
             }
@@ -27,31 +27,7 @@
         // 1) Variables in formulas are identified by IDs
         // 2) Default function avg(pos)-avg(neg) is replaced with null formula
         export function ExportBioModel(model: BioModel) {
-
-            function TransformFormula(id: number, f: string): string {
-                if (f != null) {
-                    f = f.trim();
-                    // Convert default function to null
-                    if (f.toLowerCase() == "avg(pos)-avg(neg)")
-                        return null;
-                    // Replace variable names with IDs
-                    var varPrefix = "var(";
-                    var startPos = 0;
-                    var index: number;
-                    while ((index = f.indexOf(varPrefix, startPos)) >= 0) {
-                        var endIndex = f.indexOf(")", index);
-                        if (endIndex < 0)
-                            break;
-                        var varName = f.substring(index + varPrefix.length, endIndex - index - varPrefix.length);
-                        f = f.substring(0, index + varPrefix.length) +
-                        this.GetIdByName(id, varName).toString() +
-                        f.substr(endIndex - index - varPrefix.length);
-                        startPos = index + 1;
-                    }
-                }
-                return f;
-            }
-
+          
             function GetIdByName(id: number, name: string): number {
                 var results = this.variables.filter(function (v2: Variable) {
                     return v2.Name == name &&
