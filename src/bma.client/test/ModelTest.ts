@@ -18,8 +18,8 @@
     var CL1 = new BMA.Model.ContainerLayout(7, "", 5, 1, 6);
     var CL2 = new BMA.Model.ContainerLayout(3, "", 24, 81, 56);
     var containers = [CL1, CL2];
-    var varialbes = [VL1, VL2, VL3];
-    var layout = new BMA.Model.Layout(containers, varialbes);
+    var layoutVariables = [VL1, VL2, VL3];
+    var layout = new BMA.Model.Layout(containers, layoutVariables);
 
     var isStable = true;
     var time = 15;
@@ -257,7 +257,7 @@
         this.layout = new BMA.Model.Layout(containers, variableLayouts);
         
         var serializedModel = JSON.stringify(ml);
-        appModel.Reset(serializedModel);
+        appModel.Deserialize(serializedModel);
         expect(appModel.BioModel).toEqual(this.model);
         expect(appModel.Layout).toEqual(this.layout);
         expect(appModel.ProofResult).toEqual(undefined);
@@ -392,7 +392,7 @@
         newAppModel.Layout = layout;
         newAppModel.ProofResult = proof;
 
-        appModel.Reset(serialized);
+        appModel.Deserialize(serialized);
         
         expect(appModel).toEqual(newAppModel);
     });
@@ -403,7 +403,7 @@
         appModel.ProofResult = proof;
 
         var newAppModel = new BMA.Model.AppModel();
-        appModel.Reset(undefined);
+        appModel.Deserialize(undefined);
 
         expect(appModel).toEqual(newAppModel);
     });
@@ -414,7 +414,7 @@
         appModel.ProofResult = proof;
 
         var newAppModel = new BMA.Model.AppModel();
-        appModel.Reset(null);
+        appModel.Deserialize(null);
 
         expect(appModel).toEqual(newAppModel);
     });

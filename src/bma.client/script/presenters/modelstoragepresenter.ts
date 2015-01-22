@@ -25,7 +25,7 @@
                     else load()
 
                     function load() {
-                        appModel.Reset(undefined);
+                        appModel.Deserialize(undefined);
                         checker.Snapshot(appModel);
                     }
                 });
@@ -63,12 +63,12 @@
                                 try {
                                 var data = $.parseXML(fileContent);
                                 var model = BMA.ParseXmlModel(data, window.GridSettings);
-                                appModel.Reset2(model.Model, model.Layout);
+                                appModel.Reset(model.Model, model.Layout);
                                 
                                 }
                                 catch (exc) {
                                     console.log(exc);
-                                    appModel.Reset(fileReader.result);
+                                    appModel.Deserialize(fileReader.result);
                                 }
                                 checker.Snapshot(appModel);
                             };

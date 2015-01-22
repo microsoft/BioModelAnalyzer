@@ -84,6 +84,7 @@ module BMA {
         export class VariableTypes {
             public static get Default() { return "Default" } // Intracellular
             public static get Constant() { return "Constant" } // Extracellular
+            public static get MembraneReceptor() { return "MembraneReceptor"; }
         }
 
         export class Variable {

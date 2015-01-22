@@ -5,7 +5,7 @@
         private currentModel: BMA.Model.AppModel = new BMA.Model.AppModel();
 
         Snapshot(model: BMA.Model.AppModel) {
-            this.currentModel.Reset(model.Serialize());
+            this.currentModel.Deserialize(model.Serialize());
         }
 
         IsChanged(model: BMA.Model.AppModel): boolean {

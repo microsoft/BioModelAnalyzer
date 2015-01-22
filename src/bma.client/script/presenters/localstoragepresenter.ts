@@ -74,7 +74,7 @@
 
                     function load() {
                         if (that.tool.IsInRepo(key)) {
-                            appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
+                            appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
                             that.checker.Snapshot(that.appModel);
                         }
                         else {
@@ -86,7 +86,7 @@
 
                 window.Commands.On("LocalStorageInitModel", function (key) {
                     if (that.tool.IsInRepo(key)) {
-                        appModel.Reset(JSON.stringify(that.tool.LoadModel(key)));
+                        appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
                         that.checker.Snapshot(that.appModel);
                     }
                 });
