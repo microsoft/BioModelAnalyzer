@@ -1,1 +1,90 @@
-{"model":{"name":"ToyModelStable","variables":[{"id":1,"containerId":1,"type":"Default","rangeFrom":0,"rangeTo":4,"formula":"","name":"a"},{"id":2,"containerId":1,"type":"Default","rangeFrom":0,"rangeTo":4,"formula":"","name":"b"},{"id":3,"containerId":1,"type":"Default","rangeFrom":0,"rangeTo":4,"formula":"","name":"c"}],"relationships":[{"id":1,"fromVariableId":1,"toVariableId":2,"type":"Activator"},{"id":2,"fromVariableId":2,"toVariableId":3,"type":"Activator"},{"id":3,"fromVariableId":3,"toVariableId":1,"type":"Inhibitor"}]},"layout":{"containers":[{"id":1,"size":1,"positionX":2,"positionY":0}],"variables":[{"id":1,"positionX":630.7,"positionY":47.34285714285714,"cellX":null,"cellY":null,"angle":0},{"id":2,"positionX":583.2,"positionY":178.77142857142857,"cellX":null,"cellY":null,"angle":0},{"id":3,"positionX":678.2,"positionY":162.34285714285716,"cellX":null,"cellY":null,"angle":0}]}}
+{
+  "Model": {
+    "Name": "ToyModelStable",
+    "Variables": [
+      {
+        "Id": 1,
+        "RangeFrom": 0,
+        "RangeTo": 4,
+        "Formula": ""
+      },
+      {
+        "Id": 2,
+        "RangeFrom": 0,
+        "RangeTo": 4,
+        "Formula": ""
+      },
+      {
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 4,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 1,
+        "FromVariable": 1,
+        "ToVariable": 2,
+        "Type": "Activator"
+      },
+      {
+        "Id": 2,
+        "FromVariable": 2,
+        "ToVariable": 3,
+        "Type": "Activator"
+      },
+      {
+        "Id": 3,
+        "FromVariable": 3,
+        "ToVariable": 1,
+        "Type": "Inhibitor"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 1,
+        "Name": "a",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 630.7,
+        "PositionY": 47.34285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 2,
+        "Name": "b",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 583.2,
+        "PositionY": 178.77142857142857,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 3,
+        "Name": "c",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 678.2,
+        "PositionY": 162.34285714285716,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": 0
+      }
+    ]
+  }
+}

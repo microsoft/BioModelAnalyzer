@@ -17,8 +17,7 @@ type VMCAIFurtherTestingTests() =
         let jobj = JObject.Parse(System.IO.File.ReadAllText("SimpleBifurcation.json"))
 
         // Extract model from json
-        let model = (jobj.["model"] :?> JObject).ToObject<Model>()
-        model.Preprocess()
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
 
         // Create analyzer. 
         // Have to static cast to get IAnalyzer functions.   
@@ -45,8 +44,7 @@ type VMCAIFurtherTestingTests() =
         let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
 
         // Extract model from json
-        let model = (jobj.["model"] :?> JObject).ToObject<Model>()
-        model.Preprocess()
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
 
         // Create analyzer. 
         // Have to static cast to get IAnalyzer functions.   
@@ -69,8 +67,7 @@ type VMCAIFurtherTestingTests() =
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ion channel.json"))
 
         // Extract model from json
-        let model = (jobj.["model"] :?> JObject).ToObject<Model>()
-        model.Preprocess()
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
 
         // Create analyzer. 
         // Have to static cast to get IAnalyzer functions.   

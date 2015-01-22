@@ -323,6 +323,34 @@
 				}
 			}
 
+	// Contextual Command List
+		ul.command-list{
+				padding: 5px 0px 3px 0px;
+				li{
+					padding:0px;
+					margin-bottom:3px;
+					
+					a {
+						text-decoration: none;
+						line-height: 19px;
+						padding:2px 0px 2px 5px;
+						display:block;
+						vertical-align: middle;
+						&:hover{
+							background-color:@lightgrey;
+						}
+						img{
+							padding:0px;
+							width: 20px;
+							height: 20px;
+							margin:0px 5px 0px 0px;
+							vertical-align: middle;
+
+						}
+					}
+				}
+			}
+
 	// Form elements
 
 		textarea, input { outline: none; } // Remove default highlight on focus
@@ -651,37 +679,6 @@
 	    box-sizing: border-box;
 	}
 
-/* Drawing Surface */
-
-	.bma-drawingsurfacecontainer {
-	    height: calc(~"100% - 70px" - @footer-height);
-	    /*.calc(height, ~"100% - 70px" - @footer-height);*/
-	    position: relative;
-	}
-
-	.bma-drawingsurface {
-	    position: absolute;
-	    top: 0;
-	    left: 0;
-	    right: 0;
-	    bottom: 0;
-	}
-
-	.modeldesigner-element-cell {
-	    stroke-width: 1px;
-	    stroke: transparent;
-	}
-
-
-	.modeldesigner-element-hover {
-	    stroke: gray;
-	    stroke-width: 2px;
-	}
-
-	.modeldesigner-line-hover {
-	    stroke-width: 3px;
-	}
-
 /* Toolbar */
 	
 	@toolbar-icon-height: 50px;
@@ -807,9 +804,50 @@
 			}
 		}
 
-	
+/* Canvas - Drawing Surface */
 
-	
+	.bma-drawingsurfacecontainer {
+	    height: calc(~"100% - 70px" - @footer-height);
+	    /*.calc(height, ~"100% - 70px" - @footer-height);*/
+	    position: relative;
+	}
+
+	.bma-drawingsurface {
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	}
+
+	.modeldesigner-element-cell {
+	    stroke-width: 1px;
+	    stroke: transparent;
+	}
+
+
+	.modeldesigner-element-hover {
+	    stroke: gray;
+	    stroke-width: 2px;
+	}
+
+	.modeldesigner-line-hover {
+	    stroke-width: 3px;
+	}
+
+	.window.canvas-contextual{
+		width:85px;
+		border-radius: 5px;
+		padding:0px;
+		font-size: 12px;
+
+		
+
+	}
+	.window.submenu{
+		width:35px;
+	}
+
  
 /*  Windows  */
 	

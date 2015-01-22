@@ -60,7 +60,6 @@ namespace bma.client.Controllers
                 
                 // Prepare model for analysis
                 var model = (Model)input.Model;
-                model.Preprocess();
 
                 var output = analyzer.simulate_tick(model, input.Variables);
 

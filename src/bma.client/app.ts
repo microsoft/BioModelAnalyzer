@@ -2,6 +2,7 @@
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="script\model\biomodel.ts"/>
 /// <reference path="script\model\model.ts"/>
+/// <reference path="script\model\exportimport.ts"/>
 /// <reference path="script\model\visualsettings.ts"/>
 /// <reference path="script\commands.ts"/>
 /// <reference path="script\elementsregistry.ts"/>
@@ -398,20 +399,24 @@ $(document).ready(function () {
     if (params.Model !== undefined) {
 
         var s = params.Model.split('.');
-        if (s[s.length - 1] == "json") {
-            $.getJSON(params.Model, function (fileContent) {
-                appModel.Reset(JSON.stringify(fileContent));
+        if (s.length > 1 && s[s.length - 1] == "json") {
+            $.ajax(params.Model, {
+                dataType: "text",
+                success: function (fileContent) {
+                    appModel.Deserialize(fileContent);
+                    //appModel._Reset(fileContent);
+                }
             })
         }
         else {
             $.get(params.Model, function (fileContent) {
                 try {
                     var model = BMA.ParseXmlModel(fileContent, window.GridSettings);
-                    appModel.Reset2(model.Model, model.Layout);
+                    appModel.Reset(model.Model, model.Layout);
                 }
                 catch (exc) {
                     console.log(exc);
-                    appModel.Reset(fileContent);
+                    appModel.Deserialize(fileContent);
                 }
             });
         }

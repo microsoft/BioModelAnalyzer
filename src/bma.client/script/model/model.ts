@@ -36,7 +36,7 @@ module BMA {
                 this.proofResult = value;
             }
 
-            public Reset(serializedModel: string) {
+            public DeserializeLegacyJSON(serializedModel: string) {
 
                 if (serializedModel !== undefined && serializedModel !== null) {
                     var ml = JSON.parse(serializedModel);
@@ -105,14 +105,29 @@ module BMA {
                 window.Commands.Execute("ModelReset", undefined);
             }
 
-            public Reset2(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
+            public Deserialize(serializedModel: string) {
+
+                if (serializedModel !== undefined && serializedModel !== null) {
+                    var imported = BMA.Model.ImportModelAndLayout(JSON.parse(serializedModel));
+                    this.model = imported.Model;
+                    this.layout = imported.Layout;
+                } else {
+                    this.model = new BMA.Model.BioModel("model 1", [], []);
+                    this.layout = new BMA.Model.Layout([], []);
+                }
+
+                this.proofResult = undefined;
+                window.Commands.Execute("ModelReset", undefined);
+            }
+
+            public Reset(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.model = model;
                 this.layout = layout;
                 window.Commands.Execute("ModelReset", undefined);
             }
 
             public Serialize(): string {
-                return JSON.stringify({ model: this.model, layout: this.layout });
+                return JSON.stringify(BMA.Model.ExportModelAndLayout(this.model, this.layout));
             }
 
             constructor() {

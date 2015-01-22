@@ -56,7 +56,7 @@
 
                 window.Commands.On("ProofStarting", function () {
                     proofResultViewer.OnProofStarted();
-                    var proofInput = appModel.BioModel.GetJSON();
+                    var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
@@ -169,7 +169,7 @@
                     return true;
                 }
                 else
-                    return JSON.stringify(this.currentModel.GetJSON()) !== JSON.stringify(this.appModel.BioModel.GetJSON());
+                    return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
             }
 
             public Snapshot() {

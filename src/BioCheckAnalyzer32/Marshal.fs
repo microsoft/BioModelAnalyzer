@@ -589,7 +589,7 @@ let QN_of_Model (model:Model) =
                 let tags = []
 
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
-                let t = Some v.Function
+                let t = Some v.Formula
                 let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
                 let parse_error f line col msg = 
                     "Failed to parse " + name + "'s function: " + f + ". " +
@@ -614,8 +614,8 @@ let QN_of_Model (model:Model) =
     let rr = model.Relationships
     let io = seq { for r in rr do
                     let id = r.Id
-                    let source = r.FromVariableId
-                    let target = r.ToVariableId
+                    let source = r.FromVariable
+                    let target = r.ToVariable
                     let parsed_rel = r.Type
                     let rel_ty =
                         match parsed_rel with

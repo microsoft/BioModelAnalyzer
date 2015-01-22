@@ -55,7 +55,6 @@ namespace bma.client.Controllers
                 }
 
                 var model = (Model)input;
-                model.Preprocess();
                 var result = analyzer.checkStability(model);
 
                 //azureLogService.Debug("Analyze Output XML", outputXml.ToString());

@@ -32,8 +32,8 @@
                 var results = model.Variables.filter(function (v2: Variable) {
                     return v2.Name == name &&
                         model.Relationships.some(function (r: Relationship) {
-                            return r.FromVariableId == id && r.ToVariableId == v2.Id ||
-                                r.ToVariableId == id && r.FromVariableId == v2.Id;
+                            return r.ToVariableId == id && r.FromVariableId == v2.Id;
+                               // || r.FromVariableId == id && r.ToVariableId == v2.Id
                         });
                 });
                 if (results.length > 1)
@@ -44,7 +44,7 @@
             }
 
             return {
-                ModelName: model.Name,
+                Name: model.Name,
                 Variables: model.Variables.map(v => {
                     return {
                         Id: v.Id,
@@ -102,7 +102,7 @@
             });
             return {
                 Model: new BioModel(json.Model.Name,
-                    json.Model.Variables.map(v => new Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Name, id[v.Id].Type, v.RangeFrom, v.RangeTo,
+                    json.Model.Variables.map(v => new Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo,
                                                                MapVariableNames(v.Formula, s => id[parseInt(s)].Name))), 
                                     json.Model.Relationships.map(r => new Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type))),
                 Layout: new Layout(json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY)),

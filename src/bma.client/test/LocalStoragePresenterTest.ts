@@ -76,7 +76,7 @@
         //var key = '4';
         window.Commands.Execute("LocalStorageSaveModel", {});
         window.Commands.Execute("LocalStorageLoadModel", "user." + name);
-        expect(appModel.Reset).toHaveBeenCalledWith(JSON.stringify(modelRepositoryTest.LoadModel(name)));
+        expect(appModel.Deserialize).toHaveBeenCalledWith(JSON.stringify(modelRepositoryTest.LoadModel(name)));
     });
 
     xit("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
@@ -84,6 +84,6 @@
         spyOn(appModel, "Reset");
         var key = 'testkey';
         window.Commands.Execute("LocalStorageLoadModel", key);
-        expect(appModel.Reset).not.toHaveBeenCalled();
+        expect(appModel.Deserialize).not.toHaveBeenCalled();
     });
 }); 

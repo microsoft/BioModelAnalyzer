@@ -24,17 +24,14 @@
         }
 
         public ParseItem(item): boolean {
-            var ml = JSON.parse(item);
-
-            if (ml === undefined || ml.model === undefined || ml.layout === undefined ||
-                ml.model.variables === undefined ||
-                ml.layout.variables === undefined ||
-                ml.model.variables.length !== ml.layout.variables.length ||
-                ml.layout.containers === undefined ||
-                ml.model.relationships === undefined) {
+            try {
+                var ml = JSON.parse(item);
+                BMA.Model.ImportModelAndLayout(ml);
+                return true;
+            }
+            catch(e) {
                 return false;
             }
-            else return true;
         }
 
         public SaveModel(id: string, model: JSON) {
@@ -54,7 +51,7 @@
             var model = window.localStorage.getItem(id);
             if (model !== null) {
                 var app = new BMA.Model.AppModel();
-                app.Reset(model);
+                app.Deserialize(model);
                 return JSON.parse(app.Serialize());
             }
             else return null;

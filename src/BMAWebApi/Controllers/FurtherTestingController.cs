@@ -57,7 +57,6 @@ namespace bma.client.Controllers
 
                 // Prepare model for analysis
                 var model = (Model)input.Model;
-                model.Preprocess();
 
                 // SI: these all return a single CEx, not an array of them. 
                 var cexBifurcates = analyzer.findCExBifurcates(model, input.Analysis);
