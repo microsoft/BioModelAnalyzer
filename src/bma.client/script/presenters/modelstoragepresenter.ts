@@ -67,8 +67,14 @@
                                 
                                 }
                                 catch (exc) {
-                                    console.log(exc);
-                                    appModel.Deserialize(fileReader.result);
+                                    console.log("XML parsing failed: " + exc + ". Trying JSON");
+                                    try {
+                                        appModel.Deserialize(fileReader.result);
+                                    }
+                                    catch (exc2) {
+                                        console.log("JSON failed: " + exc + ". Trying legacy JSON version");
+                                        appModel.DeserializeLegacyJSON(fileReader.result);
+                                    }
                                 }
                                 checker.Snapshot(appModel);
                             };

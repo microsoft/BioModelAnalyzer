@@ -35,7 +35,7 @@ type WebApiControllersTests() =
     member x.``Stable model stabilizes`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelStable.json", System.Text.Encoding.UTF8))
-            let model = jobj.["model"] :?> JObject
+            let model = jobj.["Model"] :?> JObject
             model.Add("EnableLogging", JValue(false))
 
             let! responseString = 
@@ -53,7 +53,7 @@ type WebApiControllersTests() =
     member x.``Unstable model does not stabilize`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
-            let model = jobj.["model"] :?> JObject
+            let model = jobj.["Model"] :?> JObject
             model.Add("EnableLogging", JValue(false))
 
             let! responseString = 
@@ -71,7 +71,7 @@ type WebApiControllersTests() =
     [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Unstable model simulated for 10 steps`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
-        let model = (jobj.["model"] :?> JObject).ToObject<Model>()
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
 
         let v1 = SimulationVariable()
         v1.Id <- 1
@@ -111,7 +111,7 @@ type WebApiControllersTests() =
     [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Bifurcating model bifurcates`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("SimpleBifurcation.json"))
-        let jmodel = jobj.["model"] :?> JObject
+        let jmodel = jobj.["Model"] :?> JObject
         let model = jmodel.ToObject<Model>()
 
         let analysisInput = jmodel
@@ -152,7 +152,7 @@ type WebApiControllersTests() =
     [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Race model cycles`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
-        let jmodel = jobj.["model"] :?> JObject
+        let jmodel = jobj.["Model"] :?> JObject
         let model = jmodel.ToObject<Model>()
 
         let analysisInput = jmodel
@@ -193,7 +193,7 @@ type WebApiControllersTests() =
     [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Ion channel has fixpoint`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ion channel.json"))
-        let jmodel = jobj.["model"] :?> JObject
+        let jmodel = jobj.["Model"] :?> JObject
         let model = jmodel.ToObject<Model>()
 
         let analysisInput = jmodel

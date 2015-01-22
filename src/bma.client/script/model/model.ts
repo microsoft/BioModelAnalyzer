@@ -36,7 +36,7 @@ module BMA {
                 this.proofResult = value;
             }
 
-            public _Reset(serializedModel: string) {
+            public DeserializeLegacyJSON(serializedModel: string) {
 
                 if (serializedModel !== undefined && serializedModel !== null) {
                     var ml = JSON.parse(serializedModel);

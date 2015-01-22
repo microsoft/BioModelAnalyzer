@@ -1,1 +1,119 @@
-{"model":{"name":"model 1","variables":[{"id":3,"containerId":0,"type":"Constant","rangeFrom":0,"rangeTo":1,"formula":"1","name":"P1p_input"},{"id":4,"containerId":0,"type":"Constant","rangeFrom":0,"rangeTo":1,"formula":"1","name":"P2p_input"},{"id":5,"containerId":1,"type":"Default","rangeFrom":0,"rangeTo":1,"formula":"","name":"P1p_path"},{"id":6,"containerId":2,"type":"Default","rangeFrom":0,"rangeTo":1,"formula":"","name":"P2p_path"}],"relationships":[{"id":7,"fromVariableId":6,"toVariableId":5,"type":"Inhibitor"},{"id":8,"fromVariableId":5,"toVariableId":6,"type":"Inhibitor"},{"id":9,"fromVariableId":3,"toVariableId":5,"type":"Activator"},{"id":10,"fromVariableId":4,"toVariableId":6,"type":"Activator"}]},"layout":{"containers":[{"id":1,"size":1,"positionX":2,"positionY":-2},{"id":2,"size":1,"positionX":3,"positionY":-2}],"variables":[{"id":3,"positionX":636.6666666666667,"positionY":-633.3333333333334,"cellX":0,"cellY":0,"angle":0},{"id":4,"positionX":856.6666666666667,"positionY":-625,"cellX":0,"cellY":0,"angle":0},{"id":5,"positionX":630,"positionY":-417.5,"cellX":0,"cellY":0,"angle":0},{"id":6,"positionX":875,"positionY":-414.1666666666667,"cellX":0,"cellY":0,"angle":0}]}}
+{
+  "Model": {
+    "Name": "model 1",
+    "Variables": [
+      {
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": "1"
+      },
+      {
+        "Id": 4,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": "1"
+      },
+      {
+        "Id": 5,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Id": 6,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 7,
+        "FromVariable": 6,
+        "ToVariable": 5,
+        "Type": "Inhibitor"
+      },
+      {
+        "Id": 8,
+        "FromVariable": 5,
+        "ToVariable": 6,
+        "Type": "Inhibitor"
+      },
+      {
+        "Id": 9,
+        "FromVariable": 3,
+        "ToVariable": 5,
+        "Type": "Activator"
+      },
+      {
+        "Id": 10,
+        "FromVariable": 4,
+        "ToVariable": 6,
+        "Type": "Activator"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 3,
+        "Name": "P1p_input",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 636.6666666666667,
+        "PositionY": -633.3333333333334,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      },
+      {
+        "Id": 4,
+        "Name": "P2p_input",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 856.6666666666667,
+        "PositionY": -625,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      },
+      {
+        "Id": 5,
+        "Name": "P1p_path",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 630,
+        "PositionY": -417.5,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      },
+      {
+        "Id": 6,
+        "Name": "P2p_path",
+        "Type": "Default",
+        "ContainerId": 2,
+        "PositionX": 875,
+        "PositionY": -414.1666666666667,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": -2
+      },
+      {
+        "Id": 2,
+        "Size": 1,
+        "PositionX": 3,
+        "PositionY": -2
+      }
+    ]
+  }
+}

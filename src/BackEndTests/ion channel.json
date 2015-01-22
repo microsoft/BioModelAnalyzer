@@ -1,1 +1,73 @@
-{"model":{"name":"ion channel","variables":[{"id":2,"containerId":1,"type":"MembraneReceptor","rangeFrom":0,"rangeTo":1,"formula":"","name":""},{"id":3,"containerId":1,"type":"Default","rangeFrom":0,"rangeTo":1,"formula":"","name":""}],"relationships":[{"id":4,"fromVariableId":2,"toVariableId":3,"type":"Activator"},{"id":5,"fromVariableId":2,"toVariableId":2,"type":"Activator"},{"id":6,"fromVariableId":3,"toVariableId":2,"type":"Inhibitor"}]},"layout":{"containers":[{"id":1,"size":1,"positionX":2,"positionY":-3}],"variables":[{"id":2,"positionX":633.4614423293597,"positionY":-826.802736706546,"cellX":0,"cellY":0,"angle":3.842338183320199},{"id":3,"positionX":622.2222222222222,"positionY":-740.3777779473198,"cellX":0,"cellY":0,"angle":0}]}}
+{
+  "Model": {
+    "Name": "ion channel",
+    "Variables": [
+      {
+        "Id": 2,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 4,
+        "FromVariable": 2,
+        "ToVariable": 3,
+        "Type": "Activator"
+      },
+      {
+        "Id": 5,
+        "FromVariable": 2,
+        "ToVariable": 2,
+        "Type": "Activator"
+      },
+      {
+        "Id": 6,
+        "FromVariable": 3,
+        "ToVariable": 2,
+        "Type": "Inhibitor"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 2,
+        "Name": "",
+        "Type": "MembraneReceptor",
+        "ContainerId": 1,
+        "PositionX": 633.4614423293597,
+        "PositionY": -826.802736706546,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 3.842338183320199
+      },
+      {
+        "Id": 3,
+        "Name": "",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 622.2222222222222,
+        "PositionY": -740.3777779473198,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": -3
+      }
+    ]
+  }
+}

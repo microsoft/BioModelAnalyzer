@@ -17,8 +17,7 @@ type VMCAISimulateTests() =
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
 
         // Extract model from json
-        let model = (jobj.["model"] :?> JObject).ToObject<Model>()
-        model.Preprocess()
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
 
         // Create analyzer
         let analyzer = UIMain.Analyzer()

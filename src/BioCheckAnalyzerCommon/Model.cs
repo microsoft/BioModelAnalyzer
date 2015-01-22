@@ -31,8 +31,7 @@ namespace BioModelAnalyzer
 
             [DefaultValue((string)null)]
             [DisplayFormat(ConvertEmptyStringToNull = false)]
-            [JsonProperty(PropertyName = "formula")]
-            public string Function { get; set; }
+            public string Formula { get; set; }
 
             //public int? Number { get; set; }
 
@@ -57,9 +56,9 @@ namespace BioModelAnalyzer
             [XmlAttribute]
             public int Id { get; set; }
 
-            public int FromVariableId { get; set; }
+            public int FromVariable { get; set; }
 
-            public int ToVariableId { get; set; }
+            public int ToVariable { get; set; }
 
             // [JsonConverter(typeof(StringEnumConverter))]
             // RelationshipType is encoded as number of JSON because attribute is commented
@@ -80,6 +79,7 @@ namespace BioModelAnalyzer
 
         public Relationship[] Relationships { get; set; }
 
+        /* Preprocesss code is no longer needed
         /// <summary>Performs preprocessing of Model before passing it to F# code.
         /// Preprocessing takes two steps: replacing avg(pos)-avg(neg) with default value and replacing 
         /// variable names with IDs
@@ -90,8 +90,8 @@ namespace BioModelAnalyzer
                 return;
 
             foreach (var v in Variables)
-                if (v.Function != null)
-                    v.Function = v.Function.Trim();
+                if (v.Formula != null)
+                    v.Formula = v.Formula.Trim();
 
             NullifyDefaultFunction();
             ReplaceVariableNamesWithIDs();
@@ -104,7 +104,7 @@ namespace BioModelAnalyzer
 
             foreach (var v in Variables)
             {
-                v.Function = ReplaceVariableNames(v.Function, name =>
+                v.Formula = ReplaceVariableNames(v.Formula, name =>
                 {
                     var fromRelationships = Variables.Where(
                         v1 => Relationships.Where(r => r.FromVariableId == v1.Id && r.ToVariableId == v.Id || r.FromVariableId == v.Id && r.ToVariableId == v1.Id).Count() > 0).FirstOrDefault(vv => vv.Name == name);
@@ -120,8 +120,8 @@ namespace BioModelAnalyzer
                 return;
 
             foreach (var v in Variables)
-                if (v.Function != null && v.Function.ToLower() == "avg(pos)-avg(neg)")
-                    v.Function = null;
+                if (v.Formula != null && v.Formula.ToLower() == "avg(pos)-avg(neg)")
+                    v.Formula = null;
         }
 
         private static string ReplaceVariableNames(string s, Func<string, string> f)
@@ -139,6 +139,6 @@ namespace BioModelAnalyzer
                 startPos = index + 1;
             }
             return s;
-        }
+        }*/
     }
 }
