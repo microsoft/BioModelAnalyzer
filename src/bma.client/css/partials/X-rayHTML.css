@@ -39,7 +39,7 @@ a.btn {
 .method-flip .source-panel {
   position: absolute;
   z-index: 99;
-  background-color: #EDEDED;
+  background-color: white;
   width: 70%;
   min-width: 350px;
   padding: 10px;

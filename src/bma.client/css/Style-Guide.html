@@ -4,12 +4,10 @@
 		
 		<link href="partials/X-rayHTML.css" rel="stylesheet">
 		<link rel="stylesheet" href="BMA-Styles.css">
+		<link href="partials/prism.css" rel="stylesheet" />
 		
-
-
-
 	</head>
-	<body class="language-html">
+	<body class="language-markup">
 		
 		<h1>BMA Style Guide</h1><br>
 
@@ -18,12 +16,13 @@
 <!-- Style Guide Navigation -->
 <div class="style-guide-nav">
 	<a href="#colors">Colors</a><br>
-	<a href="#toolbar">Toolbar</a><br>
 	<a href="#typography">Typography</a><br>
 		<ul>
 			<li><a href="#buttons">Buttons</a></li>
 			<li><a href="#tables">Tables</a></li>
 		</ul>
+	<a href="#toolbar">Toolbar</a><br>
+	<a href="#canvas">Canvas</a><br>
 	<a href="#windows">Windows</a><br>
 		<ul>
 			<li><a href="#dialog">Dialog</a></li>
@@ -37,7 +36,7 @@
 </div>
 
 
-<!-- 		Color Swatches -->
+<!-- Color Swatches -->
 <a name="colors"></a>
 <h2>Colors</h2>
 <div class="element">
@@ -99,162 +98,6 @@
 		</div>
 	</div>
 </div>
-
-<!-- Toolbars -->
-
-<hr>
-<a name="toolbar"></a>
-<h2>Toolbar</h2>
-
-<p class="guide-text">Undo/Redo Toolbar<br>active state with <code>.active</code></p>
-<div data-xrayhtml class="data-xrayhtml method-flip">
-	<div class="snippet">
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="pointer-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="undo-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="redo-icon" title="pointer"></div>
-		</span>
-	</div>
-	<br><br>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="pointer-icon" title="pointer"></div>
-		</span>
-	</div>
-	</div>
-	</div>
-
-<p class="guide-text">Model Elements Toolbar<br>active state with <code>.active</code></p>
-<div data-xrayhtml class="data-xrayhtml method-flip">
-	<div class="snippet">
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="cell-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="variable-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="constant-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="receptor-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="activate-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="inhibit-icon" title="pointer"></div>
-		</span>
-	</div>
-	<br><Br>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="cell-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="variable-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="constant-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="receptor-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="activate-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="inhibit-icon" title="pointer"></div>
-		</span>
-	</div>
-
-	</div>
-	</div>
-</div>
-
-<p class="guide-text">Zoom Bar</code></p>
-<div data-xrayhtml class="data-xrayhtml method-flip">
-<div class="snippet">
-<div class="zoomslider-container">
-	<img id="zoom-plus" class="hoverable" src="../images/zoomplus.svg">
-	<div class="zoomslider-bar">
-		<a class="zoomslider-pointer" href="#"></a>
-	</div>
-	<img id="zoom-minus" class="hoverable" src="../images/zoomminus.svg">
-	</div></div>
-</div>
-
-<p class="guide-text">View Options</code></p>
-<div data-xrayhtml class="data-xrayhtml method-flip">
-	<div class="snippet">
-	<div class="tool-icon">
-		<span class="ui-button-text">
-		<div class="view-options-icon" title="pointer"></div>
-		</span>
-	</div>
-	<div class="tool-icon active">
-		<span class="ui-button-text">
-		<div class="view-options-icon" title="pointer"></div>
-		</span>
-	</div>
-	<br><br>
-	
-	</div>
-</div>
-<div data-xrayhtml class="data-xrayhtml method-flip">
-	<div class="snippet">
-<div class="window vis-options">
-	<div class="option-name">Text Labels</div> 
-	<div class="default-button onoff green"><button>ON</button></div>
-	<div class="pill-button-box">
-		<div class="pill-button"><button >-</button></div>
-		<div class="pill-button"><button>+</button></div>
-	</div></br>
-	<div class="option-name">Grid</div> 
-	<div class="default-button onoff grey"><button>OFF</button></div><br>
-	<div class="option-name">Arrow Width</div> 
-	<div class="pill-button-box">
-		<div class="pill-button"><button >-</button></div>
-		<div class="pill-button"><button>+</button></div>
-	</div>
-	
-</div>
-	
-</div>
-</div>
-
-
-
 
 <!-- Typography -->
 <hr>
@@ -1075,6 +918,205 @@ Variables Table</p>
 </table>
 </div>
 </div>
+
+<!-- Toolbars -->
+
+	<hr>
+	<a name="toolbar"></a>
+	<h2>Toolbar</h2>
+
+	<p class="guide-text">Undo/Redo Toolbar<br>active state with <code>.active</code></p>
+	<div data-xrayhtml class="data-xrayhtml method-flip">
+		<div class="snippet">
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="pointer-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="undo-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="redo-icon" title="pointer"></div>
+			</span>
+		</div>
+		<br><br>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="pointer-icon" title="pointer"></div>
+			</span>
+		</div>
+		</div>
+		</div>
+
+	<p class="guide-text">Model Elements Toolbar<br>active state with <code>.active</code></p>
+	<div data-xrayhtml class="data-xrayhtml method-flip">
+		<div class="snippet">
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="cell-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="variable-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="constant-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="receptor-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="activate-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="inhibit-icon" title="pointer"></div>
+			</span>
+		</div>
+		<br><Br>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="cell-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="variable-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="constant-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="receptor-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="activate-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="inhibit-icon" title="pointer"></div>
+			</span>
+		</div>
+
+		</div>
+		</div>
+	</div>
+
+	<p class="guide-text">Zoom Bar</code></p>
+	<div data-xrayhtml class="data-xrayhtml method-flip">
+	<div class="snippet">
+	<div class="zoomslider-container">
+		<img id="zoom-plus" class="hoverable" src="../images/zoomplus.svg">
+		<div class="zoomslider-bar">
+			<a class="zoomslider-pointer" href="#"></a>
+		</div>
+		<img id="zoom-minus" class="hoverable" src="../images/zoomminus.svg">
+		</div></div>
+	</div>
+
+	<p class="guide-text">View Options</code></p>
+	<div data-xrayhtml class="data-xrayhtml method-flip">
+		<div class="snippet">
+		<div class="tool-icon">
+			<span class="ui-button-text">
+			<div class="view-options-icon" title="pointer"></div>
+			</span>
+		</div>
+		<div class="tool-icon active">
+			<span class="ui-button-text">
+			<div class="view-options-icon" title="pointer"></div>
+			</span>
+		</div>
+		<br><br>
+		
+		</div>
+	</div>
+	<div data-xrayhtml class="data-xrayhtml method-flip">
+		<div class="snippet">
+	<div class="window vis-options">
+		<div class="option-name">Text Labels</div> 
+		<div class="default-button onoff green"><button>ON</button></div>
+		<div class="pill-button-box">
+			<div class="pill-button"><button >-</button></div>
+			<div class="pill-button"><button>+</button></div>
+		</div></br>
+		<div class="option-name">Grid</div> 
+		<div class="default-button onoff grey"><button>OFF</button></div><br>
+		<div class="option-name">Arrow Width</div> 
+		<div class="pill-button-box">
+			<div class="pill-button"><button >-</button></div>
+			<div class="pill-button"><button>+</button></div>
+		</div>
+		
+	</div>
+		
+	</div>
+	</div>
+
+<!-- Canvas -->
+<hr>
+<a name="canvas"></a>
+<h2>Drawing Canvas</h2>
+
+<p class="guide-text">Container Contextual Menu</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+	<div class="window canvas-contextual">
+		<ul class="command-list">
+			<li><a href="#"><img src="../images/icon-cut.svg" alt=""> Cut</a></li>
+			<li><a href="#"><img src="../images/icon-copy.svg" alt=""> Copy</a></li>
+			<li><a href="#"><img src="../images/icon-edit.svg" alt=""> Edit</a></li>
+			<li><a href="#"><img src="../images/icon-size.svg" alt=""> Size ></a></li>
+			<li><a href="#"><img src="../images/icon-delete.svg" alt=""> Delete</a></li>
+		</ul>
+	</div>
+</div>
+</div>
+
+<p class="guide-text">Size Sub-Menu</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+	<div class="window canvas-contextual submenu">
+		<ul class="command-list">
+			<li><a href="#"> 1x1</a></li>
+			<li><a href="#"> 2x2</a></li>
+			<li><a href="#"> 3x3</a></li>
+		</ul>
+	</div>
+</div>
+</div>
+
+<p class="guide-text">Paste Contextual menu</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+	<div class="window canvas-contextual">
+		<ul class="command-list">
+			<li><a href="#"><img src="../images/icon-paste.svg" alt=""> Paste</a></li>
+		</ul>
+	</div>
+</div>
+</div>
+
+
 
 <!-- WINDOWS -->
 
@@ -2989,6 +3031,7 @@ Variables Table</p>
 
 		
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="js/prism.js" type="text/javascript"></script>
 		<script src="js/X-rayHTML.js" type="text/javascript"></script>
 	</body>
 </html>

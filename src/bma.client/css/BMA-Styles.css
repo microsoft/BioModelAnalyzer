@@ -324,6 +324,30 @@ ul.button-list li button:focus {
 .simulation-popout ul.button-list li.run button:hover {
   color: #81bb83;
 }
+ul.command-list {
+  padding: 5px 0px 3px 0px;
+}
+ul.command-list li {
+  padding: 0px;
+  margin-bottom: 3px;
+}
+ul.command-list li a {
+  text-decoration: none;
+  line-height: 19px;
+  padding: 2px 0px 2px 5px;
+  display: block;
+  vertical-align: middle;
+}
+ul.command-list li a:hover {
+  background-color: #ededed;
+}
+ul.command-list li a img {
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  margin: 0px 5px 0px 0px;
+  vertical-align: middle;
+}
 textarea,
 input {
   outline: none;
@@ -603,30 +627,6 @@ body {
 .box-sizing {
   box-sizing: border-box;
 }
-/* Drawing Surface */
-.bma-drawingsurfacecontainer {
-  height: calc(100% - 70px - 40px);
-  /*.calc(height, ~"100% - 70px" - @footer-height);*/
-  position: relative;
-}
-.bma-drawingsurface {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-.modeldesigner-element-cell {
-  stroke-width: 1px;
-  stroke: transparent;
-}
-.modeldesigner-element-hover {
-  stroke: gray;
-  stroke-width: 2px;
-}
-.modeldesigner-line-hover {
-  stroke-width: 3px;
-}
 /* Toolbar */
 .tool-icon {
   width: 50px;
@@ -764,6 +764,39 @@ body {
 .window.vis-options .option-name {
   display: inline-block;
   width: 90px;
+}
+/* Canvas - Drawing Surface */
+.bma-drawingsurfacecontainer {
+  height: calc(100% - 70px - 40px);
+  /*.calc(height, ~"100% - 70px" - @footer-height);*/
+  position: relative;
+}
+.bma-drawingsurface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.modeldesigner-element-cell {
+  stroke-width: 1px;
+  stroke: transparent;
+}
+.modeldesigner-element-hover {
+  stroke: gray;
+  stroke-width: 2px;
+}
+.modeldesigner-line-hover {
+  stroke-width: 3px;
+}
+.window.canvas-contextual {
+  width: 85px;
+  border-radius: 5px;
+  padding: 0px;
+  font-size: 12px;
+}
+.window.submenu {
+  width: 35px;
 }
 /*  Windows  */
 .window {
@@ -1320,14 +1353,14 @@ p.guide-text {
   margin: 0px 0px 10px 0px;
   color: #aaaaaa;
 }
+p.guide-text code {
+  background-color: #ededed;
+}
 .bug-note {
   color: red;
 }
 hr {
   margin-top: 20px;
-}
-code {
-  background-color: #ededed;
 }
 .color-swatch {
   width: 50px;
