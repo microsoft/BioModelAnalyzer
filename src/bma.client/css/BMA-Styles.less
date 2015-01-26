@@ -640,6 +640,7 @@
 	    position: relative;
 	    height: 100%;
 	    overflow:hidden;
+        background-color: @lightgrey;
 	    .default-text;
 	}
 
@@ -759,15 +760,15 @@
 
 	// Zoom Slider
 		.zoomslider-container{
-			display: table;
+			//display: table;
 			width:@zoomslider-width;
-			> * {
+			/*> * {
 				display: table-cell;
 			}
 
 			img{
 				margin: 2px;
-			}
+			}*/
 
 			.zoomslider-bar{
 				width: 100%;
@@ -1201,7 +1202,7 @@
 /* Footer */  // THIS CAN BE NESTED: bma-footer > bma-logo + link-container + msr-logo
 
 	@footer-height: 40px;
-	@width: 220px; // Link Container width
+	@width: 300px; // Link Container width
 
 	.bma-footer {
 	    height: @footer-height;
@@ -1243,4 +1244,4 @@
 
 
 // Overrides for Style Guide Page
-@import "partials/style-guide.less"; 
+//@import "partials/style-guide.less"; 

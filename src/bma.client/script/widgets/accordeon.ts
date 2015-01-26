@@ -266,21 +266,21 @@
                 .addClass("bma-accordion-header");
             //var loading = that.options.showLoading;
             this.loadingList = [];
-            this.headers.each(function (ind) {
-
+            for (var ind = 0; ind < this.headers.length; ind++) {
                 that.loadingList[ind] = true;
-                var child = $(this).next();
+                var th = this.headers[ind];
+                var child = $(th).next();
                 var distantion = 0;
                 switch (position) {
                     case "left":
                     case "right":
-                        distantion = child.outerWidth();
-                        $(this).css("top", ($(this).outerHeight() + 10) * ind);
+                        distantion = child.width();
+                        $(th).css("top", ($(th).outerHeight() + 10) * ind);
                         break;
                     case "top":
                     case "bottom":
-                        $(this).css("left", ($(this).outerHeight() + 10) * ind);
                         distantion = child.outerHeight();
+                        $(th).css("left", ($(th).outerWidth() + 10) * ind);
                         break;
                     case "center":
                         that.headers
@@ -293,7 +293,7 @@
                 that.headers.css(position, 0);
                 child.css("position", "absolute");
                 child.css(position, -distantion);
-            })
+            }
         },
 
         _refresh: function () {

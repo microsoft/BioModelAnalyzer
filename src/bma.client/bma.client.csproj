@@ -115,6 +115,12 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="css\BMA-Styles.css">
+      <DependentUpon>BMA-Styles.less</DependentUpon>
+    </Content>
+    <Content Include="css\BMA-Styles.min.css">
+      <DependentUpon>BMA-Styles.css</DependentUpon>
+    </Content>
     <Content Include="css\bma.css" />
     <Content Include="css\bma.widgets.css" />
     <Content Include="css\BMA_less.css">
@@ -260,6 +266,11 @@
     <Content Include="css\BMA_less.less" />
     <Content Include="css\BMA_less.css.map">
       <DependentUpon>BMA_less.css</DependentUpon>
+    </Content>
+    <Content Include="css\fonts.less" />
+    <Content Include="css\BMA-Styles.less" />
+    <Content Include="css\BMA-Styles.css.map">
+      <DependentUpon>BMA-Styles.css</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
