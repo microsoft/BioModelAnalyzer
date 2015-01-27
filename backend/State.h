@@ -48,6 +48,8 @@ public:
 	bool update(const std::string& var,bool val);
 	bool update(const std::string& var, const Type::Value&);
 
+	// A wrapper for set with the constant variable CellCycle
+	void addCellCycle(const Type::Value&);
 
 	// Create a fresh copy of this state
 	// Overwrite the values of variables according to the other state

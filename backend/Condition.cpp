@@ -8,6 +8,8 @@
 #include <iostream>
 #include "Condition.h"
 #include "HelperFunctions.h"
+#include "Expression\AndExp.h"
+#include "Expression\EqExp.h"
 
 using std::string;
 using std::map;
@@ -44,6 +46,10 @@ Condition::~Condition() {
 
 bool Condition::isDef() const {
 	return _def;
+}
+
+bool Condition::addCellCycle(const string& cellCycle) {
+	_conjunction = new AndExp(new EqExp("CellCycle", cellCycle), _conjunction);
 }
 
 std::pair<bool,unsigned int> Condition::evaluate(const State* st, const Simulation* sim, float from, float to) const {

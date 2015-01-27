@@ -56,19 +56,31 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 	// Find the right mean time of the first operation
 	if (initialMean<=0.0) {
 		if (_defMean <= 0.0) {
-			const string err{"Cell "+_name+" does not have a default mean time."};
-			throw err;
+			if (_sim->defTime(Simulation::G1_PHASE).first <= 0.0) {
+				const string err{ "Cell " + _name + " does not have a default mean time." };
+				throw err;
+			}
+			initialMean = _sim->defTime(Simulation::G1_PHASE).first;
 		}
 		else {
-			initialMean=_defMean;
+			if (_sim->defTime(Simulation::S_PHASE).first <= 0.0 ||
+				_sim->defTime(Simulation::G2_PHASE).first <= 0.0) {
+				const string err{ "Global S or G2 time not defined." };
+				throw err;
+			}
+			initialMean = _defMean - _sim->defTime(Simulation::S_PHASE).first - 
+				_sim->defTime(Simulation::G2_PHASE).first;
 		}
 	}
 
 	// Find the right standard deviation of the first operation
 	if (initialSD < 0.0) {
 		if (_defSD < 0.0) {
-			const string err{"Cell "+_name+" does not have a default standard devisation."};
-			throw err;
+			if (_sim->defTime(Simulation::G1_PHASE).second < 0.0) {
+				const string err{ "Cell " + _name + " does not have a default standard devisation." };
+				throw err;
+			}
+			initialSD = _sim->defTime(Simulation::G1_PHASE).second;
 		}
 		else {
 			initialSD=_defSD;
@@ -88,6 +100,7 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 		state=new State(initialState);
 	}
 
+	state->addCellCycle(EnumType::Value(*(_sim->cellCycleType()),Simulation::G1_PHASE));
 	Cell* cell{new Cell(this,state)};
 	_sim->addCell(cell);
 	Happening* h{new Happening(currentTime, initialMean, initialSD, _sim, cell)};
@@ -95,6 +108,8 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 }
 
 const Directive* CellProgram::bestDirective(const State* state, float from, float to) const {
+	// TODO: How to give a special meaning to the CellCycle?
+	// Perhaps with a lexicographic order that is more elaborate than the curret?
 	Directive* best{nullptr};
 	unsigned int val{0};
 	for (pair<Condition*,Directive*> condDir : _program) {

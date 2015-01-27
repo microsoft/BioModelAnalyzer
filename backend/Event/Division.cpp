@@ -117,6 +117,7 @@ bool Division::expressed(const string& cell, const string& var) const {
 }
 
 string Division::toString() const {
+	// TODO: update the toString of all different events.
 	string ret{};
 	ret+=Event::toString();
 	ret+=",";

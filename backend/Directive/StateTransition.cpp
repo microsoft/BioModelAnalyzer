@@ -37,6 +37,7 @@ vector<string> StateTransition::programs() const {
 }
 
 std::pair<Event*,std::vector<Happening*>> StateTransition::apply(Cell* c,float duration, float time) const {
+	// TODO: How to add the CellCycle???
 	Event* e{ nullptr };
 	if (c == nullptr) {
 		return make_pair(e,vector<Happening*>{});

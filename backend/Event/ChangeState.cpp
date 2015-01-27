@@ -23,13 +23,14 @@ ChangeState::~ChangeState() {
 //vector<Event*> ChangeState::execute() const
 //{
 //	Simulation *sim(simulation());
-//	//TODO: implement this
+//  // In order to implement this:
 //	// 1. get the best match for this program
 //	// 2. create a new division that matches
 //	// 3. what you've found
 //	return vector<Event*>{};
 //}
 //
+
 void ChangeState::output(ostream& out) const {
 }
 
@@ -57,6 +58,7 @@ bool ChangeState::expressed(const string& cell, const string& var) const {
 }
 
 string ChangeState::toString() const {
+	// TODO: implement me
 	return "";
 }
 

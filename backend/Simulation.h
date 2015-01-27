@@ -25,6 +25,8 @@ class Simulation;
 #include "Event/Event.h"
 #include "Directive/Directive.h"
 #include "Happening.h"
+#include "Variable/Type.h"
+#include "Variable/EnumType.h"
 
 class Simulation {
 public:
@@ -50,17 +52,29 @@ public:
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
 
+	Type* type(const std::string&);
+	EnumType* cellCycleType();
+
 	bool expressed(const std::string&,float from, float to) const;
+
+	std::pair<float, float> defTime(const std::string&) const;
 
 	std::string toString(unsigned int num=0) const;
 	std::string toJson() const;
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
+
+	static const string G1_PHASE{ "G1" };
+	static const string G2_PHASE{ "G2" };
+	static const string S_PHASE{ "S" };
+	static const string G0_PHASE{ "G0" };
 private:
-	enum CsvFields { NAME, CONDITION, ACTION,
+	enum CsvFields { NAME, CELLCYCLE, CONDITION, ACTION,
 					 DAUGHTER1, STATE1, MEANTIME1, STANDARDDEV1,
 					 DAUGHTER2, STATE2, MEANTIME2, STANDARDDEV2,
 					 LASTDELIM};
+
+	enum CellCyclePhases { G1, S, G1, G0 };
 
 	class EventPtrComparison
 	{
@@ -73,12 +87,18 @@ private:
 	void _parseLine(const std::string& line);
 	float _readFloat(const std::string& input) const;
 	void _sanitize(std::string& buffer);
+	bool _validCellCycle(const std::string&) const;
+	void _addTypesFromConjunction(const std::string&);
+	void _addCellCycleType();
+	void _setDefaultTime(const std::string&, float, float);
 	// std::pair<std::string,State*> _parseCellWithState(const std::string& cell) const;
 
 	float _currentTime;
 	std::vector<Event*> _log;
 	// TODO: Change to multiset and set that are sorted by the name
 	//       of the object in them.
+	std::map<std::string, std::pair<float, float>> _defaults;
+	std::map<std::string, Type*> _types;
 	std::multimap<std::string,Cell*> _cells;
 	std::map<std::string,CellProgram*> _programs;
 };

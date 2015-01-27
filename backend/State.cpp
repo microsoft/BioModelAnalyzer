@@ -18,6 +18,8 @@ using std::string;
 using std::make_pair;
 using std::pair;
 
+const string CELL_CYCLE_VAR{ "CellCycle" };
+
 State::State(const string& initializer)
 : _vars(splitConjunction(initializer))
 {
@@ -108,6 +110,12 @@ bool State::update(const string& var, const Type::Value& val) {
 	}
 	varIt->second->set(val);
 	return true;
+}
+
+void State::addCellCycle(const Type::Value& cellCycle) {
+	// TODO: Find the unique cellcycle type and find the 
+	// value that corresponds to the cell cycle
+	set(CELL_CYCLE_VAR, cellCycle);
 }
 
 State* State::copyOverwrite(const State* other) const {

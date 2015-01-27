@@ -16,6 +16,8 @@
 #include <map>
 #include "Event/Event.h"
 #include "Directive/Divide.h"
+#include "Directive/StateTransition.h"
+#include "Variable/Type.h"
 #include "State.h"
 #include "Simulation.h"
 #include "HelperFunctions.h"
@@ -42,9 +44,12 @@ using std::max;
 using std::unique_ptr;
 // using boost::lexical_cast;
 
-const int NUMBER_OF_LINES_TO_SKIP{1};
-const string DIVIDE{"divide"};
-const string DEF_INIT{"default_init"};
+constexpr int NUMBER_OF_LINES_TO_SKIP{ 1 };
+const string CELL_CYCLE{ "CellCycle" };
+const string DIVIDE{ "divide" };
+const string CHANGE_STATE{ "change_state" };
+const string DEF_INIT{ "default_init" };
+const string DEF_LENGTH{ "default_length" };
 
 bool Simulation::EventPtrComparison::operator() (Happening* lhs, Happening* rhs) const {
 	return (rhs->operator<(*lhs));
@@ -63,22 +68,25 @@ Simulation::~Simulation() {
 	for (auto prog : _programs) {
 		delete prog.second;
 	}
+	for (auto type : _types) {
+		delete type.second;
+	}
 }
 
 void Simulation::run(const string& initialProg,
-					 const string& initialState,
-					 float initialMean, float initialSD) {
+	const string& initialState,
+	float initialMean, float initialSD) {
 
 	// Find the right program
 	auto firstProg(_programs.find(initialProg));
-	if (firstProg==_programs.end()) {
-		string err{"Could not find the initial cell: "};
-		err+=initialProg;
+	if (_programs.end() == firstProg) {
+		string err{ "Could not find the initial cell: " };
+		err += initialProg;
 		throw err;
 	}
 	CellProgram* cellProg(firstProg->second);
 
-	vector<Happening*> happenings(cellProg->firstEvent(_currentTime,initialState,initialMean,initialSD));
+	vector<Happening*> happenings(cellProg->firstEvent(_currentTime, initialState, initialMean, initialSD));
 
 	std::priority_queue<Happening*, deque<Happening*>, EventPtrComparison> pending;
 
@@ -130,17 +138,17 @@ void Simulation::clear() {
 	}
 	_cells.clear();
 
-	_currentTime=0.0;
+	_currentTime = 0.0;
 }
 
 // There's an implicit assumption here that the first time a name is
 // mentioned the cell is born and that the last time the the cell is mentioned
 // it dies.
-pair<float,bool> Simulation::overlap(const string& name1, const string& name2) const {
-	float b1{-1.0},d1{-1.0},b2{-1.0},d2{-1.0};
+pair<float, bool> Simulation::overlap(const string& name1, const string& name2) const {
+	float b1{ -1.0 }, d1{ -1.0 }, b2{ -1.0 }, d2{ -1.0 };
 	for (auto event : _log) {
 		if (event->concerns(name1)) {
-			if (b1<0.0) {
+			if (b1 < 0.0) {
 				b1 = event->execTime();
 			}
 			else {
@@ -149,7 +157,7 @@ pair<float,bool> Simulation::overlap(const string& name1, const string& name2) c
 		}
 
 		if (event->concerns(name2)) {
-			if (b2<0.0) {
+			if (b2 < 0.0) {
 				b2 = event->execTime();
 			}
 			else {
@@ -163,18 +171,18 @@ pair<float,bool> Simulation::overlap(const string& name1, const string& name2) c
 	// b1 ... d1 ... b2 ... d2 --> d1-b2
 	// b1 ... b2 ... d1 ... d2 --> d1-b2
 	// b1 ... b2 ... d2 ... d1 --> d2-b2
-	return make_pair(min(d1,d2)-max(b2,b1),b1<b2);
+	return make_pair(min(d1, d2) - max(b2, b1), b1 < b2);
 }
 
-map<string,unsigned int> Simulation::cellCount() const {
-	map<string,unsigned int> ret{};
+map<string, unsigned int> Simulation::cellCount() const {
+	map<string, unsigned int> ret{};
 
 	for (auto nameCellP : _cells) {
 		if (ret.find(nameCellP.first) != ret.end()) {
-			ret[nameCellP.first]+=1;
+			ret[nameCellP.first] += 1;
 		}
 		else {
-			ret.insert(make_pair(nameCellP.first,1));
+			ret.insert(make_pair(nameCellP.first, 1));
 		}
 	}
 	return ret;
@@ -185,22 +193,22 @@ void Simulation::readFile(const string& filename) {
 	if (infile)
 		infile >> *this;
 	else {
-		string err{"Failed to open file "};
-		err+=filename;
+		string err{ "Failed to open file " };
+		err += filename;
 		throw err;
 	}
 }
 
 void Simulation::addCell(Cell* c) {
-	_cells.insert(make_pair(c->name(),c));
+	_cells.insert(make_pair(c->name(), c));
 }
 
 vector<Cell*> Simulation::cells(const string& name) const {
-	auto beginEnd=_cells.equal_range(name);
-	auto begin=beginEnd.first;
-	auto end=beginEnd.second;
+	auto beginEnd = _cells.equal_range(name);
+	auto begin = beginEnd.first;
+	auto end = beginEnd.second;
 	vector<Cell*> ret{};
-	for (auto it=begin ; it!= end ; ++it) {
+	for (auto it = begin; it != end; ++it) {
 		if (it->second->alive()) {
 			ret.push_back(it->second);
 		}
@@ -210,7 +218,7 @@ vector<Cell*> Simulation::cells(const string& name) const {
 
 CellProgram* Simulation::program(const string& name) {
 	auto prog(_programs.find(name));
-	if (prog == _programs.end()) {
+	if (_programs.end() == prog) {
 		return nullptr;
 	}
 	return prog->second;
@@ -220,36 +228,48 @@ unsigned int Simulation::numPrograms() const {
 	return _programs.size();
 }
 
-bool Simulation::expressed(const string& cond,float from, float to) const {
-	if (cond.find('[')==std::string::npos ||
-		cond.find(']')==std::string::npos ||
+Type* Simulation::type(const string& name) {
+	auto t(_types.find(name));
+	if (_types.end() == t) {
+		return nullptr;
+	}
+	return t->second;
+}
+
+EnumType* Simulation::cellCycleType() {
+	return dynamic_cast<EnumType*>(type(CELL_CYCLE));
+}
+
+bool Simulation::expressed(const string& cond, float from, float to) const {
+	if (cond.find('[') == std::string::npos ||
+		cond.find(']') == std::string::npos ||
 		cond.find(']') < cond.find('[')) {
-		 const string err{"Trying to evaluate a local condition on the simulation."};
-		 throw err;
+		const string err{ "Trying to evaluate a local condition on the simulation." };
+		throw err;
 	}
 
-	string var{cond.substr(0,cond.find('['))};
-	string cellName{cond.substr(cond.find('[')+1,cond.find(']')-cond.find('[')-1)};
+	string var{ cond.substr(0, cond.find('[')) };
+	string cellName{ cond.substr(cond.find('[') + 1, cond.find(']') - cond.find('[') - 1) };
 
 	// TODO: Replace this by a check of all the events in the range
 	// (from,to)
-	auto rit=_log.rbegin();
+	auto rit = _log.rbegin();
 
 	// Skip events that happen after to
-	while (rit!=_log.rend() && (*rit)->execTime() >= to) {
+	while (rit != _log.rend() && (*rit)->execTime() >= to) {
 		++rit;
 	}
 
 	// Search events that happen before to and after from
-	while (rit!=_log.rend() && (*rit)->execTime() > from) {
-		if ((*rit)->expressed(cellName,var)) {
+	while (rit != _log.rend() && (*rit)->execTime() > from) {
+		if ((*rit)->expressed(cellName, var)) {
 			return true;
 		}
 		++rit;
 	}
 
-	if (_currentTime<=to && _currentTime >=from) {
-		vector<Cell*> matchingCells{cells(cellName)};
+	if (_currentTime <= to && _currentTime >= from) {
+		vector<Cell*> matchingCells{ cells(cellName) };
 		for (auto cell : matchingCells) {
 			if (cell->expressed(var)) {
 				return true;
@@ -257,11 +277,20 @@ bool Simulation::expressed(const string& cond,float from, float to) const {
 		}
 	}
 	else {
-		const string err{"Asking to evalute expression level in the past. This is currently not supported."};
+		const string err{ "Asking to evalute expression level in the past. This is currently not supported." };
 		throw err;
 	}
 	return false;
 }
+
+pair<float, float> Simulation::defTime(const string& phase) const {
+	auto t = _defaults.find(phase);
+	if (t == _defaults.end()) {
+		return t->second;
+	}
+	return make_pair(0.0, 0.0);
+}
+
 
 string Simulation::toString(unsigned int num) const {
 	stringstream temp;
@@ -274,7 +303,7 @@ string Simulation::toString(unsigned int num) const {
 
 string Simulation::toJson() const {
 
-	if (_log.size() == 0) {
+	if (0 == _log.size()) {
 		return "";
 	}
 
@@ -282,16 +311,16 @@ string Simulation::toJson() const {
 	unsigned int id{ 0 };
 	for (auto it = _log.crbegin(); it != _log.crend(); ++it) {
 		Event* ev = *it;
-		nameJsonMap.insert(make_pair(ev->cell()->name(), ev->toJson(id++,nameJsonMap)));
+		nameJsonMap.insert(make_pair(ev->cell()->name(), ev->toJson(id++, nameJsonMap)));
 	}
 	string firstCell = _log.at(0)->cell()->name();
 	return nameJsonMap[firstCell];
 }
 
 ostream& operator<< (ostream& out, const Simulation& sim) {
-//	for (auto prog : sim._programs) {
-//		out << *prog.second << endl;
-//	}
+	//	for (auto prog : sim._programs) {
+	//		out << *prog.second << endl;
+	//	}
 
 	for (auto ev : sim._log) {
 		out << *ev << endl;
@@ -301,53 +330,61 @@ ostream& operator<< (ostream& out, const Simulation& sim) {
 }
 
 istream& operator>> (istream& in, Simulation& sim) {
-	int lineNo{1};
+	int lineNo{ 1 };
 	string buffer;
 
+	sim._addCellCycleType();
+
 	// Skip the first two lines
-	for (; lineNo < NUMBER_OF_LINES_TO_SKIP+1 ; ++lineNo) {
-//		cout << "Skipping line number " << lineNo << "\n";
-		getline(in,buffer);
+	for (; lineNo < NUMBER_OF_LINES_TO_SKIP + 1; ++lineNo) {
+		//		cout << "Skipping line number " << lineNo << "\n";
+		getline(in, buffer);
 	}
 
-	// Every line is a comma separated thing that includes:
-	// Cell Name (string), Condition (string), action (string),
+	// The basic structure of a line is:
+	// Cell Name (string), Cell Cycle (G1/S/G2/G0), Condition (string), action (string),
 	// Daughter 1 (string), State 1 (string), mean time (float), standard deviation (float),
-	// Daughter 2 (string), State 2 (string), mean time (float), standard deviation (float),
-
-	// Currently the possible actions are: divide, and default_init
-	// For default_init only fields 1,3,5,6,7 are full
-	// For divide all fields are applicable
-	while (getline(in,buffer) && buffer.size()!=0) {
-		 try {
-			 sim._sanitize(buffer);
-			 sim._parseLine(buffer);
-			 ++lineNo;
-		 }
-		 catch (const string& err) {
-			 stringstream error;
-			 error << "Error: on line " << lineNo << ":" << err;
-			 const string withLineNum{error.str()};
-			 throw withLineNum;
-		 }
+	// Daughter 2 (string), State 2 (string), mean time (float), standard deviation (float)
+	//
+	// Currently this can be used in various possible ways:
+	// 1. No cell name, cell cycle, empty condition, default_length, mean1, sd1
+	//    This will set the basic cell cycle length for all cells
+	// 2. Cell name, _, _, default_init, _, initial state, mean1, sd1
+	//    This sets the intial state and the mean and sd TOTAL time for this cell (i.e., G1+S+G2)
+	// 3. Cell name, start cycle, condition, next cycle, ...
+	//    The next cycle phase can be omitted (G1->S, S->G2, G2->divide)
+	//    Another option is to have an action called change_state that just changes the state
+	//    and does not advance the cell cycle.
+	while (getline(in, buffer) && buffer.size() != 0) {
+		try {
+			sim._sanitize(buffer);
+			sim._parseLine(buffer);
+			++lineNo;
+		}
+		catch (const string& err) {
+			stringstream error;
+			error << "Error: on line " << lineNo << ":" << err;
+			const string withLineNum{ error.str() };
+			throw withLineNum;
+		}
 	}
 	if (!in.eof()) {
 		cerr << "Something went wrong with reading" << endl;
 		return in;
 	}
 
-//  // This part of the code checks that every program mentioned is defined
-//	// But actually, not all programs are defined
-//	// The last cells that have no descendants are not defined ...
-//	for (auto prog : sim._programs) {
-//		for (auto otherprog : prog.second->otherPrograms()) {
-//			if (sim._programs.find(otherprog)==sim._programs.end()) {
-//				cerr << "Program " << otherprog << " mentioned but does not exist!" << endl;
-//				in.setstate(std::ios::failbit);
-//				return in;
-//			}
-//		}
-//	}
+	//  // This part of the code checks that every program mentioned is defined
+	//	// But actually, not all programs are defined
+	//	// The last cells that have no descendants are not defined ...
+	//	for (auto prog : sim._programs) {
+	//		for (auto otherprog : prog.second->otherPrograms()) {
+	//			if (sim._programs.find(otherprog)==sim._programs.end()) {
+	//				cerr << "Program " << otherprog << " mentioned but does not exist!" << endl;
+	//				in.setstate(std::ios::failbit);
+	//				return in;
+	//			}
+	//		}
+	//	}
 
 	in.clear();
 	return in;
@@ -356,12 +393,14 @@ istream& operator>> (istream& in, Simulation& sim) {
 
 void Simulation::_parseLine(const string& line) {
 
-	// Cell Name (string), Condition (string), action (string),
+	// Cell Name (string), Cell Cycle (string), 
+	// Condition (string), action (string),
 	// Daughter 1 (string), State 1 (string), mean1 time (float), standard deviation (float),
 	// Daughter 2 (string), State 2 (string), mean1 time (float), standard deviation (float),
 
 
 	string cellName{};
+	string cellCycle{};
 	string condition{};
 	string action{};
 	string d1{};
@@ -373,127 +412,191 @@ void Simulation::_parseLine(const string& line) {
 	float mean2{};
 	float sd2{};
 
-	const vector<string> fields{splitOn(',',line)};
+	const vector<string> fields{ splitOn(',', line) };
 
 	// cout << "Read: " << buffer << endl;
 
-	for (unsigned int i=0 ; i<static_cast<unsigned int>(LASTDELIM) && i<fields.size() ;
-		 ++ i) {
-		const string piece{fields.at(i)};
+	for (unsigned int i = 0; i < static_cast<unsigned int>(LASTDELIM) && i < fields.size();
+		++i) {
+		const string piece{ fields.at(i) };
 
 		switch (static_cast<CsvFields>(i)) {
 		case NAME:
-		{
 			cellName = piece;
-		}
-		break;
-		case CONDITION: {
+			break;
+		case CELLCYCLE:
+			cellCycle = piece;
+			break;
+		case CONDITION:
 			condition = piece;
-		}
-		break;
+			break;
 		case ACTION:
-		{
 			action = piece;
-		}
-		break;
+			break;
 		case DAUGHTER1: // Daughter 1
-		{
 			d1 = piece;
-		}
-		break;
+			break;
 		case STATE1:
-		{
 			state1 = piece;
-		}
-		break;
+			break;
 		case MEANTIME1: // Mean time
-		{
-			mean1=_readFloat(piece);
-		}
-		break;
+			mean1 = _readFloat(piece);
+			break;
 		case STANDARDDEV1: // Standard Deviation
-		{
-			sd1=_readFloat(piece);
-		}
-		break;
+			sd1 = _readFloat(piece);
+			break;
 		case DAUGHTER2:
-		{
 			d2 = piece;
-		}
-		break;
+			break;
 		case STATE2:
-		{
 			state2 = piece;
-		}
-		break;
+			break;
 		case MEANTIME2: // Mean time
-		{
-			mean2=_readFloat(piece);
-		}
-		break;
+			mean2 = _readFloat(piece);
+			break;
 		case STANDARDDEV2: // Standard Deviation
-		{
-			sd2=_readFloat(piece);
-		}
-		break;
+			sd2 = _readFloat(piece);
+			break;
 		default:
-		{
-			const string err{"Too many fields."};
+			const string err{ "Too many fields." };
 			throw err;
-		}
 		}
 	}
 
-	auto progIt=_programs.find(cellName);
-	if (progIt==_programs.end()) {
-		CellProgram* newProg=new CellProgram(cellName,this);
-		_programs.insert(make_pair(cellName,newProg));
-		progIt=_programs.find(cellName);
+	auto progIt = _programs.find(cellName);
+	if (_programs.end() == progIt) {
+		CellProgram* newProg = new CellProgram(cellName, this);
+		_programs.insert(make_pair(cellName, newProg));
+		progIt = _programs.find(cellName);
 	}
 
-	unique_ptr<Condition> cond{(condition.size()==0 ? nullptr : new Condition(condition))};
-	if (DIVIDE==action) {
-		State* st1{(state1.size()==0 ? nullptr : new State(state1))};
-		State* st2{(state2.size()==0 ? nullptr : new State(state2))};
-		Directive* d{new Divide(progIt->second,d1,st1,mean1,sd1,d2,st2,mean2,sd2)};
-		progIt->second->addCondition(cond.release(),d);
-	}
-	else if (DEF_INIT==action) {
-		if (mean2!=-1.0 || sd2!=-1.0 || state2.size()!=0 || cond!=nullptr) {
-			const string err{"Badly structured default initialization."};
+	unique_ptr<Condition> cond{ (0 == condition.size() ? nullptr : new Condition(condition)) };
+	EnumType* cellCycleType = dynamic_cast<EnumType*>(type(CELL_CYCLE));
+	_addTypesFromConjunction(state1);
+	_addTypesFromConjunction(state2);
+	_addTypesFromConjunction(condition);
+
+	if (DIVIDE == action) {
+		if (0 == cellName.size() || !_validCellCycle(cellCycle) ||
+			0 == d1.size() || 0 == d2.size()) {
+			const string err{ "Badly structured divide instruction" };
 			throw err;
 		}
-		State* st1{(state1.size()==0 ? nullptr : new State(state1))};
-		progIt->second->setDefaults(st1,mean1,sd1);
+		cond->addCellCycle(cellCycle);
+		State* st1{ (0 == state1.size() ? nullptr : new State(state1)) };
+		State* st2{ (0 == state2.size() ? nullptr : new State(state2)) };
+		EnumType::Value g1(*cellCycleType, G1_PHASE);
+		st1->addCellCycle(g1);
+		st2->addCellCycle(g1);
+		Directive* d{ new Divide(progIt->second, d1, st1, mean1, sd1, d2, st2, mean2, sd2) };
+		progIt->second->addCondition(cond.release(), d);
+	}
+	else if (G1_PHASE == action || S_PHASE== action || 
+			 G2_PHASE == action || G0_PHASE == action ||
+			 CHANGE_STATE == action) {
+		if (0 == cellName.size() || 
+			// For change state it is OK for the cellCycle to be empty
+			(!_validCellCycle(cellCycle) && (action != CHANGE_STATE || cellCycle.size() != 0)) ||
+			d1.size() != 0 || d2.size() != 0 || mean2 != -1.0 || sd2 != -1.0) {
+			string err{ "Badly structured " };
+			err += action;
+			err += " instruction";
+			throw err;
+		}
+		if (cellCycle.size() != 0) {
+			cond->addCellCycle(cellCycle);
+		}
+		State* st1{ (0 == state1.size() ? nullptr : new State(state1)) };
+		if (action != CHANGE_STATE) {
+			EnumType::Value p(*cellCycleType, action);
+			st1->addCellCycle(p);
+		}
+		Directive* d{ new StateTransition(progIt->second, mean1, sd1, st1) };
+		progIt->second->addCondition(cond.release(), d);
+	}
+	else if (DEF_INIT == action) {
+		if (!_validCellCycle(cellCycle) || cond != nullptr || d1.size() != 0 ||
+			d2.size() != 0 || state2.size() != 0 || mean2 != -1.0 || sd2 != -1.0) {
+			const string err{ "Badly structured default initialization." };
+			throw err;
+		}
+		State* st1{ (0 == state1.size() ? nullptr : new State(state1)) };
+		progIt->second->setDefaults(st1, mean1, sd1);
+	}
+	else if (DEF_LENGTH == action) {
+		if (!_validCellCycle(cellCycle) || 0 == cellCycle.size() || cond != nullptr ||
+			d1.size() != 0 || state1.size() != 0 || d2.size() != 0 ||
+			state2.size() != 0 || mean2 != -1.0 || sd2 != -1.0) {
+			const string err{ "Badly structured default length." };
+			throw err;
+		}
+		_setDefaultTime(cellCycle, mean1, sd1);
 	}
 	else {
-		const string err{"Unexpected action."};
+		const string err{ "Unexpected action." };
 		throw err;
 	}
 }
 
 float Simulation::_readFloat(const string& input) const {
-	if (input.size()==0) {
+	if (0 == input.size()) {
 		return -1.0;
 	}
 	std::stringstream str(input);
 	float ret{};
 	str >> ret;
 	if (!str) {
-		const string err{"Expecting a number for mean time."};
+		const string err{ "Expecting a number for mean time." };
 		throw err;
 	}
 	return ret;
 }
 
-bool notIsPrint (char c)
+bool notIsPrint(char c)
 {
-    return !isprint((unsigned)c);
+	return !isprint((unsigned)c);
 }
 
 void Simulation::_sanitize(string & str)
 {
-    str.erase(remove_if(str.begin(),str.end(), notIsPrint) , str.end());
+	str.erase(remove_if(str.begin(), str.end(), notIsPrint), str.end());
+}
+
+bool Simulation::_validCellCycle(const string& c) const
+{
+	if (0 == c.length() || c != G1_PHASE || c != G2_PHASE || c != S_PHASE)
+		return false;
+	return true;
+}
+
+void Simulation::_addTypesFromConjunction(const string& cond) {
+	// TODO: implement me
+}
+
+void Simulation::_addCellCycleType() {
+	auto t = _types.find(CELL_CYCLE);
+	if (t != _types.end()) {
+		return;
+	}
+
+	EnumType* cc = new EnumType();
+	cc->addElem(G0_PHASE);
+	cc->addElem(G1_PHASE);
+	cc->addElem(G2_PHASE);
+	cc->addElem(S_PHASE);
+
+	_types.insert(make_pair(CELL_CYCLE, cc));
+}
+
+
+void Simulation::_setDefaultTime(const string& phase, float mean, float sd) {
+	auto t = _defaults.find(phase);
+	if (_defaults.end() == t) {
+		_defaults.insert(make_pair(phase, make_pair(mean, sd)));
+	}
+	else {
+		t->second = make_pair(mean, sd);
+	}
 }
 
 //pair<string,State*> Simulation::_parseCellWithState(const std::string& cell) const {
