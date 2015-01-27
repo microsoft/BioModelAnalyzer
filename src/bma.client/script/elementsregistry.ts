@@ -307,7 +307,7 @@ module BMA {
                         return leftTop && leftBottom && rightTop && rightBottom;
                     },
                     "Cell",
-                    "bma-container-img"));
+                    "cell-icon"));
 
                 this.elements.push(new BboxElement(
                     "Constant",
@@ -381,7 +381,7 @@ module BMA {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
                     "Extracellular Protein",
-                    "bma-constant-img"));
+                    "constant-icon"));
 
                 this.elements.push(new BboxElement(
                     "Default",
@@ -440,7 +440,7 @@ module BMA {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
                     "Intracellular Protein",
-                    "bma-variable-img"));
+                    "variable-icon"));
 
                 this.elements.push(new BboxElement(
                     "MembraneReceptor",
@@ -531,7 +531,7 @@ module BMA {
                         return { x: elementX - that.variableWidthConstant / 2, y: elementY - that.variableHeightConstant / 2, width: that.variableWidthConstant, height: that.variableHeightConstant };
                     },
                     "Membrane Receptor",
-                    "bma-receptor-img"));
+                    "receptor-icon"));
 
                 this.elements.push(new Element(
                     "Activator",
@@ -644,7 +644,7 @@ module BMA {
                         }
                     },
                     "Activating Relationship",
-                    "bma-activate-img"));
+                    "activate-icon"));
 
                 this.elements.push(new Element(
                     "Inhibitor",
@@ -765,7 +765,7 @@ module BMA {
                         }
                     },
                     "Inhibiting Relationship",
-                    "bma-inhibit-img"));
+                    "inhibit-icon"));
             }
         }
     }

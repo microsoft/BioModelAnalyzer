@@ -274,7 +274,7 @@
                 switch (position) {
                     case "left":
                     case "right":
-                        distantion = child.width();
+                        distantion = child.outerWidth();
                         $(th).css("top", ($(th).outerHeight() + 10) * ind);
                         break;
                     case "top":

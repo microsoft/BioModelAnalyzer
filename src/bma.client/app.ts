@@ -158,7 +158,8 @@ $(document).ready(function () {
             { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
+            
             {
                 title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
@@ -167,7 +168,8 @@ $(document).ready(function () {
                 ],
                 uiIcon: "ui-icon-arrow-4-diag"
             },
-            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" }
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
+            
         ],
         beforeOpen: function (event, ui) {
             ui.menu.zIndex(50);
@@ -205,6 +207,31 @@ $(document).ready(function () {
             window.Commands.Execute(commandName, args);
         }
     });
+    var aas = $('body').children('ul').children('li').children('a');
+   
+    aas.children('span').detach();
+    aas.each(function () {
+        switch ($(this).text()) {
+            case "Cut": $('<img alt="" src="../images/icon-cut.svg">').appendTo($(this));
+                break;
+            case "Copy": $('<img alt="" src="../images/icon-copy.svg">').appendTo($(this));
+                break;
+            case "Paste": $('<img alt="" src="../images/icon-paste.svg">').appendTo($(this));
+                break;
+            case "Edit": $('<img alt="" src="../images/icon-edit.svg">').appendTo($(this));
+                break;
+            case "Size": $('<img alt="" src="../images/icon-size.svg">').appendTo($(this));
+                break;
+            case "Delete": $('<img alt="" src="../images/icon-delete.svg">').appendTo($(this));
+                break;
+        }
+    })
+    //$('<img alt="" src="../images/icon-cut.svg">').appendTo(aas.eq(0));
+    //$('<img alt="" src="../images/icon-copy.svg">').appendTo(aas.eq(1));
+    //$('<img alt="" src="../images/icon-paste.svg">').appendTo(aas.eq(2));
+    //$('<img alt="" src="../images/icon-edit.svg">').appendTo(aas.eq(3));
+    //$('<img alt="" src="../images/icon-size.svg">').appendTo(aas.eq(4));
+    //$('<img alt="" src="../images/icon-delete.svg">').appendTo(aas.eq(5));
 
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });

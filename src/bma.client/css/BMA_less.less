@@ -1,4 +1,7 @@
-﻿@bma-toolbar-icon-height: 50px;
+﻿
+@import "StyleSheet.less"; 
+
+@bma-toolbar-icon-height: 50px;
 @bma-toolbar-icon-border-radius: 7px;
 @general-font-family: 'Segoe UI';
 @footer-height: 40px;
@@ -14,80 +17,12 @@
 @even-item-color: #ffffff;
 
 
-///General functions
-
 .big-font(){
     font-size: @big-font-size;
     line-height: @big-line-height;
 }
 
-.background-img() {
-    background-repeat:no-repeat;
-    background-position:center;
-    background-size:contain;
-}
 
-.hoverable:hover{
-    cursor: pointer;
-}
-
-.invisible {
-    display:none;
-}
-
-.calc(@prop; @val) {
-  @{prop}: calc(@val);
-  @{prop}: -moz-calc(@val);
-  @{prop}: -webkit-calc(@val);
-  @{prop}: -o-calc(@val);
-}
-
-.border-radius(@a){
-    -moz-border-radius: @a;
-    -webkit-border-radius: @a;
-    -ms-border-radius: @a;
-    -o-border-radius: @a;
-    border-radius: @a;
-}
-
-.box-shadow(@a, @color){
-    -webkit-box-shadow: @a @color;
-    -moz-box-shadow: @a @color;
-    -ms-box-shadow: @a @color;
-    -o-box-shadow: @a @color;
-    box-shadow: @a @color;
-} 
-
-///General functions ending
-
-///Body
- 
-html {
-    height: 100%;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #E4E4E6;
-    position: relative;
-    height: 100%;
-    overflow:hidden;
-    font-family: @general-font-family;
-    font-size: @general-font-size;
-    line-height: @general-line-height;
-    color: @general-font-color;
-}
-
-* {
-    outline:0 none;
-}
-
-.box-sizing {
-    box-sizing: border-box;
-} 
-
-///Body ending
 
 ///Drawing surface 
 
@@ -147,22 +82,42 @@ body {
     left: 0;
 }
 
+	// Links
+
+		a {
+			.default-text;
+			text-decoration: underline;
+
+			&:hover{
+				text-decoration: none;
+			}
+		}
+
+		a.website-link{
+			color:@green;
+			text-decoration: none;
+
+			&:hover{
+				text-decoration: underline;
+			}
+		}
+
 .bma-pagefooter-linkcontainer {
     position: absolute;
     bottom: 0;
     background-color: white;
     height: @footer-height - 10px;
     line-height: 30px;
-    @width: 220px;
+    @width: 300px;
     width: @width;
 
     .calc(left, ~"50%" - @width / 2);
-    .box-shadow(5px 5px 10px, @shadow-color);
+    .box-shadow(5px, 5px, 10px, @shadow-color);
     .border-radius(10px 10px 0 0);
 
-    a {
+    /*a {
         color: #82BD82;
-    }
+    }*/
 } 
 
 ///Footer ending
@@ -284,13 +239,13 @@ body {
     vertical-align: middle;
 }
 
-.PointerImg {
+/*.PointerImg {
     background-image: url("../images/pointer.svg");
 }
 
 label[aria-pressed='true'] .PointerImg {
     background-image: url("../images/pointer ON.svg");
-}
+}*/
 
 .bma-toolbarpanel-visibilityoptions {
     .calc(margin-left, ~"40% - 387px");
@@ -302,7 +257,7 @@ label[aria-pressed='true'] .PointerImg {
     margin-left: calc(~"40% - 390px");
 }
 
-.bma-container-img {
+/*.bma-container-img {
     background-image: url("../images/container.svg");
 }
 
@@ -348,7 +303,7 @@ label[aria-pressed='true'] .bma-activate-img {
 
 label[aria-pressed='true'] .bma-inhibit-img {
     background-image: url("../images/inhibitor-ON.svg");
-}
+}*/
 
 .bma-draggable-helper-element {
     width: 36px;
@@ -359,7 +314,46 @@ label[aria-pressed='true'] .bma-inhibit-img {
 /// BMA Toolbar Panel ending 
 
 
-///Accordion 
+
+
+	// Accordion
+
+		.bma-accordion-container{
+		    position:relative;
+		    ul {
+		        margin: 0;
+		        padding: 0;
+		        list-style: none;
+		        li {
+		            display: inline-block;
+		            vertical-align: middle;
+		            * {
+		                position: relative;
+		            }
+		        }
+		    }
+		}
+
+		.bma-accordion-header{
+		    cursor: pointer;
+		}
+
+		.accordion-shadow {
+			.box-shadow(@x:0px; @y:5px; @blur:5px; @color:@shadow)
+		}
+
+		.accordion-collapsed {
+		    border: 1px solid lightgray;
+		    border-radius: @bma-toolbar-icon-border-radius;
+		}
+
+		.accordion-expanded  {
+		    border: none;
+		    @r: toolbar-icon-border-radius;
+		    border-radius: @r @r 0 0;
+		}
+
+/*///Accordion 
 
  .bma-accordion-container{
     position:relative;
@@ -387,7 +381,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 .accordion-collapsed {
     border: 1px solid lightgray;
-    border-radius: @bma-toolbar-icon-border-radius;
+    border-radius: @bma-bma-toolbar-icon-border-radius;
 }
 
 .accordion-expanded  {
@@ -396,10 +390,12 @@ label[aria-pressed='true'] .bma-inhibit-img {
     border-radius: @r @r 0 0;
 } 
 
-///Accordion ending
+///Accordion ending*/
 
 ///BMA Visibility options
  
+
+
 .visibility-options-icon {
     .background-img();
     background-image: url("/images/visicon2.svg");
