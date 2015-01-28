@@ -129,6 +129,12 @@
     <Content Include="css\BMA_less.min.css">
       <DependentUpon>BMA_less.css</DependentUpon>
     </Content>
+    <Content Include="css\fonts.css">
+      <DependentUpon>fonts.less</DependentUpon>
+    </Content>
+    <Content Include="css\fonts.min.css">
+      <DependentUpon>fonts.css</DependentUpon>
+    </Content>
     <Content Include="css\help.css" />
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
@@ -287,6 +293,9 @@
     <Content Include="css\StyleSheet.less" />
     <Content Include="css\StyleSheet.css.map">
       <DependentUpon>StyleSheet.css</DependentUpon>
+    </Content>
+    <Content Include="css\fonts.css.map">
+      <DependentUpon>fonts.css</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />

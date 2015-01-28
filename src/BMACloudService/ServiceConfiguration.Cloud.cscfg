@@ -3,7 +3,7 @@
   <Role name="bma.client">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
