@@ -506,13 +506,29 @@ $(document).ready(function () {
 
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
-
         var log = logService.CloseSession();
-        //TODO: send log to service;
+        var data = JSON.stringify({
+            SessionID: log.SessionID,
+            UserID: log.UserID,
+            LogInTime: log.LogIn,
+            LogOutTime: log.LogOut,
+            ClientVersion: "BMA HTML5 2.0"
+        });
+        var sendBeacon = navigator['sendBeacon'];
+        if (sendBeacon) {
+            sendBeacon('/api/ActivityLog', data);
+        } else {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', '/api/ActivityLog', false);
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            xhr.setRequestHeader("Content-length", data.length.toString());
+            xhr.setRequestHeader("Connection", "close");
+            xhr.send(data);
+        }
     };
 
     window.onload = function () {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);       
     };
     $("label[for='button-pointer']").click();
 });

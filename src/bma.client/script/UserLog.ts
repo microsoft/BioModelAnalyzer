@@ -17,12 +17,22 @@ module BMA {
         LogSaveModel();
     }
 
+    function generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    };
+
     export class SessionLog implements ISessionLog {
         private userId: string;
+        private sessionId: string;
 
         private logIn: Date;
         private logOut: Date;
-        private duration: number;
 
         private proofCount: number;
         private simulationCount: number;
@@ -32,14 +42,15 @@ module BMA {
         private importModelCount: number;
 
         constructor() {
-            this.userId = $.cookie("userID");
+            this.userId = $.cookie("BMAClient.UserID");
             if (this.userId === undefined) {
-
+                this.userId = generateUUID();
+                $.cookie("BMAClient.UserID", this.userId);
             }
+            this.sessionId = generateUUID();
 
             this.logIn = new Date();
             this.logOut = new Date();
-            this.duration = 0;
 
             this.proofCount = 0;
             this.simulationCount = 0;
@@ -75,8 +86,6 @@ module BMA {
 
         public CloseSession() {
             this.logOut = new Date();
-            this.duration = Math.abs(this.logOut.getSeconds() - this.logIn.getSeconds());
-
             return {
                 Proof: this.proofCount,
                 Simulation: this.simulationCount,
@@ -86,7 +95,8 @@ module BMA {
                 SaveModel: this.saveModelCount,
                 LogIn: this.logIn.toJSON(),
                 LogOut: this.logOut.toJSON(),
-                Duration: this.duration
+                UserID: this.userId,
+                SessionID: this.sessionId
             };
         }
     }
