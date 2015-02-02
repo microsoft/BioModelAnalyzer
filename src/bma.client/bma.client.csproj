@@ -197,6 +197,7 @@
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
+    <Content Include="images\MSRLogoDigitalBlack.png" />
     <Content Include="images\new.png" />
     <Content Include="images\new.svg" />
     <Content Include="images\open.png" />
