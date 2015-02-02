@@ -279,7 +279,6 @@
     <Content Include="preloaded\diabetes_new_mod.json" />
     <Content Include="preloaded\ToyModelStable.json" />
     <Content Include="preloaded\ToyModelUnstable.json" />
-    <Content Include="preloaded\VPC.json" />
     <Content Include="preloaded\SkinModel.json" />
     <Content Include="css\BMA_less.less" />
     <Content Include="css\BMA_less.css.map">
@@ -297,6 +296,7 @@
     <Content Include="css\fonts.css.map">
       <DependentUpon>fonts.css</DependentUpon>
     </Content>
+    <Content Include="preloaded\VPC.json" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />

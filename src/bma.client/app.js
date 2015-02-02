@@ -1,3 +1,39 @@
+/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="script\model\biomodel.ts"/>
+/// <reference path="script\model\model.ts"/>
+/// <reference path="script\model\exportimport.ts"/>
+/// <reference path="script\model\visualsettings.ts"/>
+/// <reference path="script\commands.ts"/>
+/// <reference path="script\elementsregistry.ts"/>
+/// <reference path="script\functionsregistry.ts"/>
+/// <reference path="script\localRepository.ts"/>
+/// <reference path="script\uidrivers.interfaces.ts"/>
+/// <reference path="script\uidrivers.ts"/>
+/// <reference path="script\presenters\undoredopresenter.ts"/>
+/// <reference path="script\presenters\presenters.ts"/>
+/// <reference path="script\presenters\furthertestingpresenter.ts"/>
+/// <reference path="script\presenters\simulationpresenter.ts"/>
+/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
+/// <reference path="script\SVGHelper.ts"/>
+/// <reference path="script\changeschecker.ts"/>
+/// <reference path="script\widgets\drawingsurface.ts"/>
+/// <reference path="script\widgets\simulationplot.ts"/>
+/// <reference path="script\widgets\simulationviewer.ts"/>
+/// <reference path="script\widgets\simulationexpanded.ts"/>
+/// <reference path="script\widgets\accordeon.ts"/>
+/// <reference path="script\widgets\visibilitysettings.ts"/>
+/// <reference path="script\widgets\elementbutton.ts"/>
+/// <reference path="script\widgets\bmaslider.ts"/>
+/// <reference path="script\widgets\userdialog.ts"/>
+/// <reference path="script\widgets\variablesOptionsEditor.ts"/>
+/// <reference path="script\widgets\progressiontable.ts"/>
+/// <reference path="script\widgets\proofresultviewer.ts"/>
+/// <reference path="script\widgets\furthertestingviewer.ts"/>
+/// <reference path="script\widgets\localstoragewidget.ts"/>
+/// <reference path="script\widgets\resultswindowviewer.ts"/>
+/// <reference path="script\widgets\coloredtableviewer.ts"/>
+/// <reference path="script\widgets\containernameeditor.ts"/>
 function onSilverlightError(sender, args) {
     var appSource = "";
     if (sender != null && sender != 0) {
@@ -40,9 +76,13 @@ function transformToAssocArray(prmstr) {
     return params;
 }
 $(document).ready(function () {
+    //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
+    //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
+    //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
+    //Creating model and layout
     var appModel = new BMA.Model.AppModel();
     window.PlotSettings = {
         MaxWidth: 3200,
@@ -54,6 +94,7 @@ $(document).ready(function () {
         xStep: 250,
         yStep: 280
     };
+    //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
@@ -81,7 +122,7 @@ $(document).ready(function () {
             { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
             {
                 title: "Size",
                 cmd: "Size",
@@ -92,7 +133,7 @@ $(document).ready(function () {
                 ],
                 uiIcon: "ui-icon-arrow-4-diag"
             },
-            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" }
+            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
         ],
         beforeOpen: function (event, ui) {
             ui.menu.zIndex(50);
@@ -128,9 +169,40 @@ $(document).ready(function () {
             window.Commands.Execute(commandName, args);
         }
     });
+    var aas = $('body').children('ul').children('li').children('a');
+    aas.children('span').detach();
+    aas.each(function () {
+        switch ($(this).text()) {
+            case "Cut":
+                $('<img alt="" src="../images/icon-cut.svg">').appendTo($(this));
+                break;
+            case "Copy":
+                $('<img alt="" src="../images/icon-copy.svg">').appendTo($(this));
+                break;
+            case "Paste":
+                $('<img alt="" src="../images/icon-paste.svg">').appendTo($(this));
+                break;
+            case "Edit":
+                $('<img alt="" src="../images/icon-edit.svg">').appendTo($(this));
+                break;
+            case "Size":
+                $('<img alt="" src="../images/icon-size.svg">').appendTo($(this));
+                break;
+            case "Delete":
+                $('<img alt="" src="../images/icon-delete.svg">').appendTo($(this));
+                break;
+        }
+    });
+    //$('<img alt="" src="../images/icon-cut.svg">').appendTo(aas.eq(0));
+    //$('<img alt="" src="../images/icon-copy.svg">').appendTo(aas.eq(1));
+    //$('<img alt="" src="../images/icon-paste.svg">').appendTo(aas.eq(2));
+    //$('<img alt="" src="../images/icon-edit.svg">').appendTo(aas.eq(3));
+    //$('<img alt="" src="../images/icon-size.svg">').appendTo(aas.eq(4));
+    //$('<img alt="" src="../images/icon-delete.svg">').appendTo(aas.eq(5));
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
     $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+    //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
@@ -141,7 +213,11 @@ $(document).ready(function () {
     }
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
         helper: function (event, ui) {
+            //var h = $(this).children().children().clone().appendTo('body');
+            //console.log(h.attr("class"));
             var classes = $(this).children().children().attr("class").split(" ");
+            //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
+            //console.log();
             return $('<div></div>').addClass(classes[0]).addClass("bma-draggable-helper-element").appendTo('body');
         },
         scroll: false,
@@ -157,6 +233,7 @@ $(document).ready(function () {
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
     elementPanel.buttonset();
+    //undo/redo panel
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
@@ -172,6 +249,7 @@ $(document).ready(function () {
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    popup.draggable({ scroll: false });
     $("#localSaveBtn").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
@@ -188,6 +266,7 @@ $(document).ready(function () {
         window.Commands.Execute("ExportModel", undefined);
     });
     var expandedSimulation = $('<div></div>').simulationexpanded();
+    //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
@@ -199,12 +278,19 @@ $(document).ready(function () {
         window.ElementRegistry.LabelSize = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
+    //window.Commands.On("Commands.ToggleIcons", function (param) {
+    //    visualSettings.IconsVisibility = param;
+    //});
+    //window.Commands.On("Commands.IconsSize", function (param) {
+    //    visualSettings.IconsSize = param;
+    //});
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
         window.ElementRegistry.LineWidth = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
-    var localStorageWidget = $('<div></div>').addClass('newWindow').appendTo('#drawingSurceContainer').localstoragewidget();
+    var localStorageWidget = $('<div></div>').addClass('new-window').appendTo('#drawingSurceContainer').localstoragewidget();
+    //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
@@ -219,7 +305,11 @@ $(document).ready(function () {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+    //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
+    var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
+    var changesCheckerTool = new BMA.ChangesChecker();
+    changesCheckerTool.Snapshot(appModel);
     window.Commands.On("Commands.ToggleGrid", function (param) {
         visualSettings.GridVisibility = param;
         svgPlotDriver.SetGridVisibility(param);
@@ -228,21 +318,23 @@ $(document).ready(function () {
         $("#zoomslider").bmazoomslider({ value: value });
     });
     window.Commands.On("AppModelChanged", function () {
-        popupDriver.Hide();
-        accordionHider.Hide();
+        if (changesCheckerTool.IsChanged) {
+            popupDriver.Hide();
+            accordionHider.Hide();
+            window.Commands.Execute("Expand", '');
+        }
     });
     window.Commands.On("DrawingSurfaceVariableEditorOpened", function () {
         popupDriver.Hide();
         accordionHider.Hide();
     });
-    var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
-    var changesCheckerTool = new BMA.ChangesChecker();
-    changesCheckerTool.Snapshot(appModel);
+    //Loaing ServiсeDrivers 
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
     var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
+    //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
@@ -251,30 +343,35 @@ $(document).ready(function () {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
+    //Loading model from URL
     var params = getSearchParameters();
     if (params.Model !== undefined) {
         var s = params.Model.split('.');
-        if (s[s.length - 1] == "json") {
-            $.getJSON(params.Model, function (fileContent) {
-                appModel.Reset(JSON.stringify(fileContent));
+        if (s.length > 1 && s[s.length - 1] == "json") {
+            $.ajax(params.Model, {
+                dataType: "text",
+                success: function (fileContent) {
+                    appModel.Deserialize(fileContent);
+                    //appModel._Reset(fileContent);
+                }
             });
         }
         else {
             $.get(params.Model, function (fileContent) {
                 try {
                     var model = BMA.ParseXmlModel(fileContent, window.GridSettings);
-                    appModel.Reset2(model.Model, model.Layout);
+                    appModel.Reset(model.Model, model.Layout);
                 }
                 catch (exc) {
                     console.log(exc);
-                    appModel.Reset(fileContent);
+                    appModel.Deserialize(fileContent);
                 }
             });
         }
     }
     function popup_position() {
         var my_popup = $('.popup-window, .bma-userdialog');
-        var analytic_tabs = $('.tabPanel');
+        var analytic_tabs = $('.analytics-tabpanel');
         analytic_tabs.each(function () {
             var tab_h = $(this).outerHeight();
             var win_h = $(window).outerHeight() * 0.8;
@@ -299,19 +396,46 @@ $(document).ready(function () {
             }
         });
     }
+    var toolsdivs = $('#tools').children('div');
+    function resize_header_tools() {
+        toolsdivs.each(function () {
+            $(this).toggleClass('box-sizing'); //.css('box-sizing', 'border-box');
+        });
+    }
     $(document).ready(function () {
         popup_position();
     });
     $(window).resize(function () {
         popup_position();
+        resize_header_tools();
     });
     var reserved_key = "InitialModel";
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
         var log = logService.CloseSession();
+        var data = JSON.stringify({
+            SessionID: log.SessionID,
+            UserID: log.UserID,
+            LogInTime: log.LogIn,
+            LogOutTime: log.LogOut,
+            ClientVersion: "BMA HTML5 2.0"
+        });
+        var sendBeacon = navigator['sendBeacon'];
+        if (sendBeacon) {
+            sendBeacon('/api/ActivityLog', data);
+        }
+        else {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post', '/api/ActivityLog', false);
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            xhr.setRequestHeader("Content-length", data.length.toString());
+            xhr.setRequestHeader("Connection", "close");
+            xhr.send(data);
+        }
     };
     window.onload = function () {
         window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
     $("label[for='button-pointer']").click();
 });
+//# sourceMappingURL=app.js.map

@@ -1,7 +1,7 @@
 ﻿module BMA {
     export module Model {
 
-        export function MapVariableNames(f: string, mapper : (string) => string) {
+        export function MapVariableNames(f: string, mapper: (string) => string) {
             if (f != null) {
                 f = f.trim();
                 // Convert default function to null
@@ -27,18 +27,19 @@
         // 1) Variables in formulas are identified by IDs
         // 2) Default function avg(pos)-avg(neg) is replaced with null formula
         export function ExportBioModel(model: BioModel) {
-          
+
             function GetIdByName(id: number, name: string): number {
                 var results = model.Variables.filter(function (v2: Variable) {
                     return v2.Name == name &&
                         model.Relationships.some(function (r: Relationship) {
                             return r.ToVariableId == id && r.FromVariableId == v2.Id;
-                               // || r.FromVariableId == id && r.ToVariableId == v2.Id
+                            // || r.FromVariableId == id && r.ToVariableId == v2.Id
                         });
                 });
-                if (results.length > 1)
-                    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
-                else if (results.length == 0)
+                //if (results.length > 1)
+                //    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
+                //else if (results.length == 0)
+                if (results.length == 0)
                     throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
                 return results[0].Id;
             }
@@ -68,7 +69,7 @@
             return {
                 Model: ExportBioModel(model),
                 Layout: {
-                    Variables: layout.Variables.map(v => { 
+                    Variables: layout.Variables.map(v => {
                         var mv = model.GetVariableById(v.Id);
                         return {
                             Id: v.Id,
@@ -103,10 +104,10 @@
             return {
                 Model: new BioModel(json.Model.Name,
                     json.Model.Variables.map(v => new Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo,
-                                                               MapVariableNames(v.Formula, s => id[parseInt(s)].Name))), 
-                                    json.Model.Relationships.map(r => new Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type))),
+                        MapVariableNames(v.Formula, s => id[parseInt(s)].Name))),
+                    json.Model.Relationships.map(r => new Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type))),
                 Layout: new Layout(json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY)),
-                                   json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle))) 
+                    json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle)))
             }
         }
     }
