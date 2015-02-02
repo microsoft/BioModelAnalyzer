@@ -9,10 +9,9 @@
 
     <script type="text/javascript">
 
-	function toggleInfo(id)
-	{
-		$(id).slideToggle("fast");
-	}
+        function toggleInfo(id) {
+            $(id).slideToggle("fast");
+        }
 
 
     </script>
@@ -22,12 +21,16 @@
 <body>
 
     <div id="MSR-logo">
-        <a href="http://research.microsoft.com/en-us/" target="_blank"><img src="images/MSR-logo.png"></a>
+        <a href="http://research.microsoft.com/en-us/" target="_blank">
+            <img src="images/MSRLogoDigitalBlack.png" alt="Logo" />
+        </a>
     </div>
 
     <div id="header">
         <div id="site-wide-nav">
-            <a href="about.html">About</a> - <a href="help.html">Help</a> - <a href="tou.html">Terms of Use</a>
+            <a href="help.html" class="website-link" target="_blank">Help</a> -
+            <a href="http://go.microsoft.com/fwlink/?LinkID=286687" class="website-link" target="_blank">Privacy &amp Cookies</a> -
+            <a href="http://go.microsoft.com/fwlink/?LinkId=386394" class="website-link" target="_blank">Terms of Use</a>
 
             <div id="launch-btn">
                 <!-- Load up hard-coded unstable Dictyostelium at startup. For SYN. -->
@@ -123,7 +126,7 @@
                     <span class="bold">Sergey Berezin</span><br>
                     Architecture and programming - <a href="http://microsoft.cs.msu.su/eng/Pages/default.aspx" target="_blank">Moscow State University</a><br>
                     <p style="display:none" id="sergey">
-                        Sergey is Associate Professor in Moscow State University. His interests include visualization and processing of large data sets 
+                        Sergey is Associate Professor in Moscow State University. His interests include visualization and processing of large data sets
                         and applications of cloud computing and modern programming technologies to problems of computational sciences.
                     </p>
                     <a onclick="toggleInfo('#sergey')">[+]</a>
@@ -161,7 +164,7 @@
                 <a href="http://computationalculture.net/article/modelling-biology" target="_blank">[text]</a><br>
                 <br>
 
-               <span class="bold">Finding instability in biological models</span><br>
+                <span class="bold">Finding instability in biological models</span><br>
                 Cook, Fisher, Hall, Ishtiaq, Juniwal, Piterman<br>
                 CAV 2014<br>
                 <a href="http://research.microsoft.com/pubs/214284/cav2014.pdf" target="_blank">[PDF]</a><br>

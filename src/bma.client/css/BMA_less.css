@@ -695,7 +695,9 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
   height: 40px;
 }
 .bma-pagefooter-msrlogo img {
-  height: 35px;
+  margin-top: 8px;
+  height: 20px;
+  width: 180px;
   border: none;
 }
 .bma-pagefooter-logo {
