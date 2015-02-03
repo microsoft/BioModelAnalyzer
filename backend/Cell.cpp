@@ -11,7 +11,7 @@ using std::unique_ptr;
 using std::string;
 using std::pair;
 
-Cell::Cell(const CellProgram* prog, const string& state) : _alive(true), _state(new State(state)), _program(prog) {
+Cell::Cell(const CellProgram* prog, const string& state) : _alive(true), _state(new State(state,prog->simulation())), _program(prog) {
 }
 
 Cell::Cell(const CellProgram* prog, State* state) : _alive(true), _state(state), _program(prog) {

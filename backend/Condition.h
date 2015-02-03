@@ -28,7 +28,7 @@ public:
 
 	bool isDef() const;
 
-	bool addCellCycle(const std::string& cellCycle);
+	void addCellCycle(const std::string& cellCycle);
 
 	// Returns a pair of values:
 	// 1. Is the condition satisfied by the state

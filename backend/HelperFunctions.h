@@ -19,6 +19,6 @@ std::vector<std::string> splitOn(char c,const std::string& line);
 std::string removeSpace(const std::string& in);
 BoolExp* parseSimpleBoolExp(const  std::string& exp);
 BoolExp* parseBoolExp(const std::string& boolexp);
-std::map<std::string,Variable*> splitConjunction(const std::string& initializer);
+std::map<std::string,Variable*> splitConjunction(const std::string& initializer,const Simulation*);
 
 #endif /* HELPERFUNCTIONS_H_ */

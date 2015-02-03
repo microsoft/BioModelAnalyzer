@@ -32,6 +32,15 @@ ChangeState::~ChangeState() {
 //
 
 void ChangeState::output(ostream& out) const {
+	Event::output(out);
+	out << " " << cell()->name();
+	if (_oldState != nullptr) {
+		out << "[" << *_oldState << "]";
+	}
+	out << " -> " << cell()->name();
+	if (_newState != nullptr) {
+		out << "[" << *_newState << "]";
+	}
 }
 
 bool ChangeState::concerns(const string& name) const {
@@ -58,8 +67,20 @@ bool ChangeState::expressed(const string& cell, const string& var) const {
 }
 
 string ChangeState::toString() const {
+	string ret{};
+	ret += Event::toString();
+	ret += ",";
+	ret += cell()->name();
+	ret += ",,";
+	if (_oldState != nullptr) {
+		ret += _oldState->toString();
+	}
+	ret += ",,";
+	if (_newState != nullptr) {
+		ret += _newState->toString();
+	}
 	// TODO: implement me
-	return "";
+	return ret;
 }
 
 ostream& operator<<(ostream& out,const ChangeState& state) {

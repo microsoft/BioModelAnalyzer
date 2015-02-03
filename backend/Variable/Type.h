@@ -7,11 +7,16 @@
 class Type
 {
 public:
+
 	Type() = default;
 	virtual ~Type() = default;
 
+	enum Types{ BOOL, ENUM };
+
 	virtual bool operator==(const Type& other) const=0;
 	virtual bool operator!=(const Type& other) const final;
+
+	virtual Types type() const=0;
 
 	class Value {
 	public:

@@ -20,13 +20,13 @@ using std::pair;
 
 const string CELL_CYCLE_VAR{ "CellCycle" };
 
-State::State(const string& initializer)
-: _vars(splitConjunction(initializer))
+State::State(const string& initializer, const Simulation* sim)
+: _vars(splitConjunction(initializer,sim))
 {
 }
 
 State::State(const State& other)
-: _vars() // Check what does copy constructor do
+: _vars() 
 {
 	for (auto strVar : other._vars) {
 		_vars.insert(make_pair(strVar.first, new Variable(*(strVar.second))));
@@ -59,7 +59,6 @@ pair<bool,const Type::Value*> State::value(const string& var) const {
 }
 
 bool State::set(const string& var,bool val) {
-	// TODO: add some type checking 
 	if (update(var, val)) {
 		return true;
 	}
@@ -68,7 +67,7 @@ bool State::set(const string& var,bool val) {
 }
 
 bool State::set(const string& var, const Type::Value& val) {
-	// TODO: add some type checking
+	// TODO: Check that the Value matches 
 	if (update(var, val)) {
 		return true;
 	}

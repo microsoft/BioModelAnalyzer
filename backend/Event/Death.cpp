@@ -25,7 +25,7 @@ Death::~Death() {
 
 void Death::output(ostream& out) const {
 	Event::output(out);
-	out << " " << _cell << " X";
+	out << " " << cell()->name() << " X";
 }
 
 string Death::toString() const {

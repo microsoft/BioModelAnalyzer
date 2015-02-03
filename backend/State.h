@@ -24,7 +24,7 @@ public:
 	State()=delete;
 	State& operator=(const State&) = delete;
 	State& operator=(State&&) = delete;
-	State(const std::string& initializer);
+	State(const std::string& initializer, const Simulation* sim);
 	State(const State&);
 	State(State&&);
 	~State();

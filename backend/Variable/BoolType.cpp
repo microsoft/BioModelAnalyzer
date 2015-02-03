@@ -3,6 +3,10 @@
 
 using std::string;
 
+Type::Types BoolType::type() const {
+	return Type::Types::ENUM;
+}
+
 BoolType& BoolType::getInstance() {
 	static BoolType theBT;
 	return theBT;

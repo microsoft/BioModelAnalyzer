@@ -52,8 +52,8 @@ public:
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
 
-	Type* type(const std::string&);
-	EnumType* cellCycleType();
+	const Type* type(const std::string&) const;
+	const EnumType* cellCycleType() const;
 
 	bool expressed(const std::string&,float from, float to) const;
 
@@ -64,18 +64,11 @@ public:
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);
 
-	static const string G1_PHASE{ "G1" };
-	static const string G2_PHASE{ "G2" };
-	static const string S_PHASE{ "S" };
-	static const string G0_PHASE{ "G0" };
+	static const std::string G1_PHASE; // { "G1" };
+	static const std::string G2_PHASE; // { "G2" };
+	static const std::string S_PHASE; // {  "S" };
+	static const std::string G0_PHASE; // { "G0" };
 private:
-	enum CsvFields { NAME, CELLCYCLE, CONDITION, ACTION,
-					 DAUGHTER1, STATE1, MEANTIME1, STANDARDDEV1,
-					 DAUGHTER2, STATE2, MEANTIME2, STANDARDDEV2,
-					 LASTDELIM};
-
-	enum CellCyclePhases { G1, S, G1, G0 };
-
 	class EventPtrComparison
 	{
 	public:
@@ -85,12 +78,12 @@ private:
 
 //	_LineStructure _parseLine(const std::string& line) const ;
 	void _parseLine(const std::string& line);
-	float _readFloat(const std::string& input) const;
 	void _sanitize(std::string& buffer);
 	bool _validCellCycle(const std::string&) const;
 	void _addTypesFromConjunction(const std::string&);
 	void _addCellCycleType();
 	void _setDefaultTime(const std::string&, float, float);
+	std::string _setDefaultNextAction(const std::string &) const;
 	// std::pair<std::string,State*> _parseCellWithState(const std::string& cell) const;
 
 	float _currentTime;

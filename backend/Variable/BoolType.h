@@ -18,6 +18,7 @@ public:
 
 	bool operator==(const Type& other) const override;
 
+	Type::Types type() const override;
 	static BoolType& getInstance();
 
 	class Value : public Type::Value {

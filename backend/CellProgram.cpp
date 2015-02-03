@@ -97,7 +97,7 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 		}
 	}
 	else {
-		state=new State(initialState);
+		state=new State(initialState,_sim);
 	}
 
 	state->addCellCycle(EnumType::Value(*(_sim->cellCycleType()),Simulation::G1_PHASE));

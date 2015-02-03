@@ -13,6 +13,8 @@
 #include "Expression/EqExp.h"
 #include "Expression/Negation.h"
 #include "Expression/NeqExp.h"
+#include "Variable/Type.h"
+#include "Variable/EnumType.h"
 
 
 using std::map;
@@ -107,7 +109,7 @@ BoolExp* parseSimpleBoolExp(const string& exp) {
 }
 
 
-map<string,Variable*> splitConjunction(const string& initializer) {
+map<string, Variable*> splitConjunction(const string& initializer, const Simulation* sim) {
 	vector<string> fields{splitOn('&',initializer)};
 
 	map<string,Variable*> ret{};
@@ -122,20 +124,42 @@ map<string,Variable*> splitConjunction(const string& initializer) {
 		bool positive=true;
 		if (field.at(0)=='!') {
 			if (field.find('=') != std::string::npos) {
-				const string error{ "Expression of the form !var=val is not allowed. Change to var!=val!" };
+				const string error{ "Expression of the form !var=val is not allowed. Change to var!=val." };
 				throw error;
 			}
 			positive=false;
 			field = field.substr(1,field.length()-1);
 		}
-		//else if (field.find("!=") != std::string::npos) {
-		//	string varname = field.substr(0, field.find("!="));
-		//	string value = field.substr(field.find("!=") + 2, field.length() - field.find("!=") - 2);
-		//	ret.insert(make_pair(varname, new Variable()))
-		//}
 		else if (field.find('=')!=std::string::npos) {
-			const string error{"Not ready to support multi-value variables"};
-			throw error;
+			unsigned int skip = 1;
+			std::string::size_type l;
+			if ((l = field.find("!=")) != std::string::npos) {
+				positive = false;
+				skip = 2;
+			}
+			else {
+				l = field.find("=");
+			}
+			string varname = field.substr(0, l);
+			string value = field.substr(l + skip, field.length() - l - skip);
+			const Type* t = sim->type(varname);
+			if (t->type() != Type::Types::ENUM) {
+				string err{ "Variable " };
+				err += varname;
+				err += " is compared to a value.";
+				throw err;
+			}
+			const EnumType* et = dynamic_cast<const EnumType*>(t);
+			if (!et->isMember(value)) {
+				string err{ "Value " };
+				err += value;
+				err += " does not match the type of variable ";
+				err += varname;
+				err += ".";
+				throw err;
+			}
+			EnumType::Value* v = new EnumType::Value(*et, value);
+			ret.insert(make_pair(varname, new Variable(varname, v)));
 		}
 
 		ret.insert(make_pair(field,new Variable(field,positive)));
@@ -143,3 +167,4 @@ map<string,Variable*> splitConjunction(const string& initializer) {
 
 	return ret;
 }
+

@@ -7,6 +7,11 @@ using std::string;
 using std::vector;
 using std::ostream;
 
+Type::Types EnumType::type() const {
+	return Type::Types::ENUM;
+}
+
+
 void EnumType::addElem(const string& e) {
 	_elements.push_back(e);
 }

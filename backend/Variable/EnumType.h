@@ -19,6 +19,7 @@ public:
 
 	virtual ~EnumType() = default;
 
+	Type::Types type() const override;
 
 	void addElem(const std::string&);
 	unsigned int size() const;

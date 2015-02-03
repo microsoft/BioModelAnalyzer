@@ -48,8 +48,17 @@ bool Condition::isDef() const {
 	return _def;
 }
 
-bool Condition::addCellCycle(const string& cellCycle) {
-	_conjunction = new AndExp(new EqExp("CellCycle", cellCycle), _conjunction);
+void Condition::addCellCycle(const string& cellCycle) {
+	if (_def) {
+		_def = false;
+	}
+	EqExp* e = new EqExp("CellCycle", cellCycle);
+	if (_conjunction) {
+		_conjunction = new AndExp(e, _conjunction);
+	}
+	else {
+		_conjunction = e;
+	}
 }
 
 std::pair<bool,unsigned int> Condition::evaluate(const State* st, const Simulation* sim, float from, float to) const {

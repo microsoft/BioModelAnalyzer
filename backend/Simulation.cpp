@@ -44,12 +44,22 @@ using std::max;
 using std::unique_ptr;
 // using boost::lexical_cast;
 
-constexpr int NUMBER_OF_LINES_TO_SKIP{ 1 };
+
+// Initialize static members
+const string Simulation::G1_PHASE="G1";
+const string Simulation::G2_PHASE = "G2";
+const string Simulation::S_PHASE = "S";
+const string Simulation::G0_PHASE = "G0";
+
+
+const int NUMBER_OF_LINES_TO_SKIP{ 1 };
 const string CELL_CYCLE{ "CellCycle" };
 const string DIVIDE{ "divide" };
 const string CHANGE_STATE{ "change_state" };
 const string DEF_INIT{ "default_init" };
 const string DEF_LENGTH{ "default_length" };
+
+
 
 bool Simulation::EventPtrComparison::operator() (Happening* lhs, Happening* rhs) const {
 	return (rhs->operator<(*lhs));
@@ -228,7 +238,7 @@ unsigned int Simulation::numPrograms() const {
 	return _programs.size();
 }
 
-Type* Simulation::type(const string& name) {
+const Type* Simulation::type(const string& name) const {
 	auto t(_types.find(name));
 	if (_types.end() == t) {
 		return nullptr;
@@ -236,8 +246,8 @@ Type* Simulation::type(const string& name) {
 	return t->second;
 }
 
-EnumType* Simulation::cellCycleType() {
-	return dynamic_cast<EnumType*>(type(CELL_CYCLE));
+const EnumType* Simulation::cellCycleType() const {
+	return dynamic_cast<const EnumType*>(type(CELL_CYCLE));
 }
 
 bool Simulation::expressed(const string& cond, float from, float to) const {
@@ -285,10 +295,10 @@ bool Simulation::expressed(const string& cond, float from, float to) const {
 
 pair<float, float> Simulation::defTime(const string& phase) const {
 	auto t = _defaults.find(phase);
-	if (t == _defaults.end()) {
+	if (t != _defaults.end()) {
 		return t->second;
 	}
-	return make_pair(0.0, 0.0);
+	return make_pair(-1.0, -1.0);
 }
 
 
@@ -363,7 +373,7 @@ istream& operator>> (istream& in, Simulation& sim) {
 		}
 		catch (const string& err) {
 			stringstream error;
-			error << "Error: on line " << lineNo << ":" << err;
+			error << "On line " << lineNo << ": " << err;
 			const string withLineNum{ error.str() };
 			throw withLineNum;
 		}
@@ -390,155 +400,7 @@ istream& operator>> (istream& in, Simulation& sim) {
 	return in;
 }
 
-
-void Simulation::_parseLine(const string& line) {
-
-	// Cell Name (string), Cell Cycle (string), 
-	// Condition (string), action (string),
-	// Daughter 1 (string), State 1 (string), mean1 time (float), standard deviation (float),
-	// Daughter 2 (string), State 2 (string), mean1 time (float), standard deviation (float),
-
-
-	string cellName{};
-	string cellCycle{};
-	string condition{};
-	string action{};
-	string d1{};
-	string state1{};
-	float mean1{};
-	float sd1{};
-	string d2{};
-	string state2{};
-	float mean2{};
-	float sd2{};
-
-	const vector<string> fields{ splitOn(',', line) };
-
-	// cout << "Read: " << buffer << endl;
-
-	for (unsigned int i = 0; i < static_cast<unsigned int>(LASTDELIM) && i < fields.size();
-		++i) {
-		const string piece{ fields.at(i) };
-
-		switch (static_cast<CsvFields>(i)) {
-		case NAME:
-			cellName = piece;
-			break;
-		case CELLCYCLE:
-			cellCycle = piece;
-			break;
-		case CONDITION:
-			condition = piece;
-			break;
-		case ACTION:
-			action = piece;
-			break;
-		case DAUGHTER1: // Daughter 1
-			d1 = piece;
-			break;
-		case STATE1:
-			state1 = piece;
-			break;
-		case MEANTIME1: // Mean time
-			mean1 = _readFloat(piece);
-			break;
-		case STANDARDDEV1: // Standard Deviation
-			sd1 = _readFloat(piece);
-			break;
-		case DAUGHTER2:
-			d2 = piece;
-			break;
-		case STATE2:
-			state2 = piece;
-			break;
-		case MEANTIME2: // Mean time
-			mean2 = _readFloat(piece);
-			break;
-		case STANDARDDEV2: // Standard Deviation
-			sd2 = _readFloat(piece);
-			break;
-		default:
-			const string err{ "Too many fields." };
-			throw err;
-		}
-	}
-
-	auto progIt = _programs.find(cellName);
-	if (_programs.end() == progIt) {
-		CellProgram* newProg = new CellProgram(cellName, this);
-		_programs.insert(make_pair(cellName, newProg));
-		progIt = _programs.find(cellName);
-	}
-
-	unique_ptr<Condition> cond{ (0 == condition.size() ? nullptr : new Condition(condition)) };
-	EnumType* cellCycleType = dynamic_cast<EnumType*>(type(CELL_CYCLE));
-	_addTypesFromConjunction(state1);
-	_addTypesFromConjunction(state2);
-	_addTypesFromConjunction(condition);
-
-	if (DIVIDE == action) {
-		if (0 == cellName.size() || !_validCellCycle(cellCycle) ||
-			0 == d1.size() || 0 == d2.size()) {
-			const string err{ "Badly structured divide instruction" };
-			throw err;
-		}
-		cond->addCellCycle(cellCycle);
-		State* st1{ (0 == state1.size() ? nullptr : new State(state1)) };
-		State* st2{ (0 == state2.size() ? nullptr : new State(state2)) };
-		EnumType::Value g1(*cellCycleType, G1_PHASE);
-		st1->addCellCycle(g1);
-		st2->addCellCycle(g1);
-		Directive* d{ new Divide(progIt->second, d1, st1, mean1, sd1, d2, st2, mean2, sd2) };
-		progIt->second->addCondition(cond.release(), d);
-	}
-	else if (G1_PHASE == action || S_PHASE== action || 
-			 G2_PHASE == action || G0_PHASE == action ||
-			 CHANGE_STATE == action) {
-		if (0 == cellName.size() || 
-			// For change state it is OK for the cellCycle to be empty
-			(!_validCellCycle(cellCycle) && (action != CHANGE_STATE || cellCycle.size() != 0)) ||
-			d1.size() != 0 || d2.size() != 0 || mean2 != -1.0 || sd2 != -1.0) {
-			string err{ "Badly structured " };
-			err += action;
-			err += " instruction";
-			throw err;
-		}
-		if (cellCycle.size() != 0) {
-			cond->addCellCycle(cellCycle);
-		}
-		State* st1{ (0 == state1.size() ? nullptr : new State(state1)) };
-		if (action != CHANGE_STATE) {
-			EnumType::Value p(*cellCycleType, action);
-			st1->addCellCycle(p);
-		}
-		Directive* d{ new StateTransition(progIt->second, mean1, sd1, st1) };
-		progIt->second->addCondition(cond.release(), d);
-	}
-	else if (DEF_INIT == action) {
-		if (!_validCellCycle(cellCycle) || cond != nullptr || d1.size() != 0 ||
-			d2.size() != 0 || state2.size() != 0 || mean2 != -1.0 || sd2 != -1.0) {
-			const string err{ "Badly structured default initialization." };
-			throw err;
-		}
-		State* st1{ (0 == state1.size() ? nullptr : new State(state1)) };
-		progIt->second->setDefaults(st1, mean1, sd1);
-	}
-	else if (DEF_LENGTH == action) {
-		if (!_validCellCycle(cellCycle) || 0 == cellCycle.size() || cond != nullptr ||
-			d1.size() != 0 || state1.size() != 0 || d2.size() != 0 ||
-			state2.size() != 0 || mean2 != -1.0 || sd2 != -1.0) {
-			const string err{ "Badly structured default length." };
-			throw err;
-		}
-		_setDefaultTime(cellCycle, mean1, sd1);
-	}
-	else {
-		const string err{ "Unexpected action." };
-		throw err;
-	}
-}
-
-float Simulation::_readFloat(const string& input) const {
+float readFloat(const string& input) {
 	if (0 == input.size()) {
 		return -1.0;
 	}
@@ -550,6 +412,173 @@ float Simulation::_readFloat(const string& input) const {
 		throw err;
 	}
 	return ret;
+}
+
+enum CsvFields {
+	NAME, CELLCYCLE, CONDITION, ACTION,
+	DAUGHTER1, STATE1, MEANTIME1, STANDARDDEV1,
+	DAUGHTER2, STATE2, MEANTIME2, STANDARDDEV2,
+	LASTDELIM
+};
+
+enum CellCyclePhases { G1, S, G2, G0 };
+
+struct LineComponents {
+	string cellName;
+	string cellCycle;
+	string condition;
+	string action;
+	string d1;
+	string state1;
+	float mean1;
+	float sd1;
+	string d2;
+	string state2;
+	float mean2;
+	float sd2;
+
+	LineComponents(const vector<string>& fields) {
+		for (unsigned int i = 0; i < static_cast<unsigned int>(LASTDELIM) && i < fields.size();
+			++i) {
+			const string piece{ fields.at(i) };
+
+			switch (static_cast<CsvFields>(i)) {
+			case NAME:
+				cellName = piece;
+				break;
+			case CELLCYCLE:
+				cellCycle = piece;
+				break;
+			case CONDITION:
+				condition = piece;
+				break;
+			case ACTION:
+				action = piece;
+				break;
+			case DAUGHTER1: // Daughter 1
+				d1 = piece;
+				break;
+			case STATE1:
+				state1 = piece;
+				break;
+			case MEANTIME1: // Mean time
+				mean1 = readFloat(piece);
+				break;
+			case STANDARDDEV1: // Standard Deviation
+				sd1 = readFloat(piece);
+				break;
+			case DAUGHTER2:
+				d2 = piece;
+				break;
+			case STATE2:
+				state2 = piece;
+				break;
+			case MEANTIME2: // Mean time
+				mean2 = readFloat(piece);
+				break;
+			case STANDARDDEV2: // Standard Deviation
+				sd2 = readFloat(piece);
+				break;
+			default:
+				const string err{ "Too many fields." };
+				throw err;
+			}
+		}
+	}
+};
+
+
+void Simulation::_parseLine(const string& line) {
+
+	// Cell Name (string), Cell Cycle (string), 
+	// Condition (string), action (string),
+	// Daughter 1 (string), State 1 (string), mean1 time (float), standard deviation (float),
+	// Daughter 2 (string), State 2 (string), mean1 time (float), standard deviation (float),
+
+	const vector<string> fields{ splitOn(',', line) };
+
+
+	LineComponents lc(fields);
+	// cout << "Read: " << buffer << endl;
+
+
+	auto progIt = _programs.find(lc.cellName);
+	if (_programs.end() == progIt) {
+		CellProgram* newProg = new CellProgram(lc.cellName, this);
+		_programs.insert(make_pair(lc.cellName, newProg));
+		progIt = _programs.find(lc.cellName);
+	}
+
+	unique_ptr<Condition> cond{ (0 == lc.condition.size() ? nullptr : new Condition(lc.condition)) };
+	const EnumType* cellCycleType = dynamic_cast<const EnumType*>(type(CELL_CYCLE));
+	_addTypesFromConjunction(lc.state1);
+	_addTypesFromConjunction(lc.state2);
+	_addTypesFromConjunction(lc.condition);
+
+	if (0 == lc.action.size()) {
+		lc.action = _setDefaultNextAction(lc.cellCycle);
+	}
+
+	if (DIVIDE == lc.action) {
+		if (0 == lc.cellName.size() || !_validCellCycle(lc.cellCycle) ||
+			0 == lc.d1.size() || 0 == lc.d2.size()) {
+			const string err{ "Badly structured divide instruction" };
+			throw err;
+		}
+		cond->addCellCycle(lc.cellCycle);
+		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1,this)) };
+		State* st2{ (0 == lc.state2.size() ? nullptr : new State(lc.state2,this)) };
+		EnumType::Value g1(*cellCycleType, G1_PHASE);
+		st1->addCellCycle(g1);
+		st2->addCellCycle(g1);
+		Directive* d{ new Divide(progIt->second, lc.d1, st1, lc.mean1, lc.sd1, lc.d2, st2, lc.mean2, lc.sd2) };
+		progIt->second->addCondition(cond.release(), d);
+	}
+	else if (G1_PHASE == lc.action || S_PHASE == lc.action || 
+		G2_PHASE == lc.action || G0_PHASE == lc.action ||
+		CHANGE_STATE == lc.action) {
+		if (0 == lc.cellName.size() ||
+			// For change state it is OK for the cellCycle to be empty
+			(!_validCellCycle(lc.cellCycle) && (lc.action != CHANGE_STATE || lc.cellCycle.size() != 0)) ||
+			lc.d1.size() != 0 || lc.d2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
+			string err{ "Badly structured " };
+			err += lc.action;
+			err += " instruction";
+			throw err;
+		}
+		if (lc.cellCycle.size() != 0) {
+			cond->addCellCycle(lc.cellCycle);
+		}
+		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1,this)) };
+		if (lc.action != CHANGE_STATE) {
+			EnumType::Value p(*cellCycleType, lc.action);
+			st1->addCellCycle(p);
+		}
+		Directive* d{ new StateTransition(progIt->second, lc.mean1, lc.sd1, st1) };
+		progIt->second->addCondition(cond.release(), d);
+	}
+	else if (DEF_INIT == lc.action) {
+		if (lc.cellCycle.size() != 0 || cond != nullptr || lc.d1.size() != 0 ||
+			lc.d2.size() != 0 || lc.state2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
+			const string err{ "Badly structured default initialization." };
+			throw err;
+		}
+		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1,this)) };
+		progIt->second->setDefaults(st1, lc.mean1, lc.sd1);
+	}
+	else if (DEF_LENGTH == lc.action) {
+		if (!_validCellCycle(lc.cellCycle) || 0 == lc.cellCycle.size() || cond != nullptr ||
+			lc.d1.size() != 0 || lc.state1.size() != 0 || lc.d2.size() != 0 ||
+			lc.state2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
+			const string err{ "Badly structured default length." };
+			throw err;
+		}
+		_setDefaultTime(lc.cellCycle, lc.mean1, lc.sd1);
+	}
+	else {
+		const string err{ "Unexpected action." };
+		throw err;
+	}
 }
 
 bool notIsPrint(char c)
@@ -564,8 +593,10 @@ void Simulation::_sanitize(string & str)
 
 bool Simulation::_validCellCycle(const string& c) const
 {
-	if (0 == c.length() || c != G1_PHASE || c != G2_PHASE || c != S_PHASE)
+	if (0 == c.length() ||
+		(c != G1_PHASE && c != G2_PHASE && c != S_PHASE)) {
 		return false;
+	}
 	return true;
 }
 
@@ -599,6 +630,22 @@ void Simulation::_setDefaultTime(const string& phase, float mean, float sd) {
 	}
 }
 
+string Simulation::_setDefaultNextAction(const string& c) const {
+	if (G1_PHASE == c) {
+		return S_PHASE;
+	}
+	if (S_PHASE == c) {
+		return G2_PHASE;
+	}
+	if (G2_PHASE == c) {
+		return DIVIDE;
+	}
+	if (G0_PHASE == c) {
+		return G0_PHASE;
+	}
+	const string err{ "No action and no set default action" };
+	throw err;
+}
 //pair<string,State*> Simulation::_parseCellWithState(const std::string& cell) const {
 //	if (cell.find('[')==string::npos) {
 //		return make_pair(cell,nullptr);
