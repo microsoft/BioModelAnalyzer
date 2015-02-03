@@ -12,11 +12,13 @@
             private expandedSimulationVariables: JQuery;
             private expandedSimulationPlot: JQuery;
             private currentModel: BMA.Model.BioModel;
+            private logService: ISessionLog;
 
             constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver, logService: BMA.ISessionLog) {
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
+                this.logService = logService;
                 this.ajax = ajax;
                 this.colors = [];
                 var that = this;
@@ -131,11 +133,13 @@
                                 that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             }
                             else {
+                                
                                 that.expandedViewer.ActiveMode();
                                 alert ("Simulation Error: " + res.ErrorMessages);
                             }
                         })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                            this.logService.LogSimulationError();
                             console.log(textStatus);
                             that.expandedViewer.ActiveMode();
                             alert("Simulate error: " + errorThrown);

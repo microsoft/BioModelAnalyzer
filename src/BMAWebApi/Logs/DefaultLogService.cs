@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using BioCheckAnalyzerCommon;
+using BMAWebApi;
 
 namespace bma.client
 {
-    public class DefaultLogService : ILogService
+    public class DefaultLogService : ILogService, ILogContents
     {
         private readonly List<string> debugMessages;
         private readonly List<string> errorMessages;
@@ -19,17 +20,17 @@ namespace bma.client
         /// <summary>
         /// Gets the value of the <see cref="DebugMessages"/> property.
         /// </summary>
-        public List<string> DebugMessages
+        public string[] DebugMessages
         {
-            get { return debugMessages; }
+            get { return debugMessages.ToArray(); }
         }
 
         /// <summary>
         /// Gets the value of the <see cref="ErrorMessages"/> property.
         /// </summary>
-        public List<string> ErrorMessages
+        public string[] ErrorMessages
         {
-            get { return errorMessages; }
+            get { return errorMessages.ToArray(); }
         }
 
         public void LogDebug(string message)

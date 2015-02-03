@@ -1064,10 +1064,10 @@ label[aria-pressed='true'] .bma-inhibit-img {
 .modelstorage-toolbar-modelname {
   width: 150px;
   height: 50px;
-  background-image: -moz-linear-gradient(left, gainsboro 0, white 50%);
-  background-image: -webkit-linear-gradient(left, gainsboro 0, white 50%);
-  background-image: -ms-linear-gradient(left, gainsboro 0, white 50%);
-  background-image: -webkit-gradient(linear, left, gainsboro 0, white 50%);
+  background-image: -moz-linear-gradient(left, #dcdcdc 0, #ffffff 50%);
+  background-image: -webkit-linear-gradient(left, #dcdcdc 0, #ffffff 50%);
+  background-image: -ms-linear-gradient(left, #dcdcdc 0, #ffffff 50%);
+  background-image: -webkit-gradient(linear, left, #dcdcdc 0, #ffffff 50%);
 }
 .modelstorage-toolbar-modelname input {
   position: absolute;
@@ -1700,17 +1700,17 @@ label[aria-pressed='true'] .bma-inhibit-img {
 }
 .bma-variables-options-editor input.formula-failed-textarea,
 .bma-variables-options-editor textarea.formula-failed-textarea {
-  border: 1px solid red;
+  border: 1px solid #ff0000;
 }
 .bma-variables-options-editor input.formula-validated-textarea,
 .bma-variables-options-editor textarea.formula-validated-textarea {
-  border: 1px solid green;
+  border: 1px solid #008000;
 }
 .bma-variables-options-editor.bmaeditor-expanded {
   height: 340px;
 }
 .bma-variables-options-editor .bma-formula-validation-message {
-  color: red;
+  color: #ff0000;
   max-height: 40px;
 }
 .bma-variables-options-editor > *:nth-child(4),
@@ -1816,8 +1816,8 @@ label[aria-pressed='true'] .bma-inhibit-img {
   display: table;
 }
 .bma-variables-options-editor .list-of-functions > ul > li:hover {
-  color: white;
-  background-color: gray;
+  color: #ffffff;
+  background-color: #808080;
 }
 .bma-variables-options-editor .list-of-functions > ul > li:hover .inputs-list-header .inputs-expandbttn {
   border-top-color: lightgray;
@@ -1861,8 +1861,8 @@ label[aria-pressed='true'] .bma-inhibit-img {
   margin-right: 3px;
 }
 .bma-variables-options-editor .list-of-operators ul > li:hover {
-  color: white;
-  background-color: gray;
+  color: #ffffff;
+  background-color: #808080;
 }
 .bma-variables-options-editor .list-of-operators ul > li:hover .inputs-list-header .inputs-expandbttn {
   border-top-color: lightgray;

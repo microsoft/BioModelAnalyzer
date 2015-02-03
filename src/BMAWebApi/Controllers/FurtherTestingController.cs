@@ -9,6 +9,9 @@ using System.Xml.Serialization;
 using System.Linq;
 using Microsoft.FSharp.Core;
 using BioModelAnalyzer;
+using BMAWebApi;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace bma.client.Controllers
 {
@@ -82,17 +85,23 @@ namespace bma.client.Controllers
                 return new FurtherTestingOutput 
                 {
                     CounterExamples = cexs.ToArray(), 
-                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
+                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                 };
             }
             catch (Exception ex)
             {
                 log.LogError(ex.ToString());
+
+                FailureAzureLogger logger = new FailureAzureLogger(
+                    CloudStorageAccount.Parse(
+                        RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+                logger.Add(DateTime.Now, "2.0", input, log);
+
                 return new FurtherTestingOutput
                 {
-                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
+                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                 };
             }
         }

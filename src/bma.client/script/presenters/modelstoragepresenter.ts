@@ -27,6 +27,7 @@
                     function load() {
                         appModel.Deserialize(undefined);
                         checker.Snapshot(appModel);
+                        logService.LogNewModelCreated();
                     }
                 });
 

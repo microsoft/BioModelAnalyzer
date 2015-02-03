@@ -121,6 +121,7 @@
                                     }
                                 }
                                 else {
+                                    logService.LogFurtherTestingError();
                                     that.driver.ActiveMode();
                                     that.messagebox.Show(res2.Error);
                                 }

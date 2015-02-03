@@ -34,7 +34,11 @@ namespace bma.client.Controllers
 
         public Int32 RunProofCount { get; set; }
 
+        public Int32 ProofErrorCount { get; set; }
+
         public Int32 RunSimulationCount { get; set; }
+
+        public Int32 SimulationErrorCount { get; set; }
 
         public Int32 NewModelCount { get; set; }
 
@@ -43,6 +47,8 @@ namespace bma.client.Controllers
         public Int32 SaveModelCount { get; set; }
 
         public Int32 FurtherTestingCount { get; set; }
+
+        public Int32 FurtherTestingErrorCount { get; set; }
 
         public string ClientVersion { get; set; }
     }
@@ -62,7 +68,10 @@ namespace bma.client.Controllers
                 NewModelCount = record.NewModelCount,
                 RunProofCount = record.RunProofCount,
                 RunSimulationCount = record.RunSimulationCount,
-                SaveModelCount = record.SaveModelCount
+                SaveModelCount = record.SaveModelCount,
+                ProofErrorCount = record.ProofErrorCount,
+                SimulationErrorCount = record.SimulationErrorCount,
+                FurtherTestingErrorCount = record.FurtherTestingErrorCount
             };
 
             ActivityAzureLogger logger = new ActivityAzureLogger(

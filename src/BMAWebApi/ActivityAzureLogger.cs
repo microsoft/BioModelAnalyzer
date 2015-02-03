@@ -43,6 +43,12 @@ namespace BMAWebApi
         public Int32 FurtherTestingCount { get; set; }
 
         public string ClientVersion { get; set; }
+
+        public int SimulationErrorCount { get; set; }
+
+        public int FurtherTestingErrorCount { get; set; }
+
+        public int ProofErrorCount { get; set; }
     }
 
     public class ActivityAzureLogger

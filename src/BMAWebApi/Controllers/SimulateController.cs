@@ -1,5 +1,8 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
+using BMAWebApi;
+using Microsoft.WindowsAzure.ServiceRuntime;
+using Microsoft.WindowsAzure.Storage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -66,8 +69,8 @@ namespace bma.client.Controllers
                 return new SimulationOutput
                 {
                     Variables = output,
-                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null,
+                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null,
                 };
 
                 //outputData.ErrorMessages = log.ErrorMessages;
@@ -76,10 +79,15 @@ namespace bma.client.Controllers
             catch (Exception ex)
             {
                 log.LogError(ex.ToString());
+                FailureAzureLogger logger = new FailureAzureLogger(
+                    CloudStorageAccount.Parse(
+                        RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+                logger.Add(DateTime.Now, "2.0", input, log);
+
                 return new SimulationOutput
                 {
-                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
+                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                 };
             }
         }

@@ -98,11 +98,12 @@
                                 proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
-                            else {
+                            else { 
+                                logService.LogProofError();
                                 if (res.Status == "Error") {
                                     proofResultViewer.SetData({
                                         issucceeded: res.Status === "Stabilizing",
-                                        message: res.ErrorMessages[0],
+                                        message: res.Error,
                                         data: undefined
                                     })
                                 }

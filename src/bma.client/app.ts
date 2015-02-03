@@ -512,6 +512,15 @@ $(document).ready(function () {
             UserID: log.UserID,
             LogInTime: log.LogIn,
             LogOutTime: log.LogOut,
+            FurtherTestingCount: log.FurtherTesting,
+            ImportModelCount: log.ImportModel,
+            RunSimulationCount: log.Simulation,
+            NewModelCount: log.NewModel,
+            RunProofCount: log.Proof,
+            SaveModelCount: log.SaveModel,
+            ProofErrorCount: log.ProofErrorCount,
+            SimulationErrorCount: log.SimulationErrorCount,
+            FurtherTestingErrorCount: log.FurtherTestingErrorCount,
             ClientVersion: "BMA HTML5 2.0"
         });
         var sendBeacon = navigator['sendBeacon'];

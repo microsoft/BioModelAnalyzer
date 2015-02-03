@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FailureAzureLogger.cs" />
     <Compile Include="ActivityAzureLogger.cs" />
     <Compile Include="Controllers\ActivityLogController.cs" />
     <Compile Include="Controllers\AnalyzeController.cs" />

@@ -12,6 +12,12 @@ module BMA {
         LogProofRun();
         LogSimulationRun();
         LogFurtherTestingRun();
+
+        LogProofError();
+        LogSimulationError();
+        LogFurtherTestingError();
+
+
         LogNewModelCreated();
         LogImportModel();
         LogSaveModel();
@@ -40,6 +46,9 @@ module BMA {
         private newModelCount: number;
         private saveModelCount: number;
         private importModelCount: number;
+        private proofErrorCount: number;
+        private simulationErrorCount: number;
+        private furtherTestingErrorCount: number;
 
         constructor() {
             this.userId = $.cookie("BMAClient.UserID");
@@ -58,6 +67,19 @@ module BMA {
             this.newModelCount = 0;
             this.saveModelCount = 0;
             this.importModelCount = 0;
+            this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
+        }
+
+        public LogProofError() {
+            this.proofErrorCount++;
+        }
+
+        public LogSimulationError() {
+            this.simulationErrorCount++;
+        }
+
+        public LogFurtherTestingError() {
+            this.furtherTestingErrorCount++;
         }
 
         public LogProofRun() {
@@ -96,7 +118,10 @@ module BMA {
                 LogIn: this.logIn.toJSON(),
                 LogOut: this.logOut.toJSON(),
                 UserID: this.userId,
-                SessionID: this.sessionId
+                SessionID: this.sessionId,
+                ProofErrorCount: this.proofErrorCount,
+                SimulationErrorCount: this.simulationErrorCount,
+                FurtherTestingErrorCount: this.furtherTestingErrorCount
             };
         }
     }

@@ -1,5 +1,8 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
+using BMAWebApi;
+using Microsoft.WindowsAzure.ServiceRuntime;
+using Microsoft.WindowsAzure.Storage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,7 +39,9 @@ namespace bma.client.Controllers
         {
             var log = new DefaultLogService();
 
-            // var azureLogService = new LogService();
+            FailureAzureLogger faultLogger = new FailureAzureLogger(
+                   CloudStorageAccount.Parse(
+                       RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
 
             // Standard Proof
             try
@@ -44,8 +49,7 @@ namespace bma.client.Controllers
                 IAnalyzer analyzer = new UIMain.Analyzer();
                 var analyisStartTime = DateTime.Now;
 
-                var logger = input.EnableLogging ? log : null;
-                if (logger != null)
+                if (input.EnableLogging)
                 {
                     analyzer.LoggingOn(log);
                 }
@@ -57,10 +61,13 @@ namespace bma.client.Controllers
                 var model = (Model)input;
                 var result = analyzer.checkStability(model);
 
-                //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
-
                 var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
                 log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
+
+                if (result.Status != StatusType.Stabilizing && result.Status != StatusType.NotStabilizing) {
+                    log.LogError(result.Error);
+                    faultLogger.Add(DateTime.Now, "2.0", input, log);
+                }
 
                 return new AnalysisOutput 
                 {
@@ -68,8 +75,8 @@ namespace bma.client.Controllers
                     Ticks = result.Ticks,
                     Status = result.Status,
                     Time = (int)time,
-                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
+                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                     //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
                     //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
                 };
@@ -78,14 +85,14 @@ namespace bma.client.Controllers
             {
                 //  azureLogService.Debug("Analyze Exception", ex.ToString());
 
-                log.LogError(ex.ToString());
-
+                log.LogError(ex.ToString());               
+                faultLogger.Add(DateTime.Now, "2.0", input, log);
                 // Return an Unknown if fails
                 return new AnalysisOutput
                 {
                     Status = StatusType.Error,
-                    ErrorMessages = log.ErrorMessages.Count > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Count > 0 ? log.DebugMessages.ToArray() : null
+                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                 };
             }
         }            
