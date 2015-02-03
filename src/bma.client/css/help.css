@@ -282,7 +282,7 @@ float:right;
 
 #block {
 background-color:white;
-padding:10px 20px 15px 10px;
+padding:10px 10px 15px 10px;
 margin:0 0 15px 0;
 line-height:16px;
 
@@ -299,6 +299,9 @@ box-shadow: 5px 5px 10px #C6C6C6;
 -o-box-shadow: 5px 5px 10px #C6C6C6;
 }
 
+#block p{
+	padding-right: 
+}
 
 .Team_Member{
 margin-bottom:15px;

@@ -54,8 +54,17 @@
 
         <div id="col-wide">
             <div id="block">
+                <video width="100%"  controls>
+                    <source src="videos/BMA.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video><br><br>
                 Bio Model Analyzer is a new biological modelling tool that illustrates signalling pathways and determines cellular stabilization. The tool represents a merging of perspectives from systems biology, formal methods, human computer interaction and design. At one level, Bio Model Analyzer is a sketching tool that enables users to draw out a biological system of interest (e.g. a genetic regulatory network) by dragging and dropping cells, their contents (DNA, proteins, etc.), extracellular components and relationships onto a simple canvas. At another level, Bio Model Analyzer’s analysis proves stabilization of biological systems, based upon formal methods that were developed for the specification and verification of properties in concurrent software systems. We hope you enjoy using Bio Model Analyzer and welcome your feedback.
                 <br><br>
+                <video width="100%"  controls>
+                    <source src="videos/BMA-trailer.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                
             </div>
 
             <div id="block">
@@ -70,16 +79,6 @@
                         Her research focuses on the construction and analysis of executable models that mimic aspects of biological phenomena in order to better understand complex biological systems. She is mainly interested in processes of cell fate determination and signalling networks operating during normal development and cancer.
                     </p>
                     <a onclick="toggleInfo('#jasmin')">[+]</a>
-                </div>
-
-                <div class="Team_Member">
-                    <span class="bold">Byron Cook</span><br>
-                    Verification and Automated Reasoning - <a href="http://research.microsoft.com/en-us/people/bycook/" target="_blank">Microsoft Research</a><br>
-                    <p style="display:none" id="byron">
-                        Byron Cook is a principal researcher at Microsoft Research in New York and professor of computer science at University College London.
-                        His research interests include topics in automatic verification and analysis of systems (e.g. software, hardware, biological models), programming languages, and theorem proving.  Much of Byron's focus in the past 5 years has been on developing automatic tools for proving termination (and other "liveness properties") of software and biological models as well as tools that can reason about mutable data-structures used in programs. Before joining MSR-Cambridge, Byron was a developer in the Windows Base OS group.
-                    </p>
-                    <a onclick="toggleInfo('#byron')">[+]</a>
                 </div>
 
                 <div class="Team_Member">
@@ -100,6 +99,15 @@
                         His research interests include formal verification, automata theory, and applications of formal methods to biological modeling.
                     </p>
                     <a onclick="toggleInfo('#nir')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Ben Hall</span><br>
+                    Systems Biology - <a href="http://www.mrc-cu.cam.ac.uk/hall.html" target="_blank">University of Cambridge</a><br>
+                    <p style="display:none" id="ben">
+                        Ben Hall is a Royal Society University Research Fellow working at the MRC Cancer Unit at the University of Cambridge. His research focuses on developing computational models of the decision making processes of cancer, from the early events of carcinogenesis to the later stages of metastasis. Alongside this, he maintains a long-standing interest in the development of algorithms and tools in formal methods for biology.
+                    </p>
+                    <a onclick="toggleInfo('#ben')">[+]</a>
                 </div>
 
                 <div class="Team_Member">
@@ -156,7 +164,7 @@
 
         <div id="col-side">
             <div id="block">
-                <span class="heading">References</span><br><br>
+                <span class="heading">Publications</span><br><br>
 
                 <span class="bold">Modelling biology -- working through (in-)stabilities and frictions</span><br>
                 Taylor, Fisher, Cook, Ishtiaq, Piterman<br>
