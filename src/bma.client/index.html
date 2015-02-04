@@ -1,230 +1,35 @@
-﻿<!DOCTYPE html>
-
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
-    <title>Bio Model Analyzer</title>
-    <link rel="stylesheet" href="Content/themes/base/jquery.ui.all.css" type="text/css" />
-    <link rel="stylesheet" href="Content/themes/base/jquery.ui.css" type="text/css" />
-    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
-    <link rel="stylesheet" href="css/idd.css" type="text/css" />
-    <link rel="stylesheet" href="css/BMA_less.css" type="text/css" />
-    <link rel="stylesheet" href="css/fonts.css" type="text/css" />
-    <script src="Silverlight.js"></script>
+  <title>Bio Model Analyzer - Home - Microsoft Research</title>
+<link rel="stylesheet" type="text/css" href="css/welcome.css" />
 
-    <script src="Scripts/jquery-2.1.1.min.js"></script>
-    <script src="js/jquery.browser.min.js"></script>
-    <script src="js/jquery.cookie.js"></script>
-
-    <script src="Scripts/jquery-ui-1.10.4.min.js"></script>
-    <script src="js/jquery.ui-contextmenu.js"></script>
-
-    <script src="js/jquery.svg.js"></script>
-    <script src="js/FileSaver.js"></script>
-
-
-    <script src="Scripts/rx.js"></script>
-    <script src="Scripts/rx.lite.js"></script>
-    <script src="Scripts/rx.aggregates.js"></script>
-    <script src="js/rx.jQuery.js"></script>
-
-    <script src="script/XmlModelParser.js"></script>
-    <script src="script/SVGHelper.js"></script>
-    <script src="script/ModelHelper.js"></script>
-    <script src="script/commands.js"></script>
-    <script src="script/elementsregistry.js"></script>
-    <script src="script/functionsregistry.js"></script>
-    <script src="script/localRepository.js"></script>
-    <script src="script/changeschecker.js"></script>
-
-    <script src="js/idd.js"></script>
-    <script src="js/svgplot.js"></script>
-    <script src="js/scalablegridlinesplot.js"></script>
-
-    <script src="script/model/biomodel.js"></script>
-    <script src="script/model/model.js"></script>
-    <script src="script/model/exportimport.js"></script>
-    <script src="script/model/analytics.js"></script>
-    <script src="script/model/visualsettings.js"></script>
-
-    <script src="script/uidrivers.js"></script>
-    <script src="script/presenters/undoredopresenter.js"></script>
-    <script src="script/presenters/presenters.js"></script>
-    <script src="script/presenters/proofpresenter.js"></script>
-    <script src="script/presenters/simulationpresenter.js"></script>
-    <script src="script/presenters/modelstoragepresenter.js"></script>
-    <script src="script/presenters/formulavalidationpresenter.js"></script>
-    <script src="script/presenters/furthertestingpresenter.js"></script>
-    <script src="script/presenters/localstoragepresenter.js"></script>
-    <script src="script/UserLog.js"></script>
-
-    <script src="script/widgets/accordeon.js"></script>
-    <script src="script/widgets/bmaslider.js"></script>
-    <script src="script/widgets/coloredtableviewer.js"></script>
-    <script src="script/widgets/containernameeditor.js"></script>
-    <script src="script/widgets/drawingsurface.js"></script>
-    <script src="script/widgets/progressiontable.js"></script>
-    <script src="script/widgets/proofresultviewer.js"></script>
-    <script src="script/widgets/furthertestingviewer.js"></script>
-    <script src="script/widgets/localstoragewidget.js"></script>
-    <script src="script/widgets/resultswindowviewer.js"></script>
-    <script src="script/widgets/simulationplot.js"></script>
-
-    <script src="script/widgets/simulationexpanded.js"></script>
-    <script src="script/widgets/simulationviewer.js"></script>
-    <script src="script/widgets/userdialog.js"></script>
-    <script src="script/widgets/variablesOptionsEditor.js"></script>
-    <script src="script/widgets/visibilitysettings.js"></script>
-
-    <script src="app.js"></script>
 </head>
 
 <body>
-    <div id="tools" class="bma-toolbarpanel">
-        <a id="downloadLink" style="display: none"></a>
-        <input style="display: none;" type="file" id="fileLoader">
 
-        <div id="undoredotoolbar" class="bma-toolbarpanel-undoredotoolbar">
-            <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
-            <label for="button-pointer">
-                <div class="pointer-icon" title="Selection tool"></div>
-            </label>
+<div id="MSR-logo">
+	<a href="http://research.microsoft.com/en-us/" target="_blank"><img src="images/MSRLogoDigitalBlack.png" /></a>
+</div>
 
-            <div class="bma-toolbarpanel-verticalline"></div>
-
-            <button id="button-undo">
-                <img src="images/undo.svg" title="Undo" />
-            </button>
-            <button id="button-redo">
-                <img src="images/redo.svg" title="Redo" />
-            </button>
-        </div>
-
-        <div id="modelelemtoolbar" class="bma-toolbarpanel-elementstoolbar"></div>
-
-   
-
-        <div class="bma-toolbarpanel-visibilityoptions" id="visibilityOptionsSlider">
-            <button id="visibilityOptionsHeader" class="visibility-options-icon"></button>
-            <div style="position: relative">
-                <div id="visibilityOptionsContent" class="visibility-options-table accordion-shadow">
-                    <ul>
-                        <li id="li1">
-                            <div class="optionsNames">Text Labels</div>
-                            <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
-                            <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
-                        </li>
-                        <!--<li id="li2">
-                <div class="optionsNames">Icons</div>
-                <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
-                <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
-            </li>-->
-                        <li id="li3">
-                            <div class="optionsNames">Grid</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
-                        </li>
-                        <li id="li4">
-                            <div class="optionsNames">Line Width</div>
-                            <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="zoomslider" data-command="ZoomSliderChanged"></div>
-
-    </div>
-
-    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
-
-
-        <div id="drawingSurface" class="bma-drawingsurface"></div>
-
-        <div class="bma-modeltoolbarcontainer">
-            <div id="modelToolbarSlider">
-                <div id="modelToolbarHeader" class="modelstorage-toolbar-header">
-                    <ul>
-                        <li>
-                            <div class="modelstorage-toolbar-modelname">
-                                <input id="modelNameEditor" type="text" value="Model 1">
-                            </div>
-                        <li>
-                            <div class="modelstorage-toolbar-expand-bttn"></div>
-                    </ul>
-                </div>
-                <div id="modelToolbarContent" class="modelstorage-toolbar-content">
-                    <ul>
-                        <li>
-                            <div id="localSaveBtn" data-command="LocalStorageSaveModel" class="localSaveButton">
-                                SAVE
-                            </div>
-                        </li>
-                        <li>
-                            <div id="newModelBtn" data-command="NewModel" class="newButton">
-                                NEW
-                            </div>
-                        </li>
-                        <li>
-                            <div id="localStorageBtn" data-command="LocalStorageRequested" class="localStorageButton">
-                                MODELS
-                            </div>
-                        </li>
-                        <li>
-                            <div id="importModelBtn" data-command="ImportModel" class="openButton">
-                                IMPORT
-                            </div>
-                        </li>
-                        <li>
-                            <div id="exportModelBtn" data-command="ExportModel" class="saveButton">
-                                EXPORT
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="bma-analyticstoolbarcontainer">
-            <div id="analytics">
-                <div id="icon1" data-command="ProofRequested" class="analytics-header">
-                    <img src="images/analyze.svg">
-                </div>
-                <div id="tabs-1" class="analytics-tabpanel">
-                    <div id="Proof-Analysis"></div>
-                    <div id="Further-Testing"></div>
-                </div>
-                <div id="icon2" data-command="SimulationRequested" class="analytics-header">
-                    <img src="images/graphic.svg">
-                </div>
-                <div id="tabs-2" class="analytics-tabpanel">
-                    <h2>Simulation</h2>
-                </div>
-            </div>
-
-
-        </div>
-        <div id="editor"></div>
-        <div id="containerEditor"></div>
-    </div>
-
-    <footer class="bma-footer">
-        <div class="bma-pagefooter-msrlogo">
-            <a href="http://research.microsoft.com/en-us/" target="_blank">
-                <img src="images/MSRLogoDigitalBlack.png" alt="Logo" />
-            </a>
-        </div>
-        <div class="bma-pagefooter-linkcontainer">
-            <a href="about.html" class="website-link" target="_blank">About</a> - 
+    <div id="site-wide-nav">
+        <div>
+            <a href="about.html" class="website-link" target="_blank">About</a> -
             <a href="help.html" class="website-link" target="_blank">Help</a> - 
-            <a href="http://go.microsoft.com/fwlink/?LinkID=286687" class="website-link" target="_blank">Privacy &amp Cookies</a> - 
+            <a href="http://go.microsoft.com/fwlink/?LinkID=286687" class="website-link" target="_blank">Privacy &amp Cookies</a> -
             <a href="http://go.microsoft.com/fwlink/?LinkId=386394" class="website-link" target="_blank">Terms of Use</a>
         </div>
-        <div class="bma-pagefooter-logo">
-            <img src="images/logo-crop.png" alt="Logo" />
-        </div>
-    </footer>
+    </div>
+
+<div id="home-logo">
+	<img src="images/home-logo.png">
+</div>
+
+<div id="home-launch">
+	<a href="tool.html"><span id="home-launch-btn"></span><img src="images/launch-tool-btn.png"></a>
+</div>
+
+
 
 </body>
-
 </html>

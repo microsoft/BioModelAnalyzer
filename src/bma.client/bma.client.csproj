@@ -139,6 +139,7 @@
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
+    <Content Include="css\welcome.css" />
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>
     </Content>
@@ -160,6 +161,7 @@
     <Content Include="images\activate.svg" />
     <Content Include="images\analyze.png" />
     <Content Include="images\analyze.svg" />
+    <Content Include="images\background.png" />
     <Content Include="images\bifurcations.png" />
     <Content Include="images\check.png" />
     <Content Include="images\close.png" />
@@ -179,6 +181,7 @@
     <Content Include="images\formula_validated.png" />
     <Content Include="images\graphic.png" />
     <Content Include="images\graphic.svg" />
+    <Content Include="images\home-logo.png" />
     <Content Include="images\icon-copy.svg" />
     <Content Include="images\icon-cut.svg" />
     <Content Include="images\icon-delete.svg" />
@@ -242,6 +245,7 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
+    <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.cookie.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />
@@ -510,7 +514,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="tou.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
