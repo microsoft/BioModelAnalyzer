@@ -258,11 +258,9 @@ bool Simulation::expressed(const string& cond, float from, float to) const {
 		throw err;
 	}
 
-	string var{ cond.substr(0, cond.find('[')) };
-	string cellName{ cond.substr(cond.find('[') + 1, cond.find(']') - cond.find('[') - 1) };
+	string cellName{ cond.substr(0, cond.find('[')) };
+	string var{ cond.substr(cond.find('[') + 1, cond.find(']') - cond.find('[') - 1) };
 
-	// TODO: Replace this by a check of all the events in the range
-	// (from,to)
 	auto rit = _log.rbegin();
 
 	// Skip events that happen after to
@@ -513,7 +511,6 @@ void Simulation::_parseLine(const string& line) {
 	const EnumType* cellCycleType = dynamic_cast<const EnumType*>(type(CELL_CYCLE));
 	_addTypesFromConjunction(lc.state1);
 	_addTypesFromConjunction(lc.state2);
-	_addTypesFromConjunction(lc.condition);
 
 	if (0 == lc.action.size()) {
 		lc.action = _setDefaultNextAction(lc.cellCycle);
@@ -601,7 +598,50 @@ bool Simulation::_validCellCycle(const string& c) const
 }
 
 void Simulation::_addTypesFromConjunction(const string& cond) {
-	// TODO: implement me
+	if (cond.size() == 0) {
+		return;
+	}
+
+	vector<string> fields{ splitOn('&', cond) };
+	for (string field : fields) {
+		field = removeSpace(field);
+
+		// It is not permitted to write !(var=val)
+		// This will be caught later on.
+		if (field.at(0) == '!') {
+			continue;
+		}
+
+		if (field.find('=') != std::string::npos) {
+			unsigned int skip = 1;
+			std::string::size_type l;
+			if ((l = field.find("!=")) != std::string::npos) {
+				skip = 2;
+			}
+			else {
+				l = field.find("=");
+			}
+			string varname = field.substr(0, l);
+			string value = field.substr(l + skip, field.length() - l - skip);
+
+			auto it = _types.find(varname);
+			if (it == _types.end()) {
+				EnumType* e = new EnumType();
+				e->addElem(value);
+				_types.insert(make_pair(varname, e));
+			} 
+			else {
+				Type* t = it->second;
+				// This is not permitted (boolvar=true or boolvar=false)
+				// But it will be caught and error reported later
+				if (t->type() != Type::Types::ENUM) {
+					continue;
+				}
+				EnumType* e = dynamic_cast<EnumType*>(t);
+				e->addElem(value);
+			}
+		}
+	}
 }
 
 void Simulation::_addCellCycleType() {

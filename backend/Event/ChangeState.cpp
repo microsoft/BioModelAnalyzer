@@ -51,6 +51,11 @@ bool ChangeState::expressed(const string& cell, const string& var) const {
 	if (cell != this->cell()->name()) {
 		return false;
 	}
+
+	if (var.size() == 0) {
+		return true;
+	}
+
 	if (nullptr != _oldState.get()) {
 		auto existsVal = _oldState->value(var);
 		if (existsVal.first && existsVal.second) {

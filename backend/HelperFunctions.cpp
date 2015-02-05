@@ -59,12 +59,8 @@ BoolExp* parseBoolExp(const string& boolexp) {
 				const string error{ "Empty conjunct!" };
 				throw error;
 			}
-			try {
-				temp = unique_ptr<BoolExp>(parseSimpleBoolExp(field));
-			}
-			catch (const string& err) {
-				throw err;
-			}
+			temp = unique_ptr<BoolExp>(parseSimpleBoolExp(field));
+
 			if (prev.get()!=nullptr) {
 				prev = unique_ptr<BoolExp>(new AndExp(prev.release() , temp.release()));
 			}
@@ -130,10 +126,13 @@ map<string, Variable*> splitConjunction(const string& initializer, const Simulat
 			positive=false;
 			field = field.substr(1,field.length()-1);
 		}
-		else if (field.find('=')!=std::string::npos) {
+		
+		if (field.find('=')!=std::string::npos) {
 			unsigned int skip = 1;
 			std::string::size_type l;
 			if ((l = field.find("!=")) != std::string::npos) {
+				const string error{ "Expression of the form var!=val cannot be used in assignment." }; 
+				throw error;
 				positive = false;
 				skip = 2;
 			}
@@ -161,8 +160,9 @@ map<string, Variable*> splitConjunction(const string& initializer, const Simulat
 			EnumType::Value* v = new EnumType::Value(*et, value);
 			ret.insert(make_pair(varname, new Variable(varname, v)));
 		}
-
-		ret.insert(make_pair(field,new Variable(field,positive)));
+		else {
+			ret.insert(make_pair(field, new Variable(field, positive)));
+		}
 	}
 
 	return ret;
