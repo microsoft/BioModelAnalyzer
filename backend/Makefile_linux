@@ -50,7 +50,7 @@ CellProgram.o : CellProgram.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c CellProgram.cpp -o CellProgram.o
 
 Condition.o : Condition.cpp
-	g++ -std=c++0x -O0 -g3 -Wall -c Condition.cpp -o Condition.o
+	g++ -std=c++0x -O0 -g3 -Wall -I ./Expression -c Condition.cpp -o Condition.o
 
 Happening.o : Happening.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c Happening.cpp -o Happening.o
@@ -111,6 +111,6 @@ Lineage: Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
 
 # Other Targets
 clean:
-	-$(RM) *.o Event/*.o Directive/*.o
+	-$(RM) *.o Event/*.o Directive/*.o Expression/*.o
 	-@echo ' '
 
