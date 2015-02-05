@@ -285,7 +285,6 @@ int main() {
 	Simulation* s{nullptr};
 	while (true) {
 		try {
-			bool rawData{false};
 			int which(0);
 			printOptions();
 			if (!(cin >> which)) {
@@ -314,14 +313,14 @@ int main() {
 				{
 					string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
 					s->run(INITIALPROG, condition, -1.0, -1.0);
+					cout << *s;
 				}
-				cout << *s;
 				break;
 			case Options::overlapraw:
-				rawData = true;
-				/* no break */
+				timeOverlap(s, true);
+				break;
 			case Options::overlap:
-				timeOverlap(s, rawData);
+				timeOverlap(s, false);
 				break;
 			case Options::existencefile:
 				cellCount(s, outputFileChooser());
