@@ -141,6 +141,11 @@ map<string, Variable*> splitConjunction(const string& initializer, const Simulat
 			}
 			string varname = field.substr(0, l);
 			string value = field.substr(l + skip, field.length() - l - skip);
+			if (varname.find('!') != std::string::npos || value.find('!') != std::string::npos) {
+				const string err{ "Negation (!) appears in the middle of a value." };
+				throw err;
+			}
+
 			const Type* t = sim->type(varname);
 			if (t->type() != Type::Types::ENUM) {
 				string err{ "Variable " };
@@ -161,6 +166,11 @@ map<string, Variable*> splitConjunction(const string& initializer, const Simulat
 			ret.insert(make_pair(varname, new Variable(varname, v)));
 		}
 		else {
+			if (field.find('!') != std::string::npos) {
+				const string err{ "Negation (!) appears in the middle of a value." };
+				throw err;
+			}
+
 			ret.insert(make_pair(field, new Variable(field, positive)));
 		}
 	}

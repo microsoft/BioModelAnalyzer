@@ -136,22 +136,40 @@ bool Division::expressed(const string& cell, const string& var) const {
 }
 
 string Division::toString() const {
-	// TODO: update the toString of all different events.
 	string ret{};
 	ret+=Event::toString();
 	ret+=",";
 	ret+=_parent;
 	ret+=",";
+	if (_stp) {
+		ret += _stp->toString("CellCycle",true);
+		ret += ",";
+		ret += _stp->toString("CellCycle", false);
+	}
+	else {
+		ret += ",";
+	}
+	ret += ",";
 	ret+=_daughter1;
 	ret+=",";
 	if (_st1!=nullptr) {
-		ret+=_st1->toString();
+		ret += _st1->toString("CellCycle",true);
+		ret += ",";
+		ret += _st1->toString("CellCycle",false);
+	}
+	else {
+		ret += ","; 
 	}
 	ret+=",";
 	ret+=_daughter2;
 	ret+=",";
 	if (_st2!=nullptr) {
-		ret+=_st2->toString();
+		ret += _st2->toString("CellCycle", true);
+		ret += ",";
+		ret+=_st2->toString("CellCycle",false);
+	}
+	else {
+		ret += ",";
 	}
 	return ret;
 }

@@ -76,15 +76,25 @@ string ChangeState::toString() const {
 	ret += Event::toString();
 	ret += ",";
 	ret += cell()->name();
-	ret += ",,";
-	if (_oldState != nullptr) {
-		ret += _oldState->toString();
+	ret += ",";
+	if (_oldState) {
+		ret += _oldState->toString("CellCycle", true);
+		ret += ",";
+		ret += _oldState->toString("CellCycle", false);
 	}
-	ret += ",,";
-	if (_newState != nullptr) {
-		ret += _newState->toString();
+	else {
+		ret += ",";
 	}
-	// TODO: implement me
+	ret += ",,"; 
+	if (_newState) {
+		ret += _newState->toString("CellCycle", true);
+		ret += ",";
+		ret += _newState->toString("CellCycle", false);
+	}
+	else {
+		ret += ",";
+
+	}
 	return ret;
 }
 

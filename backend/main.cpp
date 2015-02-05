@@ -29,12 +29,13 @@ using std::endl;
 using std::string;
 using std::ifstream;
 using std::ofstream;
+using std::ostream;
 using std::stringstream;
 using std::vector;
 using std::map;
 using std::pair;
 
-enum class Options { load, overlap, overlapraw, existence, exportSim };
+enum class Options { load, simulation, overlap, overlapraw, existence, existencefile, exportSim };
 
 const string INITIALPROG{"P0"};
 const string INITIALCOND{"SPERM_LEFT"};
@@ -44,9 +45,11 @@ const string INITIALPROGWITHCOND{INITIALPROG+"["+INITIALCOND+"]"};
 void printOptions() {
 	cout << "Please choose:" << endl;
 	cout << "(" << static_cast<int>(Options::load) << ") Load a new program file." << endl;
+	cout << "(" << static_cast<int>(Options::simulation) << ") Run a simulation." << endl;
 	cout << "(" << static_cast<int>(Options::overlap) << ") Check for the time overlap of two cells." << endl;
 	cout << "(" << static_cast<int>(Options::overlapraw) << ") Check for the time overlap of two cells (with raw data)." << endl;
 	cout << "(" << static_cast<int>(Options::existence) << ") Check cell existence." << endl;
+	cout << "(" << static_cast<int>(Options::existencefile) << ") Export cell existence." << endl;
 	cout << "(" << static_cast<int>(Options::exportSim) << ") Export simulations to file." << endl;
 }
 
@@ -98,17 +101,6 @@ void readSimulation(Simulation*& s) {
 		s = nullptr;
 	}
 	s = new Simulation(file);
-
-	cout << "Would you like to see a simulation?" << endl;
-	char answer;
-	cin >> answer;
-	if (answer == 'y') {
-		string condition{ChooseConditionFromProgram(s,INITIALPROG)};
-		s->run(INITIALPROG,condition,-1.0,-1.0);
-		//s->run(INITIALPROGWITHCOND);
-
-		cout << *s;
-	}
 }
 
 void timeOverlap(Simulation* s,bool rawData) {
@@ -202,7 +194,7 @@ void timeOverlap(Simulation* s,bool rawData) {
 
 }
 
-void cellCount(Simulation* s) {
+void cellCount(Simulation* s, ostream& out) {
 	if (!s) {
 			cout << "Please upload a program first." << endl;
 			 return;
@@ -234,15 +226,31 @@ void cellCount(Simulation* s) {
 		}
 	}
 
-//	cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
+//	out << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
 	for (auto nameCount : total) {
 		// Do something with padding to make sure that this
 		// is printed to the right length;
-//		cout << "| " << std::setw(maxLen) << std::left << nameCount.first;
-//		cout << " |" << std::setw(5) << std::right << nameCount.second << "|" << endl;
-//		cout << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
-		cout << nameCount.first << "," << nameCount.second << endl;
+//		out << "| " << std::setw(maxLen) << std::left << nameCount.first;
+//		out << " |" << std::setw(5) << std::right << nameCount.second << "|" << endl;
+//		out << std::setw(2+maxLen+2+5+1) << std::setfill('-') << "" << std::setfill(' ') << endl;
+		out << nameCount.first << "," << nameCount.second << endl;
 	}
+}
+
+ofstream outputFileChooser() {
+	cout << "Please enter the name of a file to write to." << endl;
+	string outFile;
+	if (!(cin >> outFile)) {
+		cin.clear();
+		const string err{ "Bad input." };
+		throw err;
+	}
+	ofstream ofile(outFile);
+	if (!ofile) {
+		const string err{ "Could not open " + outFile + " for writing." };
+		throw err;
+	}
+	return ofile;
 }
 
 void exportSimulations(Simulation *s) {
@@ -259,20 +267,9 @@ void exportSimulations(Simulation *s) {
 		throw err;
 	}
 
-	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
+	string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
 
-	cout << "Please enter the name of a file to write to." << endl;
-	string outFile;
-	if (!(cin >> outFile)) {
-		cin.clear();
-		const string err{"Bad input."};
-		throw err;
-	}
-	ofstream ofile(outFile);
-	if (!ofile) {
-		const string err{"Could not open " + outFile + " for writing."};
-		throw err;
-	}
+	ofstream ofile{ outputFileChooser() };
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
 		s->run(INITIALPROG,condition,-1.0,-1.0);
@@ -299,26 +296,42 @@ int main() {
 
 			Options op{static_cast<Options>(which)};
 			switch (op) {
-			case Options::load: {
+			case Options::load:
 				readSimulation(s);
-			}
-			break;
-			case Options::overlapraw: {
-				rawData=true;
-			}
-			/* no break */
-			case Options::overlap: {
-				timeOverlap(s,rawData);
-			}
-			break;
-			case Options::existence: {
-				cellCount(s);
-			}
-			break;
-			case Options::exportSim: {
+
+				cout << "Would you like to see a simulation?" << endl;
+				char answer;
+				cin >> answer;
+				/* break only on no */
+				if (answer != 'y') {
+					break;
+				}
+			case Options::simulation:
+				if (!s) {
+					cout << "Please upload a program first." << endl;
+					break;
+				}
+				{
+					string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
+					s->run(INITIALPROG, condition, -1.0, -1.0);
+				}
+				cout << *s;
+				break;
+			case Options::overlapraw:
+				rawData = true;
+				/* no break */
+			case Options::overlap:
+				timeOverlap(s, rawData);
+				break;
+			case Options::existencefile:
+				cellCount(s, outputFileChooser());
+				break;
+			case Options::existence:
+				cellCount(s,cout);
+				break;
+			case Options::exportSim:
 				exportSimulations(s);
-			}
-			break;
+				break;
 			default:
 				bad();
 			}

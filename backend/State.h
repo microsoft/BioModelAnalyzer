@@ -56,7 +56,7 @@ public:
 	// Add the values of new variables
 	State* copyOverwrite(const State*) const;
 
-	std::string toString() const;
+	std::string toString(const std::string variable="", bool match=true) const;
 	friend std::ostream& operator<< (std::ostream&, const State&);
 private:
 	// TODO: instead of a map it would make more sense to use a set

@@ -130,23 +130,53 @@ State* State::copyOverwrite(const State* other) const {
 }
 
 
-string State::toString() const {
-	stringstream temp{};
-	temp << *this;
-	return temp.str();
-}
+// If the variable is empty then just output all compnents of the state
+// If the variable is not empty then either output only this variable (match)
+// or match everything except the variable (!match)
+//
 // TODO:
-// This code is copied from Condition operator<<
+// This code shares a lot with Condition operator<<
 // Move the printout of the map to either a helper function or a class
 // that wraps the joint map
-ostream& operator<<(ostream& out, const State& st) {
-	bool first{true};
-	for (auto var : st._vars) {
-		if (!first) {
-			out << "&";
+string State::toString(const string variable, bool match) const {
+
+	stringstream temp{};
+
+	if (variable.size() == 0) {
+		bool first{ true };
+		for (auto var : _vars) {
+			if (!first) {
+				temp << "&";
+			}
+			temp << *(var.second);
+			first = false;
 		}
-		out << *(var.second);
-		first = false;
+		return temp.str();
 	}
-	return out;
+
+	if (match) {
+		for (auto var : _vars) {
+			if (var.first == variable && match) {
+				temp << *(var.second);
+				return temp.str();
+			}
+		}
+		return "";
+	}
+
+	bool first{ true };
+	for (auto var : _vars) {
+		if (var.first != variable) {
+			if (!first) {
+				temp << "&";
+			}
+			temp << *(var.second);
+			first = false;
+		}
+	}
+	return temp.str();
+}
+
+ostream& operator<<(ostream& out, const State& st) {
+	return	out << st.toString();
 }
