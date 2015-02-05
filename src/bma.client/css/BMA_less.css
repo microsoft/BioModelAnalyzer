@@ -697,8 +697,12 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
 .bma-pagefooter-msrlogo img {
   margin-top: 8px;
   height: 20px;
-  width: 180px;
   border: none;
+}
+.bma-pagefooter-msrlogo-copyright {
+  float: left;
+  margin-top: 9px;
+  margin-right: 10px;
 }
 .bma-pagefooter-logo {
   position: absolute;
@@ -727,11 +731,11 @@ a.website-link:hover {
   background-color: white;
   height: 30px;
   line-height: 30px;
-  width: 300px;
-  left: calc(50% - 150px);
-  left: -moz-calc(50% - 150px);
-  left: -webkit-calc(50% - 150px);
-  left: -o-calc(50% - 150px);
+  width: 420px;
+  left: calc(50% - 210px);
+  left: -moz-calc(50% - 210px);
+  left: -webkit-calc(50% - 210px);
+  left: -o-calc(50% - 210px);
   -webkit-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   -o-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
@@ -1064,10 +1068,10 @@ label[aria-pressed='true'] .bma-inhibit-img {
 .modelstorage-toolbar-modelname {
   width: 150px;
   height: 50px;
-  background-image: -moz-linear-gradient(left, #dcdcdc 0, #ffffff 50%);
-  background-image: -webkit-linear-gradient(left, #dcdcdc 0, #ffffff 50%);
-  background-image: -ms-linear-gradient(left, #dcdcdc 0, #ffffff 50%);
-  background-image: -webkit-gradient(linear, left, #dcdcdc 0, #ffffff 50%);
+  background-image: -moz-linear-gradient(left, gainsboro 0, white 50%);
+  background-image: -webkit-linear-gradient(left, gainsboro 0, white 50%);
+  background-image: -ms-linear-gradient(left, gainsboro 0, white 50%);
+  background-image: -webkit-gradient(linear, left, gainsboro 0, white 50%);
 }
 .modelstorage-toolbar-modelname input {
   position: absolute;
@@ -1494,7 +1498,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
   top: -30px;
   color: #ffffff;
   text-align: center;
-  padding: 2px  20px 5px;
+  padding: 2px 20px 5px;
   cursor: pointer;
   z-index: 3;
   font-size: 20px;
@@ -1510,7 +1514,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
   top: -30px;
   color: #ffffff;
   text-align: center;
-  padding: 2px  20px 5px;
+  padding: 2px 20px 5px;
   cursor: pointer;
   z-index: 3;
   font-size: 20px;
@@ -1700,17 +1704,17 @@ label[aria-pressed='true'] .bma-inhibit-img {
 }
 .bma-variables-options-editor input.formula-failed-textarea,
 .bma-variables-options-editor textarea.formula-failed-textarea {
-  border: 1px solid #ff0000;
+  border: 1px solid red;
 }
 .bma-variables-options-editor input.formula-validated-textarea,
 .bma-variables-options-editor textarea.formula-validated-textarea {
-  border: 1px solid #008000;
+  border: 1px solid green;
 }
 .bma-variables-options-editor.bmaeditor-expanded {
   height: 340px;
 }
 .bma-variables-options-editor .bma-formula-validation-message {
-  color: #ff0000;
+  color: red;
   max-height: 40px;
 }
 .bma-variables-options-editor > *:nth-child(4),
@@ -1816,8 +1820,8 @@ label[aria-pressed='true'] .bma-inhibit-img {
   display: table;
 }
 .bma-variables-options-editor .list-of-functions > ul > li:hover {
-  color: #ffffff;
-  background-color: #808080;
+  color: white;
+  background-color: gray;
 }
 .bma-variables-options-editor .list-of-functions > ul > li:hover .inputs-list-header .inputs-expandbttn {
   border-top-color: lightgray;
@@ -1861,8 +1865,8 @@ label[aria-pressed='true'] .bma-inhibit-img {
   margin-right: 3px;
 }
 .bma-variables-options-editor .list-of-operators ul > li:hover {
-  color: #ffffff;
-  background-color: #808080;
+  color: white;
+  background-color: gray;
 }
 .bma-variables-options-editor .list-of-operators ul > li:hover .inputs-list-header .inputs-expandbttn {
   border-top-color: lightgray;

@@ -104,20 +104,18 @@ img {
 
 #MSR-logo {
     position: fixed;
-    width: 340px;
     right: 10px;
     top: 5px;
     z-index: 6;
 }
 
-    #MSR-logo img {
-        width: 220px;
-    }
-
 #Copyright {
-    width: 120px;
     float: left;
-    margin-top: 7px;
+    margin-top: 2px;
+    margin-right: 10px;
+}
+
+#MSR-logo img {
 }
 
 #header {
@@ -130,7 +128,7 @@ img {
     position: relative;
     z-index: 3;
     background-color: white;
-    width: 300px;
+    width: 360px;
     height: 35px;
     margin: 0 auto;
     color: #82BD82;
