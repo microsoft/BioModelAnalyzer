@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{29FDD3A0-589D-4367-9D20-5D7478FA07D7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="CellProgram.cpp" />
+    <ClCompile Include="Condition.cpp" />
+    <ClCompile Include="directive\Directive.cpp" />
+    <ClCompile Include="directive\Divide.cpp" />
+    <ClCompile Include="directive\StateTransition.cpp" />
+    <ClCompile Include="event\ChangeState.cpp" />
+    <ClCompile Include="event\Death.cpp" />
+    <ClCompile Include="event\Division.cpp" />
+    <ClCompile Include="event\Event.cpp" />
+    <ClCompile Include="Expression\AndExp.cpp" />
+    <ClCompile Include="Expression\BoolExp.cpp" />
+    <ClCompile Include="Expression\BoolVar.cpp" />
+    <ClCompile Include="Expression\EqExp.cpp" />
+    <ClCompile Include="Expression\Negation.cpp" />
+    <ClCompile Include="Expression\NeqExp.cpp" />
+    <ClCompile Include="Happening.cpp" />
+    <ClCompile Include="HelperFunctions.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Simulation.cpp" />
+    <ClCompile Include="State.cpp" />
+    <ClCompile Include="Variable\BoolType.cpp" />
+    <ClCompile Include="Variable\EnumType.cpp" />
+    <ClCompile Include="Variable\Type.cpp" />
+    <ClCompile Include="Variable\Variable.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Cell.h" />
+    <ClInclude Include="CellProgram.h" />
+    <ClInclude Include="Condition.h" />
+    <ClInclude Include="directive\Directive.h" />
+    <ClInclude Include="directive\Divide.h" />
+    <ClInclude Include="directive\StateTransition.h" />
+    <ClInclude Include="event\ChangeState.h" />
+    <ClInclude Include="event\Death.h" />
+    <ClInclude Include="event\Division.h" />
+    <ClInclude Include="event\Event.h" />
+    <ClInclude Include="Expression\AndExp.h" />
+    <ClInclude Include="Expression\BoolExp.h" />
+    <ClInclude Include="Expression\BoolVar.h" />
+    <ClInclude Include="Expression\EqExp.h" />
+    <ClInclude Include="Expression\Negation.h" />
+    <ClInclude Include="Expression\NeqExp.h" />
+    <ClInclude Include="Happening.h" />
+    <ClInclude Include="HelperFunctions.h" />
+    <ClInclude Include="Simulation.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="Variable\BoolType.h" />
+    <ClInclude Include="Variable\EnumType.h" />
+    <ClInclude Include="Variable\Type.h" />
+    <ClInclude Include="Variable\Variable.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
