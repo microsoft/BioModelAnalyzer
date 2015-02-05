@@ -386,7 +386,7 @@ $(document).ready(function () {
                 my_popup.css({ 'left': popup_half_w });
             }
             if (win_w < my_popup_w) {
-                my_popup.css({ 'left': 5, });
+                my_popup.css({ 'left': 5,  });
             }
             if (win_h > my_popup_h) {
                 my_popup.css({ 'top': popup_half_h });
