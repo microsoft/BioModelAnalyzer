@@ -237,7 +237,7 @@ void cellCount(Simulation* s, ostream& out) {
 	}
 }
 
-ofstream outputFileChooser() {
+void outputFileChooser(ofstream& of) {
 	cout << "Please enter the name of a file to write to." << endl;
 	string outFile;
 	if (!(cin >> outFile)) {
@@ -245,12 +245,11 @@ ofstream outputFileChooser() {
 		const string err{ "Bad input." };
 		throw err;
 	}
-	ofstream ofile(outFile);
-	if (!ofile) {
+	of.open(outFile);
+	if (!of) {
 		const string err{ "Could not open " + outFile + " for writing." };
 		throw err;
 	}
-	return ofile;
 }
 
 void exportSimulations(Simulation *s) {
@@ -269,7 +268,8 @@ void exportSimulations(Simulation *s) {
 
 	string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
 
-	ofstream ofile{ outputFileChooser() };
+	ofstream ofile{};
+	outputFileChooser(ofile);
 	for (unsigned int i{0} ; i<repetitions ; ++i) {
 		s->clear();
 		s->run(INITIALPROG,condition,-1.0,-1.0);
@@ -323,7 +323,11 @@ int main() {
 				timeOverlap(s, false);
 				break;
 			case Options::existencefile:
-				cellCount(s, outputFileChooser());
+			  {
+			  ofstream ofile{};
+			  outputFileChooser(ofile);
+				cellCount(s, ofile);
+			  }
 				break;
 			case Options::existence:
 				cellCount(s,cout);
