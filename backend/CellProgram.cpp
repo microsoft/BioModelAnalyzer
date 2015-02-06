@@ -77,7 +77,7 @@ vector<Happening*> CellProgram::firstEvent(float currentTime,
 	if (initialSD < 0.0) {
 		if (_defSD < 0.0) {
 			if (_sim->defTime(Simulation::G1_PHASE).second < 0.0) {
-				const string err{ "Cell " + _name + " does not have a default standard devisation." };
+				const string err{ "Cell " + _name + " does not have a default standard deviation." };
 				throw err;
 			}
 			initialSD = _sim->defTime(Simulation::G1_PHASE).second;

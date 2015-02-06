@@ -5,11 +5,13 @@
  *      Author: np183
  */
 
+#include <string>
 #include "Happening.h"
 
 using std::vector;
 using std::pair;
 using std::make_pair;
+using std::string;
 
 std::random_device Happening::_randomDev{};
 std::mt19937 Happening::_randomGen{Happening::_randomDev()};
@@ -61,8 +63,12 @@ pair<Event*, vector<Happening*>> Happening::execute() const {
 }
 
 float Happening::_randomTime(const float& mean, const float& sd) const {
+	if (mean <= 0.0 || sd <= 0.0) {
+		string err{ "Something that is to happen to " };
+		err += _cell->name();
+		err += " cannnot determine the time for next action. Some action for this cell type does not have a time.";
+		throw err;
+	}
 	std::normal_distribution<> d(mean,sd);
 	return static_cast<float>(d(_randomGen));
 }
-
-

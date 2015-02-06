@@ -25,13 +25,17 @@ using std::unique_ptr;
 
 vector<string> splitOn(char c, const string& line) {
 	vector<string> ret{};
-	size_t current{0};
-	size_t next{0};
-	do {
-		next=line.find_first_of(c,current);
-		ret.push_back(line.substr(current,next-current));
-		current = next+1;
-	}  while (next != std::string::npos);
+
+	if (line.size() != 0) {
+		size_t current{ 0 };
+		size_t next{ 0 };
+		do {
+			next = line.find_first_of(c, current);
+			ret.push_back(line.substr(current, next - current));
+			current = next + 1;
+		} while (next != std::string::npos);
+	}
+
 	return ret;
 }
 
