@@ -21,9 +21,10 @@ class State;
 
 class State {
 public:
-	State()=delete;
+	State()=default;
 	State& operator=(const State&) = delete;
 	State& operator=(State&&) = delete;
+	State(const Simulation* sim);
 	State(const std::string& initializer, const Simulation* sim);
 	State(const State&);
 	State(State&&);

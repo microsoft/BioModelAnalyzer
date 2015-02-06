@@ -523,8 +523,9 @@ void Simulation::_parseLine(const string& line) {
 			throw err;
 		}
 		cond->addCellCycle(lc.cellCycle);
-		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1,this)) };
-		State* st2{ (0 == lc.state2.size() ? nullptr : new State(lc.state2,this)) };
+		// Empty initializer will create the empty state
+		State* st1{ new State(lc.state1,this) };
+		State* st2{ new State(lc.state2,this) };
 		EnumType::Value g1(*cellCycleType, G1_PHASE);
 		st1->addCellCycle(g1);
 		st2->addCellCycle(g1);
@@ -544,10 +545,16 @@ void Simulation::_parseLine(const string& line) {
 			throw err;
 		}
 		if (lc.cellCycle.size() != 0) {
+			if (!cond) {
+				cond.reset(new Condition("DEFAULT"));
+			}
 			cond->addCellCycle(lc.cellCycle);
 		}
 		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1,this)) };
 		if (lc.action != CHANGE_STATE) {
+			if (!st1) {
+				st1 = new State();
+			}
 			EnumType::Value p(*cellCycleType, lc.action);
 			st1->addCellCycle(p);
 		}
