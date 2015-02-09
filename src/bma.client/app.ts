@@ -258,9 +258,10 @@ $(document).ready(function () {
         helper: function (event, ui) {
             //var h = $(this).children().children().clone().appendTo('body');
             //console.log(h.attr("class"));
-            var classes = $(this).children().children().attr("class").split(" ");
+            
             //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
             //console.log();
+            var classes = $(this).children().children().attr("class").split(" ");
             return $('<div></div>').addClass(classes[0]).addClass("bma-draggable-helper-element").appendTo('body');
         },
 

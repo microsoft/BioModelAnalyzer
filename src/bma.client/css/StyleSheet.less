@@ -1,5 +1,9 @@
 ﻿
 /* General Functions */ 
+
+    img {
+        border: 0;
+    }
 	
 	.background-img() {
 	    background-repeat:no-repeat;
@@ -455,30 +459,44 @@ body {
 
 
     .bma-toolbarpanel {
-    background-color: white;
-    padding: 10px 0;
-    white-space: nowrap;
-    display: table;
-    width: 100%;
+        background-color: white;
+        padding: 10px 0;
+        white-space: nowrap;
+        display: table;
+        width: 100%;
 
-    & > * {
-        display: inline-block;
-        vertical-align: top;
+        & > * {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        /*label[aria-pressed='true'] * {
+            .active;
+        }*/
+
+        .ui-button {
+            .tool-icon;
+        }
+
+        label[aria-pressed='true'] {
+            .tool-icon-active;
+        }
     }
 
-    /*label[aria-pressed='true'] * {
-        .active;
-    }*/
+    .pointer-icon{background-image: url("../images/pointer.svg");}
+	.undo-icon{background-image: url("../images/undo.svg");}
+	.redo-icon{background-image: url("../images/redo.svg");}
+	.cell-icon{background-image: url("../images/container.svg");}
+	.variable-icon{background-image: url("../images/variable.svg");}
+	.constant-icon{background-image: url("../images/constant.svg");}
+	.receptor-icon{background-image: url("../images/receptor.svg");}
 
-    .ui-button {
-        .tool-icon;
+    .bma-draggable-helper-element {
+        width: 36px;
+        height: 36px;
+        background-repeat: no-repeat;
+        background-size: contain;
     }
-
-    label[aria-pressed='true'] {
-        .tool-icon-active;
-    }
-}
-
 
     /*.bma-toolbarpanel .bma-toolbarpanel-visibilityoptions-zoomslider {
         width: @zoomslider-width;
@@ -527,13 +545,13 @@ body {
 		    background-color: @darkgrey;
 		}
 
-	    .pointer-icon{background-image: url("../images/pointer.svg");}
-	    .undo-icon{background-image: url("../images/undo.svg");}
-	    .redo-icon{background-image: url("../images/redo.svg");}
-	    .cell-icon{background-image: url("../images/container.svg");}
-	    .variable-icon{background-image: url("../images/variable.svg");}
-	    .constant-icon{background-image: url("../images/constant.svg");}
-		.receptor-icon{background-image: url("../images/receptor.svg");}
+	    .pointer-icon;//{background-image: url("../images/pointer.svg");}
+	    .undo-icon;//{background-image: url("../images/undo.svg");}
+	    .redo-icon;//{background-image: url("../images/redo.svg");}
+	    .cell-icon;//{background-image: url("../images/container.svg");}
+	    .variable-icon;//{background-image: url("../images/variable.svg");}
+	    .constant-icon;//{background-image: url("../images/constant.svg");}
+		.receptor-icon;//{background-image: url("../images/receptor.svg");}
 		.activate-icon{background-image: url("../images/activate.svg");}
 		.inhibit-icon{background-image: url("../images/inhibitor.svg");}
 		.view-options-icon{
@@ -565,7 +583,7 @@ body {
 
 
 // Zoom Slider
-    .zoomslider-container{
+    .zoomslider-container {
 	    //display: table;
 	    width:@zoomslider-width;
 	    /*> * {
