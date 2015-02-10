@@ -16,7 +16,7 @@
                 .text("Repository")
                 .addClass('localstorage-widget-header')
                 .appendTo(that.element);
-            var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
+            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
             closing.bind("click", function () {
                 that.element.hide();
             });

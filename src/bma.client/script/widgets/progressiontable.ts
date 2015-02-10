@@ -53,7 +53,7 @@
             var options = this.options;
             this.init.empty();
             var table = $('<table></table>')
-                .addClass("bma-table")
+                .addClass("variables-table")
                 .addClass("bma-simulation-init")
                 .appendTo(that.init);
             var tr0 = $('<tr></tr>').appendTo(table);

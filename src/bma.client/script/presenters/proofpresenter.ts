@@ -76,7 +76,7 @@
 
                                 var deferredProofPropagation = function () {
                                     var d = $.Deferred();
-                                    var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks).addClass("proof-expanded");
+                                    var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);//.addClass("proof-expanded");
                                     d.resolve(full);
                                     return d.promise();
                                 }
@@ -283,9 +283,10 @@
 
             public CreateExpandedProofVariables(variablesData) {
                 var full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
-                full.find("td").eq(0).width(150);
-                full.find("td").eq(2).width(150);
-                full.addClass("proof-expanded");
+                //full.find("td").eq(0).width(150);
+                //full.find("td").eq(2).width(150);
+                //full.addClass("proof-expanded");
+                full.addClass('scrollable-results');
                 return full;
             }
 
@@ -323,7 +324,8 @@
                 }
 
                 container.coloredtableviewer({ header: header, numericData: table, colorData: color });
-
+                container.addClass('scrollable-results');
+                container.children('table').removeClass('variables-table').addClass('proof-propagation-table');
                 container.find("td").eq(0).width(150);
                 return container;
             }

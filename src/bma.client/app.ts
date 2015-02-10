@@ -262,7 +262,7 @@ $(document).ready(function () {
             //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
             //console.log();
             var classes = $(this).children().children().attr("class").split(" ");
-            return $('<div></div>').addClass(classes[0]).addClass("bma-draggable-helper-element").appendTo('body');
+            return $('<div></div>').addClass(classes[0]).addClass("draggable-helper-element").appendTo('body');
         },
 
         scroll: false,
@@ -296,7 +296,7 @@ $(document).ready(function () {
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
-    var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div class="popup-window window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
 
     $("#localSaveBtn").click(function (args) {
@@ -451,8 +451,8 @@ $(document).ready(function () {
     }
 
     function popup_position() {
-        var my_popup = $('.popup-window, .bma-userdialog'); 
-        var analytic_tabs = $('.analytics-tabpanel');
+        var my_popup = $('.popup-window, .window.dialog'); 
+        var analytic_tabs = $('.tab-right');
         analytic_tabs.each(function () {
             var tab_h = $(this).outerHeight();
             var win_h = $(window).outerHeight()*0.8;

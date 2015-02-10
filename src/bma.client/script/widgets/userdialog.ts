@@ -11,16 +11,19 @@
         _create: function () {
             var that = this;
 
-            this.element.addClass("bma-userdialog");
-            var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
+            this.element.addClass("window dialog");
+            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
             closing.bind("click", function () {
                 that.element.hide();
             });
             that.element.draggable({ containment: "parent", scroll: false });
-            this.message = $('<div><div>').text(this.options.message).appendTo(that.element);
+            this.message = $('<div><div>')
+                .addClass('window-title')
+                .text(this.options.message)
+                .appendTo(that.element);
 
             this.buttons = $('<div><div>')
-                .addClass("bma-userdialog-btns-container")
+                .addClass("button-list")
                 .appendTo(that.element);
             var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
             var noBtn = $('<button></button>').text('No').appendTo(this.buttons);

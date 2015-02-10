@@ -257,15 +257,23 @@ module BMA {
                 var that = this;
                 //this.createResultView(params);
                 var header = "";
+                this.popupWindow
+                    .removeClass('proof-propagation-popout')
+                    .removeClass('proof-variables-popout')
+                    .removeClass('simulation-popout');
+
                 switch (params.tab) {
                     case "ProofVariables": 
                         header = "Variables";
+                        this.popupWindow.addClass('proof-variables-popout');
                         break;
                     case "ProofPropagation":
                         header = "Proof Progression";
+                        this.popupWindow.addClass('proof-propagation-popout');
                         break;
                     case "SimulationVariables":
                         header = "Simulation Progression";
+                        this.popupWindow.addClass('simulation-popout');
                         break;
                     case "FurtherTesting": 
                         header = "Further Testing";

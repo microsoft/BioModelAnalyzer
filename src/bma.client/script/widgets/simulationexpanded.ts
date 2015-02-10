@@ -19,11 +19,16 @@
             this.RunButton = $('<div></div>').text("Run").addClass("bma-simulation-run-button").appendTo(that.element);
 
             var tablesDiv = $('<div></div>')
-                .addClass("bma-simulation-table-expanded-scroll")
+                .addClass("scrollable-results")
                 .appendTo(this.element);
-            this.table1 = $('<div></div>').appendTo(tablesDiv);
-            this.progression = $('<div></div>').appendTo(tablesDiv).progressiontable();//.addClass("bma-simulation-table")
-            this.progression.css("width", "calc(70% - 60px)");
+            this.table1 = $('<div></div>')
+                .addClass('small-simulation-popout-table')
+                .appendTo(tablesDiv);
+            this.progression = $('<div></div>')
+                .addClass('big-simulation-popout-table')
+                .appendTo(tablesDiv)
+                .progressiontable();//.addClass("bma-simulation-table")
+            //this.progression.css("width", "calc(70% - 60px)");
             if (options.variables !== undefined) {
                 this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
                 if (options.interval !== undefined && options.interval.length !== 0) {

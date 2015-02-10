@@ -90,13 +90,13 @@
                 <div class="pointer-icon" title="Selection tool"></div>
             </label>
 
-            <div class="bma-toolbarpanel-verticalline"></div>
+            <!--<div class="bma-toolbarpanel-verticalline"></div>-->
 
             <button id="button-undo">
-                <img src="images/undo.svg" title="Undo" />
+                <div class="undo-icon" title="Undo"></div>
             </button>
             <button id="button-redo">
-                <img src="images/redo.svg" title="Redo" />
+                <div class="redo-icon" title="Redo" ></div>
             </button>
         </div>
 
@@ -105,20 +105,56 @@
    
 
         <div class="bma-toolbarpanel-visibilityoptions" id="visibilityOptionsSlider">
-            <button id="visibilityOptionsHeader" class="visibility-options-icon"></button>
+            <!--<button id="visibilityOptionsHeader" class="visibility-options-icon"></button>-->
+            <div class="tool-icon">
+                <span class="ui-button-text">
+                    <div title="pointer" class="view-options-icon"></div>
+                </span>
+            </div>
             <div style="position: relative">
-                <div id="visibilityOptionsContent" class="visibility-options-table accordion-shadow">
+                <div id="visibilityOptionsContent" class="window vis-options">
+                    <ul>
+                        <li id="li1">
+                            <div class="option-name">Text Labels</div>
+                            <div data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
+                            <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
+                        </li>
+                        <li id="li3">
+                            <div class="option-name">Grid</div>
+                            <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
+                        </li>
+                        <li id="li4">
+                            <div class="option-name">Line Width</div>
+                            <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
+                        </li>
+                    </ul>
+                </div>
+                    <!--<div class="option-name">Text Labels</div>
+                    <div class="default-button onoff green"><button>ON</button></div>
+                    <div class="pill-button-box">
+                        <div class="pill-button"><button>-</button></div>
+                        <div class="pill-button"><button>+</button></div>
+                    </div><br>
+                    <div class="option-name">Grid</div>
+                    <div class="default-button onoff grey"><button>OFF</button></div><br>
+                    <div class="option-name">Arrow Width</div>
+                    <div class="pill-button-box">
+                        <div class="pill-button"><button>-</button></div>
+                        <div class="pill-button"><button>+</button></div>
+                    </div>-->
+
+                <!--<div id="visibilityOptionsContent" class="visibility-options-table accordion-shadow">
                     <ul>
                         <li id="li1">
                             <div class="optionsNames">Text Labels</div>
                             <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
                             <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
                         </li>
-                        <!--<li id="li2">
-                <div class="optionsNames">Icons</div>
-                <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
-                <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
-            </li>-->
+                 //       <li id="li2">
+                 //   <div class="optionsNames">Icons</div>
+                 //   <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
+                 //   <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
+                 //   </li>
                         <li id="li3">
                             <div class="optionsNames">Grid</div>
                             <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
@@ -128,7 +164,7 @@
                             <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
                         </li>
                     </ul>
-                </div>
+                </div>-->
             </div>
         </div>
 
@@ -147,7 +183,7 @@
                     <ul>
                         <li>
                             <div class="modelstorage-toolbar-modelname">
-                                <input id="modelNameEditor" type="text" value="Model 1">
+                                <input class="item-name-input" id="modelNameEditor" type="text" value="Model 1">
                             </div>
                         <li>
                             <div class="modelstorage-toolbar-expand-bttn"></div>
@@ -190,14 +226,14 @@
                 <div id="icon1" data-command="ProofRequested" class="analytics-header">
                     <img src="images/analyze.svg">
                 </div>
-                <div id="tabs-1" class="analytics-tabpanel">
+                <div id="tabs-1" class="tab-right">
                     <div id="Proof-Analysis"></div>
                     <div id="Further-Testing"></div>
                 </div>
                 <div id="icon2" data-command="SimulationRequested" class="analytics-header">
                     <img src="images/graphic.svg">
                 </div>
-                <div id="tabs-2" class="analytics-tabpanel">
+                <div id="tabs-2" class="tab-right">
                     <h2>Simulation</h2>
                 </div>
             </div>
@@ -205,7 +241,7 @@
 
         </div>
         <div id="editor"></div>
-        <div id="containerEditor"></div>
+        <div id="containerEditor" class="window container-name"></div>
     </div>
 
     <footer class="bma-footer">

@@ -48,12 +48,12 @@
             var that = this;
             var options = this.options;
             this.header = $('<div></div>')
-                .addClass('resultswindowviewer-header')
+                .addClass('window-title')
                 .appendTo(this.element);
             $('<span></span>')
                 .text(options.header)
                 .appendTo(this.header);
-            this.buttondiv = $('<div></div>').appendTo(that.header);
+            this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
             //this.icon = $('<div></div>').appendTo(this.header);
             this.content = $('<div></div>').appendTo(this.element);
             this.reseticon();

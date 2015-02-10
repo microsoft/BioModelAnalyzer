@@ -10,11 +10,11 @@
         
         _create: function () {
             var that = this;
-            var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
+            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
             closing.bind("click", function () {
                 that.element.hide();
             });
-            this.element.addClass("containernameeditor");
+            this.element.addClass("container-name");
             this.element.draggable({ containment: "parent", scroll: false });
             this.name = $('<input>')
                 .attr("type", "text")

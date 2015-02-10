@@ -68,6 +68,7 @@
         _create: function () {
             var that = this;
             this.variables = $('<div></div>')
+                .addClass('simulation-variables')
                 .appendTo(that.element)
                 .resultswindowviewer();
 

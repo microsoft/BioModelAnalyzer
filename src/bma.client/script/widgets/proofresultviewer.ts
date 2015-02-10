@@ -19,11 +19,11 @@
                 return;
             if (options.issucceeded) {
                 $('<img src="../../images/succeeded.png">').appendTo(this.resultDiv);
-                $('<div style="color: green; font-weight:bold"></div>').text('Stabilizes').appendTo(this.resultDiv);
+                $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
             }
             else {
                 $('<img src="../../images/failed.png">').appendTo(this.resultDiv);
-                $('<div style="color: red; font-weight:bold"></div>').text('Failed to Stabilize').appendTo(this.resultDiv);
+                $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
             }
         },
 
@@ -89,19 +89,21 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            $('<h2></h2>').text('Proof Analysis').appendTo(that.element);
+            $('<span></span>').addClass('window-title').text('Proof Analysis').appendTo(that.element);
             this.resultDiv = $('<div></div>')
-                .addClass("bma-proofstate-container")
+                .addClass("proof-state")
                 .appendTo(that.element);
 
-            this.proofmessage = $('<p></p>').addClass("bma-proofstate-message").appendTo(that.element);
-
+            this.proofmessage = $('<p></p>').appendTo(that.element);
+            $('<br></br>').appendTo(that.element);
 
             this.compactvariables = $('<div id="ProofVariables"></div>')
+                .addClass('proof-variables')
                 .appendTo(that.element)
                 .resultswindowviewer();
 
             this.proofPropagation = $('<div id="ProofPropagation"></div>')
+                .addClass('proof-propagation')
                 .appendTo(that.element)
                 .resultswindowviewer();
 

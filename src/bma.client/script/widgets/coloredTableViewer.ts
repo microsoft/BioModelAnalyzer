@@ -26,7 +26,7 @@
 
                 case "standart":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-table");
+                        this.table.addClass("variables-table");
                         this.createHeader(options.header);
                         this.arrayToTable(options.numericData);
 
@@ -50,14 +50,14 @@
                             }
                         }
 
-                        this.table.addClass("bma-color-table");
+                        this.table.addClass("proof-propagation-overview");
 
                     }
                     break;
 
                 case "graph-min":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-table");
+                        this.table.addClass("variables-table");
                         this.createHeader(options.header);
                         this.arrayToTableGraphMin(options.numericData);
 
@@ -68,7 +68,7 @@
 
                 case "graph-max":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-graph-max-table bma-table");
+                        this.table.addClass("bma-graph-max-table variables-table");
                         this.createHeader(options.header);
                         var tr0 = that.table.find("tr").eq(0);
                         tr0.children("td").eq(0).attr("colspan", "2");
@@ -80,7 +80,7 @@
                     }
                     break;
                 case "simulation-min":
-                    this.table.addClass("bma-color-table bma-color-simulationtable");
+                    this.table.addClass("proof-propagation-overview bma-color-simulationtable");
                     if (options.colorData !== undefined && options.colorData.length !== 0) {
                         var that = this;
                         var color = options.colorData;
@@ -175,7 +175,7 @@
                     $('<td></td>').text(array[i][j]).appendTo(tr);
                 }
             }
-            this.buttons = that.table.find("tr").not(":first-child").find("td:eq(1)");
+            this.buttons = that.table.find("tr").not(":first-child").find("td:nth-child(2)");
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
             tdall0.css("background-color", "white");
@@ -191,16 +191,22 @@
                 that.alldiv.attr("checked", !that.alldiv.attr("checked"));
                 
                 if (that.alldiv.attr("checked")) {
-                    that.buttons.each( function () {
-                        if (!$(this).hasClass("add-variable-to-plot-checker"))
-                            $(this).click();
-                    })
+                    for (var i = 0; i < that.buttons.length; i++) {
+                        $(that.buttons[i]).addClass("add-variable-to-plot-checker")
+                    }
+                    //that.buttons.( function () {
+                    //    if (!$(this).hasClass("add-variable-to-plot-checker"))
+                    //        $(this).click();
+                    //})
                 }
                 else {
-                    that.buttons.each(function () {
-                        if ($(this).hasClass("add-variable-to-plot-checker"))
-                            $(this).click();
-                    })
+                    for (var i = 0; i < that.buttons.length; i++) {
+                        $(that.buttons[i]).removeClass("add-variable-to-plot-checker");
+                    }
+                    //that.buttons.each(function () {
+                    //    if ($(this).hasClass("add-variable-to-plot-checker"))
+                    //        $(this).click();
+                    //})
                 }
             })
 

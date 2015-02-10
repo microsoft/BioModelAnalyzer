@@ -22,7 +22,6 @@
                 .appendTo(that.element);
 
             this.zoomslider = $('<div></div>')
-                .addClass("bma-toolbarpanel-visibilityoptions-zoomslider")
                 .appendTo(that.element);
 
             var zoomminus = $('<img id="zoom-minus">')
@@ -54,6 +53,8 @@
             }
             });
             
+            this.zoomslider.removeClass().addClass("zoomslider-bar");
+            this.zoomslider.find('a').removeClass().addClass('zoomslider-pointer');
 
             zoomplus.bind("click", function () {
                 var val = that.zoomslider.slider("option", "value") - that.options.step;

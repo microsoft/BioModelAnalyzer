@@ -48,15 +48,21 @@
                                 if (that.listOptions[ind].toggle === undefined) {
                                     value = command !== undefined ? ($(child).attr("data-default")==="true") : undefined;
                                     var button = $('<button></button>')
-                                        .appendTo($(child))
-                                        .addClass("hoverable");
-                                    if (value) button.addClass("buttonON").text("ON");
-                                    else button.addClass("buttonOFF").text("OFF");
+                                        .appendTo($(child));
+                                        //.addClass("hoverable");
+                                    if (value) {
+                                        button.parent().addClass("default-button onoff green");
+                                        button.text("ON");
+                                    }
+                                    else {
+                                        button.parent().addClass("default-button onoff grey");
+                                        button.text("OFF");
+                                    }
 
                                     that.listOptions[ind].toggle = value;
                                     that.listOptions[ind].toggleButton = button;
                                     if (command !== undefined) {
-                                        button.bind("click", function (e) {
+                                        button.parent().bind("click", function (e) {
                                             that.listOptions[ind].toggle = !that.listOptions[ind].toggle;
                                             window.Commands.Execute(command, that.listOptions[ind].toggle);
                                             that.changeButtonONOFFStyle(ind);
@@ -70,10 +76,11 @@
                             case "increment":
                                 if (that.listOptions[ind].increment === undefined) {
                                     value = command !== undefined ? parseInt($(child).attr("data-default")) || 10 : undefined;
-                                    var plus = $('<button>+</button>').addClass("plusminus")
+                                    $(this).addClass('pill-button-box');
+                                    var plus = $('<button>+</button>').addClass("pill-button")
                                         .appendTo($(child))
                                         .addClass("hoverable");
-                                    var minus = $('<button>-</button>').addClass("plusminus")
+                                    var minus = $('<button>-</button>').addClass("pill-button")
                                         .appendTo($(child))
                                         .addClass("hoverable");
                                     that.listOptions[ind].increment = value;
@@ -101,11 +108,11 @@
             var button = this.listOptions[ind].toggleButton;
             if (!this.listOptions[ind].toggle) {
                 button.text("OFF");
-                button.removeClass("buttonON").addClass("buttonOFF");
+                button.parent().removeClass("green").addClass("grey");
             }
             else {
                 button.text("ON");
-                button.removeClass("buttonOFF").addClass("buttonON");
+                button.parent().removeClass("grey").addClass("green");
             }
         },
 

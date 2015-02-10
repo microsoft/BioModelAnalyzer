@@ -83,7 +83,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("new-window bma-variables-options-editor");
+            this.element.addClass("window variable-editor");
             this.element.draggable({ containment: "parent", scroll: false  });
             this._appendInputs();
             this._processExpandingContent();
@@ -93,15 +93,16 @@
 
         _appendInputs: function () {
             var that = this;
-            var closing = $('<img src="../../images/close.png" class="closing-button">').appendTo(that.element);
+            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
             closing.bind("click", function () {
                 that.element.hide();
             });
 
             var namerangeDiv = $('<div></div>')
-                .addClass('bmaeditor-namerange-container')
+                .addClass('editor-namerange-container')
                 .appendTo(that.element);
             this.name = $('<input type="text" size="15">')
+                .addClass("variable-name")
                 .attr("placeholder", "Variable Name")
                 .appendTo(namerangeDiv);
 
@@ -147,43 +148,43 @@
             });
 
             var formulaDiv = $('<div></div>')
-                .addClass('bmaeditor-formula-container')
+                .addClass('target-function')
                 .appendTo(that.element);
             $('<div></div>')
-                .addClass("variables-editor-headers")
+                .addClass("window-title")
                 .text("Target Function")
                 .appendTo(formulaDiv);
             this.formulaTextArea = $('<textarea></textarea>')
                 .attr("spellcheck", "false")
-                .addClass("variablesOptionsEditor-formulaTextArea")
+                .addClass("formula-text-area")
                 .appendTo(formulaDiv);
             this.prooficon = $('<div></div>')
                 .addClass("bma-formula-validation-icon")
                 .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
-                .addClass("bma-formula-validation-message")
+                .addClass("formula-validation-message")
                 .appendTo(formulaDiv);
         },
 
         _processExpandingContent: function () {
             var that = this;
 
-            var inputsDiv = $('<div></div>').addClass('list-of-functions').appendTo(that.element);
+            var inputsDiv = $('<div></div>').addClass('functions').appendTo(that.element);
             $('<div></div>')
-                .addClass("variables-editor-headers")
+                .addClass("window-title")
                 .text("Inputs")
                 .appendTo(inputsDiv);
             var inpUl = $('<ul></ul>').appendTo(inputsDiv);
             //var div = $('<div></div>').appendTo(that.element);
-            var operatorsDiv = $('<div></div>').addClass('list-of-operators').appendTo(that.element);
+            var operatorsDiv = $('<div></div>').addClass('operators').appendTo(that.element);
             $('<div></div>')
-                .addClass("variables-editor-headers")
+                .addClass("window-title")
                 .text("Operators")
                 .appendTo(operatorsDiv);
             var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
             var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
 
-            this.infoTextArea = $('<div></div>').addClass('functions-info').appendTo(operatorsDiv);
+            this.infoTextArea = $('<div></div>').addClass('operators-info').appendTo(operatorsDiv);
 
             var functions = this.options.functions;
             functions.forEach(
@@ -234,7 +235,7 @@
 
             operatorsDiv.width(opUl2.width());
 
-            this.inputsList = inpUl.children().eq(0);
+            this.inputsList = inpUl.children().eq(0).addClass("var-button");
             var inpbttn = this.inputsList.children("button").addClass("inputs-list-header");
             var expandinputsbttn = $('<div></div>')
                 .addClass('inputs-expandbttn')
