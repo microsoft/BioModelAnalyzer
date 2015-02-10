@@ -23,16 +23,18 @@
 		</ul>
 	<a href="#toolbar">Toolbar</a><br>
 	<a href="#canvas">Canvas</a><br>
+	<a href="#model-toolbar">Model Toolbar</a><br>
 	<a href="#windows">Windows</a><br>
 		<ul>
 			<li><a href="#dialog">Dialog</a></li>
 			<li><a href="#variable-editor">Variable Editor</a></li>
 			<li><a href="#container-name">Container Name</a></li>
+		</ul>
+	<a href="#analysis">Analysis</a><br>
+		<ul>
 			<li><a href="#proof-analysis">Proof Analysis</a></li>
 			<li><a href="#simulation">Simulation Analysis</a></li>
-			<li><a href=""></a></li>
 		</ul>
-	
 </div>
 
 
@@ -1117,6 +1119,78 @@ Variables Table</p>
 </div>
 
 
+<!-- Model Toolbar -->
+<hr>
+<a name="model-toolbar"></a>
+<h2>Model Toolbar</h2>
+<p class="bug-note">Faint shadow line where the two blocks join</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="tab-left model-toolbar">
+	<div class="model-icons">
+		<ul>
+            <li>
+                <div id="localSaveBtn" data-command="LocalStorageSaveModel" class="local-save-btn">
+                    SAVE
+                </div>
+            </li>
+            <li>
+                <div id="newModelBtn" data-command="NewModel" class="new-btn">
+                    NEW
+                </div>
+            </li>
+            <li>
+                <div id="localStorageBtn" data-command="LocalStorageRequested" class="local-storage-btn">
+                    MODELS
+                </div>
+            </li>
+            <li>
+                <div id="importModelBtn" data-command="ImportModel" class="import-btn">
+                    IMPORT
+                </div>
+            </li>
+            <li>
+                <div id="exportModelBtn" data-command="ExportModel" class="export-btn">
+                    EXPORT
+                </div>
+            </li>
+    	</ul>
+	</div>
+	<div class="model-name">
+		<ul>
+            <li>
+                <div class="">
+                    <input id="" type="text" value="Model Name">
+                </div>
+            </li>
+            <li>
+                <div class="expand-btn"></div>
+            </li>
+    	</ul>
+	</div>
+</div>
+</div>
+</div>
+
+<h3>Model Repository</h3>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window model-repository">
+	<span class="window-title">Model Repository</span>
+	<div class="close-icon">
+		<img src="../images/close.png">
+	</div>
+	<ol>
+		<li>Model 1 <a class="delete"><img src="../images/icon-delete.svg" alt=""></a></li>
+		<li>Model 2 <a class="delete"><img src="../images/icon-delete.svg" alt=""></a></li>
+		<li>Model 3 <a class="delete"><img src="../images/icon-delete.svg" alt=""></a></li>
+		<li class="active">Model 4 (active)<a class="delete"><img src="../images/icon-delete.svg" alt=""></a></li>
+		<li>Model 5 <a class="delete"><img src="../images/icon-delete.svg" alt=""></a></li>
+	</ol>
+</div>
+</div>
+</div>
+
 
 <!-- WINDOWS -->
 
@@ -1212,12 +1286,18 @@ Variables Table</p>
 </div>
 </div>
 
+
+<hr>
+<a name="analysis"></a>
+<h2>Analysis</h2>
+
 <!-- Proof Analysis -->
 <a name="proof-analysis"></a>
 <h3>Proof Analysis</h3>
 
 <!-- Proof Tab -->
 <p class="guide-text">Proof Tab<br>Tables are wrapped in a <code>.scrollable-results</code> div to manage height and scrollbars</p>
+<p class="bug-note">Missing Further testing and non-stabilizing UI</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 <div class="tab-right">
