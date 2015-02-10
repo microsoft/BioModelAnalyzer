@@ -849,7 +849,117 @@
 		width:35px;
 	}
 
- 
+/* Model Toolbar */
+	
+	.tab-left-radius(){
+		-webkit-border-bottom-right-radius: @window-radius;
+		-moz-border-radius-bottomright: @window-radius;
+		border-bottom-right-radius: @window-radius;
+	}
+
+	.tab-left-double-radius(){
+		-webkit-border-top-right-radius: @window-radius;
+		-moz-border-radius-topright: @window-radius;
+		border-top-right-radius: @window-radius;
+		-webkit-border-bottom-right-radius: @window-radius;
+		-moz-border-radius-bottomright: @window-radius;
+		border-bottom-right-radius: @window-radius;
+	}
+
+	.tab-left(){
+		padding:5px;
+		background-color: @lightgrey;
+		.box-shadow(@x:4px, @y:5px, @blur:10px, @color:@shadow);
+	}
+
+	.model-toolbar{
+		.model-icons{
+			.tab-left;
+			.tab-left-radius;
+			width:320px;
+			height:110px;
+			display:inline-block;
+			margin-right:-4px;
+
+			ul{
+				li{
+					display:inline-block;
+					div{
+						background-color: transparent;
+						width: 60px;
+						height: 105px;
+						padding-bottom: 5px;
+						background-position-x: center;
+						background-position-y: top;
+						background-repeat: no-repeat;
+						display: table-cell;
+						vertical-align: bottom;
+						border: none;
+						text-align: center;
+						cursor: pointer;
+						&.local-save-btn{
+							background-image: url("../images/savelocally.svg");
+						}
+						&.new-btn{
+							background-image: url("../images/new.svg");
+						}
+						&.local-storage-btn{
+							background-image: url("../images/local.svg");
+						}
+						&.import-btn{
+							background-image: url("../images/open.svg");
+						}
+						&.export-btn{
+							background-image: url("../images/save.svg");
+						}
+					}
+				}
+			}
+		}
+
+		.model-name{
+			.tab-left-double-radius;
+			.box-shadow(@x:4px, @y:5px, @blur:7px, @color:@shadow);
+			.gradient(@side:left,  @color1:@lightgrey,  @color2:white);
+			vertical-align: top;
+			left:-5px;
+			width:220px;
+			height:50px;
+			display: inline-block;
+			
+
+			ul > li{
+				display: inline-block;
+				vertical-align: middle;
+			}
+
+			input{
+				border:none;
+				background-color: transparent;
+				.window-title;
+				width:170px;
+				&:focus{
+					outline:none;
+					.box-shadow(@x:0px,  @y:0px,  @blur:0px,  @color:transparent);
+				}
+			}
+
+			.expand-btn{
+				display: inline-block;
+				width: 30px;
+				height: 50px;
+				border: none;
+				background-image: url('../images/expand-collapse.svg');
+				background-repeat: no-repeat;
+				background-position: center;
+				cursor: pointer;
+			}
+
+		}
+	}
+
+
+
 /*  Windows  */
 	
 	@window-radius: 10px;
