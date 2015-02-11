@@ -67,8 +67,10 @@
                         .addClass("scrollable-results")
                         .coloredtableviewer({ numericData: that.options.data[i], header: that.options.tableHeaders[i] })
                         .appendTo(tabs);
+                    content.find('table').removeClass('variables-table').addClass('furhter-testing');
                 }
 
+                
                 tabs.tabs();
                 tabs.removeClass("ui-widget ui-widget-content ui-corner-all");
                 tabs.children("ul").removeClass("ui-helper-reset ui-widget-header ui-corner-all");

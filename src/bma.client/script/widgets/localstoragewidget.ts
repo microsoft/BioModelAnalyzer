@@ -81,11 +81,10 @@
             
             for (var i = 0; i < items.length; i++) {
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
-                var a = $('<a></a>').addClass('delete').appendTo(li);
-                var removeBtn = $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//$('<button></button>').addClass("localstorage-remove-button").appendTo(li);
-                a.bind("click", function (event) {
+                //var a = $('<a></a>').addClass('delete').appendTo(li);
+                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
+                removeBtn.bind("click", function (event) {
                     event.stopPropagation();
-                    alert(items[$(this).parent().index()]);
                     window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
                 })
             }

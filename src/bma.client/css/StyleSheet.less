@@ -1328,6 +1328,32 @@ body {
 			    }
 	    }
 
+        .furhter-testing {
+            margin: 2px 0 0 0;
+            .result-table-base;
+            td{
+			    vertical-align: middle;
+			    border: 1px solid @midgrey;
+			    text-align: center;
+			    padding: 1px 3px 1px 3px;
+			    color: @darkgrey;
+			    height: 20px;
+		    }
+
+            tr:first-child td {
+			    word-break: initial;
+			    background-color: @darkgrey;
+			    border-color: @darkgrey;
+			    //text-align: center;
+			    border-width: 1px;
+			    color: white;
+		    }
+
+		    tr:nth-child(odd) {
+			    background-color: @lightgrey;
+		    }
+        }
+
     // Tables in Tabs
 		
 		// Small Variables Table in Proof Tab
@@ -1662,6 +1688,7 @@ body {
 
 .model-repository{
 		width:250px;
+        z-index: 7;
 		ol{
 			list-style-type: none;
 			padding-left: 0px;
@@ -1679,10 +1706,13 @@ body {
 						color: white;
 				}
 				
-				a.delete{
+				button.delete{
+                    border: none;
 					display: inline-block;
-					height:23px;
-					padding-top: 2px;
+                    background-color:transparent;
+					height:25px;
+                    width: 20px;
+					//padding-top: 2px;
 					float: right;
 					cursor: pointer;
 					&:hover{
@@ -1690,6 +1720,13 @@ body {
 					}
 					
 				}
+                .icon-delete {
+                    background-image: url('../images/icon-delete.svg');
+                    background-position:center;
+                    background-repeat:no-repeat;
+                    background-size: contain;
+                }
 			}
 		}
 	}
+
