@@ -351,7 +351,7 @@ $(document).ready(function () {
     });
 
     var localStorageWidget = $('<div></div>')
-        .addClass('new-window')
+        .addClass('window')
         .appendTo('#drawingSurceContainer')
         .localstoragewidget();
 

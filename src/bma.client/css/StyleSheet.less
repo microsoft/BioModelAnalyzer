@@ -688,14 +688,24 @@ body {
 				width: 95%;
 			}
 		}
+         .close-icon {
+			//display: inline;
+			float: right;
+			margin-right:0;
+			cursor: pointer;
+			img{
+				width: 20px;
+				height: 20px;
+			}
+		}
 
-		.close-icon {
+		/*.close-icon {
             float: right;
 			cursor: pointer;
 			width: 20px;
 			height: 20px;
-		}
-
+		}*/
+       
 
     // Visibility Options dialog
 
@@ -1649,3 +1659,37 @@ body {
                 }
 			}
 		}
+
+.model-repository{
+		width:250px;
+		ol{
+			list-style-type: none;
+			padding-left: 0px;
+			.default-text;
+			line-height: 25px;
+			li{
+				vertical-align: middle;
+				padding-left: 5px;
+				cursor: pointer;
+				&:nth-child(odd){
+					background-color: @lightgrey;
+				}
+				&.ui-selected{
+						background-color: @midgrey;
+						color: white;
+				}
+				
+				a.delete{
+					display: inline-block;
+					height:23px;
+					padding-top: 2px;
+					float: right;
+					cursor: pointer;
+					&:hover{
+						background-color: @midgrey;
+					}
+					
+				}
+			}
+		}
+	}

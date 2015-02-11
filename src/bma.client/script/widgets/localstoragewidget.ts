@@ -12,18 +12,25 @@
         _create: function () {
             var that = this;
             var items = this.options.items;
-            var header = $('<div></div>')
+            this.element.addClass('model-repository');
+
+            var header = $('<span></span>')
                 .text("Repository")
-                .addClass('localstorage-widget-header')
+                .addClass('window-title')
                 .appendTo(that.element);
-            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
+            var closediv = $('<div></div>').addClass('close-icon').appendTo(that.element);
+            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
             closing.bind("click", function () {
                 that.element.hide();
             });
             that.element.draggable({ containment: "parent", scroll: false });
-            this.message = $('<div></div>').addClass('localstorage-widget-message').appendTo(this.element);
+            this.message = $('<div></div>')
+                //.addClass('localstorage-widget-message')
+                .appendTo(this.element);
 
-            this.repo = $('<div></div>').addClass('localstorage-widget').appendTo(this.element);   
+            this.repo = $('<div></div>')
+                //.addClass('localstorage-widget')
+                .appendTo(this.element);   
 
             if (Silverlight.isInstalled()) {
                 var slWidget = $('<div></div>').appendTo(this.element);
@@ -74,8 +81,11 @@
             
             for (var i = 0; i < items.length; i++) {
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
-                var removeBtn = $('<button></button>').addClass("localstorage-remove-button").appendTo(li);
-                removeBtn.bind("click", function () {
+                var a = $('<a></a>').addClass('delete').appendTo(li);
+                var removeBtn = $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//$('<button></button>').addClass("localstorage-remove-button").appendTo(li);
+                a.bind("click", function (event) {
+                    event.stopPropagation();
+                    alert(items[$(this).parent().index()]);
                     window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
                 })
             }
