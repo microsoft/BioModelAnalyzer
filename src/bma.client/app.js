@@ -215,10 +215,10 @@ $(document).ready(function () {
         helper: function (event, ui) {
             //var h = $(this).children().children().clone().appendTo('body');
             //console.log(h.attr("class"));
-            var classes = $(this).children().children().attr("class").split(" ");
             //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
             //console.log();
-            return $('<div></div>').addClass(classes[0]).addClass("bma-draggable-helper-element").appendTo('body');
+            var classes = $(this).children().children().attr("class").split(" ");
+            return $('<div></div>').addClass(classes[0]).addClass("draggable-helper-element").appendTo('body');
         },
         scroll: false,
         start: function (event, ui) {
@@ -248,7 +248,7 @@ $(document).ready(function () {
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
-    var popup = $('<div class="popup-window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div class="popup-window window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
     $("#localSaveBtn").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
@@ -289,7 +289,7 @@ $(document).ready(function () {
         window.ElementRegistry.LineWidth = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
-    var localStorageWidget = $('<div></div>').addClass('new-window').appendTo('#drawingSurceContainer').localstoragewidget();
+    var localStorageWidget = $('<div></div>').addClass('window').appendTo('#drawingSurceContainer').localstoragewidget();
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
@@ -370,8 +370,8 @@ $(document).ready(function () {
         }
     }
     function popup_position() {
-        var my_popup = $('.popup-window, .bma-userdialog');
-        var analytic_tabs = $('.analytics-tabpanel');
+        var my_popup = $('.popup-window, .window.dialog');
+        var analytic_tabs = $('.tab-right');
         analytic_tabs.each(function () {
             var tab_h = $(this).outerHeight();
             var win_h = $(window).outerHeight() * 0.8;
@@ -386,7 +386,7 @@ $(document).ready(function () {
                 my_popup.css({ 'left': popup_half_w });
             }
             if (win_w < my_popup_w) {
-                my_popup.css({ 'left': 5,  });
+                my_popup.css({ 'left': 5, });
             }
             if (win_h > my_popup_h) {
                 my_popup.css({ 'top': popup_half_h });

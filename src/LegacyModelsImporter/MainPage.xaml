@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="50" d:DesignWidth="300" Background="Green">
+    d:DesignHeight="50" d:DesignWidth="250" Background="Green">
 
     <Grid x:Name="LayoutRoot" Background="White">
         <HyperlinkButton x:Name="importModelsLink" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" Click="importModelsLink_Click">Download legacy models from version 1.0</HyperlinkButton>

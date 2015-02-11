@@ -52,7 +52,7 @@
                     "ClientBin/BioCheck.xap",
                     slWidget[0], "slPlugin",
                     {
-                        width: "300", height: "50",
+                        width: "250", height: "50",
                         background: "white", alt: altHtml,
                         version: "5.0.61118.0"
                     },
