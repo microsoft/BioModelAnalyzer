@@ -122,7 +122,10 @@
         },
 
         ChangeVisibility: function (ind, check) {
-            this.plot.simulationplot("ChangeVisibility", ind, check);
+            try {
+                this.plot.simulationplot("ChangeVisibility", ind, check);
+            }
+            catch (ex){ }
         }
 
     });

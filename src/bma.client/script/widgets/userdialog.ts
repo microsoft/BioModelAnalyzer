@@ -12,7 +12,8 @@
             var that = this;
 
             this.element.addClass("window dialog");
-            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
+            var closediv = $('<div></div>').addClass("close-icon").appendTo(that.element);
+            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
             closing.bind("click", function () {
                 that.element.hide();
             });
@@ -33,7 +34,7 @@
         },
 
         popup_position: function () {
-            var my_popup = $('.popup-window, .bma-userdialog'); // наш попап
+            var my_popup = $('.popup-window, .dialog'); 
             my_popup.each(function () {
                 var my_popup_w = $(this).outerWidth(), 
                     my_popup_h = $(this).outerHeight(),
