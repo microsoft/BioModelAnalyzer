@@ -11,7 +11,11 @@
         -webkit-padding-start: 0;
     }
 
-    
+    .text-overflow-ellipsis(){
+        text-overflow: ellipsis;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+    }
 
     img {
         border: 0;
@@ -148,13 +152,13 @@ body {
 
 // Tooltip // Not using
 
-.tooltip{
-	font-size: 12px;
-	background-color: @darkgrey;
-	color:white;
-	padding:5px;
-	display: inline-block;
-}
+    .tooltip{
+	    font-size: 12px;
+	    background-color: @darkgrey;
+	    color:white;
+	    padding:5px;
+	    display: inline-block;
+    }
 
 
 // Buttons
@@ -162,20 +166,17 @@ body {
     button {
         color: @darkgrey;
         margin: 0;
+        .default-text;
     }	
 
 	.default-button{
-			
 			//margin-bottom: 10px;
 			background-color: @lightgrey;
 			border-radius: 15px;
-			padding: 0;
 			cursor: pointer;
 			display: inline-block;
 			margin-right: 5px;
 			padding: 0 5px;
-
-
 			&:hover {
 				color: white;
 				background-color: @darkgrey;
@@ -188,7 +189,6 @@ body {
 				background-color: transparent;
 				cursor: pointer;
 				color: inherit;
-				.default-text;
 				font-size: 0.8em;
 				letter-spacing: 1px;
 
@@ -202,37 +202,33 @@ body {
 			
 	}	
 
-
-
 	ul.button-list{
 		margin: 10px 0 0 0;
 		padding: 0;
 		li{
 			.default-button;
 		}
-			
-			
 	}
 
 
 		
-	// Action Button
+// Action Button
 
 	.action-button(@c){
 		background-color: @c;
 		border: 1px solid white;
 		border-radius:6px;
-		&:hover{
+		/*&:hover{
 			background-color: white;
 			border: 1px solid @c;
-		}
+		}*/
 		button{
 			font-size: 25px;
 			color:white;
-			padding: 7px 10px 7px 10px;
-			&:hover{
+			//padding: 7px 10px 7px 10px;
+			/*&:hover{
 			color: @c;
-			}
+			}*/
 		}
 	}
 
@@ -297,6 +293,13 @@ body {
 
 // Simulation Popout Buttons 
 	.simulation-popout{
+
+        .steps-container {
+            display: inline-block;
+            vertical-align: middle;
+            float: right;
+        }
+
 		ul.button-list{
 			float: right;
 			margin: 0px;
@@ -306,6 +309,8 @@ body {
 				&:hover{
 					background-color: @lightgrey;
 				}
+                display: inline-block;
+                vertical-align: bottom;
 			}
 
 			button{
@@ -327,8 +332,16 @@ body {
 
 			li.run{
 				margin-left: 30px;
-				.action-button(@green)
-						
+				.action-button(@green);
+                button{
+                    width: 70px;
+                    height: 30px;
+                }
+                
+				&.waiting {
+                    background-image: url(../images/20x20.gif);
+                    .background-img;
+				}		
 			}
 		}
 	}
@@ -392,7 +405,7 @@ body {
 	    bottom: 0;
 	}
 
-	.modeldesigner-element-cell {
+	.modeldesigner-element-cell { //WHAT IS IT?
 	    stroke-width: 1px;
 	    stroke: transparent;
 	}
@@ -444,6 +457,11 @@ body {
 	position: absolute;
 	left: 0;
 }
+.bma-pagefooter-msrlogo-copyright {
+    float: left;
+    margin-top: 9px;
+    margin-right: 10px;
+}
 
 .bma-pagefooter-linkcontainer {
 	position: absolute;
@@ -451,7 +469,8 @@ body {
 	background-color: white;
 	height: @footer-height - 10px;
 	line-height: 30px;
-	//width: @width;
+    padding: 0 10px;
+ 	//width: @width;
 
 	.calc(left, ~"50%" - @width / 2);
 	.box-shadow(@x:5px, @y:5px, @blur:10px, @color:@shadow);
@@ -463,12 +482,12 @@ body {
 }
 
 
-/* Toolbar */
+/*  Main Toolbar  */
 	
 	@toolbar-icon-height: 50px;
-	@zoomslider-width: 400px;
-    @zoomslider-height: 25px;
 	@toolbar-icon-border-radius: 7px;
+    @zoomslider-width: 240px;
+    @zoomslider-height: 25px;
 
 
     .bma-toolbarpanel {
@@ -491,38 +510,32 @@ body {
             .tool-icon-active;
         }
 
-        .bma-toolbarpanel-undoredotoolbar {
+        .undoredo-toolbar {
             .calc(margin-left, ~"5% - 40px");
             //margin-left: calc(~"5% - 40px");
         }
 
-        /*.bma-toolbarpanel-verticalline {
-            width: 1px;
-            background-color: @midgrey;
-            height: 30px;
-            position: relative;
-        }*/
+        .elements-toolbar {
+            .calc(margin-left, ~"40% - 370px");
+            margin-left: calc(~"40% - 370px");
+        }
+
+        .vis-options-toolbar {
+            .calc(margin-left, ~"40% - 370px");
+            margin-left: calc(~"40% - 370px");
+            &>.accordion-expanded {
+                border-bottom-left-radius:0;
+                border-bottom-right-radius: 0;
+                //.box-shadow(@x:2px, @y:7px, @blur:8px, @color:@shadow);
+            }
+        }
     }
 
-    
 
-    /*.bma-toolbarpanel .bma-toolbarpanel-visibilityoptions-zoomslider {
-        width: @zoomslider-width;
-        a  {
-            background: transparent;
-            cursor: pointer;
-            border: 10px solid transparent;
-            border-bottom: 20px solid gray;
-            border-radius: 0;
-            width: 0;
-            top: -10px;
-            height: 0;
-        }
-    }*/
 
-// Main Toolbar 
 
     /*accessible for draggable-helper-element */
+
     .pointer-icon{background-image: url("../images/pointer.svg");}
 	.undo-icon{background-image: url("../images/undo.svg");}
 	.redo-icon{background-image: url("../images/redo.svg");}
@@ -537,6 +550,8 @@ body {
         background-repeat: no-repeat;
         background-size: contain;
     }
+
+    // Toolbar icons
 
 	.tool-icon{
 		width: @toolbar-icon-height;
@@ -575,17 +590,6 @@ body {
 		    background-color: @darkgrey;
 		}
 
-        /*.ui-button-text {
-            padding: 0;
-        }*/
-
-	    /*.pointer-icon;//{background-image: url("../images/pointer.svg");}
-	    .undo-icon;//{background-image: url("../images/undo.svg");}
-	    .redo-icon;//{background-image: url("../images/redo.svg");}
-	    .cell-icon;//{background-image: url("../images/container.svg");}
-	    .variable-icon;//{background-image: url("../images/variable.svg");}
-	    .constant-icon;//{background-image: url("../images/constant.svg");}
-		.receptor-icon;//{background-image: url("../images/receptor.svg");}*/
 		.activate-icon{background-image: url("../images/activate.svg");}
 		.inhibit-icon{background-image: url("../images/inhibitor.svg");}
 		.view-options-icon{
@@ -615,7 +619,32 @@ body {
 		}
 	}
 
+// Visibility Options dialog
 
+    .window.vis-options{
+        position: absolute;
+		width: 200px;
+		border-top-left-radius: 0;
+        margin: 0 0.2em;
+
+            
+		.option-name {
+			//display: inline-block;
+			width:90px;
+            .text-overflow-ellipsis;
+		}
+
+        ul>li { 
+            display: block;
+            margin-bottom: 10px;
+
+            &>*{
+                display: inline-block;
+                vertical-align: middle;
+            }
+        }
+	}
+    
 // Zoom Slider
     .zoomslider-container {
 	    //display: table;
@@ -675,7 +704,7 @@ body {
 	
 	@window-radius: 10px;
 
-    	// Default Window
+// Default Window
 		.window{
 			padding: 15px;
 			margin:0px;
@@ -701,53 +730,12 @@ body {
 			}
 		}
 
-		/*.close-icon {
-            float: right;
-			cursor: pointer;
-			width: 20px;
-			height: 20px;
-		}*/
        
 
-    // Visibility Options dialog
 
-    .bma-toolbarpanel-visibilityoptions {
-        .calc(margin-left, ~"40% - 387px");
-        margin-left: calc(~"40% - 387px");
+    
 
-        .accordion-expanded {
-            border-bottom-left-radius:0;
-            border-bottom-right-radius: 0;
-            //.box-shadow(@x:2px, @y:7px, @blur:8px, @color:@shadow);
-        }
-
-        .window.vis-options{
-            position: absolute;
-		    width: 200px;
-		    border-top-left-radius: 0;
-            margin: 0 0.2em;
-
-		    .option-name {
-			    //display: inline-block;
-			    width:90px;
-                text-overflow: ellipsis;
-                -ms-text-overflow: ellipsis;
-                -o-text-overflow: ellipsis;
-		    }
-
-            ul>li { 
-                display: block;
-                margin-bottom: 10px;
-
-                &>*{
-                    display: inline-block;
-                    vertical-align: middle;
-                }
-            }
-	    }
-    }
-
-    	// Accordion
+// Accordion
 
 		.bma-accordion-container{
 		    position:relative;
@@ -786,7 +774,7 @@ body {
 		}
 	
 
-        /* File I/O Tab */
+/* File I/O Tab */
  
 	.modelstorage-toolbar-shadow() {
 		.box-shadow(@x:5px; @y:4px; @blur:6px; @color:@shadow)
@@ -958,7 +946,7 @@ body {
 			}
 		}
 
-    // Floating Windows
+// Floating Windows
 
 	.window-title{
 		font-size: 20px;
@@ -1202,7 +1190,7 @@ body {
 
 //Slider panels
 
-.bma-modeltoolbarcontainer, .bma-analyticstoolbarcontainer {
+.modeltoolbar-container, .analytics-container {
     .slider-panel();
 }
 

@@ -83,7 +83,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("window variable-editor");
+            this.element.addClass("variable-editor");
             this.element.draggable({ containment: "parent", scroll: false  });
             this._appendInputs();
             this._processExpandingContent();

@@ -1,21 +1,83 @@
 ﻿
-@import "StyleSheet.less";
+//@import "StyleSheet.less";
 
-@bma-toolbar-icon-height: 50px;
+/* General Functions */ 
+    
+    ul, menu, dir {
+        display: block;
+        list-style-type: disc;
+        -webkit-margin-before: 0;
+        -webkit-margin-after: 0;
+        -webkit-margin-start: 0;
+        -webkit-margin-end: 0;
+        -webkit-padding-start: 0;
+    }
+
+    
+
+    img {
+        border: 0;
+    }
+	
+	.background-img() {
+	    background-repeat:no-repeat;
+	    background-position:center;
+	    background-size:contain;
+	}
+     
+	.hoverable:hover{
+	    cursor: pointer;
+	}
+
+	.invisible {
+	    display:none;
+	}
+
+	.calc(@prop; @val) {
+	  @{prop}: calc(@val);
+	  @{prop}: -moz-calc(@val);
+	  @{prop}: -webkit-calc(@val);
+	  @{prop}: -o-calc(@val); 
+	}
+
+	.border-radius(@a){
+	    -moz-border-radius: @a;
+	    -webkit-border-radius: @a;
+	    -ms-border-radius: @a;
+	    -o-border-radius: @a;
+	    border-radius: @a;
+	}
+
+	.box-shadow(@x; @y; @blur; @color){
+		-webkit-box-shadow: @x @y @blur @shadow;
+		-moz-box-shadow:    @x @y @blur @shadow;
+		-o-box-shadow: 		@x @y @blur @shadow;
+		box-shadow:         @x @y @blur @shadow;
+	}
+
+	.gradient(@side, @color1, @color2) {
+	    background-image: -moz-linear-gradient(@side, @color1, @color2);
+	    background-image: -webkit-linear-gradient(@side,@color1, @color2);
+	    background-image: -ms-linear-gradient(@side, @color1,  @color2);
+	    background-image: -webkit-gradient(linear,@side, @color1, @color2);
+	}
+
+
+/*@bma-toolbar-icon-height: 50px;
 @bma-toolbar-icon-border-radius: 7px;
 @general-font-family: 'Segoe UI';
 @footer-height: 40px;
 @general-font-size: 13px;
 @general-line-height: 17px;
-@big-font-size: 20px;
-@big-line-height: 27px;
+
 @general-font-color: #606060;
 @dark-background-color: #606060;
 @zoomslider-width: 240px;
-@shadow-color: #c6c6c6;
+@shadow-color: #c6c6c6;*/
 @odd-item-color: #ededed;
 @even-item-color: #ffffff;
-
+@big-font-size: 20px;
+@big-line-height: 27px;
 
 .big-font() {
     font-size: @big-font-size;
@@ -26,7 +88,7 @@
 
 ///Drawing surface
 
-.bma-drawingsurfacecontainer {
+/*.bma-drawingsurfacecontainer {
     height: calc(~"100% - 70px" - @footer-height);
     .calc(height, ~"100% - 70px" - @footer-height);
     position: relative;
@@ -38,9 +100,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-}
+}*/
 
-.modeldesigner-element-cell {
+/*.modeldesigner-element-cell {
     stroke-width: 1px;
     stroke: transparent;
 }
@@ -53,13 +115,13 @@
 
 .modeldesigner-line-hover {
     stroke-width: 3px;
-}
+}*/
 
 
 /// Drawing surface ending
 
 
-///Footer
+/*///Footer
 
 .bma-footer {
     height: @footer-height;
@@ -87,7 +149,7 @@
 .bma-pagefooter-logo {
     position: absolute;
     left: 0;
-}
+}*/
 
 // Links
 
@@ -109,7 +171,7 @@ a.website-link {
     }
 }*/
 
-.bma-pagefooter-linkcontainer {
+/*.bma-pagefooter-linkcontainer {
     position: absolute;
     bottom: 0;
     background-color: white;
@@ -118,12 +180,12 @@ a.website-link {
     @width: 420px;
     width: @width;
     .calc(left, ~"50%" - @width / 2);
-    .box-shadow(5px, 5px, 10px, @shadow-color);
+    .box-shadow(5px, 5px, 10px, rgb(0,0,0,0.5));
     .border-radius(10px 10px 0 0);
     /*a {
         color: #82BD82;
-    }*/
-}
+    }
+}*/
 
 ///Footer ending
 
@@ -260,10 +322,10 @@ label[aria-pressed='true'] .PointerImg {
     margin-left: calc(~"40% - 387px");
 }*/
 
-.bma-toolbarpanel-elementstoolbar {
+/*.bma-toolbarpanel-elementstoolbar {
     .calc(margin-left, ~"40% - 390px");
     margin-left: calc(~"40% - 390px");
-}
+}*/
 
 /*.bma-container-img {
     background-image: url("../images/container.svg");
@@ -714,11 +776,11 @@ label[aria-pressed='true'] .bma-inhibit-img {
     }
 }*/
 
-.marginable {
+/*.marginable {
     & > div:not(:first-child) {
         margin-top: 10px;
     }
-}
+}*/
 
 
 /*.expand-window-icon {
@@ -731,12 +793,12 @@ label[aria-pressed='true'] .bma-inhibit-img {
     margin-bottom: 0;
 }*/
 
-@scrollable-resurts-height: 160px;
+/*@scrollable-resurts-height: 160px;
 
 .scrollable-results {
     max-height: @scrollable-resurts-height;
     overflow-y: scroll;
-}
+}*/
 /// Analytics panel ending
 
 
@@ -755,7 +817,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
         padding: 0;
     }
 }
-
+/*
 .bma-table {
     .bma-tbl();
 
@@ -792,7 +854,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 .bma-color-table td {
     border: 1px solid white;
-}
+}*/
 
 
 /*.bma-graph-max-table {
@@ -938,7 +1000,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
     color: #ffffff;
     font-size: 17px;
     line-height: 25px;
-    .border-radius(@bma-toolbar-icon-border-radius);
+    .border-radius(7px);
 }
 
 .bma-furthertesting-button-waiting {
@@ -1112,12 +1174,16 @@ label[aria-pressed='true'] .bma-inhibit-img {
 }
 
 .bma-progressiontable-randomise {
-    position: absolute;
+    /*position: absolute;
     top: -@simulation-bttns-top;
-    left: 265px;//calc(~"30% + 60px - 2px");
+    left: 265px;//calc(~"30% + 60px - 2px");*/
+    display: inline-block;
+    vertical-align: middle;
+    float:right;
     cursor: pointer;
     font-size: 18px;
     line-height: 26px;
+    margin: 5px 10px 0 0;
 
     div {
         display: inline-block;
@@ -1149,7 +1215,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
     }
 
     button {
-        background-color: @dark-background-color;
+        background-color: #606060;
         -moz-border-radius: 8px;
         -webkit-border-radius: 8px;
         border-radius: 8px;
@@ -1256,7 +1322,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 ///LocalStorage Widget
 
-.localstorage-widget {
+/*.localstorage-widget {
     ol {
         list-style: none;
         padding: 0;
@@ -1284,9 +1350,9 @@ label[aria-pressed='true'] .bma-inhibit-img {
         background-color: transparent;
         padding: 3px;
     }
-}
+}*/
 
-.localstorage-widget-header {
+/*.localstorage-widget-header {
     .big-font();
 }
 
@@ -1306,7 +1372,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 .localstorage-widget-message {
     margin: 13px 0;
-}
+}*/
 
 ///LocalStorage Widget ending
 
