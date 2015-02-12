@@ -93,7 +93,8 @@
 
         _appendInputs: function () {
             var that = this;
-            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
+            var div = $('<div></div>').addClass("close-icon").appendTo(that.element);
+            var closing = $('<img src="../../images/close.png">').appendTo(div);
             closing.bind("click", function () {
                 that.element.hide();
             });
