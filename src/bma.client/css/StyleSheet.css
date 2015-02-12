@@ -1395,6 +1395,35 @@ textarea:focus {
 .variables-table td:nth-child(3) {
   width: 15%;
 }
+.furhter-testing {
+  margin: 2px 0 0 0;
+  margin: 0px 0px 0px 0px;
+  padding: 0px;
+  width: 99%;
+  border-collapse: collapse;
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+}
+.furhter-testing td {
+  vertical-align: middle;
+  border: 1px solid #aaaaaa;
+  text-align: center;
+  padding: 1px 3px 1px 3px;
+  color: #606060;
+  height: 20px;
+}
+.furhter-testing tr:first-child td {
+  word-break: initial;
+  background-color: #606060;
+  border-color: #606060;
+  border-width: 1px;
+  color: white;
+}
+.furhter-testing tr:nth-child(odd) {
+  background-color: #ededed;
+}
 .proof-variables .scrollable-results .variables-table td:nth-child(1) {
   width: 20%;
 }
@@ -1767,6 +1796,7 @@ textarea:focus {
 }
 .model-repository {
   width: 250px;
+  z-index: 7;
 }
 .model-repository ol {
   list-style-type: none;
@@ -1789,14 +1819,22 @@ textarea:focus {
   background-color: #aaaaaa;
   color: white;
 }
-.model-repository ol li a.delete {
+.model-repository ol li button.delete {
+  border: none;
   display: inline-block;
-  height: 23px;
-  padding-top: 2px;
+  background-color: transparent;
+  height: 25px;
+  width: 20px;
   float: right;
   cursor: pointer;
 }
-.model-repository ol li a.delete:hover {
+.model-repository ol li button.delete:hover {
   background-color: #aaaaaa;
+}
+.model-repository ol li .icon-delete {
+  background-image: url('../images/icon-delete.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 /*# sourceMappingURL=StyleSheet.css.map */
