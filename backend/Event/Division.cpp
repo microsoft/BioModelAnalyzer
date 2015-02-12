@@ -100,9 +100,6 @@ bool Division::concerns(const string& name) const {
 
 bool Division::expressed(const string& cell, const string& var) const {
 	if (_parent==cell) {
-		if (var.size() == 0) {
-			return true;
-		}
 		if (_stp != nullptr) {
 			pair<bool, const Type::Value*> existsVal{ _stp->value(var) };
 			if (existsVal.first && existsVal.second->operator()()) {
@@ -111,9 +108,6 @@ bool Division::expressed(const string& cell, const string& var) const {
 		}
 	}
 	if (_daughter1==cell) {
-		if (var.size() == 0) {
-			return true;
-		}
 		if (_st1 != nullptr) {
 			pair<bool, const Type::Value*> existsVal{ _st1->value(var) };
 			if (existsVal.first && existsVal.second->operator()()) {
@@ -122,9 +116,6 @@ bool Division::expressed(const string& cell, const string& var) const {
 		}
 	}
 	if (_daughter2==cell) {
-		if (var.size() == 0) {
-			return true;
-		}
 		if (_st2 != nullptr) {
 			pair<bool, const Type::Value*> existsVal{ _st2->value(var) };
 			if (existsVal.first && existsVal.second->operator()()) {
