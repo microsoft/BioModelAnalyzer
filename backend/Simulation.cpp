@@ -270,7 +270,8 @@ bool Simulation::expressed(const string& cond, float from, float to) const {
 
 	// Search events that happen before to and after from
 	while (rit != _log.rend() && (*rit)->execTime() > from) {
-		if ((*rit)->expressed(cellName, var)) {
+		if (var.size() == 0 && (*rit)->concerns(cellName) ||
+			var.size() != 0 && (*rit)->expressed(cellName, var)) {
 			return true;
 		}
 		++rit;
@@ -279,7 +280,7 @@ bool Simulation::expressed(const string& cond, float from, float to) const {
 	if (_currentTime <= to && _currentTime >= from) {
 		vector<Cell*> matchingCells{ cells(cellName) };
 		for (auto cell : matchingCells) {
-			if (cell->expressed(var)) {
+			if (var.size() == 0 || cell->expressed(var)) {
 				return true;
 			}
 		}

@@ -19,11 +19,11 @@ public:
 	virtual ~ChangeState();
 
 //	virtual std::vector<Event*> execute() const;
-	virtual void output(std::ostream&) const;
-	virtual bool concerns(const std::string&) const;
-	virtual bool expressed(const std::string& cell,const std::string& var) const;
+	void output(std::ostream&) const override;
+	bool concerns(const std::string&) const override;
+	bool expressed(const std::string& cell,const std::string& var) const override;
 
-	virtual std::string toString() const;
+	std::string toString() const override;
 	friend std::ostream& operator<<(std::ostream&,const ChangeState&);
 private:
 	std::unique_ptr<State> _oldState;

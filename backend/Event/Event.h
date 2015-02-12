@@ -36,7 +36,7 @@ public:
 	// virtual std::vector<Event*> execute() const=0;
 	virtual void output(std::ostream&) const;
 	virtual bool concerns(const std::string&) const=0;
-	virtual bool expressed(const std::string& call,const std::string& var) const=0;
+	virtual bool expressed(const std::string& cell, const std::string& var) const = 0;
 
 	virtual std::string toString() const;
 	virtual std::string toJson(unsigned int id, const std::map<std::string, std::string>&) const;

@@ -18,12 +18,12 @@ public:
 	virtual ~Death();
 
 //	virtual std::vector<Event*> execute() const;
-	virtual void output(std::ostream&) const;
+	void output(std::ostream&) const override;
 
-	virtual bool concerns(const std::string&) const;
-	virtual bool expressed(const std::string& call,const std::string& var) const;
+	bool concerns(const std::string&) const override;
+	bool expressed(const std::string& cell,const std::string& var) const override;
 
-	virtual std::string toString() const;
+	std::string toString() const override;
 	friend std::ostream& operator<<(std::ostream&,const Death&);
 private:
 	std::string _cell;

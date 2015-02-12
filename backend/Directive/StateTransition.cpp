@@ -27,7 +27,7 @@ StateTransition::~StateTransition() {
 //void StateTransition::addChange(const std::string& var, bool val) {
 //	if (_changes.find(var)!=_changes.end()) {
 //		_changes[var]=val;
-//	}
+//	}	
 //	else {
 //		_changes.insert(make_pair(var,val));
 //	}

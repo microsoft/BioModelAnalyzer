@@ -53,6 +53,11 @@ void printOptions() {
 	cout << "(" << static_cast<int>(Options::exportSim) << ") Export simulations to file." << endl;
 }
 
+void clearCinToEndOfLine() {
+	string str;
+	getline(cin, str);
+}
+
 string ChooseConditionFromProgram(Simulation*& s,const string& name) {
 	cout << "Which condition would you like to start from:" << endl;
 	CellProgram* cProg { s->program(name) };
@@ -74,8 +79,11 @@ string ChooseConditionFromProgram(Simulation*& s,const string& name) {
 	if (!(cin >> which)) {
 		const string err{"Wrong option."};
 		cin.clear();
+		clearCinToEndOfLine();
 		throw err;
 	}
+
+	clearCinToEndOfLine();
 
 	CellProgram::iterator it { cProg->begin() };
 	unsigned int i { 1 };
@@ -95,7 +103,7 @@ string ChooseConditionFromProgram(Simulation*& s,const string& name) {
 void readSimulation(Simulation*& s) {
 	cout << "Please enter the name of a program file:" << endl;
 	string file;
-	cin >> file;
+	getline(cin, file);
 	if (s) {
 		delete s;
 		s = nullptr;
@@ -121,6 +129,8 @@ void timeOverlap(Simulation* s,bool rawData) {
 	unsigned int repetitions{0};
 	cout << "How many simulations would you like to run?" << endl;
 	cin >> repetitions;
+
+	clearCinToEndOfLine();
 
 	vector<float> results1; // cell1 born before cell2
 	vector<float> results2; // cell2 born before cell1
@@ -204,6 +214,8 @@ void cellCount(Simulation* s, ostream& out) {
 	cout << "How many simulations would you like to run?" << endl;
 	cin >> repetitions;
 
+	clearCinToEndOfLine();
+
 	string condition{ChooseConditionFromProgram(s,INITIALPROG)};
 
 	unsigned int maxLen{0};
@@ -240,7 +252,8 @@ void cellCount(Simulation* s, ostream& out) {
 void outputFileChooser(ofstream& of) {
 	cout << "Please enter the name of a file to write to." << endl;
 	string outFile;
-	if (!(cin >> outFile)) {
+	getline(cin, outFile);
+	if (!cin) {
 		cin.clear();
 		const string err{ "Bad input." };
 		throw err;
@@ -262,10 +275,12 @@ void exportSimulations(Simulation *s) {
 	cout << "How many simulations would you like to run?" << endl;
 	if (!(cin >> repetitions)) {
 		cin.clear();
+		clearCinToEndOfLine();
 		const string err{"Bad input."};
 		throw err;
 	}
 
+	clearCinToEndOfLine();
 	string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
 
 	ofstream ofile{};
@@ -289,9 +304,12 @@ int main() {
 			printOptions();
 			if (!(cin >> which)) {
 				cin.clear();
+				clearCinToEndOfLine();
 				const string err{"Something went wrong with reading your input. Please try again."};
 				throw err;
 			}
+
+			clearCinToEndOfLine();
 
 			Options op{static_cast<Options>(which)};
 			switch (op) {
