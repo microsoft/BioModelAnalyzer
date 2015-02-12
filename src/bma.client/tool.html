@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
     <link rel="stylesheet" href="css/BMA_less.css" type="text/css" />
+    <link rel="stylesheet" href="css/StyleSheet.css" type="text/css" />
     <link rel="stylesheet" href="css/fonts.css" type="text/css" />
     <script src="Silverlight.js"></script>
 
@@ -129,42 +130,6 @@
                         </li>
                     </ul>
                 </div>
-                    <!--<div class="option-name">Text Labels</div>
-                    <div class="default-button onoff green"><button>ON</button></div>
-                    <div class="pill-button-box">
-                        <div class="pill-button"><button>-</button></div>
-                        <div class="pill-button"><button>+</button></div>
-                    </div><br>
-                    <div class="option-name">Grid</div>
-                    <div class="default-button onoff grey"><button>OFF</button></div><br>
-                    <div class="option-name">Arrow Width</div>
-                    <div class="pill-button-box">
-                        <div class="pill-button"><button>-</button></div>
-                        <div class="pill-button"><button>+</button></div>
-                    </div>-->
-
-                <!--<div id="visibilityOptionsContent" class="visibility-options-table accordion-shadow">
-                    <ul>
-                        <li id="li1">
-                            <div class="optionsNames">Text Labels</div>
-                            <div id="buttonzz" data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
-                            <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
-                        </li>
-                 //       <li id="li2">
-                 //   <div class="optionsNames">Icons</div>
-                 //   <div data-behavior="toggle" data-command="Commands.ToggleIcons" data-default="true" style="float: left;"></div>
-                 //   <div data-behavior="increment" data-command="Commands.IconsSize" data-default="10" style="float: left;"></div>
-                 //   </li>
-                        <li id="li3">
-                            <div class="optionsNames">Grid</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
-                        </li>
-                        <li id="li4">
-                            <div class="optionsNames">Line Width</div>
-                            <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
-                        </li>
-                    </ul>
-                </div>-->
             </div>
         </div>
 
@@ -178,18 +143,18 @@
         <div id="drawingSurface" class="bma-drawingsurface"></div>
 
         <div class="bma-modeltoolbarcontainer">
-            <div id="modelToolbarSlider">
-                <div id="modelToolbarHeader" class="modelstorage-toolbar-header">
+            <div id="modelToolbarSlider" class="tab-left model-toolbar">
+                <div id="modelToolbarHeader" class="model-name">
                     <ul>
                         <li>
-                            <div class="modelstorage-toolbar-modelname">
-                                <input class="item-name-input" id="modelNameEditor" type="text" value="Model 1">
+                            <div>
+                                <input id="modelNameEditor" type="text" value="Model 1">
                             </div>
                         <li>
-                            <div class="modelstorage-toolbar-expand-bttn"></div>
+                            <div class="expand-btn"></div>
                     </ul>
                 </div>
-                <div id="modelToolbarContent" class="modelstorage-toolbar-content">
+                <div id="modelToolbarContent" class="model-icons">
                     <ul>
                         <li>
                             <div id="localSaveBtn" data-command="LocalStorageSaveModel" class="localSaveButton">

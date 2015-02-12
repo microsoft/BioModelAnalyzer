@@ -10,7 +10,8 @@
         
         _create: function () {
             var that = this;
-            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
+            var closediv = $('<div></div>').addClass('close-icon').appendTo(that.element);
+            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
             closing.bind("click", function () {
                 that.element.hide();
             });

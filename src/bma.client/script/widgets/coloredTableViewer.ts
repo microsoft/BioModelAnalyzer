@@ -68,7 +68,7 @@
 
                 case "graph-max":
                     if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
-                        this.table.addClass("bma-graph-max-table variables-table");
+                        this.table.addClass("variables-table");
                         this.createHeader(options.header);
                         var tr0 = that.table.find("tr").eq(0);
                         tr0.children("td").eq(0).attr("colspan", "2");
@@ -192,7 +192,8 @@
                 
                 if (that.alldiv.attr("checked")) {
                     for (var i = 0; i < that.buttons.length; i++) {
-                        $(that.buttons[i]).addClass("add-variable-to-plot-checker")
+                        if (!$(that.buttons[i]).hasClass("add-variable-to-plot-checker"))
+                            $(that.buttons[i]).click();
                     }
                     //that.buttons.( function () {
                     //    if (!$(this).hasClass("add-variable-to-plot-checker"))
@@ -201,7 +202,8 @@
                 }
                 else {
                     for (var i = 0; i < that.buttons.length; i++) {
-                        $(that.buttons[i]).removeClass("add-variable-to-plot-checker");
+                        if ($(that.buttons[i]).hasClass("add-variable-to-plot-checker"))
+                            $(that.buttons[i]).click();
                     }
                     //that.buttons.each(function () {
                     //    if ($(this).hasClass("add-variable-to-plot-checker"))
