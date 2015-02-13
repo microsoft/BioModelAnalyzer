@@ -142,8 +142,8 @@
                                 that.driver.HideResults();
                                 var content = $('<div></div>').furthertesting();
                                 content.furthertesting("SetData", that.data);
-                                content.find("*").removeClass("scrollable-results");
-                                var full = content.children().eq(1).children().eq(1).addClass("proof-expanded");
+                                //content.find("*").removeClass("scrollable-results");
+                                var full = content.children().eq(1).children().eq(1);//.addClass("scrollable-results");
                                 this.popupViewer.Show({ tab: param, content: full });
                                 break;
                             default:

@@ -523,8 +523,9 @@ body {
             .calc(margin-left, ~"40% - 370px");
             margin-left: calc(~"40% - 370px");
             &>.accordion-expanded {
-                border-bottom-left-radius:0;
-                border-bottom-right-radius: 0;
+                .tool-icon-active;
+                /*border-bottom-left-radius:0;
+                border-bottom-right-radius: 0;*/
                 //.box-shadow(@x:2px, @y:7px, @blur:8px, @color:@shadow);
             }
         }
@@ -613,8 +614,8 @@ body {
 		.activate-icon{background-image: url("../images/activate-ON.svg");}
 		.inhibit-icon{background-image: url("../images/inhibitor-ON.svg");}
 		.view-options-icon{
-			background-image: url("../images/visicon2-ON.svg");
-			border-bottom-left-radius: 0px;
+            background-image: url("../images/visicon2-ON.svg");
+            //border-bottom-left-radius: 0px;
 		}
 	}
 
@@ -623,7 +624,7 @@ body {
     .window.vis-options{
         position: absolute;
 		width: 200px;
-		border-top-left-radius: 0;
+		//border-top-left-radius: 0;
         margin: 0 0.2em;
 
             
@@ -756,21 +757,21 @@ body {
 		    cursor: pointer;
 		}
 
-		.accordion-shadow {
+		/*.accordion-shadow {
 			.box-shadow(@x:0px; @y:5px; @blur:5px; @color:@shadow)
-		}
+		}*/
 
 		/*.accordion-collapsed {
 		    border: 1px solid lightgray;
 		    border-radius: @toolbar-icon-border-radius;
 		}*/
 
-		.accordion-expanded  {
+		/*.accordion-expanded  {
 		    border-color: transparent;
             .box-shadow(@x:2px, @y:7px, @blur:8px, @color:@shadow);
 		    /*@r: toolbar-icon-border-radius;
 		    border-radius: @r @r 0 0;*/
-		}
+		//}
 	
 
 /* File I/O Tab */
@@ -862,7 +863,7 @@ body {
 	}
 
 
-	.openButton{
+	/*.openButton{
 	    background-image: url('../images/open.svg');
 	}
 
@@ -879,7 +880,7 @@ body {
 	}
 	.localSaveButton {
 	    background-image: url("../images/savelocally.svg"); 
-	}
+	}*/
 
     // Form elements
 
@@ -953,10 +954,11 @@ body {
 		margin-right: 10px;
         padding-bottom: 5px;
 
-        .expand-collapse-bttn {
-            float: right;
-        }
+        
 	}
+    .expand-collapse-bttn {
+        float: right;
+    }
     .expand-window-icon {
         cursor: pointer;
         width: 20px;
@@ -967,6 +969,12 @@ body {
 		.window-title;
 		font-family: 'Segoe-UI-Light';
 	}
+
+    .popup-window {
+        .analysis-title{
+            .window-title;
+        }   
+    }
 
 
 // Variable Editor
@@ -1512,6 +1520,7 @@ body {
 			padding: 0;
 			width: 95%;
 		}
+
 	}
 
 	.popout-icon {
@@ -1573,6 +1582,12 @@ body {
 			}
 		}
 
+        .further-testing-box{
+			.scrollable-results{
+				.scrollbox(150px);
+			}
+		}
+
 		.simulation-variables{
 			margin-top: 10px;
 			.scrollable-results{
@@ -1598,6 +1613,13 @@ body {
 				.scrollbox(500px);
 			}
 		}
+
+        .window.further-testing-popout {
+            .analysis-popout;
+			.scrollable-results{
+				.scrollbox(480px);
+			}
+        }
 
 		.window.proof-propagation-popout{
 			.analysis-popout;
