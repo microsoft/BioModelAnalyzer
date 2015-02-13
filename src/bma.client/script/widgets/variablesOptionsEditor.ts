@@ -83,7 +83,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("window variable-editor");
+            this.element.addClass("variable-editor");
             this.element.draggable({ containment: "parent", scroll: false  });
             this._appendInputs();
             this._processExpandingContent();
@@ -93,7 +93,8 @@
 
         _appendInputs: function () {
             var that = this;
-            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
+            var div = $('<div></div>').addClass("close-icon").appendTo(that.element);
+            var closing = $('<img src="../../images/close.png">').appendTo(div);
             closing.bind("click", function () {
                 that.element.hide();
             });

@@ -35,6 +35,7 @@
             var options = this.options;
             var defaultToggler = $('<button></button>').text("Further Testing").addClass('bma-furthertesting-button');
 
+            this.element.addClass("further-testing-box");
             this.toggler = that.options.toggler || defaultToggler;
             this.toggler
                 .appendTo(this.element)

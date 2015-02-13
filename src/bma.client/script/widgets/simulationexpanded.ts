@@ -16,7 +16,7 @@
             var that = this;
             var options = that.options;
            
-            this.RunButton = $('<div></div>').text("Run").addClass("bma-simulation-run-button").appendTo(that.element);
+            //this.RunButton = $('<div></div>').text("Run").addClass("bma-simulation-run-button").appendTo(that.element);
 
             var tablesDiv = $('<div></div>')
                 .addClass("scrollable-results")
@@ -24,10 +24,14 @@
             this.table1 = $('<div></div>')
                 .addClass('small-simulation-popout-table')
                 .appendTo(tablesDiv);
+
+
             this.progression = $('<div></div>')
                 .addClass('big-simulation-popout-table')
-                .appendTo(tablesDiv)
-                .progressiontable();//.addClass("bma-simulation-table")
+                .appendTo(tablesDiv);
+
+            var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
+            this.progression.progressiontable();//.addClass("bma-simulation-table")
             //this.progression.css("width", "calc(70% - 60px)");
             if (options.variables !== undefined) {
                 this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
@@ -36,43 +40,56 @@
 
                 }
             }
+        //<ul class="button-list" >
+        //<li><button>- 10 < /button></li >
+        //<li class="steps" > <button>STEPS: 10</button > </li>
+        //< li > <button>+ 10 < /button></li >
+        //<li class="run" > <button>RUN < /button></li >
+        //</ul>
 
-            var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
-            this.num = $('<span></span>').text(that.options.num).appendTo(steps);
-            $('<span></span>').text("Steps").appendTo(steps);
-            var add10 = $('<button></button>').text('+ 10').appendTo(steps);
-            var min10 = $('<button></button>').text('- 10').appendTo(steps);
+            var step = 10;
+
+            var stepsul = $('<ul></ul>').addClass('button-list').appendTo(stepsdiv);
+            var li0 = $('<li></li>').appendTo(stepsul);
+            var li1 = $('<li></li>').addClass('steps').appendTo(stepsul);
+            var li2 = $('<li></li>').appendTo(stepsul);
+            var li3 = $('<li></li>').addClass('run').appendTo(stepsul);
+            //var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
+            //this.num = $('<span></span>').text(that.options.num).appendTo(steps);
+            //$('<span></span>').text("Steps").appendTo(steps);
+            var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
             add10.bind("click", function () {
-                that._setOption("num", that.options.num + 10);
+                that._setOption("num", that.options.num + step);
             });
-            min10.bind("click", function () {
-                that._setOption("num", that.options.num - 10);
-            })
 
-            that.element.addClass("bma-simulation-expanded");
+            this.num = $('<button></button>').text('STEPS:' + that.options.num).appendTo(li1);
+            var min10 = $('<button></button>').text('- ' + step).appendTo(li2);
+            min10.bind("click", function () {
+                that._setOption("num", that.options.num - step);
+            })
+            this.RunButton = $('<button></button>').text('Run').appendTo(li3);
+            //that.element.addClass("bma-simulation-expanded");
             this.refresh();
         },
 
         ChangeMode: function () {
             var that = this;
-            var toAddClass = "", toRemoveClass = "", text = "";
             switch (this.options.buttonMode) {
                 case "ActiveMode":
-                    toAddClass = "bma-simulation-run-button";
-                    toRemoveClass = "bma-simulation-run-button-waiting";
-                    text = "Run";
+                    this.RunButton.parent().removeClass('waiting');
+                    this.RunButton.text('Run');
                     this.RunButton.bind("click", function () {
                         that.progression.progressiontable("ClearData");
                         window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("GetInit"), num: that.options.num });
                     })
                     break;
                 case "StandbyMode":
-                    toAddClass = "bma-simulation-run-button-waiting";
-                    toRemoveClass = "bma-simulation-run-button";
+                    this.RunButton.parent().addClass('waiting');
+                    this.RunButton.text('');
                     this.RunButton.unbind("click");
                     break;
             }
-            this.RunButton.removeClass(toRemoveClass).addClass(toAddClass).text(text);
+            //.addClass(toAddClass).text(text);
         },
 
         refresh: function () {
@@ -118,7 +135,7 @@
                 case "num":
                     if (value < 0) value = 0;
                     this.options.num = value;
-                    this.num.text(value);
+                    this.num.text('STEPS: ' + value);
                     break;
                 case "variables": 
                     this.options.variables = value;
