@@ -6,23 +6,23 @@
 
                 window.Commands.On("NewModel", (args) => {
                     if (checker.IsChanged(appModel)) {
-                        var userDialog = $('<div id="usrdialog"></div>').appendTo('body').userdialog({
+                        var userDialog = $('<div></div>').appendTo('body').userdialog({
                             message: "Do you want to save changes?",
                             functions: [
                                 function () {
-                                    $('#usrdialog').detach();
+                                    userDialog.detach();
                                 },
                                 function () {
-                                    $('#usrdialog').detach();
+                                    userDialog.detach();
                                     load();
                                 },
                                 function () {
-                                    $('#usrdialog').detach();
+                                    userDialog.detach();
                                 }
                             ]
                         });
                     }
-                    else load()
+                    else load();
 
                     function load() {
                         appModel.Deserialize(undefined);
@@ -34,18 +34,18 @@
                 window.Commands.On("ImportModel", (args) => {
 
                     if (checker.IsChanged(appModel)) {
-                        var userDialog = $('<div id="usrdialog"></div>').appendTo('body').userdialog({
+                        var userDialog = $('<div></div>').appendTo('body').userdialog({
                             message: "Do you want to save changes?",
                             functions: [
                                 function () {
-                                    $('#usrdialog').detach();
+                                    userDialog.detach();
                                 },
                                 function () {
-                                    $('#usrdialog').detach();
+                                    userDialog.detach();
                                     load();
                                 },
                                 function () {
-                                    $('#usrdialog').detach();
+                                    userDialog.detach();
                                 }
                             ]
                         });

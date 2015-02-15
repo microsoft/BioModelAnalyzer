@@ -112,7 +112,6 @@ $(document).ready(function () {
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
 
-
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 
@@ -208,34 +207,26 @@ $(document).ready(function () {
         }
     });
     var aas = $('body').children('ul').children('li').children('a');
-   
     aas.children('span').detach();
+
     aas.each(function () {
         switch ($(this).text()) {
-            case "Cut": $('<img alt="" src="../images/icon-cut.svg">').appendTo($(this));
+            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg">Cut';//.appendTo($(this));
                 break;
-            case "Copy": $('<img alt="" src="../images/icon-copy.svg">').appendTo($(this));
+            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg">Copy';//).appendTo($(this));
                 break;
-            case "Paste": $('<img alt="" src="../images/icon-paste.svg">').appendTo($(this));
+            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg">Paste';//).appendTo($(this));
                 break;
-            case "Edit": $('<img alt="" src="../images/icon-edit.svg">').appendTo($(this));
+            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg">Edit';//).appendTo($(this));
                 break;
-            case "Size": $('<img alt="" src="../images/icon-size.svg">').appendTo($(this));
+            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg">Size';//).appendTo($(this));
                 break;
-            case "Delete": $('<img alt="" src="../images/icon-delete.svg">').appendTo($(this));
+            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg">Delete';//).appendTo($(this));
                 break;
         }
     })
-    //$('<img alt="" src="../images/icon-cut.svg">').appendTo(aas.eq(0));
-    //$('<img alt="" src="../images/icon-copy.svg">').appendTo(aas.eq(1));
-    //$('<img alt="" src="../images/icon-paste.svg">').appendTo(aas.eq(2));
-    //$('<img alt="" src="../images/icon-edit.svg">').appendTo(aas.eq(3));
-    //$('<img alt="" src="../images/icon-size.svg">').appendTo(aas.eq(4));
-    //$('<img alt="" src="../images/icon-delete.svg">').appendTo(aas.eq(5));
 
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
-    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon1", val: false } });
-    $("#analytics").bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
 
     //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
@@ -256,11 +247,6 @@ $(document).ready(function () {
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
 
         helper: function (event, ui) {
-            //var h = $(this).children().children().clone().appendTo('body');
-            //console.log(h.attr("class"));
-            
-            //var h = $('<img src="' + $(this).children().children().css("background-image").split("localhost/")[1].split(')')[0] + '">').appendTo('body');
-            //console.log();
             var classes = $(this).children().children().attr("class").split(" ");
             return $('<div></div>').addClass(classes[0]).addClass("draggable-helper-element").appendTo('body');
         },
@@ -291,35 +277,42 @@ $(document).ready(function () {
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
+    $("#btn-local-save").click(function (args) {
+        window.Commands.Execute("LocalStorageSaveModel", undefined);
+    });
+    $("#btn-new-model").click(function (args) {
+        window.Commands.Execute("NewModel", undefined);
+    });
+    $("#btn-local-storage").click(function (args) {
+        window.Commands.Execute("LocalStorageRequested", undefined);
+    });
+    $("#btn-import-model").click(function (args) {
+        window.Commands.Execute("ImportModel", undefined);
+    });
+
+    $("#btn-export-model").click(function (args) {
+        window.Commands.Execute("ExportModel", undefined);
+    });
+
+    var localStorageWidget = $('<div></div>')
+        .addClass('window')
+        .appendTo('#drawingSurceContainer')
+        .localstoragewidget();
+
     $("#editor").bmaeditor();
 
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
-    var popup = $('<div class="popup-window window"></div>').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div></div>')
+        .addClass('popup-window window')
+        .appendTo('body')
+        .hide()
+        .resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
-
-    $("#localSaveBtn").click(function (args) {
-        window.Commands.Execute("LocalStorageSaveModel", undefined);
-    });
-    $("#localStorageBtn").click(function (args) {
-        window.Commands.Execute("LocalStorageRequested", undefined);
-    });
-
-    $("#newModelBtn").click(function (args) {
-        window.Commands.Execute("NewModel", undefined);
-    });
-
-    $("#importModelBtn").click(function (args) {
-        window.Commands.Execute("ImportModel", undefined);
-    });
-
-    $("#exportModelBtn").click(function (args) {
-        window.Commands.Execute("ExportModel", undefined);
-    });
+    
     var expandedSimulation = $('<div></div>').simulationexpanded();
-
-
+    
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
 
@@ -350,10 +343,28 @@ $(document).ready(function () {
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
 
-    var localStorageWidget = $('<div></div>')
-        .addClass('window')
-        .appendTo('#drawingSurceContainer')
-        .localstoragewidget();
+    window.Commands.On("Commands.ToggleGrid", function (param) {
+        visualSettings.GridVisibility = param;
+        svgPlotDriver.SetGridVisibility(param);
+    });
+
+    window.Commands.On("ZoomSliderBind",(value) => {
+        $("#zoomslider").bmazoomslider({ value: value });
+    });
+
+    window.Commands.On("AppModelChanged",() => {
+        if (changesCheckerTool.IsChanged) {
+            popupDriver.Hide();
+            accordionHider.Hide();
+            window.Commands.Execute("Expand", '');
+        }
+    });
+
+    window.Commands.On("DrawingSurfaceVariableEditorOpened",() => {
+        popupDriver.Hide();
+        accordionHider.Hide();
+    });
+
 
     //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
@@ -377,31 +388,6 @@ $(document).ready(function () {
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
 
-    window.Commands.On("Commands.ToggleGrid", function (param) {
-        visualSettings.GridVisibility = param;
-        svgPlotDriver.SetGridVisibility(param);
-    });
-
-
-    window.Commands.On("ZoomSliderBind", (value) => {
-        $("#zoomslider").bmazoomslider({ value: value });
-    });
-
-    window.Commands.On("AppModelChanged", () => {
-        if (changesCheckerTool.IsChanged) {
-            popupDriver.Hide();
-            accordionHider.Hide();
-            window.Commands.Execute("Expand", '');
-        }
-    });
-
-    window.Commands.On("DrawingSurfaceVariableEditorOpened", () => {
-        popupDriver.Hide();
-        accordionHider.Hide();
-    });
-
-    
-    
 
     //Loaing ServiсeDrivers 
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();

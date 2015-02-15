@@ -34,8 +34,9 @@
                             this.paintTable(options.colorData);
                     }
                     break;
-                case "color":
 
+                case "color":
+                    this.table.addClass("proof-propagation-overview");
                     if (options.colorData !== undefined && options.colorData.length !== 0) {
                         var that = this;
                         var color = options.colorData;
@@ -44,14 +45,11 @@
                             for (var j = 0; j < color[i].length; j++) {
                                 var td = $('<td></td>').appendTo(tr);
                                 if (color[i][j] !== undefined) {
-                                    if (color[i][j]) td.css("background-color", "#CCFF99");
-                                    else td.css("background-color", "#FFADAD");
+                                    if (color[i][j]) td.addClass('propagation-cell-green');
+                                    else td.addClass('propagation-cell-red');
                                 }
                             }
                         }
-
-                        this.table.addClass("proof-propagation-overview");
-
                     }
                     break;
 
@@ -89,7 +87,7 @@
                             for (var j = 0; j < color[i].length; j++) {
                                 var td = $('<td></td>').appendTo(tr);
                                 if (color[i][j]) {
-                                    td.css("background-color", "#FFF729");
+                                    td.css("background-color", "#FFF729"); //no guide
                                 }
                             }
                         }
@@ -278,8 +276,8 @@
 
                     var td = tds.eq(j);
                     //if (color[i][j] !== undefined) {
-                    if (color[i][j]) td.css("background-color", "#CCFF99");
-                    else td.css("background-color", "#FFADAD");
+                    if (color[i][j]) td.addClass('propagation-cell-green');//td.css("background-color", "#CCFF99");
+                    else td.addClass('propagation-cell-red');//td.css("background-color", "#FFADAD");
                     //}
                 }
             }

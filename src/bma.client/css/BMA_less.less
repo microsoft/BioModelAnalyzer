@@ -62,6 +62,408 @@
 	    background-image: -webkit-gradient(linear,@side, @color1, @color2);
 	}
 
+    .ui-menu {
+        white-space: nowrap;
+    }
+
+    .ui-widget button {
+        font-size: 13px;
+    }
+
+
+    .ui-selected {
+        background-color: gray;
+    }
+
+    ::-webkit-scrollbar {
+        width: 17px;
+        height: 17px;
+    }
+
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: gray;
+        /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
+    }
+
+
+    @odd-item-color: #ededed;
+    @even-item-color: #ffffff;
+    @big-font-size: 20px;
+    @big-line-height: 27px;
+
+    .big-font() {
+        font-size: @big-font-size;
+        line-height: @big-line-height;
+    }
+
+    @table-line-height: 20px;
+
+    .bma-tbl() {
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+            border: 1px solid #cccccc;
+            text-align: center;
+            line-height: 22px;
+            padding: 0;
+        }
+    }
+
+    
+.bma-simulation-data-table {
+    max-width: calc(~"100% - 120px");
+    overflow-x: scroll;
+    overflow-y: hidden;
+    margin-bottom: -17px;
+}
+/*
+.bma-simulation-table {
+    margin: 0;
+    width:auto;
+}
+
+.bma-simulation-table td {
+    height: 26px;
+    padding: 0;
+}*/
+
+.simulation-progression-table-container {
+    & > div {
+        display: inline-block;
+        white-space: nowrap;
+        vertical-align: bottom;
+    }
+}
+
+.bma-simulation-init {
+    width: auto;
+}
+
+.bma-simulation-init tr:not(:first-child) td:first-child {
+    width: 70px;
+    border-right: none;
+    text-align: right;
+    padding: 0;
+}
+
+.bma-simulation-init tr:not(:first-child) td:nth-child(2) {
+    border-left: none;
+}
+
+.bma-simulation-init tr:not(:first-child) td:nth-child(n+2) {
+    width: 20px;
+}
+
+.bma-simulation-init input {
+    border: none;
+    text-align: center;
+    background-color: transparent;
+}
+
+.bma-random-icon1 {
+    background-image: url(../images/random1.gif);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-x: center;
+    width: 20px;
+    height: 20px;
+}
+
+.bma-random-icon2 {
+    background-image: url(../images/random2.png);
+    background-repeat: no-repeat;
+    background-position-x: left;
+    width: 26px;
+    height: 26px;
+    float: left;
+}
+
+.bma-progressiontable {
+    .bma-tbl();
+
+    td {
+        position: relative;
+        padding: 0 5px;
+
+        div {
+            width: 100%;
+            height: 22px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
+
+    td:first-child {
+        border-left: none;
+    }
+
+    tr:nth-child(even) {
+        background-color: @odd-item-color;
+    }
+
+    tr:nth-child(odd) {
+        background-color: @even-item-color;
+    }
+}
+
+
+///BMA Tables ending
+
+
+/// Further testing
+
+.bma-furthertesting-button {
+    width: 150px;
+    height: 30px;
+    padding: 0;
+    background-color: #d0451b;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 17px;
+    line-height: 25px;
+    .border-radius(7px);
+}
+
+.bma-furthertesting-button-waiting {
+    .bma-furthertesting-button;
+    background-image: url(../images/20x20.gif);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bma-furthertesting-tabs-headers() {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    background-size: contain;
+    height: 25px;
+    width: 50px;
+}
+
+/*.ui-tabs > div {
+    border: 1px solid lightgray;
+}*/
+
+.bma-futhertesting-bifurcations-icon {
+    background-image: url("../images/bifurcations.png");
+    .bma-furthertesting-tabs-headers();
+}
+
+.bma-futhertesting-oscillations-icon {
+    background-image: url("../images/oscillations.png");
+    .bma-furthertesting-tabs-headers();
+}
+
+.ui-tabs-vertical {
+    width: 55em;
+}
+
+.ui-tabs-vertical .ui-tabs-nav {
+    padding: .2em .1em .2em .2em;
+    float: left;
+    width: 12em;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li {
+    clear: left;
+    width: 100%;
+    border-bottom-width: 1px !important;
+    border-right-width: 0 !important;
+    margin: 0 -1px .2em 0;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li a {
+    display: block;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active {
+    padding-bottom: 0;
+    padding-right: .1em;
+    border-right-width: 1px;
+    border-right-width: 1px;
+}
+
+.ui-tabs-vertical .ui-tabs-panel {
+    padding: 1em;
+    float: right;
+    width: 40em;
+}
+
+/// Further testing ending
+
+
+///Simulation compact
+
+.bma-color-simulationtable tr:nth-child(even) {
+    background-color: @odd-item-color;
+}
+
+.bma-color-simulationtable tr:nth-child(odd) {
+    background-color: @even-item-color;
+}
+
+.simulationplot-legend-legendcontainer {
+    width: 30%;
+    height: calc(100% - 20px);
+    background-color: white;
+    float: left;
+    overflow-y: auto;
+}
+
+.simulationplot-legend-legenditem {
+    cursor: pointer;
+    padding-left: 5px;
+}
+
+
+.simulationplot-legend-colorboxcontainer {
+    display: table-cell;
+}
+
+.simulationplot-legend-colorbox {
+    width: 30px;
+    height: 30px;
+}
+
+.simulationplot-legend-namebox {
+    width: 120px;
+    height: 30px;
+    display: table-cell;
+    padding-left: 5px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+///Simulation compact ending
+
+
+///Simulation expanded
+
+@simulation-bttns-top: 30px;
+
+.bma-simulation-run-button {
+    width: 55px;
+    background-color: #77b55a;
+    border-radius: 7px;
+    position: absolute;
+    right: 50px;
+    top: -@simulation-bttns-top;
+    color: #ffffff;
+    text-align: center;
+    padding: 2px 20px 5px;
+    cursor: pointer;
+    z-index: 3;
+    .big-font();
+    height: @big-font-size + 5px;
+}
+
+.bma-simulation-run-button-waiting {
+    .bma-simulation-run-button;
+    background-image: url(../images/20x20.gif);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bma-simulation-expanded {
+    position: relative;
+    width: 100%;
+    height: 90%;
+    margin-top: @simulation-bttns-top;
+}
+
+.bma-simulation-table-expanded-scroll {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+    overflow-y: scroll;
+
+    & > div {
+        display: inline-block;
+        vertical-align: top;
+        position: relative;
+    }
+
+    & > div:first-child {
+        width: 30%;
+    }
+
+    & > div:not(:first-child) {
+        margin-left: 60px;
+    }
+}
+
+.bma-progressiontable-randomise {
+    /*position: absolute;
+    top: -@simulation-bttns-top;
+    left: 265px;//calc(~"30% + 60px - 2px");*/
+    display: inline-block;
+    vertical-align: middle;
+    float:right;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 26px;
+    margin: 5px 10px 0 0;
+
+    div {
+        display: inline-block;
+        vertical-align: bottom;
+    }
+}
+
+.add-variable-to-plot-checker {
+    background-image: url("../images/check.png");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+.steps-setting {
+    position: relative;
+    float: right;
+
+    *:first-child {
+        margin-right: 5px;
+    }
+
+    *:nth-child(2) {
+        margin-right: 15px;
+    }
+
+    *:nth-child(3) {
+        margin-right: 5px;
+    }
+
+    button {
+        background-color: #606060;
+        -moz-border-radius: 8px;
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        border: none;
+        display: inline-block;
+        cursor: pointer;
+        color: #ffffff;
+        padding: 4px 15px;
+        text-decoration: none;
+    }
+}
+
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    padding: .2em .5em;
+}
+
+.idd-axis {
+    font-size: 12px;
+}
+
+
 
 /*@bma-toolbar-icon-height: 50px;
 @bma-toolbar-icon-border-radius: 7px;
@@ -74,15 +476,7 @@
 @dark-background-color: #606060;
 @zoomslider-width: 240px;
 @shadow-color: #c6c6c6;*/
-@odd-item-color: #ededed;
-@even-item-color: #ffffff;
-@big-font-size: 20px;
-@big-line-height: 27px;
 
-.big-font() {
-    font-size: @big-font-size;
-    line-height: @big-line-height;
-}
 
  
 
@@ -804,19 +1198,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 
 ///BMA Tables
 
-@table-line-height: 20px;
 
-.bma-tbl() {
-    width: 100%;
-    border-collapse: collapse;
-
-    td {
-        border: 1px solid #cccccc;
-        text-align: center;
-        line-height: 22px;
-        padding: 0;
-    }
-}
 /*
 .bma-table {
     .bma-tbl();
@@ -885,348 +1267,6 @@ label[aria-pressed='true'] .bma-inhibit-img {
 }*/
 
 
-
-.bma-simulation-data-table {
-    max-width: calc(~"100% - 120px");
-    overflow-x: scroll;
-    overflow-y: hidden;
-    margin-bottom: -17px;
-}
-/*
-.bma-simulation-table {
-    margin: 0;
-    width:auto;
-}
-
-.bma-simulation-table td {
-    height: 26px;
-    padding: 0;
-}*/
-
-.simulation-progression-table-container {
-    & > div {
-        display: inline-block;
-        white-space: nowrap;
-        vertical-align: bottom;
-    }
-}
-
-.bma-simulation-init {
-    width: auto;
-}
-
-.bma-simulation-init tr:not(:first-child) td:first-child {
-    width: 70px;
-    border-right: none;
-    text-align: right;
-    padding: 0;
-}
-
-.bma-simulation-init tr:not(:first-child) td:nth-child(2) {
-    border-left: none;
-}
-
-.bma-simulation-init tr:not(:first-child) td:nth-child(n+2) {
-    width: 20px;
-}
-
-.bma-simulation-init input {
-    border: none;
-    text-align: center;
-    background-color: transparent;
-}
-
-.bma-random-icon1 {
-    background-image: url(../images/random1.gif);
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position-x: center;
-    width: 20px;
-    height: 20px;
-}
-
-.bma-random-icon2 {
-    background-image: url(../images/random2.png);
-    background-repeat: no-repeat;
-    background-position-x: left;
-    width: 26px;
-    height: 26px;
-    float: left;
-}
-
-.bma-progressiontable {
-    .bma-tbl();
-
-    td {
-        position: relative;
-        padding: 0 5px;
-
-        div {
-            width: 100%;
-            height: 22px;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-    }
-
-    td:first-child {
-        border-left: none;
-    }
-
-    tr:nth-child(even) {
-        background-color: @odd-item-color;
-    }
-
-    tr:nth-child(odd) {
-        background-color: @even-item-color;
-    }
-}
-
-
-///BMA Tables ending
-
-
-/// Further testing
-
-.bma-furthertesting-button {
-    width: 150px;
-    height: 30px;
-    padding: 0;
-    background-color: #d0451b;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 17px;
-    line-height: 25px;
-    .border-radius(7px);
-}
-
-.bma-furthertesting-button-waiting {
-    .bma-furthertesting-button;
-    background-image: url(../images/20x20.gif);
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.bma-furthertesting-tabs-headers() {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: transparent;
-    background-size: contain;
-    height: 25px;
-    width: 50px;
-}
-
-/*.ui-tabs > div {
-    border: 1px solid lightgray;
-}*/
-
-.bma-futhertesting-bifurcations-icon {
-    background-image: url("../images/bifurcations.png");
-    .bma-furthertesting-tabs-headers();
-}
-
-.bma-futhertesting-oscillations-icon {
-    background-image: url("../images/oscillations.png");
-    .bma-furthertesting-tabs-headers();
-}
-
-.ui-tabs-vertical {
-    width: 55em;
-}
-
-.ui-tabs-vertical .ui-tabs-nav {
-    padding: .2em .1em .2em .2em;
-    float: left;
-    width: 12em;
-}
-
-.ui-tabs-vertical .ui-tabs-nav li {
-    clear: left;
-    width: 100%;
-    border-bottom-width: 1px !important;
-    border-right-width: 0 !important;
-    margin: 0 -1px .2em 0;
-}
-
-.ui-tabs-vertical .ui-tabs-nav li a {
-    display: block;
-}
-
-.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active {
-    padding-bottom: 0;
-    padding-right: .1em;
-    border-right-width: 1px;
-    border-right-width: 1px;
-}
-
-.ui-tabs-vertical .ui-tabs-panel {
-    padding: 1em;
-    float: right;
-    width: 40em;
-}
-
-/// Further testing ending
-
-
-///Simulation compact
-
-.bma-color-simulationtable tr:nth-child(even) {
-    background-color: @odd-item-color;
-}
-
-.bma-color-simulationtable tr:nth-child(odd) {
-    background-color: @even-item-color;
-}
-
-.simulationplot-legend-legendcontainer {
-    width: 30%;
-    height: calc(100% - 20px);
-    background-color: white;
-    float: left;
-    overflow-y: auto;
-}
-
-.simulationplot-legend-legenditem {
-    cursor: pointer;
-    padding-left: 5px;
-}
-
-
-.simulationplot-legend-colorboxcontainer {
-    display: table-cell;
-}
-
-.simulationplot-legend-colorbox {
-    width: 30px;
-    height: 30px;
-}
-
-.simulationplot-legend-namebox {
-    width: 120px;
-    height: 30px;
-    display: table-cell;
-    padding-left: 5px;
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-
-///Simulation compact ending
-
-
-///Simulation expanded
-
-@simulation-bttns-top: 30px;
-
-.bma-simulation-run-button {
-    width: 55px;
-    background-color: #77b55a;
-    border-radius: 7px;
-    position: absolute;
-    right: 50px;
-    top: -@simulation-bttns-top;
-    color: #ffffff;
-    text-align: center;
-    padding: 2px 20px 5px;
-    cursor: pointer;
-    z-index: 3;
-    .big-font();
-    height: @big-font-size + 5px;
-}
-
-.bma-simulation-run-button-waiting {
-    .bma-simulation-run-button;
-    background-image: url(../images/20x20.gif);
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.bma-simulation-expanded {
-    position: relative;
-    width: 100%;
-    height: 90%;
-    margin-top: @simulation-bttns-top;
-}
-
-.bma-simulation-table-expanded-scroll {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    white-space: nowrap;
-    overflow-y: scroll;
-
-    & > div {
-        display: inline-block;
-        vertical-align: top;
-        position: relative;
-    }
-
-    & > div:first-child {
-        width: 30%;
-    }
-
-    & > div:not(:first-child) {
-        margin-left: 60px;
-    }
-}
-
-.bma-progressiontable-randomise {
-    /*position: absolute;
-    top: -@simulation-bttns-top;
-    left: 265px;//calc(~"30% + 60px - 2px");*/
-    display: inline-block;
-    vertical-align: middle;
-    float:right;
-    cursor: pointer;
-    font-size: 18px;
-    line-height: 26px;
-    margin: 5px 10px 0 0;
-
-    div {
-        display: inline-block;
-        vertical-align: bottom;
-    }
-}
-
-.add-variable-to-plot-checker {
-    background-image: url("../images/check.png");
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-
-.steps-setting {
-    position: relative;
-    float: right;
-
-    *:first-child {
-        margin-right: 5px;
-    }
-
-    *:nth-child(2) {
-        margin-right: 15px;
-    }
-
-    *:nth-child(3) {
-        margin-right: 5px;
-    }
-
-    button {
-        background-color: #606060;
-        -moz-border-radius: 8px;
-        -webkit-border-radius: 8px;
-        border-radius: 8px;
-        border: none;
-        display: inline-block;
-        cursor: pointer;
-        color: #ffffff;
-        padding: 4px 15px;
-        text-decoration: none;
-    }
-}
 
 
 ///Simulation expanded ending
@@ -1664,13 +1704,6 @@ label[aria-pressed='true'] .bma-inhibit-img {
 ///Variables options editor ending*/
 
 
-.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
-    padding: .2em .5em;
-}
-
-.idd-axis {
-    font-size: 12px;
-}
 
 
 /*.bma-userdialog {
@@ -1702,30 +1735,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
     }
 }*/
 
-.ui-menu {
-    white-space: nowrap;
-}
 
-.ui-widget button {
-    font-size: 13px;
-}
-
-
-.ui-selected {
-    background-color: gray;
-}
-
-::-webkit-scrollbar {
-    width: 17px;
-    height: 17px;
-}
-
-
-::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: gray;
-    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
-}
 
 
 /*.bma-toolbarpanel-elementstoolbar {

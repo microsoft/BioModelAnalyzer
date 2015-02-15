@@ -16,17 +16,19 @@
 
             var command = this.element.attr("data-command");
 
-            var zoomplus = $('<img id="zoom-plus">')
-                .addClass("hoverable")
+            var zoomplus = $('<img>')
+                .attr("id", "zoom-plus")
                 .attr("src", "images/zoomplus.svg")
+                .addClass("hoverable")
                 .appendTo(that.element);
 
             this.zoomslider = $('<div></div>')
                 .appendTo(that.element);
 
-            var zoomminus = $('<img id="zoom-minus">')
-                .addClass("hoverable")
+            var zoomminus = $('<img>')
+                .attr("id", "zoom-minus")
                 .attr("src", "images/zoomminus.svg")
+                .addClass("hoverable")
                 .appendTo(that.element);
 
             this.zoomslider.slider({

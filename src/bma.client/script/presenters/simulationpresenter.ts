@@ -69,7 +69,7 @@
                                 }
                                 break;
                             case "SimulationPlot":
-                                full = $('<div id="SimulationPlot"></div>').height('100%').simulationplot({ colors: that.dataForPlot });
+                                full = $('<div></div>').height('100%').simulationplot({ colors: that.dataForPlot });
                                 break;
                             default:
                                 simulationViewer.Show({ tab: undefined });
@@ -133,7 +133,6 @@
                                 that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
                             }
                             else {
-                                
                                 that.expandedViewer.ActiveMode();
                                 alert ("Simulation Error: " + res.ErrorMessages);
                             }
@@ -257,7 +256,6 @@
                 return res;
             }
             public ConvertResult(res) {
-
                 var data = [];
                 if (res.Variables !== undefined && res.Variables !== null)
                     data = [];
