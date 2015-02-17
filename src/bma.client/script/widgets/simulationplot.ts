@@ -31,7 +31,10 @@
                 .appendTo(that.element);
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
 
-            var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
+            var gridLinesPlotDiv = $("<div></div>")
+                .attr("id", "glPlot")
+                .attr("data-idd-plot", "scalableGridLines")
+                .appendTo(this.chartdiv);
 
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
 

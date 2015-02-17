@@ -78,7 +78,7 @@
                     }
                     break;
                 case "simulation-min":
-                    this.table.addClass("proof-propagation-overview bma-color-simulationtable");
+                    this.table.addClass("proof-propagation-overview");
                     if (options.colorData !== undefined && options.colorData.length !== 0) {
                         var that = this;
                         var color = options.colorData;
@@ -87,7 +87,7 @@
                             for (var j = 0; j < color[i].length; j++) {
                                 var td = $('<td></td>').appendTo(tr);
                                 if (color[i][j]) {
-                                    td.css("background-color", "#FFF729"); //no guide
+                                    td.addClass('change');//.css("background-color", "#FFF729"); //no guide
                                 }
                             }
                         }
@@ -151,12 +151,12 @@
                 var buttontd = $('<td></td>').appendTo(tr);
                 if (array[i][1] && array[i][0] !== undefined) {
                     td0.css("background-color", array[i][0]);
-                    buttontd.addClass("add-variable-to-plot-checker hoverable");
+                    buttontd.addClass("plot-check hoverable");
                 }
 
                 buttontd.bind("click", function () {
-                    $(this).toggleClass("add-variable-to-plot-checker");
-                    var check = $(this).hasClass("add-variable-to-plot-checker");
+                    $(this).toggleClass("plot-check");
+                    var check = $(this).hasClass("plot-check");
                     if (check) {
                         $(this).prev().css("background-color", array[$(this).parent().index() - 1][0]);
                         that.alldiv.attr("checked", that.checkAllButtons());
@@ -177,7 +177,7 @@
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
             tdall0.css("background-color", "white");
-            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("add-variable-to-plot-checker hoverable")
+            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check hoverable")
             this.allcheck.css("border-right", "none");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
@@ -190,21 +190,21 @@
                 
                 if (that.alldiv.attr("checked")) {
                     for (var i = 0; i < that.buttons.length; i++) {
-                        if (!$(that.buttons[i]).hasClass("add-variable-to-plot-checker"))
+                        if (!$(that.buttons[i]).hasClass("plot-check"))
                             $(that.buttons[i]).click();
                     }
                     //that.buttons.( function () {
-                    //    if (!$(this).hasClass("add-variable-to-plot-checker"))
+                    //    if (!$(this).hasClass("plot-check"))
                     //        $(this).click();
                     //})
                 }
                 else {
                     for (var i = 0; i < that.buttons.length; i++) {
-                        if ($(that.buttons[i]).hasClass("add-variable-to-plot-checker"))
+                        if ($(that.buttons[i]).hasClass("plot-check"))
                             $(that.buttons[i]).click();
                     }
                     //that.buttons.each(function () {
-                    //    if ($(this).hasClass("add-variable-to-plot-checker"))
+                    //    if ($(this).hasClass("plot-check"))
                     //        $(this).click();
                     //})
                 }
@@ -219,7 +219,7 @@
                 var tds = this.table.find("tr:not(:first-child)").children("td: nth-child(2)");
                 var data = [];
                 tds.each(function (ind, val) {
-                    if ($(this).hasClass("add-variable-to-plot-checker"))
+                    if ($(this).hasClass("plot-check"))
                         data[ind] = that.options.data.variables[ind].color;
                 })
             }
@@ -238,7 +238,7 @@
             var that = this;
             var l = that.buttons.length;
             for (var i = 0; i < l; i++) {
-                if (!that.buttons.eq(i).hasClass("add-variable-to-plot-checker"))
+                if (!that.buttons.eq(i).hasClass("plot-check"))
                     return false;
             }
             return true;

@@ -91,7 +91,7 @@
                                             var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
                                             data.push(bifurcationsView);
                                             headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                            var label = $('<div></div>').addClass('bma-futhertesting-bifurcations-icon');
+                                            var label = $('<div></div>').addClass('bifurcations-icon');
                                             tabLabels.push(label);
                                         }
                                         if (osc !== null) {
@@ -99,7 +99,7 @@
                                             var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
                                             data.push(oscillationsView);
                                             headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                            var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
+                                            var label = $('<div></div>').addClass('oscillations-icon');
                                             tabLabels.push(label);
                                         }
 

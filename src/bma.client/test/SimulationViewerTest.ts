@@ -81,7 +81,7 @@
         var c0: JQuery = div.children().eq(0);
         var r1: JQuery = div.children().eq(1);
         expect(c0.children().length).toEqual(0);
-        expect(c0[0].outerHTML).toEqual("<div></div>");
+        expect(c0[0].outerHTML).toEqual('<div class="simulation-variables"></div>');
         expect(r1.resultswindowviewer("option", "tabid")).toEqual("SimulationPlot");
         data.variables = variables;
     });

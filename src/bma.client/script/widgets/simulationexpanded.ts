@@ -9,66 +9,60 @@
             interval: undefined,
             variables: undefined,
             num: 10,
-            buttonMode: "ActiveMode"
+            buttonMode: "ActiveMode",
+            step: 10
         },
 
         _create: function () {
             var that = this;
             var options = that.options;
-           
-            //this.RunButton = $('<div></div>').text("Run").addClass("bma-simulation-run-button").appendTo(that.element);
 
-            var tablesDiv = $('<div></div>')
+            var tables = $('<div></div>')
                 .addClass("scrollable-results")
                 .appendTo(this.element);
-            this.table1 = $('<div></div>')
+            this.small_table = $('<div></div>')
                 .addClass('small-simulation-popout-table')
-                .appendTo(tablesDiv);
-
-
-            this.progression = $('<div></div>')
+                .appendTo(tables);
+            this.big_table = $('<div></div>')
                 .addClass('big-simulation-popout-table')
-                .appendTo(tablesDiv);
+                .appendTo(tables);
 
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
-            this.progression.progressiontable();//.addClass("bma-simulation-table")
-            //this.progression.css("width", "calc(70% - 60px)");
+            this.big_table.progressiontable();
             if (options.variables !== undefined) {
-                this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
+                this.small_table.coloredtableviewer({
+                    header: ["Graph", "Name", "Range"],
+                    type: "graph-max",
+                    numericData: that.options.variables
+                });
                 if (options.interval !== undefined && options.interval.length !== 0) {
-                    this.progression.progressiontable({ interval: options.interval, init: options.init, data: options.data });
-
+                    this.big_table.progressiontable({
+                        init: options.init,
+                        interval: options.interval,
+                        data: options.data
+                    });
                 }
             }
-        //<ul class="button-list" >
-        //<li><button>- 10 < /button></li >
-        //<li class="steps" > <button>STEPS: 10</button > </li>
-        //< li > <button>+ 10 < /button></li >
-        //<li class="run" > <button>RUN < /button></li >
-        //</ul>
 
-            var step = 10;
+            var step = this.options.step;
 
             var stepsul = $('<ul></ul>').addClass('button-list').appendTo(stepsdiv);
             var li0 = $('<li></li>').appendTo(stepsul);
             var li1 = $('<li></li>').addClass('steps').appendTo(stepsul);
             var li2 = $('<li></li>').appendTo(stepsul);
             var li3 = $('<li></li>').addClass('run').appendTo(stepsul);
-            //var steps = $('<div class="steps-setting"></div>').appendTo(that.element);
-            //this.num = $('<span></span>').text(that.options.num).appendTo(steps);
-            //$('<span></span>').text("Steps").appendTo(steps);
+
             var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
             add10.bind("click", function () {
                 that._setOption("num", that.options.num + step);
             });
 
-            this.num = $('<button></button>').text('STEPS:' + that.options.num).appendTo(li1);
+            this.num = $('<button></button>').text('STEPS: ' + that.options.num).appendTo(li1);
             var min10 = $('<button></button>').text('- ' + step).appendTo(li2);
             min10.bind("click", function () {
                 that._setOption("num", that.options.num - step);
             })
             this.RunButton = $('<button></button>').text('Run').appendTo(li3);
-            //that.element.addClass("bma-simulation-expanded");
             this.refresh();
         },
 
@@ -79,8 +73,11 @@
                     this.RunButton.parent().removeClass('waiting');
                     this.RunButton.text('Run');
                     this.RunButton.bind("click", function () {
-                        that.progression.progressiontable("ClearData");
-                        window.Commands.Execute("RunSimulation", { data: that.progression.progressiontable("GetInit"), num: that.options.num });
+                        that.big_table.progressiontable("ClearData");
+                        window.Commands.Execute("RunSimulation", {
+                            data: that.big_table.progressiontable("GetInit"),
+                            num: that.options.num
+                        });
                     })
                     break;
                 case "StandbyMode":
@@ -89,29 +86,31 @@
                     this.RunButton.unbind("click");
                     break;
             }
-            //.addClass(toAddClass).text(text);
         },
 
         refresh: function () {
             var that = this;
             var options = this.options;
             if (options.variables !== undefined) {
-                this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
+                this.small_table.coloredtableviewer({
+                    header: ["Graph", "Name", "Range"],
+                    type: "graph-max",
+                    numericData: that.options.variables
+                });
                 if (options.interval !== undefined && options.interval.length !== 0) {
-                    this.progression.progressiontable({ interval: options.interval, data: options.data });
+                    this.big_table.progressiontable({ interval: options.interval, data: options.data });
                 }
             }
             this.ChangeMode();
         },
 
         AddResult: function (res) {
-            this.progression.progressiontable("AddData", res);
+            this.big_table.progressiontable("AddData", res);
         },
 
         getColors: function () {
-            this.table1.coloredtableviewer("GetColors");
+            this.small_table.coloredtableviewer("GetColors");
         },
-
 
         _destroy: function () {
             this.element.empty();
@@ -125,12 +124,12 @@
                     this.options.data = value;
                     //if (value !== null && value !== undefined)
                         if (options.interval !== undefined && options.interval.length !== 0) {
-                            this.progression.progressiontable({ interval: options.interval, data: options.data });
+                            this.big_table.progressiontable({ interval: options.interval, data: options.data });
                         }
                     break;
                 case "init": 
                     this.options.init = value;
-                    this.progression.progressiontable({ init: value });
+                    this.big_table.progressiontable({ init: value });
                     break;
                 case "num":
                     if (value < 0) value = 0;
@@ -139,10 +138,14 @@
                     break;
                 case "variables": 
                     this.options.variables = value;
-                    this.table1.coloredtableviewer({ header: ["Graph", "Name", "Range"], type: "graph-max", numericData: that.options.variables });
+                    this.small_table.coloredtableviewer({
+                        header: ["Graph", "Name", "Range"],
+                        type: "graph-max",
+                        numericData: that.options.variables
+                    });
                 case "interval":
                     this.options.interval = value;
-                    this.progression.progressiontable({ interval: value });
+                    this.big_table.progressiontable({ interval: value });
                     break;
                 case "buttonMode":
                     this.options.buttonMode = value;

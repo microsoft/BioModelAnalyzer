@@ -88,10 +88,20 @@
     }
 
 
-    @odd-item-color: #ededed;
-    @even-item-color: #ffffff;
+    /*@odd-item-color: #ededed;
+    @even-item-color: #ffffff;*/
     @big-font-size: 20px;
     @big-line-height: 27px;
+
+    /*  Colors  */
+
+	@green: #81BB83;
+	@lightgreen: #D9FFB6;
+	@red: #FEB6B2;
+	@lightgrey: #EDEDED;
+	@midgrey: #AAA;
+	@darkgrey: #606060; 
+	@shadow: rgba(0,0,0,0.50);
 
     .big-font() {
         font-size: @big-font-size;
@@ -99,13 +109,56 @@
     }
 
     @table-line-height: 20px;
+    .default-text() {
+		font-family: 'Segoe-UI';
+		font-size: 13px;
+		line-height: 17px;
+		color: @darkgrey;
+	}
+
+    // Default Mixin for tables
+			.result-table-base(){
+				margin: 0px 0px 0px 0px;
+				padding: 0px;
+				width: 99%;
+				border-collapse: collapse;
+				.default-text;
+			}
+
+        // Default BMA Tables
+        .default-table() {
+            .result-table-base;
+            border: 1px solid @darkgrey;
+            td{
+			    vertical-align: middle;
+			    border: 1px solid @midgrey;
+			    text-align: center;
+			    padding: 1px 3px 1px 3px;
+			    color: @darkgrey;
+			    height: 20px;
+		    }
+
+            tr:first-child td {
+			    word-break: initial;
+			    background-color: @darkgrey;
+			    border-color: @darkgrey;
+			    //text-align: center;
+			    border-width: 1px;
+			    color: white;
+		    }
+
+		    tr:nth-child(odd) {
+			    background-color: @lightgrey;
+		    }
+        }
+
 
     .bma-tbl() {
         width: 100%;
         border-collapse: collapse;
 
         td {
-            border: 1px solid #cccccc;
+            border: 1px solid @midgrey;
             text-align: center;
             line-height: 22px;
             padding: 0;
@@ -138,7 +191,7 @@
     }
 }
 
-.bma-simulation-init {
+/*.bma-simulation-init {
     width: auto;
 }
 
@@ -161,7 +214,7 @@
     border: none;
     text-align: center;
     background-color: transparent;
-}
+}*/
 
 .bma-random-icon1 {
     background-image: url(../images/random1.gif);
@@ -181,7 +234,7 @@
     float: left;
 }
 
-.bma-progressiontable {
+.progression-table {
     .bma-tbl();
 
     td {
@@ -195,18 +248,25 @@
             top: 0;
             left: 0;
         }
+
+        .repeat {
+            background-color: rgba(223, 223, 245, 0.5);
+        }
+        &.change {
+            background-color: #fffcb5;
+        }
     }
 
     td:first-child {
         border-left: none;
     }
 
-    tr:nth-child(even) {
+    /*tr:nth-child(even) {
         background-color: @odd-item-color;
-    }
+    }*/
 
-    tr:nth-child(odd) {
-        background-color: @even-item-color;
+    tr:nth-child(even) {
+        background-color: @lightgrey;
     }
 }
 
@@ -216,7 +276,7 @@
 
 /// Further testing
 
-.bma-furthertesting-button {
+.furthertesting-button {
     width: 150px;
     height: 30px;
     padding: 0;
@@ -228,16 +288,16 @@
     font-size: 17px;
     line-height: 25px;
     .border-radius(7px);
+
+    &.waiting{
+        background-image: url(../images/20x20.gif);
+        background-repeat: no-repeat;
+        background-position: center;
+    }
 }
 
-.bma-furthertesting-button-waiting {
-    .bma-furthertesting-button;
-    background-image: url(../images/20x20.gif);
-    background-repeat: no-repeat;
-    background-position: center;
-}
 
-.bma-furthertesting-tabs-headers() {
+.further-testing-tabs() {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
@@ -250,14 +310,14 @@
     border: 1px solid lightgray;
 }*/
 
-.bma-futhertesting-bifurcations-icon {
+.bifurcations-icon {
     background-image: url("../images/bifurcations.png");
-    .bma-furthertesting-tabs-headers();
+    .further-testing-tabs;
 }
 
-.bma-futhertesting-oscillations-icon {
+.oscillations-icon {
     background-image: url("../images/oscillations.png");
-    .bma-furthertesting-tabs-headers();
+    .further-testing-tabs;
 }
 
 .ui-tabs-vertical {
@@ -300,12 +360,16 @@
 
 ///Simulation compact
 
-.bma-color-simulationtable tr:nth-child(even) {
+/*.bma-color-simulationtable tr:nth-child(even) {
     background-color: @odd-item-color;
 }
 
 .bma-color-simulationtable tr:nth-child(odd) {
     background-color: @even-item-color;
+}*/
+
+.plot-min {
+    height: 160px;
 }
 
 .simulationplot-legend-legendcontainer {
@@ -346,9 +410,9 @@
 
 ///Simulation expanded
 
-@simulation-bttns-top: 30px;
+/*@simulation-bttns-top: 30px;*/
 
-.bma-simulation-run-button {
+/*.bma-simulation-run-button {
     width: 55px;
     background-color: #77b55a;
     border-radius: 7px;
@@ -369,9 +433,9 @@
     background-image: url(../images/20x20.gif);
     background-repeat: no-repeat;
     background-position: center;
-}
+}*/
 
-.bma-simulation-expanded {
+/*.bma-simulation-expanded {
     position: relative;
     width: 100%;
     height: 90%;
@@ -398,9 +462,9 @@
     & > div:not(:first-child) {
         margin-left: 60px;
     }
-}
+}*/
 
-.bma-progressiontable-randomise {
+.randomise-button {
     /*position: absolute;
     top: -@simulation-bttns-top;
     left: 265px;//calc(~"30% + 60px - 2px");*/
@@ -418,14 +482,14 @@
     }
 }
 
-.add-variable-to-plot-checker {
+/*.plot-check{
     background-image: url("../images/check.png");
     background-repeat: no-repeat;
     background-position: center;
-}
+}*/
 
 
-.steps-setting {
+/*.steps-setting {
     position: relative;
     float: right;
 
@@ -453,7 +517,7 @@
         padding: 4px 15px;
         text-decoration: none;
     }
-}
+}*/
 
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding: .2em .5em;
@@ -1534,9 +1598,9 @@ label[aria-pressed='true'] .bma-inhibit-img {
     & > *:nth-child(3) {
         margin-left: 5px;
     }
-}
+}*/
 
-.bma-formula-validation-icon {
+.validation-icon {
     width: 40px;
     height: 40px;
     background-position: center;
@@ -1550,7 +1614,7 @@ label[aria-pressed='true'] .bma-inhibit-img {
 .formula-validated-icon {
     background-image: url("../images/validation_succeeded.png");
 }
-
+/*
 .functions-info {
     width: 100%;
     display: inline-block;

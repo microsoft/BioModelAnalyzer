@@ -983,10 +983,11 @@ body {
 // Variable Editor
 
 @font-color-hover: white;
+@editor-height: 340px;
 
 		.window.variable-editor{
 			width:380px;
-            height: 340px;
+            height: @editor-height;
 		}
 
 
@@ -996,6 +997,10 @@ body {
 				//min-width: 40px;
                 width: 30px;
 			}
+
+            &.bmaeditor-expanded {
+                height: @editor-height + 40px;
+            }
 
             .editor-namerange-container {
                 .inline-block-middle-aligned-children();
@@ -1077,6 +1082,12 @@ body {
                         border: 1px solid @green;
                     }
 				}
+
+                .formula-text-area, .validation-icon{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+
                 .formula-validation-message {
                     color: @red;
                     max-height: 40px;
@@ -1346,8 +1357,10 @@ body {
 						}
 						td:nth-child(2){
 							width:65%;
-							//text-align: left;
 						}
+                        tr:not(:first-child) > td:nth-child(2){
+                            text-align: left;
+                        }
 						td:nth-child(3){
 							width:15%;
 						}
@@ -1366,6 +1379,12 @@ body {
 					}
 				.propagation-cell-red{background-color: @red;}
 				.propagation-cell-green{background-color: @lightgreen;}
+                .change{
+                    background-color: #fffcb5;
+                }
+                tr:nth-child(even) {
+                    background-color: @lightgrey;
+                }
 			}
 
 		// Small Variables Table in Simulation Tab
@@ -1408,8 +1427,10 @@ body {
 							}
 							td:nth-child(2){
 								width:75%;
-								//text-align: left;
 							}
+                            tr:not(:first-child) > td:nth-child(2){
+                            text-align: left;
+                        }
 							td:nth-child(3){
 								width:10%;
 							}
@@ -1475,7 +1496,9 @@ body {
 								margin-left: 30px;
 								width:90px;
                                 table-layout: auto;
-
+                                tr.red{
+                                    background-color:@red;
+                                }
 								input{
 									height: 17px;
 									width: 100%;
@@ -1654,7 +1677,7 @@ body {
 
 
 
-.add-variable-to-plot-checker {
+.plot-check {
     background-image: url("../images/check.png");
     background-repeat: no-repeat;
     background-position: center;

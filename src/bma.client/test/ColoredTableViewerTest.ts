@@ -98,9 +98,9 @@ describe("ColoredTableViewer", () => {
                 var ij = tr.eq(j + 1).children().eq(i);
                 expect(ij.text()).toEqual(numericData[j][i].toString());
                 if (colorData[j][i])
-                    expect(ij.css("background-color")).toEqual("rgb(204, 255, 153)");
+                    expect(ij.hasClass('propagation-cell-green'));//css("background-color")).toEqual("rgb(204, 255, 153)");
                 else
-                    expect(ij.css("background-color")).toEqual("rgb(255, 173, 173)");
+                    expect(ij.css("propagation-cell-red"));//.toEqual("rgb(255, 173, 173)");
             }
         }
     })
@@ -160,7 +160,7 @@ describe("ColoredTableViewer", () => {
             else
                 expect(tds.eq(0).css("background-color")).toEqual('');
 
-            expect(tds.eq(1).hasClass("add-variable-to-plot-checker")).toEqual(numericData[i - 1][0] !== undefined);
+            expect(tds.eq(1).hasClass("plot-check")).toEqual(numericData[i - 1][0] !== undefined);
 
             for (var j = 2; j < tds.length; j++) {
                 expect(tds.eq(j).text()).toEqual(numericData[i - 1][j].toString());
@@ -181,13 +181,13 @@ describe("ColoredTableViewer", () => {
         widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
         var trs = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
         var all = widget.coloredtableviewer("getAllButton");
-        expect(all.hasClass("add-variable-to-plot-checker")).toBeTruthy();
+        expect(all.hasClass("plot-check")).toBeTruthy();
         all.click();
-        expect(all.hasClass("add-variable-to-plot-checker")).toBeTruthy();
-        expect(trs.hasClass("add-variable-to-plot-checker")).toBeTruthy();
+        expect(all.hasClass("plot-check")).toBeTruthy();
+        expect(trs.hasClass("plot-check")).toBeTruthy();
         expect(window.Commands.Execute).toHaveBeenCalled();
         all.click();
-        expect(trs.hasClass("add-variable-to-plot-checker")).toBeFalsy();
+        expect(trs.hasClass("plot-check")).toBeFalsy();
         expect(window.Commands.Execute).toHaveBeenCalled();
     })
 
@@ -205,10 +205,10 @@ describe("ColoredTableViewer", () => {
         var buttons = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
         
         buttons.eq(0).click();
-        expect(buttons.eq(0).hasClass("add-variable-to-plot-checker")).toBeFalsy();
+        expect(buttons.eq(0).hasClass("plot-check")).toBeFalsy();
         expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 0, check: false });
         buttons.eq(1).click();
-        expect(buttons.eq(1).hasClass("add-variable-to-plot-checker")).toBeTruthy();
+        expect(buttons.eq(1).hasClass("plot-check")).toBeTruthy();
         expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 1, check: true });
     })
 
@@ -230,7 +230,7 @@ describe("ColoredTableViewer", () => {
 
             for (var j = 0; j < tds.length; j++) {
                 if (colorData[i][j]) {
-                    expect(tds.eq(j).css("background-color")).toEqual("rgb(255, 247, 41)");
+                    expect(tds.eq(j).hasClass('change')).toBeTruthy();//.css("background-color")).toEqual("rgb(255, 247, 41)");
                 }
             }
         }

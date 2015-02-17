@@ -30,7 +30,7 @@
 
                 if (data.colorData !== undefined && data.colorData.length !== 0) {
                     var colortable = $('<div></div>')
-                        .attr("id", "Simulation-min-table")
+                        //.attr("id", "Simulation-min-table")
                         .addClass("scrollable-results")
                         .appendTo(container)
                         .coloredtableviewer({
@@ -51,7 +51,7 @@
             }
 
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
-                that.plot = $('<div></div>').height(160).simulationplot({ colors: that.options.plot });
+                that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot });//.height(160)
                 that.plotDiv.resultswindowviewer({
                     content: that.plot,
                     icon: "max",

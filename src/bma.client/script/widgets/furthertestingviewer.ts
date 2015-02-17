@@ -15,25 +15,25 @@
 
         ChangeMode: function () {
             var that = this;
-            var toAddClass = "", toRemoveClass = "", text = "";
             switch (this.options.buttonMode) {
                 case "ActiveMode":
-                    toAddClass = "bma-furthertesting-button";
-                    toRemoveClass = "bma-furthertesting-button-waiting";
-                    text = "Further Testing";
+                    this.toggler
+                        .removeClass("waiting")
+                        .text("Further Testing");
                     break;
                 case "StandbyMode":
-                    toAddClass = "bma-furthertesting-button-waiting";
-                    toRemoveClass = "bma-furthertesting-button";
+                    this.toggler
+                        .addClass("waiting")
+                        .text("");
                     break;
             }
-            this.toggler.removeClass(toRemoveClass).addClass(toAddClass).text(text);
+            
         },
 
         _create: function () {
             var that = this;
             var options = this.options;
-            var defaultToggler = $('<button></button>').text("Further Testing").addClass('bma-furthertesting-button');
+            var defaultToggler = $('<button></button>').text("Further Testing").addClass('furthertesting-button');
 
             this.element.addClass("further-testing-box");
             this.toggler = that.options.toggler || defaultToggler;
