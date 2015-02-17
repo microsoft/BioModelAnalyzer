@@ -8,7 +8,7 @@
             private expandedProofPropagation: JQuery;
             private expandedProofVariables: JQuery;
             private currentModel: BMA.Model.BioModel;
-            private st;
+            private stability;
             private colorData;
             private logService: BMA.ISessionLog;
 
@@ -32,18 +32,18 @@
                     
                     //var st = that.st.variablesStability;
                     param.fixPoint.forEach((val, ind) => {
-                        var i = that.getIndById(that.st.variablesStability, val.Id);
-                        that.st.variablesStability[i].state = true;
-                        that.st.variablesStability[i].range = val.Value;
-                        var id = that.st.variablesStability[i].id;
+                        var i = that.getIndById(that.stability.variablesStability, val.Id);
+                        that.stability.variablesStability[i].state = true;
+                        that.stability.variablesStability[i].range = val.Value;
+                        var id = that.stability.variablesStability[i].id;
                         var cont = that.appModel.BioModel.GetVariableById(id).ContainerId;
                         if (cont !== undefined) {
-                            that.st.containersStability[cont] = true;
+                            that.stability.containersStability[cont] = true;
                         }
                     });
-                    var variablesData = that.CreateTableView(that.st.variablesStability);
+                    var variablesData = that.CreateTableView(that.stability.variablesStability);
                     that.expandedProofVariables =  that.CreateExpandedProofVariables(variablesData);
-                    that.AddPropagationColumn(that.st.variablesStability);
+                    that.AddPropagationColumn(that.stability.variablesStability);
 
                     proofResultViewer.SetData({
                         issucceeded: param.issucceeded,
@@ -51,7 +51,7 @@
                         data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData }
                     });
                     
-                    window.Commands.Execute("DrawingSurfaceSetProofResults", that.st);
+                    window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
                 });
 
                 window.Commands.On("ProofStarting", function () {
@@ -70,8 +70,8 @@
                                     window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
                                 else
                                     window.Commands.Execute("ProofFailed", undefined);
-                                that.st = that.Stability(res.Ticks);
-                                var variablesData = that.CreateTableView(that.st.variablesStability);
+                                that.stability = that.Stability(res.Ticks);
+                                var variablesData = that.CreateTableView(that.stability.variablesStability);
                                 that.colorData = that.CreateColoredTable(res.Ticks);
 
                                 var deferredProofPropagation = function () {
@@ -94,7 +94,7 @@
                                     that.expandedProofVariables = res;
                                 })
 
-                                window.Commands.Execute("DrawingSurfaceSetProofResults", that.st);
+                                window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
                                 proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
                                 proofResultViewer.ShowResult(appModel.ProofResult);
                             }
@@ -131,7 +131,7 @@
                     }
                     else {
                         proofResultViewer.ShowResult(appModel.ProofResult);
-                        window.Commands.Execute("DrawingSurfaceSetProofResults", that.st);
+                        window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
                     }
                 });
 
@@ -282,10 +282,12 @@
             }
 
             public CreateExpandedProofVariables(variablesData) {
-                var full = $('<div></div>').coloredtableviewer({ numericData: variablesData.numericData, colorData: variablesData.colorData, header: ["Name", "Formula", "Range"] });
-                //full.find("td").eq(0).width(150);
-                //full.find("td").eq(2).width(150);
-                //full.addClass("proof-expanded");
+                var full = $('<div></div>').coloredtableviewer({
+                    numericData: variablesData.numericData,
+                    colorData: variablesData.colorData,
+                    header: ["Name", "Formula", "Range"]
+                });
+
                 full.addClass('scrollable-results');
                 return full;
             }

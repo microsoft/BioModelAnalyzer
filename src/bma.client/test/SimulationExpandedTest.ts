@@ -13,7 +13,7 @@ describe("Simulation Expanded", () => {
     it("should create Run button and execute 'RunSimulation' command on click", () => {
         widget.simulationexpanded();
         spyOn(window.Commands, "Execute");
-        widget.children().eq(0).click();
+        widget.find('.run').children().eq(0).click();
         expect(window.Commands.Execute).toHaveBeenCalled();
     })
 
@@ -21,7 +21,7 @@ describe("Simulation Expanded", () => {
         var variables = [];
         variables[0] = ["#FFFFFF", false, "var1", "3-15"];
         widget.simulationexpanded({ variables: variables });
-        var variablesTable = widget.children().eq(1).children().eq(0);
+        var variablesTable = widget.find('.small-simulation-popout-table');
         expect(variablesTable.coloredtableviewer("option", "header")).toEqual(["Graph", "Name", "Range"]);
         expect(variablesTable.coloredtableviewer("option", "type")).toEqual("graph-max");
         expect(variablesTable.coloredtableviewer("option", "numericData")).toEqual(variables);
@@ -43,7 +43,7 @@ describe("Simulation Expanded", () => {
 
         widget.simulationexpanded({ variables: variables, interval: interval, init: init, data: data });
 
-        var progressionTable = widget.children().eq(1).children().eq(1);
+        var progressionTable = widget.find('.big-simulation-popout-table');
         expect(progressionTable.progressiontable("option", "interval")).toEqual(interval);
         expect(progressionTable.progressiontable("option", "init")).toEqual(init);
         expect(progressionTable.progressiontable("option", "data")).toEqual(data);
@@ -64,7 +64,7 @@ describe("Simulation Expanded", () => {
 
         widget.simulationexpanded({ variables: variables, interval: interval, init: init, data: data });
         var num = widget.simulationexpanded("option", "num");
-        var run = widget.children().eq(0);
+        var run = widget.find('.run').children().eq(0);
         spyOn(window.Commands, "Execute");
         run.click();
         expect(window.Commands.Execute).toHaveBeenCalledWith("RunSimulation", {data: init, num: num});
@@ -72,28 +72,28 @@ describe("Simulation Expanded", () => {
 
     it("should initially set num option", () => {
         widget.simulationexpanded();
-        var span = widget.children(":last-child").children().eq(0);
-        expect(span.text()).toEqual('10');
-        expect(span.text()).toEqual(widget.simulationexpanded("option", "num").toString());
+        var span = widget.find(".steps");
+        expect(span.text()).toEqual('STEPS: 10');
+        expect(span.text()).toEqual('STEPS: ' + widget.simulationexpanded("option", "num").toString());
 
         widget.simulationexpanded({num: 15});
-        expect(span.text()).toEqual('15');
+        expect(span.text()).toEqual('STEPS: 15');
     })
 
     it("should change num option", () => {
         widget.simulationexpanded();
-        var span = widget.children(":last-child").children().eq(0);
-        var inc = widget.children(":last-child").children("button").eq(0);
-        var dec = widget.children(":last-child").children("button").eq(1);
-        var initValue = parseInt(span.text());
+        var span = widget.find(".steps");
+        var inc = span.prev().children(':first-child');
+        var dec = span.next().children(':first-child');
+        var initValue = parseInt(span.text().split(' ')[1]);
 
         inc.click();
         expect(widget.simulationexpanded("option", "num")).toEqual(initValue + 10);
-        expect(span.text()).toEqual((initValue + 10).toString());
+        expect(span.text()).toEqual('STEPS: '+ (initValue + 10).toString());
 
         dec.click();
         dec.click();
         expect(widget.simulationexpanded("option", "num")).toEqual(initValue - 10);
-        expect(span.text()).toEqual((initValue - 10).toString());
+        expect(span.text()).toEqual('STEPS: ' + (initValue - 10).toString());
     })
 })

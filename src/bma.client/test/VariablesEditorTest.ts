@@ -157,7 +157,7 @@
         window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
         window.Commands = new BMA.CommandRegistry();
         var editor = $("<div></div>").bmaeditor();
-        var functions = editor.find(".list-of-functions").children("ul").children("li");
+        
         var textarea = editor.find("textarea");
 
         beforeEach(() => {
@@ -168,13 +168,15 @@
             editor.bmaeditor("destroy");
         })
 
-        xit("shouldn't show inputs list on click on 'var()' function when it is no inputs", () => {
+        xit("shouldn't show inputs list on click on 'var()' function when it is no inputs",() => {
+            var functions = editor.find(".list-of-functions").children("ul").children("li");
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
             functions.eq(0).click();
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
         });
 
-        it("should show inputs list on click on 'var()' function after add of inputs", () => {
+        it("should show inputs list on click on 'var()' function after add of inputs",() => {
+            var functions = editor.find(".functions").children("ul").children("li");
             var inputs = ["htr", "asdas"];
             editor.bmaeditor({ inputs: inputs });
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
@@ -183,7 +185,8 @@
             expect(editor.find(".inputs-list-content").children().length).toEqual(inputs.length);
         })
 
-        it("should input CONST", () => {
+        it("should input CONST",() => {
+            var functions = editor.find(".functions").children("ul").children("li");
             var inputs = ["htr", "asdas"];
             editor.bmaeditor({ inputs: inputs });
             functions.eq(1).click();
@@ -197,7 +200,7 @@
         window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
         window.Commands = new BMA.CommandRegistry();
         var editor = $("<div></div>").bmaeditor();
-        var functions = editor.find(".list-of-operators").children("ul").children("li");
+        var functions = editor.find(".operators").children("ul").children("li");
         var textarea = editor.find("textarea");
 
         beforeEach(() => {

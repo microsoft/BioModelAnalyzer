@@ -49,7 +49,6 @@
                                     value = command !== undefined ? ($(child).attr("data-default")==="true") : undefined;
                                     var button = $('<button></button>')
                                         .appendTo($(child));
-                                        //.addClass("hoverable");
                                     if (value) {
                                         button.parent().addClass("default-button onoff green");
                                         button.text("ON");

@@ -40,21 +40,32 @@
             if (options.data !== undefined && options.data.numericData !== undefined && options.data.numericData !== null && options.data.numericData.length !== 0) {
                 var variables = $("<div></div>")
                     .addClass("scrollable-results")
-                    .coloredtableviewer({ numericData: options.data.numericData, colorData: options.data.colorVariables, header: ["Name", "Formula", "Range"] });
-
-                var tr = variables.find("tr").eq(0);
-                tr.children().eq(0).width(120);
-                tr.children().eq(2).width(120);
-                this.compactvariables.resultswindowviewer({ header: "Variables", content: variables, icon: "max", tabid: "ProofVariables" });
+                    .coloredtableviewer({
+                        header: ["Name", "Formula", "Range"],
+                        numericData: options.data.numericData,
+                        colorData: options.data.colorVariables
+                });
+                this.compactvariables.resultswindowviewer({
+                    header: "Variables",
+                    content: variables,
+                    icon: "max",
+                    tabid: "ProofVariables"
+                });
 
                 if (options.data.colorData !== undefined && options.data.colorData !== null && options.data.colorData.length !== 0) {
                     var proof = $("<div></div>")
                         .addClass("scrollable-results")
-                        .coloredtableviewer({ colorData: options.data.colorData, type: "color" });
-                    this.proofPropagation.resultswindowviewer({ header: "Proof Propagation", content: proof, icon: "max", tabid: "ProofPropagation" });
+                        .coloredtableviewer({
+                            type: "color",
+                            colorData: options.data.colorData,
+                    });
+                    this.proofPropagation.resultswindowviewer({
+                        header: "Proof Propagation",
+                        content: proof,
+                        icon: "max",
+                        tabid: "ProofPropagation"
+                    });
                 }
-                //else 
-                //    this.proofPropagation.resultswindowviewer("destroy");
             }
             else {
                 this.compactvariables.resultswindowviewer("destroy");
@@ -89,7 +100,9 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            $('<span></span>').addClass('window-title').text('Proof Analysis').appendTo(that.element);
+            $('<span>Proof Analysis</span>')
+                .addClass('window-title')
+                .appendTo(that.element);
             this.resultDiv = $('<div></div>')
                 .addClass("proof-state")
                 .appendTo(that.element);
@@ -97,12 +110,12 @@
             this.proofmessage = $('<p></p>').appendTo(that.element);
             $('<br></br>').appendTo(that.element);
 
-            this.compactvariables = $('<div id="ProofVariables"></div>')
+            this.compactvariables = $('<div></div>')
                 .addClass('proof-variables')
                 .appendTo(that.element)
                 .resultswindowviewer();
 
-            this.proofPropagation = $('<div id="ProofPropagation"></div>')
+            this.proofPropagation = $('<div></div>')
                 .addClass('proof-propagation')
                 .appendTo(that.element)
                 .resultswindowviewer();
@@ -110,7 +123,6 @@
             this.refreshSuccess();
             this.refreshMessage();
             this.refreshData();
-            
         },
 
         _destroy: function () {

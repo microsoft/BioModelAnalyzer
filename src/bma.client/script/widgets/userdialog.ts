@@ -10,31 +10,34 @@
 
         _create: function () {
             var that = this;
-
             this.element.addClass("window dialog");
-            var closediv = $('<div></div>').addClass("close-icon").appendTo(that.element);
-            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
-            closing.bind("click", function () {
-                that.element.hide();
-            });
-            that.element.draggable({ containment: "parent", scroll: false });
+            this.element.draggable({ containment: "parent", scroll: false });
+            this._add_close_button();
             this.message = $('<div><div>')
-                .addClass('window-title')
                 .text(this.options.message)
+                .addClass('window-title')
                 .appendTo(that.element);
-
             this.buttons = $('<div><div>')
                 .addClass("button-list")
                 .appendTo(that.element);
             var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
             var noBtn = $('<button></button>').text('No').appendTo(this.buttons);
             var cancelBtn = $('<button></button>').text('Cancel').appendTo(this.buttons);
-            this.BindFunctions();
-            this.popup_position();
+            this._bind_functions();
+            this._popup_position();
         },
 
-        popup_position: function () {
-            var my_popup = $('.popup-window, .dialog'); 
+        _add_close_button: function () {
+            var that = this;
+            var closediv = $('<div></div>').addClass("close-icon").appendTo(that.element);
+            var closing = $('<img>').attr('src', '../../images/close.png').appendTo(closediv);
+            closing.bind("click", function () {
+                that.element.hide();
+            });
+        },
+
+        _popup_position: function () {
+            var my_popup = $('.dialog'); 
             my_popup.each(function () {
                 var my_popup_w = $(this).outerWidth(), 
                     my_popup_h = $(this).outerHeight(),
@@ -58,7 +61,7 @@
             })
         },
 
-        BindFunctions: function () {
+        _bind_functions: function () {
             var functions = this.options.functions;
             var btns = this.buttons.children("button");
             if (functions !== null && functions.length ===3) {
@@ -77,16 +80,6 @@
         },
 
         _destroy: function () {
-            var contents;
-
-            // clean up main element
-            this.element
-                .removeClass("zoomslider-container");
-
-            this.element.children().filter(".bma-elementspanel-visibilityoptions-zoomslider")
-                .removeClass("bma-elementspanel-visibilityoptions-zoomslider")
-                .removeUniqueId();
-
             this.element.empty();
         },
 

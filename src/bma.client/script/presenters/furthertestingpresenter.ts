@@ -7,7 +7,6 @@
             private ajax: BMA.UIDrivers.IServiceDriver;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private appModel: BMA.Model.AppModel;
-            private num: number = 0;
             private data;
             private model;
             private result;
@@ -92,7 +91,7 @@
                                             var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
                                             data.push(bifurcationsView);
                                             headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                            var label = $('<div></div>').addClass('bma-futhertesting-bifurcations-icon');
+                                            var label = $('<div></div>').addClass('bifurcations-icon');
                                             tabLabels.push(label);
                                         }
                                         if (osc !== null) {
@@ -100,7 +99,7 @@
                                             var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
                                             data.push(oscillationsView);
                                             headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                            var label = $('<div></div>').addClass('bma-futhertesting-oscillations-icon');
+                                            var label = $('<div></div>').addClass('oscillations-icon');
                                             tabLabels.push(label);
                                         }
 
@@ -142,8 +141,7 @@
                                 that.driver.HideResults();
                                 var content = $('<div></div>').furthertesting();
                                 content.furthertesting("SetData", that.data);
-                                content.find("*").removeClass("scrollable-results");
-                                var full = content.children().eq(1).children().eq(1).addClass("proof-expanded");
+                                var full = content.children().eq(1).children().eq(1);
                                 this.popupViewer.Show({ tab: param, content: full });
                                 break;
                             default:
@@ -160,6 +158,53 @@
                             break;
                     }
                 })
+            }
+
+            private ParseOscillations(variables) {
+                var table = [];
+                for (var j = 0; j < variables.length; j++) {
+                    var parse = this.ParseId(variables[j].Id);
+                    if (table[parseInt(parse[0])] === undefined)
+                        table[parseInt(parse[0])] = [];
+
+                    table[parseInt(parse[0])][parseInt(parse[1])] = variables[j].Value;
+                }
+                var result = [];
+                for (var i = 0; i < table.length; i++) {
+                    if (table[i] !== undefined) {
+                        result[i] = { min: table[i][0], max: table[i][0], oscillations: "" };
+                        for (var j = 0; j < table[i].length - 1; j++) {
+                            if (table[i][j] < result[i].min) result[i].min = table[i][j];
+                            if (table[i][j] > result[i].max) result[i].max = table[i][j];
+                            result[i].oscillations += table[i][j] + ",";
+                        }
+                        result[i].oscillations += table[i][table[i].length - 1];
+                    }
+                }
+                return result;
+            }
+
+            private ParseBifurcations(variables) {
+                var table = [];
+                for (var j = 0; j < variables.length; j++) {
+                    var parse = this.ParseId(variables[j].Id);
+                    if (table[parseInt(parse[0])] === undefined)
+                        table[parseInt(parse[0])] = [];
+                    table[parseInt(parse[0])][0] = parseInt(variables[j].Fix1);
+                    table[parseInt(parse[0])][1] = parseInt(variables[j].Fix2);
+                }
+                var result = [];
+                for (var i = 0; i < table.length; i++) {
+                    if (table[i] !== undefined) {
+                        result[i] = {
+                            min: Math.min(table[i][0], table[i][1]),
+                            max: Math.max(table[i][0], table[i][1]),
+                            Fix1: table[i][0],
+                            Fix2: table[i][1]
+                        };
+                    }
+                }
+                return result;
             }
 
             public CreateOscillationsView(variables, results) {
@@ -200,30 +245,7 @@
                 return table;
 
             }
-
-            private ParseBifurcations(variables) {
-                var table = [];
-                for (var j = 0; j < variables.length; j++) {
-                    var parse = this.ParseId(variables[j].Id);
-                    if (table[parseInt(parse[0])] === undefined)
-                        table[parseInt(parse[0])] = [];
-                    table[parseInt(parse[0])][0] = parseInt(variables[j].Fix1);
-                    table[parseInt(parse[0])][1] = parseInt(variables[j].Fix2);
-                }
-                var result = [];
-                for (var i = 0; i < table.length; i++) {
-                    if (table[i] !== undefined) {
-                        result[i] = {
-                            min: Math.min(table[i][0], table[i][1]),
-                            max: Math.max(table[i][0], table[i][1]),
-                            Fix1: table[i][0],
-                            Fix2: table[i][1]
-                        };
-                    }
-                }
-                return result;
-            }
-
+            
             private ParseFixPoint(variables) {
                 var fixPoints = [];
                 var that = this;
@@ -234,30 +256,6 @@
                     })
                 })
                 return fixPoints;
-            }
-
-            private ParseOscillations(variables) {
-                var table = [];
-                for (var j = 0; j < variables.length; j++) {
-                    var parse = this.ParseId(variables[j].Id);
-                    if (table[parseInt(parse[0])] === undefined) 
-                        table[parseInt(parse[0])] = [];
-
-                    table[parseInt(parse[0])][parseInt(parse[1])] = variables[j].Value;
-                }
-                var result = [];
-                for (var i = 0; i < table.length; i++) {
-                    if (table[i] !== undefined) {
-                        result[i] = { min: table[i][0], max: table[i][0],oscillations:""};
-                        for (var j = 0; j < table[i].length - 1; j++) {
-                            if (table[i][j] < result[i].min) result[i].min = table[i][j];
-                            if (table[i][j] > result[i].max) result[i].max = table[i][j];
-                            result[i].oscillations += table[i][j] + ",";
-                        }
-                        result[i].oscillations += table[i][table[i].length - 1];
-                    }
-                }
-                return result;
             }
 
             private ParseId(id) {

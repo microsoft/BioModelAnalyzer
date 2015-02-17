@@ -20,7 +20,7 @@ describe("ProofResultViewer", () => {
         var issucceeded = true;
         var msg = 'Test Message';
         widget.proofresultviewer({ issucceeded: issucceeded, message: msg });
-        var success = widget.find(".bma-proofstate-container").children().eq(1);
+        var success = widget.find(".stabilize-prooved");
         expect(success.text()).toEqual("Stabilizes");
         var p = widget.find("p").eq(0);
         expect(p.text()).toEqual(msg);
@@ -30,7 +30,7 @@ describe("ProofResultViewer", () => {
         var issucceeded = false;
         var msg = 'Test Message';
         widget.proofresultviewer({ issucceeded: issucceeded, message: msg });
-        var success = widget.find(".bma-proofstate-container").children().eq(1);
+        var success = widget.find(".stabilize-failed");
         expect(success.text()).toEqual("Failed to Stabilize");
         var p = widget.find("p").eq(0);
         expect(p.text()).toEqual(msg);

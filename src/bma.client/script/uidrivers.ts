@@ -258,6 +258,7 @@ module BMA {
                 //this.createResultView(params);
                 var header = "";
                 this.popupWindow
+                    .removeClass('further-testing-popout')
                     .removeClass('proof-propagation-popout')
                     .removeClass('proof-variables-popout')
                     .removeClass('simulation-popout');
@@ -277,6 +278,7 @@ module BMA {
                         break;
                     case "FurtherTesting": 
                         header = "Further Testing";
+                        this.popupWindow.addClass('further-testing-popout')
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });

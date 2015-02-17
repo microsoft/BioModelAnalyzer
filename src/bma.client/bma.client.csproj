@@ -138,7 +138,6 @@
     <Content Include="css\fonts\segoeui-webfont.svg" />
     <Content Include="css\fonts\segoeuib-webfont.svg" />
     <Content Include="css\fonts\segoeuii-webfont.svg" />
-    <Content Include="css\fonts\segoeuil.svg" />
     <Content Include="css\help.css" />
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
@@ -150,6 +149,7 @@
     <Content Include="css\StyleSheet.min.css">
       <DependentUpon>StyleSheet.css</DependentUpon>
     </Content>
+    <Content Include="css\fonts\segoeuil.svg" />
     <Content Include="Global.asax" />
     <Content Include="help.html" />
     <Content Include="html\callback.html" />
@@ -575,6 +575,7 @@
       <Name>UIExpr</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

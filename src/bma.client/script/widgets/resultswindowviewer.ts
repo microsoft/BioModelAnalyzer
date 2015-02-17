@@ -48,7 +48,7 @@
             var that = this;
             var options = this.options;
             this.header = $('<div></div>')
-                .addClass('window-title')
+                .addClass('analysis-title')
                 .appendTo(this.element);
             $('<span></span>')
                 .text(options.header)

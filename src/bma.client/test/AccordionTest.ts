@@ -31,9 +31,9 @@
     });
 
     it("should set right position", () => {
-        var pos = "left";
+        //var pos = "left";
         expect(acc.bmaaccordion("option", "position")).toEqual("center");
-        pos = "wqdfsghj";
+        var pos = "wqdfsghj";
         acc.bmaaccordion("option", "position", pos);
         expect(acc.bmaaccordion("option", "position")).toEqual("center");
         pos = "top";
@@ -41,14 +41,28 @@
         expect(acc.bmaaccordion("option", "position")).toEqual(pos);
     });
 
-    it("should activate correct context", () => {
+    it("should activate correct content",() => {
+        acc.bmaaccordion("option", "position", "left");
         h2.click();
-        expect(c2.attr('aria-hidden')).toEqual('false');
+        expect(c2.attr('aria-hidden')).toEqual('true');
+        expect(c1.attr('aria-hidden')).toEqual("true");
+        h2.click();
+        expect(c2.attr('aria-hidden')).toEqual('true');
         expect(c1.attr('aria-hidden')).toEqual("true");
 
-        h1.click();
-        expect(c1.attr('aria-hidden')).toEqual('false');
-        expect(c2.attr('aria-hidden')).toEqual("true");
+        //h2.click();
+        //expect(c1.attr('aria-hidden')).toEqual('true');
+        //expect(c2.attr('aria-hidden')).toEqual('false');
+        //h1.click();
+        //expect(c2.attr('aria-hidden')).toEqual('true');
+        //expect(c1.attr('aria-hidden')).toEqual("false");
+        //h1.click();
+        //expect(c2.attr('aria-hidden')).toEqual('true');
+        //expect(c1.attr('aria-hidden')).toEqual("true");
+        //h2.click();
+        //h2.click();
+        //expect(c1.attr('aria-hidden')).toEqual('true');
+        //expect(c2.attr('aria-hidden')).toEqual('false');
     });
 
     it("sets a contentLoaded option ", () => {

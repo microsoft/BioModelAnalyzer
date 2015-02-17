@@ -83,7 +83,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("window variable-editor");
+            this.element.addClass("variable-editor");
             this.element.draggable({ containment: "parent", scroll: false  });
             this._appendInputs();
             this._processExpandingContent();
@@ -93,7 +93,8 @@
 
         _appendInputs: function () {
             var that = this;
-            var closing = $('<img src="../../images/close.png" class="close-icon">').appendTo(that.element);
+            var div = $('<div></div>').addClass("close-icon").appendTo(that.element);
+            var closing = $('<img src="../../images/close.png">').appendTo(div);
             closing.bind("click", function () {
                 that.element.hide();
             });
@@ -108,7 +109,7 @@
 
             var rangeDiv = $('<div></div>').appendTo(namerangeDiv);
             var rangeLabel = $('<span></span>')
-                .addClass("labels-in-variables-editor variables-editor-headers")
+                //.addClass("labels-in-variables-editor variables-editor-headers")
                 .text("Range")
                 .appendTo(rangeDiv);
             this.rangeFrom = $('<input type="text" min="0" max="100" size="1">')
@@ -159,7 +160,7 @@
                 .addClass("formula-text-area")
                 .appendTo(formulaDiv);
             this.prooficon = $('<div></div>')
-                .addClass("bma-formula-validation-icon")
+                .addClass("validation-icon")
                 .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("formula-validation-message")

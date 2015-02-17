@@ -85,7 +85,7 @@
         <a id="downloadLink" style="display: none"></a>
         <input style="display: none;" type="file" id="fileLoader">
 
-        <div id="undoredotoolbar" class="bma-toolbarpanel-undoredotoolbar">
+        <div id="undoredotoolbar" class="undoredo-toolbar">
             <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
             <label for="button-pointer">
                 <div class="pointer-icon" title="Selection tool"></div>
@@ -101,12 +101,9 @@
             </button>
         </div>
 
-        <div id="modelelemtoolbar" class="bma-toolbarpanel-elementstoolbar"></div>
+        <div id="modelelemtoolbar" class="elements-toolbar"></div>
 
-   
-
-        <div class="bma-toolbarpanel-visibilityoptions" id="visibilityOptionsSlider">
-            <!--<button id="visibilityOptionsHeader" class="visibility-options-icon"></button>-->
+        <div class="vis-options-toolbar" id="visibilityOptionsSlider">
             <div class="tool-icon">
                 <span class="ui-button-text">
                     <div title="pointer" class="view-options-icon"></div>
@@ -139,10 +136,9 @@
 
     <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
 
-
         <div id="drawingSurface" class="bma-drawingsurface"></div>
 
-        <div class="bma-modeltoolbarcontainer">
+        <div class="modeltoolbar-container">
             <div id="modelToolbarSlider" class="tab-left model-toolbar">
                 <div id="modelToolbarHeader" class="model-name">
                     <ul>
@@ -157,27 +153,27 @@
                 <div id="modelToolbarContent" class="model-icons">
                     <ul>
                         <li>
-                            <div id="localSaveBtn" data-command="LocalStorageSaveModel" class="localSaveButton">
+                            <div id="btn-local-save" data-command="LocalStorageSaveModel" class="local-save-btn">
                                 SAVE
                             </div>
                         </li>
                         <li>
-                            <div id="newModelBtn" data-command="NewModel" class="newButton">
+                            <div id="btn-new-model" data-command="NewModel" class="new-btn">
                                 NEW
                             </div>
                         </li>
                         <li>
-                            <div id="localStorageBtn" data-command="LocalStorageRequested" class="localStorageButton">
+                            <div id="btn-local-storage" data-command="LocalStorageRequested" class="local-storage-btn">
                                 MODELS
                             </div>
                         </li>
                         <li>
-                            <div id="importModelBtn" data-command="ImportModel" class="openButton">
+                            <div id="btn-import-model" data-command="ImportModel" class="import-btn">
                                 IMPORT
                             </div>
                         </li>
                         <li>
-                            <div id="exportModelBtn" data-command="ExportModel" class="saveButton">
+                            <div id="btn-export-model" data-command="ExportModel" class="export-btn">
                                 EXPORT
                             </div>
                         </li>
@@ -186,7 +182,7 @@
             </div>
         </div>
 
-        <div class="bma-analyticstoolbarcontainer">
+        <div class="analytics-container">
             <div id="analytics">
                 <div id="icon1" data-command="ProofRequested" class="analytics-header">
                     <img src="images/analyze.svg">
@@ -202,10 +198,9 @@
                     <h2>Simulation</h2>
                 </div>
             </div>
-
-
         </div>
-        <div id="editor"></div>
+
+        <div id="editor" class="window"></div>
         <div id="containerEditor" class="window container-name"></div>
     </div>
 

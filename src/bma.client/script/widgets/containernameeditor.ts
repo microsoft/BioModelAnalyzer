@@ -15,8 +15,10 @@
             closing.bind("click", function () {
                 that.element.hide();
             });
-            this.element.addClass("container-name");
-            this.element.draggable({ containment: "parent", scroll: false });
+            this.element
+                .addClass("container-name")
+                .draggable({ containment: "parent", scroll: false });
+
             this.name = $('<input>')
                 .attr("type", "text")
                 .attr("size", 15)
