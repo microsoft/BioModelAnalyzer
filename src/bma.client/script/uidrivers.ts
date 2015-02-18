@@ -286,30 +286,46 @@ module BMA {
                 this.popupWindow.show();
             }
 
-            private popup_position() {
-                var my_popup = $('.popup-window, .bma-userdialog'); // наш попап
-                my_popup.each(function () {
-                    var my_popup_w = $(this).outerWidth(), // ширина попапа
-                        my_popup_h = $(this).outerHeight(), // высота попапа
+            private  popup_position() {
+            var my_popup = $('.popup-window, .window.dialog');
+            var analytic_tabs = $('.tab-right');
+            var plot = $('.simulation-plot');
+            var win_w = $(window).outerWidth(),
+                win_h = $(window).outerHeight();
 
-                        win_w = $(window).outerWidth(), // ширина окна
-                        win_h = $(window).outerHeight(), // высота окна
-                        popup_half_w = (win_w - my_popup_w) / 2,
-                        popup_half_h = (win_h - my_popup_h) / 2;
-                    if (win_w > my_popup_w) { // если ширина окна больше ширины попапа
-                        my_popup.css({ 'left': popup_half_w });
-                    }
-                    if (win_w < my_popup_w) { // если ширина окна меньше ширины попапа                  
-                        my_popup.css({ 'left': 5, });
-                    }
-                    if (win_h > my_popup_h) { // если высота окна больше ширины попапа
-                        my_popup.css({ 'top': popup_half_h });
-                    }
-                    if (win_h < my_popup_h) { // если высота окна меньше ширины попапа
-                        my_popup.css({ 'top': 5 });
-                    }
-                })
-            }
+            analytic_tabs.each(function () {
+                var tab_h = $(this).outerHeight();
+                var win_h = $(window).outerHeight() * 0.8;
+                if (win_h > tab_h)
+                    $(this).css({ 'max-height': win_h * 0.8 });
+
+                else
+                    $(this).css({ 'max-height': '600px' });
+            });
+
+            plot.each(function () {
+                $(this).css({ 'height': win_h * 0.8 });
+            });
+
+            my_popup.each(function () {
+                var my_popup_w = $(this).outerWidth(),
+                    my_popup_h = $(this).outerHeight(),
+                    popup_half_w = (win_w - my_popup_w) / 2,
+                    popup_half_h = (win_h - my_popup_h) / 2;
+                if (win_w > my_popup_w) {
+                    my_popup.css({ 'left': popup_half_w });
+                }
+                if (win_w < my_popup_w) {
+                    my_popup.css({ 'left': 5, });
+                }
+                if (win_h > my_popup_h) {
+                    my_popup.css({ 'top': popup_half_h });
+                }
+                if (win_h < my_popup_h) {
+                    my_popup.css({ 'top': 5 });
+                }
+            })
+        }
 
             public Hide() {
                 this.popupWindow.hide();

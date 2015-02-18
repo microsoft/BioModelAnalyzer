@@ -439,6 +439,10 @@ $(document).ready(function () {
     function popup_position() {
         var my_popup = $('.popup-window, .window.dialog'); 
         var analytic_tabs = $('.tab-right');
+        var plot = $('.simulation-plot');
+        var win_w = $(window).outerWidth(),
+            win_h = $(window).outerHeight();
+
         analytic_tabs.each(function () {
             var tab_h = $(this).outerHeight();
             var win_h = $(window).outerHeight()*0.8;
@@ -449,12 +453,13 @@ $(document).ready(function () {
                 $(this).css({ 'max-height': '600px' });
         });
 
+        plot.each(function () {
+            $(this).css({ 'height': '550px' });
+        });
+
         my_popup.each(function () {
             var my_popup_w = $(this).outerWidth(), 
                 my_popup_h = $(this).outerHeight(),
-
-                win_w = $(window).outerWidth(), 
-                win_h = $(window).outerHeight(),
                 popup_half_w = (win_w - my_popup_w) / 2,
                 popup_half_h = (win_h - my_popup_h) / 2;
             if (win_w > my_popup_w) { 
