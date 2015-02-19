@@ -175,10 +175,8 @@
             }
             this.buttons = that.table.find("tr").not(":first-child").find("td:nth-child(2)");
             var alltr = $('<tr></tr>').appendTo(that.table);
-            var tdall0 = $('<td></td>').appendTo(alltr).css("border", "none");
-            tdall0.css("background-color", "white");
-            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check hoverable")
-            this.allcheck.css("border-right", "none");
+            var tdall0 = $('<td></td>').appendTo(alltr);
+            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check hoverable");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
 

@@ -168,9 +168,12 @@
     
 .bma-simulation-data-table {
     max-width: calc(~"100% - 120px");
-    overflow-x: scroll;
+    overflow-x: auto;
     overflow-y: hidden;
-    margin-bottom: -17px;
+}
+
+.simulation-plot {
+    height: 100%;
 }
 /*
 .bma-simulation-table {
@@ -187,7 +190,7 @@
     & > div {
         display: inline-block;
         white-space: nowrap;
-        vertical-align: bottom;
+        vertical-align: top;
     }
 }
 
@@ -236,7 +239,7 @@
 
 .progression-table {
     .bma-tbl();
-
+    margin-top: 23px;
     td {
         position: relative;
         padding: 0 5px;

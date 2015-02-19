@@ -100,9 +100,9 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            $('<span>Proof Analysis</span>')
-                .addClass('window-title')
-                .appendTo(that.element);
+            //$('<span>Proof Analysis</span>')
+            //    .addClass('window-title')
+            //    .appendTo(that.element);
             this.resultDiv = $('<div></div>')
                 .addClass("proof-state")
                 .appendTo(that.element);

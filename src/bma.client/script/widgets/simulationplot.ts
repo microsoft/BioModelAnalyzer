@@ -22,15 +22,15 @@
             var that = this;
             var options = this.options;
             this.element.empty();
-
+            
             this.chartdiv = $('<div id="chart"></div>')
                 .attr("data-idd-plot", "figure")
                 .width("70%")
-                .height("100%")
                 .css("float", "left")
+                .addClass('simulation-plot')
                 .appendTo(that.element);
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
-
+            
             var gridLinesPlotDiv = $("<div></div>")
                 .attr("id", "glPlot")
                 .attr("data-idd-plot", "scalableGridLines")
