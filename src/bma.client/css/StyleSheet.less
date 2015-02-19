@@ -11,6 +11,13 @@
         -webkit-padding-start: 0;
     }
 
+    table {
+        display: table;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border-color: transparent;
+    }
+
     .text-overflow-ellipsis(){
         text-overflow: ellipsis;
         -ms-text-overflow: ellipsis;
@@ -180,6 +187,9 @@ body {
 			&:hover {
 				color: white;
 				background-color: @darkgrey;
+                button{
+                    color: white;
+                }
 			}
 
 			button{
@@ -308,6 +318,9 @@ body {
 				background-color: @darkgrey;
 				&:hover{
 					background-color: @lightgrey;
+                    button{
+                        color: @general-font-color;
+                    }
 				}
                 display: inline-block;
                 vertical-align: bottom;
@@ -336,6 +349,7 @@ body {
                 button{
                     width: 70px;
                     height: 30px;
+                    text-transform: uppercase;
                 }
                 
 				&.waiting {
@@ -1476,10 +1490,15 @@ body {
 								td:nth-child(1){
 									width: 40px;
 								}
-								tr:not(:first-child) td:nth-child(1){
+                                tr:last-child td:first-child{
+                                    background-color: Window;
+                                    border-left-color: transparent;
+                                    border-bottom-color: transparent;
+                                }
+								/*tr:not(:first-child) td:nth-child(1){
 									width: 5px; 							// NOT WORKING
 									border-bottom-color:white;
-								}
+								}*/
 								td:nth-child(3){
 									width: 50px;
 								}
@@ -1496,6 +1515,12 @@ body {
 								margin-left: 30px;
 								width:90px;
                                 table-layout: auto;
+                                td:nth-child(1){
+                                    border-right: none;
+                                }
+                                td:nth-child(2){
+                                    border-left: none;
+                                }
                                 tr.red{
                                     background-color:@red;
                                 }
@@ -1619,6 +1644,15 @@ body {
 			}
 		}
 
+        .simulation-plot-box {
+            height: 200px;
+            width: 100%;
+            &>*{
+                display: inline-block;
+                vertical-align: top;
+            }
+        }
+
 	// Popout Windows
         .popup-window {
             position: absolute;
@@ -1674,6 +1708,10 @@ body {
 				}
 			}
 		}
+
+        .popup-window .simulation-plot-box{
+            height: 550px;
+        }
 
 
 

@@ -69,7 +69,7 @@
                                 }
                                 break;
                             case "SimulationPlot":
-                                full = $('<div></div>').height('100%').simulationplot({ colors: that.dataForPlot });
+                                full = $('<div></div>').simulationplot({ colors: that.dataForPlot });
                                 break;
                             default:
                                 simulationViewer.Show({ tab: undefined });

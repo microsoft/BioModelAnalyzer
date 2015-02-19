@@ -11,6 +11,7 @@
         _create: function () {
             var that = this;
             this.refresh();
+            this.element.addClass('simulation-plot-box');
         },
 
         changeVisibility: function (param) {
@@ -26,11 +27,10 @@
             this.chartdiv = $('<div id="chart"></div>')
                 .attr("data-idd-plot", "figure")
                 .width("70%")
-                .css('float', 'left')
-                .height("100%")
+                .height('100%')
+                .css("float", "left")
                 
                 .appendTo(that.element);
-            this.chartdiv.parent().addClass('simulation-plot');
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
 
             var gridLinesPlotDiv = $("<div></div>")
