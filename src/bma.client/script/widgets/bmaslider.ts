@@ -38,7 +38,7 @@
                 value: that.options.value,
                 change: function (event, ui) {
                     var val = that.zoomslider.slider("option", "value");
-                    var isExternal = //Math.abs(that.options.value - ui.value) < 1 ||
+                    var isExternal =
                         val > that.options.max ||
                         val < that.options.min;
                     if (!isExternal) {
@@ -73,13 +73,7 @@
             var contents;
 
             // clean up main element
-            this.element
-                .removeClass("zoomslider-container");
-
-            this.element.children().filter(".bma-elementspanel-visibilityoptions-zoomslider")
-                .removeClass("bma-elementspanel-visibilityoptions-zoomslider")
-                .removeUniqueId();
-
+            this.element.removeClass("zoomslider-container");
             this.element.empty();
         },
 

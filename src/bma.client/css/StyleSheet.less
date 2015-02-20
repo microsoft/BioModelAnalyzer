@@ -1708,9 +1708,10 @@ body {
 
 .plot-check {
     background-image: url("../images/check.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
+    .background-img();
+    &:hover{
+        cursor: pointer;
+    }
 }
 
 // Dialog window

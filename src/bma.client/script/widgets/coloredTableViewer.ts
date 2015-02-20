@@ -91,7 +91,6 @@
                                 }
                             }
                         }
-                        
                     }
                     break;
             }
@@ -110,7 +109,7 @@
                 if (this.options.colorData !== undefined) {
                     this.paintTable(this.options.colorData);
                     return;
-                    }
+                }
             }
 
             this._super(key, value);
@@ -146,12 +145,11 @@
             for (var i = 0; i < array.length; i++) {
 
                 var tr = $('<tr></tr>').appendTo(that.table);
-                
                 var td0 = $('<td></td>').appendTo(tr);
                 var buttontd = $('<td></td>').appendTo(tr);
                 if (array[i][1] && array[i][0] !== undefined) {
                     td0.css("background-color", array[i][0]);
-                    buttontd.addClass("plot-check hoverable");
+                    buttontd.addClass("plot-check");
                 }
 
                 buttontd.bind("click", function () {
@@ -176,7 +174,7 @@
             this.buttons = that.table.find("tr").not(":first-child").find("td:nth-child(2)");
             var alltr = $('<tr></tr>').appendTo(that.table);
             var tdall0 = $('<td></td>').appendTo(alltr);
-            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check hoverable");
+            this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
 
@@ -191,24 +189,14 @@
                         if (!$(that.buttons[i]).hasClass("plot-check"))
                             $(that.buttons[i]).click();
                     }
-                    //that.buttons.( function () {
-                    //    if (!$(this).hasClass("plot-check"))
-                    //        $(this).click();
-                    //})
                 }
                 else {
                     for (var i = 0; i < that.buttons.length; i++) {
                         if ($(that.buttons[i]).hasClass("plot-check"))
                             $(that.buttons[i]).click();
                     }
-                    //that.buttons.each(function () {
-                    //    if ($(this).hasClass("plot-check"))
-                    //        $(this).click();
-                    //})
                 }
             })
-
-
         },
 
         getColors: function () {
@@ -222,16 +210,7 @@
                 })
             }
         },
-
-        getRandomColor: function () {
-            var letters = '0123456789ABCDEF'.split('');
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        },
-
+        
         checkAllButtons: function (): boolean {
             var that = this;
             var l = that.buttons.length;
@@ -247,7 +226,6 @@
                 return this.allcheck;
         },
 
-
         arrayToTable: function (array) {
             var that = this;
             for (var i = 0; i < array.length; i++) {
@@ -258,30 +236,24 @@
             }
         },
 
-        
         paintTable: function (color) {
             var that = this;
             var table = that.table;
             var over = 0;
             if (that.options.header !== undefined && that.options.header.length !== 0) over = 1;
-            //if (color.length > table.find("tr").length) { console.log("Incompatible sizes of numeric and color data"); return };
 
             for (var i = 0; i < color.length; i++) {
                 var tds = table.find("tr").eq(i + over).children("td");
                 if (color[i].length > tds.length) { console.log("Incompatible sizes of numeric and color data-2"); return };
 
                 for (var j = 0; j < color[i].length; j++) {
-
                     var td = tds.eq(j);
-                    //if (color[i][j] !== undefined) {
-                    if (color[i][j]) td.addClass('propagation-cell-green');//td.css("background-color", "#CCFF99");
-                    else td.addClass('propagation-cell-red');//td.css("background-color", "#FFADAD");
-                    //}
+                    if (color[i][j]) td.addClass('propagation-cell-green');
+                    else td.addClass('propagation-cell-red');
                 }
             }
             return table;
         }
-
     });
 } (jQuery));
 

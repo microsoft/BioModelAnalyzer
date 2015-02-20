@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<bundle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://vswebessentials.com/schemas/v1/bundle.xsd">
+  <settings>
+    <!--Determines if the bundle file should be automatically optimized after creation/update.-->
+    <minify>true</minify>
+    <!--Determine whether to generate/re-generate this bundle on building the solution.-->
+    <runOnBuild>false</runOnBuild>
+    <!--Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
+    <outputDirectory />
+  </settings>
+  <!--The order of the <file> elements determines the order of the files in the bundle.-->
+  <files>
+    
+	<file>/js/svgplot.js</file>
+	<file>/js/scalablegridlinesplot.js</file>
+	<file>/script/XmlModelParser.js</file>
+	<file>/script/SVGHelper.js</file>
+	<file>/script/ModelHelper.js</file>
+	<file>/script/commands.js</file>
+	<file>/script/elementsregistry.js</file>
+	<file>/script/functionsregistry.js</file>
+	<file>/script/localRepository.js</file>
+	<file>/script/changeschecker.js</file>
+	<file>/script/model/biomodel.js</file>
+	<file>/script/model/model.js</file>
+	<file>/script/model/exportimport.js</file>
+	<file>/script/model/analytics.js</file>
+	<file>/script/model/visualsettings.js</file>
+	<file>/script/uidrivers.js</file>
+	<file>/script/presenters/undoredopresenter.js</file>
+	<file>/script/presenters/presenters.js</file>
+	<file>/script/presenters/proofpresenter.js</file>
+	<file>/script/presenters/simulationpresenter.js</file>
+	<file>/script/presenters/modelstoragepresenter.js</file>
+	<file>/script/presenters/formulavalidationpresenter.js</file>
+	<file>/script/presenters/furthertestingpresenter.js</file>
+	<file>/script/presenters/localstoragepresenter.js</file>
+	<file>/script/UserLog.js</file>
+	<file>/script/widgets/accordeon.js</file>
+	<file>/script/widgets/bmaslider.js</file>
+	<file>/script/widgets/coloredtableviewer.js</file>
+	<file>/script/widgets/containernameeditor.js</file>
+	<file>/script/widgets/drawingsurface.js</file>
+	<file>/script/widgets/progressiontable.js</file>
+	<file>/script/widgets/proofresultviewer.js</file>
+	<file>/script/widgets/furthertestingviewer.js</file>
+	<file>/script/widgets/localstoragewidget.js</file>
+	<file>/script/widgets/resultswindowviewer.js</file>
+	<file>/script/widgets/simulationplot.js</file>
+	<file>/script/widgets/simulationexpanded.js</file>
+	<file>/script/widgets/simulationviewer.js</file>
+	<file>/script/widgets/userdialog.js</file>
+	<file>/script/widgets/variablesOptionsEditor.js</file>
+	<file>/script/widgets/visibilitysettings.js</file>
+	<file>/app.js</file>
+  </files>
+</bundle>

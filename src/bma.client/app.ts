@@ -102,6 +102,42 @@ function transformToAssocArray(prmstr) {
     return params;
 }
 
+function popup_position() {
+    var my_popup = $('.popup-window, .window.dialog');
+    var analytic_tabs = $('.tab-right');
+    analytic_tabs.each(function () {
+        var tab_h = $(this).outerHeight();
+        var win_h = $(window).outerHeight() * 0.8;
+        if (win_h > tab_h)
+            $(this).css({ 'max-height': win_h * 0.8 });
+
+        else
+            $(this).css({ 'max-height': '600px' });
+    });
+
+    my_popup.each(function () {
+        var my_popup_w = $(this).outerWidth(),
+            my_popup_h = $(this).outerHeight(),
+
+            win_w = $(window).outerWidth(),
+            win_h = $(window).outerHeight(),
+            popup_half_w = (win_w - my_popup_w) / 2,
+            popup_half_h = (win_h - my_popup_h) / 2;
+        if (win_w > my_popup_w) {
+            my_popup.css({ 'left': popup_half_w });
+        }
+        if (win_w < my_popup_w) {
+            my_popup.css({ 'left': 5, });
+        }
+        if (win_h > my_popup_h) {
+            my_popup.css({ 'top': popup_half_h });
+        }
+        if (win_h < my_popup_h) {
+            my_popup.css({ 'top': 5 });
+        }
+    })
+}
+
 $(document).ready(function () {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -436,41 +472,7 @@ $(document).ready(function () {
         }
     }
 
-    function popup_position() {
-        var my_popup = $('.popup-window, .window.dialog'); 
-        var analytic_tabs = $('.tab-right');
-        analytic_tabs.each(function () {
-            var tab_h = $(this).outerHeight();
-            var win_h = $(window).outerHeight()*0.8;
-            if (win_h > tab_h) 
-                $(this).css({ 'max-height': win_h*0.8 });
-            
-            else 
-                $(this).css({ 'max-height': '600px' });
-        });
-
-        my_popup.each(function () {
-            var my_popup_w = $(this).outerWidth(), 
-                my_popup_h = $(this).outerHeight(),
-
-                win_w = $(window).outerWidth(), 
-                win_h = $(window).outerHeight(),
-                popup_half_w = (win_w - my_popup_w) / 2,
-                popup_half_h = (win_h - my_popup_h) / 2;
-            if (win_w > my_popup_w) { 
-                my_popup.css({ 'left': popup_half_w });
-            }
-            if (win_w < my_popup_w) {                 
-                my_popup.css({ 'left': 5, });
-            }
-            if (win_h > my_popup_h) {
-                my_popup.css({ 'top': popup_half_h });
-            }
-            if (win_h < my_popup_h) {
-                my_popup.css({ 'top': 5 });
-            }
-        })
-    }
+    
 
     var toolsdivs = $('#tools').children('div');
 

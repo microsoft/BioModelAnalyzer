@@ -167,10 +167,6 @@ module BMA {
             }
 
             public SetData(params) {
-                //if (params.issucceeded !== undefined)
-                //    this.proofContentViewer.proofresultviewer({ issucceeded: params.issucceeded });
-                //if (params.time !== undefined)
-                //    this.proofContentViewer.proofresultviewer({ time: params.time });
                 if (params !== undefined)
                     this.proofContentViewer.proofresultviewer(params);
             }
@@ -222,15 +218,10 @@ module BMA {
                 if (data !== undefined)
                     this.viewer.furthertesting("SetData", { tabLabels: data.tabLabels, tableHeaders: data.tableHeaders, data: data.data });
                 else { this.viewer.furthertesting("SetData", undefined) }
-                //var content = $('<div></div>')
-                //    .addClass("scrollable-results")
-                //    .coloredtableviewer({ numericData: data, header: ["Cell", "Name", "Calculated Bound", "Oscillation"] });
-                //this.results.resultswindowviewer({header: "Further Testing", content: content, icon: "max"})
             }
             
             public HideResults() {
                 this.viewer.furthertesting({data: null});
-                //this.results.resultswindowviewer("destroy");
             }
 
             public StandbyMode() {
@@ -282,48 +273,17 @@ module BMA {
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
-                this.popup_position();
+                popup_position();
                 this.popupWindow.show();
-            }
-
-            private popup_position() {
-                var my_popup = $('.popup-window, .bma-userdialog'); // наш попап
-                my_popup.each(function () {
-                    var my_popup_w = $(this).outerWidth(), // ширина попапа
-                        my_popup_h = $(this).outerHeight(), // высота попапа
-
-                        win_w = $(window).outerWidth(), // ширина окна
-                        win_h = $(window).outerHeight(), // высота окна
-                        popup_half_w = (win_w - my_popup_w) / 2,
-                        popup_half_h = (win_h - my_popup_h) / 2;
-                    if (win_w > my_popup_w) { // если ширина окна больше ширины попапа
-                        my_popup.css({ 'left': popup_half_w });
-                    }
-                    if (win_w < my_popup_w) { // если ширина окна меньше ширины попапа                  
-                        my_popup.css({ 'left': 5, });
-                    }
-                    if (win_h > my_popup_h) { // если высота окна больше ширины попапа
-                        my_popup.css({ 'top': popup_half_h });
-                    }
-                    if (win_h < my_popup_h) { // если высота окна меньше ширины попапа
-                        my_popup.css({ 'top': 5 });
-                    }
-                })
             }
 
             public Hide() {
                 this.popupWindow.hide();
-                //window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
             }
 
             public Collapse() {
                 window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
             }
-
-            //private createResultView(params) {
-            //    if (params.type === "coloredTable") {
-            //    }
-            //}
         }
 
         export class SimulationExpandedDriver implements ISimulationExpanded {
@@ -336,9 +296,7 @@ module BMA {
             public Set(data: { variables; colors; init }) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
-                //var toAdd = this.CreatePlotView(data.colors);
-                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });//, data: toAdd });
-                //this.viewer.simulationexpanded("option", "data", toAdd);
+                this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });
             }
 
             public SetData(data) {
@@ -366,7 +324,7 @@ module BMA {
             public CreatePlotView(colors) {
                 var data = [];
                 for (var i = 1; i < colors[0].Plot.length; i++) {
-                    data[i-1] = []; //= colors[i].Plot;
+                    data[i-1] = [];
                     for (var j = 0; j < colors.length; j++) {
                         data[i-1][j] = colors[j].Plot[i];
                     }
@@ -428,7 +386,7 @@ module BMA {
             }
 
             public SetData(params) {
-                this.viewer.simulationviewer(params);//{ data: params.data, plot: params.plot });
+                this.viewer.simulationviewer(params);
             }
 
             public Show(params: any) {
@@ -583,19 +541,6 @@ module BMA {
             }
         }
 
-        //export class AjaxServiceDriver implements IServiceDriver {
-           
-        //    public Invoke(url, data): JQueryPromise<any> {
-        //        return $.ajax({
-        //            type: "POST",
-        //            url: url,
-        //            data: JSON.stringify(data),
-        //            contentType: "application/json",
-        //            dataType: "json"
-        //        });
-        //    }
-        //}
-
         export class MessageBoxDriver implements IMessageServiсe {
 
             public Show(message: string){
@@ -606,7 +551,5 @@ module BMA {
                 console.log(message);
             }
         }
-
-        
     }
 } 

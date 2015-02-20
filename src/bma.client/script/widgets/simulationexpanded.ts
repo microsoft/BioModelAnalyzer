@@ -123,9 +123,9 @@
                 case "data":
                     this.options.data = value;
                     //if (value !== null && value !== undefined)
-                        if (options.interval !== undefined && options.interval.length !== 0) {
-                            this.big_table.progressiontable({ interval: options.interval, data: options.data });
-                        }
+                    if (options.interval !== undefined && options.interval.length !== 0) {
+                        this.big_table.progressiontable({ interval: options.interval, data: options.data });
+                    }
                     break;
                 case "init": 
                     this.options.init = value;

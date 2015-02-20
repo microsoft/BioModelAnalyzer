@@ -104,7 +104,7 @@
             //context.show().css("z-index",1);
             context.css("z-index", that.options.z_index + 1);
             //this.headers.next().not(context).hide().css("z-index", 0);
-            this.headers.next().not(context).css("z-index", that.options.z_index);//0);
+            this.headers.next().not(context).css("z-index", that.options.z_index);
         },
 
         _setOption: function (key, value) {

@@ -106,13 +106,13 @@
 
             public StartSimulation(param) {
                 var that = this;
+                that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                 if (param.num === undefined || param.num === 0) {
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
                     that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
-                    that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                     this.Snapshot();
                     return;
                 }
