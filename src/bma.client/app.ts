@@ -194,7 +194,7 @@ $(document).ready(function () {
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
             { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
-            
+
             {
                 title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
@@ -204,7 +204,7 @@ $(document).ready(function () {
                 uiIcon: "ui-icon-arrow-4-diag"
             },
             { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
-            
+
         ],
         beforeOpen: function (event, ui) {
             ui.menu.zIndex(50);
@@ -308,7 +308,7 @@ $(document).ready(function () {
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
-    
+
     $("#undoredotoolbar").buttonset();
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
@@ -346,7 +346,7 @@ $(document).ready(function () {
         .hide()
         .resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
-    
+
     var expandedSimulation = $('<div></div>').simulationexpanded();
     
     //Visual Settings Presenter
@@ -472,7 +472,7 @@ $(document).ready(function () {
         }
     }
 
-    
+
 
     var toolsdivs = $('#tools').children('div');
 
@@ -526,7 +526,34 @@ $(document).ready(function () {
     };
 
     window.onload = function () {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);       
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
     $("label[for='button-pointer']").click();
+    
+    window.onerror = function (msg, url, l) {
+        var model = appModel.Serialize();
+        
+        var txt = '_s=df803b2032ef0848cce4490f739f9bf2&_r=json&_t=text';
+        txt += '&_msg=' + msg;
+        txt += '&URL=' + url;
+        txt += '&Line=' + l;
+        txt += '&Platform=' + navigator.platform;
+        txt += '&UserAgent=' + navigator.userAgent;
+        //txt += '&Model=' + JSON.stringify(j.Model); 
+        //txt += '&Layout=' + JSON.stringify(j.Layout); 
+        //alert(txt);
+        //var i = document.createElement('img');
+        //i.setAttribute('src',(('https:' == document.location.protocol) ?
+        //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
+        //document.body.appendChild(i);
+         
+        var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: "&Model=" + model
+        });
+    }
 });
+
