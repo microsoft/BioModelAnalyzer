@@ -178,10 +178,16 @@ pair<float, bool> Simulation::overlap(const string& name1, const string& name2) 
 
 	// TODO: What happens if d1==-1.0 or d2==-1.0 ?????
 
-	// b1 ... d1 ... b2 ... d2 --> d1-b2
-	// b1 ... b2 ... d1 ... d2 --> d1-b2
-	// b1 ... b2 ... d2 ... d1 --> d2-b2
-	return make_pair(min(d1, d2) - max(b2, b1), b1 < b2);
+	// b1 ... d1 ... b2 ... d2 --> (0,true)
+	// b1 ... b2 ... d1 ... d2 --> (d1-b2,true)
+	// b1 ... b2 ... d2 ... d1 --> (d2-b2,true)
+	// b2 ... d2 ... b1 ... d1 --> (0,false)
+	// b2 ... b1 ... d2 ... d1 --> (d2-b1,false)
+	// b2 ... b1 ... d1 ... d2 --> (d1-b1,false)
+	// b1=b2 ... d1 ... d2 --> (d1-b1,false)
+	// b1=b2 ... d2 ... d1 --> (d2-b1,false)
+	const float zero{ 0.0 };
+	return make_pair(max(min(d1, d2) - max(b2, b1), zero), b1 < b2);
 }
 
 map<string, unsigned int> Simulation::cellCount() const {
@@ -500,6 +506,25 @@ void Simulation::_parseLine(const string& line) {
 	LineComponents lc(fields);
 	// cout << "Read: " << buffer << endl;
 
+	// Handle default length first as it does not require a valid program name
+	if (DEF_LENGTH == lc.action) {
+		if (!_validCellCycle(lc.cellCycle) || 0 == lc.cellCycle.size() || 
+			lc.condition.size() != 0 ||
+			lc.d1.size() != 0 || lc.state1.size() != 0 || lc.d2.size() != 0 ||
+			lc.state2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
+			const string err{ "Badly structured default length." };
+			throw err;
+		}
+		_setDefaultTime(lc.cellCycle, lc.mean1, lc.sd1);
+		return;
+	}
+
+	// Check for the existence of a program name and create a new one 
+	// if it does not exist
+	if (0 == lc.cellName.size()) {
+		const string err{ "Empty cell name." };
+		throw err;
+	}
 
 	auto progIt = _programs.find(lc.cellName);
 	if (_programs.end() == progIt) {
@@ -508,18 +533,39 @@ void Simulation::_parseLine(const string& line) {
 		progIt = _programs.find(lc.cellName);
 	}
 
+	// Default init
+	if (DEF_INIT == lc.action) {
+		if (lc.cellCycle.size() != 0 || lc.condition.size() != 0 || lc.d1.size() != 0 ||
+			lc.d2.size() != 0 || lc.state2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
+			const string err{ "Badly structured default initialization." };
+			throw err;
+		}
+		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1, this)) };
+		progIt->second->setDefaults(st1, lc.mean1, lc.sd1);
+		return;
+	}
+
 	unique_ptr<Condition> cond{ (0 == lc.condition.size() ? nullptr : new Condition(lc.condition)) };
 	const EnumType* cellCycleType = dynamic_cast<const EnumType*>(type(CELL_CYCLE));
 	_addTypesFromConjunction(lc.state1);
 	_addTypesFromConjunction(lc.state2);
 
+	// For change state it is OK for the cellCycle to be empty.
+	// In all other cases cell cycle has to be valid
+	if (!_validCellCycle(lc.cellCycle) &&
+		(lc.action != CHANGE_STATE || lc.cellCycle.size() != 0)) {
+		const string err{ "No cell cycle or wrong cell cycle." };
+		throw err;
+	}
+
+	// Set next default action
 	if (0 == lc.action.size()) {
 		lc.action = _setDefaultNextAction(lc.cellCycle);
 	}
 
+	// Handle remaining possible actions (DIVIDE and different CellCycle phases)
 	if (DIVIDE == lc.action) {
-		if (0 == lc.cellName.size() || !_validCellCycle(lc.cellCycle) ||
-			0 == lc.d1.size() || 0 == lc.d2.size()) {
+		if (0 == lc.d1.size() || 0 == lc.d2.size()) {
 			const string err{ "Badly structured divide instruction" };
 			throw err;
 		}
@@ -534,12 +580,9 @@ void Simulation::_parseLine(const string& line) {
 		progIt->second->addCondition(cond.release(), d);
 	}
 	else if (G1_PHASE == lc.action || S_PHASE == lc.action || 
-		G2_PHASE == lc.action || G0_PHASE == lc.action ||
-		CHANGE_STATE == lc.action) {
-		if (0 == lc.cellName.size() ||
-			// For change state it is OK for the cellCycle to be empty
-			(!_validCellCycle(lc.cellCycle) && (lc.action != CHANGE_STATE || lc.cellCycle.size() != 0)) ||
-			lc.d1.size() != 0 || lc.d2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
+			G2_PHASE == lc.action || G0_PHASE == lc.action ||
+			CHANGE_STATE == lc.action) {
+		if (lc.d1.size() != 0 || lc.d2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
 			string err{ "Badly structured " };
 			err += lc.action;
 			err += " instruction";
@@ -561,24 +604,6 @@ void Simulation::_parseLine(const string& line) {
 		}
 		Directive* d{ new StateTransition(progIt->second, lc.mean1, lc.sd1, st1) };
 		progIt->second->addCondition(cond.release(), d);
-	}
-	else if (DEF_INIT == lc.action) {
-		if (lc.cellCycle.size() != 0 || cond != nullptr || lc.d1.size() != 0 ||
-			lc.d2.size() != 0 || lc.state2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
-			const string err{ "Badly structured default initialization." };
-			throw err;
-		}
-		State* st1{ (0 == lc.state1.size() ? nullptr : new State(lc.state1,this)) };
-		progIt->second->setDefaults(st1, lc.mean1, lc.sd1);
-	}
-	else if (DEF_LENGTH == lc.action) {
-		if (!_validCellCycle(lc.cellCycle) || 0 == lc.cellCycle.size() || cond != nullptr ||
-			lc.d1.size() != 0 || lc.state1.size() != 0 || lc.d2.size() != 0 ||
-			lc.state2.size() != 0 || lc.mean2 != -1.0 || lc.sd2 != -1.0) {
-			const string err{ "Badly structured default length." };
-			throw err;
-		}
-		_setDefaultTime(lc.cellCycle, lc.mean1, lc.sd1);
 	}
 	else {
 		const string err{ "Unexpected action." };

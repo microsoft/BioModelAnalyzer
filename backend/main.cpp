@@ -116,16 +116,17 @@ void timeOverlap(Simulation* s,bool rawData) {
 		cout << "Please upload a program first." << endl;
 		 return;
 	}
-	string name1;
-	while (!s->program(name1)) {
+	string name1,name2;
+	do {
 		cout << "Please enter the name of the first cell:" << endl;
 		cin >> name1;
-	}
-	string name2;
-	while (!s->program(name2)) {
+	} while (!s->program(name1));
+
+	do {
 		cout << "Please enter the name of the second cell:" << endl;
 		cin >> name2;
-	}
+	} while (!s->program(name2));
+
 	unsigned int repetitions{0};
 	cout << "How many simulations would you like to run?" << endl;
 	cin >> repetitions;
