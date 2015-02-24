@@ -8,8 +8,8 @@
 #include <iostream>
 #include "Condition.h"
 #include "HelperFunctions.h"
-#include "Expression\AndExp.h"
-#include "Expression\EqExp.h"
+#include "Expression/AndExp.h"
+#include "Expression/EqExp.h"
 
 using std::string;
 using std::map;
