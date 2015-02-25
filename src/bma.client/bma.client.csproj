@@ -249,18 +249,6 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
-    <Content Include="Scripts\jquery.js">
-      <DependentUpon>jquery.js.bundle</DependentUpon>
-    </Content>
-    <Content Include="Scripts\jquery.min.js">
-      <DependentUpon>jquery.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\rx_bundle.js">
-      <DependentUpon>rx_bundle.js.bundle</DependentUpon>
-    </Content>
-    <Content Include="Scripts\rx_bundle.min.js">
-      <DependentUpon>rx_bundle.js</DependentUpon>
-    </Content>
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.cookie.js" />
@@ -565,14 +553,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
-    <Content Include="Scripts\jquery.js.bundle" />
-    <Content Include="Scripts\jquery.min.js.map">
-      <DependentUpon>jquery.min.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\rx_bundle.js.bundle" />
-    <Content Include="Scripts\rx_bundle.min.js.map">
-      <DependentUpon>rx_bundle.min.js</DependentUpon>
-    </Content>
     <Content Include="tool.js.bundle" />
     <Content Include="tool.min.js.map">
       <DependentUpon>tool.min.js</DependentUpon>
