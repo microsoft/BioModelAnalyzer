@@ -151,6 +151,7 @@ body {
 	a.website-link{
 		color:@green;
 		text-decoration: none;
+        cursor: pointer;
 
 		&:hover{
 			text-decoration: underline;
@@ -992,7 +993,23 @@ body {
             .window-title;
         }   
     }
-
+    .popup-window.report-bug{
+        width: 400px;
+        textarea{
+            width: 270px;
+            height: 100px;
+            resize:none;
+        }
+        .inline{
+            display:inline-block;
+            vertical-align: middle;
+        } 
+        button {
+            padding: 5px 10px;
+            border: none;
+            margin-left: 20px;
+        }
+    }
 
 // Variable Editor
 
