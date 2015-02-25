@@ -547,7 +547,7 @@ $(document).ready(function () {
         var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
         btn.bind('click', function () {
             var model = appModel.Serialize();
-            var txt = '_s=df803b2032ef0848cce4490f739f9bf2&_r=json&_t=text';
+            var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
             txt += '&_msg=' + msg;
             txt += '&URL=' + url;
             txt += '&Line=' + l;
