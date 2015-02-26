@@ -530,53 +530,53 @@ $(document).ready(function () {
     };
     $("label[for='button-pointer']").click();
     
-    window.onerror = function (msg, url, l) {
+    //window.onerror = function (msg, url, l) {
 
-        var win = $('<div></div>').addClass('popup-window window report-bug').appendTo('body');
-        win.draggable({ containment: parent, scroll: false });
-        popup_position();
-        var closediv = $('<div></div>').addClass('close-icon').appendTo(win);
-        var closing = $('<img src="/images/close.png">').appendTo(closediv);
-        closing.bind("click", function () {
-            win.detach();
-        });
+    //    var win = $('<div></div>').addClass('popup-window window report-bug').appendTo('body');
+    //    win.draggable({ containment: parent, scroll: false });
+    //    popup_position();
+    //    var closediv = $('<div></div>').addClass('close-icon').appendTo(win);
+    //    var closing = $('<img src="/images/close.png">').appendTo(closediv);
+    //    closing.bind("click", function () {
+    //        win.detach();
+    //    });
 
-        var div = $('<div></div>').addClass('window-title').text('Please describe the problem').appendTo(win);
-        var inline1 = $('<div></div>').addClass('inline').appendTo(win);
-        var textarea = $('<textarea></textarea>').appendTo(inline1);
-        var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
-        btn.bind('click', function () {
-            var model = appModel.Serialize();
-            var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
-            txt += '&_msg=' + msg;
-            txt += '&URL=' + url;
-            txt += '&Line=' + l;
-            txt += '&Platform=' + navigator.platform;
-            txt += '&UserAgent=' + navigator.userAgent;
-            txt += '&UserSay=' + textarea.val();
-            //txt += '&Model=' + JSON.stringify(j.Model); 
-            //txt += '&Layout=' + JSON.stringify(j.Layout); 
-            //alert(txt);
-            //var i = document.createElement('img');
-            //i.setAttribute('src',(('https:' == document.location.protocol) ?
-            //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
-            //document.body.appendChild(i);
+    //    var div = $('<div></div>').addClass('window-title').text('Please describe the problem').appendTo(win);
+    //    var inline1 = $('<div></div>').addClass('inline').appendTo(win);
+    //    var textarea = $('<textarea></textarea>').appendTo(inline1);
+    //    var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
+    //    btn.bind('click', function () {
+    //        var model = appModel.Serialize();
+    //        var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
+    //        txt += '&_msg=' + msg;
+    //        txt += '&URL=' + url;
+    //        txt += '&Line=' + l;
+    //        txt += '&Platform=' + navigator.platform;
+    //        txt += '&UserAgent=' + navigator.userAgent;
+    //        txt += '&UserSay=' + textarea.val();
+    //        //txt += '&Model=' + JSON.stringify(j.Model); 
+    //        //txt += '&Layout=' + JSON.stringify(j.Layout); 
+    //        //alert(txt);
+    //        //var i = document.createElement('img');
+    //        //i.setAttribute('src',(('https:' == document.location.protocol) ?
+    //        //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
+    //        //document.body.appendChild(i);
          
-            var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
+    //        var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
 
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: "&Model=" + model
-            }).always(function () {
-                inline1.detach();
-                btn.detach();
-                $('.report-bug').children('.window-title').eq(0).text('Thanks for your report!').appendTo(win);
-            });
-        });
+    //        $.ajax({
+    //            type: "POST",
+    //            url: url,
+    //            data: "&Model=" + model
+    //        }).always(function () {
+    //            inline1.detach();
+    //            btn.detach();
+    //            $('.report-bug').children('.window-title').eq(0).text('Thanks for your report!').appendTo(win);
+    //        });
+    //    });
         
         
         
-    }
+    //}
 });
 
