@@ -35,7 +35,7 @@ using std::vector;
 using std::map;
 using std::pair;
 
-enum class Options { load, simulation, overlap, overlapraw, existence, existencefile, exportSim };
+enum class Options { load, simulation, overlap, overlapraw, existence, existencefile, exportSim, abnormalSim };
 
 const string INITIALPROG{"P0"};
 const string INITIALCOND{"SPERM_LEFT"};
@@ -51,6 +51,7 @@ void printOptions() {
 	cout << "(" << static_cast<int>(Options::existence) << ") Check cell existence." << endl;
 	cout << "(" << static_cast<int>(Options::existencefile) << ") Export cell existence." << endl;
 	cout << "(" << static_cast<int>(Options::exportSim) << ") Export simulations to file." << endl;
+	cout << "(" << static_cast<int>(Options::abnormalSim) << ") Search for abnormal simulation." << endl;
 }
 
 void clearCinToEndOfLine() {
@@ -202,8 +203,44 @@ void timeOverlap(Simulation* s,bool rawData) {
 		cout << name2 << " born before " << name1 << ":" << endl;
 		print_all(results2);
 	}
-
 }
+
+void abnormalSim(Simulation* s) {
+	if (!s) {
+		cout << "Please upload a program first." << endl;
+		return;
+	}
+
+	unsigned int repetitions{ 0 };
+	cout << "Please give an upper bound for number of simulations." << endl;
+	cin >> repetitions;
+
+	clearCinToEndOfLine();
+
+	string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
+
+	vector<string> progs { s->programs() };
+
+	for (unsigned int i{ 0 }; i<repetitions; ++i) {
+		s->clear();
+		s->run(INITIALPROG, condition, -1.0, -1.0);
+		map<string, unsigned int> res{ s->cellCount() };
+		for (auto name : progs) {
+			if (res.find(name) == res.end()) {
+				cout << "Found a simulation where " << name << " was not created." << endl;
+				cout << *s;
+				return;
+			}
+			if (res.find(name)->second > 1) {
+				cout << "Found a simulation where " << name << " was created more than once." << endl;
+				cout << *s;
+				return;
+			}
+		}
+	}
+	cout << "Could not find an abnormal simulation." << endl;
+}
+
 
 void cellCount(Simulation* s, ostream& out) {
 	if (!s) {
@@ -353,6 +390,9 @@ int main() {
 				break;
 			case Options::exportSim:
 				exportSimulations(s);
+				break;
+			case Options::abnormalSim:
+				abnormalSim(s);
 				break;
 			default:
 				bad();

@@ -244,6 +244,14 @@ unsigned int Simulation::numPrograms() const {
 	return _programs.size();
 }
 
+vector<string> Simulation::programs() const {
+	vector<string> res;
+
+	for (auto strProg : _programs) {
+		res.push_back(strProg.first);
+	}
+	return res;
+}
 const Type* Simulation::type(const string& name) const {
 	auto t(_types.find(name));
 	if (_types.end() == t) {

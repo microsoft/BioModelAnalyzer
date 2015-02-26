@@ -51,6 +51,7 @@ public:
 
 	CellProgram* program(const std::string&);
 	unsigned int numPrograms() const;
+	std::vector<std::string> programs() const;
 
 	const Type* type(const std::string&) const;
 	const EnumType* cellCycleType() const;
