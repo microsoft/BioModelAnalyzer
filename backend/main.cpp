@@ -322,34 +322,32 @@ void abnormalSim(Simulation* s) {
 
 	clearCinToEndOfLine();
 
+	ofstream ofile{};
+	outputFileChooser(ofile);
+
 	string condition{ ChooseConditionFromProgram(s, INITIALPROG) };
 
 	vector<string> progs{ s->programs() };
 
-	bool found{ false };
-	for (unsigned int i{ 0 }; !found && i<repetitions; ++i) {
+	unsigned int numSim{ 0 };
+	for (unsigned int i{ 0 }; i<repetitions; ++i) {
 		s->clear();
 		s->run(INITIALPROG, condition, -1.0, -1.0);
 		map<string, unsigned int> res{ s->cellCount() };
 		for (auto name : progs) {
 			if (res.find(name) == res.end()) {
-				cout << "Found a simulation where " << name << " was not created." << endl;
-				found = true;
+				cout << "In simulation " << numSim+1 << " (" << i << ") " << name << " was not created." << endl;
+				ofile << s->toString(++numSim);
 				break;
 			}
 			if (res.find(name)->second > 1) {
-				cout << "Found a simulation where " << name << " was created more than once." << endl;
-				found = true;
+				cout << "In simulation " << numSim + 1 << " (" << i << ") " << name << " was created more than once." << endl;
+				ofile << s->toString(++numSim);
 				break;
 			}
 		}
 	}
-	if (found) {
-		ofstream ofile{};
-		outputFileChooser(ofile);
-		ofile << s->toString();
-	}
-	else {
+	if (0==numSim) {
 		cout << "Could not find an abnormal simulation." << endl;
 	}
 }
