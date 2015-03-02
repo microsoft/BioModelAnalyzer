@@ -281,7 +281,7 @@ void timeOverlap(Simulation* s, bool rawData) {
 	auto print_all = [&](vector<float>& vec) {
 		if (rawData) {
 			std::ostream_iterator<float> out_it(std::cout, ", ");
-			std::copy(results1.begin(), results1.end(), out_it);
+			std::copy(vec.begin(), vec.end(), out_it);
 			cout << endl;
 		}
 
