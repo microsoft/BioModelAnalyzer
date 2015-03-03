@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
-namespace LineageWebApi
+namespace Lineage
 {
     public class WebRole : RoleEntryPoint
     {
