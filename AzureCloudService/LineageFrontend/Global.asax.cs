@@ -11,7 +11,6 @@ using System.Web.Security;
 using System.Web.SessionState;
 using System.Xml.Linq;
 
-
 namespace Lineage
 {
     public class Global : System.Web.HttpApplication
@@ -19,16 +18,40 @@ namespace Lineage
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            GlobalConfiguration.Configuration.Formatters.XmlFormatter.UseXmlSerializer = true; 
-            
-            // Force controllers assembly to be loaded
             var assembly = typeof(Lineage.Controllers.SimulationController).Assembly;
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}"
-            );
+                routeTemplate: "api/{controller}");
+        }
+
+        protected void Session_Start(object sender, EventArgs e)
+        {
 
         }
 
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Application_AuthenticateRequest(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Application_Error(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Session_End(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Application_End(object sender, EventArgs e)
+        {
+
+        }
     }
 }
