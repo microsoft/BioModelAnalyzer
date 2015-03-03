@@ -49,10 +49,14 @@
   <ItemGroup>
     <Folder Include="LineageFrontendContent\" />
     <Folder Include="LineageWebApiContent\" />
+    <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="LineageFrontendContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="LineageWebApiContent\diagnostics.wadcfgx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublishProfile Include="Profiles\Lineage2Production.azurePubxml" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
