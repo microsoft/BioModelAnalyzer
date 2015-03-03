@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
-namespace LineageWebApi.Controller
+namespace Lineage.Controllers
 {
     public class SimulationController : ApiController
     {
