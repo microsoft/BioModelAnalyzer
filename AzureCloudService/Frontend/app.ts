@@ -35,6 +35,22 @@ function run_clicked() {
     var txt = "run clicked";
     console.log(txt);
     $("#log").append(txt);
+
+    $.ajax({
+        type: "POST",
+        url: "api/Simulation",
+        data: JSON.stringify("42"),
+        contentType: "application/json",
+        dataType: "json",
+        success: function (msg) {
+            $("#log").append(msg);
+        },
+        error: function (e) {
+            $("#log").append("errror: " + e);
+        }
+    })
+    
+
 }
 
 
