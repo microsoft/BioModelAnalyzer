@@ -12,6 +12,7 @@
     <AssemblyName>AzureCloudService</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
     <Name>AzureCloudService</Name>
+    <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,26 +38,28 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LineageFrontend\LineageFrontend.csproj">
-      <Name>LineageFrontend</Name>
-      <Project>{23a28c07-12ab-44dd-9149-0a7d69263526}</Project>
-      <Private>True</Private>
-      <RoleType>Web</RoleType>
-      <RoleName>LineageFrontend</RoleName>
-      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <Folder Include="FrontendContent\" />
     <Folder Include="LineageFrontendContent\" />
     <Folder Include="LineageWebApiContent\" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
+    <DiagnosticsConfiguration Include="FrontendContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="LineageFrontendContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="LineageWebApiContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
     <PublishProfile Include="Profiles\Lineage2Production.azurePubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Frontend\Frontend.csproj">
+      <Name>Frontend</Name>
+      <Project>{a76d3317-eef1-4925-bec2-5c7c12a69647}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>Frontend</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
