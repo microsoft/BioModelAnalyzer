@@ -1,4 +1,7 @@
-﻿class Greeter {
+﻿/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
+
+class Greeter {
     element: HTMLElement;
     span: HTMLElement;
     timerToken: number;
@@ -26,3 +29,14 @@ window.onload = () => {
     var greeter = new Greeter(el);
     greeter.start();
 };
+
+
+function run_clicked() {
+    var txt = "run clicked";
+    console.log(txt);
+    $("#log").append(txt);
+}
+
+
+
+
