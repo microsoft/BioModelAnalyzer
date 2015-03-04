@@ -21,7 +21,7 @@ namespace Lineage.Controllers
 {
     public class SimulationController : ApiController
     {
-        // POST api/Simulate
+        // POST api/Simulation
         // SI: update payload and return value
         public int Post([FromBody]int payload)
         {
