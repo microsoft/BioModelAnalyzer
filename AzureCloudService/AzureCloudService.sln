@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineageFrontend", "LineageF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineageWebApi2", "LineageWebApi2\LineageWebApi2.csproj", "{763013D5-4E4E-4C99-8718-83E680936392}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend", "Frontend\Frontend.csproj", "{A76D3317-EEF1-4925-BEC2-5C7C12A69647}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{763013D5-4E4E-4C99-8718-83E680936392}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{763013D5-4E4E-4C99-8718-83E680936392}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{763013D5-4E4E-4C99-8718-83E680936392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A76D3317-EEF1-4925-BEC2-5C7C12A69647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A76D3317-EEF1-4925-BEC2-5C7C12A69647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A76D3317-EEF1-4925-BEC2-5C7C12A69647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A76D3317-EEF1-4925-BEC2-5C7C12A69647}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
