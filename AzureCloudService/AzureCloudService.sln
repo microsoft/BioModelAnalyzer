@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "AzureCloudService", "AzureCloudService\AzureCloudService.ccproj", "{DF9326C9-DD03-44EA-BB3C-8EC1CC24FC1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineageFrontend", "LineageFrontend\LineageFrontend.csproj", "{23A28C07-12AB-44DD-9149-0A7D69263526}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineageWebApi2", "LineageWebApi2\LineageWebApi2.csproj", "{763013D5-4E4E-4C99-8718-83E680936392}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend", "Frontend\Frontend.csproj", "{A76D3317-EEF1-4925-BEC2-5C7C12A69647}"
@@ -21,10 +19,6 @@ Global
 		{DF9326C9-DD03-44EA-BB3C-8EC1CC24FC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF9326C9-DD03-44EA-BB3C-8EC1CC24FC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF9326C9-DD03-44EA-BB3C-8EC1CC24FC1E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23A28C07-12AB-44DD-9149-0A7D69263526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23A28C07-12AB-44DD-9149-0A7D69263526}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23A28C07-12AB-44DD-9149-0A7D69263526}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23A28C07-12AB-44DD-9149-0A7D69263526}.Release|Any CPU.Build.0 = Release|Any CPU
 		{763013D5-4E4E-4C99-8718-83E680936392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{763013D5-4E4E-4C99-8718-83E680936392}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{763013D5-4E4E-4C99-8718-83E680936392}.Release|Any CPU.ActiveCfg = Release|Any CPU
