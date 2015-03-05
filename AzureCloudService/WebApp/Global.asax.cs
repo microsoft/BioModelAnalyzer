@@ -15,6 +15,7 @@ namespace WebApp
         {
             // Force controllers assembly to be loaded
             var assembly = typeof(WebApi.HelloController).Assembly;
+            var assembly1 = typeof(WebApi.SimulationController).Assembly;
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"
