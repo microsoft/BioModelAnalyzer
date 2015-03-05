@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace Controllers
+namespace WebApi
 {
     public class HelloController : ApiController
     {
