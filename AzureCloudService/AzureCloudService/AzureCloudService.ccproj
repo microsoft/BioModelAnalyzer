@@ -42,22 +42,24 @@
     <Folder Include="LineageFrontendContent\" />
     <Folder Include="LineageWebApiContent\" />
     <Folder Include="Profiles" />
+    <Folder Include="WebAppContent\" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="FrontendContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="LineageFrontendContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="LineageWebApiContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="WebAppContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
     <PublishProfile Include="Profiles\Lineage2Production.azurePubxml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Frontend\Frontend.csproj">
-      <Name>Frontend</Name>
-      <Project>{a76d3317-eef1-4925-bec2-5c7c12a69647}</Project>
+    <ProjectReference Include="..\WebApp\WebApp.csproj">
+      <Name>WebApp</Name>
+      <Project>{71ee96ee-035f-4bf3-87b7-ed9f772eccc9}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
-      <RoleName>Frontend</RoleName>
+      <RoleName>WebApp</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
   </ItemGroup>
