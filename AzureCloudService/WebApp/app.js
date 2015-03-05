@@ -22,18 +22,32 @@ window.onload = function () {
     var greeter = new Greeter(el);
     greeter.start();
 };
+var SimulationInput = (function () {
+    function SimulationInput(pgm, condition) {
+        this.pgm = pgm;
+        this.condition = condition;
+    }
+    return SimulationInput;
+})();
+var SimulationOutput = (function () {
+    function SimulationOutput() {
+    }
+    return SimulationOutput;
+})();
 function run_clicked() {
     var txt = "run clicked\n";
     console.log(txt);
     $("#log").append(txt);
+    var i = new SimulationInput(["x", "y"], "condition");
     $.ajax({
         type: "POST",
-        url: "api/Hello",
-        data: JSON.stringify("42"),
+        url: "api/Simulation",
+        data: JSON.stringify(i),
         contentType: "application/json",
         dataType: "json",
         success: function (msg) {
-            $("#log").append(msg);
+            var o = msg.Output;
+            $("#log").append(o);
         },
         error: function (e) {
             $("#log").append("error: " + e);

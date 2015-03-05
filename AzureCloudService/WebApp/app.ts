@@ -30,20 +30,34 @@ window.onload = () => {
     greeter.start();
 };
 
+class SimulationInput {
+    public pgm: string[];
+    public condition: string;
+    constructor(pgm: string[], condition: string) {
+        this.pgm = pgm;
+        this.condition = condition;
+    }
+}
+
+class SimulationOutput {
+    public output: string;
+}
 
 function run_clicked() {
     var txt = "run clicked\n";
     console.log(txt);
     $("#log").append(txt);
 
+    var i = new SimulationInput(["x", "y"], "condition");
     $.ajax({
         type: "POST",
-        url: "api/Hello",
-        data: JSON.stringify("42"),
+        url: "api/Simulation",
+        data: JSON.stringify(i),
         contentType: "application/json",
         dataType: "json",
         success: function (msg) {
-            $("#log").append(msg);
+            var o = msg.Output; 
+            $("#log").append(o);
         },
         error: function (e) {
             $("#log").append("error: " + e);

@@ -56,8 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SimulationController.cs" />
     <Compile Include="HelloController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimulationModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
