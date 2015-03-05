@@ -1,7 +1,7 @@
 ﻿/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
-
+// Simulation Model
 class SimulationInput {
     public pgm: string[];
     public condition: string;

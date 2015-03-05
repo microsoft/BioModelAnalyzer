@@ -1,5 +1,6 @@
 /// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
+// Simulation Model
 var SimulationInput = (function () {
     function SimulationInput(pgm, condition) {
         this.pgm = pgm;
