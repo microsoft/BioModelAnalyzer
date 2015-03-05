@@ -14,7 +14,7 @@ namespace WebApp
         protected void Application_Start(object sender, EventArgs e)
         {
             // Force controllers assembly to be loaded
-            var assembly = typeof(Controllers.HelloController).Assembly;
+            var assembly = typeof(WebApi.HelloController).Assembly;
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"
