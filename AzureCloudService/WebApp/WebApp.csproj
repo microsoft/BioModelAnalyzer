@@ -127,9 +127,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Controllers\WebAPI.csproj">
+    <ProjectReference Include="..\Controllers\Controllers.csproj">
       <Project>{999b0792-be6b-42b0-8458-3ad9abbbb9ed}</Project>
-      <Name>WebAPI</Name>
+      <Name>Controllers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
