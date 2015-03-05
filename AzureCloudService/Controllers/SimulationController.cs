@@ -11,7 +11,9 @@ namespace WebApi
     {
         public SimulationOutput Post(SimulationInput input)
         {
-            var o = new SimulationOutput { Output = "SimOut" };
+            var p = input.Pgm;
+            var c = input.Condition;
+            var o = new SimulationOutput { Output = p + c };
             return o;
         }
     }

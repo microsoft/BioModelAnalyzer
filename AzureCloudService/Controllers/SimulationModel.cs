@@ -8,7 +8,7 @@ namespace WebApi
 {
     public class SimulationInput
     {
-        public string[] Pgm { get; set; }
+        public string Pgm { get; set; }
         public string Condition { get; set; }
     }
 

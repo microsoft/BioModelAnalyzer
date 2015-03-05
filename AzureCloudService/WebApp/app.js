@@ -19,24 +19,27 @@ function run_clicked() {
     var func = $('input[name=function]:checked').val();
     if (func == "simulate") {
         console.log('func=simulate=' + func);
+        var pgm = $('#pgm').val();
         var s_cond = $('input[name=s_condition]:checked').val();
-        console.log('s_cond:' + s_cond);
+        console.log('pgm:' + pgm);
+        console.log('s_cond: ' + s_cond);
+        // SI: is pgm:string[]?
+        var i = new SimulationInput(pgm, s_cond);
+        $.ajax({
+            type: "POST",
+            url: "api/Simulation",
+            data: JSON.stringify(i),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (msg) {
+                var o = msg.Output;
+                $("#log").append(o);
+            },
+            error: function (e) {
+                $("#log").append("error: " + e);
+            }
+        });
     }
-    var i = new SimulationInput(["x", "y"], "func");
-    $.ajax({
-        type: "POST",
-        url: "api/Simulation",
-        data: JSON.stringify(i),
-        contentType: "application/json",
-        dataType: "json",
-        success: function (msg) {
-            var o = msg.Output;
-            $("#log").append(o);
-        },
-        error: function (e) {
-            $("#log").append("error: " + e);
-        }
-    });
 }
 // SI: old default code. 
 window.onload = function () {
