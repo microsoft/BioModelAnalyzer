@@ -37,8 +37,13 @@ var SimulationOutput = (function () {
 function run_clicked() {
     var txt = "run clicked\n";
     console.log(txt);
-    $("#log").append(txt);
-    var i = new SimulationInput(["x", "y"], "condition");
+    var func = $('input[name=function]:checked').val();
+    if (func == "simulate") {
+        console.log('func=simulate=' + func);
+        var s_cond = $('input[name=s_condition]:checked').val();
+        console.log('s_cond:' + s_cond);
+    }
+    var i = new SimulationInput(["x", "y"], "func");
     $.ajax({
         type: "POST",
         url: "api/Simulation",
