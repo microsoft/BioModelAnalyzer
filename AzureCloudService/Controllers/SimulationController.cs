@@ -15,7 +15,10 @@ namespace WebApi
         {
             var p = input.Pgm;
             var c = input.Condition;
-            var o = new SimulationOutput { Output = p + c };
+
+            var b = BackEndClassLibrary1.Class1.foo(p);
+
+            var o = new SimulationOutput { Output = p + c + b};
             
             return o;
         }
