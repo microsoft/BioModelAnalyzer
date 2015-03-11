@@ -147,7 +147,18 @@
 <p class="guide-text">Default Button<br></p>
 <div data-xrayhtml class="data-xrayhtml method-flip">
 <div class="snippet">
-	<div class="default-button"><button>LOREM</button></div>
+	<ul class="button-list">
+		<li><button>LOREM</button></li>
+	</ul>
+</div>
+</div>
+
+<p class="guide-text">Default Button - Inverted<br></p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet">
+	<ul class="button-list">
+		<li class="inverse"><button>LOREM</button></li>
+	</ul>
 </div>
 </div>
 
@@ -184,12 +195,43 @@
 
 
 <!-- Big Action Button -->
-<p class="guide-text">Big Action Button<br>This is used for actions such as "RUN" in the simul;ation popout.<br>Color can be changed with <code>.action-button(@c)</code> mixin</p>
+<p class="guide-text">Big Action Button<br>This is used for actions such as "RUN" in the simulation popout.<br>Color can be changed with <code>.grey</code>, <code>.green</code>and <code>.red</code> classes</p>
+<p class="bug-note"><code>.action-button</code> without another class for colour doesn't work. It defaults to a small button</p>
 <div data-xrayhtml class="data-xrayhtml method-flip">
 <div class="snippet"><ul class="button-list">
-		<li class="action-button green"><button>RUN</button></li>
+		<li class="action-button grey"><button>LOREM</button></li>
 	</ul></div>
 </div>
+
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li class="action-button green"><button>LOREM</button></li>
+	</ul></div>
+</div>
+
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li class="action-button red"><button>LOREM</button></li>
+	</ul></div>
+</div>
+
+<p class="guide-text">Small Action Button</p>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li class="action-button-small grey"><button>LOREM</button></li>
+	</ul></div>
+</div>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li class="action-button-small green"><button>LOREM</button></li>
+	</ul></div>
+</div>
+<div data-xrayhtml class="data-xrayhtml method-flip">
+<div class="snippet"><ul class="button-list">
+		<li class="action-button-small red"><button>LOREM</button></li>
+	</ul></div>
+</div>
+
 
 <!-- Input Fields -->
 <p class="guide-text">Input Field</p>
@@ -1864,6 +1906,35 @@ Variables Table</p>
 					</table>
 				</div>
 	</div>
+	<ul class="button-list">
+		<li class="action-button-small red"><button>FURTHER TESTING</button></li>
+	</ul>
+
+
+	<div class="further-testing">
+		<span class="analysis-title">Further Testing</span>
+		<div class="popout-icon">
+				<img src="../images/maximize.png">
+			</div><br>
+		
+		<div class="further-testing-menu">
+			<a href="#"><img src="../images/bifurcations-ON.svg"> <span>Bifurcations</span></a>
+			<a href="#"><img src="../images/oscillations.svg"> <span class="inactive">Oscillations</span></a>
+		</div>
+		<div class="scrollable-results">
+			<table class="variables-table bifurcation"><tbody><tr><td>Cell</td><td>Name</td><td>Calculated Bound</td><td>Fix1</td><td>Fix2</td></tr><tr><td></td><td>a</td><td>2</td><td>2</td><td>2</td></tr><tr><td></td><td>b</td><td>2</td><td>2</td><td>2</td></tr><tr><td></td><td>c</td><td>2</td><td>2</td><td>2</td></tr><tr><td></td><td></td><td>0-1</td><td>1</td><td>0</td></tr></tbody></table>
+		</div>
+		<br>
+		<div class="further-testing-menu">
+			<a href="#"><img src="../images/bifurcations.svg"> <span class="inactive">Bifurcations</span></a>
+			<a href="#"><img src="../images/oscillations-ON.svg"> <span >Oscillations</span></a>
+		</div>
+		<div class="scrollable-results">
+			<table class="variables-table oscillations"><tbody><tr><td>Cell</td><td>Name</td><td>Calculated Bound</td><td>Oscillation</td></tr><tr><td></td><td>a</td><td>1-3</td><td>3,2,1,2,2,3,2,2,1</td></tr><tr><td></td><td>b</td><td>0-3</td><td>0,1,2,1,2,2,3,2,2</td></tr><tr><td></td><td>c</td><td>1-4</td><td>4,3,2,2,1,2,2,3,2</td></tr><tr><td></td><td></td><td>0-0</td><td>0,0,0,0,0,0,0,0,0</td></tr></tbody></table>
+		
+		</div>
+
+	</div>
 </div>
 </div>
 </div>
@@ -2902,7 +2973,7 @@ Variables Table</p>
 
 <!-- Simulation Popout -->
 
-<p class="guide-text">Simulation Tab</p>
+<p class="guide-text">Simulation Popout</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 <div class="window simulation-popout">
@@ -3118,10 +3189,11 @@ Variables Table</p>
 	</div>
 
 	<ul class="button-list">
-		<li><button>- 10</button></li>
-		<li class="steps"><button>STEPS: 10</button></li>
-		<li><button>+ 10</button></li>
-		<li class="run"><button>RUN</button></li>
+		<li class="action-button-small grey"><button>EXPORT CSV</button></li>
+		<li class="inverse"><button>- 10</button></li>
+		<li class="steps">STEPS: 10</li>
+		<li class="inverse"><button>+ 10</button></li>
+		<li class="action-button green"><button>RUN</button></li>
 	</ul>
 	<div style="clear:both"></div>
 
