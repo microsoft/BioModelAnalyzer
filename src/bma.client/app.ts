@@ -242,6 +242,10 @@ $(document).ready(function () {
             window.Commands.Execute(commandName, args);
         }
     });
+
+    var contextmenu = $('body').children('ul').filter('.ui-menu');
+    contextmenu.addClass('command-list window canvas-contextual');
+    contextmenu.children('li').children('ul').filter('.ui-menu').addClass('command-list');
     var aas = $('body').children('ul').children('li').children('a');
     aas.children('span').detach();
 
@@ -255,7 +259,7 @@ $(document).ready(function () {
                 break;
             case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg">Edit';//).appendTo($(this));
                 break;
-            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg">Size';//).appendTo($(this));
+            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg">Size  >';//).appendTo($(this));
                 break;
             case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg">Delete';//).appendTo($(this));
                 break;

@@ -118,7 +118,7 @@ body {
     
 /* Typography */
 
-	@import "partials/fonts.less";
+	@import "fonts.less";
 
 	.default-text() {
 		font-family: 'Segoe-UI';
@@ -229,17 +229,18 @@ body {
 		background-color: @c;
 		border: 1px solid white;
 		border-radius:6px;
-		/*&:hover{
+		&:hover{
 			background-color: white;
 			border: 1px solid @c;
-		}*/
+            color: @c;
+		}
 		button{
 			font-size: 25px;
 			color:white;
 			//padding: 7px 10px 7px 10px;
-			/*&:hover{
+			&:hover{
 			color: @c;
-			}*/
+			}
 		}
 	}
 
@@ -259,14 +260,13 @@ body {
 		display: inline-block;
 		.pill-button{
 			.default-button;
-            width: 20px;
+            width: 27px;
             height: 23px;
             border: none;
-			font-size: 1.5em;
+			//font-size: 0.8em;
 			&:first-child{
 				border-top-right-radius: 0px;
 				border-bottom-right-radius: 0px;
-				margin-right: 1px;
 			}
 			&:last-child{
 				border-top-left-radius: 0px;
@@ -361,10 +361,44 @@ body {
 		}
 	}
 
+
+
+
+    ul.command-list{
+				padding: 5px 0px 3px 0px;
+                position: absolute;
+				li{
+					padding:0px;
+					margin-bottom:3px;
+                    position: relative;
+					
+					a {
+						text-decoration: none;
+						line-height: 19px;
+						padding:2px 0px 2px 5px;
+						display:block;
+						vertical-align: middle;
+						&:hover{
+							background-color:@lightgrey;
+						}
+						img{
+							padding:0px;
+							width: 20px;
+							height: 20px;
+							margin:0px 5px 0px 0px;
+							vertical-align: middle;
+
+						}
+					}
+				}
+			}
+
+
+
 // Contextual Command List
     ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons{
             width:85px;
-		    border-radius: 5px;
+		    /*border-radius: 5px;*/
 		    padding:0px;
 		    font-size: 12px;
 		    padding: 5px 0px 3px 0px;
@@ -373,9 +407,10 @@ body {
 			    margin-bottom:3px;
 					
 			    a {
+                    border-radius: 0;
 				    text-decoration: none;
 				    line-height: 19px;
-				    padding:2px 0px 2px 5px;
+				    padding:2px 5px;
 				    display:block;
 				    vertical-align: middle;
 				    &:hover{
@@ -1037,7 +1072,7 @@ body {
                 .inline-block-middle-aligned-children();
 
                 & > *:nth-child(2) {
-                    margin-left: 30px;
+                    //margin-left: 30px;
                     .inline-block-middle-aligned-children();
 
                     & > * {
@@ -1122,6 +1157,7 @@ body {
                 .formula-validation-message {
                     color: @red;
                     max-height: 40px;
+                    width: 80%;
                 }
 			}
 
@@ -1167,9 +1203,12 @@ body {
                             background-color: inherit;
                             border-radius: 0 0 15px 15px;
                             text-align: center;
-
-                            & > div:hover {
-                                color: darken(@font-color-hover,30%);
+                            &>div{
+                                text-align: left;
+                                padding-left: 7px;
+                                &:hover {
+                                    color: darken(@font-color-hover,30%);
+                                }
                             }
                         }
 
@@ -1192,7 +1231,7 @@ body {
 			}
 			.inputs-expandbttn-layout() {
                 float: right;
-                margin: 5px 0 0 0;
+                margin: 5px 0 0 5px;
             }
 
             .inputs-list-header {
@@ -1280,6 +1319,26 @@ body {
 }
 
 	// Analysis Tabs
+
+
+    .furthertesting-button {
+        .action-button(#d0451b);
+        cursor: pointer;
+        height: 30px;
+        text-transform: uppercase;
+        padding: 0 10px;
+        font-size: 20px;
+        color: #fff;
+        width: 200px;
+
+        &.waiting{
+            background-image: url(../images/20x20.gif);
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
+
+
 
     // Proof Tab
 
@@ -1609,6 +1668,25 @@ body {
 	}
 
 	// Scrollbars & Scrollbox Mixin
+
+        ::-webkit-scrollbar-track{
+				width:20px;
+				background-color: white;
+		}
+
+		::-webkit-scrollbar{
+				width: 5px;
+				height: 5px;
+				background-color: @midgrey;
+		}
+
+		::-webkit-scrollbar-thumb
+		{
+			padding: 5px;
+			border-radius: 5px;
+			background-color: @midgrey;
+		}
+
 		.tab-scrollbar(){
 			&::-webkit-scrollbar-track{
 					width:20px;
@@ -1666,6 +1744,7 @@ body {
         .simulation-plot-box {
             height: 200px;
             width: 100%;
+            margin-top:5px;
             &>*{
                 display: inline-block;
                 vertical-align: top;

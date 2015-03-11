@@ -14,10 +14,14 @@
             this.element.addClass('simulation-plot-box');
         },
 
-        changeVisibility: function (param) {
-            var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
-            polyline.isVisible = param.check;
-        },
+        //changeVisibility: function (param) {
+        //    var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
+        //    polyline.isVisible = param.check;
+        //    var legenditem = this.element.find(".simulationplot-legend-legendcontainer");//[data-index=" + param.ind + "]");//.attr("data-index", i)
+        //    //if (param.check) legenditem.hide();
+        //    //else legenditem.show();
+        //    alert(legenditem.length);
+        //},
 
         refresh: function () {
             var that = this;
@@ -71,6 +75,7 @@
                         }
 
                         var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(legendDiv);
+                        if (!options.colors[i].Seen) legendItem.hide();
                         var colorBoxContainer = $("<div></div>").addClass("simulationplot-legend-colorboxcontainer").appendTo(legendItem);
                         var colorBox = $("<div></div>").addClass("simulationplot-legend-colorbox").css("background-color", options.colors[i].Color).appendTo(colorBoxContainer);
                         var nameBox = $("<div></div>").text(options.colors[i].Name).addClass("simulationplot-legend-namebox").appendTo(legendItem);
@@ -154,6 +159,10 @@
             var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
+
+            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]");//.attr("data-index", i)
+            if (check) legenditem.show();
+                else legenditem.hide();
         },
 
         _destroy: function () {
