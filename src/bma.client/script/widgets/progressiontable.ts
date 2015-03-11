@@ -173,8 +173,9 @@
             var that = this;
             var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
             tds.each(function (ind) {
-                var div = $('<div></div>').appendTo($(this));
-                div.addClass('repeat');
+                $(this).addClass('repeat');
+                //var div = $('<div></div>').appendTo($(this));
+                //div.addClass('repeat');
             });
         },
 

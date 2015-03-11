@@ -10,7 +10,7 @@
         -webkit-margin-after: 0;
         -webkit-margin-start: 0;
         -webkit-margin-end: 0;
-        -webkit-padding-start: 0;
+        -webkit-padding-start: 0; 
     }
 
     
@@ -219,12 +219,15 @@
             top: 0;
             left: 0;
         }
-
-        .repeat {
+       
+        &.repeat {
             background-color: rgba(223, 223, 245, 0.5);
         }
         &.change {
             background-color: #fffcb5;
+        }
+        &.repeat.change {
+            background-color: #efeed5;
         }
     }
 

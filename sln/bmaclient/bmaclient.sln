@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
 EndProject
@@ -29,6 +29,8 @@ EndProject
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "BMACloudService", "..\..\src\BMACloudService\BMACloudService.ccproj", "{61C59A01-322F-4B27-8C30-9507181CA2FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMAWebApi", "..\..\src\BMAWebApi\BMAWebApi.csproj", "{6652FDAB-C878-4661-BAAD-664CF8327467}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer32", "..\..\src\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj", "{27FCEE47-CED8-4629-9989-7E9A490B090E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +99,12 @@ Global
 		{6652FDAB-C878-4661-BAAD-664CF8327467}.nuget|Any CPU.Build.0 = Release|Any CPU
 		{6652FDAB-C878-4661-BAAD-664CF8327467}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6652FDAB-C878-4661-BAAD-664CF8327467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27FCEE47-CED8-4629-9989-7E9A490B090E}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{27FCEE47-CED8-4629-9989-7E9A490B090E}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,5 +115,6 @@ Global
 		{501423C3-8EA5-4E54-8D9C-EF60272B57FA} = {491D2994-4833-439D-8426-B0AA75EE0F08}
 		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E} = {491D2994-4833-439D-8426-B0AA75EE0F08}
 		{C6745675-EA9F-41F3-BFFC-2C3810585B36} = {491D2994-4833-439D-8426-B0AA75EE0F08}
+		{27FCEE47-CED8-4629-9989-7E9A490B090E} = {491D2994-4833-439D-8426-B0AA75EE0F08}
 	EndGlobalSection
 EndGlobal

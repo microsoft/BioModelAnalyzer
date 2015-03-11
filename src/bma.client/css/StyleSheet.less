@@ -9,7 +9,7 @@
         -webkit-margin-start: 0;
         -webkit-margin-end: 0;
         -webkit-padding-start: 0;
-    }
+    } 
 
     table {
         display: table;
@@ -118,7 +118,7 @@ body {
     
 /* Typography */
 
-	@import "partials/fonts.less";
+	@import "fonts.less";
 
 	.default-text() {
 		font-family: 'Segoe-UI';
@@ -1256,7 +1256,7 @@ body {
     background-color: white;
     width: 80px;
     height: 70px;
-    border: hidden;
+    border: 1px solid white;
     margin: 0;
     padding: 0;
     @r: @toolbar-icon-border-radius;
@@ -1309,12 +1309,14 @@ body {
 // Result Tables
 		
 		// Table Title
-			.analysis-title{
-				font-size: 15px;
-				line-height: 20px;
-				letter-spacing: 1px;
-				text-transform: uppercase;
-			}
+        .tab-right .analysis-title{
+			font-size: 15px;
+			line-height: 20px;
+			letter-spacing: 1px;
+			text-transform: uppercase;
+		}
+			
+
 		
 		// Default Mixin for tables
 			.result-table-base(){
@@ -1792,7 +1794,7 @@ body {
 			height:110px;
 			display:inline-block;
 			margin-right:-4px;
-
+            border: 1px solid @lightgrey;
 			ul{
 				li{
 					display:inline-block;
@@ -1806,7 +1808,7 @@ body {
 						background-repeat: no-repeat;
 						display: table-cell;
 						vertical-align: bottom;
-						border: none;
+					    border: none;
 						text-align: center;
 						cursor: pointer;
 						&.local-save-btn{
