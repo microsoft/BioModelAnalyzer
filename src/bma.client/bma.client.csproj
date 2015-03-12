@@ -221,7 +221,9 @@
     <Content Include="images\pointer.svg" />
     <Content Include="images\random1.gif" />
     <Content Include="images\random1.png" />
+    <Content Include="images\random1.svg" />
     <Content Include="images\random2.png" />
+    <Content Include="images\random2.svg" />
     <Content Include="images\receptor-ON.svg" />
     <Content Include="images\receptor.png" />
     <Content Include="images\receptor.svg" />
