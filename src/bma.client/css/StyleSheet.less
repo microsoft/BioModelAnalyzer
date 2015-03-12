@@ -233,6 +233,9 @@ body {
 			background-color: white;
 			border: 1px solid @c;
             color: @c;
+            button{
+			    color: @c;
+			}
 		}
 		button{
 			font-size: 25px;
@@ -353,7 +356,7 @@ body {
                     text-transform: uppercase;
                 }
                 
-				&.waiting {
+				&.waiting > button {
                     background-image: url(../images/20x20.gif);
                     .background-img;
 				}		
@@ -364,34 +367,6 @@ body {
 
 
 
-    ul.command-list{
-				padding: 5px 0px 3px 0px;
-                position: absolute;
-				li{
-					padding:0px;
-					margin-bottom:3px;
-                    position: relative;
-					
-					a {
-						text-decoration: none;
-						line-height: 19px;
-						padding:2px 0px 2px 5px;
-						display:block;
-						vertical-align: middle;
-						&:hover{
-							background-color:@lightgrey;
-						}
-						img{
-							padding:0px;
-							width: 20px;
-							height: 20px;
-							margin:0px 5px 0px 0px;
-							vertical-align: middle;
-
-						}
-					}
-				}
-			}
 
 
 
@@ -407,6 +382,12 @@ body {
 			    margin-bottom:3px;
 					
 			    a {
+                    &.ui-state-focus, &.ui-state-active{
+                        border: none;
+                        margin:0;
+                        background-image: none;
+                    }
+
                     border-radius: 0;
 				    text-decoration: none;
 				    line-height: 19px;
@@ -438,6 +419,41 @@ body {
     .ui-icon-trash { background-image: url('../images/icon-paste.svg') !important; }
     .ui-icon-pencil { background-image: url('../images/icon-edit.svg') !important; }
     .ui-icon-arrow-4-diag { background-image: url('../images/icon-size.svg') !important; }
+
+        ul.command-list{
+				padding: 5px 0px 3px 0px;
+                position: absolute;
+                border: none;
+				li{
+					padding:0px;
+					margin-bottom:3px;
+                    position: relative;
+					
+					a {
+						text-decoration: none;
+						line-height: 19px;
+						padding:2px 0px 2px 5px;
+						display:block;
+						vertical-align: middle;
+						&:hover{
+							background-color:@lightgrey;
+						}
+						img{
+							padding:0px;
+							width: 20px;
+							height: 20px;
+							margin:0px 5px 0px 0px;
+							vertical-align: middle;
+
+						}
+					}
+
+                    
+				}
+			}
+
+
+
 
 /* Canvas - Drawing Surface */
 
@@ -1331,7 +1347,7 @@ body {
         color: #fff;
         width: 200px;
 
-        &.waiting{
+        &.waiting > button{
             background-image: url(../images/20x20.gif);
             background-repeat: no-repeat;
             background-position: center;

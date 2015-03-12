@@ -157,12 +157,19 @@
         width: 100%;
         border-collapse: collapse;
 
-        td {
+        /*td {
             border: 1px solid @midgrey;
             text-align: center;
-            line-height: 22px;
             padding: 0;
-        }
+        }*/
+        td{
+			vertical-align: middle;
+			border: 1px solid @midgrey;
+			text-align: center;
+			padding: 1px 3px;
+			color: @darkgrey;
+			height: 20px;
+		}
     }
 
     
@@ -207,11 +214,10 @@
 
 .progression-table {
     .bma-tbl();
-    margin-top: 22px;
+    margin-top: 23px;
     td {
-        position: relative;
-        padding: 0 5px;
-
+        //position: relative;
+        padding: 1px 4px;
         div {
             width: 100%;
             height: 22px;

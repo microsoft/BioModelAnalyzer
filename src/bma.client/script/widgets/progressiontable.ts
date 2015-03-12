@@ -91,7 +91,7 @@
             var trs = this.data.find("tr");
             var tr0 = trs.eq(0);
             for (var i = 0; i < tr0.children("td").length-1; i++) {
-                var tds = trs.children("td:nth-child(" + (i + 1) + ")").children("span:first-child");
+                var tds = trs.children("td:nth-child(" + (i + 1) + ")");
                 if (this.IsClone(column, tds)) {
                     if (this.repeat === undefined)
                         this.repeat = tds;
@@ -141,18 +141,18 @@
                         .appendTo(that.data);
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
-                        var td = $('<td></td>').appendTo(tr);
-                        $('<span></span>').text(data[i]).appendTo(td);
+                        var td = $('<td></td>').text(data[i]).appendTo(tr);
+                        //$('<span></span>').text(data[i]).appendTo(td);
                     }
                 }
                 else {
                     trs.each(function (ind) {
-                        var td = $('<td></td>').appendTo($(this));
-                        $('<span></span>').text(data[ind]).appendTo(td);
-                        if (td.children("span").eq(0).text() !== td.prev().children("span:first-child").text())
+                        var td = $('<td></td>').text(data[ind]).appendTo($(this));
+                        //$('<span></span>').text(data[ind]).appendTo(td);
+                        if (td.text() !== td.prev().text())
                             td.addClass('change')
                     })
-                    var last = that.data.find("tr").children("td:last-child").children("span:first-child");
+                    var last = that.data.find("tr").children("td:last-child");
                     if (that.repeat !== undefined) {
                         if (that.IsClone(that.repeat, last))
                             that.Highlight(that.data.find("tr:first-child").children("td").length-1);
