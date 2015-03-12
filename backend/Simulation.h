@@ -34,6 +34,7 @@ public:
 	Simulation(const Simulation&) = delete;
 	Simulation(Simulation&&) = delete;
 	Simulation(const std::string& filename);
+	Simulation(const std::vector<std::string>&);
 	virtual ~Simulation();
 
 //	bool addCellProgram(CellProgram* c);
@@ -41,6 +42,7 @@ public:
 	std::vector<Cell*> cells(const std::string& name) const;
 
 	void readFile(const std::string& filename);
+	void readVector(const std::vector<std::string>& programs);
 	void run(const std::string& initialProg,
 			 const std::string& initialState,
 			 float initialMean, float initialSD);
@@ -61,6 +63,7 @@ public:
 	std::pair<float, float> defTime(const std::string&) const;
 
 	std::string toString(unsigned int num=0) const;
+	std::vector<std::string> toVectorString() const;
 	std::string toJson() const;
 	friend std::istream& operator>>(std::istream&, Simulation&);
 	friend std::ostream& operator<<(std::ostream&, const Simulation&);

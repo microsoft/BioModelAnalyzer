@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <tuple>
 #include "Simulation.h"
+#include "LineageLib.h"
 
 using std::cout;
 using std::cerr;
@@ -54,6 +55,14 @@ void exportSimulations(Simulation *s);
 
 
 int main() {
+
+	vector<string> programs{};
+	string condition;
+	simulate(programs, condition);
+	checkTimeOverlap(programs, condition, condition, condition, 1);
+	cellExistence(programs, condition, 1);
+	simulateAbnormal(programs, condition, 1);
+
 	Simulation* s{nullptr};
 	while (true) {
 		try {
@@ -281,7 +290,7 @@ void timeOverlap(Simulation* s, bool rawData) {
 	auto print_all = [&](vector<float>& vec) {
 		if (rawData) {
 			std::ostream_iterator<float> out_it(std::cout, ", ");
-			std::copy(results1.begin(), results1.end(), out_it);
+			std::copy(vec.begin(), vec.end(), out_it);
 			cout << endl;
 		}
 

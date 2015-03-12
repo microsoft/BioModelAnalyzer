@@ -90,6 +90,9 @@
     <ClCompile Include="Expression\NeqExp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LineageLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h">
@@ -162,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Expression\NeqExp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LineageLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
