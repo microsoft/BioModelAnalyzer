@@ -156,7 +156,10 @@
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
+    <Content Include="images\1x1.svg" />
     <Content Include="images\20x20.gif" />
+    <Content Include="images\2x2.svg" />
+    <Content Include="images\3x3.svg" />
     <Content Include="images\60x60.gif" />
     <Content Include="images\activate-ON.svg" />
     <Content Include="images\activate.png" />
@@ -164,7 +167,9 @@
     <Content Include="images\analyze.png" />
     <Content Include="images\analyze.svg" />
     <Content Include="images\background.png" />
+    <Content Include="images\bifurcations-ON.svg" />
     <Content Include="images\bifurcations.png" />
+    <Content Include="images\bifurcations.svg" />
     <Content Include="images\check.png" />
     <Content Include="images\close.png" />
     <Content Include="images\constant-ON.svg" />
@@ -179,6 +184,7 @@
     <Content Include="images\expand.png" />
     <Content Include="images\export.png" />
     <Content Include="images\failed.png" />
+    <Content Include="images\failed.svg" />
     <Content Include="images\formula_not_validated.png" />
     <Content Include="images\formula_validated.png" />
     <Content Include="images\graphic.png" />
@@ -207,7 +213,9 @@
     <Content Include="images\new.svg" />
     <Content Include="images\open.png" />
     <Content Include="images\open.svg" />
+    <Content Include="images\oscillations-ON.svg" />
     <Content Include="images\oscillations.png" />
+    <Content Include="images\oscillations.svg" />
     <Content Include="images\pointer ON.svg" />
     <Content Include="images\pointer.png" />
     <Content Include="images\pointer.svg" />
@@ -233,6 +241,8 @@
     <Content Include="images\title-TOU.png" />
     <Content Include="images\undo.png" />
     <Content Include="images\undo.svg" />
+    <Content Include="images\validation-failed.svg" />
+    <Content Include="images\validation-succeeded.svg" />
     <Content Include="images\validation_failed.png" />
     <Content Include="images\validation_succeeded.png" />
     <Content Include="images\variable-ON.svg" />

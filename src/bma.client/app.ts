@@ -248,7 +248,7 @@ $(document).ready(function () {
     contextmenu.children('li').children('ul').filter('.ui-menu').addClass('command-list');
     var aas = $('body').children('ul').children('li').children('a');
     aas.children('span').detach();
-
+    var ulsizes: JQuery;
     aas.each(function () {
         switch ($(this).text()) {
             case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg">Cut';//.appendTo($(this));
@@ -260,12 +260,16 @@ $(document).ready(function () {
             case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg">Edit';//).appendTo($(this));
                 break;
             case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg">Size  >';//).appendTo($(this));
+                ulsizes = $(this).next('ul');
                 break;
             case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg">Delete';//).appendTo($(this));
                 break;
         }
     })
-
+    //var asizes = ulsizes.children('li').children('a');
+    //asizes.each(function (ind) {
+    //    //$(this)[0].innerHTML = '<img alt="" src="../images/'+(ind+1)+'x'+(ind+1)+'.svg">';
+    //});
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
 
     //Preparing elements panel
