@@ -304,7 +304,7 @@ body {
         }
 		// Small Action Button 
 
-		.action-button-small{
+		.action-button-small, .button-list .action-button-small{
 			@s: 15px;
 			@p: 5px 5px 3px 5px;
 			&.grey{
@@ -316,6 +316,7 @@ body {
 			&.red{
 				.action-button(@c: @darkred;@size:@s;@pad:@p;);
 			}
+            height: 25px !important;
 		}
 
 
