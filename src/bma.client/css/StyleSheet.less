@@ -106,14 +106,16 @@ body {
 ///Body ending
 
 /*  Colors  */
-
+    
 	@green: #81BB83;
 	@lightgreen: #D9FFB6;
 	@red: #FEB6B2;
+    @darkred: #CF451B; 
 	@lightgrey: #EDEDED;
 	@midgrey: #AAA;
 	@darkgrey: #606060; 
 	@shadow: rgba(0,0,0,0.50);
+    @lightgreen: #D9FFB6; 
 
     
 /* Typography */
@@ -225,7 +227,7 @@ body {
 		
 // Action Button
 
-	.action-button(@c){
+	/*.action-button(@c){
 		background-color: @c;
 		border: 1px solid white;
 		border-radius:6px;
@@ -255,7 +257,67 @@ body {
 			}
 		}
         
-	}
+	}*/
+
+    		// Action Button
+
+		.action-button(@c: @midgrey;@size:20px;@pad:5px 7px 5px 7px;){
+			background-color: @c;
+			border: 1px solid white;
+			border-radius:6px;
+            cursor: pointer;
+            height: 30px;
+            color:white;
+			&:hover{
+				background-color: white;
+				border: 1px solid @c;
+                color: @c;
+                button{
+			        color: @c;
+			    }
+			}
+			button{
+				font-size: @size;
+				line-height: 100%;
+				color:white;
+				padding: @pad;
+				&:hover{
+				color: @c;
+				}
+			}
+		}
+
+		.action-button, .button-list .action-button{
+			&.grey{
+				.action-button;
+			}
+			&.green{
+				.action-button(@c: @green);
+			}
+			&.red{
+				.action-button(@c: @darkred);
+			}
+		}
+
+        li.action-button {
+            padding: 0 5px;
+        }
+		// Small Action Button 
+
+		.action-button-small{
+			@s: 15px;
+			@p: 5px 5px 3px 5px;
+			&.grey{
+				.action-button(@size:@s;@pad:@p;);
+			}
+			&.green{
+				.action-button(@c: @green;@size:@s;@pad:@p;);
+			}
+			&.red{
+				.action-button(@c: @darkred;@size:@s;@pad:@p;);
+			}
+		}
+
 
 // Pill Button
 
@@ -1338,7 +1400,7 @@ body {
 	// Analysis Tabs
 
 
-    .furthertesting-button {
+    /*.furthertesting-button {
         .action-button(#d0451b);
         cursor: pointer;
         height: 30px;
@@ -1353,7 +1415,7 @@ body {
             background-repeat: no-repeat;
             background-position: center;
         }
-    }
+    }*/
 
 
 
@@ -1370,7 +1432,7 @@ body {
             }
 
             div.stabilize-failed{
-                color: red;
+                color: @darkred;
             }
             div.stabilize-prooved{
                 color: @green;

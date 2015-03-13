@@ -282,13 +282,21 @@
     background-repeat: no-repeat;
     background-color: transparent;
     background-size: contain;
-    height: 25px;
-    width: 50px;
+    height: 20px;
+    width: 20px;
+    margin-right: 3px;
 }
 
 /*.ui-tabs > div {
     border: 1px solid lightgray;
 }*/
+
+.further-testing-tab{
+    &>div {
+        display: inline-block;
+        vertical-align: bottom;
+    }
+}
 
 .bifurcations-icon {
     background-image: url("../images/bifurcations.svg");
@@ -305,6 +313,14 @@ li.ui-state-active .bifurcations-icon {
 li.ui-state-active .oscillations-icon {
     background-image: url("../images/oscillations-ON.svg");
 }
+
+li.ui-state-hover{
+    background: none;
+}
+li.ui-state-default{
+    background: none;
+}
+
 
 .ui-tabs-vertical {
     width: 55em;

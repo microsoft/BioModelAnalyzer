@@ -25,6 +25,10 @@
                     this.toggler
                         .addClass("waiting")
                         .text("");
+                    var snipper = $('<div class="spinner"></div>').appendTo(this.toggler);
+                    for (var i = 1; i < 4; i++) {
+                        $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+                    }
                     break;
             }
             
@@ -33,7 +37,7 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            var defaultToggler = $('<button></button>').text("Further Testing").addClass('furthertesting-button');
+            var defaultToggler = $('<button></button>').text("Further Testing").addClass('action-button-small red');
 
             this.element.addClass("further-testing-box");
             this.toggler = that.options.toggler || defaultToggler;
