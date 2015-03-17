@@ -251,25 +251,26 @@ $(document).ready(function () {
     var ulsizes: JQuery;
     aas.each(function () {
         switch ($(this).text()) {
-            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg">Cut';//.appendTo($(this));
+            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';//.appendTo($(this));
                 break;
-            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg">Copy';//).appendTo($(this));
+            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';//).appendTo($(this));
                 break;
-            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg">Paste';//).appendTo($(this));
+            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg><span>Paste</span>';//).appendTo($(this));
                 break;
-            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg">Edit';//).appendTo($(this));
+            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';//).appendTo($(this));
                 break;
-            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg">Size  >';//).appendTo($(this));
+            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';//).appendTo($(this));
                 ulsizes = $(this).next('ul');
                 break;
-            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg">Delete';//).appendTo($(this));
+            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';//).appendTo($(this));
                 break;
         }
     })
-    //var asizes = ulsizes.children('li').children('a');
-    //asizes.each(function (ind) {
-    //    //$(this)[0].innerHTML = '<img alt="" src="../images/'+(ind+1)+'x'+(ind+1)+'.svg">';
-    //});
+    ulsizes.addClass('context-menu-small');
+    var asizes = ulsizes.children('li').children('a');
+    asizes.each(function (ind) {
+        $(this)[0].innerHTML = '<img alt="" src="../images/'+(ind+1)+'x'+(ind+1)+'.svg">';
+    });
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
 
     //Preparing elements panel
