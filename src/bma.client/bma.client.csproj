@@ -171,6 +171,7 @@
     <Content Include="images\bifurcations.png" />
     <Content Include="images\bifurcations.svg" />
     <Content Include="images\check.png" />
+    <Content Include="images\check.svg" />
     <Content Include="images\close.png" />
     <Content Include="images\constant-ON.svg" />
     <Content Include="images\constant.png" />

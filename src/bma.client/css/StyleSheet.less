@@ -116,6 +116,8 @@ body {
 	@darkgrey: #606060; 
 	@shadow: rgba(0,0,0,0.50);
     @lightgreen: #D9FFB6; 
+    @sim-yellow: #FFFCB5; 
+    @sim-blue: rgba(223,223,245,0.5); 
 
     
 /* Typography */
@@ -428,7 +430,12 @@ body {
 	}
 
 
-
+    .run-button {
+        width: 70px;
+    }
+    .further-testing-button {
+        width: 101px;
+    }
 
 
 
@@ -1575,12 +1582,71 @@ body {
 				.propagation-cell-red{background-color: @red;}
 				.propagation-cell-green{background-color: @lightgreen;}
                 .change{
-                    background-color: #fffcb5;
+                    background-color: @sim-yellow;
                 }
                 tr:nth-child(even) {
                     background-color: @lightgrey;
                 }
 			}
+
+             .bma-tbl() {
+                    width: 100%;
+                    border-collapse: collapse;
+
+                    /*td {
+                        border: 1px solid @midgrey;
+                        text-align: center;
+                        padding: 0;
+                    }*/
+                    td{
+			            vertical-align: middle;
+			            border: 1px solid @midgrey;
+			            text-align: center;
+			            padding: 1px 3px;
+			            color: @darkgrey;
+			            height: 20px;
+		            }
+                }
+
+             .progression-table {
+    .bma-tbl();
+    margin-top: 23px;
+    td {
+        //position: relative;
+        padding: 1px 4px;
+        div {
+            width: 100%;
+            height: 22px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+       
+        &.repeat {
+            background-color: @sim-blue;
+        }
+        &.change {
+            background-color: @sim-yellow;
+        }
+        &.repeat.change {
+            background-color: #efeed5;
+        }
+    }
+
+    td:first-child {
+        border-left: none;
+    }
+
+    /*tr:nth-child(even) {
+        background-color: @odd-item-color;
+    }*/
+
+    tr:nth-child(even) {
+        background-color: @lightgrey;
+    }
+}
+
+
 
 		// Small Variables Table in Simulation Tab
 
@@ -1917,7 +1983,7 @@ body {
 
 
 .plot-check {
-    background-image: url("../images/check.png");
+    background-image: url("../images/check.svg");
     .background-img();
     &:hover{
         cursor: pointer;
@@ -2106,7 +2172,7 @@ body {
 
 	.spinner {
 	  //margin: 100px auto 0;
-	  width: 70px;
+	  //width: 70px;
 	  text-align: center;
 	}
 
