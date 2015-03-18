@@ -47,15 +47,19 @@
                 this.formulaTextArea.removeClass("formula-failed-textarea");
                 this.formulaTextArea.removeClass("formula-validated-textarea");
             }
-            if (this.options.approved === true) {
-                that.prooficon.addClass("formula-validated-icon");
-                this.formulaTextArea.addClass("formula-validated-textarea");
-                that.element.removeClass('bmaeditor-expanded');
-            }
-            else if (this.options.approved === false) {
-                that.prooficon.addClass("formula-failed-icon");
-                this.formulaTextArea.addClass("formula-failed-textarea");
-                that.element.addClass('bmaeditor-expanded');
+            else {
+
+                if (this.options.approved === true) {
+                    that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
+                    this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
+                    that.element.removeClass('bmaeditor-expanded');
+                }
+                else if (this.options.approved === false) {
+                    that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
+                    this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
+                    that.element.addClass('bmaeditor-expanded');
+                }
+
             }
             that.errorMessage.text(message);
             

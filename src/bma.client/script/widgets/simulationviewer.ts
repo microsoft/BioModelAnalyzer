@@ -53,6 +53,7 @@
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
                 that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot });//.height(160)
                 that.plotDiv.resultswindowviewer({
+                    header: "Simulation Graph",
                     content: that.plot,
                     icon: "max",
                     tabid: "SimulationPlot"

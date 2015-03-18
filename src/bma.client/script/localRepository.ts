@@ -73,9 +73,15 @@
         }
 
         private IsUserKey(key: string): string {
-            var sp = key.split('.', 2);
-            if (sp[0] === "user")
-                return sp[1];
+            var sp = key.split('.');
+            if (sp[0] === "user") {
+                var q = sp[1];
+                for (var i = 2; i < sp.length; i++) {
+                    q = q.concat('.');
+                    q = q.concat(sp[i]);
+                }
+                return q;
+            }
             else return undefined;
         }
     }

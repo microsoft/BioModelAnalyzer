@@ -59,7 +59,7 @@
     <Compile Include="Version.fs" />
     <Compile Include="Log.fs" />
     <Compile Include="Util.fs" />
-    <Compile Include="Test.fs" />
+    <!--<Compile Include="Test.fs" />-->
     <Compile Include="Expr.fs" />
     <Compile Include="ParsecExpr.fs" />
     <Compile Include="QN.fs" />
@@ -91,27 +91,17 @@
     <Compile Include="Prover.fs" />
     <Compile Include="Suggest.fs" />
     <Compile Include="UIMain.fs" />
-    <Compile Include="UnitTests.fs" />
+    <!--<Compile Include="UnitTests.fs" />-->
     <None Include="App.config" />
     <Compile Include="PathFinder.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
-      <Name>FParsec (FParsec\FParsec)</Name>
-      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
-      <Name>FParsecCS</Name>
-      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <Reference Include="FSharp.Core">
       <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
-      <HintPath>..\Libs\dotNET\32bit\Microsoft.Z3.dll</HintPath>
+      <HintPath>..\..\ext\dotNET\32bit\Microsoft.Z3.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -120,6 +110,16 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
+      <Name>FParsec</Name>
+      <Project>{8ea340d3-e9e0-477e-9ac3-fbfdf3bad41e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj">
+      <Name>FParsecCS</Name>
+      <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Name>BioCheckAnalyzerCommon</Name>
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>

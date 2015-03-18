@@ -10,7 +10,7 @@
         -webkit-margin-after: 0;
         -webkit-margin-start: 0;
         -webkit-margin-end: 0;
-        -webkit-padding-start: 0;
+        -webkit-padding-start: 0; 
     }
 
     
@@ -75,7 +75,7 @@
         background-color: gray;
     }
 
-    ::-webkit-scrollbar {
+    /*::-webkit-scrollbar {
         width: 17px;
         height: 17px;
     }
@@ -84,8 +84,8 @@
     ::-webkit-scrollbar-thumb {
         border-radius: 10px;
         background-color: gray;
-        /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
-    }
+        /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    }*/
 
 
     /*@odd-item-color: #ededed;
@@ -157,12 +157,19 @@
         width: 100%;
         border-collapse: collapse;
 
-        td {
+        /*td {
             border: 1px solid @midgrey;
             text-align: center;
-            line-height: 22px;
             padding: 0;
-        }
+        }*/
+        td{
+			vertical-align: middle;
+			border: 1px solid @midgrey;
+			text-align: center;
+			padding: 1px 3px;
+			color: @darkgrey;
+			height: 20px;
+		}
     }
 
     
@@ -188,7 +195,7 @@
 
 
 .bma-random-icon1 {
-    background-image: url(../images/random1.gif);
+    background-image: url(../images/random1.svg);
     background-repeat: no-repeat;
     background-size: contain;
     background-position-x: center;
@@ -197,7 +204,7 @@
 }
 
 .bma-random-icon2 {
-    background-image: url(../images/random2.png);
+    background-image: url(../images/random2.svg);
     background-repeat: no-repeat;
     background-position-x: left;
     width: 26px;
@@ -209,9 +216,8 @@
     .bma-tbl();
     margin-top: 23px;
     td {
-        position: relative;
-        padding: 0 5px;
-
+        //position: relative;
+        padding: 1px 4px;
         div {
             width: 100%;
             height: 22px;
@@ -219,12 +225,15 @@
             top: 0;
             left: 0;
         }
-
-        .repeat {
+       
+        &.repeat {
             background-color: rgba(223, 223, 245, 0.5);
         }
         &.change {
             background-color: #fffcb5;
+        }
+        &.repeat.change {
+            background-color: #efeed5;
         }
     }
 
@@ -247,7 +256,7 @@
 
 /// Further testing
 
-.furthertesting-button {
+/*.furthertesting-button {
     width: 150px;
     height: 30px;
     padding: 0;
@@ -265,7 +274,7 @@
         background-repeat: no-repeat;
         background-position: center;
     }
-}
+}*/
 
 
 .further-testing-tabs() {
@@ -273,23 +282,45 @@
     background-repeat: no-repeat;
     background-color: transparent;
     background-size: contain;
-    height: 25px;
-    width: 50px;
+    height: 20px;
+    width: 20px;
+    margin-right: 3px;
 }
 
 /*.ui-tabs > div {
     border: 1px solid lightgray;
 }*/
 
+.further-testing-tab{
+    &>div {
+        display: inline-block;
+        vertical-align: bottom;
+    }
+}
+
 .bifurcations-icon {
-    background-image: url("../images/bifurcations.png");
+    background-image: url("../images/bifurcations.svg");
     .further-testing-tabs;
+}
+li.ui-state-active .bifurcations-icon {
+    background-image: url("../images/bifurcations-ON.svg");
 }
 
 .oscillations-icon {
-    background-image: url("../images/oscillations.png");
+    background-image: url("../images/oscillations.svg");
     .further-testing-tabs;
 }
+li.ui-state-active .oscillations-icon {
+    background-image: url("../images/oscillations-ON.svg");
+}
+
+li.ui-state-hover{
+    background: none;
+}
+li.ui-state-default{
+    background: none;
+}
+
 
 .ui-tabs-vertical {
     width: 55em;
@@ -355,7 +386,9 @@
     cursor: pointer;
     padding-left: 5px;
 }
-
+.simulationplot-legend-legenditem:not(:last-child) {
+    margin-bottom: 5px;
+}
 
 .simulationplot-legend-colorboxcontainer {
     display: table-cell;
@@ -411,12 +444,13 @@
     height: 40px;
     background-position: center;
     background-repeat: no-repeat;
+    background-size: contain;
 }
 
 .formula-failed-icon {
-    background-image: url("../images/validation_failed.png");
+    background-image: url("../images/validation-failed.svg");
 }
 
 .formula-validated-icon {
-    background-image: url("../images/validation_succeeded.png");
+    background-image: url("../images/validation-succeeded.svg");
 }

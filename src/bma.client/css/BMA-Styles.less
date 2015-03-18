@@ -86,15 +86,18 @@
 	@green: #81BB83;
 	@lightgreen: #D9FFB6;
 	@red: #FEB6B2;
+	@darkred: #CF451B;
 	@lightgrey: #EDEDED;
 	@midgrey: #AAA;
 	@darkgrey: #606060; 
+	@sim-yellow: #FFFCB5;
+	@sim-blue: rgba(223,223,245,0.5);
 	
-	@shadow: rgba(0,0,0,0.50);
+	@shadow: rgba(0,0,0,0.50); 
 
 /*  Typography  */
 
-	@import "partials/fonts.less";
+	@import "fonts.less";
 
 	.default-text() {
 		font-family: 'Segoe-UI';
@@ -152,53 +155,66 @@
 
 		.default-button{
 			
-				margin-bottom: 10px;
-				background-color: @lightgrey;
-				border-radius: 15px;
-				padding: 0;
+			margin-bottom: 10px;
+			background-color: @lightgrey;
+			border-radius: 15px;
+			padding: 0;
+			cursor: pointer;
+			display: inline-block;
+			margin-right: 5px;
+			padding: 0px 5px 0px 5px;
+
+
+			&:hover {
+				color: white;
+				background-color: @darkgrey;
+			}
+
+			button{
+				border: none;
+				padding: 3px;
+				min-width: 17px;
+				background-color: transparent;
 				cursor: pointer;
-				display: inline-block;
-				margin-right: 5px;
-				padding: 0px 5px 0px 5px;
+				color: inherit;
+				.default-text;
+				font-size: 0.8em;
+				letter-spacing: 1px;
 
-
-				&:hover {
+				&:hover{
 					color: white;
-					background-color: @darkgrey;
 				}
-
-				button{
-					border: none;
-					padding: 3px;
-					min-width: 17px;
-					background-color: transparent;
-					cursor: pointer;
-					color: inherit;
-					.default-text;
-					font-size: 0.8em;
-					letter-spacing: 1px;
-
-					&:hover{
-						color: white;
-					}
-					&:focus{
-						outline: none;
-					}
+				&:focus{
+					outline: none;
 				}
-			
-		}	
-
-
+			}
+		}
 
 		ul.button-list{
 			margin: 10px 0px 0px 0px;
 			padding: 0px;
 			li{
 				.default-button;
+				&.inverse{
+					background-color: @darkgrey;
+						&:hover{
+							background-color: @lightgrey;
+						}
+						button{
+							color: white;
+							&:hover{
+								color:@darkgrey;
+							}
+						}
+				}
 			}
 			
 			
 		}
+
+
+
+
 
 		// Buttons > Dialog
 
@@ -211,7 +227,7 @@
 		
 		// Action Button
 
-		.action-button(@c){
+		.action-button(@c: @midgrey;@size:20px;@pad:5px 7px 5px 7px;){
 			background-color: @c;
 			border: 1px solid white;
 			border-radius:6px;
@@ -220,23 +236,44 @@
 				border: 1px solid @c;
 			}
 			button{
-				font-size: 25px;
+				font-size: @size;
+				line-height: 100%;
 				color:white;
-				padding: 7px 10px 7px 10px;
+				padding: @pad;
 				&:hover{
 				color: @c;
 				}
 			}
 		}
 
-		.button-list{
-			li.action-button{
-				.action-button(@darkgrey);
-				&.green{
-					.action-button(@green);
-				}
+		li.action-button{
+			&.grey{
+				.action-button;
+			}
+			&.green{
+				.action-button(@c: @green);
+			}
+			&.red{
+				.action-button(@c: @darkred);
 			}
 		}
+		// Small Action Button 
+
+		li.action-button-small{
+			@s: 15px;
+			@p: 5px 5px 3px 5px;
+			&.grey{
+				.action-button(@size:@s;@pad:@p;);
+			}
+			&.green{
+				.action-button(@c: @green;@size:@s;@pad:@p;);
+			}
+			&.red{
+				.action-button(@c: @darkred;@size:@s;@pad:@p;);
+			}
+		}
+
+		
 
 		// Pill Button
 
@@ -288,40 +325,28 @@
 		// Simulation Popout Buttons 
 			.simulation-popout{
 				ul.button-list{
-					float: right;
-					margin: 0px;
-
-					li{
-						background-color: @darkgrey;
-						&:hover{
-							background-color: @lightgrey;
-						}
+					text-align: right;
+					font-size: 15px;
+					display: table;
+					width:100%;
+					& li:first-child{
+						margin-right: 30px;
 					}
-
-					button{
-						color: white;
-						font-size: 14px;
-						padding:3px;
-						&:hover{
-							color: @darkgrey;
-						}
-					}
-
-					li.steps{
-						background-color: @lightgrey;
-						color: @darkgrey;
-						button{
-							color: @darkgrey;
-						}
-					}
-
-					li.run{
+					& li:last-child{
 						margin-left: 30px;
-						.action-button(@green)
+					}
+					li{
+						vertical-align: middle;
+					}
+					li.steps{
+						background-color: white;
+						color: @darkgrey;
 						
+						padding: 3px 8px 3px 8px;
 					}
 				}
 			}
+			
 
 	// Contextual Command List
 		ul.command-list{
@@ -440,6 +465,29 @@
 			}
 		}
 
+		.further-testing-menu{
+			margin-bottom: 5px;
+			a{
+				display: inline-block;
+				text-decoration: none;
+				margin-right: 25px;
+				*{
+					vertical-align: middle;
+				}
+			}
+
+			img{
+				width:25px;
+				margin-right: 0px;
+			}
+
+			.inactive{
+				color: @midgrey;
+			}
+		}
+
+
+
 	// Result Tables
 		
 		// Table Title
@@ -491,13 +539,13 @@
 				td:nth-child(1){
 						width:20%;
 					}
-					td:nth-child(2){
-						width:65%;
-						text-align: left;
-					}
-					td:nth-child(3){
-						width:15%;
-					}
+				td:nth-child(2){
+					width:65%;
+					text-align: left;
+				}
+				td:nth-child(3){
+					width:15%;
+				}
 			}
 
 		// Tables in Tabs
@@ -532,6 +580,40 @@
 						}
 					.propagation-cell-red{background-color: @red;}
 					.propagation-cell-green{background-color: @lightgreen;}
+				}
+
+			// Further Testing Tables in Proof Tab
+
+				.further-testing{
+					.scrollable-results{
+						.variables-table{
+							&.bifurcation{
+								td:nth-child(1){
+									width:10%;
+								}
+								td:nth-child(2){
+									width:30%;
+									text-align: left;
+								}
+								td:nth-child(3){
+									width:35%;
+								}
+							}
+
+							&.oscillations{
+								td:nth-child(1){
+									width:7%;
+								}
+								td:nth-child(2){
+									width:25%;
+									text-align: left;
+								}
+								td:nth-child(3){
+									width:35%;
+								}
+							}
+						}
+					}
 				}
 
 			// Small Variables Table in Simulation Tab
@@ -655,6 +737,52 @@
 						}
 					}
 				}
+
+/* Loading Animation */
+
+	.spinner {
+	  //margin: 100px auto 0;
+	  width: 70px;
+	  text-align: center;
+	}
+
+	.spinner > div {
+	  width: 10px;
+	  height: 10px;
+	  background-color: @midgrey;
+	  border-radius: 100%;
+	  display: inline-block;
+	  -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+	  animation: bouncedelay 1.4s infinite ease-in-out;
+	  /* Prevent first frame from flickering when animation starts */
+	  -webkit-animation-fill-mode: both;
+	  animation-fill-mode: both;
+	}
+
+	.spinner .bounce1 {
+	  -webkit-animation-delay: -0.32s;
+	  animation-delay: -0.32s;
+	}
+
+	.spinner .bounce2 {
+	  -webkit-animation-delay: -0.16s;
+	  animation-delay: -0.16s;
+	}
+
+	@-webkit-keyframes bouncedelay {
+	  0%, 80%, 100% { -webkit-transform: scale(0.0) }
+	  40% { -webkit-transform: scale(1.0) }
+	}
+
+	@keyframes bouncedelay {
+	  0%, 80%, 100% { 
+	    transform: scale(0.0);
+	    -webkit-transform: scale(0.0);
+	  } 40% { 
+	    transform: scale(1.0);
+	    -webkit-transform: scale(1.0);
+	  }
+	}
 
 /* Body */
 
@@ -1225,7 +1353,7 @@
 		.simulation-variables{
 			margin-top: 10px;
 			.scrollable-results{
-				.scrollbox(300px);
+				.scrollbox(150px);
 			}
 		}
 

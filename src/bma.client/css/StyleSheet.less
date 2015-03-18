@@ -9,7 +9,7 @@
         -webkit-margin-start: 0;
         -webkit-margin-end: 0;
         -webkit-padding-start: 0;
-    }
+    } 
 
     table {
         display: table;
@@ -106,19 +106,21 @@ body {
 ///Body ending
 
 /*  Colors  */
-
+    
 	@green: #81BB83;
 	@lightgreen: #D9FFB6;
 	@red: #FEB6B2;
+    @darkred: #CF451B; 
 	@lightgrey: #EDEDED;
 	@midgrey: #AAA;
 	@darkgrey: #606060; 
 	@shadow: rgba(0,0,0,0.50);
+    @lightgreen: #D9FFB6; 
 
     
 /* Typography */
 
-	@import "partials/fonts.less";
+	@import "fonts.less";
 
 	.default-text() {
 		font-family: 'Segoe-UI';
@@ -225,21 +227,25 @@ body {
 		
 // Action Button
 
-	.action-button(@c){
+	/*.action-button(@c){
 		background-color: @c;
 		border: 1px solid white;
 		border-radius:6px;
-		/*&:hover{
+		&:hover{
 			background-color: white;
 			border: 1px solid @c;
-		}*/
+            color: @c;
+            button{
+			    color: @c;
+			}
+		}
 		button{
 			font-size: 25px;
 			color:white;
 			//padding: 7px 10px 7px 10px;
-			/*&:hover{
+			&:hover{
 			color: @c;
-			}*/
+			}
 		}
 	}
 
@@ -251,7 +257,68 @@ body {
 			}
 		}
         
-	}
+	}*/
+
+    		// Action Button
+
+		.action-button(@c: @midgrey;@size:20px;@pad:5px 7px 5px 7px;){
+			background-color: @c;
+			border: 1px solid white;
+			border-radius:6px;
+            cursor: pointer;
+            height: 30px;
+            color:white;
+			&:hover{
+				background-color: white;
+				border: 1px solid @c;
+                color: @c;
+                button{
+			        color: @c;
+			    }
+			}
+			button{
+				font-size: @size;
+				line-height: 100%;
+				color:white;
+				padding: @pad;
+				&:hover{
+				color: @c;
+				}
+			}
+		}
+
+		.action-button, .button-list .action-button{
+			&.grey{
+				.action-button;
+			}
+			&.green{
+				.action-button(@c: @green);
+			}
+			&.red{
+				.action-button(@c: @darkred);
+			}
+		}
+
+        li.action-button {
+            padding: 0 5px;
+        }
+		// Small Action Button 
+
+		.action-button-small, .button-list .action-button-small{
+			@s: 15px;
+			@p: 5px 5px 3px 5px;
+			&.grey{
+				.action-button(@size:@s;@pad:@p;);
+			}
+			&.green{
+				.action-button(@c: @green;@size:@s;@pad:@p;);
+			}
+			&.red{
+				.action-button(@c: @darkred;@size:@s;@pad:@p;);
+			}
+            height: 25px !important;
+		}
+
 
 // Pill Button
 
@@ -259,14 +326,13 @@ body {
 		display: inline-block;
 		.pill-button{
 			.default-button;
-            width: 20px;
+            width: 27px;
             height: 23px;
             border: none;
-			font-size: 1.5em;
+			//font-size: 0.8em;
 			&:first-child{
 				border-top-right-radius: 0px;
 				border-bottom-right-radius: 0px;
-				margin-right: 1px;
 			}
 			&:last-child{
 				border-top-left-radius: 0px;
@@ -353,7 +419,7 @@ body {
                     text-transform: uppercase;
                 }
                 
-				&.waiting {
+				&.waiting > button {
                     background-image: url(../images/20x20.gif);
                     .background-img;
 				}		
@@ -361,10 +427,16 @@ body {
 		}
 	}
 
+
+
+
+
+
+
 // Contextual Command List
     ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons{
             width:85px;
-		    border-radius: 5px;
+		    /*border-radius: 5px;*/
 		    padding:0px;
 		    font-size: 12px;
 		    padding: 5px 0px 3px 0px;
@@ -373,9 +445,16 @@ body {
 			    margin-bottom:3px;
 					
 			    a {
+                    &.ui-state-focus, &.ui-state-active{
+                        border: none;
+                        margin:0;
+                        background-image: none;
+                    }
+
+                    border-radius: 0;
 				    text-decoration: none;
 				    line-height: 19px;
-				    padding:2px 0px 2px 5px;
+				    padding:2px 5px;
 				    display:block;
 				    vertical-align: middle;
 				    &:hover{
@@ -385,7 +464,7 @@ body {
 					    padding:0px;
 					    width: 20px;
 					    height: 20px;
-					    margin:0px 5px 0px 0px;
+					    //margin:0px 5px 0px 0px;
 					    vertical-align: middle;
                         position: relative;
                         float: left;
@@ -403,6 +482,64 @@ body {
     .ui-icon-trash { background-image: url('../images/icon-paste.svg') !important; }
     .ui-icon-pencil { background-image: url('../images/icon-edit.svg') !important; }
     .ui-icon-arrow-4-diag { background-image: url('../images/icon-size.svg') !important; }
+
+        ul.command-list{
+				padding: 5px 0px 3px 0px;
+                position: absolute;
+                border: none;
+				li{
+					padding:0px;
+					margin-bottom:3px;
+                    position: relative;
+				    
+					a {
+						text-decoration: none;
+						line-height: 19px;
+						padding:2px 0px 2px 5px;
+						display:block;
+						vertical-align: middle;
+						&:hover{
+							background-color:@lightgrey;
+						}
+						img{
+							padding:0px;
+							width: 20px;
+							height: 20px;
+							//margin:0px 5px 0px 0px;
+							vertical-align: middle;
+
+						}
+                        span {
+                            margin-left: 5px;
+                        }
+					}
+
+                    
+				}
+			}
+
+        .ui-menu .ui-menu-item {
+            list-style-image: none;
+
+            a {
+                height: 20px;
+                img{ margin: 0;}
+            }
+        }
+        .context-menu-small {
+            
+            /*li {
+                height: 22px;
+                position: relative;
+                a {
+                    position: absolute;
+                    height: 20px;
+                    img {
+                        margin: 0;
+                    }
+                }
+            }*/
+        }
 
 /* Canvas - Drawing Surface */
 
@@ -1037,7 +1174,7 @@ body {
                 .inline-block-middle-aligned-children();
 
                 & > *:nth-child(2) {
-                    margin-left: 30px;
+                    //margin-left: 30px;
                     .inline-block-middle-aligned-children();
 
                     & > * {
@@ -1122,6 +1259,7 @@ body {
                 .formula-validation-message {
                     color: @red;
                     max-height: 40px;
+                    width: 80%;
                 }
 			}
 
@@ -1135,6 +1273,7 @@ body {
                     width: 30%;
                     li {
                         .default-button;
+                        width: 50px;
                         //.bma-variables-options-editor-li();
                         display: table;
                         margin: 0 0 5px 0;
@@ -1167,9 +1306,12 @@ body {
                             background-color: inherit;
                             border-radius: 0 0 15px 15px;
                             text-align: center;
-
-                            & > div:hover {
-                                color: darken(@font-color-hover,30%);
+                            &>div{
+                                text-align: left;
+                                padding-left: 7px;
+                                &:hover {
+                                    color: darken(@font-color-hover,30%);
+                                }
                             }
                         }
 
@@ -1192,7 +1334,7 @@ body {
 			}
 			.inputs-expandbttn-layout() {
                 float: right;
-                margin: 5px 0 0 0;
+                margin: 5px 0 0 5px;
             }
 
             .inputs-list-header {
@@ -1256,7 +1398,7 @@ body {
     background-color: white;
     width: 80px;
     height: 70px;
-    border: hidden;
+    border: 1px solid white;
     margin: 0;
     padding: 0;
     @r: @toolbar-icon-border-radius;
@@ -1281,6 +1423,26 @@ body {
 
 	// Analysis Tabs
 
+
+    /*.furthertesting-button {
+        .action-button(#d0451b);
+        cursor: pointer;
+        height: 30px;
+        text-transform: uppercase;
+        padding: 0 10px;
+        font-size: 20px;
+        color: #fff;
+        width: 200px;
+
+        &.waiting {
+            background-image: url(../images/20x20.gif);
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }*/
+
+
+
     // Proof Tab
 
 		.proof-state{
@@ -1294,7 +1456,7 @@ body {
             }
 
             div.stabilize-failed{
-                color: red;
+                color: @darkred;
             }
             div.stabilize-prooved{
                 color: @green;
@@ -1309,12 +1471,14 @@ body {
 // Result Tables
 		
 		// Table Title
-			.analysis-title{
-				font-size: 15px;
-				line-height: 20px;
-				letter-spacing: 1px;
-				text-transform: uppercase;
-			}
+        .tab-right .analysis-title{
+			font-size: 15px;
+			line-height: 20px;
+			letter-spacing: 1px;
+			text-transform: uppercase;
+		}
+			
+
 		
 		// Default Mixin for tables
 			.result-table-base(){
@@ -1607,6 +1771,25 @@ body {
 	}
 
 	// Scrollbars & Scrollbox Mixin
+
+        ::-webkit-scrollbar-track{
+				width:20px;
+				background-color: white;
+		}
+
+		::-webkit-scrollbar{
+				width: 5px;
+				height: 5px;
+				background-color: @midgrey;
+		}
+
+		::-webkit-scrollbar-thumb
+		{
+			padding: 5px;
+			border-radius: 5px;
+			background-color: @midgrey;
+		}
+
 		.tab-scrollbar(){
 			&::-webkit-scrollbar-track{
 					width:20px;
@@ -1657,13 +1840,14 @@ body {
 		.simulation-variables{
 			margin-top: 10px;
 			.scrollable-results{
-				.scrollbox(300px);
+				.scrollbox(121px);
 			}
 		}
 
         .simulation-plot-box {
             height: 200px;
             width: 100%;
+            margin-top:5px;
             &>*{
                 display: inline-block;
                 vertical-align: top;
@@ -1792,7 +1976,7 @@ body {
 			height:110px;
 			display:inline-block;
 			margin-right:-4px;
-
+            border: 1px solid @lightgrey;
 			ul{
 				li{
 					display:inline-block;
@@ -1806,7 +1990,7 @@ body {
 						background-repeat: no-repeat;
 						display: table-cell;
 						vertical-align: bottom;
-						border: none;
+					    border: none;
 						text-align: center;
 						cursor: pointer;
 						&.local-save-btn{
@@ -1918,3 +2102,48 @@ body {
 		}
 	}
 
+/* Loading Animation */
+
+	.spinner {
+	  //margin: 100px auto 0;
+	  width: 70px;
+	  text-align: center;
+	}
+
+	.spinner > div {
+	  width: 10px;
+	  height: 10px;
+	  background-color: @midgrey;
+	  border-radius: 100%;
+	  display: inline-block;
+	  -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+	  animation: bouncedelay 1.4s infinite ease-in-out;
+	  /* Prevent first frame from flickering when animation starts */
+	  -webkit-animation-fill-mode: both;
+	  animation-fill-mode: both;
+	}
+
+	.spinner .bounce1 {
+	  -webkit-animation-delay: -0.32s;
+	  animation-delay: -0.32s;
+	}
+
+	.spinner .bounce2 {
+	  -webkit-animation-delay: -0.16s;
+	  animation-delay: -0.16s;
+	}
+
+	@-webkit-keyframes bouncedelay {
+	  0%, 80%, 100% { -webkit-transform: scale(0.0) }
+	  40% { -webkit-transform: scale(1.0) }
+	}
+
+	@keyframes bouncedelay {
+	  0%, 80%, 100% { 
+	    transform: scale(0.0);
+	    -webkit-transform: scale(0.0);
+	  } 40% { 
+	    transform: scale(1.0);
+	    -webkit-transform: scale(1.0);
+	  }
+	}

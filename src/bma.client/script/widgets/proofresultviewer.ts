@@ -18,11 +18,11 @@
             if (options.issucceeded === undefined)// || options.time === undefined)
                 return;
             if (options.issucceeded) {
-                $('<img src="../../images/succeeded.png">').appendTo(this.resultDiv);
+                $('<img src="../../images/succeeded.svg">').appendTo(this.resultDiv);
                 $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
             }
             else {
-                $('<img src="../../images/failed.png">').appendTo(this.resultDiv);
+                $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
                 $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
             }
         },
