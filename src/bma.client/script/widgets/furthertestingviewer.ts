@@ -37,7 +37,7 @@
         _create: function () {
             var that = this;
             var options = this.options;
-            var defaultToggler = $('<button></button>').text("Further Testing").addClass('action-button-small red');
+            var defaultToggler = $('<button></button>').text("Further Testing").addClass('action-button-small red further-testing-button');
 
             this.element.addClass("further-testing-box");
             this.toggler = that.options.toggler || defaultToggler;

@@ -67,7 +67,8 @@
             min10.bind("click", function () {
                 that._setOption("num", that.options.num - step);
             })
-            this.RunButton = $('<button></button>').text('Run').appendTo(li3);
+            this.RunButton = $('<button></button>').addClass('run-button').text('Run').appendTo(li3);
+
             this.refresh();
         },
 
