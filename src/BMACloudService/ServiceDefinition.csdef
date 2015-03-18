@@ -13,6 +13,7 @@
     </Endpoints>
     <ConfigurationSettings>
       <Setting name="StorageConnectionString" />
+      <Setting name="ComputeTimeLimit" />
     </ConfigurationSettings>
   </WebRole>
 </ServiceDefinition>

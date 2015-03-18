@@ -90,6 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\SimulateController.cs" />
     <Compile Include="Controllers\ValidateController.cs" />
+    <Compile Include="TimeLimit.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(Platform)'!='x64'" />

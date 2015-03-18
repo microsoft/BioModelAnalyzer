@@ -64,7 +64,7 @@ namespace bma.client.Controllers
                 // Prepare model for analysis
                 var model = (Model)input.Model;
 
-                var output = analyzer.simulate_tick(model, input.Variables);
+                var output = Utilities.RunWithTimeLimit(() => analyzer.simulate_tick(model, input.Variables), Utilities.GetTimeLimitFromConfig());
 
                 return new SimulationOutput
                 {

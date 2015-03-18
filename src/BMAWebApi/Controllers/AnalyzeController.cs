@@ -59,7 +59,7 @@ namespace bma.client.Controllers
                 }
 
                 var model = (Model)input;
-                var result = analyzer.checkStability(model);
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkStability(model), Utilities.GetTimeLimitFromConfig());
 
                 var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
                 log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));

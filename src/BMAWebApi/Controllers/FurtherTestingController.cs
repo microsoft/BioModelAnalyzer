@@ -62,22 +62,26 @@ namespace bma.client.Controllers
                 var model = (Model)input.Model;
 
                 // SI: these all return a single CEx, not an array of them. 
-                var cexBifurcates = analyzer.findCExBifurcates(model, input.Analysis);
-                var cexCycles = analyzer.findCExCycles(model, input.Analysis);
-                var cexFixPoints = analyzer.findCExFixpoint(model, input.Analysis);
+                var result = Utilities.RunWithTimeLimit(() => new                    
+                    {
+                        cexBifurcates = analyzer.findCExBifurcates(model, input.Analysis),
+                        cexCycles = analyzer.findCExCycles(model, input.Analysis),
+                        cexFixPoints = analyzer.findCExFixpoint(model, input.Analysis),
+                    }, Utilities.GetTimeLimitFromConfig());
+
 
                 var cexs = new List<CounterExampleOutput>();
-                if (FSharpOption<BifurcationCounterExample>.get_IsSome(cexBifurcates))
+                if (FSharpOption<BifurcationCounterExample>.get_IsSome(result.cexBifurcates))
                 { 
-                    cexs.Add(cexBifurcates.Value); 
+                    cexs.Add(result.cexBifurcates.Value); 
                 }
-                if (FSharpOption<CycleCounterExample>.get_IsSome(cexCycles))
+                if (FSharpOption<CycleCounterExample>.get_IsSome(result.cexCycles))
                 {
-                    cexs.Add(cexCycles.Value);
+                    cexs.Add(result.cexCycles.Value);
                 }
-                if (FSharpOption<FixPointCounterExample>.get_IsSome(cexFixPoints))
+                if (FSharpOption<FixPointCounterExample>.get_IsSome(result.cexFixPoints))
                 {
-                    cexs.Add(cexFixPoints.Value);
+                    cexs.Add(result.cexFixPoints.Value);
                 }
 
                 log.LogDebug(string.Format("Finding Counter Examples took {0} seconds to run.", (DateTime.Now - analyisStartTime).TotalSeconds));

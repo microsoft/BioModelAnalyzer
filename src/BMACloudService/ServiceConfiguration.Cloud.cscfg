@@ -4,6 +4,7 @@
     <Instances count="4" />
     <ConfigurationSettings>
       <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />
+      <Setting name="ComputeTimeLimit" value="90" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
