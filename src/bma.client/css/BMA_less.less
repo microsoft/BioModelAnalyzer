@@ -1,81 +1,81 @@
 ﻿
 //@import "StyleSheet.less";
 
-/* General Functions */ 
-    
-    ul, menu, dir {
-        display: block;
-        list-style-type: disc;
-        -webkit-margin-before: 0;
-        -webkit-margin-after: 0;
-        -webkit-margin-start: 0;
-        -webkit-margin-end: 0;
-        -webkit-padding-start: 0; 
-    }
+/* General Functions */
 
-    
-
-    img {
-        border: 0;
-    }
-	 
-	.background-img() {
-	    background-repeat:no-repeat;
-	    background-position:center;
-	    background-size:contain;
-	}
-     
-	.hoverable:hover{
-	    cursor: pointer;
-	}
-
-	.invisible {
-	    display:none;
-	}
-
-	.calc(@prop; @val) {
-	  @{prop}: calc(@val);
-	  @{prop}: -moz-calc(@val);
-	  @{prop}: -webkit-calc(@val);
-	  @{prop}: -o-calc(@val); 
-	}
-
-	.border-radius(@a){
-	    -moz-border-radius: @a;
-	    -webkit-border-radius: @a;
-	    -ms-border-radius: @a;
-	    -o-border-radius: @a;
-	    border-radius: @a;
-	}
-
-	.box-shadow(@x; @y; @blur; @color){
-		-webkit-box-shadow: @x @y @blur @shadow;
-		-moz-box-shadow:    @x @y @blur @shadow;
-		-o-box-shadow: 		@x @y @blur @shadow;
-		box-shadow:         @x @y @blur @shadow;
-	}
-
-	.gradient(@side, @color1, @color2) {
-	    background-image: -moz-linear-gradient(@side, @color1, @color2);
-	    background-image: -webkit-linear-gradient(@side,@color1, @color2);
-	    background-image: -ms-linear-gradient(@side, @color1,  @color2);
-	    background-image: -webkit-gradient(linear,@side, @color1, @color2);
-	}
-
-    .ui-menu {
-        white-space: nowrap;
-    }
-
-    .ui-widget button {
-        font-size: 13px;
-    }
+ul, menu, dir {
+    display: block;
+    list-style-type: disc;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    -webkit-margin-start: 0;
+    -webkit-margin-end: 0;
+    -webkit-padding-start: 0;
+}
 
 
-    .ui-selected {
-        background-color: gray;
-    }
 
-    /*::-webkit-scrollbar {
+img {
+    border: 0;
+}
+
+.background-img() {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.hoverable:hover {
+    cursor: pointer;
+}
+
+.invisible {
+    display: none;
+}
+
+.calc(@prop; @val) {
+    @{prop}: calc(@val);
+    @{prop}: -moz-calc(@val);
+    @{prop}: -webkit-calc(@val);
+    @{prop}: -o-calc(@val);
+}
+
+.border-radius(@a) {
+    -moz-border-radius: @a;
+    -webkit-border-radius: @a;
+    -ms-border-radius: @a;
+    -o-border-radius: @a;
+    border-radius: @a;
+}
+
+.box-shadow(@x; @y; @blur; @color) {
+    -webkit-box-shadow: @x @y @blur @shadow;
+    -moz-box-shadow: @x @y @blur @shadow;
+    -o-box-shadow: @x @y @blur @shadow;
+    box-shadow: @x @y @blur @shadow;
+}
+
+.gradient(@side, @color1, @color2) {
+    background-image: -moz-linear-gradient(@side, @color1, @color2);
+    background-image: -webkit-linear-gradient(@side,@color1, @color2);
+    background-image: -ms-linear-gradient(@side, @color1, @color2);
+    background-image: -webkit-gradient(linear,@side, @color1, @color2);
+}
+
+.ui-menu {
+    white-space: nowrap;
+}
+
+.ui-widget button {
+    font-size: 13px;
+}
+
+
+.ui-selected {
+    background-color: gray;
+}
+
+/*::-webkit-scrollbar {
         width: 17px;
         height: 17px;
     }
@@ -88,91 +88,92 @@
     }*/
 
 
-    /*@odd-item-color: #ededed;
+/*@odd-item-color: #ededed;
     @even-item-color: #ffffff;*/
-    @big-font-size: 20px;
-    @big-line-height: 27px;
+@big-font-size: 20px;
+@big-line-height: 27px;
 
-    /*  Colors  */
+/*  Colors  */
 
-	@green: #81BB83;
-	@lightgreen: #D9FFB6;
-	@red: #FEB6B2;
-	@lightgrey: #EDEDED;
-	@midgrey: #AAA;
-	@darkgrey: #606060; 
-	@shadow: rgba(0,0,0,0.50);
+@green: #81BB83;
+@lightgreen: #D9FFB6;
+@red: #FEB6B2;
+@lightgrey: #EDEDED;
+@midgrey: #AAA;
+@darkgrey: #606060;
+@shadow: rgba(0,0,0,0.50);
 
-    .big-font() {
-        font-size: @big-font-size;
-        line-height: @big-line-height;
+.big-font() {
+    font-size: @big-font-size;
+    line-height: @big-line-height;
+}
+
+@table-line-height: 20px;
+
+.default-text() {
+    font-family: 'Segoe-UI';
+    font-size: 13px;
+    line-height: 17px;
+    color: @darkgrey;
+}
+
+// Default Mixin for tables
+.result-table-base() {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+    width: 99%;
+    border-collapse: collapse;
+    .default-text;
+}
+
+// Default BMA Tables
+.default-table() {
+    .result-table-base;
+    border: 1px solid @darkgrey;
+
+    td {
+        vertical-align: middle;
+        border: 1px solid @midgrey;
+        text-align: center;
+        padding: 1px 3px 1px 3px;
+        color: @darkgrey;
+        height: 20px;
     }
 
-    @table-line-height: 20px;
-    .default-text() {
-		font-family: 'Segoe-UI';
-		font-size: 13px;
-		line-height: 17px;
-		color: @darkgrey;
-	}
+    tr:first-child td {
+        word-break: initial;
+        background-color: @darkgrey;
+        border-color: @darkgrey;
+        //text-align: center;
+        border-width: 1px;
+        color: white;
+    }
 
-    // Default Mixin for tables
-			.result-table-base(){
-				margin: 0px 0px 0px 0px;
-				padding: 0px;
-				width: 99%;
-				border-collapse: collapse;
-				.default-text;
-			}
-
-        // Default BMA Tables
-        .default-table() {
-            .result-table-base;
-            border: 1px solid @darkgrey;
-            td{
-			    vertical-align: middle;
-			    border: 1px solid @midgrey;
-			    text-align: center;
-			    padding: 1px 3px 1px 3px;
-			    color: @darkgrey;
-			    height: 20px;
-		    }
-
-            tr:first-child td {
-			    word-break: initial;
-			    background-color: @darkgrey;
-			    border-color: @darkgrey;
-			    //text-align: center;
-			    border-width: 1px;
-			    color: white;
-		    }
-
-		    tr:nth-child(odd) {
-			    background-color: @lightgrey;
-		    }
-        }
+    tr:nth-child(odd) {
+        background-color: @lightgrey;
+    }
+}
 
 
-    .bma-tbl() {
-        width: 100%;
-        border-collapse: collapse;
-
-        /*td {
+.bma-tbl() {
+    width: 100%;
+    border-collapse: collapse;
+    /*td {
             border: 1px solid @midgrey;
             text-align: center;
             padding: 0;
         }*/
-        td{
-			vertical-align: middle;
-			border: 1px solid @midgrey;
-			text-align: center;
-			padding: 1px 3px;
-			color: @darkgrey;
-			height: 20px;
-		}
+    td {
+        vertical-align: middle;
+        border: 1px solid @midgrey;
+        text-align: center;
+        padding: 1px 3px;
+        color: @darkgrey;
+        height: 20px;
     }
+}
 
-    
+
 .bma-simulation-data-table {
     max-width: calc(~"100% - 120px");
     overflow-x: auto;
@@ -215,9 +216,11 @@
 .progression-table {
     .bma-tbl();
     margin-top: 23px;
+
     td {
         //position: relative;
         padding: 1px 4px;
+
         div {
             width: 100%;
             height: 22px;
@@ -225,13 +228,15 @@
             top: 0;
             left: 0;
         }
-       
+
         &.repeat {
             background-color: rgba(223, 223, 245, 0.5);
         }
+
         &.change {
             background-color: #fffcb5;
         }
+
         &.repeat.change {
             background-color: #efeed5;
         }
@@ -240,11 +245,9 @@
     td:first-child {
         border-left: none;
     }
-
     /*tr:nth-child(even) {
         background-color: @odd-item-color;
     }*/
-
     tr:nth-child(even) {
         background-color: @lightgrey;
     }
@@ -285,16 +288,18 @@
     height: 20px;
     width: 20px;
     margin-right: 3px;
+    cursor: pointer;
 }
 
 /*.ui-tabs > div {
     border: 1px solid lightgray;
 }*/
 
-.further-testing-tab{
-    &>div {
+.further-testing-tab {
+    & > div {
         display: inline-block;
         vertical-align: bottom;
+        cursor: pointer;
     }
 }
 
@@ -302,6 +307,7 @@
     background-image: url("../images/bifurcations.svg");
     .further-testing-tabs;
 }
+
 li.ui-state-active .bifurcations-icon {
     background-image: url("../images/bifurcations-ON.svg");
 }
@@ -310,14 +316,16 @@ li.ui-state-active .bifurcations-icon {
     background-image: url("../images/oscillations.svg");
     .further-testing-tabs;
 }
+
 li.ui-state-active .oscillations-icon {
     background-image: url("../images/oscillations-ON.svg");
 }
 
-li.ui-state-hover{
+li.ui-state-hover {
     background: none;
 }
-li.ui-state-default{
+
+li.ui-state-default {
     background: none;
 }
 
@@ -386,6 +394,7 @@ li.ui-state-default{
     cursor: pointer;
     padding-left: 5px;
 }
+
 .simulationplot-legend-legenditem:not(:last-child) {
     margin-bottom: 5px;
 }
@@ -415,7 +424,7 @@ li.ui-state-default{
     left: 265px;//calc(~"30% + 60px - 2px");*/
     display: inline-block;
     vertical-align: middle;
-    float:right;
+    float: right;
     cursor: pointer;
     font-size: 18px;
     line-height: 26px;

@@ -1927,6 +1927,13 @@ textarea:focus {
 .simulation-popout .scrollable-results .big-simulation-popout-table .variables-table input:focus {
   box-shadow: none;
 }
+.simulation-popout .scrollable-results .big-simulation-popout-table .variables-table .random-small {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-x: center;
+  width: 20px;
+  height: 20px;
+}
 .tab-right {
   padding: 15px;
   margin: 0px;
@@ -2033,6 +2040,9 @@ textarea:focus {
   padding: 5px;
   border-radius: 5px;
   background-color: #aaaaaa;
+}
+.further-testing-box .ui-tabs .ui-tabs-nav li {
+  border: none;
 }
 .simulation-variables {
   margin-top: 10px;

@@ -58,19 +58,19 @@ img {
 }
 .bma-random-icon1 {
   background-image: url(../images/random1.svg);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position-x: center;
-  width: 20px;
-  height: 20px;
+  /*background-repeat: no-repeat;
+    background-size: contain;
+    background-position-x: center;
+    width: 20px;
+    height: 20px;*/
 }
 .bma-random-icon2 {
   background-image: url(../images/random2.svg);
-  background-repeat: no-repeat;
-  background-position-x: left;
-  width: 26px;
-  height: 26px;
-  float: left;
+  /*background-repeat: no-repeat;
+    background-position-x: left;
+    width: 26px;
+    height: 26px;
+    float: left;*/
 }
 .progression-table {
   width: 100%;
@@ -143,6 +143,7 @@ img {
 .further-testing-tab > div {
   display: inline-block;
   vertical-align: bottom;
+  cursor: pointer;
 }
 .bifurcations-icon {
   background-image: url("../images/bifurcations.svg");
@@ -153,6 +154,7 @@ img {
   height: 20px;
   width: 20px;
   margin-right: 3px;
+  cursor: pointer;
 }
 li.ui-state-active .bifurcations-icon {
   background-image: url("../images/bifurcations-ON.svg");
@@ -166,6 +168,7 @@ li.ui-state-active .bifurcations-icon {
   height: 20px;
   width: 20px;
   margin-right: 3px;
+  cursor: pointer;
 }
 li.ui-state-active .oscillations-icon {
   background-image: url("../images/oscillations-ON.svg");
