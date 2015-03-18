@@ -13,7 +13,7 @@
     
 	<file>/js/svgplot.js</file>
 	<file>/js/scalablegridlinesplot.js</file>
-	<file>/script/XmlModelParser.js</file>
+	<file>/script/XmlModelParser.js</file> 
 	<file>/script/SVGHelper.js</file>
 	<file>/script/ModelHelper.js</file>
 	<file>/script/commands.js</file>

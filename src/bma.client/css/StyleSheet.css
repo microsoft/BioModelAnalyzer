@@ -116,9 +116,11 @@ button {
   font-size: 13px;
   line-height: 17px;
   color: #606060;
+  border: 1px solid #606060;
 }
 .default-button {
   background-color: #ededed;
+  border: 1px solid #ededed;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -154,6 +156,7 @@ ul.button-list {
 }
 ul.button-list li {
   background-color: #ededed;
+  border: 1px solid #ededed;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -182,6 +185,9 @@ ul.button-list li button:hover {
 }
 ul.button-list li button:focus {
   outline: none;
+}
+ul.button-list li:last-child {
+  margin-right: 0;
 }
 /*.action-button(@c){
 		background-color: @c;
@@ -217,7 +223,7 @@ ul.button-list li button:focus {
 .action-button.grey,
 .button-list .action-button.grey {
   background-color: #aaaaaa;
-  border: 1px solid white;
+  border: 1px solid #aaaaaa;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -244,10 +250,20 @@ ul.button-list li button:focus {
 .button-list .action-button.grey button:hover {
   color: #aaaaaa;
 }
+.action-button.grey.waiting:hover,
+.button-list .action-button.grey.waiting:hover {
+  background-color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  color: white;
+}
+.action-button.grey .spinner > div,
+.button-list .action-button.grey .spinner > div {
+  background-color: white;
+}
 .action-button.green,
 .button-list .action-button.green {
   background-color: #81bb83;
-  border: 1px solid white;
+  border: 1px solid #81bb83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -274,10 +290,20 @@ ul.button-list li button:focus {
 .button-list .action-button.green button:hover {
   color: #81bb83;
 }
+.action-button.green.waiting:hover,
+.button-list .action-button.green.waiting:hover {
+  background-color: #81bb83;
+  border: 1px solid #81bb83;
+  color: white;
+}
+.action-button.green .spinner > div,
+.button-list .action-button.green .spinner > div {
+  background-color: white;
+}
 .action-button.red,
 .button-list .action-button.red {
   background-color: #cf451b;
-  border: 1px solid white;
+  border: 1px solid #cf451b;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -304,6 +330,16 @@ ul.button-list li button:focus {
 .button-list .action-button.red button:hover {
   color: #cf451b;
 }
+.action-button.red.waiting:hover,
+.button-list .action-button.red.waiting:hover {
+  background-color: #cf451b;
+  border: 1px solid #cf451b;
+  color: white;
+}
+.action-button.red .spinner > div,
+.button-list .action-button.red .spinner > div {
+  background-color: white;
+}
 li.action-button {
   padding: 0 5px;
 }
@@ -314,7 +350,7 @@ li.action-button {
 .action-button-small.grey,
 .button-list .action-button-small.grey {
   background-color: #aaaaaa;
-  border: 1px solid white;
+  border: 1px solid #aaaaaa;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -341,10 +377,20 @@ li.action-button {
 .button-list .action-button-small.grey button:hover {
   color: #aaaaaa;
 }
+.action-button-small.grey.waiting:hover,
+.button-list .action-button-small.grey.waiting:hover {
+  background-color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  color: white;
+}
+.action-button-small.grey .spinner > div,
+.button-list .action-button-small.grey .spinner > div {
+  background-color: white;
+}
 .action-button-small.green,
 .button-list .action-button-small.green {
   background-color: #81bb83;
-  border: 1px solid white;
+  border: 1px solid #81bb83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -371,10 +417,20 @@ li.action-button {
 .button-list .action-button-small.green button:hover {
   color: #81bb83;
 }
+.action-button-small.green.waiting:hover,
+.button-list .action-button-small.green.waiting:hover {
+  background-color: #81bb83;
+  border: 1px solid #81bb83;
+  color: white;
+}
+.action-button-small.green .spinner > div,
+.button-list .action-button-small.green .spinner > div {
+  background-color: white;
+}
 .action-button-small.red,
 .button-list .action-button-small.red {
   background-color: #cf451b;
-  border: 1px solid white;
+  border: 1px solid #cf451b;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -401,11 +457,22 @@ li.action-button {
 .button-list .action-button-small.red button:hover {
   color: #cf451b;
 }
+.action-button-small.red.waiting:hover,
+.button-list .action-button-small.red.waiting:hover {
+  background-color: #cf451b;
+  border: 1px solid #cf451b;
+  color: white;
+}
+.action-button-small.red .spinner > div,
+.button-list .action-button-small.red .spinner > div {
+  background-color: white;
+}
 .pill-button-box {
   display: inline-block;
 }
 .pill-button-box .pill-button {
   background-color: #ededed;
+  border: 1px solid #ededed;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -481,7 +548,7 @@ li.action-button {
 .simulation-popout ul.button-list li {
   background-color: #606060;
   display: inline-block;
-  vertical-align: bottom;
+  vertical-align: middle;
 }
 .simulation-popout ul.button-list li:hover {
   background-color: #ededed;
@@ -507,7 +574,7 @@ li.action-button {
 .simulation-popout ul.button-list li.run {
   margin-left: 30px;
   background-color: #81bb83;
-  border: 1px solid white;
+  border: 1px solid #81bb83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -529,6 +596,14 @@ li.action-button {
 }
 .simulation-popout ul.button-list li.run button:hover {
   color: #81bb83;
+}
+.simulation-popout ul.button-list li.run.waiting:hover {
+  background-color: #81bb83;
+  border: 1px solid #81bb83;
+  color: white;
+}
+.simulation-popout ul.button-list li.run .spinner > div {
+  background-color: white;
 }
 .simulation-popout ul.button-list li.run button {
   width: 70px;
@@ -1063,6 +1138,13 @@ ul.command-list li a span {
 .bma-accordion-header {
   cursor: pointer;
 }
+.bma-accordion-header > div {
+  display: inline-block;
+  vertical-align: middle;
+}
+.bma-accordion-header .spinner {
+  margin: 0 10px;
+}
 /*.accordion-shadow {
 			.box-shadow(@x:0px; @y:5px; @blur:5px; @color:@shadow)
 		}*/
@@ -1262,6 +1344,7 @@ textarea:focus {
   line-height: 27px;
   margin-right: 10px;
   padding-bottom: 5px;
+  margin-right: 0;
 }
 .popup-window.report-bug {
   width: 400px;
@@ -1401,6 +1484,7 @@ textarea:focus {
 }
 .variable-editor .functions li {
   background-color: #ededed;
+  border: 1px solid #ededed;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -1469,6 +1553,7 @@ textarea:focus {
 }
 .variable-editor .operators li {
   background-color: #ededed;
+  border: 1px solid #ededed;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -1983,7 +2068,7 @@ textarea:focus {
 }
 .proof-variables .scrollable-results {
   max-height: 121px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2003,7 +2088,7 @@ textarea:focus {
 }
 .proof-propagation .scrollable-results {
   max-height: 150px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2023,7 +2108,7 @@ textarea:focus {
 }
 .further-testing-box .scrollable-results {
   max-height: 150px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2049,7 +2134,7 @@ textarea:focus {
 }
 .simulation-variables .scrollable-results {
   max-height: 121px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2088,7 +2173,7 @@ textarea:focus {
 }
 .window.proof-variables-popout .scrollable-results {
   max-height: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2112,7 +2197,7 @@ textarea:focus {
 }
 .window.further-testing-popout .scrollable-results {
   max-height: 480px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2130,6 +2215,9 @@ textarea:focus {
   border-radius: 5px;
   background-color: #aaaaaa;
 }
+.window.further-testing-popout .ui-tabs .ui-tabs-nav li {
+  border: none;
+}
 .window.proof-propagation-popout {
   width: 850px;
   max-height: 550px;
@@ -2137,7 +2225,7 @@ textarea:focus {
 .window.proof-propagation-popout .scrollable-results {
   overflow-x: scroll;
   max-height: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
 }
@@ -2169,7 +2257,7 @@ textarea:focus {
 }
 .window.simulation-popout .scrollable-results {
   max-height: 470px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
   margin-bottom: 5px;
@@ -2194,7 +2282,7 @@ textarea:focus {
   width: 250px;
 }
 .popup-window .simulation-plot-box {
-  height: 550px;
+  height: 500px;
 }
 .plot-check {
   background-image: url("../images/check.svg");
@@ -2215,6 +2303,7 @@ textarea:focus {
 }
 .dialog .button-list button {
   background-color: #ededed;
+  border: 1px solid #ededed;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;

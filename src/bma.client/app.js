@@ -205,23 +205,23 @@ $(document).ready(function () {
     aas.each(function () {
         switch ($(this).text()) {
             case "Cut":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>'; //.appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';
                 break;
             case "Copy":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';
                 break;
             case "Paste":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg><span>Paste</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg"><span>Paste</span>';
                 break;
             case "Edit":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';
                 break;
             case "Size":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';
                 ulsizes = $(this).next('ul');
                 break;
             case "Delete":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';
                 break;
         }
     });
@@ -369,6 +369,7 @@ $(document).ready(function () {
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
     //Loading model from URL
+    var reserved_key = "InitialModel";
     var params = getSearchParameters();
     if (params.Model !== undefined) {
         var s = params.Model.split('.');
@@ -394,6 +395,9 @@ $(document).ready(function () {
             });
         }
     }
+    else {
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
+    }
     var toolsdivs = $('#tools').children('div');
     function resize_header_tools() {
         toolsdivs.each(function () {
@@ -407,7 +411,6 @@ $(document).ready(function () {
         popup_position();
         resize_header_tools();
     });
-    var reserved_key = "InitialModel";
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
         var log = logService.CloseSession();
@@ -439,9 +442,6 @@ $(document).ready(function () {
             xhr.setRequestHeader("Connection", "close");
             xhr.send(data);
         }
-    };
-    window.onload = function () {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
     $("label[for='button-pointer']").click();
     //window.onerror = function (msg, url, l) {

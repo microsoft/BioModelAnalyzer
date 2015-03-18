@@ -2383,6 +2383,8 @@ var BMA;
                         header = "Further Testing";
                         this.popupWindow.addClass('further-testing-popout');
                         break;
+                    case "SimulationPlot":
+                        header = "Simulation Graph";
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 popup_position();
@@ -3841,7 +3843,7 @@ var BMA;
                             logService.LogProofError();
                             if (res.Status == "Error") {
                                 proofResultViewer.SetData({
-                                    issucceeded: res.Status === "Stabilizing",
+                                    issucceeded: undefined,
                                     message: res.Error,
                                     data: undefined
                                 });
@@ -5209,7 +5211,11 @@ var BMA;
         },
         _showLoading: function (clicked) {
             clicked.animate({ width: "+=60px" });
-            $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
+            var snipper = $('<div class="spinner loading"></div>').appendTo(clicked);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            //$('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
         _hideLoading: function (toHide) {
             toHide.each(function () {
@@ -6037,11 +6043,7 @@ var BMA;
                         input.val(init[0]);
                     else
                         input.val(init);
-                    var random = $('<td></td>').addClass("random-small hoverable").appendTo(tr);
-                    if (i % 2 === 0)
-                        random.addClass('bma-random-icon1');
-                    else
-                        random.addClass('bma-random-icon2');
+                    var random = $('<td></td>').addClass("random-small bma-random-icon2 hoverable").appendTo(tr);
                     //random.filter(':nth-child(even)').addClass('bma-random-icon1');
                     //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
                     random.bind("click", function () {
@@ -6185,15 +6187,19 @@ var BMA;
             var that = this;
             var options = this.options;
             this.resultDiv.empty();
-            if (options.issucceeded === undefined)
-                return;
-            if (options.issucceeded) {
-                $('<img src="../../images/succeeded.svg">').appendTo(this.resultDiv);
-                $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
-            }
-            else {
-                $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
-                $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
+            switch (options.issucceeded) {
+                case true:
+                    $('<img src="../../images/succeeded.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
+                    break;
+                case false:
+                    $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
+                    break;
+                case undefined:
+                    $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-failed').text('Service Error').appendTo(this.resultDiv);
+                    break;
             }
         },
         refreshMessage: function () {
@@ -7724,23 +7730,23 @@ $(document).ready(function () {
     aas.each(function () {
         switch ($(this).text()) {
             case "Cut":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>'; //.appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';
                 break;
             case "Copy":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';
                 break;
             case "Paste":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg><span>Paste</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg"><span>Paste</span>';
                 break;
             case "Edit":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';
                 break;
             case "Size":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';
                 ulsizes = $(this).next('ul');
                 break;
             case "Delete":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';
                 break;
         }
     });
@@ -7888,6 +7894,7 @@ $(document).ready(function () {
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
     //Loading model from URL
+    var reserved_key = "InitialModel";
     var params = getSearchParameters();
     if (params.Model !== undefined) {
         var s = params.Model.split('.');
@@ -7913,6 +7920,9 @@ $(document).ready(function () {
             });
         }
     }
+    else {
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
+    }
     var toolsdivs = $('#tools').children('div');
     function resize_header_tools() {
         toolsdivs.each(function () {
@@ -7926,7 +7936,6 @@ $(document).ready(function () {
         popup_position();
         resize_header_tools();
     });
-    var reserved_key = "InitialModel";
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
         var log = logService.CloseSession();
@@ -7958,9 +7967,6 @@ $(document).ready(function () {
             xhr.setRequestHeader("Connection", "close");
             xhr.send(data);
         }
-    };
-    window.onload = function () {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);
     };
     $("label[for='button-pointer']").click();
     //window.onerror = function (msg, url, l) {
