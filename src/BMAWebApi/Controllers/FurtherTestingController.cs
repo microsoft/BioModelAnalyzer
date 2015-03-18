@@ -31,6 +31,8 @@ namespace bma.client.Controllers
         public string[] ErrorMessages { get; set; }
 
         public string[] DebugMessages { get; set; }
+
+        public string Error { get; set; }
     }
 
     public class FurtherTestingController : ApiController
@@ -104,6 +106,7 @@ namespace bma.client.Controllers
 
                 return new FurtherTestingOutput
                 {
+                    Error = ex.Message,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                 };

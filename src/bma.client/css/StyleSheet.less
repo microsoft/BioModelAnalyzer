@@ -179,11 +179,13 @@ body {
         color: @darkgrey;
         margin: 0;
         .default-text;
+        border: 1px solid @darkgrey;
     }	
 
 	.default-button{
 			//margin-bottom: 10px;
 			background-color: @lightgrey;
+            border: 1px solid @lightgrey;
 			border-radius: 15px;
 			cursor: pointer;
 			display: inline-block;
@@ -223,6 +225,9 @@ body {
 		li{
 			.default-button;
 		}
+        li:last-child {
+            margin-right: 0;
+        }
 	}
 
 
@@ -265,7 +270,7 @@ body {
 
 		.action-button(@c: @midgrey;@size:20px;@pad:5px 7px 5px 7px;){
 			background-color: @c;
-			border: 1px solid white;
+			border: 1px solid @c;
 			border-radius:6px;
             cursor: pointer;
             height: 30px;
@@ -287,6 +292,16 @@ body {
 				color: @c;
 				}
 			}
+
+            &.waiting:hover {
+                background-color: @c;
+				border: 1px solid @c;
+                color: white;
+            }
+
+            .spinner > div {
+                background-color: white;
+            }
 		}
 
 		.action-button, .button-list .action-button{
@@ -392,7 +407,7 @@ body {
                     }
 				}
                 display: inline-block;
-                vertical-align: bottom;
+                vertical-align: middle;
 			}
 
 			button{
@@ -917,6 +932,14 @@ body {
 
 		.bma-accordion-header{
 		    cursor: pointer;
+            & > div {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .spinner {
+                margin: 0 10px;
+            }
 		}
 
 		/*.accordion-shadow {
@@ -1135,6 +1158,7 @@ body {
     .popup-window {
         .analysis-title{
             .window-title;
+            margin-right: 0;
         }   
     }
     .popup-window.report-bug{
@@ -1885,7 +1909,7 @@ body {
 
 		.scrollbox(@height){
 			max-height: @height;
-			overflow-y: scroll;
+			overflow-y: auto;
 			margin-top: 5px;
 			margin-bottom: 15px;
 			.tab-scrollbar;
@@ -1954,6 +1978,9 @@ body {
 			.scrollable-results{
 				.scrollbox(480px);
 			}
+            .ui-tabs .ui-tabs-nav li {
+                border: none;
+            }
         }
 
 		.window.proof-propagation-popout{

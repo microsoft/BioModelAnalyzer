@@ -271,6 +271,8 @@ module BMA {
                         header = "Further Testing";
                         this.popupWindow.addClass('further-testing-popout')
                         break;
+                    case "SimulationPlot":
+                        header = "Simulation Graph";
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 popup_position();

@@ -14,7 +14,7 @@ type ui_variable = {  Vid: var; Vname: string; Vfr: int; Vto: int; Vf: Expr.expr
 type RelTy = RTActivator | RTInhibitor
 type ui_rel = { Rid: var; Rfr: int; Rto: int; Rrel_ty: RelTy }
 
-exception MarshalInFailed of var * string
+exception MarshalInFailed of var * string 
 
 // string->XName.
 let xn s = XName.Get s
@@ -89,7 +89,7 @@ let model_of_xml (xd:XDocument) =
 
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
                 let t = try Some ((string) (v.Element(xn "Function").Value)) with _ -> None
-                let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
+                let exn_msg f = "Failed to parse " + name + "'s transfer function " + f
                 let parse_error f line col msg = 
                     "Failed to parse " + name + "'s function: " + f + ". " +
                     "Exception: " + msg + ". " +
@@ -590,7 +590,7 @@ let QN_of_Model (model:Model) =
 
                 // [t] can be None, in which case we'll synthesize a default T in [qn_map] later.
                 let t = Some v.Formula
-                let exn_msg f = "Failed to parse " + name + "'s transfer function" + f
+                let exn_msg f = "Failed to parse " + name + "'s transfer function " + f
                 let parse_error f line col msg = 
                     "Failed to parse " + name + "'s function: " + f + ". " +
                     "Exception: " + msg + ". " +

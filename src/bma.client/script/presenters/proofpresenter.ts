@@ -102,7 +102,7 @@
                                 logService.LogProofError();
                                 if (res.Status == "Error") {
                                     proofResultViewer.SetData({
-                                        issucceeded: res.Status === "Stabilizing",
+                                        issucceeded: undefined,
                                         message: res.Error,
                                         data: undefined
                                     })

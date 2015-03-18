@@ -251,18 +251,18 @@ $(document).ready(function () {
     var ulsizes: JQuery;
     aas.each(function () {
         switch ($(this).text()) {
-            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';//.appendTo($(this));
+            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';
                 break;
-            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';//).appendTo($(this));
+            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';
                 break;
-            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg><span>Paste</span>';//).appendTo($(this));
+            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg"><span>Paste</span>';
                 break;
-            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';//).appendTo($(this));
+            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';
                 break;
-            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';//).appendTo($(this));
+            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';
                 ulsizes = $(this).next('ul');
                 break;
-            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';//).appendTo($(this));
+            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';
                 break;
         }
     })
@@ -454,6 +454,7 @@ $(document).ready(function () {
 
 
     //Loading model from URL
+    var reserved_key = "InitialModel";
     var params = getSearchParameters();
     if (params.Model !== undefined) {
 
@@ -480,7 +481,9 @@ $(document).ready(function () {
             });
         }
     }
-
+    else {
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
+    }
 
 
     var toolsdivs = $('#tools').children('div');
@@ -500,7 +503,7 @@ $(document).ready(function () {
         resize_header_tools();
     });
 
-    var reserved_key = "InitialModel";
+    
 
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
@@ -534,9 +537,7 @@ $(document).ready(function () {
         }
     };
 
-    window.onload = function () {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);
-    };
+   
     $("label[for='button-pointer']").click();
     
     //window.onerror = function (msg, url, l) {
