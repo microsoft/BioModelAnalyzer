@@ -183,37 +183,223 @@ ul.button-list li button:hover {
 ul.button-list li button:focus {
   outline: none;
 }
-.button-list li.action-button {
-  background-color: #606060;
-  border: 1px solid white;
-  border-radius: 6px;
-  /*&:hover{
+/*.action-button(@c){
+		background-color: @c;
+		border: 1px solid white;
+		border-radius:6px;
+		&:hover{
 			background-color: white;
 			border: 1px solid @c;
-		}*/
-}
-.button-list li.action-button button {
-  font-size: 25px;
-  color: white;
-  /*&:hover{
+            color: @c;
+            button{
+			    color: @c;
+			}
+		}
+		button{
+			font-size: 25px;
+			color:white;
+			//padding: 7px 10px 7px 10px;
+			&:hover{
 			color: @c;
-			}*/
+			}
+		}
+	}
+
+	.button-list{
+		li.action-button{
+			.action-button(@darkgrey);
+			&.green{
+				.action-button(@green);
+			}
+		}
+        
+	}*/
+.action-button.grey,
+.button-list .action-button.grey {
+  background-color: #aaaaaa;
+  border: 1px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+  color: white;
 }
-.button-list li.action-button.green {
+.action-button.grey:hover,
+.button-list .action-button.grey:hover {
+  background-color: white;
+  border: 1px solid #aaaaaa;
+  color: #aaaaaa;
+}
+.action-button.grey:hover button,
+.button-list .action-button.grey:hover button {
+  color: #aaaaaa;
+}
+.action-button.grey button,
+.button-list .action-button.grey button {
+  font-size: 20px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 7px 5px 7px;
+}
+.action-button.grey button:hover,
+.button-list .action-button.grey button:hover {
+  color: #aaaaaa;
+}
+.action-button.green,
+.button-list .action-button.green {
   background-color: #81bb83;
   border: 1px solid white;
   border-radius: 6px;
-  /*&:hover{
-			background-color: white;
-			border: 1px solid @c;
-		}*/
-}
-.button-list li.action-button.green button {
-  font-size: 25px;
+  cursor: pointer;
+  height: 30px;
   color: white;
-  /*&:hover{
-			color: @c;
-			}*/
+}
+.action-button.green:hover,
+.button-list .action-button.green:hover {
+  background-color: white;
+  border: 1px solid #81bb83;
+  color: #81bb83;
+}
+.action-button.green:hover button,
+.button-list .action-button.green:hover button {
+  color: #81bb83;
+}
+.action-button.green button,
+.button-list .action-button.green button {
+  font-size: 20px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 7px 5px 7px;
+}
+.action-button.green button:hover,
+.button-list .action-button.green button:hover {
+  color: #81bb83;
+}
+.action-button.red,
+.button-list .action-button.red {
+  background-color: #cf451b;
+  border: 1px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+  color: white;
+}
+.action-button.red:hover,
+.button-list .action-button.red:hover {
+  background-color: white;
+  border: 1px solid #cf451b;
+  color: #cf451b;
+}
+.action-button.red:hover button,
+.button-list .action-button.red:hover button {
+  color: #cf451b;
+}
+.action-button.red button,
+.button-list .action-button.red button {
+  font-size: 20px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 7px 5px 7px;
+}
+.action-button.red button:hover,
+.button-list .action-button.red button:hover {
+  color: #cf451b;
+}
+li.action-button {
+  padding: 0 5px;
+}
+.action-button-small,
+.button-list .action-button-small {
+  height: 25px !important;
+}
+.action-button-small.grey,
+.button-list .action-button-small.grey {
+  background-color: #aaaaaa;
+  border: 1px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+  color: white;
+}
+.action-button-small.grey:hover,
+.button-list .action-button-small.grey:hover {
+  background-color: white;
+  border: 1px solid #aaaaaa;
+  color: #aaaaaa;
+}
+.action-button-small.grey:hover button,
+.button-list .action-button-small.grey:hover button {
+  color: #aaaaaa;
+}
+.action-button-small.grey button,
+.button-list .action-button-small.grey button {
+  font-size: 15px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 5px 3px 5px;
+}
+.action-button-small.grey button:hover,
+.button-list .action-button-small.grey button:hover {
+  color: #aaaaaa;
+}
+.action-button-small.green,
+.button-list .action-button-small.green {
+  background-color: #81bb83;
+  border: 1px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+  color: white;
+}
+.action-button-small.green:hover,
+.button-list .action-button-small.green:hover {
+  background-color: white;
+  border: 1px solid #81bb83;
+  color: #81bb83;
+}
+.action-button-small.green:hover button,
+.button-list .action-button-small.green:hover button {
+  color: #81bb83;
+}
+.action-button-small.green button,
+.button-list .action-button-small.green button {
+  font-size: 15px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 5px 3px 5px;
+}
+.action-button-small.green button:hover,
+.button-list .action-button-small.green button:hover {
+  color: #81bb83;
+}
+.action-button-small.red,
+.button-list .action-button-small.red {
+  background-color: #cf451b;
+  border: 1px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+  color: white;
+}
+.action-button-small.red:hover,
+.button-list .action-button-small.red:hover {
+  background-color: white;
+  border: 1px solid #cf451b;
+  color: #cf451b;
+}
+.action-button-small.red:hover button,
+.button-list .action-button-small.red:hover button {
+  color: #cf451b;
+}
+.action-button-small.red button,
+.button-list .action-button-small.red button {
+  font-size: 15px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 5px 3px 5px;
+}
+.action-button-small.red button:hover,
+.button-list .action-button-small.red button:hover {
+  color: #cf451b;
 }
 .pill-button-box {
   display: inline-block;
@@ -225,10 +411,9 @@ ul.button-list li button:focus {
   display: inline-block;
   margin-right: 5px;
   padding: 0 5px;
-  width: 20px;
+  width: 27px;
   height: 23px;
   border: none;
-  font-size: 1.5em;
 }
 .pill-button-box .pill-button:hover {
   color: white;
@@ -256,7 +441,6 @@ ul.button-list li button:focus {
 .pill-button-box .pill-button:first-child {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  margin-right: 1px;
 }
 .pill-button-box .pill-button:last-child {
   border-top-left-radius: 0px;
@@ -325,32 +509,47 @@ ul.button-list li button:focus {
   background-color: #81bb83;
   border: 1px solid white;
   border-radius: 6px;
-  /*&:hover{
-			background-color: white;
-			border: 1px solid @c;
-		}*/
+  cursor: pointer;
+  height: 30px;
+  color: white;
+}
+.simulation-popout ul.button-list li.run:hover {
+  background-color: white;
+  border: 1px solid #81bb83;
+  color: #81bb83;
+}
+.simulation-popout ul.button-list li.run:hover button {
+  color: #81bb83;
 }
 .simulation-popout ul.button-list li.run button {
-  font-size: 25px;
+  font-size: 20px;
+  line-height: 100%;
   color: white;
-  /*&:hover{
-			color: @c;
-			}*/
+  padding: 5px 7px 5px 7px;
+}
+.simulation-popout ul.button-list li.run button:hover {
+  color: #81bb83;
 }
 .simulation-popout ul.button-list li.run button {
   width: 70px;
   height: 30px;
   text-transform: uppercase;
 }
-.simulation-popout ul.button-list li.run.waiting {
+.simulation-popout ul.button-list li.run.waiting > button {
   background-image: url(../images/20x20.gif);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
 }
+.run-button {
+  width: 70px;
+}
+.further-testing-button {
+  width: 110px;
+}
 ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons {
   width: 85px;
-  border-radius: 5px;
+  /*border-radius: 5px;*/
   padding: 0px;
   font-size: 12px;
   padding: 5px 0px 3px 0px;
@@ -360,11 +559,18 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
   margin-bottom: 3px;
 }
 ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a {
+  border-radius: 0;
   text-decoration: none;
   line-height: 19px;
-  padding: 2px 0px 2px 5px;
+  padding: 2px 5px;
   display: block;
   vertical-align: middle;
+}
+ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a.ui-state-focus,
+ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a.ui-state-active {
+  border: none;
+  margin: 0;
+  background-image: none;
 }
 ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a:hover {
   background-color: #ededed;
@@ -373,7 +579,6 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
   padding: 0px;
   width: 20px;
   height: 20px;
-  margin: 0px 5px 0px 0px;
   vertical-align: middle;
   position: relative;
   float: left;
@@ -398,6 +603,57 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
 }
 .ui-icon-arrow-4-diag {
   background-image: url('../images/icon-size.svg') !important;
+}
+ul.command-list {
+  padding: 5px 0px 3px 0px;
+  position: absolute;
+  border: none;
+}
+ul.command-list li {
+  padding: 0px;
+  margin-bottom: 3px;
+  position: relative;
+}
+ul.command-list li a {
+  text-decoration: none;
+  line-height: 19px;
+  padding: 2px 0px 2px 5px;
+  display: block;
+  vertical-align: middle;
+}
+ul.command-list li a:hover {
+  background-color: #ededed;
+}
+ul.command-list li a img {
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+ul.command-list li a span {
+  margin-left: 5px;
+}
+.ui-menu .ui-menu-item {
+  list-style-image: none;
+}
+.ui-menu .ui-menu-item a {
+  height: 20px;
+}
+.ui-menu .ui-menu-item a img {
+  margin: 0;
+}
+.context-menu-small {
+  /*li {
+                height: 22px;
+                position: relative;
+                a {
+                    position: absolute;
+                    height: 20px;
+                    img {
+                        margin: 0;
+                    }
+                }
+            }*/
 }
 /* Canvas - Drawing Surface */
 .bma-drawingsurfacecontainer {
@@ -1038,9 +1294,6 @@ textarea:focus {
   display: inline-block;
   vertical-align: middle;
 }
-.variable-editor .editor-namerange-container > *:nth-child(2) {
-  margin-left: 30px;
-}
 .variable-editor .editor-namerange-container > *:nth-child(2) > * {
   display: inline-block;
   vertical-align: middle;
@@ -1135,6 +1388,7 @@ textarea:focus {
 .variable-editor .target-function .formula-validation-message {
   color: #feb6b2;
   max-height: 40px;
+  width: 80%;
 }
 .variable-editor .functions,
 .variable-editor .operators {
@@ -1152,6 +1406,7 @@ textarea:focus {
   display: inline-block;
   margin-right: 5px;
   padding: 0 5px;
+  width: 50px;
   display: table;
   margin: 0 0 5px 0;
 }
@@ -1201,6 +1456,10 @@ textarea:focus {
   background-color: inherit;
   border-radius: 0 0 15px 15px;
   text-align: center;
+}
+.variable-editor .inputs-list-content > div {
+  text-align: left;
+  padding-left: 7px;
 }
 .variable-editor .inputs-list-content > div:hover {
   color: #b3b3b3;
@@ -1260,7 +1519,7 @@ textarea:focus {
   border-top: 7px solid #aaaaaa;
   border-bottom: none;
   float: right;
-  margin: 5px 0 0 0;
+  margin: 5px 0 0 5px;
 }
 .variable-editor .inputs-list-header .inputs-expandbttn:hover {
   border-top: 7px solid #ededed;
@@ -1281,7 +1540,7 @@ textarea:focus {
   border-bottom: 7px solid #aaaaaa;
   border-top: none;
   float: right;
-  margin: 5px 0 0 0;
+  margin: 5px 0 0 5px;
 }
 .variable-editor .inputs-list-header-expanded .inputs-expandbttn:hover {
   border-bottom: 7px solid #ededed;
@@ -1323,7 +1582,7 @@ textarea:focus {
   background-color: white;
   width: 80px;
   height: 70px;
-  border: hidden;
+  border: 1px solid white;
   margin: 0;
   padding: 0;
   border-radius: 7px 0 0 7px;
@@ -1344,6 +1603,22 @@ textarea:focus {
   height: 50px;
   margin: 10px;
 }
+/*.furthertesting-button {
+        .action-button(#d0451b);
+        cursor: pointer;
+        height: 30px;
+        text-transform: uppercase;
+        padding: 0 10px;
+        font-size: 20px;
+        color: #fff;
+        width: 200px;
+
+        &.waiting {
+            background-image: url(../images/20x20.gif);
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }*/
 .proof-state > * {
   display: inline-block;
   vertical-align: middle;
@@ -1356,7 +1631,7 @@ textarea:focus {
   vertical-align: middle;
 }
 .proof-state div.stabilize-failed {
-  color: red;
+  color: #cf451b;
 }
 .proof-state div.stabilize-prooved {
   color: #81bb83;
@@ -1365,7 +1640,7 @@ textarea:focus {
   margin: 0;
   padding: 0;
 }
-.analysis-title {
+.tab-right .analysis-title {
   font-size: 15px;
   line-height: 20px;
   letter-spacing: 1px;
@@ -1479,6 +1754,52 @@ textarea:focus {
   background-color: #fffcb5;
 }
 .proof-propagation-overview tr:nth-child(even) {
+  background-color: #ededed;
+}
+.progression-table {
+  width: 100%;
+  border-collapse: collapse;
+  /*td {
+                        border: 1px solid @midgrey;
+                        text-align: center;
+                        padding: 0;
+                    }*/
+  margin-top: 23px;
+  /*tr:nth-child(even) {
+        background-color: @odd-item-color;
+    }*/
+}
+.progression-table td {
+  vertical-align: middle;
+  border: 1px solid #aaaaaa;
+  text-align: center;
+  padding: 1px 3px;
+  color: #606060;
+  height: 20px;
+}
+.progression-table td {
+  padding: 1px 4px;
+}
+.progression-table td div {
+  width: 100%;
+  height: 22px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.progression-table td.repeat {
+  background-color: rgba(223, 223, 245, 0.5);
+}
+.progression-table td.change {
+  background-color: #fffcb5;
+}
+.progression-table td.repeat.change {
+  background-color: #efeed5;
+}
+.progression-table td:first-child {
+  border-left: none;
+}
+.progression-table tr:nth-child(even) {
   background-color: #ededed;
 }
 /*.simulation-variables{
@@ -1639,6 +1960,20 @@ textarea:focus {
 .proof-variables-popout .popout-icon {
   margin-right: 14px;
 }
+::-webkit-scrollbar-track {
+  width: 20px;
+  background-color: white;
+}
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #aaaaaa;
+}
+::-webkit-scrollbar-thumb {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #aaaaaa;
+}
 .proof-variables .scrollable-results {
   max-height: 121px;
   overflow-y: scroll;
@@ -1703,7 +2038,7 @@ textarea:focus {
   margin-top: 10px;
 }
 .simulation-variables .scrollable-results {
-  max-height: 300px;
+  max-height: 121px;
   overflow-y: scroll;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -1725,6 +2060,7 @@ textarea:focus {
 .simulation-plot-box {
   height: 200px;
   width: 100%;
+  margin-top: 5px;
 }
 .simulation-plot-box > * {
   display: inline-block;
@@ -1851,7 +2187,7 @@ textarea:focus {
   height: 550px;
 }
 .plot-check {
-  background-image: url("../images/check.png");
+  background-image: url("../images/check.svg");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -1916,6 +2252,7 @@ textarea:focus {
   height: 110px;
   display: inline-block;
   margin-right: -4px;
+  border: 1px solid #ededed;
 }
 .model-toolbar .model-icons ul li {
   display: inline-block;
@@ -2052,5 +2389,51 @@ textarea:focus {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+}
+/* Loading Animation */
+.spinner {
+  text-align: center;
+}
+.spinner > div {
+  width: 10px;
+  height: 10px;
+  background-color: #aaaaaa;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+  animation: bouncedelay 1.4s infinite ease-in-out;
+  /* Prevent first frame from flickering when animation starts */
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+@-webkit-keyframes bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+@keyframes bouncedelay {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
 }
 /*# sourceMappingURL=StyleSheet.css.map */

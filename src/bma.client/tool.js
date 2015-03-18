@@ -1396,9 +1396,15 @@ var BMA;
             return keys;
         };
         LocalRepositoryTool.prototype.IsUserKey = function (key) {
-            var sp = key.split('.', 2);
-            if (sp[0] === "user")
-                return sp[1];
+            var sp = key.split('.');
+            if (sp[0] === "user") {
+                var q = sp[1];
+                for (var i = 2; i < sp.length; i++) {
+                    q = q.concat('.');
+                    q = q.concat(sp[i]);
+                }
+                return q;
+            }
             else
                 return undefined;
         };
@@ -4484,7 +4490,9 @@ var BMA;
                                         var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
                                         data.push(bifurcationsView);
                                         headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                        var label = $('<div></div>').addClass('bifurcations-icon');
+                                        var label = $('<div></div>').addClass('further-testing-tab');
+                                        var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
+                                        var text = $('<div></div>').text('Bifurcations').appendTo(label);
                                         tabLabels.push(label);
                                     }
                                     if (osc !== null) {
@@ -4492,7 +4500,9 @@ var BMA;
                                         var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
                                         data.push(oscillationsView);
                                         headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                        var label = $('<div></div>').addClass('oscillations-icon');
+                                        var label = $('<div></div>').addClass('further-testing-tab');
+                                        var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
+                                        var text = $('<div></div>').text('Oscillations').appendTo(label);
                                         tabLabels.push(label);
                                     }
                                     if (fix !== null && bif === null && osc === null) {
@@ -6045,7 +6055,7 @@ var BMA;
             var trs = this.data.find("tr");
             var tr0 = trs.eq(0);
             for (var i = 0; i < tr0.children("td").length - 1; i++) {
-                var tds = trs.children("td:nth-child(" + (i + 1) + ")").children("span:first-child");
+                var tds = trs.children("td:nth-child(" + (i + 1) + ")");
                 if (this.IsClone(column, tds)) {
                     if (this.repeat === undefined)
                         this.repeat = tds;
@@ -6088,18 +6098,17 @@ var BMA;
                     var table = $('<table></table>').addClass("progression-table").appendTo(that.data);
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
-                        var td = $('<td></td>').appendTo(tr);
-                        $('<span></span>').text(data[i]).appendTo(td);
+                        var td = $('<td></td>').text(data[i]).appendTo(tr);
                     }
                 }
                 else {
                     trs.each(function (ind) {
-                        var td = $('<td></td>').appendTo($(this));
-                        $('<span></span>').text(data[ind]).appendTo(td);
-                        if (td.children("span").eq(0).text() !== td.prev().children("span:first-child").text())
+                        var td = $('<td></td>').text(data[ind]).appendTo($(this));
+                        //$('<span></span>').text(data[ind]).appendTo(td);
+                        if (td.text() !== td.prev().text())
                             td.addClass('change');
                     });
-                    var last = that.data.find("tr").children("td:last-child").children("span:first-child");
+                    var last = that.data.find("tr").children("td:last-child");
                     if (that.repeat !== undefined) {
                         if (that.IsClone(that.repeat, last))
                             that.Highlight(that.data.find("tr:first-child").children("td").length - 1);
@@ -6120,8 +6129,9 @@ var BMA;
             var that = this;
             var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
             tds.each(function (ind) {
-                var div = $('<div></div>').appendTo($(this));
-                div.addClass('repeat');
+                $(this).addClass('repeat');
+                //var div = $('<div></div>').appendTo($(this));
+                //div.addClass('repeat');
             });
         },
         GetRandomInt: function (min, max) {
@@ -6172,11 +6182,11 @@ var BMA;
             if (options.issucceeded === undefined)
                 return;
             if (options.issucceeded) {
-                $('<img src="../../images/succeeded.png">').appendTo(this.resultDiv);
+                $('<img src="../../images/succeeded.svg">').appendTo(this.resultDiv);
                 $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
             }
             else {
-                $('<img src="../../images/failed.png">').appendTo(this.resultDiv);
+                $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
                 $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
             }
         },
@@ -6301,13 +6311,17 @@ var BMA;
                     break;
                 case "StandbyMode":
                     this.toggler.addClass("waiting").text("");
+                    var snipper = $('<div class="spinner"></div>').appendTo(this.toggler);
+                    for (var i = 1; i < 4; i++) {
+                        $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+                    }
                     break;
             }
         },
         _create: function () {
             var that = this;
             var options = this.options;
-            var defaultToggler = $('<button></button>').text("Further Testing").addClass('furthertesting-button');
+            var defaultToggler = $('<button></button>').text("Further Testing").addClass('action-button-small red further-testing-button');
             this.element.addClass("further-testing-box");
             this.toggler = that.options.toggler || defaultToggler;
             this.toggler.appendTo(this.element).hide();
@@ -6573,10 +6587,14 @@ var BMA;
             this.refresh();
             this.element.addClass('simulation-plot-box');
         },
-        changeVisibility: function (param) {
-            var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
-            polyline.isVisible = param.check;
-        },
+        //changeVisibility: function (param) {
+        //    var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
+        //    polyline.isVisible = param.check;
+        //    var legenditem = this.element.find(".simulationplot-legend-legendcontainer");//[data-index=" + param.ind + "]");//.attr("data-index", i)
+        //    //if (param.check) legenditem.hide();
+        //    //else legenditem.show();
+        //    alert(legenditem.length);
+        //},
         refresh: function () {
             var that = this;
             var options = this.options;
@@ -6613,6 +6631,8 @@ var BMA;
                             polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
                         }
                         var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(legendDiv);
+                        if (!options.colors[i].Seen)
+                            legendItem.hide();
                         var colorBoxContainer = $("<div></div>").addClass("simulationplot-legend-colorboxcontainer").appendTo(legendItem);
                         var colorBox = $("<div></div>").addClass("simulationplot-legend-colorbox").css("background-color", options.colors[i].Color).appendTo(colorBoxContainer);
                         var nameBox = $("<div></div>").text(options.colors[i].Name).addClass("simulationplot-legend-namebox").appendTo(legendItem);
@@ -6685,6 +6705,11 @@ var BMA;
             var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
+            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]"); //.attr("data-index", i)
+            if (check)
+                legenditem.show();
+            else
+                legenditem.hide();
         },
         _destroy: function () {
             var that = this;
@@ -6742,10 +6767,14 @@ var BMA;
             }
             var step = this.options.step;
             var stepsul = $('<ul></ul>').addClass('button-list').appendTo(stepsdiv);
+            //var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
             var li0 = $('<li></li>').appendTo(stepsul);
             var li1 = $('<li></li>').addClass('steps').appendTo(stepsul);
             var li2 = $('<li></li>').appendTo(stepsul);
-            var li3 = $('<li></li>').addClass('run').appendTo(stepsul);
+            var li3 = $('<li></li>').addClass('action-button green').appendTo(stepsul);
+            //var exportCSV = $('<button></button>')
+            //    .text('Export CSV')
+            //    .appendTo(li);
             var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
             add10.bind("click", function () {
                 that._setOption("num", that.options.num + step);
@@ -6755,14 +6784,16 @@ var BMA;
             min10.bind("click", function () {
                 that._setOption("num", that.options.num - step);
             });
-            this.RunButton = $('<button></button>').text('Run').appendTo(li3);
+            this.RunButton = $('<button></button>').addClass('run-button').text('Run').appendTo(li3);
             this.refresh();
         },
         ChangeMode: function () {
             var that = this;
             switch (this.options.buttonMode) {
                 case "ActiveMode":
-                    this.RunButton.parent().removeClass('waiting');
+                    var li = this.RunButton.parent();
+                    li.removeClass('waiting');
+                    li.find('.spinner').detach();
                     this.RunButton.text('Run');
                     this.RunButton.bind("click", function () {
                         that.big_table.progressiontable("ClearData");
@@ -6773,8 +6804,16 @@ var BMA;
                     });
                     break;
                 case "StandbyMode":
-                    this.RunButton.parent().addClass('waiting');
+                    var li = this.RunButton.parent();
+                    li.addClass('waiting');
                     this.RunButton.text('');
+                    var snipper = $('<div class="spinner"></div>').appendTo(this.RunButton);
+                    for (var i = 1; i < 4; i++) {
+                        $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+                    }
+                    //                < div class="bounce1" > </div>
+                    //< div class="bounce2" > </div>
+                    //< div class="bounce3" > </div>
                     this.RunButton.unbind("click");
                     break;
             }
@@ -6885,6 +6924,7 @@ var BMA;
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
                 that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot }); //.height(160)
                 that.plotDiv.resultswindowviewer({
+                    header: "Simulation Graph",
                     content: that.plot,
                     icon: "max",
                     tabid: "SimulationPlot"
@@ -7070,15 +7110,17 @@ var BMA;
                 this.formulaTextArea.removeClass("formula-failed-textarea");
                 this.formulaTextArea.removeClass("formula-validated-textarea");
             }
-            if (this.options.approved === true) {
-                that.prooficon.addClass("formula-validated-icon");
-                this.formulaTextArea.addClass("formula-validated-textarea");
-                that.element.removeClass('bmaeditor-expanded');
-            }
-            else if (this.options.approved === false) {
-                that.prooficon.addClass("formula-failed-icon");
-                this.formulaTextArea.addClass("formula-failed-textarea");
-                that.element.addClass('bmaeditor-expanded');
+            else {
+                if (this.options.approved === true) {
+                    that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
+                    this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
+                    that.element.removeClass('bmaeditor-expanded');
+                }
+                else if (this.options.approved === false) {
+                    that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
+                    this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
+                    that.element.addClass('bmaeditor-expanded');
+                }
             }
             that.errorMessage.text(message);
         },
@@ -7667,29 +7709,39 @@ $(document).ready(function () {
             window.Commands.Execute(commandName, args);
         }
     });
+    var contextmenu = $('body').children('ul').filter('.ui-menu');
+    contextmenu.addClass('command-list window canvas-contextual');
+    contextmenu.children('li').children('ul').filter('.ui-menu').addClass('command-list');
     var aas = $('body').children('ul').children('li').children('a');
     aas.children('span').detach();
+    var ulsizes;
     aas.each(function () {
         switch ($(this).text()) {
             case "Cut":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg">Cut'; //.appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>'; //.appendTo($(this));
                 break;
             case "Copy":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg">Copy'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>'; //).appendTo($(this));
                 break;
             case "Paste":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg">Paste'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg><span>Paste</span>'; //).appendTo($(this));
                 break;
             case "Edit":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg">Edit'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>'; //).appendTo($(this));
                 break;
             case "Size":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg">Size'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>'; //).appendTo($(this));
+                ulsizes = $(this).next('ul');
                 break;
             case "Delete":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg">Delete'; //).appendTo($(this));
+                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>'; //).appendTo($(this));
                 break;
         }
+    });
+    ulsizes.addClass('context-menu-small');
+    var asizes = ulsizes.children('li').children('a');
+    asizes.each(function (ind) {
+        $(this)[0].innerHTML = '<img alt="" src="../images/' + (ind + 1) + 'x' + (ind + 1) + '.svg">';
     });
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
     //Preparing elements panel
