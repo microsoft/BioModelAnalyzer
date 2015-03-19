@@ -27,7 +27,7 @@ namespace BMAWebApi
                 }
             });
             
-            th.IsBackground = true;
+            //th.IsBackground = true;
             th.Start();
             if (th.Join(timespan))
             {

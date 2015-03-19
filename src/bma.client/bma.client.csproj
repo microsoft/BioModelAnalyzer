@@ -238,6 +238,7 @@
     <Content Include="images\savelocally.png" />
     <Content Include="images\savelocally.svg" />
     <Content Include="images\succeeded.png" />
+    <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
     <Content Include="images\title-about.png" />
     <Content Include="images\title-help.png" />
@@ -564,7 +565,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
-    <Content Include="tool.js.bundle" />
+    <Content Include="tool.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="tool.min.js.map">
       <DependentUpon>tool.min.js</DependentUpon>
     </Content>
