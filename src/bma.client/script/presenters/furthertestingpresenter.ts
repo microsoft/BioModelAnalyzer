@@ -109,13 +109,19 @@
                                         }
 
                                         if (fix !== null && bif === null && osc === null) {
-                                            var parseFix = that.ParseFixPoint(fix.Variables);
-                                            window.Commands.Execute("ProofByFurtherTesting", {
-                                                issucceeded: true,
-                                                message: 'Further testing has been determined the model to be stable with the following stable state',
-                                                fixPoint: parseFix
-                                            });
-                                            OnProofStarting();
+                                            try {
+                                                var parseFix = that.ParseFixPoint(fix.Variables);
+                                                window.Commands.Execute("ProofByFurtherTesting", {
+                                                    issucceeded: true,
+                                                    message: 'Further testing has been determined the model to be stable with the following stable state',
+                                                    fixPoint: parseFix
+                                                });
+                                                OnProofStarting();
+                                            }
+                                            catch (ex) {
+                                                console.log(ex);
+                                                that.driver.ShowStartFurtherTestingToggler();
+                                            };
                                         }
                                         else {
 
