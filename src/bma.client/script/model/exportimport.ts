@@ -2,7 +2,7 @@
     export module Model {
 
         export function MapVariableNames(f: string, mapper: (string) => string) {
-            if (f != null) {
+            if (f !== undefined && f != null) {
                 f = f.trim();
                 // Convert default function to null
                 if (f.toLowerCase() == "avg(pos)-avg(neg)")
