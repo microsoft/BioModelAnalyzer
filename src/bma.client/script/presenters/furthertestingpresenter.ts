@@ -120,7 +120,7 @@
                                                 OnProofStarting();
                                             }
                                             catch (ex) {
-                                                that.messagebox.Show(ex);
+                                                that.messagebox.Show("Invalid service response");
                                                 that.driver.ShowStartFurtherTestingToggler();
                                             };
                                         }
@@ -134,12 +134,12 @@
                                 else {
                                     logService.LogFurtherTestingError();
                                     that.driver.ActiveMode();
-                                    that.messagebox.Show(res2.Error);
+                                    that.messagebox.Show("Invalid service response");
                                 }
                             })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                                 that.driver.ActiveMode();
-                                that.messagebox.Show(errorThrown);
+                                that.messagebox.Show("Invalid service response");
                             });
 
                     }
