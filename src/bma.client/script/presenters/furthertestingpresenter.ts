@@ -120,7 +120,7 @@
                                                 OnProofStarting();
                                             }
                                             catch (ex) {
-                                                console.log(ex);
+                                                that.messagebox.Show(ex);
                                                 that.driver.ShowStartFurtherTestingToggler();
                                             };
                                         }
