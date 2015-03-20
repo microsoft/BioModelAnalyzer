@@ -109,6 +109,7 @@
                                         }
 
                                         if (fix !== null && bif === null && osc === null) {
+
                                             try {
                                                 var parseFix = that.ParseFixPoint(fix.Variables);
                                                 window.Commands.Execute("ProofByFurtherTesting", {
