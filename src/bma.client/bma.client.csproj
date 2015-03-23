@@ -35,6 +35,7 @@
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -582,19 +583,19 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Choose>
-    <When Condition="'$(Platform)'!='x64'">
+    <When Condition="'$(Platform)'=='x64'">
       <ItemGroup>
-        <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
-          <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
-          <Name>BioCheckAnalyzer32</Name>
+        <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
+          <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
+          <Name>BioCheckAnalyzer64</Name>
         </ProjectReference>
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
-        <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-          <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-          <Name>BioCheckAnalyzer64</Name>
+        <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
+          <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
+          <Name>BioCheckAnalyzer32</Name>
         </ProjectReference>
       </ItemGroup>
     </Otherwise>
