@@ -4,25 +4,30 @@
             constructor(appModel: BMA.Model.AppModel, fileLoaderDriver: BMA.UIDrivers.IFileLoader, checker: BMA.UIDrivers.ICheckChanges, logService: BMA.ISessionLog) {
                 var that = this;
 
-                window.Commands.On("NewModel", (args) => {
-                    if (checker.IsChanged(appModel)) {
-                        var userDialog = $('<div></div>').appendTo('body').userdialog({
-                            message: "Do you want to save changes?",
-                            functions: [
-                                function () {
-                                    userDialog.detach();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                    load();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                }
-                            ]
-                        });
+                window.Commands.On("NewModel",(args) => {
+                    try {
+                        if (checker.IsChanged(appModel)) {
+                            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                                message: "Do you want to save changes?",
+                                functions: [
+                                    function () {
+                                        userDialog.detach();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                        load();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                    }
+                                ]
+                            });
+                        }
+                        else load();
                     }
-                    else load();
+                    catch (ex) {
+                        load();
+                    }
 
                     function load() {
                         appModel.Deserialize(undefined);
@@ -32,25 +37,31 @@
                 });
 
                 window.Commands.On("ImportModel", (args) => {
-
-                    if (checker.IsChanged(appModel)) {
-                        var userDialog = $('<div></div>').appendTo('body').userdialog({
-                            message: "Do you want to save changes?",
-                            functions: [
-                                function () {
-                                    userDialog.detach();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                    load();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                }
-                            ]
-                        });
+                    try {
+                        if (checker.IsChanged(appModel)) {
+                            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                                message: "Do you want to save changes?",
+                                functions: [
+                                    function () {
+                                        userDialog.detach();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                        load();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                    }
+                                ]
+                            });
+                        }
+                        else {
+                            logService.LogImportModel();
+                            load();
+                        }
                     }
-                    else {
+                    catch (ex) {
+                        alert(ex);
                         logService.LogImportModel();
                         load();
                     }
@@ -85,10 +96,13 @@
                     }
                 });
 
-                window.Commands.On("ExportModel", (args) => {
-                    var data = appModel.Serialize();
-                    var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
-                    checker.Snapshot(appModel);
+                window.Commands.On("ExportModel",(args) => {
+                    try {
+                        var data = appModel.Serialize();
+                        var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
+                        checker.Snapshot(appModel);
+                    }
+                    catch (ex) { alert(ex); }
                 });
             }
         }

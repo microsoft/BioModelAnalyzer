@@ -64,7 +64,12 @@
 
                 window.Commands.On("ProofStarting", function () {
                     proofResultViewer.OnProofStarted();
-                    var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    try {
+                        var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    }
+                    catch (ex) {
+                        alert(ex);
+                    }
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
@@ -178,8 +183,15 @@
                     this.Snapshot();
                     return true;
                 }
-                else
-                    return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                else {
+                    try {
+                        return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                    }
+                    catch(ex){
+                        console.log(ex);
+                        return true;
+                    }
+                }
             }
 
             public Snapshot() {

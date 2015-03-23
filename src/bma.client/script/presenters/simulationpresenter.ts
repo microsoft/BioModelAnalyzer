@@ -33,10 +33,16 @@
                     that.results = [];
                     that.initValues = param.data;
                     that.ClearColors();
-                    var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
-                    var variables = that.ConvertParam(param.data);
-                    logService.LogSimulationRun();
-                    that.StartSimulation({ model: stableModel, variables: variables, num: param.num});
+                    try {
+                        var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        var variables = that.ConvertParam(param.data);
+                        logService.LogSimulationRun();
+                        that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
+                    }
+                    catch (ex) {
+                        alert(ex);
+                        that.expandedViewer.ActiveMode();
+                    }
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
@@ -94,9 +100,15 @@
                     return true;
                 }
                 else {
-                    var q = JSON.stringify(BMA.Model.ExportBioModel(this.currentModel));
-                    var w = JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
-                    return q !== w;
+                    try {
+                        var q = JSON.stringify(BMA.Model.ExportBioModel(this.currentModel));
+                        var w = JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                        return q !== w;
+                    }
+                    catch (ex) {
+                        this.Snapshot();
+                        return true;
+                    }
                 }
             }
 

@@ -45,32 +45,43 @@
                 });
 
                 window.Commands.On("LocalStorageSaveModel", function () {
-                    logService.LogSaveModel();
-                    var key = appModel.BioModel.Name;
-                    that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
-                    that.checker.Snapshot(that.appModel);
+                    try {
+                        logService.LogSaveModel();
+                        var key = appModel.BioModel.Name;
+                        that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
+                        that.checker.Snapshot(that.appModel);
+                    }
+                    catch (ex){
+                        alert(ex);
+                    }
                 });
 
                 window.Commands.On("LocalStorageLoadModel", function (key) {
-                    if (that.checker.IsChanged(that.appModel)) {
-                        var userDialog = $('<div></div>').appendTo('body').userdialog({
-                            message: "Do you want to save changes?",
-                            functions: [
-                                function () {
-                                    userDialog.detach();
-                                    window.Commands.Execute("LocalStorageSaveModel", {});
-                                },
-                                function () {
-                                    userDialog.detach();
-                                    load();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                }
-                            ]
-                        });
+                    try {
+                        if (that.checker.IsChanged(that.appModel)) {
+                            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                                message: "Do you want to save changes?",
+                                functions: [
+                                    function () {
+                                        userDialog.detach();
+                                        window.Commands.Execute("LocalStorageSaveModel", {});
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                        load();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                    }
+                                ]
+                            });
+                        }
+                        else load();
                     }
-                    else load();
+                    catch (ex) {
+                        alert(ex);
+                        load();
+                    }
 
                     function load() {
                         if (that.tool.IsInRepo(key)) {
