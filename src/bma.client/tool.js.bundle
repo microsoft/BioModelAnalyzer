@@ -52,6 +52,5 @@
 	<file>/script/widgets/userdialog.js</file>
 	<file>/script/widgets/variablesOptionsEditor.js</file>
 	<file>/script/widgets/visibilitysettings.js</file>
-	<file>/app.js</file>
   </files>
 </bundle>
