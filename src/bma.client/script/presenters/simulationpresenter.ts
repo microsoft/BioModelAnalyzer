@@ -62,7 +62,7 @@
                         that.expandedSimulationVariables = undefined;
                         that.CreateColors();
                         that.ClearColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                        that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
                     }
@@ -137,7 +137,7 @@
                 if (param.num === undefined || param.num === 0) {
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
-                    that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                    that.dataForPlot = that.CreateDataForPlot(that.colors);
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
@@ -176,7 +176,9 @@
 
             public AddData(d) {
                 if (d !== null) {
-                    var variables = this.appModel.BioModel.Variables;
+                    var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                        return x.Id < y.Id ? -1 : 1;
+                    });
                     for (var i = 0; i < d.length; i++) {
                         var color = this.colors[this.GetColorById(variables[i].Id)];
                         color.Plot.push(d[i]);
@@ -185,8 +187,11 @@
                 return color;
             }
 
-            public CreateDataForPlot(colors: { Id; Colors; Seen; Plot }, variables: BMA.Model.Variable[]) {
+            public CreateDataForPlot(colors: { Id; Colors; Seen; Plot }) {
                 var result = [];
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 for (var i = 0; i < variables.length; i++) {
                     result.push(colors[this.GetColorById(variables[i].Id)]);
                 }
@@ -291,9 +296,12 @@
 
             public ConvertParam(arr) {
                 var res = [];
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 for (var i = 0; i < arr.length; i++) {
                     res[i] = {
-                        "Id": this.appModel.BioModel.Variables[i].Id,
+                        "Id": variables[i].Id,
                         "Value": arr[i]
                     }
                 }
