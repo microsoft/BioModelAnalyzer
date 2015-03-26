@@ -14,7 +14,15 @@
             private currentModel: BMA.Model.BioModel;
             private logService: ISessionLog;
 
-            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver, logService: BMA.ISessionLog) {
+            constructor(
+                appModel: BMA.Model.AppModel,
+                simulationExpanded: BMA.UIDrivers.ISimulationExpanded,
+                simulationViewer: BMA.UIDrivers.ISimulationViewer,
+                popupViewer: BMA.UIDrivers.IPopup,
+                ajax: BMA.UIDrivers.IServiceDriver,
+                logService: BMA.ISessionLog,
+                exportService: BMA.UIDrivers.ExportService) {
+
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
@@ -22,6 +30,8 @@
                 this.ajax = ajax;
                 this.colors = [];
                 var that = this;
+
+
 
                 window.Commands.On("ChangePlotVariables", function (param) {
                     that.colors[param.ind].Seen = param.check;
@@ -90,6 +100,11 @@
                 window.Commands.On("Collapse", (param) => {
                     simulationViewer.Show({ tab: param });
                     popupViewer.Hide();
+                });
+
+                window.Commands.On('ExportCSV', function () {
+                    var csv = that.CreateCSV(',');
+                    exportService.Export(csv, appModel.BioModel.Name, 'csv');
                 });
             }
 
@@ -192,14 +207,22 @@
                 }
             }
 
-            //public CreateCSV() {
-            //    var csv = ''
-            //    var that = this;
-            //    var data = this.dataForPlot;
-            //    for (var i = 0, len = data.length; i < len; i++) {
-            //        that.appModel.Layout.GetContainerById(variables[i].ContainerId);
-            //    }
-            //}
+            public CreateCSV(sep): string {
+                var csv = '';
+                var that = this;
+                var data = this.dataForPlot;
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var contid = that.appModel.BioModel.GetVariableById(data[i].Id).ContainerId;
+                    csv += that.appModel.Layout.GetContainerById(contid) + sep;
+                    csv += data[i].Name + sep;
+                    var plot = data[i].Plot;
+                    for (var j = 0, plotl = plot.length; j < plotl; j++) {
+                        csv += plot[j] + sep;
+                    }
+                    csv += "\n";
+                }
+                return csv;
+            }
 
             public ClearColors() {
                 for (var i = 0; i < this.colors.length; i++) {

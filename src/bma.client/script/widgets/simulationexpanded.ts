@@ -56,7 +56,9 @@
             var exportCSV = $('<button></button>')
                 .text('Export CSV')
                 .appendTo(li);
-
+            exportCSV.bind('click', function () {
+                window.Commands.Execute('ExportCSV', {});
+            })
             var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
             add10.bind("click", function () {
                 that._setOption("num", that.options.num + step);
