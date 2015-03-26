@@ -27,6 +27,10 @@ module BMA {
             Invoke(data): JQueryPromise<any>;
         }
 
+        export interface IExportService {
+            Export(content: string, name: string, extension: string)
+        }
+
         export interface IVariableEditor {
             GetVariableProperties(): {
                 name: string; formula: string; rangeFrom: number; rangeTo: number;

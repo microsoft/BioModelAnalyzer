@@ -425,13 +425,17 @@ declare var Rx: any;
         setCenter: function (p) {
             var plotRect = this._plot.visibleRect;
             this._plot.navigation.setVisibleRect({ x: p.x - plotRect.width / 2, y: p.y - plotRect.height / 2, width: plotRect.width, height: plotRect.height }, false);
+        },
+
+        getSVG: function () {
+            return this._svgPlot.svg;
         }
 
     });
 } (jQuery));
 
 interface JQuery {
-    drawingsurface(): JQueryUI.Widget;
-    drawingsurface(settings: Object): JQueryUI.Widget;
-    drawingsurface(methodName: string, arg: any): JQueryUI.Widget;
+    drawingsurface(): any;
+    drawingsurface(settings: Object): any;
+    drawingsurface(methodName: string, arg: any): any;
 }

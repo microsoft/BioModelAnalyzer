@@ -554,5 +554,11 @@ module BMA {
                 console.log(message);
             }
         }
+
+        export class ExportService implements IExportService {
+            public Export(content: string, name: string, extension: string) {
+                var ret = saveTextAs(content, name + '.' + extension);
+            }
+        }
     }
 } 

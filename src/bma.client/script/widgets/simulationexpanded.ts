@@ -47,16 +47,18 @@
             var step = this.options.step;
 
             var stepsul = $('<ul></ul>').addClass('button-list').appendTo(stepsdiv);
-            //var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
+            var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
             var li0 = $('<li></li>').appendTo(stepsul);
             var li1 = $('<li></li>').addClass('steps').appendTo(stepsul);
             var li2 = $('<li></li>').appendTo(stepsul);
             var li3 = $('<li></li>').addClass('action-button green').appendTo(stepsul);
 
-            //var exportCSV = $('<button></button>')
-            //    .text('Export CSV')
-            //    .appendTo(li);
-
+            var exportCSV = $('<button></button>')
+                .text('Export CSV')
+                .appendTo(li);
+            exportCSV.bind('click', function () {
+                window.Commands.Execute('ExportCSV', {});
+            })
             var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
             add10.bind("click", function () {
                 that._setOption("num", that.options.num + step);
@@ -72,6 +74,7 @@
             this.refresh();
         },
 
+        
         ChangeMode: function () {
             var that = this;
             switch (this.options.buttonMode) {

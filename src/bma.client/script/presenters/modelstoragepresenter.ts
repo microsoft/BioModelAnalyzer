@@ -1,7 +1,12 @@
 ﻿module BMA {
     export module Presenters {
         export class ModelStoragePresenter {
-            constructor(appModel: BMA.Model.AppModel, fileLoaderDriver: BMA.UIDrivers.IFileLoader, checker: BMA.UIDrivers.ICheckChanges, logService: BMA.ISessionLog) {
+            constructor(
+                appModel: BMA.Model.AppModel,
+                fileLoaderDriver: BMA.UIDrivers.IFileLoader,
+                checker: BMA.UIDrivers.ICheckChanges,
+                logService: BMA.ISessionLog,
+                exportService: BMA.UIDrivers.ExportService) {
                 var that = this;
 
                 window.Commands.On("NewModel",(args) => {
@@ -99,7 +104,8 @@
                 window.Commands.On("ExportModel",(args) => {
                     try {
                         var data = appModel.Serialize();
-                        var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
+                        exportService.Export(data, appModel.BioModel.Name, 'json');
+                        //var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
                         checker.Snapshot(appModel);
                     }
                     catch (ex) { alert(ex); }

@@ -21,6 +21,7 @@ module BMA {
             private navigationDriver: BMA.UIDrivers.INavigationPanel;
             private variableEditor: BMA.UIDrivers.IVariableEditor;
             private containerEditor: BMA.UIDrivers.IContainerEditor;
+            private exportservice: BMA.UIDrivers.IExportService;
             private svg: any;
 
             private xOrigin = 0;
@@ -56,7 +57,9 @@ module BMA {
                 dragService: BMA.UIDrivers.IElementsPanel,
                 variableEditorDriver: BMA.UIDrivers.IVariableEditor,
                 containerEditorDriver: BMA.UIDrivers.IContainerEditor,
-                contextMenu: BMA.UIDrivers.IContextMenu) {
+                contextMenu: BMA.UIDrivers.IContextMenu,
+                exportservice: BMA.UIDrivers.IExportService
+                ) {
 
                 var that = this;
                 this.appModel = appModel;
@@ -67,8 +70,13 @@ module BMA {
                 this.variableEditor = variableEditorDriver;
                 this.containerEditor = containerEditorDriver;
                 this.contextMenu = contextMenu;
+                this.exportservice = exportservice;
 
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
+
+                window.Commands.On('SaveSVG',() => {
+                    that.exportservice.Export(that.svg.toSVG(), appModel.BioModel.Name, 'svg');
+                });
 
                 window.Commands.On("AddElementSelect", (type: string) => {
 
