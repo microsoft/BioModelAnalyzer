@@ -100,6 +100,13 @@
                     }
                 })
             });
+
+            var svg = $('<button></button>').text('Save as SVG').addClass('default-button').appendTo($("#visibilityOptionsContent"));
+            svg.bind('click', function () {
+                window.Commands.Execute('SaveSVG', {});
+                //var _svg = drawingSurface.drawingsurface('getSVG');
+                //var ret = saveTextAs(_svg.toSVG(), appModel.BioModel.Name + ".svg");
+            });
         },
 
         changeButtonONOFFStyle: function (ind)

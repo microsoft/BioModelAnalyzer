@@ -192,6 +192,15 @@
                 }
             }
 
+            //public CreateCSV() {
+            //    var csv = ''
+            //    var that = this;
+            //    var data = this.dataForPlot;
+            //    for (var i = 0, len = data.length; i < len; i++) {
+            //        that.appModel.Layout.GetContainerById(variables[i].ContainerId);
+            //    }
+            //}
+
             public ClearColors() {
                 for (var i = 0; i < this.colors.length; i++) {
                     this.colors[i].Plot = [];
