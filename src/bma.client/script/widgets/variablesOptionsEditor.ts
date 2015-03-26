@@ -33,7 +33,7 @@
             });
 
             this.formulaTextArea.val(that.options.formula);
-            window.Commands.Execute("FormulaEdited", {});
+            window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: that._inputsArray() });
         },
 
         SetValidation: function (result: boolean, message: string) {
@@ -315,6 +315,16 @@
 
         },
 
+        _inputsArray() {
+            var inputs = this.options.inputs;
+            var arr = {};
+            for (var i = 0; i < inputs.length; i++) {
+                if (arr[inputs[i]] === undefined) arr[inputs[i]] = 1;
+                else arr[inputs[i]]++;
+            }
+            return arr;
+        },
+
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
@@ -336,10 +346,10 @@
                     break;
                 case "formula":
                     that.options.formula = value;
-
+                    var inparr = that._inputsArray();
                     if (this.formulaTextArea.val() !== that.options.formula)
                         this.formulaTextArea.val(that.options.formula);
-                    window.Commands.Execute("FormulaEdited", that.options.formula);
+                    window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     
                     break;
                 case "inputs": 

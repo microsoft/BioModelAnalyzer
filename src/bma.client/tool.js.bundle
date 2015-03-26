@@ -23,9 +23,9 @@
 	<file>/script/changeschecker.js</file>
 	<file>/script/model/biomodel.js</file>
 	<file>/script/model/model.js</file>
-	<file>/script/model/exportimport.js</file>
 	<file>/script/model/analytics.js</file>  
 	<file>/script/model/visualsettings.js</file>
+	<file>/script/model/exportimport.js</file>
 	<file>/script/uidrivers.js</file>
 	<file>/script/presenters/undoredopresenter.js</file>
 	<file>/script/presenters/presenters.js</file>
