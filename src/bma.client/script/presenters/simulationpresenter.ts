@@ -218,7 +218,11 @@
                 var data = this.dataForPlot;
                 for (var i = 0, len = data.length; i < len; i++) {
                     var contid = that.appModel.BioModel.GetVariableById(data[i].Id).ContainerId;
-                    csv += that.appModel.Layout.GetContainerById(contid) + sep;
+                    var cont = that.appModel.Layout.GetContainerById(contid);
+                    if (cont !== undefined) {
+                        csv += cont.Name + sep;
+                    }
+                    else csv += '' + sep;
                     csv += data[i].Name + sep;
                     var plot = data[i].Plot;
                     for (var j = 0, plotl = plot.length; j < plotl; j++) {
