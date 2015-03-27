@@ -614,7 +614,7 @@ var BMA;
                 return {
                     x: bottomLeftCell.x * grid.xStep + grid.xOrigin,
                     y: bottomLeftCell.y * grid.yStep + grid.yOrigin,
-                    width: (topRightCell.x - bottomLeftCell.x + 1) * grid.yStep,
+                    width: (topRightCell.x - bottomLeftCell.x + 1) * grid.xStep,
                     height: (topRightCell.y - bottomLeftCell.y + 1) * grid.yStep
                 };
             }
