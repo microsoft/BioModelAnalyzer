@@ -13,7 +13,7 @@ describe("Simulation Expanded", () => {
     it("should create Run button and execute 'RunSimulation' command on click", () => {
         widget.simulationexpanded();
         spyOn(window.Commands, "Execute");
-        widget.find('.run').children().eq(0).click();
+        widget.find('.green').children().eq(0).click();
         expect(window.Commands.Execute).toHaveBeenCalled();
     })
 
@@ -64,7 +64,7 @@ describe("Simulation Expanded", () => {
 
         widget.simulationexpanded({ variables: variables, interval: interval, init: init, data: data });
         var num = widget.simulationexpanded("option", "num");
-        var run = widget.find('.run').children().eq(0);
+        var run = widget.find('.green').children().eq(0);
         spyOn(window.Commands, "Execute");
         run.click();
         expect(window.Commands.Execute).toHaveBeenCalledWith("RunSimulation", {data: init, num: num});
