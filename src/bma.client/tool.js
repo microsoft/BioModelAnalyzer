@@ -566,6 +566,60 @@ var BMA;
             }
         }
         ModelHelper.ResizeContainer = ResizeContainer;
+        function GetModelBoundingBox(model, grid) {
+            var bottomLeftCell = { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY };
+            var topRightCell = { x: Number.NEGATIVE_INFINITY, y: Number.NEGATIVE_INFINITY };
+            var cells = model.Containers;
+            for (var i = 0; i < cells.length; i++) {
+                var cell = cells[i];
+                if (cell.PositionX < bottomLeftCell.x) {
+                    bottomLeftCell.x = cell.PositionX;
+                }
+                if (cell.PositionY < bottomLeftCell.y) {
+                    bottomLeftCell.y = cell.PositionY;
+                }
+                if (cell.PositionX + cell.Size - 1 > topRightCell.x) {
+                    topRightCell.x = cell.PositionX + cell.Size - 1;
+                }
+                if (cell.PositionY + cell.Size - 1 > topRightCell.y) {
+                    topRightCell.y = cell.PositionY + cell.Size - 1;
+                }
+            }
+            var variables = model.Variables;
+            var getGridCell = function (x, y) {
+                var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
+                var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
+                return { x: cellX, y: cellY };
+            };
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                var gridCell = getGridCell(variable.PositionX, variable.PositionY);
+                if (gridCell.x < bottomLeftCell.x) {
+                    bottomLeftCell.x = gridCell.x;
+                }
+                if (gridCell.y < bottomLeftCell.y) {
+                    bottomLeftCell.y = gridCell.y;
+                }
+                if (gridCell.x > topRightCell.x) {
+                    topRightCell.x = gridCell.x;
+                }
+                if (gridCell.y > topRightCell.y) {
+                    topRightCell.y = gridCell.y;
+                }
+            }
+            if (cells.length === 0 && variables.length === 0) {
+                return undefined;
+            }
+            else {
+                return {
+                    x: bottomLeftCell.x * grid.xStep + grid.xOrigin,
+                    y: bottomLeftCell.y * grid.yStep + grid.yOrigin,
+                    width: (topRightCell.x - bottomLeftCell.x + 1) * grid.yStep,
+                    height: (topRightCell.y - bottomLeftCell.y + 1) * grid.yStep
+                };
+            }
+        }
+        ModelHelper.GetModelBoundingBox = GetModelBoundingBox;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ModelHelper.js.map
@@ -1374,9 +1428,14 @@ var BMA;
         LocalRepositoryTool.prototype.LoadModel = function (id) {
             var model = window.localStorage.getItem(id);
             if (model !== null) {
-                var app = new BMA.Model.AppModel();
-                app.Deserialize(model);
-                return JSON.parse(app.Serialize());
+                try {
+                    var app = new BMA.Model.AppModel();
+                    app.Deserialize(model);
+                    return JSON.parse(app.Serialize());
+                }
+                catch (ex) {
+                    alert(ex);
+                }
             }
             else
                 return null;
@@ -1926,117 +1985,6 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=model.js.map
-///#source 1 1 /script/model/exportimport.js
-var BMA;
-(function (BMA) {
-    var Model;
-    (function (Model) {
-        function MapVariableNames(f, mapper) {
-            if (f !== undefined && f != null) {
-                f = f.trim();
-                // Convert default function to null
-                if (f.toLowerCase() == "avg(pos)-avg(neg)")
-                    return null;
-                // Replace variable names with IDs
-                var varPrefix = "var(";
-                var startPos = 0;
-                var index;
-                while ((index = f.indexOf(varPrefix, startPos)) >= 0) {
-                    var endIndex = f.indexOf(")", index);
-                    if (endIndex < 0)
-                        break;
-                    var varName = f.substring(index + varPrefix.length, endIndex);
-                    f = f.substring(0, index + varPrefix.length) + mapper(varName) + f.substr(endIndex);
-                    startPos = index + 1;
-                }
-            }
-            return f;
-        }
-        Model.MapVariableNames = MapVariableNames;
-        // Returns object whose JSON representation matches external format:
-        // 1) Variables in formulas are identified by IDs
-        // 2) Default function avg(pos)-avg(neg) is replaced with null formula
-        function ExportBioModel(model) {
-            function GetIdByName(id, name) {
-                var results = model.Variables.filter(function (v2) {
-                    return v2.Name == name && model.Relationships.some(function (r) {
-                        return r.ToVariableId == id && r.FromVariableId == v2.Id;
-                        // || r.FromVariableId == id && r.ToVariableId == v2.Id
-                    });
-                });
-                //if (results.length > 1)
-                //    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
-                //else if (results.length == 0)
-                if (results.length == 0)
-                    throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
-                return results[0].Id;
-            }
-            return {
-                Name: model.Name,
-                Variables: model.Variables.map(function (v) {
-                    return {
-                        Id: v.Id,
-                        RangeFrom: v.RangeFrom,
-                        RangeTo: v.RangeTo,
-                        Formula: MapVariableNames(v.Formula, function (name) { return GetIdByName(v.Id, name).toString(); })
-                    };
-                }),
-                Relationships: model.Relationships.map(function (r) {
-                    return {
-                        Id: r.Id,
-                        FromVariable: r.FromVariableId,
-                        ToVariable: r.ToVariableId,
-                        Type: r.Type
-                    };
-                })
-            };
-        }
-        Model.ExportBioModel = ExportBioModel;
-        function ExportModelAndLayout(model, layout) {
-            return {
-                Model: ExportBioModel(model),
-                Layout: {
-                    Variables: layout.Variables.map(function (v) {
-                        var mv = model.GetVariableById(v.Id);
-                        return {
-                            Id: v.Id,
-                            Name: mv.Name,
-                            Type: mv.Type,
-                            ContainerId: mv.ContainerId,
-                            PositionX: v.PositionX,
-                            PositionY: v.PositionY,
-                            CellX: v.CellX,
-                            CellY: v.CellY,
-                            Angle: v.Angle,
-                        };
-                    }),
-                    Containers: layout.Containers.map(function (c) {
-                        return {
-                            Id: c.Id,
-                            Name: c.Name,
-                            Size: c.Size,
-                            PositionX: c.PositionX,
-                            PositionY: c.PositionY
-                        };
-                    })
-                }
-            };
-        }
-        Model.ExportModelAndLayout = ExportModelAndLayout;
-        function ImportModelAndLayout(json) {
-            var id = {};
-            json.Layout.Variables.forEach(function (v) {
-                id[v.Id] = v;
-            });
-            return {
-                Model: new Model.BioModel(json.Model.Name, json.Model.Variables.map(function (v) { return new Model.Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo, MapVariableNames(v.Formula, function (s) { return id[parseInt(s)].Name; })); }), json.Model.Relationships.map(function (r) { return new Model.Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type); })),
-                Layout: new Model.Layout(json.Layout.Containers.map(function (c) { return new Model.ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY); }), json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }))
-            };
-        }
-        Model.ImportModelAndLayout = ImportModelAndLayout;
-    })(Model = BMA.Model || (BMA.Model = {}));
-})(BMA || (BMA = {}));
-//# sourceMappingURL=exportimport.js.map
 ///#source 1 1 /script/model/analytics.js
 var BMA;
 (function (BMA) {
@@ -2161,6 +2109,129 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=visualsettings.js.map
+///#source 1 1 /script/model/exportimport.js
+var BMA;
+(function (BMA) {
+    var Model;
+    (function (Model) {
+        function MapVariableNames(f, mapper) {
+            var namestory = {};
+            if (f !== undefined && f != null) {
+                f = f.trim();
+                // Convert default function to null
+                if (f.toLowerCase() == "avg(pos)-avg(neg)")
+                    return null;
+                // Replace variable names with IDs
+                var varPrefix = "var(";
+                var startPos = 0;
+                var index;
+                while ((index = f.indexOf(varPrefix, startPos)) >= 0) {
+                    var endIndex = f.indexOf(")", index);
+                    if (endIndex < 0)
+                        break;
+                    var varName = f.substring(index + varPrefix.length, endIndex);
+                    namestory[varName] = (namestory[varName] === undefined) ? 0 : namestory[varName] + 1;
+                    var map = mapper(varName);
+                    var m = undefined;
+                    if (map instanceof Array) {
+                        m = map[namestory[varName]];
+                    }
+                    else {
+                        m = map;
+                    }
+                    f = f.substring(0, index + varPrefix.length) + m + f.substr(endIndex);
+                    startPos = index + 1;
+                }
+            }
+            return f;
+        }
+        Model.MapVariableNames = MapVariableNames;
+        // Returns object whose JSON representation matches external format:
+        // 1) Variables in formulas are identified by IDs
+        // 2) Default function avg(pos)-avg(neg) is replaced with null formula
+        function ExportBioModel(model) {
+            function GetIdByName(id, name) {
+                var results = model.Variables.filter(function (v2) {
+                    return v2.Name == name && model.Relationships.some(function (r) {
+                        return r.ToVariableId == id && r.FromVariableId == v2.Id;
+                        // || r.FromVariableId == id && r.ToVariableId == v2.Id
+                    });
+                });
+                //if (results.length > 1)
+                //    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
+                //else if (results.length == 0)
+                if (results.length == 0)
+                    throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
+                var res = [];
+                res = res.concat(results.map(function (x) { return x.Id.toString(); }));
+                return res;
+            }
+            return {
+                Name: model.Name,
+                Variables: model.Variables.map(function (v) {
+                    return {
+                        Id: v.Id,
+                        RangeFrom: v.RangeFrom,
+                        RangeTo: v.RangeTo,
+                        Formula: MapVariableNames(v.Formula, function (name) { return GetIdByName(v.Id, name); })
+                    };
+                }),
+                Relationships: model.Relationships.map(function (r) {
+                    return {
+                        Id: r.Id,
+                        FromVariable: r.FromVariableId,
+                        ToVariable: r.ToVariableId,
+                        Type: r.Type
+                    };
+                })
+            };
+        }
+        Model.ExportBioModel = ExportBioModel;
+        function ExportModelAndLayout(model, layout) {
+            return {
+                Model: ExportBioModel(model),
+                Layout: {
+                    Variables: layout.Variables.map(function (v) {
+                        var mv = model.GetVariableById(v.Id);
+                        return {
+                            Id: v.Id,
+                            Name: mv.Name,
+                            Type: mv.Type,
+                            ContainerId: mv.ContainerId,
+                            PositionX: v.PositionX,
+                            PositionY: v.PositionY,
+                            CellX: v.CellX,
+                            CellY: v.CellY,
+                            Angle: v.Angle,
+                        };
+                    }),
+                    Containers: layout.Containers.map(function (c) {
+                        return {
+                            Id: c.Id,
+                            Name: c.Name,
+                            Size: c.Size,
+                            PositionX: c.PositionX,
+                            PositionY: c.PositionY
+                        };
+                    })
+                }
+            };
+        }
+        Model.ExportModelAndLayout = ExportModelAndLayout;
+        function ImportModelAndLayout(json) {
+            var id = {};
+            json.Layout.Variables.forEach(function (v) {
+                id[v.Id] = v;
+            });
+            return {
+                Model: new Model.BioModel(json.Model.Name, json.Model.Variables.map(function (v) { return new Model.Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo, MapVariableNames(v.Formula, function (s) { return id[parseInt(s)].Name; })); }), json.Model.Relationships.map(function (r) { return new Model.Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type); })),
+                Layout: new Model.Layout(json.Layout.Containers.map(function (c) { return new Model.ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY); }), json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }))
+            };
+        }
+        Model.ImportModelAndLayout = ImportModelAndLayout;
+    })(Model = BMA.Model || (BMA.Model = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=exportimport.js.map
 ///#source 1 1 /script/uidrivers.js
 /// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
@@ -2247,9 +2318,6 @@ var BMA;
             };
             VariableEditorDriver.prototype.Initialize = function (variable, model) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
-                this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
-                this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
-                this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
                 var options = [];
                 var id = variable.Id;
                 for (var i = 0; i < model.Relationships.length; i++) {
@@ -2259,6 +2327,9 @@ var BMA;
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
+                this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
+                this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
+                this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
             };
             VariableEditorDriver.prototype.Show = function (x, y) {
                 this.variableEditor.show();
@@ -2642,6 +2713,15 @@ var BMA;
             return MessageBoxDriver;
         })();
         UIDrivers.MessageBoxDriver = MessageBoxDriver;
+        var ExportService = (function () {
+            function ExportService() {
+            }
+            ExportService.prototype.Export = function (content, name, extension) {
+                var ret = saveTextAs(content, name + '.' + extension);
+            };
+            return ExportService;
+        })();
+        UIDrivers.ExportService = ExportService;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=uidrivers.js.map
@@ -2743,7 +2823,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, dragService, variableEditorDriver, containerEditorDriver, contextMenu) {
+            function DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, dragService, variableEditorDriver, containerEditorDriver, contextMenu, exportservice) {
                 var _this = this;
                 this.xOrigin = 0;
                 this.yOrigin = 0;
@@ -2763,7 +2843,11 @@ var BMA;
                 this.variableEditor = variableEditorDriver;
                 this.containerEditor = containerEditorDriver;
                 this.contextMenu = contextMenu;
+                this.exportservice = exportservice;
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
+                window.Commands.On('SaveSVG', function () {
+                    that.exportservice.Export(that.svg.toSVG(), appModel.BioModel.Name, 'svg');
+                });
                 window.Commands.On("AddElementSelect", function (type) {
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
@@ -3780,7 +3864,16 @@ var BMA;
                 this.logService = logService;
                 var that = this;
                 window.Commands.On("ProofByFurtherTesting", function (param) {
-                    //var st = that.st.variablesStability;
+                    try {
+                        param.fixPoint.forEach(function (val, ind) {
+                            var i = that.getIndById(that.stability.variablesStability, val.Id);
+                            var id = that.stability.variablesStability[i].id;
+                        });
+                    }
+                    catch (ex) {
+                        throw new EventException;
+                    }
+                    ;
                     param.fixPoint.forEach(function (val, ind) {
                         var i = that.getIndById(that.stability.variablesStability, val.Id);
                         that.stability.variablesStability[i].state = true;
@@ -3803,7 +3896,12 @@ var BMA;
                 });
                 window.Commands.On("ProofStarting", function () {
                     proofResultViewer.OnProofStarted();
-                    var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    try {
+                        var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    }
+                    catch (ex) {
+                        alert(ex);
+                    }
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput).done(function (res) {
                         //console.log("Proof Result Status: " + res.Status);
@@ -3902,8 +4000,15 @@ var BMA;
                     this.Snapshot();
                     return true;
                 }
-                else
-                    return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                else {
+                    try {
+                        return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                    }
+                    catch (ex) {
+                        console.log(ex);
+                        return true;
+                    }
+                }
             };
             ProofPresenter.prototype.Snapshot = function () {
                 this.currentModel = this.appModel.BioModel.Clone();
@@ -4065,7 +4170,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var SimulationPresenter = (function () {
-            function SimulationPresenter(appModel, simulationExpanded, simulationViewer, popupViewer, ajax, logService) {
+            function SimulationPresenter(appModel, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService) {
                 var _this = this;
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
@@ -4083,10 +4188,16 @@ var BMA;
                     that.results = [];
                     that.initValues = param.data;
                     that.ClearColors();
-                    var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
-                    var variables = that.ConvertParam(param.data);
-                    logService.LogSimulationRun();
-                    that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
+                    try {
+                        var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        var variables = that.ConvertParam(param.data);
+                        logService.LogSimulationRun();
+                        that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
+                    }
+                    catch (ex) {
+                        alert(ex);
+                        that.expandedViewer.ActiveMode();
+                    }
                 });
                 window.Commands.On("SimulationRequested", function (args) {
                     if (that.CurrentModelChanged()) {
@@ -4095,7 +4206,7 @@ var BMA;
                         that.expandedSimulationVariables = undefined;
                         that.CreateColors();
                         that.ClearColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                        that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
                     }
@@ -4132,6 +4243,10 @@ var BMA;
                     simulationViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
+                window.Commands.On('ExportCSV', function () {
+                    var csv = that.CreateCSV(',');
+                    exportService.Export(csv, appModel.BioModel.Name, 'csv');
+                });
             }
             SimulationPresenter.prototype.CurrentModelChanged = function () {
                 if (this.currentModel === undefined) {
@@ -4139,9 +4254,15 @@ var BMA;
                     return true;
                 }
                 else {
-                    var q = JSON.stringify(BMA.Model.ExportBioModel(this.currentModel));
-                    var w = JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
-                    return q !== w;
+                    try {
+                        var q = JSON.stringify(BMA.Model.ExportBioModel(this.currentModel));
+                        var w = JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                        return q !== w;
+                    }
+                    catch (ex) {
+                        this.Snapshot();
+                        return true;
+                    }
                 }
             };
             SimulationPresenter.prototype.Snapshot = function () {
@@ -4153,7 +4274,7 @@ var BMA;
                 if (param.num === undefined || param.num === 0) {
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
-                    that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                    that.dataForPlot = that.CreateDataForPlot(that.colors);
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
@@ -4188,7 +4309,9 @@ var BMA;
             };
             SimulationPresenter.prototype.AddData = function (d) {
                 if (d !== null) {
-                    var variables = this.appModel.BioModel.Variables;
+                    var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
+                        return x.Id < y.Id ? -1 : 1;
+                    });
                     for (var i = 0; i < d.length; i++) {
                         var color = this.colors[this.GetColorById(variables[i].Id)];
                         color.Plot.push(d[i]);
@@ -4196,8 +4319,11 @@ var BMA;
                 }
                 return color;
             };
-            SimulationPresenter.prototype.CreateDataForPlot = function (colors, variables) {
+            SimulationPresenter.prototype.CreateDataForPlot = function (colors) {
                 var result = [];
+                var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 for (var i = 0; i < variables.length; i++) {
                     result.push(colors[this.GetColorById(variables[i].Id)]);
                 }
@@ -4215,6 +4341,27 @@ var BMA;
                             Plot: []
                         });
                 }
+            };
+            SimulationPresenter.prototype.CreateCSV = function (sep) {
+                var csv = '';
+                var that = this;
+                var data = this.dataForPlot;
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var contid = that.appModel.BioModel.GetVariableById(data[i].Id).ContainerId;
+                    var cont = that.appModel.Layout.GetContainerById(contid);
+                    if (cont !== undefined) {
+                        csv += cont.Name + sep;
+                    }
+                    else
+                        csv += '' + sep;
+                    csv += data[i].Name + sep;
+                    var plot = data[i].Plot;
+                    for (var j = 0, plotl = plot.length; j < plotl; j++) {
+                        csv += plot[j] + sep;
+                    }
+                    csv += "\n";
+                }
+                return csv;
             };
             SimulationPresenter.prototype.ClearColors = function () {
                 for (var i = 0; i < this.colors.length; i++) {
@@ -4278,9 +4425,12 @@ var BMA;
             };
             SimulationPresenter.prototype.ConvertParam = function (arr) {
                 var res = [];
+                var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 for (var i = 0; i < arr.length; i++) {
                     res[i] = {
-                        "Id": this.appModel.BioModel.Variables[i].Id,
+                        "Id": variables[i].Id,
                         "Value": arr[i]
                     };
                 }
@@ -4306,28 +4456,33 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var ModelStoragePresenter = (function () {
-            function ModelStoragePresenter(appModel, fileLoaderDriver, checker, logService) {
+            function ModelStoragePresenter(appModel, fileLoaderDriver, checker, logService, exportService) {
                 var that = this;
                 window.Commands.On("NewModel", function (args) {
-                    if (checker.IsChanged(appModel)) {
-                        var userDialog = $('<div></div>').appendTo('body').userdialog({
-                            message: "Do you want to save changes?",
-                            functions: [
-                                function () {
-                                    userDialog.detach();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                    load();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                }
-                            ]
-                        });
+                    try {
+                        if (checker.IsChanged(appModel)) {
+                            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                                message: "Do you want to save changes?",
+                                functions: [
+                                    function () {
+                                        userDialog.detach();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                        load();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                    }
+                                ]
+                            });
+                        }
+                        else
+                            load();
                     }
-                    else
+                    catch (ex) {
                         load();
+                    }
                     function load() {
                         appModel.Deserialize(undefined);
                         checker.Snapshot(appModel);
@@ -4335,24 +4490,31 @@ var BMA;
                     }
                 });
                 window.Commands.On("ImportModel", function (args) {
-                    if (checker.IsChanged(appModel)) {
-                        var userDialog = $('<div></div>').appendTo('body').userdialog({
-                            message: "Do you want to save changes?",
-                            functions: [
-                                function () {
-                                    userDialog.detach();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                    load();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                }
-                            ]
-                        });
+                    try {
+                        if (checker.IsChanged(appModel)) {
+                            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                                message: "Do you want to save changes?",
+                                functions: [
+                                    function () {
+                                        userDialog.detach();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                        load();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                    }
+                                ]
+                            });
+                        }
+                        else {
+                            logService.LogImportModel();
+                            load();
+                        }
                     }
-                    else {
+                    catch (ex) {
+                        alert(ex);
                         logService.LogImportModel();
                         load();
                     }
@@ -4383,9 +4545,15 @@ var BMA;
                     }
                 });
                 window.Commands.On("ExportModel", function (args) {
-                    var data = appModel.Serialize();
-                    var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
-                    checker.Snapshot(appModel);
+                    try {
+                        var data = appModel.Serialize();
+                        exportService.Export(data, appModel.BioModel.Name, 'json');
+                        //var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
+                        checker.Snapshot(appModel);
+                    }
+                    catch (ex) {
+                        alert(ex);
+                    }
                 });
             }
             return ModelStoragePresenter;
@@ -4404,7 +4572,17 @@ var BMA;
                 var that = this;
                 this.editorDriver = editor;
                 this.ajax = ajax;
-                window.Commands.On("FormulaEdited", function (formula) {
+                window.Commands.On("FormulaEdited", function (param) {
+                    var formula = param.formula;
+                    var inputs = param.inputs;
+                    for (var item in inputs) {
+                        if (inputs[item] > 1) {
+                            if (formula.split(item).length - 1 !== inputs[item]) {
+                                that.editorDriver.SetValidation(false, 'Need equal number of repeating inputs in formula');
+                                return;
+                            }
+                        }
+                    }
                     if (formula !== "")
                         var result = that.ajax.Invoke({ Formula: formula }).done(function (res) {
                             that.editorDriver.SetValidation(res.IsValid, res.Message);
@@ -4702,32 +4880,43 @@ var BMA;
                     that.driver.Show();
                 });
                 window.Commands.On("LocalStorageSaveModel", function () {
-                    logService.LogSaveModel();
-                    var key = appModel.BioModel.Name;
-                    that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
-                    that.checker.Snapshot(that.appModel);
+                    try {
+                        logService.LogSaveModel();
+                        var key = appModel.BioModel.Name;
+                        that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
+                        that.checker.Snapshot(that.appModel);
+                    }
+                    catch (ex) {
+                        alert(ex);
+                    }
                 });
                 window.Commands.On("LocalStorageLoadModel", function (key) {
-                    if (that.checker.IsChanged(that.appModel)) {
-                        var userDialog = $('<div></div>').appendTo('body').userdialog({
-                            message: "Do you want to save changes?",
-                            functions: [
-                                function () {
-                                    userDialog.detach();
-                                    window.Commands.Execute("LocalStorageSaveModel", {});
-                                },
-                                function () {
-                                    userDialog.detach();
-                                    load();
-                                },
-                                function () {
-                                    userDialog.detach();
-                                }
-                            ]
-                        });
+                    try {
+                        if (that.checker.IsChanged(that.appModel)) {
+                            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                                message: "Do you want to save changes?",
+                                functions: [
+                                    function () {
+                                        userDialog.detach();
+                                        window.Commands.Execute("LocalStorageSaveModel", {});
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                        load();
+                                    },
+                                    function () {
+                                        userDialog.detach();
+                                    }
+                                ]
+                            });
+                        }
+                        else
+                            load();
                     }
-                    else
+                    catch (ex) {
+                        alert(ex);
                         load();
+                    }
                     function load() {
                         if (that.tool.IsInRepo(key)) {
                             appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
@@ -5991,6 +6180,9 @@ var BMA;
         setCenter: function (p) {
             var plotRect = this._plot.visibleRect;
             this._plot.navigation.setVisibleRect({ x: p.x - plotRect.width / 2, y: p.y - plotRect.height / 2, width: plotRect.width, height: plotRect.height }, false);
+        },
+        getSVG: function () {
+            return this._svgPlot.svg;
         }
     });
 }(jQuery));
@@ -6786,14 +6978,15 @@ var BMA;
             }
             var step = this.options.step;
             var stepsul = $('<ul></ul>').addClass('button-list').appendTo(stepsdiv);
-            //var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
+            var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
             var li0 = $('<li></li>').appendTo(stepsul);
             var li1 = $('<li></li>').addClass('steps').appendTo(stepsul);
             var li2 = $('<li></li>').appendTo(stepsul);
             var li3 = $('<li></li>').addClass('action-button green').appendTo(stepsul);
-            //var exportCSV = $('<button></button>')
-            //    .text('Export CSV')
-            //    .appendTo(li);
+            var exportCSV = $('<button></button>').text('Export CSV').appendTo(li);
+            exportCSV.bind('click', function () {
+                window.Commands.Execute('ExportCSV', {});
+            });
             var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
             add10.bind("click", function () {
                 that._setOption("num", that.options.num + step);
@@ -7117,7 +7310,7 @@ var BMA;
                 });
             });
             this.formulaTextArea.val(that.options.formula);
-            window.Commands.Execute("FormulaEdited", {});
+            window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: that._inputsArray() });
         },
         SetValidation: function (result, message) {
             this.options.approved = result;
@@ -7325,6 +7518,17 @@ var BMA;
                 window.Commands.Execute("VariableEdited", {});
             });
         },
+        _inputsArray: function () {
+            var inputs = this.options.inputs;
+            var arr = {};
+            for (var i = 0; i < inputs.length; i++) {
+                if (arr[inputs[i]] === undefined)
+                    arr[inputs[i]] = 1;
+                else
+                    arr[inputs[i]]++;
+            }
+            return arr;
+        },
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
@@ -7350,9 +7554,10 @@ var BMA;
                     break;
                 case "formula":
                     that.options.formula = value;
+                    var inparr = that._inputsArray();
                     if (this.formulaTextArea.val() !== that.options.formula)
                         this.formulaTextArea.val(that.options.formula);
-                    window.Commands.Execute("FormulaEdited", that.options.formula);
+                    window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     break;
                 case "inputs":
                     this.options.inputs = value;
@@ -7493,6 +7698,12 @@ jQuery.fn.extend({
                     }
                 });
             });
+            var svg = $('<button></button>').text('Save as SVG').addClass('default-button').appendTo($("#visibilityOptionsContent"));
+            svg.bind('click', function () {
+                window.Commands.Execute('SaveSVG', {});
+                //var _svg = drawingSurface.drawingsurface('getSVG');
+                //var ret = saveTextAs(_svg.toSVG(), appModel.BioModel.Name + ".svg");
+            });
         },
         changeButtonONOFFStyle: function (ind) {
             var button = this.listOptions[ind].toggleButton;
@@ -7529,493 +7740,3 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=visibilitysettings.js.map
-///#source 1 1 /app.js
-/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="script\model\biomodel.ts"/>
-/// <reference path="script\model\model.ts"/>
-/// <reference path="script\model\exportimport.ts"/>
-/// <reference path="script\model\visualsettings.ts"/>
-/// <reference path="script\commands.ts"/>
-/// <reference path="script\elementsregistry.ts"/>
-/// <reference path="script\functionsregistry.ts"/>
-/// <reference path="script\localRepository.ts"/>
-/// <reference path="script\uidrivers.interfaces.ts"/>
-/// <reference path="script\uidrivers.ts"/>
-/// <reference path="script\presenters\undoredopresenter.ts"/>
-/// <reference path="script\presenters\presenters.ts"/>
-/// <reference path="script\presenters\furthertestingpresenter.ts"/>
-/// <reference path="script\presenters\simulationpresenter.ts"/>
-/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
-/// <reference path="script\SVGHelper.ts"/>
-/// <reference path="script\changeschecker.ts"/>
-/// <reference path="script\widgets\drawingsurface.ts"/>
-/// <reference path="script\widgets\simulationplot.ts"/>
-/// <reference path="script\widgets\simulationviewer.ts"/>
-/// <reference path="script\widgets\simulationexpanded.ts"/>
-/// <reference path="script\widgets\accordeon.ts"/>
-/// <reference path="script\widgets\visibilitysettings.ts"/>
-/// <reference path="script\widgets\elementbutton.ts"/>
-/// <reference path="script\widgets\bmaslider.ts"/>
-/// <reference path="script\widgets\userdialog.ts"/>
-/// <reference path="script\widgets\variablesOptionsEditor.ts"/>
-/// <reference path="script\widgets\progressiontable.ts"/>
-/// <reference path="script\widgets\proofresultviewer.ts"/>
-/// <reference path="script\widgets\furthertestingviewer.ts"/>
-/// <reference path="script\widgets\localstoragewidget.ts"/>
-/// <reference path="script\widgets\resultswindowviewer.ts"/>
-/// <reference path="script\widgets\coloredtableviewer.ts"/>
-/// <reference path="script\widgets\containernameeditor.ts"/>
-function onSilverlightError(sender, args) {
-    var appSource = "";
-    if (sender != null && sender != 0) {
-        appSource = sender.getHost().Source;
-    }
-    var errorType = args.ErrorType;
-    var iErrorCode = args.ErrorCode;
-    if (errorType == "ImageError" || errorType == "MediaError") {
-        return;
-    }
-    var errMsg = "Unhandled Error in Silverlight Application " + appSource + "\n";
-    errMsg += "Code: " + iErrorCode + "    \n";
-    errMsg += "Category: " + errorType + "       \n";
-    errMsg += "Message: " + args.ErrorMessage + "     \n";
-    if (errorType == "ParserError") {
-        errMsg += "File: " + args.xamlFile + "     \n";
-        errMsg += "Line: " + args.lineNumber + "     \n";
-        errMsg += "Position: " + args.charPosition + "     \n";
-    }
-    else if (errorType == "RuntimeError") {
-        if (args.lineNumber != 0) {
-            errMsg += "Line: " + args.lineNumber + "     \n";
-            errMsg += "Position: " + args.charPosition + "     \n";
-        }
-        errMsg += "MethodName: " + args.methodName + "     \n";
-    }
-    alert(errMsg);
-}
-function getSearchParameters() {
-    var prmstr = window.location.search.substr(1);
-    return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
-}
-function transformToAssocArray(prmstr) {
-    var params = {};
-    var prmarr = prmstr.split("&");
-    for (var i = 0; i < prmarr.length; i++) {
-        var tmparr = prmarr[i].split("=");
-        params[tmparr[0]] = tmparr[1];
-    }
-    return params;
-}
-function popup_position() {
-    var my_popup = $('.popup-window, .window.dialog');
-    var analytic_tabs = $('.tab-right');
-    analytic_tabs.each(function () {
-        var tab_h = $(this).outerHeight();
-        var win_h = $(window).outerHeight() * 0.8;
-        if (win_h > tab_h)
-            $(this).css({ 'max-height': win_h * 0.8 });
-        else
-            $(this).css({ 'max-height': '600px' });
-    });
-    my_popup.each(function () {
-        var my_popup_w = $(this).outerWidth(), my_popup_h = $(this).outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
-        if (win_w > my_popup_w) {
-            my_popup.css({ 'left': popup_half_w });
-        }
-        if (win_w < my_popup_w) {
-            my_popup.css({ 'left': 5, });
-        }
-        if (win_h > my_popup_h) {
-            my_popup.css({ 'top': popup_half_h });
-        }
-        if (win_h < my_popup_h) {
-            my_popup.css({ 'top': 5 });
-        }
-    });
-}
-$(document).ready(function () {
-    //Creating CommandRegistry
-    window.Commands = new BMA.CommandRegistry();
-    //Creating ElementsRegistry
-    window.ElementRegistry = new BMA.Elements.ElementsRegistry();
-    //Creating FunctionsRegistry
-    window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
-    //Creating model and layout
-    var appModel = new BMA.Model.AppModel();
-    window.PlotSettings = {
-        MaxWidth: 3200,
-        MinWidth: 800
-    };
-    window.GridSettings = {
-        xOrigin: 0,
-        yOrigin: 0,
-        xStep: 250,
-        yStep: 280
-    };
-    //Loading widgets
-    var drawingSurface = $("#drawingSurface");
-    drawingSurface.drawingsurface();
-    $("#zoomslider").bmazoomslider({ value: 50 });
-    $("#modelToolbarHeader").buttonset();
-    $("#modelToolbarContent").buttonset();
-    $("#modelToolbarSlider").bmaaccordion({ position: "left", z_index: 1 });
-    $("#visibilityOptionsContent").visibilitysettings();
-    $("#visibilityOptionsSlider").bmaaccordion();
-    $("#modelNameEditor").val(appModel.BioModel.Name);
-    $("#modelNameEditor").click(function (e) {
-        e.stopPropagation();
-    });
-    $("#modelNameEditor").bind("input change", function () {
-        appModel.BioModel.Name = $(this).val();
-    });
-    window.Commands.On("ModelReset", function () {
-        $("#modelNameEditor").val(appModel.BioModel.Name);
-    });
-    $("#drawingSurceContainer").contextmenu({
-        delegate: ".bma-drawingsurface",
-        preventContextMenuForPopup: true,
-        preventSelect: true,
-        taphold: true,
-        menu: [
-            { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-            { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-            { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-            { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
-            {
-                title: "Size",
-                cmd: "Size",
-                children: [
-                    { title: "1x1", cmd: "ResizeCellTo1x1" },
-                    { title: "2x2", cmd: "ResizeCellTo2x2" },
-                    { title: "3x3", cmd: "ResizeCellTo3x3" },
-                ],
-                uiIcon: "ui-icon-arrow-4-diag"
-            },
-            { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
-        ],
-        beforeOpen: function (event, ui) {
-            ui.menu.zIndex(50);
-            var left = event.pageX - $(".bma-drawingsurface").offset().left;
-            var top = event.pageY - $(".bma-drawingsurface").offset().top;
-            console.log("top " + top);
-            console.log("left " + left);
-            window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
-                left: left,
-                top: top
-            });
-        },
-        select: function (event, ui) {
-            var args = {};
-            var commandName = "DrawingSurface";
-            if (ui.cmd === "ResizeCellTo1x1") {
-                args.size = 1;
-                commandName += "ResizeCell";
-            }
-            else if (ui.cmd === "ResizeCellTo2x2") {
-                args.size = 2;
-                commandName += "ResizeCell";
-            }
-            else if (ui.cmd === "ResizeCellTo3x3") {
-                args.size = 3;
-                commandName += "ResizeCell";
-            }
-            else {
-                commandName += ui.cmd;
-            }
-            args.left = event.pageX - $(".bma-drawingsurface").offset().left;
-            args.top = event.pageY - $(".bma-drawingsurface").offset().top;
-            window.Commands.Execute(commandName, args);
-        }
-    });
-    var contextmenu = $('body').children('ul').filter('.ui-menu');
-    contextmenu.addClass('command-list window canvas-contextual');
-    contextmenu.children('li').children('ul').filter('.ui-menu').addClass('command-list');
-    var aas = $('body').children('ul').children('li').children('a');
-    aas.children('span').detach();
-    var ulsizes;
-    aas.each(function () {
-        switch ($(this).text()) {
-            case "Cut":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';
-                break;
-            case "Copy":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';
-                break;
-            case "Paste":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg"><span>Paste</span>';
-                break;
-            case "Edit":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';
-                break;
-            case "Size":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';
-                ulsizes = $(this).next('ul');
-                break;
-            case "Delete":
-                $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';
-                break;
-        }
-    });
-    ulsizes.addClass('context-menu-small');
-    var asizes = ulsizes.children('li').children('a');
-    asizes.each(function (ind) {
-        $(this)[0].innerHTML = '<img alt="" src="../images/' + (ind + 1) + 'x' + (ind + 1) + '.svg">';
-    });
-    $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
-    //Preparing elements panel
-    var elementPanel = $("#modelelemtoolbar");
-    var elements = window.ElementRegistry.Elements;
-    for (var i = 0; i < elements.length; i++) {
-        var elem = elements[i];
-        $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
-        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
-        var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
-    }
-    elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
-        helper: function (event, ui) {
-            var classes = $(this).children().children().attr("class").split(" ");
-            return $('<div></div>').addClass(classes[0]).addClass("draggable-helper-element").appendTo('body');
-        },
-        scroll: false,
-        start: function (event, ui) {
-            $(this).draggable("option", "cursorAt", {
-                left: Math.floor(ui.helper.width() / 2),
-                top: Math.floor(ui.helper.height() / 2)
-            });
-            $('#' + $(this).attr("for")).click();
-        }
-    });
-    $("#modelelemtoolbar input").click(function (event) {
-        window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
-    });
-    elementPanel.buttonset();
-    //undo/redo panel
-    $("#button-pointer").click(function () {
-        window.Commands.Execute("AddElementSelect", undefined);
-    });
-    $("#undoredotoolbar").buttonset();
-    $("#button-undo").click(function () {
-        window.Commands.Execute("Undo", undefined);
-    });
-    $("#button-redo").click(function () {
-        window.Commands.Execute("Redo", undefined);
-    });
-    $("#btn-local-save").click(function (args) {
-        window.Commands.Execute("LocalStorageSaveModel", undefined);
-    });
-    $("#btn-new-model").click(function (args) {
-        window.Commands.Execute("NewModel", undefined);
-    });
-    $("#btn-local-storage").click(function (args) {
-        window.Commands.Execute("LocalStorageRequested", undefined);
-    });
-    $("#btn-import-model").click(function (args) {
-        window.Commands.Execute("ImportModel", undefined);
-    });
-    $("#btn-export-model").click(function (args) {
-        window.Commands.Execute("ExportModel", undefined);
-    });
-    var localStorageWidget = $('<div></div>').addClass('window').appendTo('#drawingSurceContainer').localstoragewidget();
-    $("#editor").bmaeditor();
-    $("#Proof-Analysis").proofresultviewer();
-    $("#Further-Testing").furthertesting();
-    $("#tabs-2").simulationviewer();
-    var popup = $('<div></div>').addClass('popup-window window').appendTo('body').hide().resultswindowviewer({ icon: "min" });
-    popup.draggable({ scroll: false });
-    var expandedSimulation = $('<div></div>').simulationexpanded();
-    //Visual Settings Presenter
-    var visualSettings = new BMA.Model.AppVisualSettings();
-    window.Commands.On("Commands.ToggleLabels", function (param) {
-        visualSettings.TextLabelVisibility = param;
-        window.ElementRegistry.LabelVisibility = param;
-        window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
-    });
-    window.Commands.On("Commands.LabelsSize", function (param) {
-        visualSettings.TextLabelSize = param;
-        window.ElementRegistry.LabelSize = param;
-        window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
-    });
-    //window.Commands.On("Commands.ToggleIcons", function (param) {
-    //    visualSettings.IconsVisibility = param;
-    //});
-    //window.Commands.On("Commands.IconsSize", function (param) {
-    //    visualSettings.IconsSize = param;
-    //});
-    window.Commands.On("Commands.LineWidth", function (param) {
-        visualSettings.LineWidth = param;
-        window.ElementRegistry.LineWidth = param;
-        window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
-    });
-    window.Commands.On("Commands.ToggleGrid", function (param) {
-        visualSettings.GridVisibility = param;
-        svgPlotDriver.SetGridVisibility(param);
-    });
-    window.Commands.On("ZoomSliderBind", function (value) {
-        $("#zoomslider").bmazoomslider({ value: value });
-    });
-    window.Commands.On("AppModelChanged", function () {
-        if (changesCheckerTool.IsChanged) {
-            popupDriver.Hide();
-            accordionHider.Hide();
-            window.Commands.Execute("Expand", '');
-        }
-    });
-    window.Commands.On("DrawingSurfaceVariableEditorOpened", function () {
-        popupDriver.Hide();
-        accordionHider.Hide();
-    });
-    //Loading Drivers
-    var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
-    var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
-    var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
-    var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("#editor"));
-    var containerEditorDriver = new BMA.UIDrivers.ContainerEditorDriver($("#containerEditor"));
-    var proofViewer = new BMA.UIDrivers.ProofViewer($("#analytics"), $("#Proof-Analysis"));
-    var furtherTestingDriver = new BMA.UIDrivers.FurtherTestingDriver($("#Further-Testing"), undefined);
-    var simulationViewer = new BMA.UIDrivers.SimulationViewerDriver($("#tabs-2"));
-    var fullSimulationViewer = new BMA.UIDrivers.SimulationExpandedDriver(expandedSimulation);
-    var popupDriver = new BMA.UIDrivers.PopupDriver(popup);
-    var fileLoaderDriver = new BMA.UIDrivers.ModelFileLoader($("#fileLoader"));
-    var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
-    var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
-    var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
-    //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
-    var messagebox = new BMA.UIDrivers.MessageBoxDriver();
-    var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
-    var changesCheckerTool = new BMA.ChangesChecker();
-    changesCheckerTool.Snapshot(appModel);
-    //Loaing ServiсeDrivers 
-    var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
-    var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
-    var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
-    var simulationService = new BMA.UIDrivers.SimulationService();
-    var logService = new BMA.SessionLog();
-    //Loading presenters
-    var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver);
-    var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
-    var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(appModel, furtherTestingDriver, popupDriver, furtherTestingServiсe, messagebox, logService);
-    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService);
-    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService);
-    var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
-    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-    //Loading model from URL
-    var reserved_key = "InitialModel";
-    var params = getSearchParameters();
-    if (params.Model !== undefined) {
-        var s = params.Model.split('.');
-        if (s.length > 1 && s[s.length - 1] == "json") {
-            $.ajax(params.Model, {
-                dataType: "text",
-                success: function (fileContent) {
-                    appModel.Deserialize(fileContent);
-                    //appModel._Reset(fileContent);
-                }
-            });
-        }
-        else {
-            $.get(params.Model, function (fileContent) {
-                try {
-                    var model = BMA.ParseXmlModel(fileContent, window.GridSettings);
-                    appModel.Reset(model.Model, model.Layout);
-                }
-                catch (exc) {
-                    console.log(exc);
-                    appModel.Deserialize(fileContent);
-                }
-            });
-        }
-    }
-    else {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);
-    }
-    var toolsdivs = $('#tools').children('div');
-    function resize_header_tools() {
-        toolsdivs.each(function () {
-            $(this).toggleClass('box-sizing'); //.css('box-sizing', 'border-box');
-        });
-    }
-    $(document).ready(function () {
-        popup_position();
-    });
-    $(window).resize(function () {
-        popup_position();
-        resize_header_tools();
-    });
-    window.onunload = function () {
-        window.localStorage.setItem(reserved_key, appModel.Serialize());
-        var log = logService.CloseSession();
-        var data = JSON.stringify({
-            SessionID: log.SessionID,
-            UserID: log.UserID,
-            LogInTime: log.LogIn,
-            LogOutTime: log.LogOut,
-            FurtherTestingCount: log.FurtherTesting,
-            ImportModelCount: log.ImportModel,
-            RunSimulationCount: log.Simulation,
-            NewModelCount: log.NewModel,
-            RunProofCount: log.Proof,
-            SaveModelCount: log.SaveModel,
-            ProofErrorCount: log.ProofErrorCount,
-            SimulationErrorCount: log.SimulationErrorCount,
-            FurtherTestingErrorCount: log.FurtherTestingErrorCount,
-            ClientVersion: "BMA HTML5 2.0"
-        });
-        var sendBeacon = navigator['sendBeacon'];
-        if (sendBeacon) {
-            sendBeacon('/api/ActivityLog', data);
-        }
-        else {
-            var xhr = new XMLHttpRequest();
-            xhr.open('post', '/api/ActivityLog', false);
-            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-            xhr.setRequestHeader("Content-length", data.length.toString());
-            xhr.setRequestHeader("Connection", "close");
-            xhr.send(data);
-        }
-    };
-    $("label[for='button-pointer']").click();
-    //window.onerror = function (msg, url, l) {
-    //    var win = $('<div></div>').addClass('popup-window window report-bug').appendTo('body');
-    //    win.draggable({ containment: parent, scroll: false });
-    //    popup_position();
-    //    var closediv = $('<div></div>').addClass('close-icon').appendTo(win);
-    //    var closing = $('<img src="/images/close.png">').appendTo(closediv);
-    //    closing.bind("click", function () {
-    //        win.detach();
-    //    });
-    //    var div = $('<div></div>').addClass('window-title').text('Please describe the problem').appendTo(win);
-    //    var inline1 = $('<div></div>').addClass('inline').appendTo(win);
-    //    var textarea = $('<textarea></textarea>').appendTo(inline1);
-    //    var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
-    //    btn.bind('click', function () {
-    //        var model = appModel.Serialize();
-    //        var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
-    //        txt += '&_msg=' + msg;
-    //        txt += '&URL=' + url;
-    //        txt += '&Line=' + l;
-    //        txt += '&Platform=' + navigator.platform;
-    //        txt += '&UserAgent=' + navigator.userAgent;
-    //        txt += '&UserSay=' + textarea.val();
-    //        //txt += '&Model=' + JSON.stringify(j.Model); 
-    //        //txt += '&Layout=' + JSON.stringify(j.Layout); 
-    //        //alert(txt);
-    //        //var i = document.createElement('img');
-    //        //i.setAttribute('src',(('https:' == document.location.protocol) ?
-    //        //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
-    //        //document.body.appendChild(i);
-    //        var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
-    //        $.ajax({
-    //            type: "POST",
-    //            url: url,
-    //            data: "&Model=" + model
-    //        }).always(function () {
-    //            inline1.detach();
-    //            btn.detach();
-    //            $('.report-bug').children('.window-title').eq(0).text('Thanks for your report!').appendTo(win);
-    //        });
-    //    });
-    //}
-});
-//# sourceMappingURL=app.js.map

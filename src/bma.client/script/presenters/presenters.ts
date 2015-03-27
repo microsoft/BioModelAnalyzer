@@ -78,7 +78,7 @@ module BMA {
                     that.exportservice.Export(that.svg.toSVG(), appModel.BioModel.Name, 'svg');
                 });
 
-                window.Commands.On("AddElementSelect", (type: string) => {
+                window.Commands.On("AddElementSelect",(type: string) => {
 
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
@@ -87,7 +87,7 @@ module BMA {
                     //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
 
-                window.Commands.On("DrawingSurfaceClick", (args: { x: number; y: number; screenX: number; screenY: number }) => {
+                window.Commands.On("DrawingSurfaceClick",(args: { x: number; y: number; screenX: number; screenY: number }) => {
                     if (that.selectedType !== undefined) {
                         that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
                     } else {
@@ -111,7 +111,7 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("VariableEdited", () => {
+                window.Commands.On("VariableEdited",() => {
                     var that = this;
                     if (that.editingId !== undefined) {
                         var model = this.undoRedoPresenter.Current.model;
@@ -131,7 +131,7 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("ContainerNameEdited", () => {
+                window.Commands.On("ContainerNameEdited",() => {
                     var that = this;
 
                     if (that.editingId !== undefined) {
@@ -144,7 +144,7 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("DrawingSurfaceContextMenuOpening", (args) => {
+                window.Commands.On("DrawingSurfaceContextMenuOpening",(args) => {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
 
@@ -201,7 +201,7 @@ module BMA {
 
                 });
 
-                window.Commands.On("DrawingSurfaceDelete", (args) => {
+                window.Commands.On("DrawingSurfaceDelete",(args) => {
                     if (that.contextElement !== undefined) {
                         if (that.contextElement.type === "variable") {
                             that.RemoveVariable(that.contextElement.id);
@@ -215,15 +215,15 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("DrawingSurfaceCopy", (args) => {
+                window.Commands.On("DrawingSurfaceCopy",(args) => {
                     that.CopyToClipboard(false);
                 });
 
-                window.Commands.On("DrawingSurfaceCut", (args) => {
+                window.Commands.On("DrawingSurfaceCut",(args) => {
                     that.CopyToClipboard(true);
                 });
 
-                window.Commands.On("DrawingSurfacePaste", (args) => {
+                window.Commands.On("DrawingSurfacePaste",(args) => {
                     if (that.clipboard !== undefined) {
                         if (that.clipboard.Container !== undefined) {
                             var model = that.undoRedoPresenter.Current.model;
@@ -286,14 +286,14 @@ module BMA {
                     //that.clipboard = undefined;
                 });
 
-                window.Commands.On("DrawingSurfaceResizeCell", (args) => {
+                window.Commands.On("DrawingSurfaceResizeCell",(args) => {
                     if (that.contextElement !== undefined && that.contextElement.type === "container") {
                         var resized = ModelHelper.ResizeContainer(undoRedoPresenter.Current.model, undoRedoPresenter.Current.layout, that.contextElement.id, args.size, { xOrigin: that.xOrigin, yOrigin: that.yOrigin, xStep: that.xStep, yStep: that.yStep });
                         this.undoRedoPresenter.Dup(resized.model, resized.layout);
                     }
                 });
 
-                window.Commands.On("DrawingSurfaceEdit", () => {
+                window.Commands.On("DrawingSurfaceEdit",() => {
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
                         that.editingId = id;
@@ -313,7 +313,7 @@ module BMA {
                     that.contextElement = undefined;
                 });
 
-                window.Commands.On("DrawingSurfaceRefreshOutput", (args) => {
+                window.Commands.On("DrawingSurfaceRefreshOutput",(args) => {
                     if (this.undoRedoPresenter.Current !== undefined) {
 
                         if (args !== undefined) {
@@ -342,18 +342,18 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("DrawingSurfaceSetProofResults", (args) => {
+                window.Commands.On("DrawingSurfaceSetProofResults",(args) => {
                     if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
                         var drawingSvg = <SVGElement>this.CreateSvg(args);
                         this.driver.Draw(drawingSvg);
                     }
                 });
 
-                window.Commands.On("DrawingSurfaceVariableEditorOpened", (args) => {
+                window.Commands.On("DrawingSurfaceVariableEditorOpened",(args) => {
                     this.containerEditor.Hide();
                 });
 
-                window.Commands.On("DrawingSurfaceContainerEditorOpened", (args) => {
+                window.Commands.On("DrawingSurfaceContainerEditorOpened",(args) => {
                     this.variableEditor.Hide();
                 });
 
@@ -368,7 +368,7 @@ module BMA {
 
                 var dragSubject = dragService.GetDragSubject();
 
-                window.Commands.On("ZoomSliderChanged", (args) => {
+                window.Commands.On("ZoomSliderChanged",(args) => {
                     if (args.isExternal !== true) {
                         var value = args.value * 24 + 800;
                         navigationDriver.SetZoom(value);
@@ -711,7 +711,7 @@ module BMA {
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
                     var containerLayout = containers[i];
-                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: grid.xStep / 2, yStep: grid.yStep / 2 })) {
+                    if (element.IntersectsBorder(x, y,(containerLayout.PositionX + 0.5) * grid.xStep + grid.x0,(containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: grid.xStep / 2, yStep: grid.yStep / 2 })) {
                         return containerLayout.Id;
                     }
                 }
@@ -831,7 +831,7 @@ module BMA {
 
                         if (container === undefined ||
                             !(<BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container"))
-                                .ContainsBBox(bbox, (container.PositionX + 0.5) * that.xStep, (container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
+                                .ContainsBBox(bbox,(container.PositionX + 0.5) * that.xStep,(container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
                             return false;
                         }
 
@@ -856,7 +856,7 @@ module BMA {
 
                         if (container === undefined ||
                             !(<BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container"))
-                                .IntersectsBorder(x, y, (container.PositionX + 0.5) * that.xStep, (container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
+                                .IntersectsBorder(x, y,(container.PositionX + 0.5) * that.xStep,(container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
                             return false;
                         }
 

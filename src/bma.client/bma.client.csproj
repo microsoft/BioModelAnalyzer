@@ -432,6 +432,7 @@
     <TypeScriptCompile Include="test\BiomodelTest.ts" />
     <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
     <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
+    <TypeScriptCompile Include="test\ModelHelperTests.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
     <TypeScriptCompile Include="test\BMASliderTest.ts" />

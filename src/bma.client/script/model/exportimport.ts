@@ -19,7 +19,14 @@
                     var varName = f.substring(index + varPrefix.length, endIndex);
                     namestory[varName] = (namestory[varName] === undefined) ? 0 : namestory[varName] + 1;
                     var map = mapper(varName);
-                    var m = (map instanceof Array) ? map[namestory[varName]] : map;
+
+                    var m: any = undefined;
+                    if (map instanceof Array) {
+                        m = map[namestory[varName]];
+                    } else {
+                        m = map;
+                    }
+
                     f = f.substring(0, index + varPrefix.length) + m + f.substr(endIndex);
                     startPos = index + 1;
                 }

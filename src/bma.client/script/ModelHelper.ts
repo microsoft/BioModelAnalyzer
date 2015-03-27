@@ -136,5 +136,64 @@
                 return { model: newModel, layout: newlayout };
             }
         }
+
+        export function GetModelBoundingBox(model: BMA.Model.Layout, grid: { xOrigin: number; yOrigin: number; xStep: number; yStep: number }): { x: number; y: number; width: number; height: number } {
+            var bottomLeftCell = { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY };
+            var topRightCell = { x: Number.NEGATIVE_INFINITY, y: Number.NEGATIVE_INFINITY };
+
+
+            var cells = model.Containers;
+            for (var i = 0; i < cells.length; i++) {
+                var cell = cells[i];
+                if (cell.PositionX < bottomLeftCell.x) {
+                    bottomLeftCell.x = cell.PositionX;
+                }
+                if (cell.PositionY < bottomLeftCell.y) {
+                    bottomLeftCell.y = cell.PositionY;
+                }
+                if (cell.PositionX + cell.Size - 1 > topRightCell.x) {
+                    topRightCell.x = cell.PositionX + cell.Size - 1;
+                }
+                if (cell.PositionY + cell.Size - 1 > topRightCell.y) {
+                    topRightCell.y = cell.PositionY + cell.Size - 1;
+                }
+            }
+
+            var variables = model.Variables;
+
+            var getGridCell = function(x,y) {
+                var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
+                var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
+                return { x: cellX, y: cellY };
+            }
+
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                var gridCell = getGridCell(variable.PositionX, variable.PositionY);
+                if (gridCell.x < bottomLeftCell.x) {
+                    bottomLeftCell.x = gridCell.x;
+                }
+                if (gridCell.y < bottomLeftCell.y) {
+                    bottomLeftCell.y = gridCell.y;
+                }
+                if (gridCell.x > topRightCell.x) {
+                    topRightCell.x = gridCell.x;
+                }
+                if (gridCell.y > topRightCell.y) {
+                    topRightCell.y = gridCell.y;
+                }
+            }
+
+            if (cells.length === 0 && variables.length === 0) {
+                return undefined;
+            } else {
+                return {
+                    x: bottomLeftCell.x * grid.xStep + grid.xOrigin,
+                    y: bottomLeftCell.y * grid.yStep + grid.yOrigin,
+                    width: (topRightCell.x - bottomLeftCell.x + 1) * grid.yStep,
+                    height: (topRightCell.y - bottomLeftCell.y + 1) * grid.yStep
+                };
+            }
+        }
     }
 } 
