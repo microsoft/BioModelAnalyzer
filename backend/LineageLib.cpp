@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <sstream>
 #include "LineageLib.h"
 #include "Simulation.h"
 
@@ -16,9 +17,18 @@ using std::pair;
 
 const string INITIALPROG{ "P0" };
 
-vector<string> simulate(vector<string> programs, string condition) {
+namespace linux_problem {
+	template <class T>
+	std::string to_string(const T& obj) {
+		std::stringstream s;
+		s << obj;
+		return s.str();
+	}
+};
+
+vector<string> simulate(vector<string> pgm, string condition) {
 	try {
-		unique_ptr<Simulation> s{ new Simulation(programs) };
+		unique_ptr<Simulation> s{ new Simulation(pgm) };
 		s->run(INITIALPROG, condition, -1.0, -1.0);
 		return s->toVectorString();
 	}
@@ -27,9 +37,9 @@ vector<string> simulate(vector<string> programs, string condition) {
 	return vector<string>();
 }
 
-vector<string> checkTimeOverlap(vector<string> programs, string condition, string firstCell, string secondCell, unsigned int numSimulations, bool rawData) {
+vector<string> checkTimeOverlap(vector<string> pgm, string condition, string firstCell, string secondCell, unsigned int numSimulations, bool rawData) {
 	try {
-		unique_ptr<Simulation> s{ new Simulation(programs) };
+		unique_ptr<Simulation> s{ new Simulation(pgm) };
 		vector<float> results1;
 		vector<float> results2;
 		for (unsigned int i{ 0 }; i < numSimulations; ++i) {
@@ -66,7 +76,7 @@ vector<string> checkTimeOverlap(vector<string> programs, string condition, strin
 		auto addEntryToVec = [&](const string& name, const float& val) {
 			string toAdd{ name };
 			toAdd += ": ";
-			toAdd += std::to_string(val);
+			toAdd += linux_problem::to_string(val);
 			result.push_back(toAdd);
 		};
 
@@ -77,7 +87,7 @@ vector<string> checkTimeOverlap(vector<string> programs, string condition, strin
 				for (float val : vec) {
 					if (!first)
 						raw += ", ";
-					raw += std::to_string(val);
+					raw += linux_problem::to_string(val);
 					first = false;
 				}
 				result.push_back(raw);
@@ -137,7 +147,7 @@ vector<string> cellExistence(vector<string> programs, string condition, unsigned
 		for (auto nameCount : total) {
 			string temp{ nameCount.first };
 			temp += ": ";
-			temp += std::to_string(nameCount.second);
+			temp += linux_problem::to_string(nameCount.second);
 			results.push_back(temp); 
 		}
 		return results;
