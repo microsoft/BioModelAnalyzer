@@ -60,6 +60,10 @@ module BMA {
             public SetCenter(x: number, y: number) {
 
             }
+
+            public GetSVG(): string {
+                return "";
+            }
             
             //private svg: SVGElement[];
 

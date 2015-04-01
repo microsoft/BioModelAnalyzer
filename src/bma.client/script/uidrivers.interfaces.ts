@@ -11,6 +11,7 @@ module BMA {
             GetPlotY(top: number);
             GetPixelWidth();
             SetGridVisibility(isOn: boolean);
+            GetSVG() : string;
         }
 
         export interface IHider {
