@@ -4,6 +4,7 @@
 #include <numeric>
 #include <vector>
 #include <map>
+#include <string>
 
 #include "LineageLib.h"
 #include "Simulation.h"
@@ -11,14 +12,14 @@
 using std::vector;
 using std::map;
 using std::string;
-using std::auto_ptr;
+using std::unique_ptr;
 using std::pair;
 
 const string INITIALPROG{ "P0" };
 
 vector<string> simulate(vector<string> programs, string condition) {
 	try {
-		auto_ptr<Simulation> s{ new Simulation(programs) };
+		unique_ptr<Simulation> s{ new Simulation(programs) };
 		s->run(INITIALPROG, condition, -1.0, -1.0);
 		return s->toVectorString();
 	}
@@ -29,7 +30,7 @@ vector<string> simulate(vector<string> programs, string condition) {
 
 vector<string> checkTimeOverlap(vector<string> programs, string condition, string firstCell, string secondCell, unsigned int numSimulations, bool rawData) {
 	try {
-		auto_ptr<Simulation> s{ new Simulation(programs) };
+		unique_ptr<Simulation> s{ new Simulation(programs) };
 
 		vector<float> results1;
 		vector<float> results2;
@@ -119,7 +120,7 @@ vector<string> checkTimeOverlap(vector<string> programs, string condition, strin
 
 vector<string> cellExistence(vector<string> programs, string condition, unsigned int numSimulations) {
 	try {
-		auto_ptr<Simulation> s{ new Simulation(programs) };
+		unique_ptr<Simulation> s{ new Simulation(programs) };
 		map<string, unsigned int> total{};
 		for (unsigned int i{ 0 }; i < numSimulations; ++i) {
 			s->clear();
@@ -151,7 +152,7 @@ vector<string> cellExistence(vector<string> programs, string condition, unsigned
 
 vector<string> simulateAbnormal(vector<string> programs, string condition, unsigned int repetitions) {
 	try {
-		auto_ptr<Simulation> s{ new Simulation(programs) };
+		unique_ptr<Simulation> s{ new Simulation(programs) };
 
 		vector<string> progs{ s->programs() };
 
