@@ -72,6 +72,9 @@ Simulation::Simulation(const string& filename) : _currentTime(0.0) {
 	readFile(filename);
 }
 
+Simulation::Simulation(const vector<string>& programs) : _currentTime(0.0) {
+	readVector(programs);
+}
 
 Simulation::~Simulation() {
 	clear();
@@ -215,6 +218,26 @@ void Simulation::readFile(const string& filename) {
 	}
 }
 
+void Simulation::readVector(const vector<string>& programs) {
+	int lineNo{ 1 };
+
+	_addCellCycleType();
+
+	for (auto program : programs) {
+		try {
+			_sanitize(program);
+			_parseLine(program);
+			++lineNo;
+		}
+		catch (const string& err) {
+			stringstream error;
+			error << "On line " << lineNo << ": " << err;
+			const string withLineNum{ error.str() };
+			throw withLineNum;
+		}
+	}
+}
+
 void Simulation::addCell(Cell* c) {
 	_cells.insert(make_pair(c->name(), c));
 }
@@ -322,6 +345,14 @@ string Simulation::toString(unsigned int num) const {
 	}
 
 	return temp.str();
+}
+
+vector<string> Simulation::toVectorString() const {
+	vector<string> result;
+	for (auto ev : _log) {
+		result.push_back(ev->toString());
+	}
+	return result;
 }
 
 string Simulation::toJson() const {

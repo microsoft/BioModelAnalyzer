@@ -58,6 +58,9 @@ Happening.o : Happening.cpp
 HelperFunctions.o : HelperFunctions.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c HelperFunctions.cpp -o HelperFunctions.o
 
+LineageLib.o : LineageLib.cpp
+	g++ -std=c++0x -O0 -g3 -Wall -c LineageLib.cpp -o LineageLib.o
+
 main.o : main.cpp
 	g++ -std=c++0x -O0 -g3 -Wall -c main.cpp -o main.o
 
@@ -93,7 +96,9 @@ Lineage: Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
 		 Event/ChangeState.o Event/Death.o Event/Division.o Event/Event.o \
 		 Expression/AndExp.o Expression/BoolExp.o Expression/BoolVar.o \
 		 Expression/EqExp.o Expression/Negation.o Expression/NeqExp.o \
-		 Cell.o CellProgram.o Condition.o Happening.o HelperFunctions.o \
+		 Cell.o CellProgram.o Condition.o Happening.o \
+		 HelperFunctions.o \
+		 LineageLib.o \
 		 main.o Simulation.o State.o  \
 		 Variable/BoolType.o Variable/EnumType.o Variable/Type.o Variable/Variable.o
 	@echo 'Building target: $@'
@@ -104,7 +109,7 @@ Lineage: Directive/Directive.o Directive/Divide.o Directive/StateTransition.o \
 		Expression/AndExp.o Expression/BoolExp.o Expression/BoolVar.o \
 		Expression/EqExp.o Expression/Negation.o Expression/NeqExp.o \
 		Cell.o CellProgram.o Condition.o Happening.o HelperFunctions.o \
-		main.o Simulation.o State.o \
+		LineageLib.o main.o Simulation.o State.o \
 		Variable/BoolType.o Variable/EnumType.o Variable/Type.o Variable/Variable.o
 	@echo 'Finished building target: $@'
 	@echo ' '

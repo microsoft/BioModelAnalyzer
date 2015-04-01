@@ -93,6 +93,7 @@
     <ClCompile Include="Expression\NeqExp.cpp" />
     <ClCompile Include="Happening.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
+    <ClCompile Include="LineageLib.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="State.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="Expression\NeqExp.h" />
     <ClInclude Include="Happening.h" />
     <ClInclude Include="HelperFunctions.h" />
+    <ClInclude Include="LineageLib.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="Variable\BoolType.h" />
