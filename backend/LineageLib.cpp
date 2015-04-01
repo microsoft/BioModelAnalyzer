@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 #include <string>
-
 #include "LineageLib.h"
 #include "Simulation.h"
 
@@ -31,7 +30,6 @@ vector<string> simulate(vector<string> programs, string condition) {
 vector<string> checkTimeOverlap(vector<string> programs, string condition, string firstCell, string secondCell, unsigned int numSimulations, bool rawData) {
 	try {
 		unique_ptr<Simulation> s{ new Simulation(programs) };
-
 		vector<float> results1;
 		vector<float> results2;
 		for (unsigned int i{ 0 }; i < numSimulations; ++i) {
@@ -153,7 +151,6 @@ vector<string> cellExistence(vector<string> programs, string condition, unsigned
 vector<string> simulateAbnormal(vector<string> programs, string condition, unsigned int repetitions) {
 	try {
 		unique_ptr<Simulation> s{ new Simulation(programs) };
-
 		vector<string> progs{ s->programs() };
 
 		for (unsigned int i{ 0 }; i<repetitions; ++i) {
