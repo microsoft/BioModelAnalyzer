@@ -100,8 +100,10 @@
                     }
                 })
             });
+            var ul = $('<ul></ul>').addClass('button-list').appendTo($("#visibilityOptionsContent"));
+            var li = $('<li></li>').addClass('default-button').appendTo(ul);
 
-            var svg = $('<button></button>').text('Save as SVG').addClass('default-button').appendTo($("#visibilityOptionsContent"));
+            var svg = $('<button></button>').text('Save as SVG').appendTo(li);
             svg.bind('click', function () {
                 window.Commands.Execute('SaveSVG', {});
                 //var _svg = drawingSurface.drawingsurface('getSVG');
