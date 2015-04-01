@@ -17,7 +17,7 @@ ul, menu, dir {
 
 img {
     border: 0;
-}
+} 
 
 .background-img() {
     background-repeat: no-repeat;
@@ -54,7 +54,7 @@ img {
     -o-box-shadow: @x @y @blur @shadow;
     box-shadow: @x @y @blur @shadow;
 }
-
+ 
 .gradient(@side, @color1, @color2) {
     background-image: -moz-linear-gradient(@side, @color1, @color2);
     background-image: -webkit-linear-gradient(@side,@color1, @color2);
@@ -428,11 +428,19 @@ li.ui-state-default {
     cursor: pointer;
     font-size: 18px;
     line-height: 26px;
-    margin: 5px 10px 0 0;
+    margin: 0 10px 0 0;
 
     div {
         display: inline-block;
         vertical-align: bottom;
+    }
+
+    div:first-child {
+        width: 30px;
+        height: 30px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
     }
 }
 

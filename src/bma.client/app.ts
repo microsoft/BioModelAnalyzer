@@ -173,6 +173,10 @@ $(document).ready(function () {
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
 
+
+    $("#visibilityOptionsContent")
+
+
     $("#modelNameEditor").val(appModel.BioModel.Name);
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();
@@ -251,26 +255,29 @@ $(document).ready(function () {
     var ulsizes: JQuery;
     aas.each(function () {
         switch ($(this).text()) {
-            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';//.appendTo($(this));
+            case "Cut": $(this)[0].innerHTML = '<img alt="" src="../images/icon-cut.svg"><span>Cut</span>';
                 break;
-            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';//).appendTo($(this));
+            case "Copy": $(this)[0].innerHTML = '<img alt="" src="../images/icon-copy.svg"><span>Copy</span>';
                 break;
-            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg><span>Paste</span>';//).appendTo($(this));
+            case "Paste": $(this)[0].innerHTML = '<img alt="" src="../images/icon-paste.svg"><span>Paste</span>';
                 break;
-            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';//).appendTo($(this));
+            case "Edit": $(this)[0].innerHTML = '<img alt="" src="../images/icon-edit.svg"><span>Edit</span>';
                 break;
-            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';//).appendTo($(this));
+            case "Size": $(this)[0].innerHTML = '<img alt="" src="../images/icon-size.svg"><span>Size  ></span>';
                 ulsizes = $(this).next('ul');
                 break;
-            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';//).appendTo($(this));
+            case "Delete": $(this)[0].innerHTML = '<img alt="" src="../images/icon-delete.svg"><span>Delete</span>';
                 break;
         }
     })
-    ulsizes.addClass('context-menu-small');
-    var asizes = ulsizes.children('li').children('a');
-    asizes.each(function (ind) {
-        $(this)[0].innerHTML = '<img alt="" src="../images/'+(ind+1)+'x'+(ind+1)+'.svg">';
-    });
+    if (ulsizes !== undefined)
+        ulsizes.addClass('context-menu-small');
+    if (asizes !== undefined) {
+        var asizes = ulsizes.children('li').children('a');
+        asizes.each(function (ind) {
+            $(this)[0].innerHTML = '<img alt="" src="../images/' + (ind + 1) + 'x' + (ind + 1) + '.svg">';
+        });
+    }
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
 
     //Preparing elements panel
@@ -435,6 +442,7 @@ $(document).ready(function () {
 
 
     //Loaing ServiсeDrivers 
+    var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
     var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
@@ -444,16 +452,17 @@ $(document).ready(function () {
 
     //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver);
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(appModel, furtherTestingDriver, popupDriver, furtherTestingServiсe, messagebox, logService);
-    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService);
-    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService);
+    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService);
+    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
 
 
     //Loading model from URL
+    var reserved_key = "InitialModel";
     var params = getSearchParameters();
     if (params.Model !== undefined) {
 
@@ -480,7 +489,9 @@ $(document).ready(function () {
             });
         }
     }
-
+    else {
+        window.Commands.Execute("LocalStorageInitModel", reserved_key);
+    }
 
 
     var toolsdivs = $('#tools').children('div');
@@ -500,7 +511,7 @@ $(document).ready(function () {
         resize_header_tools();
     });
 
-    var reserved_key = "InitialModel";
+
 
     window.onunload = function () {
         window.localStorage.setItem(reserved_key, appModel.Serialize());
@@ -534,9 +545,7 @@ $(document).ready(function () {
         }
     };
 
-    window.onload = function () {
-        window.Commands.Execute("LocalStorageInitModel", reserved_key);
-    };
+
     $("label[for='button-pointer']").click();
     
     //window.onerror = function (msg, url, l) {

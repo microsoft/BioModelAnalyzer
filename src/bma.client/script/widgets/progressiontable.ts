@@ -70,11 +70,8 @@
                         input.val(init);
 
                     var random = $('<td></td>')
-                        .addClass("random-small hoverable")
+                        .addClass("random-small bma-random-icon2 hoverable")
                         .appendTo(tr);
-                    if (i % 2 === 0)
-                        random.addClass('bma-random-icon1');
-                    else random.addClass('bma-random-icon2');
                     //random.filter(':nth-child(even)').addClass('bma-random-icon1');
                     //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
                     random.bind("click", function () {

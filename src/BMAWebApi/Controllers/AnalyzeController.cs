@@ -91,6 +91,7 @@ namespace bma.client.Controllers
                 return new AnalysisOutput
                 {
                     Status = StatusType.Error,
+                    Error = ex.Message,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                 };

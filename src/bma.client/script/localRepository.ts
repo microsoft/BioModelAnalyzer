@@ -50,9 +50,12 @@
         public LoadModel(id: string): JSON {
             var model = window.localStorage.getItem(id);
             if (model !== null) {
-                var app = new BMA.Model.AppModel();
-                app.Deserialize(model);
-                return JSON.parse(app.Serialize());
+                try {
+                    var app = new BMA.Model.AppModel();
+                    app.Deserialize(model);
+                    return JSON.parse(app.Serialize());
+                }
+                catch (ex) { alert(ex); }
             }
             else return null;
         }

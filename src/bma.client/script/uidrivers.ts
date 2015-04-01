@@ -103,10 +103,6 @@ module BMA {
 
             public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
-                this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
-                this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
-                this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
-
                 var options = [];
                 var id = variable.Id;
                 for (var i = 0; i < model.Relationships.length; i++) {
@@ -116,6 +112,11 @@ module BMA {
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
+                this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
+                this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
+                this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
+
+                
             }
 
             public Show(x: number, y: number) {
@@ -271,6 +272,8 @@ module BMA {
                         header = "Further Testing";
                         this.popupWindow.addClass('further-testing-popout')
                         break;
+                    case "SimulationPlot":
+                        header = "Simulation Graph";
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 popup_position();
@@ -549,6 +552,12 @@ module BMA {
 
             public Log(message: string) {
                 console.log(message);
+            }
+        }
+
+        export class ExportService implements IExportService {
+            public Export(content: string, name: string, extension: string) {
+                var ret = saveTextAs(content, name + '.' + extension);
             }
         }
     }

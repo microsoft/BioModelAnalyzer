@@ -29,8 +29,14 @@
                 var that = this;
 
                 window.Commands.On("ProofByFurtherTesting", function (param: { issucceeded; message; fixPoint}) {
-                    
-                    //var st = that.st.variablesStability;
+                    try {
+                        param.fixPoint.forEach((val, ind) => {
+                            var i = that.getIndById(that.stability.variablesStability, val.Id);
+                            var id = that.stability.variablesStability[i].id;
+                        })
+                     }
+                    catch (ex) { throw new EventException;};
+
                     param.fixPoint.forEach((val, ind) => {
                         var i = that.getIndById(that.stability.variablesStability, val.Id);
                         that.stability.variablesStability[i].state = true;
@@ -42,21 +48,28 @@
                         }
                     });
                     var variablesData = that.CreateTableView(that.stability.variablesStability);
-                    that.expandedProofVariables =  that.CreateExpandedProofVariables(variablesData);
+                    that.expandedProofVariables = that.CreateExpandedProofVariables(variablesData);
                     that.AddPropagationColumn(that.stability.variablesStability);
+                   
 
                     proofResultViewer.SetData({
                         issucceeded: param.issucceeded,
                         message: param.message,
                         data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData }
                     });
-                    
+
                     window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
+                    
                 });
 
                 window.Commands.On("ProofStarting", function () {
                     proofResultViewer.OnProofStarted();
-                    var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    try {
+                        var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    }
+                    catch (ex) {
+                        alert(ex);
+                    }
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
@@ -102,7 +115,7 @@
                                 logService.LogProofError();
                                 if (res.Status == "Error") {
                                     proofResultViewer.SetData({
-                                        issucceeded: res.Status === "Stabilizing",
+                                        issucceeded: undefined,
                                         message: res.Error,
                                         data: undefined
                                     })
@@ -130,6 +143,7 @@
                         window.Commands.Execute("ProofStarting", {});
                     }
                     else {
+                        
                         proofResultViewer.ShowResult(appModel.ProofResult);
                         window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
                     }
@@ -169,8 +183,15 @@
                     this.Snapshot();
                     return true;
                 }
-                else
-                    return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                else {
+                    try {
+                        return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                    }
+                    catch(ex){
+                        console.log(ex);
+                        return true;
+                    }
+                }
             }
 
             public Snapshot() {

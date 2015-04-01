@@ -15,15 +15,21 @@
             var options = this.options;
             this.resultDiv.empty();
 
-            if (options.issucceeded === undefined)// || options.time === undefined)
-                return;
-            if (options.issucceeded) {
-                $('<img src="../../images/succeeded.svg">').appendTo(this.resultDiv);
-                $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
-            }
-            else {
-                $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
-                $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
+            switch (options.issucceeded) {
+                case true:
+                    $('<img src="../../images/succeeded.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-prooved').text('Stabilizes').appendTo(this.resultDiv);
+                    break;
+
+                case false:
+                    $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-failed').text('Failed to Stabilize').appendTo(this.resultDiv);
+                    break;
+
+                case undefined:
+                    $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-failed').text('Service Error').appendTo(this.resultDiv);
+                    break;
             }
         },
 

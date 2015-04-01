@@ -14,7 +14,15 @@
             private currentModel: BMA.Model.BioModel;
             private logService: ISessionLog;
 
-            constructor(appModel: BMA.Model.AppModel, simulationExpanded: BMA.UIDrivers.ISimulationExpanded, simulationViewer: BMA.UIDrivers.ISimulationViewer, popupViewer: BMA.UIDrivers.IPopup, ajax: BMA.UIDrivers.IServiceDriver, logService: BMA.ISessionLog) {
+            constructor(
+                appModel: BMA.Model.AppModel,
+                simulationExpanded: BMA.UIDrivers.ISimulationExpanded,
+                simulationViewer: BMA.UIDrivers.ISimulationViewer,
+                popupViewer: BMA.UIDrivers.IPopup,
+                ajax: BMA.UIDrivers.IServiceDriver,
+                logService: BMA.ISessionLog,
+                exportService: BMA.UIDrivers.ExportService) {
+
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
@@ -22,6 +30,8 @@
                 this.ajax = ajax;
                 this.colors = [];
                 var that = this;
+
+
 
                 window.Commands.On("ChangePlotVariables", function (param) {
                     that.colors[param.ind].Seen = param.check;
@@ -33,10 +43,16 @@
                     that.results = [];
                     that.initValues = param.data;
                     that.ClearColors();
-                    var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
-                    var variables = that.ConvertParam(param.data);
-                    logService.LogSimulationRun();
-                    that.StartSimulation({ model: stableModel, variables: variables, num: param.num});
+                    try {
+                        var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        var variables = that.ConvertParam(param.data);
+                        logService.LogSimulationRun();
+                        that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
+                    }
+                    catch (ex) {
+                        alert(ex);
+                        that.expandedViewer.ActiveMode();
+                    }
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
@@ -46,7 +62,7 @@
                         that.expandedSimulationVariables = undefined;
                         that.CreateColors();
                         that.ClearColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                        that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
                     }
@@ -85,6 +101,11 @@
                     simulationViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
+
+                window.Commands.On('ExportCSV', function () {
+                    var csv = that.CreateCSV(',');
+                    exportService.Export(csv, appModel.BioModel.Name, 'csv');
+                });
             }
 
 
@@ -94,9 +115,15 @@
                     return true;
                 }
                 else {
-                    var q = JSON.stringify(BMA.Model.ExportBioModel(this.currentModel));
-                    var w = JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
-                    return q !== w;
+                    try {
+                        var q = JSON.stringify(BMA.Model.ExportBioModel(this.currentModel));
+                        var w = JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                        return q !== w;
+                    }
+                    catch (ex) {
+                        this.Snapshot();
+                        return true;
+                    }
                 }
             }
 
@@ -110,7 +137,7 @@
                 if (param.num === undefined || param.num === 0) {
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
-                    that.dataForPlot = that.CreateDataForPlot(that.colors, that.appModel.BioModel.Variables);
+                    that.dataForPlot = that.CreateDataForPlot(that.colors);
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
@@ -149,7 +176,9 @@
 
             public AddData(d) {
                 if (d !== null) {
-                    var variables = this.appModel.BioModel.Variables;
+                    var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                        return x.Id < y.Id ? -1 : 1;
+                    });
                     for (var i = 0; i < d.length; i++) {
                         var color = this.colors[this.GetColorById(variables[i].Id)];
                         color.Plot.push(d[i]);
@@ -158,8 +187,11 @@
                 return color;
             }
 
-            public CreateDataForPlot(colors: { Id; Colors; Seen; Plot }, variables: BMA.Model.Variable[]) {
+            public CreateDataForPlot(colors: { Id; Colors; Seen; Plot }) {
                 var result = [];
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 for (var i = 0; i < variables.length; i++) {
                     result.push(colors[this.GetColorById(variables[i].Id)]);
                 }
@@ -178,6 +210,27 @@
                             Plot: []
                         })
                 }
+            }
+
+            public CreateCSV(sep): string {
+                var csv = '';
+                var that = this;
+                var data = this.dataForPlot;
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var contid = that.appModel.BioModel.GetVariableById(data[i].Id).ContainerId;
+                    var cont = that.appModel.Layout.GetContainerById(contid);
+                    if (cont !== undefined) {
+                        csv += cont.Name + sep;
+                    }
+                    else csv += '' + sep;
+                    csv += data[i].Name + sep;
+                    var plot = data[i].Plot;
+                    for (var j = 0, plotl = plot.length; j < plotl; j++) {
+                        csv += plot[j] + sep;
+                    }
+                    csv += "\n";
+                }
+                return csv;
             }
 
             public ClearColors() {
@@ -247,9 +300,12 @@
 
             public ConvertParam(arr) {
                 var res = [];
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 for (var i = 0; i < arr.length; i++) {
                     res[i] = {
-                        "Id": this.appModel.BioModel.Variables[i].Id,
+                        "Id": variables[i].Id,
                         "Value": arr[i]
                     }
                 }

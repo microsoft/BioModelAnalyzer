@@ -7,6 +7,7 @@ open Newtonsoft.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
 open Newtonsoft.Json.Linq
 open BioModelAnalyzer
+open System.Text.RegularExpressions
 
 [<TestClass>]
 type VMCAIFurtherTestingTests() = 
@@ -87,5 +88,29 @@ type VMCAIFurtherTestingTests() =
         // Check that var(3^0) exists and has value 0. 
         let var3_0 = result2.Variables |> Seq.pick (fun v -> if v.Id = "3^0" then Some(v) else None) 
         Assert.AreEqual(var3_0.Value, 0)
+
+    [<TestMethod>]
+    [<DeploymentItem("ceilFunc.json")>]
+    member x.``FinCounter Examples correctly handles ceil and floor functions`` () = 
+        let jobj = JObject.Parse(System.IO.File.ReadAllText("ceilFunc.json"))
+
+        // Extract model from json
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
+
+        // Create analyzer. 
+        // Have to static cast to get IAnalyzer functions.   
+        let analyzer = UIMain.Analyzer() 
+
+        // Check stability
+        let result =  (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model)
+        Assert.AreEqual(result.Status, StatusType.NotStabilizing)
+
+        // Find fix points
+        let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
+        let result2 = result2o.Value
+        // Check that var(2^0) exists and has value 0. 
+        let var2_0 = result2.Variables |> Seq.filter (fun v -> Regex.IsMatch(v.Id, "\d*\^\d*") |> not ) |> Seq.length
+        Assert.AreEqual(var2_0, 0)
+
 
 

@@ -510,7 +510,11 @@
 
         _showLoading: function (clicked) {
             clicked.animate({ width: "+=60px" });
-            $('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
+            var snipper = $('<div class="spinner loading"></div>').appendTo(clicked);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            //$('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
 
         _hideLoading: function (toHide) {

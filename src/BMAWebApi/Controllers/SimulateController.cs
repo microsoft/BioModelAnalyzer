@@ -78,7 +78,7 @@ namespace bma.client.Controllers
             }
             catch (Exception ex)
             {
-                log.LogError(ex.ToString());
+                log.LogError(ex.Message);
                 FailureAzureLogger logger = new FailureAzureLogger(
                     CloudStorageAccount.Parse(
                         RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));

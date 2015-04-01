@@ -109,13 +109,20 @@
                                         }
 
                                         if (fix !== null && bif === null && osc === null) {
-                                            var parseFix = that.ParseFixPoint(fix.Variables);
-                                            window.Commands.Execute("ProofByFurtherTesting", {
-                                                issucceeded: true,
-                                                message: 'Further testing has been determined the model to be stable with the following stable state',
-                                                fixPoint: parseFix
-                                            });
-                                            OnProofStarting();
+
+                                            try {
+                                                var parseFix = that.ParseFixPoint(fix.Variables);
+                                                window.Commands.Execute("ProofByFurtherTesting", {
+                                                    issucceeded: true,
+                                                    message: 'Further testing has been determined the model to be stable with the following stable state',
+                                                    fixPoint: parseFix
+                                                });
+                                                OnProofStarting();
+                                            }
+                                            catch (ex) {
+                                                that.messagebox.Show("Invalid service response");
+                                                that.driver.ShowStartFurtherTestingToggler();
+                                            };
                                         }
                                         else {
 
@@ -127,12 +134,12 @@
                                 else {
                                     logService.LogFurtherTestingError();
                                     that.driver.ActiveMode();
-                                    that.messagebox.Show(res2.Error);
+                                    that.messagebox.Show("Invalid service response");
                                 }
                             })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                                 that.driver.ActiveMode();
-                                that.messagebox.Show(errorThrown);
+                                that.messagebox.Show("Invalid service response");
                             });
 
                     }

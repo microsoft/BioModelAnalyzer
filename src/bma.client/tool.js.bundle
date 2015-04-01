@@ -13,7 +13,7 @@
     
 	<file>/js/svgplot.js</file>
 	<file>/js/scalablegridlinesplot.js</file>
-	<file>/script/XmlModelParser.js</file>
+	<file>/script/XmlModelParser.js</file> 
 	<file>/script/SVGHelper.js</file>
 	<file>/script/ModelHelper.js</file>
 	<file>/script/commands.js</file>
@@ -23,9 +23,9 @@
 	<file>/script/changeschecker.js</file>
 	<file>/script/model/biomodel.js</file>
 	<file>/script/model/model.js</file>
-	<file>/script/model/exportimport.js</file>
-	<file>/script/model/analytics.js</file> 
+	<file>/script/model/analytics.js</file>  
 	<file>/script/model/visualsettings.js</file>
+	<file>/script/model/exportimport.js</file>
 	<file>/script/uidrivers.js</file>
 	<file>/script/presenters/undoredopresenter.js</file>
 	<file>/script/presenters/presenters.js</file>
@@ -52,6 +52,5 @@
 	<file>/script/widgets/userdialog.js</file>
 	<file>/script/widgets/variablesOptionsEditor.js</file>
 	<file>/script/widgets/visibilitysettings.js</file>
-	<file>/app.js</file>
   </files>
 </bundle>

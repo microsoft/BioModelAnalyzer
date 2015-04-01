@@ -1,8 +1,9 @@
 ﻿module BMA {
     export module Model {
 
-        export function MapVariableNames(f: string, mapper: (string) => string) {
-            if (f != null) {
+        export function MapVariableNames(f: string, mapper: (string) => string[]) {
+            var namestory = {};
+            if (f !== undefined && f != null) {
                 f = f.trim();
                 // Convert default function to null
                 if (f.toLowerCase() == "avg(pos)-avg(neg)")
@@ -16,7 +17,17 @@
                     if (endIndex < 0)
                         break;
                     var varName = f.substring(index + varPrefix.length, endIndex);
-                    f = f.substring(0, index + varPrefix.length) + mapper(varName) + f.substr(endIndex);
+                    namestory[varName] = (namestory[varName] === undefined) ? 0 : namestory[varName] + 1;
+                    var map = mapper(varName);
+
+                    var m: any = undefined;
+                    if (map instanceof Array) {
+                        m = map[namestory[varName]];
+                    } else {
+                        m = map;
+                    }
+
+                    f = f.substring(0, index + varPrefix.length) + m + f.substr(endIndex);
                     startPos = index + 1;
                 }
             }
@@ -28,7 +39,7 @@
         // 2) Default function avg(pos)-avg(neg) is replaced with null formula
         export function ExportBioModel(model: BioModel) {
 
-            function GetIdByName(id: number, name: string): number {
+            function GetIdByName(id: number, name: string): string[] {
                 var results = model.Variables.filter(function (v2: Variable) {
                     return v2.Name == name &&
                         model.Relationships.some(function (r: Relationship) {
@@ -41,7 +52,9 @@
                 //else if (results.length == 0)
                 if (results.length == 0)
                     throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
-                return results[0].Id;
+                var res = [];
+                res = res.concat(results.map(x => x.Id.toString()));
+                return res;
             }
 
             return {
@@ -51,7 +64,7 @@
                         Id: v.Id,
                         RangeFrom: v.RangeFrom,
                         RangeTo: v.RangeTo,
-                        Formula: MapVariableNames(v.Formula, name => GetIdByName(v.Id, name).toString())
+                        Formula: MapVariableNames(v.Formula, name => GetIdByName(v.Id, name))
                     }
                 }),
                 Relationships: model.Relationships.map(r => {

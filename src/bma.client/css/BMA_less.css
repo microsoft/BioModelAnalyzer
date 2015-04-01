@@ -256,11 +256,18 @@ li.ui-state-default {
   cursor: pointer;
   font-size: 18px;
   line-height: 26px;
-  margin: 5px 10px 0 0;
+  margin: 0 10px 0 0;
 }
 .randomise-button div {
   display: inline-block;
   vertical-align: bottom;
+}
+.randomise-button div:first-child {
+  width: 30px;
+  height: 30px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
 }
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
   padding: .2em .5em;

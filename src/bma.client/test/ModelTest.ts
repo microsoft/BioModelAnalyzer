@@ -111,7 +111,25 @@
     });
 
     it("shouldn't reset model when serializedModel isn't correct", () => {
-        var ml = { "Model": { "Name": "model 1", "Variables": [{ "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "1" }, { "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }], "Relationships": [{ "Id": 4, "FromVariable": 1, "ToVariable": 2, "Type": "Activator" }, { "Id": 5, "FromVariable": 2, "ToVariable": 3, "Type": "Activator" }, { "Id": 6, "FromVariable": 3, "ToVariable": 1, "Type": "Activator" }] }, "Layout": { "Variables": [{ "Id": 1, "Name": "", "Type": "Constant", "ContainerId": 0, "PositionX": -356.212986463621, "PositionY": -93.81451737860536, "CellX": 0, "CellY": 0, "Angle": 0 }, { "Id": 2, "Name": "sdccc", "Type": "Constant", "ContainerId": 0, "PositionX": -169.28934010152284, "PositionY": -106.15853176100808, "CellX": 0, "CellY": 0, "Angle": 0 }, { "Id": 3, "Name": "", "Type": "Constant", "ContainerId": 0, "PositionX": -137.54758883248732, "PositionY": 71.94796147080243, "CellX": 0, "CellY": 0, "Angle": 0 }], "Containers": [] } };
+        var ml = {
+            "Model": {
+                "Variables": [
+                    { "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" },
+                    { "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "1" },
+                    { "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }],
+                //"Relationships": [
+                //    { "Id": 4, "FromVariable": 1, "ToVariable": 2, "Type": "Activator" },
+                //    { "Id": 5, "FromVariable": 2, "ToVariable": 3, "Type": "Activator" },
+                //    { "Id": 6, "FromVariable": 3, "ToVariable": 1, "Type": "Activator" }
+                //]
+            }, "Layout": {
+                "Variables": [
+                    { "Id": 1, "Name": "", "Type": "Constant", "ContainerId": 0, "PositionX": -356.212986463621, "PositionY": -93.81451737860536, "CellX": 0, "CellY": 0, "Angle": 0 },
+                    { "Id": 2, "Name": "sdccc", "Type": "Constant", "ContainerId": 0, "PositionX": -169.28934010152284, "PositionY": -106.15853176100808, "CellX": 0, "CellY": 0, "Angle": 0 },
+                    { "Id": 3, "Name": "", "Type": "Constant", "ContainerId": 0, "PositionX": -137.54758883248732, "PositionY": 71.94796147080243, "CellX": 0, "CellY": 0, "Angle": 0 }],
+                "Containers": []
+            }
+        };
 
         
         var serialized = JSON.stringify(ml);
@@ -124,9 +142,11 @@
         newAppModel.BioModel = biomodel;
         newAppModel.Layout = layout;
         newAppModel.ProofResult = proof;
+        try {
+            appModel.Deserialize(serialized);
+        }
+        catch (ex) { }
 
-        appModel.Deserialize(serialized);
-        
         expect(appModel).toEqual(newAppModel);
     });
 
