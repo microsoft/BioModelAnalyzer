@@ -101,13 +101,17 @@
                 })
             });
             var ul = $('<ul></ul>').addClass('button-list').appendTo($("#visibilityOptionsContent"));
-            var li = $('<li></li>').addClass('default-button').appendTo(ul);
 
-            var svg = $('<button></button>').text('Save as SVG').appendTo(li);
+            var ftvli = $('<li></li>').addClass('default-button').appendTo(ul);
+            var ftv = $('<button></button>').text('Fit To View').width(60).appendTo(ftvli);
+            ftv.bind('click', function () {
+                window.Commands.Execute('ModelFitToView', {});
+            });
+
+            var svgli = $('<li></li>').addClass('default-button').appendTo(ul);
+            var svg = $('<button></button>').text('Save as SVG').width(60).appendTo(svgli);
             svg.bind('click', function () {
                 window.Commands.Execute('SaveSVG', {});
-                //var _svg = drawingSurface.drawingsurface('getSVG');
-                //var ret = saveTextAs(_svg.toSVG(), appModel.BioModel.Name + ".svg");
             });
         },
 

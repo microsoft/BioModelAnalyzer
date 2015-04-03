@@ -2283,6 +2283,9 @@ var BMA;
             SVGPlotDriver.prototype.SetCenter = function (x, y) {
                 this.svgPlotDiv.drawingsurface("setCenter", { x: x, y: y });
             };
+            SVGPlotDriver.prototype.SetVisibleRect = function (rect) {
+                this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
@@ -3070,7 +3073,8 @@ var BMA;
                             if (args.status === "Set") {
                                 _this.ResetVariableIdIndex();
                                 var center = _this.GetLayoutCentralPoint();
-                                _this.navigationDriver.SetCenter(center.x, center.y);
+                                var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
+                                _this.driver.SetVisibleRect(bbox);
                             }
                         }
                         if (that.editingId !== undefined) {
@@ -3083,6 +3087,12 @@ var BMA;
                             }
                         }
                         that.RefreshOutput();
+                    }
+                });
+                window.Commands.On("ModelFitToView", function (args) {
+                    if (_this.undoRedoPresenter.Current !== undefined) {
+                        var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
+                        _this.driver.SetVisibleRect(bbox);
                     }
                 });
                 window.Commands.On("DrawingSurfaceSetProofResults", function (args) {
@@ -6126,14 +6136,21 @@ var BMA;
                             var yCenter = oldPlotRect.y + oldPlotRect.height / 2;
                             var scale = oldPlotRect.width / value;
                             var newHeight = oldPlotRect.height / scale;
-                            that._plot.navigation.setVisibleRect({
+                            var newrect = {
                                 x: xCenter - value / 2,
                                 y: yCenter - newHeight / 2,
                                 width: value,
                                 height: newHeight
-                            }, false);
+                            };
+                            console.log(newrect.y);
+                            that._plot.navigation.setVisibleRect(newrect, false);
                             that.options.zoom = value;
                         }
+                    }
+                    break;
+                case "visibleRect":
+                    if (value !== undefined) {
+                        that._plot.navigation.setVisibleRect({ x: value.x, y: -value.y - value.height, width: value.width, height: value.height }, false);
                     }
                     break;
                 case "gridVisibility":
@@ -7698,11 +7715,16 @@ jQuery.fn.extend({
                     }
                 });
             });
-            var svg = $('<button></button>').text('Save as SVG').addClass('default-button').appendTo($("#visibilityOptionsContent"));
+            var ul = $('<ul></ul>').addClass('button-list').appendTo($("#visibilityOptionsContent"));
+            var ftvli = $('<li></li>').addClass('default-button').appendTo(ul);
+            var ftv = $('<button></button>').text('Fit To View').width(60).appendTo(ftvli);
+            ftv.bind('click', function () {
+                window.Commands.Execute('ModelFitToView', {});
+            });
+            var svgli = $('<li></li>').addClass('default-button').appendTo(ul);
+            var svg = $('<button></button>').text('Save as SVG').width(60).appendTo(svgli);
             svg.bind('click', function () {
                 window.Commands.Execute('SaveSVG', {});
-                //var _svg = drawingSurface.drawingsurface('getSVG');
-                //var ret = saveTextAs(_svg.toSVG(), appModel.BioModel.Name + ".svg");
             });
         },
         changeButtonONOFFStyle: function (ind) {
