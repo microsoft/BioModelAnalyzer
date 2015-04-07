@@ -1780,7 +1780,7 @@ a:hover {
   position: fixed;
   right: 10px;
   top: 5px;
-  z-index: 6;
+  z-index: 0;
 }
 #Copyright {
   float: left;
