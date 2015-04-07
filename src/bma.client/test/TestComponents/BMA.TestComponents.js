@@ -44,6 +44,8 @@ var BMA;
             };
             TestSVGPlotDriver.prototype.SetCenter = function (x, y) {
             };
+            TestSVGPlotDriver.prototype.SetVisibleRect = function (rect) {
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;

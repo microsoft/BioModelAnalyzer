@@ -62,6 +62,10 @@ module BMA {
             public SetCenter(x: number, y: number) {
                 this.svgPlotDiv.drawingsurface("setCenter", { x: x, y: y });
             }
+
+            public SetVisibleRect(rect: { x: number; y: number; width: number; height: number }) {
+                this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {

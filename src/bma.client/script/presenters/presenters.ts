@@ -325,7 +325,9 @@ module BMA {
                             if (args.status === "Set") {
                                 this.ResetVariableIdIndex();
                                 var center = this.GetLayoutCentralPoint();
-                                this.navigationDriver.SetCenter(center.x, center.y);
+                                var bbox = BMA.ModelHelper.GetModelBoundingBox(this.undoRedoPresenter.Current.layout, { xOrigin: this.Grid.x0, yOrigin: this.Grid.y0, xStep: this.Grid.xStep, yStep: this.Grid.yStep });
+                                this.driver.SetVisibleRect(bbox);
+                                //this.navigationDriver.SetCenter(center.x, center.y);
                             }
                         }
 
@@ -339,6 +341,13 @@ module BMA {
                         }
 
                         that.RefreshOutput();
+                    }
+                });
+
+                window.Commands.On("ModelFitToView",(args) => {
+                    if (this.undoRedoPresenter.Current !== undefined) {
+                        var bbox = BMA.ModelHelper.GetModelBoundingBox(this.undoRedoPresenter.Current.layout, { xOrigin: this.Grid.x0, yOrigin: this.Grid.y0, xStep: this.Grid.xStep, yStep: this.Grid.yStep });
+                        this.driver.SetVisibleRect(bbox);
                     }
                 });
 
