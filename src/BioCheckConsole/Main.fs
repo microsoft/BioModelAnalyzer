@@ -119,8 +119,7 @@ let read_ModelFile_as_QN model_fname =
     // Read file
     let jobj = JObject.Parse(System.IO.File.ReadAllText(model_fname))
     // Extract model from json
-    let model = (jobj.["model"] :?> JObject).ToObject<Model>()           
-    model.Preprocess();
+    let model = (jobj.["Model"] :?> JObject).ToObject<Model>()           
     // model to QN
     let qn = Marshal.QN_of_Model model
     qn
