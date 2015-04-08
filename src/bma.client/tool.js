@@ -7003,7 +7003,7 @@ var BMA;
             var li1 = $('<li></li>').addClass('steps').appendTo(stepsul);
             var li2 = $('<li></li>').appendTo(stepsul);
             var li3 = $('<li></li>').addClass('action-button green').appendTo(stepsul);
-            var exportCSV = $('<button></button>').text('Export CSV').appendTo(li);
+            var exportCSV = $('<button></button>').text('EXPORT CSV').appendTo(li);
             exportCSV.bind('click', function () {
                 window.Commands.Execute('ExportCSV', {});
             });
@@ -7718,14 +7718,11 @@ jQuery.fn.extend({
                     }
                 });
             });
-            var ul = $('<ul></ul>').addClass('button-list').appendTo($("#visibilityOptionsContent"));
-            var ftvli = $('<li></li>').addClass('default-button').appendTo(ul);
-            var ftv = $('<button></button>').text('Fit To View').width(60).appendTo(ftvli);
+            var ftv = $('#fitToViewBtn');
             ftv.bind('click', function () {
                 window.Commands.Execute('ModelFitToView', {});
             });
-            var svgli = $('<li></li>').addClass('default-button').appendTo(ul);
-            var svg = $('<button></button>').text('Save as SVG').width(60).appendTo(svgli);
+            var svg = $('#exportSVGBtn');
             svg.bind('click', function () {
                 window.Commands.Execute('SaveSVG', {});
             });

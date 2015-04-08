@@ -246,9 +246,27 @@ ul.button-list li:last-child {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+.action-button.grey button .icon,
+.button-list .action-button.grey button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.action-button.grey button .icon.download,
+.button-list .action-button.grey button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .action-button.grey button:hover,
 .button-list .action-button.grey button:hover {
   color: #aaaaaa;
+}
+.action-button.grey button:hover .icon.download,
+.button-list .action-button.grey button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .action-button.grey.waiting:hover,
 .button-list .action-button.grey.waiting:hover {
@@ -286,9 +304,27 @@ ul.button-list li:last-child {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+.action-button.green button .icon,
+.button-list .action-button.green button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.action-button.green button .icon.download,
+.button-list .action-button.green button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .action-button.green button:hover,
 .button-list .action-button.green button:hover {
   color: #81bb83;
+}
+.action-button.green button:hover .icon.download,
+.button-list .action-button.green button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .action-button.green.waiting:hover,
 .button-list .action-button.green.waiting:hover {
@@ -326,9 +362,27 @@ ul.button-list li:last-child {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+.action-button.red button .icon,
+.button-list .action-button.red button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.action-button.red button .icon.download,
+.button-list .action-button.red button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .action-button.red button:hover,
 .button-list .action-button.red button:hover {
   color: #cf451b;
+}
+.action-button.red button:hover .icon.download,
+.button-list .action-button.red button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .action-button.red.waiting:hover,
 .button-list .action-button.red.waiting:hover {
@@ -373,9 +427,27 @@ li.action-button {
   color: white;
   padding: 5px 5px 3px 5px;
 }
+.action-button-small.grey button .icon,
+.button-list .action-button-small.grey button .icon {
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.action-button-small.grey button .icon.download,
+.button-list .action-button-small.grey button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .action-button-small.grey button:hover,
 .button-list .action-button-small.grey button:hover {
   color: #aaaaaa;
+}
+.action-button-small.grey button:hover .icon.download,
+.button-list .action-button-small.grey button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .action-button-small.grey.waiting:hover,
 .button-list .action-button-small.grey.waiting:hover {
@@ -413,9 +485,27 @@ li.action-button {
   color: white;
   padding: 5px 5px 3px 5px;
 }
+.action-button-small.green button .icon,
+.button-list .action-button-small.green button .icon {
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.action-button-small.green button .icon.download,
+.button-list .action-button-small.green button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .action-button-small.green button:hover,
 .button-list .action-button-small.green button:hover {
   color: #81bb83;
+}
+.action-button-small.green button:hover .icon.download,
+.button-list .action-button-small.green button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .action-button-small.green.waiting:hover,
 .button-list .action-button-small.green.waiting:hover {
@@ -453,9 +543,27 @@ li.action-button {
   color: white;
   padding: 5px 5px 3px 5px;
 }
+.action-button-small.red button .icon,
+.button-list .action-button-small.red button .icon {
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.action-button-small.red button .icon.download,
+.button-list .action-button-small.red button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .action-button-small.red button:hover,
 .button-list .action-button-small.red button:hover {
   color: #cf451b;
+}
+.action-button-small.red button:hover .icon.download,
+.button-list .action-button-small.red button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .action-button-small.red.waiting:hover,
 .button-list .action-button-small.red.waiting:hover {
@@ -594,8 +702,23 @@ li.action-button {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+.simulation-popout ul.button-list li.run button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.simulation-popout ul.button-list li.run button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 .simulation-popout ul.button-list li.run button:hover {
   color: #81bb83;
+}
+.simulation-popout ul.button-list li.run button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .simulation-popout ul.button-list li.run.waiting:hover {
   background-color: #81bb83;
@@ -1049,6 +1172,7 @@ ul.command-list li a span {
 }
 .window.vis-options ul.button-list > li {
   display: inline-block;
+  margin-top: 0px;
 }
 .zoomslider-container {
   position: relative;

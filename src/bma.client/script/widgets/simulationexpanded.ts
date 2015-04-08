@@ -54,7 +54,7 @@
             var li3 = $('<li></li>').addClass('action-button green').appendTo(stepsul);
 
             var exportCSV = $('<button></button>')
-                .text('Export CSV')
+                .text('EXPORT CSV')
                 .appendTo(li);
             exportCSV.bind('click', function () {
                 window.Commands.Execute('ExportCSV', {});

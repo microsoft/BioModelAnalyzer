@@ -191,6 +191,8 @@
     <Content Include="images\container-ON.svg" />
     <Content Include="images\container.png" />
     <Content Include="images\container.svg" />
+    <Content Include="images\download-white.svg" />
+    <Content Include="images\download.svg" />
     <Content Include="images\editorExpanded.png" />
     <Content Include="images\editorExpander.png" />
     <Content Include="images\expand-collapse.svg" />
