@@ -3,7 +3,7 @@
   <Role name="BioCheck.Web">
     <Instances count="2" />
     <ConfigurationSettings>
-      <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biocheckstorage;AccountKey=G8QXrBKlXVjA6j8iT8nAeMRgAUCQyTfMoETLIcRQVvvfdMy+qga16iRU7LG4GYLLnHjzdLUp1miJPiD3IAFo/A==" />
+      <Setting name="DataConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmalegacy;AccountKey=i6Novkx7xoE59yO7+UiA0FCAguEfG5WybbPDrqXF7XvWVEQxB+hvHGeICihXZ8JEdcLE7iXGsMrO4RVqVJbYYA==" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
