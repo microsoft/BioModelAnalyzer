@@ -75,7 +75,7 @@ module BMA {
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
 
                 window.Commands.On('SaveSVG',() => {
-                    that.exportservice.Export(that.svg.toSVG(), appModel.BioModel.Name, 'svg');
+                    that.exportservice.Export(that.driver.GetSVG(), appModel.BioModel.Name, 'svg');
                 });
 
                 window.Commands.On("AddElementSelect",(type: string) => {

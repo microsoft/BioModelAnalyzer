@@ -20,7 +20,7 @@
 	<file>/script/elementsregistry.js</file>
 	<file>/script/functionsregistry.js</file>
 	<file>/script/localRepository.js</file>
-	<file>/script/changeschecker.js</file>
+	<file>/script/changeschecker.js</file> 
 	<file>/script/model/biomodel.js</file>
 	<file>/script/model/model.js</file>
 	<file>/script/model/analytics.js</file>  

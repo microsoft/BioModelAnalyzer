@@ -5,18 +5,18 @@
     <AzureDeleteDeploymentOnFailure>False</AzureDeleteDeploymentOnFailure>
     <AzureDeploymentLabel>BioCheck/SL, from git master.</AzureDeploymentLabel>
     <AzureDeploymentReplacementMethod>AutomaticUpgrade</AzureDeploymentReplacementMethod>
-    <AzureSlot>Staging</AzureSlot>
+    <AzureSlot>Production</AzureSlot>
     <AzureEnableRemoteDesktop>True</AzureEnableRemoteDesktop>
     <AzureEnableWebDeploy>True</AzureEnableWebDeploy>
     <AzureFallbackToDeleteAndRecreateIfUpgradeFails>False</AzureFallbackToDeleteAndRecreateIfUpgradeFails>
-    <AzureHostedServiceLabel>biomodelanalyzertest</AzureHostedServiceLabel>
-    <AzureHostedServiceName>biomodelanalyzertest</AzureHostedServiceName>
+    <AzureHostedServiceLabel>bmalegacy</AzureHostedServiceLabel>
+    <AzureHostedServiceName>bmalegacy</AzureHostedServiceName>
     <AzureEnableIntelliTrace>False</AzureEnableIntelliTrace>
     <AzureEnableProfiling>False</AzureEnableProfiling>
     <AzureServiceConfiguration>Cloud</AzureServiceConfiguration>
-    <AzureSolutionConfiguration>Debug</AzureSolutionConfiguration>
-    <AzureStorageAccountLabel>biomodelanalyzertest</AzureStorageAccountLabel>
-    <AzureStorageAccountName>biomodelanalyzertest</AzureStorageAccountName>
+    <AzureSolutionConfiguration>Release</AzureSolutionConfiguration>
+    <AzureStorageAccountLabel>bmalegacy</AzureStorageAccountLabel>
+    <AzureStorageAccountName>bmalegacy</AzureStorageAccountName>
     <AzureAppendTimestampToDeploymentLabel>True</AzureAppendTimestampToDeploymentLabel>
   </PropertyGroup>
 </Project>

@@ -63,6 +63,10 @@ module BMA {
                 this.svgPlotDiv.drawingsurface("setCenter", { x: x, y: y });
             }
 
+            public GetSVG() {
+                return this.svgPlotDiv.drawingsurface("getSVG").toSVG();
+            }
+
             public SetVisibleRect(rect: { x: number; y: number; width: number; height: number }) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
             }

@@ -1047,6 +1047,9 @@ ul.command-list li a span {
   display: inline-block;
   vertical-align: middle;
 }
+.window.vis-options ul.button-list > li {
+  display: inline-block;
+}
 .zoomslider-container {
   position: relative;
 }

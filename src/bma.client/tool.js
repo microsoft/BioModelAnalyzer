@@ -2283,6 +2283,9 @@ var BMA;
             SVGPlotDriver.prototype.SetCenter = function (x, y) {
                 this.svgPlotDiv.drawingsurface("setCenter", { x: x, y: y });
             };
+            SVGPlotDriver.prototype.GetSVG = function () {
+                return this.svgPlotDiv.drawingsurface("getSVG").toSVG();
+            };
             SVGPlotDriver.prototype.SetVisibleRect = function (rect) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
             };
@@ -2849,7 +2852,7 @@ var BMA;
                 this.exportservice = exportservice;
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
                 window.Commands.On('SaveSVG', function () {
-                    that.exportservice.Export(that.svg.toSVG(), appModel.BioModel.Name, 'svg');
+                    that.exportservice.Export(that.driver.GetSVG(), appModel.BioModel.Name, 'svg');
                 });
                 window.Commands.On("AddElementSelect", function (type) {
                     that.selectedType = type;
