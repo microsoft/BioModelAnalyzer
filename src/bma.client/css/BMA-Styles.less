@@ -18,7 +18,7 @@
 	.calc(@prop; @val) {
 	  @{prop}: calc(@val);
 	  @{prop}: -moz-calc(@val); 
-	  @{prop}: -webkit-calc(@val); 
+	  @{prop}: -webkit-calc(@val);  
 	  @{prop}: -o-calc(@val);
 	} 
 
@@ -31,10 +31,10 @@
 	}
 
 	.box-shadow(@x; @y; @blur; @color){
-		-webkit-box-shadow: @x @y @blur @shadow;
-		-moz-box-shadow:    @x @y @blur @shadow;
-		-o-box-shadow: 		@x @y @blur @shadow;
-		box-shadow:         @x @y @blur @shadow;
+		-webkit-box-shadow: @x @y @blur @color;
+		-moz-box-shadow:    @x @y @blur @color;
+		-o-box-shadow: 		@x @y @blur @color;
+		box-shadow:         @x @y @blur @color;
 	}
 
 	.gradient(@side, @color1, @color2) {

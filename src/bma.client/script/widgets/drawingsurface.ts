@@ -359,15 +359,21 @@ declare var Rx: any;
                             var yCenter = oldPlotRect.y + oldPlotRect.height / 2;
                             var scale = oldPlotRect.width / value;
                             var newHeight = oldPlotRect.height / scale;
-
-                            that._plot.navigation.setVisibleRect({
+                            var newrect = {
                                 x: xCenter - value / 2,
                                 y: yCenter - newHeight / 2,
                                 width: value,
                                 height: newHeight
-                            }, false);
+                            };
+                            console.log(newrect.y);
+                            that._plot.navigation.setVisibleRect(newrect, false);
                             that.options.zoom = value;
                         }
+                    }
+                    break;
+                case "visibleRect":
+                    if (value !== undefined) {
+                        that._plot.navigation.setVisibleRect({ x: value.x, y: -value.y - value.height, width: value.width, height: value.height }, false);
                     }
                     break;
                 case "gridVisibility":

@@ -1,4 +1,5 @@
-﻿/* General Functions */
+﻿/*   BASE   */
+/* General Functions */
 .hoverable:hover {
   cursor: pointer;
 }
@@ -1676,4 +1677,361 @@ hr {
 .sim-blue {
   background-color: rgba(223, 223, 245, 0.5);
 }
-/*# sourceMappingURL=BMA-Styles.css.map */
+html,
+body {
+  background-color: #ededed;
+  background-image: url(../images/background.svg);
+  background-repeat: no-repeat;
+  background-position: 50% 40%;
+  background-attachment: fixed;
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+}
+img {
+  border: 0;
+}
+/* ---  Typography  --- */
+#col-wide {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  font-size: 14px;
+  line-height: 130%;
+}
+#col-wide a {
+  font-size: 14px;
+  line-height: 130%;
+}
+.heading {
+  color: #81bb83;
+  font-family: 'Segoe-UI-Light';
+  font-size: 2em;
+  line-height: 100%;
+}
+.bold {
+  color: #606060;
+  font-weight: 'Segoe-UI-Bold';
+}
+/* ---  Links  --- */
+a {
+  color: #82BD82;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* New class to enable link style change by hover*/
+.hoverEnabled a {
+  color: #82BD82;
+  text-decoration: none;
+  display: block;
+  padding: 10px 0px 10px 0px;
+  /* Top right bottom left */
+  white-space: nowrap;
+  /* No wrapping: hyperlink forced onto one line */
+}
+.hoverEnabled a:hover {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* New class ends */
+/* ---  Buttons --- */
+#btn-block {
+  position: relative;
+  background-color: white;
+  /*padding:10px 10px 10px 10px;*/
+  /* No spill-over, unclickable space.  */
+  margin: 0 15px 15px 0;
+  width: 110px;
+  text-align: center;
+  color: #81bb83;
+  float: left;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+#btn-block:hover {
+  background-color: #81bb83;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+#btn {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+/* ---  Site-Wide header  --- */
+#MSR-logo {
+  position: fixed;
+  right: 10px;
+  top: 5px;
+  z-index: 0;
+}
+#Copyright {
+  float: left;
+  margin-top: 2px;
+  margin-right: 10px;
+}
+#header {
+  width: 100%;
+  position: fixed;
+  z-index: 5;
+}
+#site-wide-nav {
+  position: relative;
+  z-index: 3;
+  display: inline-block;
+  margin: -10px auto 0 auto;
+  height: 45px;
+  padding: 5px 10px 0px 10px;
+  color: #81bb83;
+  line-height: 50px;
+  background-color: white;
+  -moz-border-radius: 0px 0px 10px 10px;
+  -webkit-border-radius: 0px 0px 10px 10px;
+  -ms-border-radius: 0px 0px 10px 10px;
+  -o-border-radius: 0px 0px 10px 10px;
+  border-radius: 0px 0px 10px 10px;
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+#logo {
+  position: relative;
+  margin-bottom: 30px;
+}
+#logo object {
+  width: 300px;
+}
+#logo object svg {
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+.launch-btn {
+  position: relative;
+  z-index: 5;
+  background-color: #81bb83;
+  display: block;
+  color: white;
+  font-family: 'SeGoe-UI-Light';
+  font-size: 2.2em;
+  line-height: 100%;
+  width: 150px;
+  padding: 30px 10px 10px 10px;
+  /* Prevents 'Enter tool' from being squeezed up against the page top*/
+  margin: -65px 0 0 -270px;
+  /* wrt the page */
+  -moz-border-radius: 0px 0px 10px 10px;
+  -webkit-border-radius: 0px 0px 10px 10px;
+  -ms-border-radius: 0px 0px 10px 10px;
+  -o-border-radius: 0px 0px 10px 10px;
+  border-radius: 0px 0px 10px 10px;
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+.launch-btn:hover {
+  text-decoration: none;
+  background-color: white;
+  color: #81bb83;
+}
+.home-launch-btn {
+  position: relative;
+  z-index: 5;
+  background-color: #81bb83;
+  display: block;
+  color: white;
+  font-family: 'SeGoe-UI-Light';
+  font-size: 2.2em;
+  line-height: 100%;
+  width: 150px;
+  padding: 30px 10px 10px 10px;
+  /* Prevents 'Enter tool' from being squeezed up against the page top*/
+  margin: -65px 0 0 -270px;
+  /* wrt the page */
+  -moz-border-radius: 0px 0px 10px 10px;
+  -webkit-border-radius: 0px 0px 10px 10px;
+  -ms-border-radius: 0px 0px 10px 10px;
+  -o-border-radius: 0px 0px 10px 10px;
+  border-radius: 0px 0px 10px 10px;
+  margin: 0px;
+  padding: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  -ms-border-radius: 10px 10px 10px 10px;
+  -o-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+.home-launch-btn:hover {
+  text-decoration: none;
+  background-color: white;
+  color: #81bb83;
+}
+/* ---  Home page  --- */
+#home-logo {
+  width: 450px;
+  height: 450px;
+  margin: 30px auto;
+}
+#home-launch {
+  position: relative;
+  margin: 0 auto 0 50%;
+}
+#home-launch img {
+  margin-top: 14px;
+}
+#home-launch-btn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+/* ---  Content pages  --- */
+#content-wrapper {
+  position: relative;
+  width: 900px;
+  margin: 0px auto;
+  text-align: left;
+  z-index: 3;
+}
+.page-title {
+  background-color: white;
+  margin-bottom: 15px;
+  padding: 10px 15px 10px 10px;
+  width: 130px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  font-family: 'Segoe-UI-Light';
+  font-size: 3em;
+  line-height: 100%;
+  color: #81bb83;
+}
+#col-wide {
+  width: 520px;
+  float: left;
+}
+#col-side {
+  width: 350px;
+  float: right;
+}
+#block {
+  background-color: white;
+  padding: 10px 10px 15px 10px;
+  margin: 0 0 15px 0;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.5);
+}
+.Team_Member {
+  margin-bottom: 15px;
+}
+.Team_Member p {
+  margin: 5px 0px 5px 0px;
+}
+.FAQ_question {
+  margin-bottom: 10px;
+}
+.FAQ_question p {
+  margin: 5px 10px 20px 25px;
+}
+/* ---  TOOL  --- */
+#tool-container {
+  position: absolute;
+  background-color: #E4E4E6;
+  width: 100%;
+  height: 100%;
+}
+#tool {
+  position: absolute;
+  background-color: white;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 40px;
+  box-shadow: 5px 5px 10px #C6C6C6;
+  -webkit-box-shadow: 5px 5px 10px #C6C6C6;
+  -moz-box-shadow: 5px 5px 10px #C6C6C6;
+  -ms-box-shadow: 5px 5px 10px #C6C6C6;
+  -o-box-shadow: 5px 5px 10px #C6C6C6;
+  z-index: 7;
+}
+#tool-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  height: 40px;
+  text-align: center;
+}
+#tool-site-wide-nav {
+  position: relative;
+  z-index: 8;
+  background-color: white;
+  width: 220px;
+  height: 35px;
+  margin: 5px auto 0px auto;
+  color: #82BD82;
+  line-height: 35px;
+  border-radius: 10px 10px 0px 0px;
+  -moz-border-radius: 10px 10px 0px 0px;
+  /* Firefox 3.6 and earlier */
+  -webkit-border-radius: 10px 10px 0px 0px;
+  -ms-border-radius: 10px 10px 0px 0px;
+  -o-border-radius: 10px 10px 0px 0px;
+  box-shadow: 5px 5px 10px #C6C6C6;
+  -webkit-box-shadow: 5px 5px 10px #C6C6C6;
+  -moz-box-shadow: 5px 5px 10px #C6C6C6;
+  -ms-box-shadow: 5px 5px 10px #C6C6C6;
+  -o-box-shadow: 5px 5px 10px #C6C6C6;
+}
+#tool-logo {
+  position: absolute;
+  left: -3px;
+  bottom: 0px;
+}
+#tool-MSR-logo {
+  position: absolute;
+  right: 10px;
+  padding-top: 3px;
+}
+#tool-MSR-logo img {
+  height: 33px;
+}
+/*# sourceMappingURL=website.css.map */

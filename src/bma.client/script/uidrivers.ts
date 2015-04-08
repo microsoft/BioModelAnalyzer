@@ -66,6 +66,10 @@ module BMA {
             public GetSVG() {
                 return this.svgPlotDiv.drawingsurface("getSVG").toSVG();
             }
+
+            public SetVisibleRect(rect: { x: number; y: number; width: number; height: number }) {
+                this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Bio Model Analyzer</title>
-    <link rel="stylesheet" type="text/css" href="css/help.css">
+    <link rel="stylesheet" type="text/css" href="css/website.css">
     <script type="text/javascript" src="Scripts/jquery-2.1.1.min.js"></script>
 
     <script type="text/javascript">
@@ -32,28 +32,23 @@
             <a href="http://go.microsoft.com/fwlink/?LinkID=286687" class="website-link" target="_blank">Privacy &amp Cookies</a> -
             <a href="http://go.microsoft.com/fwlink/?LinkId=386394" class="website-link" target="_blank">Terms of Use</a> - 
             <a href="http://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/en-us.aspx" class="website-link" target="_blank">Trademarks</a>
-
-            <div id="launch-btn">
                 <!-- Load up hard-coded unstable Dictyostelium at startup. For SYN. -->
-                <a href="tool.html"><span id="home-launch-btn"></span><img src="images/launch-tool-btn.png" width="100px"></a>
+                <a href="tool.html" class="launch-btn">Launch Tool</a>
                 <!--<a href="tool.aspx?Model=_models/Dicty_unstable.xml" target="_blank"><span id="home-launch-btn"></span><img src="_images/launch-tool-btn.png" width="100px"></a>-->
-                <br>
-            </div>
-
         </div>
     </div>
 
     <div id="logo">
-        <img src="images/logo.png">
+        <object type="image/svg+xml" data="images/BMA-logo.svg">Your browser does not support SVG</object>
     </div>
 
     <div id="content-wrapper">
 
-        <div id="content-title">
-            <img src="images/title-about.png">
+    <div class="page-title">
+            About
         </div>
-
         <div id="col-wide">
+
             <div id="block">
                 <video width="100%"  controls>
                     <source src="videos/BMA.mp4" type="video/mp4">
@@ -226,5 +221,6 @@
         </div>
 
     </div>
+
 </body>
 </html>

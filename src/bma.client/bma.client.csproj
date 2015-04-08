@@ -137,11 +137,9 @@
     <Content Include="css\fonts\segoeui-webfont.svg" />
     <Content Include="css\fonts\segoeuib-webfont.svg" />
     <Content Include="css\fonts\segoeuii-webfont.svg" />
-    <Content Include="css\help.css" />
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="css\welcome.css" />
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>
     </Content>
@@ -149,6 +147,12 @@
       <DependentUpon>StyleSheet.css</DependentUpon>
     </Content>
     <Content Include="css\fonts\segoeuil.svg" />
+    <Content Include="css\website.css">
+      <DependentUpon>website.less</DependentUpon>
+    </Content>
+    <Content Include="css\website.min.css">
+      <DependentUpon>website.css</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="help.html" />
     <Content Include="html\callback.html" />
@@ -158,25 +162,32 @@
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
+    <Content Include="images\2.gif" />
     <Content Include="images\20x20.gif" />
     <Content Include="images\2x2.svg" />
     <Content Include="images\3x3.svg" />
     <Content Include="images\60x60.gif" />
+    <Content Include="images\Accept.png" />
+    <Content Include="images\activate-ON.png" />
     <Content Include="images\activate-ON.svg" />
     <Content Include="images\activate.png" />
     <Content Include="images\activate.svg" />
     <Content Include="images\analyze.png" />
     <Content Include="images\analyze.svg" />
-    <Content Include="images\background.png" />
+    <Content Include="images\background.svg" />
     <Content Include="images\bifurcations-ON.svg" />
     <Content Include="images\bifurcations.png" />
     <Content Include="images\bifurcations.svg" />
+    <Content Include="images\BMA-logo-big.svg" />
+    <Content Include="images\BMA-logo.svg" />
     <Content Include="images\check.png" />
     <Content Include="images\check.svg" />
     <Content Include="images\close.png" />
+    <Content Include="images\constant-ON.png" />
     <Content Include="images\constant-ON.svg" />
     <Content Include="images\constant.png" />
     <Content Include="images\constant.svg" />
+    <Content Include="images\container-ON.png" />
     <Content Include="images\container-ON.svg" />
     <Content Include="images\container.png" />
     <Content Include="images\container.svg" />
@@ -198,15 +209,17 @@
     <Content Include="images\icon-edit.svg" />
     <Content Include="images\icon-paste.svg" />
     <Content Include="images\icon-size.svg" />
+    <Content Include="images\inhibit-ON.png" />
     <Content Include="images\inhibit.png" />
+    <Content Include="images\inhibitor-ON.png" />
     <Content Include="images\inhibitor-ON.svg" />
     <Content Include="images\inhibitor.svg" />
-    <Content Include="images\launch-tool-btn.png" />
     <Content Include="images\list.png" />
+    <Content Include="images\loading.gif" />
+    <Content Include="images\Loading_Animation.gif" />
     <Content Include="images\local.png" />
     <Content Include="images\local.svg" />
     <Content Include="images\logo-crop.png" />
-    <Content Include="images\logo.png" />
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
@@ -218,7 +231,9 @@
     <Content Include="images\oscillations-ON.svg" />
     <Content Include="images\oscillations.png" />
     <Content Include="images\oscillations.svg" />
+    <Content Include="images\pointer ON.png" />
     <Content Include="images\pointer ON.svg" />
+    <Content Include="images\pointer-ON.png" />
     <Content Include="images\pointer.png" />
     <Content Include="images\pointer.svg" />
     <Content Include="images\random1.gif" />
@@ -226,6 +241,7 @@
     <Content Include="images\random1.svg" />
     <Content Include="images\random2.png" />
     <Content Include="images\random2.svg" />
+    <Content Include="images\receptor-ON.png" />
     <Content Include="images\receptor-ON.svg" />
     <Content Include="images\receptor.png" />
     <Content Include="images\receptor.svg" />
@@ -241,8 +257,7 @@
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
-    <Content Include="images\title-about.png" />
-    <Content Include="images\title-help.png" />
+    <Content Include="images\tick-128.png" />
     <Content Include="images\title-TOU.png" />
     <Content Include="images\undo.png" />
     <Content Include="images\undo.svg" />
@@ -250,10 +265,12 @@
     <Content Include="images\validation-succeeded.svg" />
     <Content Include="images\validation_failed.png" />
     <Content Include="images\validation_succeeded.png" />
+    <Content Include="images\variable-ON.png" />
     <Content Include="images\variable-ON.svg" />
     <Content Include="images\variable.png" />
     <Content Include="images\variable.svg" />
     <Content Include="images\visicon.png" />
+    <Content Include="images\visicon2-ON.png" />
     <Content Include="images\visicon2-ON.svg" />
     <Content Include="images\visicon2.png" />
     <Content Include="images\visicon2.svg" />
@@ -332,6 +349,10 @@
     <Content Include="css\fonts\segoeuil.otf" />
     <Content Include="css\fonts\segoeuil.ttf" />
     <Content Include="css\fonts\segoeuil.woff" />
+    <Content Include="css\website.less" />
+    <Content Include="css\website.css.map">
+      <DependentUpon>website.css</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
