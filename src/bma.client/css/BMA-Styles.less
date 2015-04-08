@@ -227,7 +227,7 @@
 		
 		// Action Button
 
-		.action-button(@c: @midgrey;@size:20px;@pad:5px 7px 5px 7px;){
+		.action-button(@c: @midgrey;@size;@pad:5px 7px 5px 7px;){
 			background-color: @c;
 			border: 1px solid white;
 			border-radius:6px;
@@ -240,21 +240,38 @@
 				line-height: 100%;
 				color:white;
 				padding: @pad;
+				.icon{
+					display: inline-block;
+					height: @size - 2px;
+					width: @size - 2px;
+					background-repeat: no-repeat;
+					background-size: contain;
+					padding:0px;
+					margin: 0px;
+					&.download{
+						background-image: url("../images/download-white.svg")
+					}
+				}
 				&:hover{
 				color: @c;
+					.icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
 				}
 			}
 		}
 
 		li.action-button{
 			&.grey{
-				.action-button;
+				.action-button(@size:20px);
 			}
 			&.green{
-				.action-button(@c: @green);
+				.action-button(@c: @green;@size:20px);
 			}
 			&.red{
-				.action-button(@c: @darkred);
+				.action-button(@c: @darkred;@size:20px); 
 			}
 		}
 		// Small Action Button 
@@ -930,6 +947,10 @@
 				display: inline-block;
 				width:90px;
 
+			}
+			.button-list{
+				display: inline-block;
+				margin-top: 0px;
 			}
 		}
 

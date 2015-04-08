@@ -1,4 +1,4 @@
-﻿/* General Functions */
+/* General Functions */
 .hoverable:hover {
   cursor: pointer;
 }
@@ -205,8 +205,23 @@ li.action-button.grey button {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+li.action-button.grey button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+li.action-button.grey button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 li.action-button.grey button:hover {
   color: #aaaaaa;
+}
+li.action-button.grey button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 li.action-button.green {
   background-color: #81bb83;
@@ -223,8 +238,23 @@ li.action-button.green button {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+li.action-button.green button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+li.action-button.green button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 li.action-button.green button:hover {
   color: #81bb83;
+}
+li.action-button.green button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 li.action-button.red {
   background-color: #cf451b;
@@ -241,8 +271,23 @@ li.action-button.red button {
   color: white;
   padding: 5px 7px 5px 7px;
 }
+li.action-button.red button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+li.action-button.red button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 li.action-button.red button:hover {
   color: #cf451b;
+}
+li.action-button.red button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 li.action-button-small.grey {
   background-color: #aaaaaa;
@@ -259,8 +304,23 @@ li.action-button-small.grey button {
   color: white;
   padding: 5px 5px 3px 5px;
 }
+li.action-button-small.grey button .icon {
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+li.action-button-small.grey button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 li.action-button-small.grey button:hover {
   color: #aaaaaa;
+}
+li.action-button-small.grey button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 li.action-button-small.green {
   background-color: #81bb83;
@@ -277,8 +337,23 @@ li.action-button-small.green button {
   color: white;
   padding: 5px 5px 3px 5px;
 }
+li.action-button-small.green button .icon {
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+li.action-button-small.green button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 li.action-button-small.green button:hover {
   color: #81bb83;
+}
+li.action-button-small.green button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 li.action-button-small.red {
   background-color: #cf451b;
@@ -295,8 +370,23 @@ li.action-button-small.red button {
   color: white;
   padding: 5px 5px 3px 5px;
 }
+li.action-button-small.red button .icon {
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+li.action-button-small.red button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
 li.action-button-small.red button:hover {
   color: #cf451b;
+}
+li.action-button-small.red button:hover .icon.download {
+  background-image: url("../images/download.svg");
 }
 .pill-button-box {
   display: inline-block;
@@ -426,10 +516,10 @@ input {
   color: #606060;
 }
 input:focus {
-  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  -o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 3px #ededed;
+  -moz-box-shadow: 0 0 3px #ededed;
+  -o-box-shadow: 0 0 3px #ededed;
+  box-shadow: 0 0 3px #ededed;
 }
 input::-webkit-input-placeholder {
   /* WebKit browsers */
@@ -467,10 +557,10 @@ textarea {
   box-shadow: none;
 }
 textarea:focus {
-  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  -o-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 3px #ededed;
+  -moz-box-shadow: 0 0 3px #ededed;
+  -o-box-shadow: 0 0 3px #ededed;
+  box-shadow: 0 0 3px #ededed;
 }
 .window-title {
   font-size: 20px;
@@ -913,6 +1003,10 @@ body {
   display: inline-block;
   width: 90px;
 }
+.window.vis-options .button-list {
+  display: inline-block;
+  margin-top: 0px;
+}
 /* Canvas - Drawing Surface */
 .bma-drawingsurfacecontainer {
   height: calc(100% - 70px - 40px);
@@ -1005,10 +1099,10 @@ body {
   -moz-box-shadow: 4px 5px 7px rgba(0, 0, 0, 0.5);
   -o-box-shadow: 4px 5px 7px rgba(0, 0, 0, 0.5);
   box-shadow: 4px 5px 7px rgba(0, 0, 0, 0.5);
-  background-image: -moz-linear-gradient(left, #ededed, white);
-  background-image: -webkit-linear-gradient(left, #ededed, white);
-  background-image: -ms-linear-gradient(left, #ededed, white);
-  background-image: -webkit-gradient(linear, left, #ededed, white);
+  background-image: -moz-linear-gradient(left, #ededed, #ffffff);
+  background-image: -webkit-linear-gradient(left, #ededed, #ffffff);
+  background-image: -ms-linear-gradient(left, #ededed, #ffffff);
+  background-image: -webkit-gradient(linear, left, #ededed, #ffffff);
   vertical-align: top;
   left: -5px;
   width: 220px;
@@ -1029,10 +1123,10 @@ body {
 }
 .model-toolbar .model-name input:focus {
   outline: none;
-  -webkit-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
-  -o-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
-  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0px 0px 0px transparent;
+  -moz-box-shadow: 0px 0px 0px transparent;
+  -o-box-shadow: 0px 0px 0px transparent;
+  box-shadow: 0px 0px 0px transparent;
 }
 .model-toolbar .model-name .expand-btn {
   display: inline-block;
@@ -1676,4 +1770,3 @@ hr {
 .sim-blue {
   background-color: rgba(223, 223, 245, 0.5);
 }
-/*# sourceMappingURL=BMA-Styles.css.map */
