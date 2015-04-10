@@ -170,6 +170,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 //        (v_t+1 = (v_t)     /\ T(v_t) = v_t) \/
 //        (v_t+1 = (v_t - 1) /\ T(v_t) < v_t)
 let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : Context) =
+    // SI: should be able to use [get_z3_int_var_at_time node] for this too, like we do for next_state_id. 
     let current_state_id = sprintf "%d^%d" node.var start_time
     let current_state = z.MkConst(z.MkSymbol current_state_id, z.MkIntSort())
 
@@ -238,6 +239,7 @@ let unroll_qn qn bounds start_time end_time z =
 // model to fixpoint
 ///////////////////////////////////////////////////////////////////////////////
 
+// Return [model] constants as a Map<string,int>.
 let model_to_fixpoint (model : Model) =
     let mutable fixpoint = Map.empty
 
@@ -250,6 +252,8 @@ let model_to_fixpoint (model : Model) =
 
     fixpoint
 
+// Given the naming convention for Z3 vars, 
+// turn [model_to_fixpoint]'s Map<string,int> to a Map<QN.var,int>. 
 let fixpoint_to_env (fixpoint : Map<string, int>) =
     Map.fold
         (fun newMap name value ->
@@ -277,7 +281,8 @@ let find_fixpoint (network : QN.node list) range =
 
     // Did we find a fixpoint?
     let res = if sat = LBool.True then
-                    Some(model_to_fixpoint (!model))
+                    let env = fixpoint_to_env (model_to_fixpoint !model)
+                    Some(env)
               else
                     None
 
@@ -325,9 +330,9 @@ let find_bifurcation (network : QN.node list) range =
     let sat2 = ctx.CheckAndGetModel(model2)
 
     let res = if sat2 = LBool.True then
-                let fix1 = model_to_fixpoint (!model)
-                let fix2 = model_to_fixpoint (!model2)
-                Some((fix1, fix2))
+                let env1 = fixpoint_to_env (model_to_fixpoint !model) 
+                let env2 = fixpoint_to_env (model_to_fixpoint !model2)
+                Some((env1, env2))
               else
                 None
 
@@ -387,7 +392,8 @@ let find_cycle (network: QN.node list) bounds length =
     // Did we find a loop?
     let res =
         if sat = LBool.True then
-                 Some(model_to_fixpoint (!model))
+            let env = fixpoint_to_env (model_to_fixpoint !model)
+            Some(env)
         else
                  None
 
@@ -459,7 +465,8 @@ let find_cycle_steps_optimized network bounds =
                 find_cycle_of_length (length*2) ctx
             | LBool.True -> 
                 // update cycle with the information from model
-                let res = Some(model_to_fixpoint (!model))
+                let env = fixpoint_to_env (model_to_fixpoint !model)
+                let res = Some(env)
                 if (!model) <> null then (!model).Dispose()
                 res
         | LBool.Undef -> None

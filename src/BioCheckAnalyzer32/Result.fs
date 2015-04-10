@@ -12,13 +12,13 @@ type stability_result =
     
 /// If SRNotStabilizing, then we have a CEx. 
 type cex_result = 
-    | CExBifurcation of Map<string, int> * Map<string, int>
-    | CExCycle of Map<string, int>
-    | CExFixpoint of Map<string, int>
+    | CExBifurcation of Map<QN.var, int> * Map<QN.var, int>
+    | CExCycle of Map<QN.var, int>
+    | CExFixpoint of Map<QN.var, int>
     | CExUnknown
     override this.ToString() =
         let string_of_fixpoint fixpoint =
-            List.map (fun (var,value) -> sprintf "%s=%d" var value) (Map.toList fixpoint)
+            List.map (fun (var,value) -> sprintf "%d=%d" var value) (Map.toList fixpoint)
         match this with
             | CExBifurcation(fix1,fix2) -> 
                 "Bifurcates with fix1:" + (String.concat "," (string_of_fixpoint fix1)) + " fix2:" + (String.concat "," (string_of_fixpoint fix2))

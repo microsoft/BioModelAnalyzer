@@ -206,7 +206,7 @@ let ProveStability (qn : QN.node list) =
 
             let bifur = 
                 match z_bifur with
-                | Some((fix1, fix2)) -> Some (Bifurcation((Z.fixpoint_to_env fix1), (Z.fixpoint_to_env fix2)))
+                | Some((fix1, fix2)) -> Some (Bifurcation(fix1, fix2))
                 | None -> None
                 
             //printfn "Elapsed time after trying to find bifurcation is %i" timer.ElapsedMilliseconds
