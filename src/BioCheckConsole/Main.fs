@@ -76,9 +76,9 @@ let usage i =
     Printf.printfn "                           -modelsdir model_directory"
     Printf.printfn "                           -log "
     Printf.printfn "                           -loglevel n"
-    Printf.printfn "                         [ -engine [ VMCAI | SCM | SYN ] –prove output_file_name.xml |"
+    Printf.printfn "                         [ -engine [ VMCAI | SCM | SYN ] –prove output_file_name.json |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
-    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.xml |"
+    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.json |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
     Printf.printfn "                           -dump_before_xforms"
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
@@ -185,21 +185,11 @@ let runVMCAIEngine qn (proof_output : string) =
     let (sr,cex_o) = Stabilize.stabilization_prover qn
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
-        // (xml-writing-deprecated 
-        let stable_res_xml = Marshal.xml_of_stability_result sr
-        stable_res_xml.Save(proof_output)
-        // )
-        write_json_to_file (proof_output + ".json") (Marshal.AnalysisResult_of_stability_result sr)
+        write_json_to_file proof_output (Marshal.AnalysisResult_of_stability_result sr)
     | (Result.SRNotStabilizing(_), Some(cex)) -> 
-        // (xml-writing-deprecated 
-        let unstable_res_xml = Marshal.xml_of_stability_result sr
-        unstable_res_xml.Save(proof_output)
-        let cex_xml = Marshal.xml_of_cex_result cex
+        write_json_to_file proof_output (Marshal.AnalysisResult_of_stability_result sr)
         let filename,ext = System.IO.Path.GetFileNameWithoutExtension proof_output, System.IO.Path.GetExtension proof_output
-        cex_xml.Save(filename + "_cex." + ext)
-        // )
-        write_json_to_file (proof_output + ".json") (Marshal.AnalysisResult_of_stability_result sr)
-        write_json_to_file (filename + "_cex " + ext + ".json") (Marshal.CounterExampleOutput_of_cex_result cex)
+        write_json_to_file (filename + "_cex" + ext) (Marshal.CounterExampleOutput_of_cex_result cex)
     | (Result.SRNotStabilizing(_), None) -> ()
     | _ -> failwith "Bad result from prover"
 
