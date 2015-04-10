@@ -761,7 +761,6 @@ let AnalysisResult_of_error id msg =
     r
 
 // C# CounterExampleOutput = F# cex_result
-// stubs
 let BifurcationCounterExample_of_CExBifurcation (fix1:Map<string, int>) (fix2:Map<string, int>) =
     assert(fix1.Count = fix2.Count)
     let cex = new BifurcationCounterExample()
