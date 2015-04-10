@@ -469,7 +469,7 @@ let stabilizing_result_of_xml (xd:XDocument) =
 
 let cex_result_of_xml (xd:XDocument) =
     let parse_variable (v:XElement) =
-        let id = (int)(v.Attribute(xn "Id").Value)
+        let id = (string)(v.Attribute(xn "Id").Value)
         let value = (int)(v.Attribute(xn "Value").Value)
         (id,value)
     let output = xd.Element(xn "AnalysisOutput")
@@ -762,7 +762,7 @@ let AnalysisResult_of_error id msg =
 
 // C# CounterExampleOutput = F# cex_result
 // stubs
-let BifurcationCounterExample_of_CExBifurcation (fix1:Map<QN.var, int>) (fix2:Map<QN.var, int>) =
+let BifurcationCounterExample_of_CExBifurcation (fix1:Map<string, int>) (fix2:Map<string, int>) =
     assert(fix1.Count = fix2.Count)
     let cex = new BifurcationCounterExample()
     cex.Status <- CounterExampleType.Bifurcation
@@ -775,7 +775,7 @@ let BifurcationCounterExample_of_CExBifurcation (fix1:Map<QN.var, int>) (fix2:Ma
     Map.iter
         (fun k v ->
             let bv =  new BifurcationCounterExample.BifurcatingVariable()
-            bv.Id <- (string)k // SI: BifurcationCounterExample.Id should be int, really. Ditto the other bv.Id<-(string)k below too. 
+            bv.Id <- k 
             bv.Fix1 <- v 
             bv.Fix2 <- Map.find k fix2
             vv.[!vv_idx] <- bv
@@ -784,7 +784,7 @@ let BifurcationCounterExample_of_CExBifurcation (fix1:Map<QN.var, int>) (fix2:Ma
     cex.Variables <- vv
     cex 
 
-let CycleCounterExample_of_CExCycle (cyc:Map<QN.var, int>) = 
+let CycleCounterExample_of_CExCycle (cyc:Map<string, int>) = 
     let cex = new CycleCounterExample()
     cex.Status <- CounterExampleType.Cycle
     cex.Error <- ""
@@ -793,7 +793,7 @@ let CycleCounterExample_of_CExCycle (cyc:Map<QN.var, int>) =
     Map.iter 
         (fun k v ->
             let cv = new CounterExampleOutput.Variable ()
-            cv.Id <- (string)k
+            cv.Id <- k
             cv.Value <- v
             vv.[!vv_idx] <- cv
             incr vv_idx)
@@ -801,7 +801,7 @@ let CycleCounterExample_of_CExCycle (cyc:Map<QN.var, int>) =
     cex.Variables <- vv
     cex
 
-let FixPointCounterExample_of_CExFixpoint (fix:Map<QN.var, int>) = 
+let FixPointCounterExample_of_CExFixpoint (fix:Map<string, int>) = 
     let cex = new FixPointCounterExample()
     cex.Status <- CounterExampleType.Fixpoint
     cex.Error <- ""
@@ -810,7 +810,7 @@ let FixPointCounterExample_of_CExFixpoint (fix:Map<QN.var, int>) =
     Map.iter 
         (fun k v ->
             let cv = new CounterExampleOutput.Variable ()
-            cv.Id <- (string)k
+            cv.Id <- k
             cv.Value <- v
             vv.[!vv_idx] <- cv
             incr vv_idx)

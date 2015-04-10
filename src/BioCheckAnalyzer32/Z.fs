@@ -21,6 +21,11 @@ let get_z3_int_var_at_time (node : QN.node) time = sprintf "%d^%d" node.var time
 let get_qn_var_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]
     ((int parts.[0]) : QN.var)
+
+let get_qn_var_at_t_from_z3_var (name : string) =
+    let parts = name.Split[|'^'|]
+    ((int parts.[0]),(int parts.[1]) : QN.var * int)
+
 //
 
 
@@ -252,13 +257,14 @@ let model_to_fixpoint (model : Model) =
 
     fixpoint
 
-// Given the naming convention for Z3 vars, 
-// turn [model_to_fixpoint]'s Map<string,int> to a Map<QN.var,int>. 
+// Given the naming convention for Z3 vars, use [get_qn_var_at_t_from_z3_var]
+// to filter out only valid QN vars. 
 let fixpoint_to_env (fixpoint : Map<string, int>) =
     Map.fold
         (fun newMap name value ->
             try 
-                Map.add (get_qn_var_from_z3_var name) value newMap
+                let (id,t) = get_qn_var_at_t_from_z3_var name
+                Map.add ((string)id + "^" + (string)t) value newMap
             with
                 | exn -> newMap )
         Map.empty

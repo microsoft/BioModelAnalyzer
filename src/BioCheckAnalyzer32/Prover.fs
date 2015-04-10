@@ -206,7 +206,28 @@ let ProveStability (qn : QN.node list) =
 
             let bifur = 
                 match z_bifur with
-                | Some((fix1, fix2)) -> Some (Bifurcation(fix1, fix2))
+                | Some((fix1, fix2)) -> 
+                    // id^t --> id
+                    let parse s = 
+                        let (id,t) = 
+                            try Z.get_qn_var_at_t_from_z3_var s 
+                            with exn -> failwith "Failed to parse bifurcation id"
+                        id
+                    let fix1 = 
+                        Map.fold
+                            (fun newMap name value ->
+                                let (id,t) = Z.get_qn_var_at_t_from_z3_var name
+                                Map.add id value newMap)
+                            Map.empty
+                            fix1
+                    let fix2 = 
+                        Map.fold
+                            (fun newMap name value ->
+                                let (id,t) = Z.get_qn_var_at_t_from_z3_var name
+                                Map.add id value newMap)
+                            Map.empty
+                            fix2
+                    Some (Bifurcation(fix1, fix2))
                 | None -> None
                 
             //printfn "Elapsed time after trying to find bifurcation is %i" timer.ElapsedMilliseconds
