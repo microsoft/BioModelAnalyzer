@@ -5,6 +5,9 @@ open System.Linq
 open System.Xml.Linq
 open Newtonsoft.Json
 open Microsoft.VisualStudio.TestTools.UnitTesting
+open Newtonsoft.Json.Linq
+open BioModelAnalyzer
+open System.Text.RegularExpressions
 
 [<TestClass>]
 type JsonToQnTests() = 
@@ -25,14 +28,15 @@ type JsonToQnTests() =
         Assert.IsTrue(List.zip q1 q2 |> List.forall areQNEqual)
 
     [<TestMethod>]
-    [<DeploymentItem("Skin2D_5X2_AI.xml")>]
+    [<DeploymentItem("Skin2D_5X2_AI.json")>]
     member x.``QNs support stuctural equality`` () = 
         // Import two QNs from one document ... 
-        let xdoc = XDocument.Load("Skin2D_5X2_AI.xml")
-        let xqn1 = Marshal.model_of_xml(xdoc)
-        let xqn2 = Marshal.model_of_xml(xdoc) 
+        let jobj = JObject.Parse(System.IO.File.ReadAllText("Skin2D_5X2_AI.json"))
+        let qn1 = (jobj.["Model"] :?> JObject).ToObject<Model>() |> Marshal.QN_of_Model
+        let qn2 = (jobj.["Model"] :?> JObject).ToObject<Model>() |> Marshal.QN_of_Model
+
         // ... and they should be equal       
-        assertQNsAreEqual xqn1 xqn2
+        assertQNsAreEqual qn1 qn2
 
 //    [<TestMethod>]
 //    [<DeploymentItem("Skin2D_5X2_AI.xml")>]
