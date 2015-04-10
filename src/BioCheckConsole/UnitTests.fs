@@ -15,16 +15,18 @@ SI: further work:
 let register_tests () =
     
     let load_run_check (fname:string) ocheck_stabilizes ocheck_cex = 
-        XDocument.Load(fname)
-        |> Marshal.model_of_xml 
-        |> Stabilize.stabilization_prover
-        |> (fun (sr,cex_o) -> 
-                    match (sr,cex_o) with 
-                     | (Result.SRStabilizing(_), None) -> 
-                            (Option.get ocheck_stabilizes) sr
-                     | (Result.SRNotStabilizing(_), Some(cex)) -> 
-                            (Option.get ocheck_cex) cex 
-                     | _ -> failwith "UnitTests got bad results from checkStabilityOrElseFindCEx")
+        failwith "Need to replace xml"
+//
+//        XDocument.Load(fname)
+//        |> Marshal.model_of_xml 
+//        |> Stabilize.stabilization_prover
+//        |> (fun (sr,cex_o) -> 
+//                    match (sr,cex_o) with 
+//                     | (Result.SRStabilizing(_), None) -> 
+//                            (Option.get ocheck_stabilizes) sr
+//                     | (Result.SRNotStabilizing(_), Some(cex)) -> 
+//                            (Option.get ocheck_cex) cex 
+//                     | _ -> failwith "UnitTests got bad results from checkStabilityOrElseFindCEx")
 
     Test.register_test true (fun () -> load_run_check "fs_2var_unstable.xml" None (Some Result.bifurcates))
     Test.register_test true (fun () -> load_run_check "fs_BuddingYeast.xml"  (Some Result.stabilizes) None) 
