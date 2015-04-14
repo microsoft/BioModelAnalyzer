@@ -2134,7 +2134,10 @@ var BMA;
                     var map = mapper(varName);
                     var m = undefined;
                     if (map instanceof Array) {
-                        m = map[namestory[varName]];
+                        var ind = namestory[varName];
+                        if (ind > map.length - 1)
+                            ind = map.length - 1;
+                        m = map[ind];
                     }
                     else {
                         m = map;
