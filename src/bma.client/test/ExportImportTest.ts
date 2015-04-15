@@ -16,6 +16,17 @@
         expect(ebm.Variables.filter(v => v.Id == 3)[0].Formula).toBe("var(2)");
     });
 
+    it("handles multiple use of one variable in formula",() => {
+        var bm = new BMA.Model.BioModel(
+            "Test model",
+            [new BMA.Model.Variable(1, 0, BMA.Model.VariableTypes.Default, "a", 0, 1, ""),
+             new BMA.Model.Variable(2, 0, BMA.Model.VariableTypes.Constant, "b", 0, 1, "var(a) + var(a)")],
+            [new BMA.Model.Relationship(1, 1, 2, BMA.Model.RelationshipTypes.Activator) ]);
+        var ebm = BMA.Model.ExportBioModel(bm);
+        expect(ebm.Variables.filter(v => v.Id == 3)[0].Formula).toBe("var(1) + var(1)");
+    });
+
+
     it("exports and imports model", () => {
         var name = "TestBioModel";
         var v1 = new BMA.Model.Variable(34, 15, BMA.Model.VariableTypes.Default, "name1", 3, 7, "formula1");

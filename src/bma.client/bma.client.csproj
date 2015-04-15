@@ -35,7 +35,7 @@
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -288,34 +288,6 @@
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
     <Content Include="js\wl.js" />
-    <Content Include="legacy\bma.css" />
-    <Content Include="legacy\bma.html" />
-    <Content Include="legacy\bma.js" />
-    <Content Include="legacy\style.css" />
-    <Content Include="legacy\_images\activate.cur" />
-    <Content Include="legacy\_images\activate.png" />
-    <Content Include="legacy\_images\background.png" />
-    <Content Include="legacy\_images\constant.cur" />
-    <Content Include="legacy\_images\constant.png" />
-    <Content Include="legacy\_images\container.cur" />
-    <Content Include="legacy\_images\container.png" />
-    <Content Include="legacy\_images\home-logo.png" />
-    <Content Include="legacy\_images\inhibit.cur" />
-    <Content Include="legacy\_images\inhibit.png" />
-    <Content Include="legacy\_images\launch-tool-btn.png" />
-    <Content Include="legacy\_images\logo-crop.png" />
-    <Content Include="legacy\_images\logo.png" />
-    <Content Include="legacy\_images\MSR-logo.png" />
-    <Content Include="legacy\_images\pointer.png" />
-    <Content Include="legacy\_images\receptor.cur" />
-    <Content Include="legacy\_images\receptor.png" />
-    <Content Include="legacy\_images\redo.png" />
-    <Content Include="legacy\_images\title-about.png" />
-    <Content Include="legacy\_images\title-help.png" />
-    <Content Include="legacy\_images\title-TOU.png" />
-    <Content Include="legacy\_images\undo.png" />
-    <Content Include="legacy\_images\variable.cur" />
-    <Content Include="legacy\_images\variable.png" />
     <Content Include="packages.config" />
     <Content Include="preloaded\diabetes_new_mod.json" />
     <Content Include="preloaded\ToyModelStable.json" />
@@ -479,7 +451,6 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="legacy\bma.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="script\model\biomodel.ts" />
