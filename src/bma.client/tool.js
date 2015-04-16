@@ -4618,7 +4618,7 @@ var BMA;
                                             OnProofStarting();
                                         }
                                         catch (ex) {
-                                            that.messagebox.Show("Invalid service response");
+                                            that.messagebox.Show("FurtherTesting error: Invalid service response");
                                             that.driver.ShowStartFurtherTestingToggler();
                                         }
                                         ;
@@ -4636,12 +4636,12 @@ var BMA;
                                     that.messagebox.Show("FurtherTesting error: " + res2.Error);
                                 }
                                 else {
-                                    that.messagebox.Show("Invalid service response");
+                                    that.messagebox.Show("FurtherTesting error: Invalid service response");
                                 }
                             }
                         }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
                             that.driver.ActiveMode();
-                            that.messagebox.Show("Invalid service response");
+                            that.messagebox.Show("FurtherTesting error: Invalid service response");
                         });
                     }
                     else
