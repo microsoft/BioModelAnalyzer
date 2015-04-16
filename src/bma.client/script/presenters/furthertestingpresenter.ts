@@ -134,7 +134,11 @@
                                 else {
                                     logService.LogFurtherTestingError();
                                     that.driver.ActiveMode();
-                                    that.messagebox.Show("Invalid service response");
+                                    if (res2.Error !== null && res2.Error !== undefined) {
+                                        that.messagebox.Show("FurtherTesting error: " + res2.Error);
+                                    } else {
+                                        that.messagebox.Show("Invalid service response");
+                                    }
                                 }
                             })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {

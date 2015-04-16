@@ -112,5 +112,36 @@ type VMCAIFurtherTestingTests() =
         let var2_0 = result2.Variables |> Seq.filter (fun v -> Regex.IsMatch(v.Id, "\d*\^\d*") |> not ) |> Seq.length
         Assert.AreEqual(var2_0, 0)
 
+    [<TestMethod>]
+    [<DeploymentItem("RestingNeuron.json")>]
+    member x.``RestingNeuron.json is processed correctly`` () = 
+        let jobj = JObject.Parse(System.IO.File.ReadAllText("RestingNeuron.json"))
+
+        // Extract model from json
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
+
+        // Create analyzer. 
+        // Have to static cast to get IAnalyzer functions.   
+        let analyzer = UIMain.Analyzer() 
+
+        // Check stability
+        let result =  (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model)
+        Assert.AreEqual(result.Status, StatusType.NotStabilizing)
+
+        // Find fix points
+        let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
+        let result2 = result2o.Value
+        // Check that var(2^0) exists and has value 0. 
+        let var2_0 = result2.Variables |> Seq.filter (fun v -> Regex.IsMatch(v.Id, "\d*\^\d*") |> not ) |> Seq.length
+        Assert.AreEqual(var2_0, 0)
+
+        let resultBF = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExBifurcates(model, result)
+        Assert.AreEqual(resultBF, null)
+
+        let resultC = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
+        Assert.AreNotEqual(resultC, null)
+
+        
+
 
 

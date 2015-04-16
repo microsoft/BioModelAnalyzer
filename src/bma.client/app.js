@@ -1,39 +1,3 @@
-/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="script\model\biomodel.ts"/>
-/// <reference path="script\model\model.ts"/>
-/// <reference path="script\model\exportimport.ts"/>
-/// <reference path="script\model\visualsettings.ts"/>
-/// <reference path="script\commands.ts"/>
-/// <reference path="script\elementsregistry.ts"/>
-/// <reference path="script\functionsregistry.ts"/>
-/// <reference path="script\localRepository.ts"/>
-/// <reference path="script\uidrivers.interfaces.ts"/>
-/// <reference path="script\uidrivers.ts"/>
-/// <reference path="script\presenters\undoredopresenter.ts"/>
-/// <reference path="script\presenters\presenters.ts"/>
-/// <reference path="script\presenters\furthertestingpresenter.ts"/>
-/// <reference path="script\presenters\simulationpresenter.ts"/>
-/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
-/// <reference path="script\SVGHelper.ts"/>
-/// <reference path="script\changeschecker.ts"/>
-/// <reference path="script\widgets\drawingsurface.ts"/>
-/// <reference path="script\widgets\simulationplot.ts"/>
-/// <reference path="script\widgets\simulationviewer.ts"/>
-/// <reference path="script\widgets\simulationexpanded.ts"/>
-/// <reference path="script\widgets\accordeon.ts"/>
-/// <reference path="script\widgets\visibilitysettings.ts"/>
-/// <reference path="script\widgets\elementbutton.ts"/>
-/// <reference path="script\widgets\bmaslider.ts"/>
-/// <reference path="script\widgets\userdialog.ts"/>
-/// <reference path="script\widgets\variablesOptionsEditor.ts"/>
-/// <reference path="script\widgets\progressiontable.ts"/>
-/// <reference path="script\widgets\proofresultviewer.ts"/>
-/// <reference path="script\widgets\furthertestingviewer.ts"/>
-/// <reference path="script\widgets\localstoragewidget.ts"/>
-/// <reference path="script\widgets\resultswindowviewer.ts"/>
-/// <reference path="script\widgets\coloredtableviewer.ts"/>
-/// <reference path="script\widgets\containernameeditor.ts"/>
 function onSilverlightError(sender, args) {
     var appSource = "";
     if (sender != null && sender != 0) {
@@ -103,13 +67,9 @@ function popup_position() {
     });
 }
 $(document).ready(function () {
-    //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
-    //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
-    //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
-    //Creating model and layout
     var appModel = new BMA.Model.AppModel();
     window.PlotSettings = {
         MaxWidth: 3200,
@@ -121,7 +81,6 @@ $(document).ready(function () {
         xStep: 250,
         yStep: 280
     };
-    //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
@@ -235,7 +194,6 @@ $(document).ready(function () {
         });
     }
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
-    //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
@@ -262,7 +220,6 @@ $(document).ready(function () {
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
     elementPanel.buttonset();
-    //undo/redo panel
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
@@ -296,7 +253,6 @@ $(document).ready(function () {
     var popup = $('<div></div>').addClass('popup-window window').appendTo('body').hide().resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
     var expandedSimulation = $('<div></div>').simulationexpanded();
-    //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
@@ -308,12 +264,6 @@ $(document).ready(function () {
         window.ElementRegistry.LabelSize = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
-    //window.Commands.On("Commands.ToggleIcons", function (param) {
-    //    visualSettings.IconsVisibility = param;
-    //});
-    //window.Commands.On("Commands.IconsSize", function (param) {
-    //    visualSettings.IconsSize = param;
-    //});
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
         window.ElementRegistry.LineWidth = param;
@@ -337,7 +287,6 @@ $(document).ready(function () {
         popupDriver.Hide();
         accordionHider.Hide();
     });
-    //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
@@ -352,19 +301,16 @@ $(document).ready(function () {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
-    //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
-    //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
     var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
-    //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
@@ -373,7 +319,6 @@ $(document).ready(function () {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-    //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();
     if (params.Model !== undefined) {
@@ -383,7 +328,6 @@ $(document).ready(function () {
                 dataType: "text",
                 success: function (fileContent) {
                     appModel.Deserialize(fileContent);
-                    //appModel._Reset(fileContent);
                 }
             });
         }
@@ -406,7 +350,7 @@ $(document).ready(function () {
     var toolsdivs = $('#tools').children('div');
     function resize_header_tools() {
         toolsdivs.each(function () {
-            $(this).toggleClass('box-sizing'); //.css('box-sizing', 'border-box');
+            $(this).toggleClass('box-sizing');
         });
     }
     $(document).ready(function () {
@@ -449,46 +393,4 @@ $(document).ready(function () {
         }
     };
     $("label[for='button-pointer']").click();
-    //window.onerror = function (msg, url, l) {
-    //    var win = $('<div></div>').addClass('popup-window window report-bug').appendTo('body');
-    //    win.draggable({ containment: parent, scroll: false });
-    //    popup_position();
-    //    var closediv = $('<div></div>').addClass('close-icon').appendTo(win);
-    //    var closing = $('<img src="/images/close.png">').appendTo(closediv);
-    //    closing.bind("click", function () {
-    //        win.detach();
-    //    });
-    //    var div = $('<div></div>').addClass('window-title').text('Please describe the problem').appendTo(win);
-    //    var inline1 = $('<div></div>').addClass('inline').appendTo(win);
-    //    var textarea = $('<textarea></textarea>').appendTo(inline1);
-    //    var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
-    //    btn.bind('click', function () {
-    //        var model = appModel.Serialize();
-    //        var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
-    //        txt += '&_msg=' + msg;
-    //        txt += '&URL=' + url;
-    //        txt += '&Line=' + l;
-    //        txt += '&Platform=' + navigator.platform;
-    //        txt += '&UserAgent=' + navigator.userAgent;
-    //        txt += '&UserSay=' + textarea.val();
-    //        //txt += '&Model=' + JSON.stringify(j.Model); 
-    //        //txt += '&Layout=' + JSON.stringify(j.Layout); 
-    //        //alert(txt);
-    //        //var i = document.createElement('img');
-    //        //i.setAttribute('src',(('https:' == document.location.protocol) ?
-    //        //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
-    //        //document.body.appendChild(i);
-    //        var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
-    //        $.ajax({
-    //            type: "POST",
-    //            url: url,
-    //            data: "&Model=" + model
-    //        }).always(function () {
-    //            inline1.detach();
-    //            btn.detach();
-    //            $('.report-bug').children('.window-title').eq(0).text('Thanks for your report!').appendTo(win);
-    //        });
-    //    });
-    //}
 });
-//# sourceMappingURL=app.js.map
