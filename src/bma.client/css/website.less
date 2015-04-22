@@ -1,358 +1,353 @@
 /*   BASE   */
 
-@import "BMA-Styles.less"; 
+@import "BMA-Styles.less";
 
-    html, body {
-        background-color: @lightgrey;
-        background-image: url(../images/background.svg);
-        background-repeat: no-repeat;
-        background-position: 50% 40%;
-        background-attachment: fixed;
-        margin: 0px;
-        padding: 0px;
-        text-align: center;
-        .default-text();
-    }
+html, body {
+    background-color: @lightgrey;
+    background-image: url(../images/background.svg);
+    background-repeat: no-repeat;
+    background-position: 50% 40%;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    text-align: center; 
+    overflow-y: auto;
+    .default-text();
+}
 
-    img { 
-        border: 0;
-    }
+img {
+    border: 0;
+}
 
 /* ---  Typography  --- */
 
-    #col-wide{
-        .default-text();
-        font-size:14px;
+#col-wide {
+    .default-text();
+    font-size: 14px;
+    line-height: 130%;
+
+    a {
+        font-size: 14px;
         line-height: 130%;
-        a{
-            font-size:14px;
-            line-height: 130%;
-        } 
     }
+}
 
-    .heading {
-        color: @green;
-        font-family: 'Segoe-UI-Light';
-        font-size: 2em;
-        line-height: 100%;
-    }
+.heading {
+    color: @green;
+    font-family: 'Segoe-UI-Light';
+    font-size: 2em;
+    line-height: 100%;
+}
 
-    .bold {
-        color: @darkgrey;
-        font-weight: 'Segoe-UI-Bold';
-    }
+.bold {
+    color: @darkgrey;
+    font-weight: 'Segoe-UI-Bold';
+}
 
-    .page-title(){
-        font-family: 'Segoe-UI-Light';
-        font-size: 3em;
-        line-height: 100%;
-        color: @green;
-    }
+.page-title() {
+    font-family: 'Segoe-UI-Light';
+    font-size: 3em;
+    line-height: 100%;
+    color: @green;
+}
 
 /* ---  Links  --- */
 
-    a {
-        color: #82BD82;
-        text-decoration: none;
-    }
+a {
+    color: #82BD82;
+    text-decoration: none;
+}
 
-        a:hover {
-            text-decoration: underline;
-            cursor: pointer;
-        }
+a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
 
-    /* New class to enable link style change by hover*/
-    .hoverEnabled a {
-        color: #82BD82;
-        text-decoration: none;
-        display: block;
-        padding: 10px 0px 10px 0px; /* Top right bottom left */
-        white-space: nowrap; /* No wrapping: hyperlink forced onto one line */
-    }
+/* New class to enable link style change by hover*/
+.hoverEnabled a {
+    color: #82BD82;
+    text-decoration: none;
+    display: block;
+    padding: 10px 0px 10px 0px; /* Top right bottom left */
+    white-space: nowrap; /* No wrapping: hyperlink forced onto one line */
+}
 
-    .hoverEnabled a:hover {
-        color: white;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    /* New class ends */
+.hoverEnabled a:hover {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+/* New class ends */
 
 /* ---  Buttons --- */
 
-    #btn-block {
-        position: relative;
-        background-color: white;
-        /*padding:10px 10px 10px 10px;*/ /* No spill-over, unclickable space.  */
-        margin: 0 15px 15px 0;
-        width: 110px;
-        text-align: center;
-        color: @green;
-        float: left;
-        .border-radius(10px);
-        .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
-    }
+#btn-block {
+    position: relative;
+    background-color: white;
+    /*padding:10px 10px 10px 10px;*/ /* No spill-over, unclickable space.  */
+    margin: 0 15px 15px 0;
+    width: 110px;
+    text-align: center;
+    color: @green;
+    float: left;
+    .border-radius(10px);
+    .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+}
 
-        #btn-block:hover {
-            background-color: @green;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-        }
+#btn-block:hover {
+    background-color: @green;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
 
-    #btn {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-    }
+#btn {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
 
 /* ---  Site-Wide header  --- */
 
-    #MSR-logo {
-        position: fixed;
-        right: 10px;
-        top: 5px;
-        z-index: 0;
-    }
+#MSR-logo {
+    position: fixed;
+    right: 10px;
+    top: 5px;
+    z-index: 0;
+}
 
-    #Copyright {
-        float: left;
-        margin-top: 2px;
-        margin-right: 10px;
-        
-    }
+#Copyright {
+    float: left;
+    margin-top: 2px;
+    margin-right: 10px;
+}
 
-    #MSR-logo img {
-    }
+#MSR-logo img {
+}
 
-    #header {
-        width: 100%;
-        position: fixed;
-        z-index: 5;
-    }
+#header {
+    width: 100%;
+    position: fixed;
+    z-index: 5;
+}
 
-    #site-wide-nav {
-        position: relative;
-        z-index: 3;
-        display: inline-block;
-        margin: -10px auto 0 auto;
-        height:45px;
-        padding: 5px 10px 0px 10px;
-        //width: 360px;
-        color: @green;
-        line-height: 50px;
+#site-wide-nav {
+    position: relative;
+    z-index: 3;
+    display: inline-block;
+    margin: -10px auto 0 auto;
+    height: 45px;
+    padding: 5px 10px 0px 10px;
+    //width: 360px;
+    color: @green;
+    line-height: 50px;
+    background-color: white;
+    .border-radius(0px 0px 10px 10px);
+    .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+}
+
+#logo {
+    position: relative;
+    margin-bottom: 30px;
+
+    object {
+        width: 300px;
+
+        svg {
+            .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+        }
+    }
+}
+
+
+.launch-btn {
+    position: relative;
+    z-index: 5;
+    background-color: @green;
+    display: block;
+    color: white;
+    font-family: 'SeGoe-UI-Light';
+    font-size: 2.2em;
+    line-height: 100%;
+    width: 150px;
+    padding: 30px 10px 10px 10px; /* Prevents 'Enter tool' from being squeezed up against the page top*/
+    margin: -65px 0 0 -270px; /* wrt the page */
+    .border-radius(0px 0px 10px 10px);
+    .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+
+    &:hover {
+        text-decoration: none;
         background-color: white;
-        .border-radius(0px 0px 10px 10px);
-        .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+        color: @green;
     }
+}
 
-    #logo {
-        position: relative;
-        margin-bottom: 30px;
-        
-        object{
-            width:300px;
-
-            svg{
-
-                .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
-                    
-                
-                
-            }
-        }
-    }
-
-
-    .launch-btn {
-        position: relative;
-        z-index: 5;
-        background-color: @green;
-        display: block;
-        color: white;
-        font-family: 'SeGoe-UI-Light';
-        font-size:2.2em;
-        line-height: 100%;
-        width: 150px;
-        padding: 30px 10px 10px 10px; /* Prevents 'Enter tool' from being squeezed up against the page top*/
-        margin: -65px 0 0 -270px; /* wrt the page */
-        .border-radius(0px 0px 10px 10px);
-        .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
-        &:hover{
-            text-decoration: none;
-            background-color: white;
-            color:@green;
-        }
-
-    }
-
-    .home-launch-btn {
-        .launch-btn();
-        margin:0px;
-        padding: 10px 10px 10px 10px;
-        .border-radius(10px 10px 10px 10px);
-        .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
-        
-
-    }
+.home-launch-btn {
+    .launch-btn();
+    margin: 0px;
+    padding: 10px 10px 10px 10px;
+    .border-radius(10px 10px 10px 10px);
+    .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+}
 
 /* ---  Home page  --- */
 
-    #home-logo {
-        width: 450px;
-        height: 450px;
-        margin: 30px auto;
-    }
+#home-logo {
+    width: 450px;
+    height: 450px;
+    margin: 30px auto;
+}
 
-    #home-launch {
-        position: relative;
-        margin: 0 auto 0 50%;
-    }
+#home-launch {
+    position: relative;
+    margin: 0 auto 0 50%;
+}
 
 
-        #home-launch img {
-            margin-top: 14px;
-        }
+#home-launch img {
+    margin-top: 14px;
+}
 
-    #home-launch-btn {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: 1;
-    }
+#home-launch-btn {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
 
 /* ---  Content pages  --- */
 
 
-    #content-wrapper {
-        position: relative;
-        width: 900px;
-        margin: 0px auto;
-        text-align: left;
-        z-index: 3;
-    }
+#content-wrapper {
+    position: relative;
+    width: 900px;
+    margin: 0px auto;
+    text-align: left;
+    z-index: 3;
+}
 
-    .page-title {
-        background-color: white;
-        margin-bottom: 15px;
-        padding:10px 15px 10px 10px;
-        width: 130px;
-        //display: inline-block;
-        .border-radius(10px);
-        .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
-        .page-title();
-    }
-
-
-    #col-wide {
-        width: 520px;
-        float: left;
-    }
+.page-title {
+    background-color: white;
+    margin-bottom: 15px;
+    padding: 10px 15px 10px 10px;
+    width: 130px;
+    //display: inline-block;
+    .border-radius(10px);
+    .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+    .page-title();
+}
 
 
-    #col-side {
-        width: 350px;
-        float: right;
-    }
+#col-wide {
+    width: 520px;
+    float: left;
+}
 
 
-    #block {
-        background-color: white;
-        padding: 10px 10px 15px 10px;
-        margin: 0 0 15px 0;
-        //display: block;
-        .border-radius(10px);
-        .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
-    }
-
-        
-
-    .Team_Member {
-        margin-bottom: 15px;
-    }
+#col-side {
+    width: 350px;
+    float: right;
+}
 
 
-        .Team_Member p {
-            margin: 5px 0px 5px 0px;
-        }
+#block {
+    background-color: white;
+    padding: 10px 10px 15px 10px;
+    margin: 0 0 15px 0;
+    //display: block;
+    .border-radius(10px);
+    .box-shadow(@x:2px, @y:5px, @blur:10px, @color:@shadow);
+}
 
 
-    .FAQ_question {
-        margin-bottom: 10px;
-    }
+
+.Team_Member {
+    margin-bottom: 15px;
+}
 
 
-        .FAQ_question p {
-            margin: 5px 10px 20px 25px;
-        }
+.Team_Member p {
+    margin: 5px 0px 5px 0px;
+}
+
+
+.FAQ_question {
+    margin-bottom: 10px;
+}
+
+
+.FAQ_question p {
+    margin: 5px 10px 20px 25px;
+}
 
 /* ---  TOOL  --- */
 
-    #tool-container {
-        position: absolute;
-        background-color: #E4E4E6;
-        width: 100%;
-        height: 100%;
-    }
+#tool-container {
+    position: absolute;
+    background-color: #E4E4E6;
+    width: 100%;
+    height: 100%;
+}
 
-    #tool {
-        position: absolute;
-        background-color: white;
-        top: 5px;
-        left: 5px;
-        right: 5px;
-        bottom: 40px;
-        box-shadow: 5px 5px 10px #C6C6C6;
-        -webkit-box-shadow: 5px 5px 10px #C6C6C6;
-        -moz-box-shadow: 5px 5px 10px #C6C6C6;
-        -ms-box-shadow: 5px 5px 10px #C6C6C6;
-        -o-box-shadow: 5px 5px 10px #C6C6C6;
-        z-index: 7;
-    }
+#tool {
+    position: absolute;
+    background-color: white;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 40px;
+    box-shadow: 5px 5px 10px #C6C6C6;
+    -webkit-box-shadow: 5px 5px 10px #C6C6C6;
+    -moz-box-shadow: 5px 5px 10px #C6C6C6;
+    -ms-box-shadow: 5px 5px 10px #C6C6C6;
+    -o-box-shadow: 5px 5px 10px #C6C6C6;
+    z-index: 7;
+}
 
 
-    #tool-footer {
-        position: absolute;
-        width: 100%;
-        bottom: 0px;
-        height: 40px;
-        text-align: center;
-    }
+#tool-footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    height: 40px;
+    text-align: center;
+}
 
-    #tool-site-wide-nav {
-        position: relative;
-        z-index: 8;
-        background-color: white;
-        width: 220px;
-        height: 35px;
-        margin: 5px auto 0px auto;
-        color: #82BD82;
-        line-height: 35px;
-        border-radius: 10px 10px 0px 0px;
-        -moz-border-radius: 10px 10px 0px 0px; /* Firefox 3.6 and earlier */
-        -webkit-border-radius: 10px 10px 0px 0px;
-        -ms-border-radius: 10px 10px 0px 0px;
-        -o-border-radius: 10px 10px 0px 0px;
-        box-shadow: 5px 5px 10px #C6C6C6;
-        -webkit-box-shadow: 5px 5px 10px #C6C6C6;
-        -moz-box-shadow: 5px 5px 10px #C6C6C6;
-        -ms-box-shadow: 5px 5px 10px #C6C6C6;
-        -o-box-shadow: 5px 5px 10px #C6C6C6;
-    }
+#tool-site-wide-nav {
+    position: relative;
+    z-index: 8;
+    background-color: white;
+    width: 220px;
+    height: 35px;
+    margin: 5px auto 0px auto;
+    color: #82BD82;
+    line-height: 35px;
+    border-radius: 10px 10px 0px 0px;
+    -moz-border-radius: 10px 10px 0px 0px; /* Firefox 3.6 and earlier */
+    -webkit-border-radius: 10px 10px 0px 0px;
+    -ms-border-radius: 10px 10px 0px 0px;
+    -o-border-radius: 10px 10px 0px 0px;
+    box-shadow: 5px 5px 10px #C6C6C6;
+    -webkit-box-shadow: 5px 5px 10px #C6C6C6;
+    -moz-box-shadow: 5px 5px 10px #C6C6C6;
+    -ms-box-shadow: 5px 5px 10px #C6C6C6;
+    -o-box-shadow: 5px 5px 10px #C6C6C6;
+}
 
-    #tool-logo {
-        position: absolute;
-        left: -3px;
-        bottom: 0px;
-    }
+#tool-logo {
+    position: absolute;
+    left: -3px;
+    bottom: 0px;
+}
 
-    #tool-MSR-logo {
-        position: absolute;
-        right: 10px;
-        padding-top: 3px;
-    }
+#tool-MSR-logo {
+    position: absolute;
+    right: 10px;
+    padding-top: 3px;
+}
 
-        #tool-MSR-logo img {
-            height: 33px;
-        }
+#tool-MSR-logo img {
+    height: 33px;
+}

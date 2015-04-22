@@ -394,7 +394,7 @@ var BMA;
     }
     BMA.ParseXmlModel = ParseXmlModel;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=XmlModelParser.js.map
 ///#source 1 1 /script/SVGHelper.js
 var BMA;
 (function (BMA) {
@@ -410,6 +410,7 @@ var BMA;
         SVGHelper.AddClass = AddClass;
         function RemoveClass(elem, c) {
             var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
+            // TODO - coalesce spaces
             if (s == " ")
                 s = null;
             elem.className.baseVal = s;
@@ -455,7 +456,7 @@ var BMA;
         SVGHelper.GeEllipsePoints = GeEllipsePoints;
     })(SVGHelper = BMA.SVGHelper || (BMA.SVGHelper = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=SVGHelper.js.map
 ///#source 1 1 /script/ModelHelper.js
 var BMA;
 (function (BMA) {
@@ -621,7 +622,7 @@ var BMA;
         ModelHelper.GetModelBoundingBox = GetModelBoundingBox;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=ModelHelper.js.map
 ///#source 1 1 /script/commands.js
 var BMA;
 (function (BMA) {
@@ -689,7 +690,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=commands.js.map
 ///#source 1 1 /script/elementsregistry.js
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -855,6 +856,25 @@ var BMA;
                     }
                     $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(op).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
+                    /*
+                    //Helper bounding ellipses
+                    jqSvg.ellipse(
+                        (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerOuterCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                        containerOuterEllipseWidth * renderParams.layout.Size, containerOuterEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+                    
+                    jqSvg.ellipse(
+                        (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                        containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+
+                    jqSvg.ellipse(
+                        x + containerOuterCenterOffset * renderParams.layout.Size / 2,
+                        y,
+                        (containerInnerEllipseWidth + containerOuterEllipseWidth) * renderParams.layout.Size / 2,
+                        (containerInnerEllipseHeight + containerOuterEllipseHeight) * renderParams.layout.Size / 2,
+                        { stroke: "red", fill: "none" });
+                    */
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
                 }, function (pointerX, pointerY, elementX, elementY) {
@@ -916,6 +936,17 @@ var BMA;
                             });
                         }
                     }
+                    /*
+                    //Helper bounding box
+                    jqSvg.rect(
+                        renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                        renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                        that.variableWidthConstant,
+                        that.variableHeightConstant,
+                        0,
+                        0,
+                        { stroke: "red", fill: "none" });
+                    */
                     $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -1018,6 +1049,17 @@ var BMA;
                             });
                         }
                     }
+                    /*
+                    //Helper bounding box
+                    jqSvg.rect(
+                        renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                        renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                        that.variableWidthConstant,
+                        that.variableHeightConstant,
+                        0,
+                        0,
+                        { stroke: "red", fill: "none" });
+                    */
                     $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -1099,6 +1141,7 @@ var BMA;
                         var points = BMA.SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
                         var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                         var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+                        //console.log(len1 + ", " + len2);
                         return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                     }
                 }, "Activating Relationship", "activate-icon"));
@@ -1174,6 +1217,7 @@ var BMA;
                         var points = BMA.SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
                         var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                         var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+                        //console.log(len1 + ", " + len2);
                         return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                     }
                 }, "Inhibiting Relationship", "inhibit-icon"));
@@ -1184,6 +1228,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.lineWidth = value;
+                    //console.log(this.lineWidth);
                 },
                 enumerable: true,
                 configurable: true
@@ -1247,7 +1292,7 @@ var BMA;
         Elements.ElementsRegistry = ElementsRegistry;
     })(Elements = BMA.Elements || (BMA.Elements = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=elementsregistry.js.map
 ///#source 1 1 /script/functionsregistry.js
 var BMA;
 (function (BMA) {
@@ -1336,7 +1381,7 @@ var BMA;
         Functions.FunctionsRegistry = FunctionsRegistry;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=functionsregistry.js.map
 ///#source 1 1 /script/localRepository.js
 var BMA;
 (function (BMA) {
@@ -1426,7 +1471,7 @@ var BMA;
     })();
     BMA.LocalRepositoryTool = LocalRepositoryTool;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=localRepository.js.map
 ///#source 1 1 /script/changeschecker.js
 var BMA;
 (function (BMA) {
@@ -1444,8 +1489,10 @@ var BMA;
     })();
     BMA.ChangesChecker = ChangesChecker;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=changeschecker.js.map
 ///#source 1 1 /script/model/biomodel.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
 (function (BMA) {
     var Model;
@@ -1524,14 +1571,16 @@ var BMA;
             Object.defineProperty(VariableTypes, "Default", {
                 get: function () {
                     return "Default";
-                },
+                } // Intracellular
+                ,
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(VariableTypes, "Constant", {
                 get: function () {
                     return "Constant";
-                },
+                } // Extracellular
+                ,
                 enumerable: true,
                 configurable: true
             });
@@ -1828,8 +1877,10 @@ var BMA;
         Model.VariableLayout = VariableLayout;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=biomodel.js.map
 ///#source 1 1 /script/model/model.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
 (function (BMA) {
     var Model;
@@ -1847,6 +1898,7 @@ var BMA;
                 set: function (value) {
                     this.model = value;
                     window.Commands.Execute("AppModelChanged", {});
+                    //TODO: update inner components (analytics)
                 },
                 enumerable: true,
                 configurable: true
@@ -1857,6 +1909,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.layout = value;
+                    //TODO: update inner components (analytics)
                 },
                 enumerable: true,
                 configurable: true
@@ -1874,6 +1927,7 @@ var BMA;
             AppModel.prototype.DeserializeLegacyJSON = function (serializedModel) {
                 if (serializedModel !== undefined && serializedModel !== null) {
                     var ml = JSON.parse(serializedModel);
+                    //TODO: verify model
                     if (ml === undefined || ml.model === undefined || ml.layout === undefined || ml.model.variables === undefined || ml.layout.variables === undefined || ml.model.variables.length !== ml.layout.variables.length || ml.layout.containers === undefined || ml.model.relationships === undefined) {
                         console.log("Invalid model");
                         return;
@@ -1930,7 +1984,7 @@ var BMA;
         Model.AppModel = AppModel;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=model.js.map
 ///#source 1 1 /script/model/analytics.js
 var BMA;
 (function (BMA) {
@@ -1968,7 +2022,7 @@ var BMA;
         Model.ProofResult = ProofResult;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=analytics.js.map
 ///#source 1 1 /script/model/visualsettings.js
 var BMA;
 (function (BMA) {
@@ -2054,7 +2108,7 @@ var BMA;
         Model.AppVisualSettings = AppVisualSettings;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=visualsettings.js.map
 ///#source 1 1 /script/model/exportimport.js
 var BMA;
 (function (BMA) {
@@ -2064,8 +2118,10 @@ var BMA;
             var namestory = {};
             if (f !== undefined && f != null) {
                 f = f.trim();
+                // Convert default function to null
                 if (f.toLowerCase() == "avg(pos)-avg(neg)")
                     return null;
+                // Replace variable names with IDs
                 var varPrefix = "var(";
                 var startPos = 0;
                 var index;
@@ -2093,13 +2149,20 @@ var BMA;
             return f;
         }
         Model.MapVariableNames = MapVariableNames;
+        // Returns object whose JSON representation matches external format:
+        // 1) Variables in formulas are identified by IDs
+        // 2) Default function avg(pos)-avg(neg) is replaced with null formula
         function ExportBioModel(model) {
             function GetIdByName(id, name) {
                 var results = model.Variables.filter(function (v2) {
                     return v2.Name == name && model.Relationships.some(function (r) {
                         return r.ToVariableId == id && r.FromVariableId == v2.Id;
+                        // || r.FromVariableId == id && r.ToVariableId == v2.Id
                     });
                 });
+                //if (results.length > 1)
+                //    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
+                //else if (results.length == 0)
                 if (results.length == 0)
                     throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
                 var res = [];
@@ -2171,8 +2234,11 @@ var BMA;
         Model.ImportModelAndLayout = ImportModelAndLayout;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=exportimport.js.map
 ///#source 1 1 /script/uidrivers.js
+/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="widgets\drawingsurface.ts"/>
 var BMA;
 (function (BMA) {
     var UIDrivers;
@@ -2196,6 +2262,9 @@ var BMA;
             SVGPlotDriver.prototype.GetDragSubject = function () {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             };
+            //public GetZoomSubject() {
+            //    return this.svgPlotDiv.drawingsurface("getZoomSubject");
+            //}
             SVGPlotDriver.prototype.SetZoom = function (zoom) {
                 this.svgPlotDiv.drawingsurface({ zoom: zoom });
             };
@@ -2374,6 +2443,7 @@ var BMA;
             };
             PopupDriver.prototype.Show = function (params) {
                 var that = this;
+                //this.createResultView(params);
                 var header = "";
                 this.popupWindow.removeClass('further-testing-popout').removeClass('proof-propagation-popout').removeClass('proof-variables-popout').removeClass('simulation-popout');
                 switch (params.tab) {
@@ -2663,7 +2733,7 @@ var BMA;
         UIDrivers.ExportService = ExportService;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=uidrivers.js.map
 ///#source 1 1 /script/presenters/undoredopresenter.js
 var BMA;
 (function (BMA) {
@@ -2749,8 +2819,14 @@ var BMA;
         Presenters.UndoRedoPresenter = UndoRedoPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=undoredopresenter.js.map
 ///#source 1 1 /script/presenters/presenters.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\model\biomodel.ts"/>
+/// <reference path="..\model\model.ts"/>
+/// <reference path="..\uidrivers.ts"/>
+/// <reference path="..\commands.ts"/>
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -2785,6 +2861,8 @@ var BMA;
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
                     that.stagingLine = undefined;
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
                 window.Commands.On("DrawingSurfaceClick", function (args) {
                     if (that.selectedType !== undefined) {
@@ -2964,6 +3042,7 @@ var BMA;
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
                         }
                     }
+                    //that.clipboard = undefined;
                 });
                 window.Commands.On("DrawingSurfaceResizeCell", function (args) {
                     if (that.contextElement !== undefined && that.contextElement.type === "container") {
@@ -3094,6 +3173,7 @@ var BMA;
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
                         that.stagingLine.x1 = gesture.x1;
                         that.stagingLine.y1 = gesture.y1;
+                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             that.driver.DrawLayer2(that.CreateStagingSvg());
                         }
@@ -3600,6 +3680,16 @@ var BMA;
                 }
                 return undefined;
             };
+            //private GetContainerGridCells(containerLayout: BMA.Model.ContainerLayout): { x: number; y: number }[] {
+            //    var result = [];
+            //    var size = containerLayout.Size;
+            //    for (var i = 0; i < size; i++) {
+            //        for (var j = 0; j < size; j++) {
+            //            result.push({ x: i + containerLayout.PositionX, y: j + containerLayout.PositionY });
+            //        }
+            //    }
+            //    return result;
+            //}
             DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
                 var result = [];
                 var variables = this.undoRedoPresenter.Current.model.Variables;
@@ -3653,7 +3743,7 @@ var BMA;
             };
             DesignSurfacePresenter.prototype.GetVariableColorByStatus = function (status) {
                 if (status)
-                    return "green";
+                    return "green"; //"#D9FFB3";
                 else
                     return "red";
             };
@@ -3673,6 +3763,7 @@ var BMA;
             DesignSurfacePresenter.prototype.CreateSvg = function (args) {
                 if (this.svg === undefined)
                     return undefined;
+                //Generating svg elements from model and layout
                 var svgElements = [];
                 var containerLayouts = this.undoRedoPresenter.Current.layout.Containers;
                 for (var i = 0; i < containerLayouts.length; i++) {
@@ -3719,6 +3810,7 @@ var BMA;
                         grid: this.Grid
                     }));
                 }
+                //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 4, "auto", { viewBox: "0 -2 4 4" });
@@ -3773,7 +3865,7 @@ var BMA;
         Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=presenters.js.map
 ///#source 1 1 /script/presenters/proofpresenter.js
 var BMA;
 (function (BMA) {
@@ -3828,6 +3920,7 @@ var BMA;
                     }
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput).done(function (res) {
+                        //console.log("Proof Result Status: " + res.Status);
                         var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
                         if (res.Ticks !== null) {
                             that.expandedProofPropagation = $('<div></div>');
@@ -3840,7 +3933,7 @@ var BMA;
                             that.colorData = that.CreateColoredTable(res.Ticks);
                             var deferredProofPropagation = function () {
                                 var d = $.Deferred();
-                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);
+                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks); //.addClass("proof-expanded");
                                 d.resolve(full);
                                 return d.promise();
                             };
@@ -4086,7 +4179,7 @@ var BMA;
         Presenters.ProofPresenter = ProofPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=proofpresenter.js.map
 ///#source 1 1 /script/presenters/simulationpresenter.js
 var BMA;
 (function (BMA) {
@@ -4336,7 +4429,7 @@ var BMA;
                 });
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
-                    table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color;
+                    table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color; // color should be there
                     table[i][1] = (function () {
                         var cont = that.appModel.Layout.GetContainerById(variables[i].ContainerId);
                         return cont !== undefined ? cont.Name : '';
@@ -4372,7 +4465,7 @@ var BMA;
         Presenters.SimulationPresenter = SimulationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=simulationpresenter.js.map
 ///#source 1 1 /script/presenters/modelstoragepresenter.js
 var BMA;
 (function (BMA) {
@@ -4471,6 +4564,7 @@ var BMA;
                     try {
                         var data = appModel.Serialize();
                         exportService.Export(data, appModel.BioModel.Name, 'json');
+                        //var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
                         checker.Snapshot(appModel);
                     }
                     catch (ex) {
@@ -4483,7 +4577,7 @@ var BMA;
         Presenters.ModelStoragePresenter = ModelStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=modelstoragepresenter.js.map
 ///#source 1 1 /script/presenters/formulavalidationpresenter.js
 var BMA;
 (function (BMA) {
@@ -4521,7 +4615,7 @@ var BMA;
         Presenters.FormulaValidationPresenter = FormulaValidationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=formulavalidationpresenter.js.map
 ///#source 1 1 /script/presenters/furthertestingpresenter.js
 var BMA;
 (function (BMA) {
@@ -4868,8 +4962,10 @@ var BMA;
         Presenters.LocalStoragePresenter = LocalStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=localstoragepresenter.js.map
 ///#source 1 1 /script/UserLog.js
+/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
 (function (BMA) {
     function generateUUID() {
@@ -4949,8 +5045,10 @@ var BMA;
     })();
     BMA.SessionLog = SessionLog;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=UserLog.js.map
 ///#source 1 1 /script/widgets/accordeon.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     var accordion = $.widget("BMA.bmaaccordion", {
         version: "1.11.0",
@@ -4960,6 +5058,7 @@ var BMA;
             collapsible: true,
             event: "click",
             position: "center",
+            // callbacks
             activate: null,
             beforeActivate: null,
             contentLoaded: { ind: "", val: true },
@@ -4972,10 +5071,12 @@ var BMA;
             var options = this.options;
             this.prevShow = this.prevHide = $();
             this.element.addClass("ui-accordion").attr("role", "tablist");
+            // don't allow collapsible: false and active: false / null
             if (!options.collapsible && (options.active === false || options.active == null)) {
                 options.active = 0;
             }
             this._processPanels();
+            // handle negative values
             if (options.active < 0) {
                 options.active += this.headers.length;
             }
@@ -4989,8 +5090,11 @@ var BMA;
         },
         _destroy: function () {
             var contents;
+            // clean up main element
             this.element.removeClass("ui-accordion ui-widget ui-helper-reset").removeAttr("role");
+            // clean up headers
             this.headers.removeClass("ui-accordion-header ui-accordion-header-active ui-state-default " + "ui-corner-all ui-state-active ui-state-disabled ui-corner-top").removeAttr("role").removeAttr("aria-expanded").removeAttr("aria-selected").removeAttr("aria-controls").removeAttr("tabIndex").removeUniqueId();
+            // clean up content panels
             contents = this.headers.next().removeClass("ui-helper-reset ui-widget-content ui-corner-bottom " + "ui-accordion-content ui-accordion-content-active ui-state-disabled").css("display", "").removeAttr("role").removeAttr("aria-hidden").removeAttr("aria-labelledby").removeUniqueId();
         },
         _processAnimation: function (context) {
@@ -5013,12 +5117,15 @@ var BMA;
             this.showProps = {};
             this.hideProps[that.options.position] = "-=" + distantion;
             this.showProps[that.options.position] = "+=" + distantion;
+            //context.show().css("z-index",1);
             context.css("z-index", that.options.z_index + 1);
+            //this.headers.next().not(context).hide().css("z-index", 0);
             this.headers.next().not(context).css("z-index", that.options.z_index);
         },
         _setOption: function (key, value) {
             var that = this;
             if (key === "active") {
+                // _activate() will handle invalid values and update this.options
                 this._activate(value);
                 return;
             }
@@ -5067,9 +5174,12 @@ var BMA;
                 }
                 return;
             }
+            // setting collapsible: false while collapsed; open first panel
             if (key === "collapsible" && !value && this.options.active === false) {
                 this._activate(0);
             }
+            // #5332 - opacity doesn't cascade to positioned elements in IE
+            // so we need to add the disabled class to the headers and panels
             if (key === "disabled") {
                 this.element.toggleClass("ui-state-disabled", !!value).attr("aria-disabled", value);
                 this.headers.add(this.options.context).toggleClass("ui-state-disabled", !!value);
@@ -5103,6 +5213,7 @@ var BMA;
             if (toFocus !== undefined) {
                 $(event.target).attr("tabIndex", -1);
                 $(toFocus).attr("tabIndex", 0);
+                //toFocus.focus();
                 event.preventDefault();
             }
         },
@@ -5113,6 +5224,7 @@ var BMA;
         refresh: function () {
             var options = this.options;
             this._processPanels();
+            // was collapsed or no panel
             if ((options.active === false && options.collapsible === true) || !this.headers.length) {
                 options.active = false;
                 this.active = $();
@@ -5121,6 +5233,7 @@ var BMA;
                 this._activate(0);
             }
             else if (this.active.length && !$.contains(this.element[0], this.active[0])) {
+                // all remaining panel are disabled
                 if (this.headers.length === this.headers.find(".ui-state-disabled").length) {
                     options.active = false;
                     this.active = $();
@@ -5130,6 +5243,7 @@ var BMA;
                 }
             }
             else {
+                // make sure active index is correct
                 options.active = this.headers.index(this.active);
             }
             this._refresh();
@@ -5140,6 +5254,7 @@ var BMA;
             this.element.css(position, 0);
             this.headers = that.element.children().filter(':even');
             this.headers.addClass("bma-accordion-header");
+            //var loading = that.options.showLoading;
             this.loadingList = [];
             for (var ind = 0; ind < this.headers.length; ind++) {
                 that.loadingList[ind] = true;
@@ -5172,6 +5287,7 @@ var BMA;
             var maxHeight, options = this.options, parent = this.element.parent();
             this.active = $();
             this.active.next().addClass("ui-accordion-content-active");
+            //.show();
             var that = this;
             this.headers.attr("role", "tab").each(function () {
                 var header = $(this), headerId = header.uniqueId().attr("id"), panel = header.next(), panelId = panel.uniqueId().attr("id");
@@ -5185,6 +5301,7 @@ var BMA;
             }).next().attr({
                 "aria-hidden": "true"
             }).hide();
+            // make sure at least one header is in the tab order
             if (!this.active.length) {
                 this.headers.eq(0).attr("tabIndex", 0);
             }
@@ -5211,12 +5328,18 @@ var BMA;
                     events[eventName] = "eventHandler";
                 });
             }
+            //this._off(this.headers.add(this.options.context));
             this._off(this.headers);
             this._on(this.headers, events);
+            //this._on(this.options.context, { keydown: "_panelKeyDown" });
             this._on(this.headers.next(), { keydown: "_panelKeyDown" });
+            //this._hoverable(this.headers);
+            //this._focusable(this.headers);
         },
         eventHandler: function (event) {
-            var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), eventData = {
+            var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), 
+            //toShow = collapsing ? $() : options.context,
+            eventData = {
                 oldHeader: active,
                 oldPanel: toHide,
                 newHeader: clicked,
@@ -5227,10 +5350,14 @@ var BMA;
                 return;
             }
             if (toShow.is(":hidden")) {
+                //toShow.show();
                 window.Commands.Execute(clicked.attr("data-command"), {});
             }
             eventData.newHeader.css("z-index", this.options.z_index + 2);
-            this.headers.not(eventData.newHeader).css("z-index", this.options.z_index);
+            this.headers.not(eventData.newHeader).css("z-index", this.options.z_index); //0);
+            // when the call to ._toggle() comes after the class changes
+            // it causes a very odd bug in IE 8 (see #6720)
+            //this.active.next().show();
             this.active = clickedIsActive ? $() : clicked;
             if (!this.loadingList[this.headers.index(clicked)]) {
                 eventData.newPanel = $();
@@ -5245,6 +5372,8 @@ var BMA;
                 return;
             }
             this._toggle(eventData);
+            // switch classes
+            // corner classes on the previously active header stay after the animation
             active.removeClass("ui-accordion-header-active ui-state-active");
             if (!clickedIsActive) {
                 clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active  ui-corner-top");
@@ -5254,6 +5383,7 @@ var BMA;
         _toggle: function (data) {
             var toShow = data.newPanel, toHide = this.prevShow.length ? this.prevShow : data.oldPanel;
             var that = this;
+            // handle activating a panel during the animation for another activation
             this.prevShow.add(this.prevHide).stop(true, true);
             this.prevShow = toShow;
             this.prevHide = toHide;
@@ -5263,6 +5393,7 @@ var BMA;
             else {
                 toHide.hide();
                 toShow.show();
+                //if (this.options.context.is(":hidden"))
                 if (data.newHeader.next().is(":hidden")) {
                     data.newHeader.removeClass("accordion-expanded").removeClass("accordion-shadow").addClass("accordion-collapsed");
                 }
@@ -5273,8 +5404,11 @@ var BMA;
             }
             toHide.attr({
                 "aria-hidden": "true"
-            });
+            }); //.hide();
             toHide.prev().attr("aria-selected", "false");
+            // if we're switching panels, remove the old header from the tab order
+            // if we're opening from collapsed state, remove the previous header from the tab order
+            // if we're collapsing, then keep the collapsing header in the tab order
             if (toShow.length && toHide.length) {
                 toHide.prev().attr({
                     "tabIndex": -1,
@@ -5298,6 +5432,7 @@ var BMA;
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
+            //$('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
         _hideLoading: function (toHide) {
             toHide.each(function () {
@@ -5318,6 +5453,7 @@ var BMA;
             if (typeof options === "string") {
                 easing = options;
             }
+            // fall back from options to animation in case of partial down settings
             easing = easing || options.easing || animate.easing;
             duration = duration || options.duration || animate.duration;
             var that = this;
@@ -5333,26 +5469,36 @@ var BMA;
                 that.element.animate(that.showProps, duration, easing, complete);
                 return;
             }
-            toHide.css("z-index", that.options.z_index);
+            //context.show()
+            //this.headers.next().not(context).hide()
+            //toHide.hide().css("z-index", 0);
+            //toShow.show().css("z-index", 1);
+            toHide.css("z-index", that.options.z_index); //0);
             toShow.css("z-index", that.options.z_index + 1);
             this._toggleComplete(data);
         },
         _toggleComplete: function (data) {
             var toHide = data.oldPanel;
             var toShow = data.newPanel;
+            //toHide.hide();
+            //toShow.show();
             data.newPanel.css("z-index", this.options.z_index + 1);
             toHide.removeClass("ui-accordion-content-active").prev().removeClass("ui-corner-top").addClass("ui-corner-all");
             toHide.hide();
             toShow.show();
+            // Work around for rendering bug in IE (#5421)
             if (toHide.length) {
                 toHide.parent()[0].className = toHide.parent()[0].className;
             }
             this._trigger("activate", null, data);
+            //this.headers.not(this.active).next().hide();
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=accordeon.js.map
 ///#source 1 1 /script/widgets/bmaslider.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.bmazoomslider", {
         options: {
@@ -5371,6 +5517,7 @@ var BMA;
             this.zoomslider.slider({
                 min: that.options.min,
                 max: that.options.max,
+                //step: that.options.step,
                 value: that.options.value,
                 change: function (event, ui) {
                     var val = that.zoomslider.slider("option", "value");
@@ -5401,6 +5548,7 @@ var BMA;
         },
         _destroy: function () {
             var contents;
+            // clean up main element
             this.element.removeClass("zoomslider-container");
             this.element.empty();
         },
@@ -5426,15 +5574,17 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=bmaslider.js.map
 ///#source 1 1 /script/widgets/coloredtableviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.coloredtableviewer", {
         options: {
             header: [],
             numericData: undefined,
             colorData: undefined,
-            type: "standart"
+            type: "standart" // "color","graph-min","graph-max", "simulation-min", "simulation-max"
         },
         _create: function () {
             this.refresh();
@@ -5505,7 +5655,7 @@ var BMA;
                             for (var j = 0; j < color[i].length; j++) {
                                 var td = $('<td></td>').appendTo(tr);
                                 if (color[i][j]) {
-                                    td.addClass('change');
+                                    td.addClass('change'); //.css("background-color", "#FFF729"); //no guide
                                 }
                             }
                         }
@@ -5661,8 +5811,11 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=coloredtableviewer.js.map
 ///#source 1 1 /script/widgets/containernameeditor.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\functionsregistry.ts"/>
 (function ($) {
     $.widget("BMA.containernameeditor", {
         options: {
@@ -5697,8 +5850,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=containernameeditor.js.map
 ///#source 1 1 /script/widgets/drawingsurface.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.drawingsurface", {
         _plot: null,
@@ -5707,6 +5862,7 @@ var BMA;
         _lightSvgPlot: null,
         _rectsPlot: null,
         _dragService: null,
+        //_zoomObservable: undefined,
         _zoomObs: undefined,
         _onlyZoomEnabled: false,
         options: {
@@ -5736,6 +5892,10 @@ var BMA;
             if (window.PlotSettings !== undefined) {
                 this._plotSettings = window.PlotSettings;
             }
+            //this._zoomObs = undefined;
+            //this._zoomObservable = Rx.Observable.create(function (rx) {
+            //    that._zoomObs = rx;
+            //});
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
@@ -5748,6 +5908,7 @@ var BMA;
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;
             this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
+            //rectsPlot.draw({ rects: [{ x: 0, y: 0, width: 500, height: 500, fill: "red" }] })
             if (this.options.svg !== undefined) {
                 if (svgPlot.svg === undefined) {
                     svgPlot.host.on("svgLoaded", this._svgLoaded);
@@ -5761,6 +5922,7 @@ var BMA;
                 lightSvgPlot.host.on("svgLoaded", this._lightSvgLoaded);
             }
             else {
+                //lightSvgPlot.svg.configure({ style: "pointer-events:none;" }, false);
                 lightSvgPlot.svg.clear();
                 if (this.options.lightSvg !== undefined)
                     lightSvgPlot.svg.add(this.options.lightSvg);
@@ -5788,6 +5950,21 @@ var BMA;
                     screenY: arg.pageY - plotDiv.offset().top
                 });
             });
+            /*
+            plotDiv.bind("mousemove", function (arg) {
+                var cs = svgPlot.getScreenToDataTransform();
+
+                if (arg.originalEvent !== undefined) {
+                    arg = arg.originalEvent;
+                }
+
+                window.Commands.Execute("DrawingSurfaceMouseMove",
+                    {
+                        x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
+                    });
+            });
+            */
             plotDiv.dblclick(function (arg) {
                 var cs = svgPlot.getScreenToDataTransform();
                 if (arg.originalEvent !== undefined) {
@@ -5798,6 +5975,7 @@ var BMA;
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
                 });
             });
+            //Subject that converts input mouse events into Pan gestures 
             var createPanSubject = function (vc) {
                 var _doc = $(document);
                 var mouseDown = vc.onAsObservable("mousedown");
@@ -5809,6 +5987,7 @@ var BMA;
                     var x0 = cs.screenToDataX(md.pageX - plotDiv.offset().left);
                     var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
                     return mouseMove.select(function (mm) {
+                        //var cs = svgPlot.getScreenToDataTransform();
                         var x1 = cs.screenToDataX(mm.pageX - plotDiv.offset().left);
                         var y1 = -cs.screenToDataY(mm.pageY - plotDiv.offset().top);
                         return { x0: x0, y0: y0, x1: x1, y1: y1 };
@@ -5868,7 +6047,7 @@ var BMA;
                 var touchEnd = _doc.onAsObservable("touchend");
                 var touchCancel = _doc.onAsObservable("touchcancel");
                 var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
-                var dragEndings = stopPanning;
+                var dragEndings = stopPanning; //.takeWhile(mouseMove);
                 return dragEndings;
             };
             this._dragService = {
@@ -5883,6 +6062,7 @@ var BMA;
                 return -y;
             }, undefined);
             this._plot.yDataTransform = yDT;
+            //this._gridLinesPlot.yDataTransform = yDT;
             var width = 1600;
             that.options.zoom = width;
             if (this.options.isNavigationEnabled) {
@@ -6034,8 +6214,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=drawingsurface.js.map
 ///#source 1 1 /script/widgets/progressiontable.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.progressiontable", {
         options: {
@@ -6089,11 +6271,13 @@ var BMA;
                     else
                         input.val(init);
                     var random = $('<td></td>').addClass("random-small bma-random-icon2 hoverable").appendTo(tr);
+                    //random.filter(':nth-child(even)').addClass('bma-random-icon1');
+                    //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
                     random.bind("click", function () {
                         var prev = parseInt($(this).prev().children("input").eq(0).val());
                         var index = $(this).parent().index() - 1;
                         var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
-                        $(this).prev().children("input").eq(0).val(randomValue);
+                        $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
                         if (randomValue !== prev)
                             $(this).parent().addClass('red');
                         else
@@ -6141,6 +6325,7 @@ var BMA;
         },
         AddData: function (data) {
             var that = this;
+            //var data = this.data;
             if (data !== undefined) {
                 var trs = that.data.find("tr");
                 if (trs.length === 0) {
@@ -6154,6 +6339,7 @@ var BMA;
                 else {
                     trs.each(function (ind) {
                         var td = $('<td></td>').text(data[ind]).appendTo($(this));
+                        //$('<span></span>').text(data[ind]).appendTo(td);
                         if (td.text() !== td.prev().text())
                             td.addClass('change');
                     });
@@ -6179,6 +6365,8 @@ var BMA;
             var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
             tds.each(function (ind) {
                 $(this).addClass('repeat');
+                //var div = $('<div></div>').appendTo($(this));
+                //div.addClass('repeat');
             });
         },
         GetRandomInt: function (min, max) {
@@ -6210,8 +6398,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=progressiontable.js.map
 ///#source 1 1 /script/widgets/proofresultviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.proofresultviewer", {
         options: {
@@ -6302,6 +6492,9 @@ var BMA;
         _create: function () {
             var that = this;
             var options = this.options;
+            //$('<span>Proof Analysis</span>')
+            //    .addClass('window-title')
+            //    .appendTo(that.element);
             this.resultDiv = $('<div></div>').addClass("proof-state").appendTo(that.element);
             this.proofmessage = $('<p></p>').appendTo(that.element);
             $('<br></br>').appendTo(that.element);
@@ -6334,8 +6527,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=proofresultviewer.js.map
 ///#source 1 1 /script/widgets/furthertestingviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.furthertesting", {
         options: {
@@ -6442,11 +6637,14 @@ var BMA;
                     break;
             }
             this._super(key, value);
+            //this.refresh();
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=furthertestingviewer.js.map
 ///#source 1 1 /script/widgets/localstoragewidget.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.localstoragewidget", {
         options: {
@@ -6498,7 +6696,8 @@ var BMA;
             this.ol = $('<ol></ol>').appendTo(this.repo);
             for (var i = 0; i < items.length; i++) {
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
-                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);
+                //var a = $('<a></a>').addClass('delete').appendTo(li);
+                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li); // $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
                     event.stopPropagation();
                     window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
@@ -6529,8 +6728,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=localstoragewidget.js.map
 ///#source 1 1 /script/widgets/resultswindowviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.resultswindowviewer", {
         options: {
@@ -6575,6 +6776,7 @@ var BMA;
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
             this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
+            //this.icon = $('<div></div>').appendTo(this.header);
             this.content = $('<div></div>').appendTo(this.element);
             this.reseticon();
             this.refresh();
@@ -6609,11 +6811,14 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=resultswindowviewer.js.map
 ///#source 1 1 /script/widgets/simulationplot.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.simulationplot", {
         options: {
+            //data: undefined,
             colors: undefined,
         },
         _create: function () {
@@ -6621,6 +6826,14 @@ var BMA;
             this.refresh();
             this.element.addClass('simulation-plot-box');
         },
+        //changeVisibility: function (param) {
+        //    var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
+        //    polyline.isVisible = param.check;
+        //    var legenditem = this.element.find(".simulationplot-legend-legendcontainer");//[data-index=" + param.ind + "]");//.attr("data-index", i)
+        //    //if (param.check) legenditem.hide();
+        //    //else legenditem.show();
+        //    alert(legenditem.length);
+        //},
         refresh: function () {
             var that = this;
             var options = this.options;
@@ -6702,8 +6915,8 @@ var BMA;
                 var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
                 var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
-                bounds.bounds.height += 0.04;
-                bounds.bounds.y -= 0.02;
+                bounds.bounds.height += 0.04; // padding
+                bounds.bounds.y -= 0.02; // padding
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);
                 var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
@@ -6731,7 +6944,7 @@ var BMA;
             var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
-            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]");
+            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]"); //.attr("data-index", i)
             if (check)
                 legenditem.show();
             else
@@ -6754,8 +6967,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=simulationplot.js.map
 ///#source 1 1 /script/widgets/simulationexpanded.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.simulationexpanded", {
         options: {
@@ -6836,6 +7051,9 @@ var BMA;
                     for (var i = 1; i < 4; i++) {
                         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
                     }
+                    //                < div class="bounce1" > </div>
+                    //< div class="bounce2" > </div>
+                    //< div class="bounce3" > </div>
                     this.RunButton.unbind("click");
                     break;
             }
@@ -6870,6 +7088,7 @@ var BMA;
             switch (key) {
                 case "data":
                     this.options.data = value;
+                    //if (value !== null && value !== undefined)
                     if (options.interval !== undefined && options.interval.length !== 0) {
                         this.big_table.progressiontable({ interval: options.interval, data: options.data });
                     }
@@ -6904,8 +7123,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=simulationexpanded.js.map
 ///#source 1 1 /script/widgets/simulationviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.simulationviewer", {
         options: {
@@ -6941,7 +7162,7 @@ var BMA;
                 that.variables.resultswindowviewer("destroy");
             }
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
-                that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot });
+                that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot }); //.height(160)
                 that.plotDiv.resultswindowviewer({
                     header: "Simulation Graph",
                     content: that.plot,
@@ -7006,8 +7227,10 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=simulationviewer.js.map
 ///#source 1 1 /script/widgets/userdialog.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.userdialog", {
         options: {
@@ -7081,11 +7304,15 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=userdialog.js.map
 ///#source 1 1 /script/widgets/variablesOptionsEditor.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\functionsregistry.ts"/>
 (function ($) {
     $.widget("BMA.bmaeditor", {
         options: {
+            //variable: BMA.Model.Variable
             name: "name",
             rangeFrom: 0,
             rangeTo: 0,
@@ -7141,7 +7368,7 @@ var BMA;
             var obj = jq[0];
             obj.focus();
             if (obj.selectionStart)
-                return obj.selectionStart;
+                return obj.selectionStart; //Gecko
             else if (document.selection) {
                 var sel = document.selection.createRange();
                 var clone = sel.duplicate();
@@ -7211,6 +7438,7 @@ var BMA;
             var inputsDiv = $('<div></div>').addClass('functions').appendTo(that.element);
             $('<div></div>').addClass("window-title").text("Inputs").appendTo(inputsDiv);
             var inpUl = $('<ul></ul>').appendTo(inputsDiv);
+            //var div = $('<div></div>').appendTo(that.element);
             var operatorsDiv = $('<div></div>').addClass('operators').appendTo(that.element);
             $('<div></div>').addClass("window-title").text("Operators").appendTo(operatorsDiv);
             var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
@@ -7374,6 +7602,8 @@ var BMA;
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
+            //window.Commands.Execute("VariableEdited", {})
+            //this.resetElement();
         },
         destroy: function () {
             $.Widget.prototype.destroy.call(this);
@@ -7384,12 +7614,14 @@ jQuery.fn.extend({
     insertAtCaret: function (myValue) {
         return this.each(function (i) {
             if (document.selection) {
+                // Для браузеров типа Internet Explorer
                 this.focus();
                 var sel = document.selection.createRange();
                 sel.text = myValue;
                 this.focus();
             }
             else if (this.selectionStart || this.selectionStart == '0') {
+                // Для браузеров типа Firefox и других Webkit-ов
                 var startPos = this.selectionStart;
                 var endPos = this.selectionEnd;
                 var scrollTop = this.scrollTop;
@@ -7406,8 +7638,10 @@ jQuery.fn.extend({
         });
     }
 });
-
+//# sourceMappingURL=variablesOptionsEditor.js.map
 ///#source 1 1 /script/widgets/visibilitysettings.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.visibilitysettings", {
         _getList: function () {
@@ -7535,4 +7769,4 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=visibilitysettings.js.map
