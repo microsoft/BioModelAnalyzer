@@ -13,9 +13,11 @@
             private expandedSimulationPlot: JQuery;
             private currentModel: BMA.Model.BioModel;
             private logService: ISessionLog;
+            private simulationAccordeon: JQuery;
 
             constructor(
                 appModel: BMA.Model.AppModel,
+                simulationAccordeon: JQuery,
                 simulationExpanded: BMA.UIDrivers.ISimulationExpanded,
                 simulationViewer: BMA.UIDrivers.ISimulationViewer,
                 popupViewer: BMA.UIDrivers.IPopup,
@@ -29,6 +31,7 @@
                 this.logService = logService;
                 this.ajax = ajax;
                 this.colors = [];
+                this.simulationAccordeon = simulationAccordeon;
                 var that = this;
 
 
@@ -57,6 +60,7 @@
 
                 window.Commands.On("SimulationRequested", function (args) {
                     if (that.CurrentModelChanged()) {
+                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
                         that.initValues = [];
                         that.results = [];
                         that.expandedSimulationVariables = undefined;
@@ -65,10 +69,23 @@
                         that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
+
+                        if (that.appModel.BioModel.Variables.length !== 0) {
+                            var vars = that.appModel.BioModel.Variables.sort((x, y) => {
+                                return x.Id < y.Id ? -1 : 1;
+                            });
+                            var initialValues = [];
+                            for (var ind = 0; ind < vars.length; ind++) {
+                                initialValues.push(vars[ind].RangeFrom);
+                            }
+                            that.initValues = initialValues;
+                            that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
+                            window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+                        }
                     }
                 });
 
-                window.Commands.On("Expand", (param) => {
+                window.Commands.On("Expand",(param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full: JQuery = undefined;
                         var variables = this.appModel.BioModel.Variables.sort((x, y) => {
@@ -97,7 +114,7 @@
                     }
                 });
 
-                window.Commands.On("Collapse", (param) => {
+                window.Commands.On("Collapse",(param) => {
                     simulationViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
@@ -141,6 +158,7 @@
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
+                    that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     return;
                 }
                 var simulate = {
@@ -152,25 +170,25 @@
 
                     var result = that.ajax.Invoke(simulate)
                         .done(function (res) {
-                            if (res.Variables !== null) {
-                                that.results.push(res);
-                                that.expandedViewer.AddResult(res);
-                                var d = that.ConvertResult(res);
-                                that.AddData(d);
-                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
-                            }
-                            else {
-                                that.expandedViewer.ActiveMode();
-                                alert ("Simulation Error: " + res.ErrorMessages);
-                            }
-                        })
-                        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                            this.logService.LogSimulationError();
-                            console.log(textStatus);
+                        if (res.Variables !== null) {
+                            that.results.push(res);
+                            that.expandedViewer.AddResult(res);
+                            var d = that.ConvertResult(res);
+                            that.AddData(d);
+                            that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                        }
+                        else {
                             that.expandedViewer.ActiveMode();
-                            alert("Simulate error: " + errorThrown);
-                            return;
-                        });
+                            alert("Simulation Error: " + res.ErrorMessages);
+                        }
+                    })
+                        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                        this.logService.LogSimulationError();
+                        console.log(textStatus);
+                        that.expandedViewer.ActiveMode();
+                        alert("Simulate error: " + errorThrown);
+                        return;
+                    });
                 else return;
             }
 
@@ -261,7 +279,7 @@
                 return "rgb(" + r + ", " + g + ", " + b + ")";
             }
 
-            public GetRandomInt (min, max) {
+            public GetRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
             }
 
@@ -273,7 +291,7 @@
                     table[i][0] = false;
                     var l = this.results.length;
                     for (var j = 1; j < l; j++) {
-                        table[i][j] = this.results[j].Variables[i].Value !== this.results[j-1].Variables[i].Value;
+                        table[i][j] = this.results[j].Variables[i].Value !== this.results[j - 1].Variables[i].Value;
                     }
                 }
                 return table;

@@ -4186,7 +4186,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var SimulationPresenter = (function () {
-            function SimulationPresenter(appModel, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService) {
+            function SimulationPresenter(appModel, simulationAccordeon, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService) {
                 var _this = this;
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
@@ -4194,6 +4194,7 @@ var BMA;
                 this.logService = logService;
                 this.ajax = ajax;
                 this.colors = [];
+                this.simulationAccordeon = simulationAccordeon;
                 var that = this;
                 window.Commands.On("ChangePlotVariables", function (param) {
                     that.colors[param.ind].Seen = param.check;
@@ -4217,6 +4218,7 @@ var BMA;
                 });
                 window.Commands.On("SimulationRequested", function (args) {
                     if (that.CurrentModelChanged()) {
+                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
                         that.initValues = [];
                         that.results = [];
                         that.expandedSimulationVariables = undefined;
@@ -4225,6 +4227,18 @@ var BMA;
                         that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
+                        if (that.appModel.BioModel.Variables.length !== 0) {
+                            var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
+                                return x.Id < y.Id ? -1 : 1;
+                            });
+                            var initialValues = [];
+                            for (var ind = 0; ind < vars.length; ind++) {
+                                initialValues.push(vars[ind].RangeFrom);
+                            }
+                            that.initValues = initialValues;
+                            that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
+                            window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+                        }
                     }
                 });
                 window.Commands.On("Expand", function (param) {
@@ -4294,6 +4308,7 @@ var BMA;
                     that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
+                    that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     return;
                 }
                 var simulate = {
