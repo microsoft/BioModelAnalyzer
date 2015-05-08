@@ -12,6 +12,17 @@
             var that = this;
             var data = this.options.data;
             
+            if (that.options.error !== undefined) {
+                that.errorDiv.empty();
+                that.errorDiv.show();
+                var errTitle = $('<div></div>').addClass('proof-state').appendTo(that.errorDiv);
+                $('<img src="../../images/failed.svg">').appendTo(errTitle);
+                $('<div></div>').addClass('stabilize-failed').text(that.options.error.title).appendTo(errTitle);
+                $('<div></div>').text(that.options.error.message).appendTo(that.errorDiv);
+            } else {
+                that.errorDiv.hide();
+            }
+
             var container = $('<div></div>').addClass("marginable");
             
             if (data !== undefined &&
@@ -68,6 +79,10 @@
 
         _create: function () {
             var that = this;
+
+            this.errorDiv = $('<div></div>')
+                .appendTo(that.element);
+
             this.variables = $('<div></div>')
                 .addClass('simulation-variables')
                 .appendTo(that.element)

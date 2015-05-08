@@ -30,6 +30,11 @@
                     $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
                     $('<div></div>').addClass('stabilize-failed').text('Service Error').appendTo(this.resultDiv);
                     break;
+
+                default:
+                    $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-failed').text(options.issucceeded).appendTo(this.resultDiv);
+                    break;
             }
         },
 
@@ -47,9 +52,9 @@
                 var variables = $("<div></div>")
                     .addClass("scrollable-results")
                     .coloredtableviewer({
-                        header: ["Name", "Formula", "Range"],
-                        numericData: options.data.numericData,
-                        colorData: options.data.colorVariables
+                    header: ["Name", "Formula", "Range"],
+                    numericData: options.data.numericData,
+                    colorData: options.data.colorVariables
                 });
                 this.compactvariables.resultswindowviewer({
                     header: "Variables",
@@ -62,8 +67,8 @@
                     var proof = $("<div></div>")
                         .addClass("scrollable-results")
                         .coloredtableviewer({
-                            type: "color",
-                            colorData: options.data.colorData,
+                        type: "color",
+                        colorData: options.data.colorData,
                     });
                     this.proofPropagation.resultswindowviewer({
                         header: "Proof Propagation",

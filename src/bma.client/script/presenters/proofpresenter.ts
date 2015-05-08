@@ -1,6 +1,6 @@
 ﻿module BMA {
     export module Presenters {
-        export class ProofPresenter { 
+        export class ProofPresenter {
             private appModel: BMA.Model.AppModel;
             private viewer: BMA.UIDrivers.IProofResultViewer;
             private ajax: BMA.UIDrivers.IServiceDriver;
@@ -28,14 +28,14 @@
 
                 var that = this;
 
-                window.Commands.On("ProofByFurtherTesting", function (param: { issucceeded; message; fixPoint}) {
+                window.Commands.On("ProofByFurtherTesting", function (param: { issucceeded; message; fixPoint }) {
                     try {
                         param.fixPoint.forEach((val, ind) => {
                             var i = that.getIndById(that.stability.variablesStability, val.Id);
                             var id = that.stability.variablesStability[i].id;
                         })
-                     }
-                    catch (ex) { throw new EventException;};
+                    }
+                    catch (ex) { throw new EventException; };
 
                     param.fixPoint.forEach((val, ind) => {
                         var i = that.getIndById(that.stability.variablesStability, val.Id);
@@ -50,7 +50,7 @@
                     var variablesData = that.CreateTableView(that.stability.variablesStability);
                     that.expandedProofVariables = that.CreateExpandedProofVariables(variablesData);
                     that.AddPropagationColumn(that.stability.variablesStability);
-                   
+
 
                     proofResultViewer.SetData({
                         issucceeded: param.issucceeded,
@@ -59,83 +59,89 @@
                     });
 
                     window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
-                    
+
                 });
 
                 window.Commands.On("ProofStarting", function () {
-                    proofResultViewer.OnProofStarted();
                     try {
                         var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
+                    } catch (ex) {
+                        //that.messagebox.Show(ex);
+                        proofResultViewer.SetData({
+                            issucceeded: "Invalid Model",
+                            message: ex,
+                            data: undefined
+                        });
+                        return;
                     }
-                    catch (ex) {
-                        alert(ex);
-                    }
+
+                    proofResultViewer.OnProofStarted();
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
-                            //console.log("Proof Result Status: " + res.Status);
-                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
-                            
-                            if (res.Ticks !== null) {
-                                that.expandedProofPropagation = $('<div></div>');
-                                
-                                if (res.Status === "NotStabilizing")
-                                    window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
-                                else
-                                    window.Commands.Execute("ProofFailed", undefined);
-                                that.stability = that.Stability(res.Ticks);
-                                var variablesData = that.CreateTableView(that.stability.variablesStability);
-                                that.colorData = that.CreateColoredTable(res.Ticks);
+                        //console.log("Proof Result Status: " + res.Status);
+                        var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
 
-                                var deferredProofPropagation = function () {
-                                    var d = $.Deferred();
-                                    var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);//.addClass("proof-expanded");
-                                    d.resolve(full);
-                                    return d.promise();
-                                }
-                                $.when(deferredProofPropagation()).done(function (res) {
-                                    that.expandedProofPropagation = res;
-                                })
+                        if (res.Ticks !== null) {
+                            that.expandedProofPropagation = $('<div></div>');
 
-                                var deferredProofVariables = function () {
-                                    var d = $.Deferred();
-                                    var full = that.CreateExpandedProofVariables(variablesData);
-                                    d.resolve(full);
-                                    return d.promise();
-                                }
-                                $.when(deferredProofVariables()).done(function (res) {
-                                    that.expandedProofVariables = res;
-                                })
+                            if (res.Status === "NotStabilizing")
+                                window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
+                            else
+                                window.Commands.Execute("ProofFailed", undefined);
+                            that.stability = that.Stability(res.Ticks);
+                            var variablesData = that.CreateTableView(that.stability.variablesStability);
+                            that.colorData = that.CreateColoredTable(res.Ticks);
 
-                                window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
-                                proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
-                                proofResultViewer.ShowResult(appModel.ProofResult);
+                            var deferredProofPropagation = function () {
+                                var d = $.Deferred();
+                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);//.addClass("proof-expanded");
+                                d.resolve(full);
+                                return d.promise();
                             }
-                            else { 
-                                logService.LogProofError();
-                                if (res.Status == "Error") {
-                                    proofResultViewer.SetData({
-                                        issucceeded: undefined,
-                                        message: res.Error,
-                                        data: undefined
-                                    })
-                                }
-                                else
-                                    proofResultViewer.SetData({
-                                        issucceeded: res.Status === "Stabilizing",
-                                        message: that.CreateMessage(result.IsStable, result.Time),
-                                        data: undefined
-                                    })
-                                proofResultViewer.ShowResult(appModel.ProofResult);
+                            $.when(deferredProofPropagation()).done(function (res) {
+                                that.expandedProofPropagation = res;
+                            })
+
+                            var deferredProofVariables = function () {
+                                var d = $.Deferred();
+                                var full = that.CreateExpandedProofVariables(variablesData);
+                                d.resolve(full);
+                                return d.promise();
                             }
-                            that.Snapshot();
-                        })
+                            $.when(deferredProofVariables()).done(function (res) {
+                                that.expandedProofVariables = res;
+                            })
+
+                            window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
+                            proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
+                            proofResultViewer.ShowResult(appModel.ProofResult);
+                        }
+                        else {
+                            logService.LogProofError();
+                            if (res.Status == "Error") {
+                                proofResultViewer.SetData({
+                                    issucceeded: undefined,
+                                    message: res.Error,
+                                    data: undefined
+                                })
+                            }
+                            else
+                                proofResultViewer.SetData({
+                                    issucceeded: res.Status === "Stabilizing",
+                                    message: that.CreateMessage(result.IsStable, result.Time),
+                                    data: undefined
+                                })
+                            proofResultViewer.ShowResult(appModel.ProofResult);
+                        }
+                        that.Snapshot();
+                    })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                            console.log("Proof Service Failed: " + errorThrown);
-                            that.messagebox.Show("Proof Service Failed: " + errorThrown);
-                            proofResultViewer.OnProofFailed();
-                        });
-                })
+                        console.log("Proof Service Failed: " + errorThrown);
+                        that.messagebox.Show("Proof Service Failed: " + errorThrown);
+                        proofResultViewer.OnProofFailed();
+                    });
+                });
 
 
                 window.Commands.On("ProofRequested", function (args) {
@@ -143,13 +149,13 @@
                         window.Commands.Execute("ProofStarting", {});
                     }
                     else {
-                        
+
                         proofResultViewer.ShowResult(appModel.ProofResult);
                         window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
                     }
                 });
 
-                window.Commands.On("Expand", (param) => {
+                window.Commands.On("Expand",(param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         switch (param) {
                             case "ProofPropagation":
@@ -161,7 +167,7 @@
                                 break;
                             case "ProofVariables":
 
-                                
+
                                 proofResultViewer.Hide({ tab: param });
                                 popupViewer.Show({ tab: param, content: that.expandedProofVariables });
                                 break;
@@ -172,7 +178,7 @@
                     }
                 });
 
-                window.Commands.On("Collapse", (param) => {
+                window.Commands.On("Collapse",(param) => {
                     proofResultViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
@@ -187,7 +193,7 @@
                     try {
                         return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
                     }
-                    catch(ex){
+                    catch (ex) {
                         console.log(ex);
                         return true;
                     }
@@ -226,8 +232,8 @@
                     var id = ij.Id;
                     stability[i] = { id: id, state: c, range: range };
                     var v = this.appModel.BioModel.GetVariableById(id);
-                    if (v.ContainerId !== undefined &&  (!c || containers[v.ContainerId] === undefined)) 
-                            containers[v.ContainerId] = c;
+                    if (v.ContainerId !== undefined && (!c || containers[v.ContainerId] === undefined))
+                        containers[v.ContainerId] = c;
                 }
 
                 for (var i = 0; i < allconts.length; i++) {
@@ -235,7 +241,7 @@
                         containers[allconts[i].Id] = true;
 
                 }
-                return {variablesStability: stability, containersStability: containers};
+                return { variablesStability: stability, containersStability: containers };
             }
 
             public getIndById(array, id) {
@@ -266,10 +272,10 @@
                         for (var j = 0; j < 3; j++)
                             color[i][j] = c;
                     }
-                    
+
                     table[i][2] = st.range;
                 }
-                return {numericData: table, colorData:color};
+                return { numericData: table, colorData: color };
             }
 
             public CreateColoredTable(ticks): any {
@@ -281,7 +287,7 @@
                 for (var i = 0; i < v; i++) {
                     color[i] = [];
                     for (var j = 0; j < t; j++) {
-                        var ij = ticks[t-j-1].Variables[v - 1 - i];
+                        var ij = ticks[t - j - 1].Variables[v - 1 - i];
                         color[i][j] = ij.Hi === ij.Lo;
                     }
                 }
@@ -333,8 +339,8 @@
                     table[j][0] = biomodel.GetVariableById(ticks[0].Variables[variables.length - 1 - j].Id).Name;
                     var v = ticks[0].Variables[variables.length - 1 - j];
                     color[j][0] = v.Lo === v.Hi;
-                    for (var i = 1; i < l+1; i++) {
-                        var ij = ticks[l-i].Variables[variables.length - 1 - j];
+                    for (var i = 1; i < l + 1; i++) {
+                        var ij = ticks[l - i].Variables[variables.length - 1 - j];
                         if (ij.Lo === ij.Hi) {
                             table[j][i] = ij.Lo;
                             color[j][i] = true;

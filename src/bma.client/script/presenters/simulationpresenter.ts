@@ -14,6 +14,7 @@
             private currentModel: BMA.Model.BioModel;
             private logService: ISessionLog;
             private simulationAccordeon: JQuery;
+            private messagebox: BMA.UIDrivers.IMessageServiсe;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -23,7 +24,8 @@
                 popupViewer: BMA.UIDrivers.IPopup,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 logService: BMA.ISessionLog,
-                exportService: BMA.UIDrivers.ExportService) {
+                exportService: BMA.UIDrivers.ExportService,
+                messagebox: BMA.UIDrivers.IMessageServiсe) {
 
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
@@ -32,6 +34,7 @@
                 this.ajax = ajax;
                 this.colors = [];
                 this.simulationAccordeon = simulationAccordeon;
+                this.messagebox = messagebox;
                 var that = this;
 
 
@@ -53,13 +56,22 @@
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
-                        alert(ex);
+                        that.messagebox.Show(ex);
                         that.expandedViewer.ActiveMode();
                     }
                 });
 
                 window.Commands.On("SimulationRequested", function (args) {
                     if (that.CurrentModelChanged()) {
+
+                        try {
+                            var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        }
+                        catch (ex) {
+                            that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: ex } });
+                            return;
+                        }
+
                         that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
                         that.initValues = [];
                         that.results = [];
@@ -68,7 +80,7 @@
                         that.ClearColors();
                         that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
-                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
+                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined, error: undefined });
 
                         if (that.appModel.BioModel.Variables.length !== 0) {
                             var vars = that.appModel.BioModel.Variables.sort((x, y) => {
@@ -155,7 +167,7 @@
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
                     that.dataForPlot = that.CreateDataForPlot(that.colors);
-                    that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
+                    that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot, error: undefined });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
                     that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });

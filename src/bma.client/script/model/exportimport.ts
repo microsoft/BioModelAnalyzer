@@ -50,11 +50,19 @@
                             // || r.FromVariableId == id && r.ToVariableId == v2.Id
                         });
                 });
-                //if (results.length > 1)
-                //    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
-                //else if (results.length == 0)
-                if (results.length == 0)
-                    throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
+                if (results.length == 0) {
+                    var varName = "unnamed";
+                    for (var ind = 0; ind < model.Variables.length; ind++) {
+                        var vi = model.Variables[ind];
+                        if (vi.Id === id) {
+                            varName = vi.Name;
+                            break;
+                        }
+                    }
+                    if (varName === "")
+                        varName = "''";
+                    throw new Error("Unknown variable " + name + " in formula for variable " + varName);
+                }
                 var res = [];
                 res = res.concat(results.map(x => x.Id.toString()));
                 return res;

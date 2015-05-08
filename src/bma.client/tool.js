@@ -2160,11 +2160,19 @@ var BMA;
                         // || r.FromVariableId == id && r.ToVariableId == v2.Id
                     });
                 });
-                //if (results.length > 1)
-                //    throw new Error("Ambiguous variable name " + name + " in formula for variable id = " + id);
-                //else if (results.length == 0)
-                if (results.length == 0)
-                    throw new Error("Unknown variable " + name + " in formula for variable id = " + id);
+                if (results.length == 0) {
+                    var varName = "unnamed";
+                    for (var ind = 0; ind < model.Variables.length; ind++) {
+                        var vi = model.Variables[ind];
+                        if (vi.Id === id) {
+                            varName = vi.Name;
+                            break;
+                        }
+                    }
+                    if (varName === "")
+                        varName = "''";
+                    throw new Error("Unknown variable " + name + " in formula for variable " + varName);
+                }
                 var res = [];
                 res = res.concat(results.map(function (x) { return x.Id.toString(); }));
                 return res;
@@ -3911,13 +3919,19 @@ var BMA;
                     window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
                 });
                 window.Commands.On("ProofStarting", function () {
-                    proofResultViewer.OnProofStarted();
                     try {
                         var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
                     }
                     catch (ex) {
-                        alert(ex);
+                        //that.messagebox.Show(ex);
+                        proofResultViewer.SetData({
+                            issucceeded: "Invalid Model",
+                            message: ex,
+                            data: undefined
+                        });
+                        return;
                     }
+                    proofResultViewer.OnProofStarted();
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput).done(function (res) {
                         //console.log("Proof Result Status: " + res.Status);
@@ -4186,7 +4200,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var SimulationPresenter = (function () {
-            function SimulationPresenter(appModel, simulationAccordeon, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService) {
+            function SimulationPresenter(appModel, simulationAccordeon, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService, messagebox) {
                 var _this = this;
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
@@ -4195,6 +4209,7 @@ var BMA;
                 this.ajax = ajax;
                 this.colors = [];
                 this.simulationAccordeon = simulationAccordeon;
+                this.messagebox = messagebox;
                 var that = this;
                 window.Commands.On("ChangePlotVariables", function (param) {
                     that.colors[param.ind].Seen = param.check;
@@ -4212,12 +4227,19 @@ var BMA;
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
-                        alert(ex);
+                        that.messagebox.Show(ex);
                         that.expandedViewer.ActiveMode();
                     }
                 });
                 window.Commands.On("SimulationRequested", function (args) {
                     if (that.CurrentModelChanged()) {
+                        try {
+                            var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        }
+                        catch (ex) {
+                            that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: ex } });
+                            return;
+                        }
                         that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
                         that.initValues = [];
                         that.results = [];
@@ -4226,7 +4248,7 @@ var BMA;
                         that.ClearColors();
                         that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
-                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined });
+                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined, error: undefined });
                         if (that.appModel.BioModel.Variables.length !== 0) {
                             var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
                                 return x.Id < y.Id ? -1 : 1;
@@ -4305,7 +4327,7 @@ var BMA;
                     var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
                     that.dataForPlot = that.CreateDataForPlot(that.colors);
-                    that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot });
+                    that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot, error: undefined });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
                     that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
@@ -6442,6 +6464,10 @@ var BMA;
                     $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
                     $('<div></div>').addClass('stabilize-failed').text('Service Error').appendTo(this.resultDiv);
                     break;
+                default:
+                    $('<img src="../../images/failed.svg">').appendTo(this.resultDiv);
+                    $('<div></div>').addClass('stabilize-failed').text(options.issucceeded).appendTo(this.resultDiv);
+                    break;
             }
         },
         refreshMessage: function () {
@@ -7160,6 +7186,17 @@ var BMA;
         refresh: function () {
             var that = this;
             var data = this.options.data;
+            if (that.options.error !== undefined) {
+                that.errorDiv.empty();
+                that.errorDiv.show();
+                var errTitle = $('<div></div>').addClass('proof-state').appendTo(that.errorDiv);
+                $('<img src="../../images/failed.svg">').appendTo(errTitle);
+                $('<div></div>').addClass('stabilize-failed').text(that.options.error.title).appendTo(errTitle);
+                $('<div></div>').text(that.options.error.message).appendTo(that.errorDiv);
+            }
+            else {
+                that.errorDiv.hide();
+            }
             var container = $('<div></div>').addClass("marginable");
             if (data !== undefined && data.variables !== undefined && data.variables.length !== 0) {
                 var variablestable = $('<div></div>').appendTo(container).addClass("scrollable-results");
@@ -7201,6 +7238,7 @@ var BMA;
         },
         _create: function () {
             var that = this;
+            this.errorDiv = $('<div></div>').appendTo(that.element);
             this.variables = $('<div></div>').addClass('simulation-variables').appendTo(that.element).resultswindowviewer();
             this.plotDiv = $('<div></div>').appendTo(that.element).resultswindowviewer();
             this.refresh();
