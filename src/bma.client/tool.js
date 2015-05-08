@@ -2171,7 +2171,7 @@ var BMA;
                     }
                     if (varName === "")
                         varName = "''";
-                    throw new Error("Unknown variable " + name + " in formula for variable " + varName);
+                    throw "Unknown variable " + name + " in formula for variable " + varName;
                 }
                 var res = [];
                 res = res.concat(results.map(function (x) { return x.Id.toString(); }));
@@ -4605,7 +4605,7 @@ var BMA;
                         checker.Snapshot(appModel);
                     }
                     catch (ex) {
-                        alert(ex);
+                        alert("Couldn't export model: " + ex);
                     }
                 });
             }
@@ -4945,7 +4945,7 @@ var BMA;
                         that.checker.Snapshot(that.appModel);
                     }
                     catch (ex) {
-                        alert(ex);
+                        alert("Couldn't save model: " + ex);
                     }
                 });
                 window.Commands.On("LocalStorageLoadModel", function (key) {

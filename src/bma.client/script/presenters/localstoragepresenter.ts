@@ -51,8 +51,8 @@
                         that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
                         that.checker.Snapshot(that.appModel);
                     }
-                    catch (ex){
-                        alert(ex);
+                    catch (ex) {
+                        alert("Couldn't save model: " + ex);
                     }
                 });
 

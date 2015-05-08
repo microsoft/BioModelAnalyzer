@@ -108,7 +108,9 @@
                         //var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
                         checker.Snapshot(appModel);
                     }
-                    catch (ex) { alert(ex); }
+                    catch (ex) {
+                        alert("Couldn't export model: " + ex);
+                    }
                 });
             }
         }

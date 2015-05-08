@@ -61,7 +61,7 @@
                     }
                     if (varName === "")
                         varName = "''";
-                    throw new Error("Unknown variable " + name + " in formula for variable " + varName);
+                    throw "Unknown variable " + name + " in formula for variable " + varName;
                 }
                 var res = [];
                 res = res.concat(results.map(x => x.Id.toString()));
