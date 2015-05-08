@@ -130,6 +130,18 @@
                 bounds.bounds.y -= 0.02;      // padding
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
 
+                that._chart.centralPart.mousedown(function (e) {
+                    e.stopPropagation();
+                });
+
+                bottomAxis.mousedown(function (e) {
+                    e.stopPropagation();
+                });
+
+                leftAxis.mousedown(function (e) {
+                    e.stopPropagation();
+                });
+
                 var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);
                 var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
                 var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
