@@ -35,7 +35,12 @@ namespace BMAWebApi
         string[] DebugMessages { get; }
     }
 
-    public class FailureAzureLogger
+    public interface IFailureLogger
+    {
+        void Add(DateTime dateTime, string backEndVersion, object request, ILogContents contents);
+    }
+
+    public class FailureAzureLogger : IFailureLogger
     {
         private CloudTableClient tableClient;
         private CloudTable failuresTable;

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using BMAWebApi;
+using Microsoft.Practices.Unity;
+using Microsoft.WindowsAzure.ServiceRuntime;
+using Microsoft.WindowsAzure.Storage;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +29,13 @@ namespace bma.client
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"                    
             );
+
+            var container = new UnityContainer();
+            FailureAzureLogger logger = new FailureAzureLogger(
+                CloudStorageAccount.Parse(
+                    RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+            container.RegisterInstance<IFailureLogger>(logger);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(container);
         }        
     }
 }

@@ -34,14 +34,22 @@ namespace bma.client.Controllers
 
     public class AnalyzeController : ApiController
     {
+        private readonly IFailureLogger faultLogger;
+
+        public AnalyzeController(IFailureLogger logger)
+        {
+            this.faultLogger = logger;
+        }
+
         // POST api/Analyze
         public AnalysisOutput Post([FromBody]AnalysisInput input)
         {
+            
             var log = new DefaultLogService();
 
-            FailureAzureLogger faultLogger = new FailureAzureLogger(
-                   CloudStorageAccount.Parse(
-                       RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+            //FailureAzureLogger faultLogger = new FailureAzureLogger(
+            //       CloudStorageAccount.Parse(
+            //           RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
 
             // Standard Proof
             try

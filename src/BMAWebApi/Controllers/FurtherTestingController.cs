@@ -37,6 +37,13 @@ namespace bma.client.Controllers
 
     public class FurtherTestingController : ApiController
     {
+        private readonly IFailureLogger logger;
+
+        public FurtherTestingController(IFailureLogger logger)
+        {
+            this.logger = logger;
+        }
+
         public FurtherTestingOutput Post([FromBody]FurtherTestingInput input)
         {
             var log = new DefaultLogService();
@@ -99,9 +106,9 @@ namespace bma.client.Controllers
             {
                 log.LogError(ex.ToString());
 
-                FailureAzureLogger logger = new FailureAzureLogger(
-                    CloudStorageAccount.Parse(
-                        RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+                //FailureAzureLogger logger = new FailureAzureLogger(
+                //    CloudStorageAccount.Parse(
+                //        RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
                 logger.Add(DateTime.Now, "2.0", input, log);
 
                 return new FurtherTestingOutput

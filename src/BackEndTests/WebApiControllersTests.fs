@@ -10,11 +10,22 @@ open System.Web.Http
 open System.IO
 open FSharp.Data.HttpRequestHeaders
 open FSharp.Data
+open BMAWebApi
+open Microsoft.Practices.Unity
+
+type TestFailureLogger() =
+    member val FailureCount = 0 with get,set
+
+    interface IFailureLogger with
+        member x.Add(_,_,_,_) =
+            x.FailureCount <- x.FailureCount + 1
 
 [<TestClass>]
 type WebApiControllersTests() = 
 
     static let mutable webApp : IDisposable = null
+
+    static let logger = TestFailureLogger()
 
     [<ClassInitialize>]
     static member TestClassInit(ctx : TestContext) =
@@ -23,11 +34,35 @@ type WebApiControllersTests() =
             let config = new HttpConfiguration();
             config.Routes.MapHttpRoute("default", "api/{controller}") |> ignore
             app.UseWebApi(config) |> ignore
+            let container = new UnityContainer()
+            container.RegisterInstance<IFailureLogger>(logger) |> ignore
+            config.DependencyResolver <- new UnityResolver(container)
+
         webApp <- Microsoft.Owin.Hosting.WebApp.Start("http://localhost:8088", Action<IAppBuilder>(configure))
 
     [<ClassCleanup>]
     static member TestClassCleanup() =
         webApp.Dispose()
+
+    [<TestMethod>]
+    [<DeploymentItem("BrokenModel.json")>]
+    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
+    member x.``Broken model generates failure log record`` () = 
+        async {
+            let jobj = JObject.Parse(System.IO.File.ReadAllText("BrokenModel.json", System.Text.Encoding.UTF8))
+            let model = jobj.["Model"] :?> JObject
+            model.Add("EnableLogging", JValue(false))
+
+            logger.FailureCount <- 0
+            let! responseString = 
+                 Http.AsyncRequestString("http://localhost:8088/api/Analyze", 
+                                         headers = [ ContentType HttpContentTypes.Json;
+                                                     Accept HttpContentTypes.Json ],
+                                         body = TextRequest (model.ToString()))
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.AnalysisOutput>(responseString); 
+            Assert.AreEqual(StatusType.Error, result.Status)
+            Assert.IsTrue(logger.FailureCount > 0)
+        } |> Async.RunSynchronously
 
     [<TestMethod>]
     [<DeploymentItem("ToyModelStable.json")>]

@@ -37,6 +37,13 @@ namespace bma.client.Controllers
 
     public class SimulateController : ApiController
     {
+        private readonly IFailureLogger logger;
+
+        public SimulateController(IFailureLogger logger)
+        {
+            this.logger = logger;
+        }
+
         // POST api/Analyze
         public SimulationOutput Post([FromBody]SimulationInput input)
         {           
@@ -79,9 +86,7 @@ namespace bma.client.Controllers
             catch (Exception ex)
             {
                 log.LogError(ex.Message);
-                FailureAzureLogger logger = new FailureAzureLogger(
-                    CloudStorageAccount.Parse(
-                        RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+
                 logger.Add(DateTime.Now, "2.0", input, log);
 
                 return new SimulationOutput
