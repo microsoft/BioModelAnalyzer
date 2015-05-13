@@ -110,6 +110,10 @@ a.website-link:hover {
   padding: 5px;
   display: inline-block;
 }
+.version-number {
+  font-size: 10px;
+  color: #aaaaaa;
+}
 button {
   margin: 0;
   font-family: 'Segoe-UI';
