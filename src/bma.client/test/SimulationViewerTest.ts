@@ -43,6 +43,7 @@
         expect(div.simulationviewer("option", "plot")).toEqual(plot);
     })
 
+    /*
     it("creates 2 resultswindowviewer widgets inside", () => {
         div.simulationviewer({ data: data, plot: plot });
         var r0: JQuery = div.children().eq(0);
@@ -69,12 +70,14 @@
         expect(c1.coloredtableviewer("option", "colorData")).toEqual(data.colorData);
         expect(c1.coloredtableviewer("option", "type")).toEqual("simulation-min");
     });
+    */
 
     it("creates simulationplot widget inside the 2nd resultswindowviewer", () => {
         div.simulationviewer({ data: data, plot: plot });
         var r1: JQuery = div.children().eq(1).resultswindowviewer("option", "content");
     });
 
+    /*
     it("creates only plot when data.variables is undefined", () => {
         data.variables = undefined;
         div.simulationviewer({ data: data, plot: plot });
@@ -111,4 +114,5 @@
         expect(r1.children().length).toEqual(0);
         expect(r1[0].outerHTML).toEqual("<div></div>");
     })
+    */
 }) 
