@@ -92,6 +92,10 @@ a.website-link {
 a.website-link:hover {
   text-decoration: underline;
 }
+.version-number {
+  font-size: 10px;
+  color: #aaaaaa;
+}
 .tooltip {
   font-size: 12px;
   background-color: #606060;
