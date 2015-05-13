@@ -23,7 +23,7 @@
              new BMA.Model.Variable(2, 0, BMA.Model.VariableTypes.Constant, "b", 0, 1, "var(a) + var(a)")],
             [new BMA.Model.Relationship(1, 1, 2, BMA.Model.RelationshipTypes.Activator) ]);
         var ebm = BMA.Model.ExportBioModel(bm);
-        expect(ebm.Variables.filter(v => v.Id == 3)[0].Formula).toBe("var(1) + var(1)");
+        expect(ebm.Variables.filter(v => v.Id == 2)[0].Formula).toBe("var(1) + var(1)");
     });
 
 
