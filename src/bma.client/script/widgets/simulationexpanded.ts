@@ -17,6 +17,12 @@
             var that = this;
             var options = that.options;
 
+            var randomise = $('<div></div>')
+                .addClass("randomise-button")
+                .appendTo(that.element);
+            var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
+            var randomLabel = $('<div></div>').text("Randomise").appendTo(randomise);
+
             var tables = $('<div></div>')
                 .addClass("scrollable-results")
                 .appendTo(this.element);
@@ -29,6 +35,11 @@
 
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
             this.big_table.progressiontable();
+
+            randomise.click(function () {
+                that.big_table.progressiontable("Randomise");
+            });
+
             if (options.variables !== undefined) {
                 this.small_table.coloredtableviewer({
                     header: ["Graph", "Name", "Range"],

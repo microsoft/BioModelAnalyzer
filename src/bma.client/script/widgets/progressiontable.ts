@@ -14,12 +14,6 @@
             var that = this;
             var options = that.options;
 
-            var randomise = $('<div></div>')
-                .addClass("randomise-button")
-                .appendTo(that.element.parent().parent());
-            
-            var randomIcon = $('<div></div>').addClass("bma-random-icon2").appendTo(randomise);
-            var randomLabel = $('<div></div>').text("Randomise").appendTo(randomise);
             that.element.addClass('simulation-progression-table-container');
             this.init = $('<div></div>')
                 .appendTo(that.element);
@@ -28,13 +22,12 @@
                 .addClass("bma-simulation-data-table")
                 .appendTo(that.element);
             this.InitData();
-            randomise.bind("click", function () {
-                var rands = that.init.find("tr").not(":first-child").children("td:nth-child(2)");
-                rands.click();
-            })
-
         },
 
+        Randomise: function () {
+            var rands = this.init.find("tr").not(":first-child").children("td:nth-child(2)");
+            rands.click();
+        },
 
         InitData: function () {
             this.ClearData();
