@@ -404,6 +404,21 @@ $(document).ready(function () {
         $("#zoomslider").bmazoomslider({ value: value });
     });
 
+    //window.Commands.On('ZoomConfigure',(value: { min; max }) => {
+    //    $("#zoomslider").bmazoomslider({ min: value.min, max: value.max });
+    //});
+
+    window.Commands.On('SetPlotSettings',(value) => {
+        
+        if (value.MaxWidth !== undefined) {
+            window.PlotSettings.MaxWidth = value.MaxWidth;
+            $("#zoomslider").bmazoomslider({ max: (value.MaxWidth - window.PlotSettings.MinWidth) / 24 });
+        }
+        if (value.MinWidth !== undefined) {
+            window.PlotSettings.MinWidth = value.MinWidth;
+        }
+    });
+
     window.Commands.On("AppModelChanged",() => {
         if (changesCheckerTool.IsChanged) {
             popupDriver.Hide();
