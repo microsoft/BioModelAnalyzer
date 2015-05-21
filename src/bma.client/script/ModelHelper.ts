@@ -184,8 +184,14 @@
                 }
             }
 
+
             if (cells.length === 0 && variables.length === 0) {
-                return undefined;
+                return {
+                    x: 0,
+                    y: 0,
+                    width: 5 * grid.xStep,
+                    height: 4 * grid.yStep
+                };
             } else {
                 return {
                     x: bottomLeftCell.x * grid.xStep + grid.xOrigin,

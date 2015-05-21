@@ -36,6 +36,7 @@
 
                     function load() {
                         window.Commands.Execute('SetPlotSettings', { MaxWidth: 3200, MinWidth: 800 });
+                        window.Commands.Execute('ModelFitToView', '');
                         appModel.Deserialize(undefined);
                         checker.Snapshot(appModel);
                         logService.LogNewModelCreated();
@@ -74,6 +75,7 @@
 
                     function load() {
                         window.Commands.Execute('SetPlotSettings', { MaxWidth: 3200, MinWidth: 800 });
+                        window.Commands.Execute('ModelFitToView', '');
                         fileLoaderDriver.OpenFileDialog().done(function (fileName) {
                             var fileReader: any = new FileReader();
                             fileReader.onload = function () {

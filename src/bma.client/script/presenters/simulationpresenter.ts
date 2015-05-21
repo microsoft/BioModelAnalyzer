@@ -82,18 +82,17 @@
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined, error: undefined });
 
-                        if (that.appModel.BioModel.Variables.length !== 0) {
-                            var vars = that.appModel.BioModel.Variables.sort((x, y) => {
-                                return x.Id < y.Id ? -1 : 1;
-                            });
-                            var initialValues = [];
-                            for (var ind = 0; ind < vars.length; ind++) {
-                                initialValues.push(vars[ind].RangeFrom);
-                            }
-                            that.initValues = initialValues;
-                            that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
-                            window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+                        var vars = that.appModel.BioModel.Variables.sort((x, y) => {
+                            return x.Id < y.Id ? -1 : 1;
+                        });
+                        var initialValues = [];
+                        for (var ind = 0; ind < vars.length; ind++) {
+                            initialValues.push(vars[ind].RangeFrom);
                         }
+                        that.initValues = initialValues;
+                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
+                        window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+                        
                     }
                 });
 

@@ -347,7 +347,7 @@ module BMA {
                 window.Commands.On("ModelFitToView",(args) => {
                     if (this.undoRedoPresenter.Current !== undefined) {
                         var bbox = BMA.ModelHelper.GetModelBoundingBox(this.undoRedoPresenter.Current.layout, { xOrigin: this.Grid.x0, yOrigin: this.Grid.y0, xStep: this.Grid.xStep, yStep: this.Grid.yStep });
-                        if (bbox.width > window.PlotSettings.MinWidth) {
+                        if (bbox.width > window.PlotSettings.MaxWidth) {
                             //window.PlotSettings.MaxWidth = bbox.width;
                             window.Commands.Execute('SetPlotSettings', { MaxWidth: bbox.width });
                         }
