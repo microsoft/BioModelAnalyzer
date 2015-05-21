@@ -2152,19 +2152,21 @@ body {
 			vertical-align: top;
 			left:-5px;
 			width:220px;
-			height:50px;
+			
 			display: inline-block;
 			
 
 			ul > li{
-				display: inline-block;
+				display: table-cell;
 				vertical-align: middle;
+                height:50px;
 			}
 
 			input{
 				border:none;
 				background-color: transparent;
 				.window-title;
+                padding-bottom: 0;
 				width:160px;
                 margin: 0 10px;
 				&:focus{
@@ -2174,7 +2176,6 @@ body {
 			}
 
 			.expand-btn{
-				display: inline-block;
 				width: 30px;
 				height: 50px;
 				border: none;
