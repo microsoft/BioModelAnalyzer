@@ -365,7 +365,7 @@ declare var Rx: any;
                                 width: value,
                                 height: newHeight
                             };
-                            console.log(newrect.y);
+                            //console.log(newrect.y);
                             that._plot.navigation.setVisibleRect(newrect, false);
                             that.options.zoom = value;
                         }

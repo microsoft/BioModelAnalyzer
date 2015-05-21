@@ -216,8 +216,8 @@ $(document).ready(function () {
             var left = event.pageX - $(".bma-drawingsurface").offset().left;
             var top = event.pageY - $(".bma-drawingsurface").offset().top;
 
-            console.log("top " + top);
-            console.log("left " + left);
+            //console.log("top " + top);
+            //console.log("left " + left);
 
             window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
                 left: left,
