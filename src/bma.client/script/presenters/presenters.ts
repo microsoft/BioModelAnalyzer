@@ -28,7 +28,7 @@ module BMA {
             private yOrigin = 0;
             private xStep = 250;
             private yStep = 280;
-
+            
             private variableIndex = 1;
 
             private stagingLine = undefined;
@@ -89,7 +89,32 @@ module BMA {
 
                 window.Commands.On("DrawingSurfaceClick",(args: { x: number; y: number; screenX: number; screenY: number }) => {
                     if (that.selectedType !== undefined) {
-                        that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
+                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
+                            var id = that.GetVariableAtPosition(args.x, args.y);
+                            if (id !== undefined) {
+                                if (this.stagingLine === undefined) {
+                                    this.stagingLine = {};
+                                    this.stagingLine.id = id;
+                                    this.stagingLine.x0 = args.x;
+                                    this.stagingLine.y0 = args.y;
+                                    return;
+                                }
+                                else {
+                                    this.stagingLine.x1 = args.x;
+                                    this.stagingLine.y1 = args.y;
+                                    that.TryAddStagingLineAsLink();
+                                    this.stagingLine = undefined;
+                                    that.RefreshOutput();
+                                    return;
+                                }
+                            }
+                            else {
+                                this.stagingLine = undefined;
+                            }
+                        }
+                        else {
+                            that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
+                        } 
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
@@ -405,7 +430,7 @@ module BMA {
                     (gesture) => {
 
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
-                            var id = this.GetVariableAtPosition(gesture.x, gesture.y);
+                            var id = that.GetVariableAtPosition(gesture.x, gesture.y);
                             if (id !== undefined) {
                                 this.stagingLine = {};
                                 this.stagingLine.id = id;
@@ -436,8 +461,8 @@ module BMA {
 
 
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
-                            that.stagingLine.x1 = gesture.x1;
-                            that.stagingLine.y1 = gesture.y1;
+                            this.stagingLine.x1 = gesture.x1;
+                            this.stagingLine.y1 = gesture.y1;
 
                             //Redraw only svg for better performance
                             if (that.svg !== undefined) {
@@ -464,10 +489,10 @@ module BMA {
                     (gesture) => {
                         that.driver.DrawLayer2(undefined);
 
-                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && this.stagingLine !== undefined) {
-                            this.TryAddStagingLineAsLink();
-                            this.stagingLine = undefined;
-                            this.RefreshOutput();
+                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined && that.stagingLine.x1 !== undefined) {
+                            that.TryAddStagingLineAsLink();
+                            that.stagingLine = undefined;
+                            that.RefreshOutput();
                         }
 
                         if (that.stagingVariable !== undefined) {
