@@ -5,7 +5,8 @@
     $.widget("BMA.simulationviewer", {
         options: {
             data: undefined, // data{variables: [][], colorData: [][]}
-            plot: undefined
+            plot: undefined,
+            error: undefined
         },
 
         refresh: function () {

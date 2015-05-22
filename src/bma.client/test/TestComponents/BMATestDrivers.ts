@@ -119,6 +119,20 @@ module BMA {
                 return deferred.promise();
             }
         }
+
+        export class NavigationTestDriver implements BMA.UIDrivers.INavigationPanel {
+            private ison = false;
+            private zoom = 1;
+            private center = { x: 0, y: 0 };
+
+            public get IsOn() { return this.ison; }
+            public get Zoom() { return this.zoom; }
+            public get Center() { return this.center; }
+
+            public TurnNavigation(isOn: boolean) { this.ison = isOn; }
+            public SetZoom(zoom: number) { this.zoom = zoom; }
+            public SetCenter(x: number, y: number) { this.center = { x: x, y: y };}
+        }
     }
 }
 
