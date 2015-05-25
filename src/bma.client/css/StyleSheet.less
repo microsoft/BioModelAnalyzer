@@ -1,6 +1,14 @@
 ﻿
 /* General Functions */ 
     
+#tapholdTest {
+    position:absolute;
+    width:100%;
+    height: 400px;
+    background-color:lightGoldenrodYellow;
+    top: 0;
+}
+
     ul, menu, dir {
         display: block;
         list-style-type: disc;
@@ -83,6 +91,8 @@ html {
 @general-font-color: @darkgrey;
 
 body {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none; 
     margin: 0;
     padding: 0;
     background-color: #E4E4E6;
@@ -637,12 +647,17 @@ body {
 .bma-footer {
 	height: @footer-height;
 	text-align: center;
+    &>* {
+        display: inline-block;
+    }
 }
 
 .bma-pagefooter-msrlogo {
 	position: absolute;
-	right: 10px;
-	height: @footer-height;
+    right: 10px;
+    //margin-right: 10px;
+	//right: 10px;
+	//height: @footer-height;
     //width: 200px;
     
 
@@ -663,17 +678,18 @@ body {
 }
 
 .bma-pagefooter-linkcontainer {
-	position: absolute;
-	bottom: 0;
+	//sition: absolute;
+	//bottom: 0;
 	background-color: white;
 	height: @footer-height - 10px;
 	line-height: 30px;
-    padding: 0 32px;
-    height: 30px;
+    padding: 0 30px;
+    margin-top: 10px;
+    //height: 30px;
  	//width: @width;
 
-	.calc(left, ~"50%" - @width / 2);
-	.box-shadow(@x:5px, @y:5px, @blur:10px, @color:@shadow);
+	//.calc(left, ~"50%" - @width / 2);
+	.box-shadow(@x:0, @y:0, @blur:10px, @color:@shadow);
 	.border-radius(10px 10px 0 0);
 
 	a {
@@ -838,11 +854,11 @@ body {
 
         ul>li { 
             display: block;
-            margin-bottom: 10px;
+            &:not(:last-child) { margin-bottom: 10px;
+                                    }
 
             &>*{
                 display: inline-block;
-                vertical-align: middle;
             }
         }
         ul.button-list>li {
@@ -2151,7 +2167,7 @@ body {
 			.gradient(@side:left,  @color1:@lightgrey,  @color2:white);
 			vertical-align: top;
 			left:-5px;
-			width:220px;
+			//width:220px;
 			
 			display: inline-block;
 			

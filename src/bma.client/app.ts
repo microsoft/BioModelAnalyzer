@@ -188,8 +188,22 @@ $(document).ready(function () {
         $("#modelNameEditor").val(appModel.BioModel.Name);
     });
 
+    var holdCords = {
+        holdX: 0,
+        holdY: 0
+    }
+
+    $(document).on('vmousedown', function (event) {
+        
+        holdCords.holdX = event.pageX;
+        holdCords.holdY = event.pageY;
+    });
+    
+    
+
     $("#drawingSurceContainer").contextmenu({
         delegate: ".bma-drawingsurface",
+        autoFocus: true,
         preventContextMenuForPopup: true,
         preventSelect: true,
         taphold: true,
@@ -213,9 +227,9 @@ $(document).ready(function () {
         beforeOpen: function (event, ui) {
             ui.menu.zIndex(50);
 
-            var left = event.pageX - $(".bma-drawingsurface").offset().left;
-            var top = event.pageY - $(".bma-drawingsurface").offset().top;
-
+            var left = holdCords.holdX - $(".bma-drawingsurface").offset().left;
+            var top = holdCords.holdY - $(".bma-drawingsurface").offset().top;
+            alert(holdCords.holdX);
             //console.log("top " + top);
             //console.log("left " + left);
 
@@ -246,7 +260,6 @@ $(document).ready(function () {
             window.Commands.Execute(commandName, args);
         }
     });
-
     var contextmenu = $('body').children('ul').filter('.ui-menu');
     contextmenu.addClass('command-list window canvas-contextual');
     contextmenu.children('li').children('ul').filter('.ui-menu').addClass('command-list');

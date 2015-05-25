@@ -282,6 +282,8 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
+    <Content Include="js\jquery.mobile-1.4.5.js" />
+    <Content Include="js\jquery.mobile-1.4.5.min.js" />
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.cookie.js" />
