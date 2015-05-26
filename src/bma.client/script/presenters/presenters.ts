@@ -122,7 +122,7 @@ module BMA {
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
-                            that.RefreshOutput();
+                            //that.RefreshOutput();
                         } else {
                             var cid = that.GetContainerAtPosition(args.x, args.y);
                             if (cid !== undefined) {
@@ -130,7 +130,7 @@ module BMA {
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(cid));
                                 that.containerEditor.Show(args.screenX, args.screenY);
                                 window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
-                                that.RefreshOutput();
+                                //that.RefreshOutput();
                             }
                         }
                     }
@@ -325,14 +325,14 @@ module BMA {
                         that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
-                        that.RefreshOutput();
+                        //that.RefreshOutput();
                     } else if (that.contextElement !== undefined && that.contextElement.type === "container") {
                         var id = that.contextElement.id;
                         that.editingId = id;
                         that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(id));
                         that.containerEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
-                        that.RefreshOutput();
+                        //that.RefreshOutput();
                     }
 
                     that.contextElement = undefined;

@@ -139,6 +139,14 @@ function popup_position() {
 }
 
 $(document).ready(function () {
+
+    var version_key = 'bma-version';
+    var version = {
+        'major': '1',
+        'minor': '2',
+        'build': '0013'
+    }
+
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
 
@@ -147,6 +155,7 @@ $(document).ready(function () {
 
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
+      
 
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
@@ -226,10 +235,10 @@ $(document).ready(function () {
         ],
         beforeOpen: function (event, ui) {
             ui.menu.zIndex(50);
-
-            var left = holdCords.holdX - $(".bma-drawingsurface").offset().left;
-            var top = holdCords.holdY - $(".bma-drawingsurface").offset().top;
-            alert(holdCords.holdX);
+            var x = holdCords.holdX || event.pageX;
+            var y = holdCords.holdX || event.pageY;
+            var left = x - $(".bma-drawingsurface").offset().left;
+            var top = y - $(".bma-drawingsurface").offset().top;
             //console.log("top " + top);
             //console.log("left " + left);
 
@@ -256,7 +265,6 @@ $(document).ready(function () {
 
             args.left = event.pageX - $(".bma-drawingsurface").offset().left;
             args.top = event.pageY - $(".bma-drawingsurface").offset().top;
-
             window.Commands.Execute(commandName, args);
         }
     });
@@ -491,6 +499,7 @@ $(document).ready(function () {
 
     //Loading model from URL
     var reserved_key = "InitialModel";
+    
     var params = getSearchParameters();
     if (params.Model !== undefined) {
 
@@ -538,10 +547,22 @@ $(document).ready(function () {
         popup_position();
         resize_header_tools();
     });
-
-
+    
+    var lastversion = window.localStorage.getItem(version_key);
+    if (lastversion !== JSON.stringify(version)) {
+        var userDialog = $('<div></div>').appendTo('body').userdialog({
+            message: "Warning! Loaded new version",
+            actions: [
+                {
+                    button: 'Ok',
+                    callback: function () { userDialog.detach(); }
+                }
+            ]
+        });
+    }
 
     window.onunload = function () {
+        window.localStorage.setItem(version_key, JSON.stringify(version));
         window.localStorage.setItem(reserved_key, appModel.Serialize());
         var log = logService.CloseSession();
         var data = JSON.stringify({

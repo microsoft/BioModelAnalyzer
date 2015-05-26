@@ -61,17 +61,24 @@
                         if (that.checker.IsChanged(that.appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
                                 message: "Do you want to save changes?",
-                                functions: [
-                                    function () {
-                                        userDialog.detach();
-                                        window.Commands.Execute("LocalStorageSaveModel", {});
+                                actions: [
+                                    {
+                                        button: 'Yes',
+                                        callback: function () {
+                                            userDialog.detach();
+                                            window.Commands.Execute("LocalStorageSaveModel", {});
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
-                                        load();
+                                    {
+                                        button: 'No',
+                                        callback: function () {
+                                            userDialog.detach();
+                                            load();
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
+                                    {
+                                        button: 'Cancel',
+                                        callback: function () { userDialog.detach(); }
                                     }
                                 ]
                             });

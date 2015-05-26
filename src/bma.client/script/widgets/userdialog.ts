@@ -5,7 +5,11 @@
     $.widget("BMA.userdialog", {
         options: {
             message: '',
-            functions: []
+            actions: [
+                { button: 'Yes', callback: function () { } },
+                { button: 'No', callback: function () { } },
+                { button: 'Cancel', callback: function () { } }
+            ]
         },
 
         _create: function () {
@@ -20,10 +24,17 @@
             this.buttons = $('<div><div>')
                 .addClass("button-list")
                 .appendTo(that.element);
-            var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
-            var noBtn = $('<button></button>').text('No').appendTo(this.buttons);
-            var cancelBtn = $('<button></button>').text('Cancel').appendTo(this.buttons);
-            this._bind_functions();
+            var actions = this.options.actions;
+            if (actions !== undefined) {
+                for (var i = 0; i < actions.length; i++) {
+                    var bttn = $('<button></button>').text(actions[i].button).appendTo(that.buttons);
+                    bttn.bind('click', actions[i].callback);
+                }
+            }
+            //var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
+            //var noBtn = $('<button></button>').text('No').appendTo(this.buttons);
+            //var cancelBtn = $('<button></button>').text('Cancel').appendTo(this.buttons);
+            //this._bind_functions();
             this._popup_position();
         },
 
@@ -61,14 +72,14 @@
             })
         },
 
-        _bind_functions: function () {
-            var functions = this.options.functions;
-            var btns = this.buttons.children("button");
-            if (functions !== null && functions.length ===3) {
-                for (var i = 0; i < 3; i++)
-                    btns.eq(i).bind("click", functions[i]);
-            }
-        },
+        //_bind_functions: function () {
+        //    var functions = this.options.functions;
+        //    var btns = this.buttons.children("button");
+        //    if (functions !== undefined) {
+        //        for (var i = 0; i < functions.length; i++)
+        //            btns.eq(i).bind("click", functions[i]);
+        //    }
+        //},
 
 
         Show: function () {
