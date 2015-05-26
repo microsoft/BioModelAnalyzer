@@ -494,6 +494,19 @@ let find_cycle_steps network diameter bounds =
 
 
 // Finds a cycle and returns it. I f no cycle is found returns None
+// 
+// The search for cycles proceeds as follows:
+// For increasing lengths, make sure that there is a path of this length
+// If not, the search for a cycle failed.
+// If a path of a certain length is possible then search for a cycle
+// of the same length where a cycle is characterized by the last state
+// on the path being equivalent to one of the states in the first half of the
+// path.
+// If no cycle is found try again with a path twice the length.
+// 
+// Postcondition:
+// The returned cycle has the last state and one of the states in the first
+// half of the path the same!
 let find_cycle_steps_optimized network bounds = 
     let mutable cycle = None
     let rec find_cycle_of_length length (ctx : Context) =      
