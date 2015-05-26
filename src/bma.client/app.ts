@@ -1,4 +1,4 @@
-﻿/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="script\model\biomodel.ts"/>
 /// <reference path="script\model\model.ts"/>
@@ -139,7 +139,7 @@ function popup_position() {
 }
 
 $(document).ready(function () {
-    var win_height = $('body').outerHeight();
+    var win_height = window.outerHeight;
     $('.page-loading').height(win_height).appendTo('body');
     //$('.page-loading').css('line-height', win_height + 'px');
     var snipper = $('<div class="spinner"></div>').appendTo($('.page-loading'));
@@ -157,7 +157,7 @@ $(document).ready(function () {
     deferredLoad().done(function () {
         $('.page-loading').detach();
     }).fail(function () {
-        alert('fail!');
+        alert("Loading page failed, we're sorry" );
     });
 
     $(document).ready(function () {
