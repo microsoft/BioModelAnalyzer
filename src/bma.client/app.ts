@@ -139,7 +139,37 @@ function popup_position() {
 }
 
 $(document).ready(function () {
+    var win_height = $('body').outerHeight();
+    $('.page-loading').height(win_height).appendTo('body');
+    //$('.page-loading').css('line-height', win_height + 'px');
+    var snipper = $('<div class="spinner"></div>').appendTo($('.page-loading'));
+    for (var i = 1; i < 4; i++) {
+        $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+    }
+    //setTimeout( delay, 3000);
+    var deferredLoad = function (): JQueryPromise<{}> {
+        var dfd;
+        dfd = $.Deferred();
+        loadScript();
+        dfd.resolve();
+        return dfd.promise();
+    };
+    deferredLoad().done(function () {
+        $('.page-loading').detach();
+    }).fail(function () {
+        alert('fail!');
+    });
 
+    $(document).ready(function () {
+        popup_position();
+    });
+    $(window).resize(function () {
+        popup_position();
+        //resize_header_tools();
+    });
+});
+
+function loadScript() {
     var version_key = 'bma-version';
     var version = {
         'major': '1',
@@ -203,12 +233,12 @@ $(document).ready(function () {
     }
 
     $(document).on('vmousedown', function (event) {
-        
+
         holdCords.holdX = event.pageX;
         holdCords.holdY = event.pageY;
     });
-    
-    
+
+
 
     $("#drawingSurceContainer").contextmenu({
         delegate: ".bma-drawingsurface",
@@ -430,7 +460,7 @@ $(document).ready(function () {
     //});
 
     window.Commands.On('SetPlotSettings',(value) => {
-        
+
         if (value.MaxWidth !== undefined) {
             window.PlotSettings.MaxWidth = value.MaxWidth;
             $("#zoomslider").bmazoomslider({ max: (value.MaxWidth - window.PlotSettings.MinWidth) / 24 });
@@ -499,7 +529,7 @@ $(document).ready(function () {
 
     //Loading model from URL
     var reserved_key = "InitialModel";
-    
+
     var params = getSearchParameters();
     if (params.Model !== undefined) {
 
@@ -539,19 +569,11 @@ $(document).ready(function () {
         });
     }
 
-
-    $(document).ready(function () {
-        popup_position();
-    });
-    $(window).resize(function () {
-        popup_position();
-        resize_header_tools();
-    });
     
     var lastversion = window.localStorage.getItem(version_key);
     if (lastversion !== JSON.stringify(version)) {
         var userDialog = $('<div></div>').appendTo('body').userdialog({
-            message: "Warning! Loaded new version",
+            message: "You're ",
             actions: [
                 {
                     button: 'Ok',
@@ -594,56 +616,5 @@ $(document).ready(function () {
         }
     };
 
-
     $("label[for='button-pointer']").click();
-    
-    //window.onerror = function (msg, url, l) {
-
-    //    var win = $('<div></div>').addClass('popup-window window report-bug').appendTo('body');
-    //    win.draggable({ containment: parent, scroll: false });
-    //    popup_position();
-    //    var closediv = $('<div></div>').addClass('close-icon').appendTo(win);
-    //    var closing = $('<img src="/images/close.png">').appendTo(closediv);
-    //    closing.bind("click", function () {
-    //        win.detach();
-    //    });
-
-    //    var div = $('<div></div>').addClass('window-title').text('Please describe the problem').appendTo(win);
-    //    var inline1 = $('<div></div>').addClass('inline').appendTo(win);
-    //    var textarea = $('<textarea></textarea>').appendTo(inline1);
-    //    var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
-    //    btn.bind('click', function () {
-    //        var model = appModel.Serialize();
-    //        var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
-    //        txt += '&_msg=' + msg;
-    //        txt += '&URL=' + url;
-    //        txt += '&Line=' + l;
-    //        txt += '&Platform=' + navigator.platform;
-    //        txt += '&UserAgent=' + navigator.userAgent;
-    //        txt += '&UserSay=' + textarea.val();
-    //        //txt += '&Model=' + JSON.stringify(j.Model); 
-    //        //txt += '&Layout=' + JSON.stringify(j.Layout); 
-    //        //alert(txt);
-    //        //var i = document.createElement('img');
-    //        //i.setAttribute('src',(('https:' == document.location.protocol) ?
-    //        //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
-    //        //document.body.appendChild(i);
-         
-    //        var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
-
-    //        $.ajax({
-    //            type: "POST",
-    //            url: url,
-    //            data: "&Model=" + model
-    //        }).always(function () {
-    //            inline1.detach();
-    //            btn.detach();
-    //            $('.report-bug').children('.window-title').eq(0).text('Thanks for your report!').appendTo(win);
-    //        });
-    //    });
-        
-        
-        
-    //}
-});
-
+}

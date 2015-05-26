@@ -1,13 +1,25 @@
 ﻿
 /* General Functions */ 
     
-#tapholdTest {
-    position:absolute;
-    width:100%;
-    height: 400px;
-    background-color:lightGoldenrodYellow;
-    top: 0;
-}
+    .page-loading {
+        position:absolute;
+        width:100%;
+        height: 100%;
+        background-color:@lightgrey;
+        top: 0;
+        font-size: 60px;
+        text-align: center;
+        display: table-cell;
+        vertical-align: middle;
+        .spinner {
+            display: inline-block;
+            div {
+                width: 8px;
+                height: 8px;
+                background-color: @darkgrey;
+            }
+        }
+    }
 
     ul, menu, dir {
         display: block;
