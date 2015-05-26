@@ -26,7 +26,15 @@ let get_qn_var_at_t_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]
     ((int parts.[0]),(int parts.[1]) : QN.var * int)
 
-//
+let enc_for_env_qn_id_string_at_t (id : string) time =
+    (id +  "^" + ((string)time))
+
+let enc_for_env_qn_id_at_t (id : QN.var) time =
+    enc_for_env_qn_id_string_at_t ((string) id) time
+
+let dec_from_env_qn_id_at_t (name : string) = 
+    let parts = name.Split[|'^'|]
+    ((parts.[0]),((int)parts.[1]))
 
 
 // Z.expr_to_z3 should be similar to Expr.eval_expr_int.
@@ -264,11 +272,72 @@ let fixpoint_to_env (fixpoint : Map<string, int>) =
         (fun newMap name value ->
             try 
                 let (id,t) = get_qn_var_at_t_from_z3_var name
-                Map.add ((string)id + "^" + (string)t) value newMap
+                Map.add (enc_for_env_qn_id_at_t id t) value newMap
             with
                 | exn -> newMap )
         Map.empty
         fixpoint
+
+// Assumption:
+// There is a state repeating twice in the map
+// If there is no such state then there is a problem
+let extract_cycle_from_model (env : Map<string, int>) =
+
+    let value_for_name_in_cyclepoint_is_not_equivalent_to_value_for_name_in_lastpoint cycletime lastpointmap =
+        (fun name value -> 
+            let (id,time) = dec_from_env_qn_id_at_t name
+            if (time <> cycletime) then false
+            else 
+                let value_in_lastpoint = 
+                    try 
+                        Map.find id lastpointmap
+                    with
+                        | exn -> value + 1
+                if (value_in_lastpoint <> value) then true
+                else false
+         )
+
+
+//    let mintime = Map.fold 
+//                        (fun oldmin name value ->
+//                            let (name, time) = dec_from_env_qn_id_at_t name
+//                            if (time < oldmin) then time
+//                            else oldmin
+//                        )
+//                        1000
+//                        env
+    let maxtime = Map.fold
+                        (fun oldmax name value -> 
+                            let (name, time) = dec_from_env_qn_id_at_t name
+                            if (time > oldmax) then time
+                            else oldmax
+                        )
+                        0
+                        env
+
+    let lastpoint = Map.fold
+                        (fun oldmap name value -> 
+                            let (id,time) = dec_from_env_qn_id_at_t name
+                            if (time = maxtime) then Map.add id value oldmap
+                            else oldmap 
+                        )
+                        Map.empty
+                        env
+    
+
+    let mutable cyclepoint = 0
+    while (Map.exists (value_for_name_in_cyclepoint_is_not_equivalent_to_value_for_name_in_lastpoint cyclepoint lastpoint) env) do
+        cyclepoint <- cyclepoint + 1
+
+    let cyclepointcopy = cyclepoint
+    Map.fold 
+        (fun oldmap name value ->
+            let (id, time) = dec_from_env_qn_id_at_t name
+            if (time < cyclepointcopy) then oldmap
+            else Map.add (enc_for_env_qn_id_string_at_t id (time - cyclepointcopy)) value oldmap
+        )
+        Map.empty
+        env
 
 ///////////////////////////////////////////////////////////////////////////////
 // fixpoint
@@ -425,6 +494,19 @@ let find_cycle_steps network diameter bounds =
 
 
 // Finds a cycle and returns it. I f no cycle is found returns None
+// 
+// The search for cycles proceeds as follows:
+// For increasing lengths, make sure that there is a path of this length
+// If not, the search for a cycle failed.
+// If a path of a certain length is possible then search for a cycle
+// of the same length where a cycle is characterized by the last state
+// on the path being equivalent to one of the states in the first half of the
+// path.
+// If no cycle is found try again with a path twice the length.
+// 
+// Postcondition:
+// The returned cycle has the last state and one of the states in the first
+// half of the path the same!
 let find_cycle_steps_optimized network bounds = 
     let mutable cycle = None
     let rec find_cycle_of_length length (ctx : Context) =      
@@ -472,7 +554,8 @@ let find_cycle_steps_optimized network bounds =
             | LBool.True -> 
                 // update cycle with the information from model
                 let env = fixpoint_to_env (model_to_fixpoint !model)
-                let res = Some(env)
+                let smallenv = extract_cycle_from_model env
+                let res = Some(smallenv)
                 if (!model) <> null then (!model).Dispose()
                 res
         | LBool.Undef -> None
