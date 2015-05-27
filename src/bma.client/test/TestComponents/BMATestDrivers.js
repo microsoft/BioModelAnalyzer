@@ -118,6 +118,45 @@ var BMA;
             return AjaxTestDriver;
         })();
         Test.AjaxTestDriver = AjaxTestDriver;
+        var NavigationTestDriver = (function () {
+            function NavigationTestDriver() {
+                this.ison = false;
+                this.zoom = 1;
+                this.center = { x: 0, y: 0 };
+            }
+            Object.defineProperty(NavigationTestDriver.prototype, "IsOn", {
+                get: function () {
+                    return this.ison;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NavigationTestDriver.prototype, "Zoom", {
+                get: function () {
+                    return this.zoom;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NavigationTestDriver.prototype, "Center", {
+                get: function () {
+                    return this.center;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            NavigationTestDriver.prototype.TurnNavigation = function (isOn) {
+                this.ison = isOn;
+            };
+            NavigationTestDriver.prototype.SetZoom = function (zoom) {
+                this.zoom = zoom;
+            };
+            NavigationTestDriver.prototype.SetCenter = function (x, y) {
+                this.center = { x: x, y: y };
+            };
+            return NavigationTestDriver;
+        })();
+        Test.NavigationTestDriver = NavigationTestDriver;
     })(Test = BMA.Test || (BMA.Test = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=BMATestDrivers.js.map

@@ -608,7 +608,12 @@ var BMA;
                 }
             }
             if (cells.length === 0 && variables.length === 0) {
-                return undefined;
+                return {
+                    x: 0,
+                    y: 0,
+                    width: 5 * grid.xStep,
+                    height: 4 * grid.yStep
+                };
             }
             else {
                 return {
@@ -2874,7 +2879,32 @@ var BMA;
                 });
                 window.Commands.On("DrawingSurfaceClick", function (args) {
                     if (that.selectedType !== undefined) {
-                        that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
+                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
+                            var id = that.GetVariableAtPosition(args.x, args.y);
+                            if (id !== undefined) {
+                                if (_this.stagingLine === undefined) {
+                                    _this.stagingLine = {};
+                                    _this.stagingLine.id = id;
+                                    _this.stagingLine.x0 = args.x;
+                                    _this.stagingLine.y0 = args.y;
+                                    return;
+                                }
+                                else {
+                                    _this.stagingLine.x1 = args.x;
+                                    _this.stagingLine.y1 = args.y;
+                                    that.TryAddStagingLineAsLink();
+                                    _this.stagingLine = undefined;
+                                    that.RefreshOutput();
+                                    return;
+                                }
+                            }
+                            else {
+                                _this.stagingLine = undefined;
+                            }
+                        }
+                        else {
+                            that.TryAddVariable(args.x, args.y, that.selectedType, undefined);
+                        }
                     }
                     else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
@@ -2883,7 +2913,6 @@ var BMA;
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
-                            that.RefreshOutput();
                         }
                         else {
                             var cid = that.GetContainerAtPosition(args.x, args.y);
@@ -2892,7 +2921,6 @@ var BMA;
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(cid));
                                 that.containerEditor.Show(args.screenX, args.screenY);
                                 window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
-                                that.RefreshOutput();
                             }
                         }
                     }
@@ -3065,7 +3093,6 @@ var BMA;
                         that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
-                        that.RefreshOutput();
                     }
                     else if (that.contextElement !== undefined && that.contextElement.type === "container") {
                         var id = that.contextElement.id;
@@ -3073,7 +3100,6 @@ var BMA;
                         that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(id));
                         that.containerEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
-                        that.RefreshOutput();
                     }
                     that.contextElement = undefined;
                 });
@@ -3106,6 +3132,10 @@ var BMA;
                 window.Commands.On("ModelFitToView", function (args) {
                     if (_this.undoRedoPresenter.Current !== undefined) {
                         var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
+                        if (bbox.width > window.PlotSettings.MaxWidth) {
+                            //window.PlotSettings.MaxWidth = bbox.width;
+                            window.Commands.Execute('SetPlotSettings', { MaxWidth: bbox.width });
+                        }
                         _this.driver.SetVisibleRect(bbox);
                     }
                 });
@@ -3149,7 +3179,7 @@ var BMA;
                 });
                 dragSubject.dragStart.subscribe(function (gesture) {
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
-                        var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
+                        var id = that.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
                             _this.stagingLine = {};
                             _this.stagingLine.id = id;
@@ -3179,8 +3209,8 @@ var BMA;
                 });
                 dragSubject.drag.subscribe(function (gesture) {
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
-                        that.stagingLine.x1 = gesture.x1;
-                        that.stagingLine.y1 = gesture.y1;
+                        _this.stagingLine.x1 = gesture.x1;
+                        _this.stagingLine.y1 = gesture.y1;
                         //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             that.driver.DrawLayer2(that.CreateStagingSvg());
@@ -3202,10 +3232,10 @@ var BMA;
                 });
                 dragSubject.dragEnd.subscribe(function (gesture) {
                     that.driver.DrawLayer2(undefined);
-                    if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && _this.stagingLine !== undefined) {
-                        _this.TryAddStagingLineAsLink();
-                        _this.stagingLine = undefined;
-                        _this.RefreshOutput();
+                    if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined && that.stagingLine.x1 !== undefined) {
+                        that.TryAddStagingLineAsLink();
+                        that.stagingLine = undefined;
+                        that.RefreshOutput();
                     }
                     if (that.stagingVariable !== undefined) {
                         var x = that.stagingVariable.layout.PositionX;
@@ -4249,18 +4279,16 @@ var BMA;
                         that.dataForPlot = that.CreateDataForPlot(that.colors);
                         var variables = that.CreateVariablesView();
                         that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined, error: undefined });
-                        if (that.appModel.BioModel.Variables.length !== 0) {
-                            var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
-                                return x.Id < y.Id ? -1 : 1;
-                            });
-                            var initialValues = [];
-                            for (var ind = 0; ind < vars.length; ind++) {
-                                initialValues.push(vars[ind].RangeFrom);
-                            }
-                            that.initValues = initialValues;
-                            that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
-                            window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+                        var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
+                            return x.Id < y.Id ? -1 : 1;
+                        });
+                        var initialValues = [];
+                        for (var ind = 0; ind < vars.length; ind++) {
+                            initialValues.push(vars[ind].RangeFrom);
                         }
+                        that.initValues = initialValues;
+                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
+                        window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
                     }
                 });
                 window.Commands.On("Expand", function (param) {
@@ -4516,16 +4544,25 @@ var BMA;
                         if (checker.IsChanged(appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
                                 message: "Do you want to save changes?",
-                                functions: [
-                                    function () {
-                                        userDialog.detach();
+                                actions: [
+                                    {
+                                        button: 'Yes',
+                                        callback: function () {
+                                            userDialog.detach();
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
-                                        load();
+                                    {
+                                        button: 'No',
+                                        callback: function () {
+                                            userDialog.detach();
+                                            load();
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
+                                    {
+                                        button: 'Cancel',
+                                        callback: function () {
+                                            userDialog.detach();
+                                        }
                                     }
                                 ]
                             });
@@ -4537,6 +4574,8 @@ var BMA;
                         load();
                     }
                     function load() {
+                        window.Commands.Execute('SetPlotSettings', { MaxWidth: 3200, MinWidth: 800 });
+                        window.Commands.Execute('ModelFitToView', '');
                         appModel.Deserialize(undefined);
                         checker.Snapshot(appModel);
                         logService.LogNewModelCreated();
@@ -4547,16 +4586,25 @@ var BMA;
                         if (checker.IsChanged(appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
                                 message: "Do you want to save changes?",
-                                functions: [
-                                    function () {
-                                        userDialog.detach();
+                                actions: [
+                                    {
+                                        button: 'Yes',
+                                        callback: function () {
+                                            userDialog.detach();
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
-                                        load();
+                                    {
+                                        button: 'No',
+                                        callback: function () {
+                                            userDialog.detach();
+                                            load();
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
+                                    {
+                                        button: 'Cancel',
+                                        callback: function () {
+                                            userDialog.detach();
+                                        }
                                     }
                                 ]
                             });
@@ -4572,6 +4620,8 @@ var BMA;
                         load();
                     }
                     function load() {
+                        window.Commands.Execute('SetPlotSettings', { MaxWidth: 3200, MinWidth: 800 });
+                        window.Commands.Execute('ModelFitToView', '');
                         fileLoaderDriver.OpenFileDialog().done(function (fileName) {
                             var fileReader = new FileReader();
                             fileReader.onload = function () {
@@ -4953,17 +5003,26 @@ var BMA;
                         if (that.checker.IsChanged(that.appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
                                 message: "Do you want to save changes?",
-                                functions: [
-                                    function () {
-                                        userDialog.detach();
-                                        window.Commands.Execute("LocalStorageSaveModel", {});
+                                actions: [
+                                    {
+                                        button: 'Yes',
+                                        callback: function () {
+                                            userDialog.detach();
+                                            window.Commands.Execute("LocalStorageSaveModel", {});
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
-                                        load();
+                                    {
+                                        button: 'No',
+                                        callback: function () {
+                                            userDialog.detach();
+                                            load();
+                                        }
                                     },
-                                    function () {
-                                        userDialog.detach();
+                                    {
+                                        button: 'Cancel',
+                                        callback: function () {
+                                            userDialog.detach();
+                                        }
                                     }
                                 ]
                             });
@@ -6190,7 +6249,7 @@ var BMA;
                                 width: value,
                                 height: newHeight
                             };
-                            console.log(newrect.y);
+                            //console.log(newrect.y);
                             that._plot.navigation.setVisibleRect(newrect, false);
                             that.options.zoom = value;
                         }
@@ -7184,7 +7243,8 @@ var BMA;
     $.widget("BMA.simulationviewer", {
         options: {
             data: undefined,
-            plot: undefined
+            plot: undefined,
+            error: undefined
         },
         refresh: function () {
             var that = this;
@@ -7300,7 +7360,14 @@ var BMA;
     $.widget("BMA.userdialog", {
         options: {
             message: '',
-            functions: []
+            actions: [
+                { button: 'Yes', callback: function () {
+                } },
+                { button: 'No', callback: function () {
+                } },
+                { button: 'Cancel', callback: function () {
+                } }
+            ]
         },
         _create: function () {
             var that = this;
@@ -7309,10 +7376,17 @@ var BMA;
             this._add_close_button();
             this.message = $('<div><div>').text(this.options.message).addClass('window-title').appendTo(that.element);
             this.buttons = $('<div><div>').addClass("button-list").appendTo(that.element);
-            var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
-            var noBtn = $('<button></button>').text('No').appendTo(this.buttons);
-            var cancelBtn = $('<button></button>').text('Cancel').appendTo(this.buttons);
-            this._bind_functions();
+            var actions = this.options.actions;
+            if (actions !== undefined) {
+                for (var i = 0; i < actions.length; i++) {
+                    var bttn = $('<button></button>').text(actions[i].button).appendTo(that.buttons);
+                    bttn.bind('click', actions[i].callback);
+                }
+            }
+            //var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
+            //var noBtn = $('<button></button>').text('No').appendTo(this.buttons);
+            //var cancelBtn = $('<button></button>').text('Cancel').appendTo(this.buttons);
+            //this._bind_functions();
             this._popup_position();
         },
         _add_close_button: function () {
@@ -7341,14 +7415,14 @@ var BMA;
                 }
             });
         },
-        _bind_functions: function () {
-            var functions = this.options.functions;
-            var btns = this.buttons.children("button");
-            if (functions !== null && functions.length === 3) {
-                for (var i = 0; i < 3; i++)
-                    btns.eq(i).bind("click", functions[i]);
-            }
-        },
+        //_bind_functions: function () {
+        //    var functions = this.options.functions;
+        //    var btns = this.buttons.children("button");
+        //    if (functions !== undefined) {
+        //        for (var i = 0; i < functions.length; i++)
+        //            btns.eq(i).bind("click", functions[i]);
+        //    }
+        //},
         Show: function () {
             this.element.show();
         },

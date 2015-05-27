@@ -103,6 +103,43 @@ function popup_position() {
     });
 }
 $(document).ready(function () {
+    var snipper = $('<div></div>').addClass('spinner').appendTo($('.loading-text'));
+    for (var i = 1; i < 4; i++) {
+        $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+    }
+    var deferredLoad = function () {
+        var dfd;
+        dfd = $.Deferred();
+        try {
+            loadScript();
+            dfd.resolve();
+        }
+        catch (ex) {
+            dfd.reject(ex.message);
+        }
+        return dfd.promise();
+    };
+    deferredLoad().done(function () {
+        $('.page-loading').detach();
+    }).fail(function (err) {
+        alert("Page loadind failed: " + err);
+    });
+    $(document).ready(function () {
+        popup_position();
+    });
+    $(window).resize(function () {
+        popup_position();
+        //resize_header_tools();
+    });
+});
+function loadScript() {
+    var version_key = 'bma-version';
+    var version = {
+        'major': '1',
+        'minor': '2',
+        'build': '0013'
+    };
+    $('.version-number').text('v. ' + version.major + '.' + version.minor + '.' + version.build);
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
     //Creating ElementsRegistry
@@ -141,8 +178,17 @@ $(document).ready(function () {
     window.Commands.On("ModelReset", function () {
         $("#modelNameEditor").val(appModel.BioModel.Name);
     });
+    var holdCords = {
+        holdX: 0,
+        holdY: 0
+    };
+    $(document).on('vmousedown', function (event) {
+        holdCords.holdX = event.pageX;
+        holdCords.holdY = event.pageY;
+    });
     $("#drawingSurceContainer").contextmenu({
         delegate: ".bma-drawingsurface",
+        autoFocus: true,
         preventContextMenuForPopup: true,
         preventSelect: true,
         taphold: true,
@@ -165,10 +211,12 @@ $(document).ready(function () {
         ],
         beforeOpen: function (event, ui) {
             ui.menu.zIndex(50);
-            var left = event.pageX - $(".bma-drawingsurface").offset().left;
-            var top = event.pageY - $(".bma-drawingsurface").offset().top;
-            console.log("top " + top);
-            console.log("left " + left);
+            var x = holdCords.holdX || event.pageX;
+            var y = holdCords.holdX || event.pageY;
+            var left = x - $(".bma-drawingsurface").offset().left;
+            var top = y - $(".bma-drawingsurface").offset().top;
+            //console.log("top " + top);
+            //console.log("left " + left);
             window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
                 left: left,
                 top: top
@@ -326,6 +374,18 @@ $(document).ready(function () {
     window.Commands.On("ZoomSliderBind", function (value) {
         $("#zoomslider").bmazoomslider({ value: value });
     });
+    //window.Commands.On('ZoomConfigure',(value: { min; max }) => {
+    //    $("#zoomslider").bmazoomslider({ min: value.min, max: value.max });
+    //});
+    window.Commands.On('SetPlotSettings', function (value) {
+        if (value.MaxWidth !== undefined) {
+            window.PlotSettings.MaxWidth = value.MaxWidth;
+            $("#zoomslider").bmazoomslider({ max: (value.MaxWidth - window.PlotSettings.MinWidth) / 24 });
+        }
+        if (value.MinWidth !== undefined) {
+            window.PlotSettings.MinWidth = value.MinWidth;
+        }
+    });
     window.Commands.On("AppModelChanged", function () {
         if (changesCheckerTool.IsChanged) {
             popupDriver.Hide();
@@ -409,14 +469,22 @@ $(document).ready(function () {
             $(this).toggleClass('box-sizing'); //.css('box-sizing', 'border-box');
         });
     }
-    $(document).ready(function () {
-        popup_position();
-    });
-    $(window).resize(function () {
-        popup_position();
-        resize_header_tools();
-    });
+    var lastversion = window.localStorage.getItem(version_key);
+    if (lastversion !== JSON.stringify(version)) {
+        var userDialog = $('<div></div>').appendTo('body').userdialog({
+            message: "BMA client was updated to version " + $('.version-number').text(),
+            actions: [
+                {
+                    button: 'Ok',
+                    callback: function () {
+                        userDialog.detach();
+                    }
+                }
+            ]
+        });
+    }
     window.onunload = function () {
+        window.localStorage.setItem(version_key, JSON.stringify(version));
         window.localStorage.setItem(reserved_key, appModel.Serialize());
         var log = logService.CloseSession();
         var data = JSON.stringify({
@@ -449,46 +517,5 @@ $(document).ready(function () {
         }
     };
     $("label[for='button-pointer']").click();
-    //window.onerror = function (msg, url, l) {
-    //    var win = $('<div></div>').addClass('popup-window window report-bug').appendTo('body');
-    //    win.draggable({ containment: parent, scroll: false });
-    //    popup_position();
-    //    var closediv = $('<div></div>').addClass('close-icon').appendTo(win);
-    //    var closing = $('<img src="/images/close.png">').appendTo(closediv);
-    //    closing.bind("click", function () {
-    //        win.detach();
-    //    });
-    //    var div = $('<div></div>').addClass('window-title').text('Please describe the problem').appendTo(win);
-    //    var inline1 = $('<div></div>').addClass('inline').appendTo(win);
-    //    var textarea = $('<textarea></textarea>').appendTo(inline1);
-    //    var btn = $('<button></button>').addClass('default-button inline').text('Submit Error').appendTo(win);
-    //    btn.bind('click', function () {
-    //        var model = appModel.Serialize();
-    //        var txt = '_s=3cf6063688d293d39d47523101ff9567&_r=json&_t=text';
-    //        txt += '&_msg=' + msg;
-    //        txt += '&URL=' + url;
-    //        txt += '&Line=' + l;
-    //        txt += '&Platform=' + navigator.platform;
-    //        txt += '&UserAgent=' + navigator.userAgent;
-    //        txt += '&UserSay=' + textarea.val();
-    //        //txt += '&Model=' + JSON.stringify(j.Model); 
-    //        //txt += '&Layout=' + JSON.stringify(j.Layout); 
-    //        //alert(txt);
-    //        //var i = document.createElement('img');
-    //        //i.setAttribute('src',(('https:' == document.location.protocol) ?
-    //        //    'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/log?' + txt);
-    //        //document.body.appendChild(i);
-    //        var url = (('https:' == document.location.protocol) ? 'https://errorstack.appspot.com' : 'http://www.errorstack.com') + '/submit?' + txt;
-    //        $.ajax({
-    //            type: "POST",
-    //            url: url,
-    //            data: "&Model=" + model
-    //        }).always(function () {
-    //            inline1.detach();
-    //            btn.detach();
-    //            $('.report-bug').children('.window-title').eq(0).text('Thanks for your report!').appendTo(win);
-    //        });
-    //    });
-    //}
-});
+}
 //# sourceMappingURL=app.js.map
