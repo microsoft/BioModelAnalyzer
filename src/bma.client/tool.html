@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -23,12 +23,41 @@
     <script src="js/idd.js"></script>
     <script src="tool.min.js"></script>
     <script src="app.js"></script>
-
-
+    <style type="text/css">
+        .page-loading {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: #ededed;
+          top: 0;
+          font-size: 60px;
+          line-height: 62px;
+          text-align: center;
+          display: table;
+          vertical-align: middle;
+          z-index: 10;
+        }
+        .page-loading .loading-text {
+            display: table-cell;
+            height: 100%;
+            vertical-align: middle;
+        }
+        .page-loading .spinner {
+          display: inline-block;
+        }
+        .page-loading .spinner div {
+          width: 8px;
+          height: 8px;
+          background-color: #606060;
+        }
+    </style>
+    
 </head>
 
 <body data-role="page">
-    <div class="page-loading" style="z-index: 100; display: table-cell; vertical-align: middle; line-height:850px" >Loading</div>
+    <div class="page-loading" data-role="page">
+        <div class="loading-text">Loading</div>
+    </div>
     <div id="tools" class="bma-toolbarpanel" data-role="header">
         <a id="downloadLink" style="display: none"></a>
         <input style="display: none;" type="file" id="fileLoader">
@@ -57,11 +86,14 @@
                     <div title="Visual Settings" class="view-options-icon"></div>
                 </span>
             </div>
-            <div style="position: relative">
+            <div>
                 <div id="visibilityOptionsContent" class="window vis-options">
                     <ul>
                         <li>
-                            <div class="option-name">Zoom Reset</div><div class="default-button"><button id="fitToViewBtn">FIT TO VIEW</button></div>
+                            <div class="option-name">Zoom Reset</div>
+                            <div class="default-button">
+                                <button id="fitToViewBtn">FIT TO VIEW</button>
+                            </div>
                         </li>
                         <li id="li1">
                             <div class="option-name">Text Labels</div>
@@ -77,7 +109,7 @@
                             <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
                         </li>
                         <li>
-                            <div class="option-name" style="margin-bottom: 10px;">Save Image</div>
+                            <div class="option-name">Save Image</div>
                             <ul class="button-list">
                                 <li class="action-button-small grey"><button id="exportSVGBtn"><div class="icon download"></div> SVG</button></li>
                             </ul>
