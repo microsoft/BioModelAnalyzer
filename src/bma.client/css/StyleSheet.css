@@ -1,4 +1,12 @@
 ﻿/* General Functions */
+.page-loading > .spinner {
+  display: inline-block;
+}
+.page-loading > .spinner div {
+  width: 8px;
+  height: 8px;
+  background-color: #606060;
+}
 ul,
 menu,
 dir {
@@ -29,13 +37,15 @@ html {
   height: 100%;
 }
 body {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none;
   margin: 0;
   padding: 0;
   background-color: #E4E4E6;
   position: relative;
   height: 100%;
   overflow: hidden;
-  font-family: 'Segoe UI';
+  font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
   color: #606060;
@@ -892,13 +902,16 @@ ul.command-list li a span {
 }
 /* Footer */
 .bma-footer {
+  position: relative;
   height: 40px;
   text-align: center;
+}
+.bma-footer > * {
+  display: inline-block;
 }
 .bma-pagefooter-msrlogo {
   position: absolute;
   right: 10px;
-  height: 40px;
 }
 .bma-pagefooter-msrlogo img {
   margin-top: 8px;
@@ -914,20 +927,15 @@ ul.command-list li a span {
   margin-right: 10px;
 }
 .bma-pagefooter-linkcontainer {
-  position: absolute;
-  bottom: 0;
   background-color: white;
-  line-height: 30px;
-  padding: 0 32px;
   height: 30px;
-  left: calc(50% - 150px);
-  left: -moz-calc(50% - 150px);
-  left: -webkit-calc(50% - 150px);
-  left: -o-calc(50% - 150px);
-  -webkit-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-  -o-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  line-height: 30px;
+  padding: 0 30px;
+  margin-top: 10px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  -o-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   -moz-border-radius: 10px 10px 0 0;
   -webkit-border-radius: 10px 10px 0 0;
   -ms-border-radius: 10px 10px 0 0;
@@ -1168,11 +1176,12 @@ ul.command-list li a span {
 }
 .window.vis-options ul > li {
   display: block;
+}
+.window.vis-options ul > li:not(:last-child) {
   margin-bottom: 10px;
 }
 .window.vis-options ul > li > * {
   display: inline-block;
-  vertical-align: middle;
 }
 .window.vis-options ul.button-list > li {
   display: inline-block;
@@ -2296,11 +2305,9 @@ textarea:focus {
   position: absolute;
   z-index: 7;
   width: 850px;
-  max-height: 550px;
 }
 .window.proof-variables-popout {
   width: 850px;
-  max-height: 550px;
 }
 .window.proof-variables-popout .scrollable-results {
   max-height: 500px;
@@ -2324,7 +2331,6 @@ textarea:focus {
 }
 .window.further-testing-popout {
   width: 850px;
-  max-height: 550px;
 }
 .window.further-testing-popout .scrollable-results {
   max-height: 480px;
@@ -2351,7 +2357,6 @@ textarea:focus {
 }
 .window.proof-propagation-popout {
   width: 850px;
-  max-height: 550px;
 }
 .window.proof-propagation-popout .scrollable-results {
   overflow-x: scroll;
@@ -2384,7 +2389,6 @@ textarea:focus {
 }
 .window.simulation-popout {
   width: 850px;
-  max-height: 550px;
 }
 .window.simulation-popout .scrollable-results {
   max-height: 470px;
@@ -2534,13 +2538,12 @@ textarea:focus {
   background-image: -webkit-gradient(linear, left, #ededed, white);
   vertical-align: top;
   left: -5px;
-  width: 220px;
-  height: 50px;
   display: inline-block;
 }
 .model-toolbar .model-name ul > li {
-  display: inline-block;
+  display: table-cell;
   vertical-align: middle;
+  height: 50px;
 }
 .model-toolbar .model-name input {
   border: none;
@@ -2549,6 +2552,7 @@ textarea:focus {
   line-height: 27px;
   margin-right: 10px;
   padding-bottom: 5px;
+  padding-bottom: 0;
   width: 160px;
   margin: 0 10px;
 }
@@ -2560,7 +2564,6 @@ textarea:focus {
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.5);
 }
 .model-toolbar .model-name .expand-btn {
-  display: inline-block;
   width: 30px;
   height: 50px;
   border: none;

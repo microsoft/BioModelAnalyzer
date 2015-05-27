@@ -175,7 +175,7 @@ function loadScript() {
     var version = {
         'major': '1',
         'minor': '2',
-        'build': '0040'
+        'build': '0042'
     }
     $('.version-number').text('v. ' + version.major + '.' + version.minor + '.' + version.build);
     //Creating CommandRegistry
