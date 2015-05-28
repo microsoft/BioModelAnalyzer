@@ -150,7 +150,7 @@ $(document).ready(function () {
         loadVersion().done(function (version) {
             try {
                 loadScript(version);
-                window.setInterval(function() { versionCheck(version); }, 3000 /* 1 hour */);
+                window.setInterval(function() { versionCheck(version); }, 3600000 /* 1 hour */);
                 dfd.resolve();
             }
             catch (ex) {

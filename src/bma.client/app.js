@@ -114,7 +114,7 @@ $(document).ready(function () {
                 loadScript(version);
                 window.setInterval(function () {
                     versionCheck(version);
-                }, 3000);
+                }, 3600000);
                 dfd.resolve();
             }
             catch (ex) {
