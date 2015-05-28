@@ -328,7 +328,6 @@
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
-    <Content Include="js\idd.tranforms.js" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
