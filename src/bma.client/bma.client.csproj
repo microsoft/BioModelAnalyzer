@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -328,6 +328,7 @@
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
+    <Content Include="js\idd.tranforms.js" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
@@ -552,6 +553,7 @@
     <Content Include="tool.min.js">
       <DependentUpon>tool.js</DependentUpon>
     </Content>
+    <Content Include="version.txt" />
     <Content Include="videos\BMA-trailer.mp4" />
     <Content Include="videos\BMA.mp4" />
     <Content Include="xmlParserTestPage.html" />

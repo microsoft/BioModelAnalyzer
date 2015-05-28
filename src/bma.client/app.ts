@@ -143,40 +143,82 @@ $(document).ready(function () {
     for (var i = 1; i < 4; i++) {
         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
     }
+
     var deferredLoad = function (): JQueryPromise<{}> {
-        var dfd;
-        dfd = $.Deferred();
-        try {
-            loadScript();
-            dfd.resolve();
-        }
-        catch (ex) {
-            dfd.reject(ex.message);
-        }
+        var dfd = $.Deferred();
+
+        loadVersion().done(function (version) {
+            try {
+                loadScript(version);
+                window.setInterval(function() { versionCheck(version); }, 3000 /* 1 hour */);
+                dfd.resolve();
+            }
+            catch (ex) {
+                dfd.reject(ex.message);
+            }
+        }).fail(function (error) {
+            dfd.reject(error);
+        });
+
         return dfd.promise();
     };
+
     deferredLoad().done(function () {
         $('.page-loading').detach();
     }).fail(function (err) {
-        alert("Page loadind failed: " +  err);
+        alert("Page loading failed: " + err);
     });
 
     $(document).ready(function () {
         popup_position();
     });
+
     $(window).resize(function () {
         popup_position();
         //resize_header_tools();
     });
 });
 
-function loadScript() {
+function versionCheck(version) {
+    loadVersion().done(function (newVersion) {
+        var v = <any>newVersion;
+        if (v.major !== version.major || v.minor !== version.minor || v.build !== version.build) {
+            var userDialog = $('<div></div>').appendTo('body').userdialog({
+                message: "BMA client was updated on server. Refresh your browser to get latest version",
+                actions: [
+                    {
+                        button: 'Ok',
+                        callback: function () { userDialog.detach(); }
+                    }
+                ]
+            });
+        } else {
+            console.log("server version was succesfully checked: client is up to date");
+        }
+    }).fail(function (err) {
+        console.log("there was an error while trying to check server version: " + err);
+    });
+}
+
+function loadVersion(): JQueryPromise<Object> {
+    var d = $.Deferred();
+    $.ajax({
+        url: "version.txt",
+        dataType: "text",
+        success: function (data) {
+            var version = JSON.parse(data);
+            d.resolve(version);
+        },
+        error: function (err) {
+            d.reject(err);
+        }
+    });
+    return d.promise();
+}
+
+function loadScript(version) {
     var version_key = 'bma-version';
-    var version = {
-        'major': '1',
-        'minor': '2',
-        'build': '0042'
-    }
+
     $('.version-number').text('v. ' + version.major + '.' + version.minor + '.' + version.build);
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
@@ -570,7 +612,7 @@ function loadScript() {
         });
     }
 
-    
+
     var lastversion = window.localStorage.getItem(version_key);
     if (lastversion !== JSON.stringify(version)) {
         var userDialog = $('<div></div>').appendTo('body').userdialog({
@@ -619,4 +661,5 @@ function loadScript() {
     };
 
     $("label[for='button-pointer']").click();
+
 }

@@ -55,33 +55,33 @@
     
 </head>
 
-<body data-role="page">
-    <div class="page-loading" data-role="page">
+<body>
+    <div class="page-loading">
         <div class="loading-text">Loading</div>
     </div>
-    <div id="tools" class="bma-toolbarpanel" data-role="header">
+    <div id="tools" class="bma-toolbarpanel">
         <a id="downloadLink" style="display: none"></a>
         <input style="display: none;" type="file" id="fileLoader">
 
-        <div id="undoredotoolbar" class="undoredo-toolbar" data-role="header" data-enhance="false">
-            <input type="radio" id="button-pointer" name="drawing-button" checked="checked" data-enhance="false" data-role="none" />
-            <label for="button-pointer" data-role="none">
+        <div id="undoredotoolbar" class="undoredo-toolbar">
+            <input type="radio" id="button-pointer" name="drawing-button" checked="checked"/>
+            <label for="button-pointer">
                 <div class="pointer-icon" title="Selection tool"></div>
             </label>
 
             <!--<div class="bma-toolbarpanel-verticalline"></div>-->
 
-            <button id="button-undo" data-role="none">
+            <button id="button-undo">
                 <div class="undo-icon" title="Undo"></div>
             </button>
-            <button id="button-redo" data-role="none">
+            <button id="button-redo">
                 <div class="redo-icon" title="Redo"></div>
             </button>
         </div>
 
-        <div id="modelelemtoolbar" class="elements-toolbar" data-enhance="false" data-role="none"></div>
+        <div id="modelelemtoolbar" class="elements-toolbar"></div>
 
-        <div class="vis-options-toolbar" id="visibilityOptionsSlider" data-enhance="false">
+        <div class="vis-options-toolbar" id="visibilityOptionsSlider">
             <div class="tool-icon">
                 <span class="ui-button-text">
                     <div title="Visual Settings" class="view-options-icon"></div>
@@ -124,7 +124,7 @@
 
     </div>
 
-    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer" data-role="content">
+    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
 
         <div id="drawingSurface" class="bma-drawingsurface"></div>
 
@@ -172,7 +172,7 @@
             </div>
         </div>
 
-        <div class="analytics-container" data-enhanced="true">
+        <div class="analytics-container">
             <div id="analytics">
                 <div id="icon1" data-command="ProofRequested" class="analytics-header">
                     <div><img src="images/analyze.svg"></div>
@@ -195,7 +195,7 @@
         <div id="containerEditor" class="window container-name"></div>
     </div>
 
-    <footer class="bma-footer" data-role="footer">
+    <footer class="bma-footer">
         <div class="bma-pagefooter-logo">
             <img src="images/logo-crop.png" alt="Logo" />
         </div>
