@@ -7,7 +7,8 @@
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private expandedProofPropagation: JQuery;
             private expandedProofVariables: JQuery;
-            private currentModel: BMA.Model.BioModel;
+            private currentBioModel: BMA.Model.BioModel;
+            private currentLayout: BMA.Model.Layout;
             private stability;
             private colorData;
             private logService: BMA.ISessionLog;
@@ -185,13 +186,14 @@
             }
 
             public CurrentModelChanged() {
-                if (this.currentModel === undefined) {
+                if (this.currentBioModel === undefined || this.currentLayout === undefined) {
                     this.Snapshot();
                     return true;
                 }
                 else {
                     try {
-                        return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                        return (JSON.stringify(this.currentBioModel) !== JSON.stringify(this.appModel.BioModel) ||
+                            JSON.stringify(this.currentLayout) !== JSON.stringify(this.appModel.Layout));
                     }
                     catch (ex) {
                         console.log(ex);
@@ -201,7 +203,8 @@
             }
 
             public Snapshot() {
-                this.currentModel = this.appModel.BioModel.Clone();
+                this.currentBioModel = this.appModel.BioModel.Clone();
+                this.currentLayout = this.appModel.Layout.Clone();
             }
 
             public CreateMessage(stable: boolean, time: number): string {
