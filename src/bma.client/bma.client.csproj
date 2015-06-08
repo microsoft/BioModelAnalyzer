@@ -446,6 +446,7 @@
     <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
     <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
     <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
+    <TypeScriptCompile Include="test\UserDialogTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
     <TypeScriptCompile Include="test\XmlParserTests.ts" />
