@@ -96,4 +96,12 @@ describe("Simulation Expanded", () => {
         expect(widget.simulationexpanded("option", "num")).toEqual(initValue - 10);
         expect(span.text()).toEqual('STEPS: ' + (initValue - 10).toString());
     })
+
+    it("should add Randomise button",() => {
+        widget.simulationexpanded();
+        var randomise = widget.find('.randomise-button');
+        expect(randomise.children().length).toEqual(2);
+        expect(randomise.children(".bma-random-icon2").index()).toEqual(0);
+        expect(randomise.children().eq(1).text()).toEqual("Randomise");
+    })
 })

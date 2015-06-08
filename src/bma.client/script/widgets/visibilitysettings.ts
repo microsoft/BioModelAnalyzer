@@ -100,16 +100,6 @@
                     }
                 })
             });
-
-            var ftv = $('#fitToViewBtn');
-            ftv.bind('click', function () {
-                window.Commands.Execute('ModelFitToView', {});
-            });
-
-            var svg = $('#exportSVGBtn');
-            svg.bind('click', function () {
-                window.Commands.Execute('SaveSVG', {});
-            });
         },
 
         changeButtonONOFFStyle: function (ind)

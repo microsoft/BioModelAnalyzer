@@ -6,9 +6,9 @@
         options: {
             message: '',
             actions: [
-                { button: 'Yes', callback: function () { } },
-                { button: 'No', callback: function () { } },
-                { button: 'Cancel', callback: function () { } }
+                { button: 'Yes', callback: function () { }},
+                { button: 'No', callback: function () { }},
+                { button: 'Cancel', callback: function () { }}
             ]
         },
 
@@ -92,6 +92,7 @@
 
         _destroy: function () {
             this.element.empty();
+            this.element.detach();
         },
 
         _setOption: function (key, value) {

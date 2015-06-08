@@ -300,7 +300,13 @@ body {
                 color: @c;
                 button{
 			        color: @c;
+                    .icon {
+                        &.download{
+						background-image: url("../images/download.svg")
+					}
+                    }
 			    }
+
 			}
 			button{
 				font-size: @size;
@@ -319,14 +325,14 @@ body {
 						background-image: url("../images/download-white.svg")
 					}
 				}
-				&:hover{
+				/*&:hover{
 				color: @c;
                     .icon{
 						&.download{
 						background-image: url("../images/download.svg")
 					}
 					}
-				}
+				}*/
 			}
 
             &.waiting:hover {

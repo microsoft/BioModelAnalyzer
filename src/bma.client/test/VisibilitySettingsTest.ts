@@ -60,4 +60,12 @@ describe("VisibilitySettings", () => {
         expect(window.Commands.Execute).toHaveBeenCalledWith(l2.attr("data-command"), initialvalue - 1);
     })
 
+
+    it("should ececute ModelFitToView",() => {
+        var ftv = vsTable.find("#fitToViewBtn");
+        spyOn(window.Commands, "Execute");
+        ftv.click();
+        expect(ftv.length).toEqual(1);
+        expect(window.Commands.Execute).toHaveBeenCalledWith('ModelFitToView', {});
+    });
 })

@@ -91,7 +91,8 @@
 
             this.ol.selectable({
                 stop: function () {
-                    window.Commands.Execute("LocalStorageLoadModel", "user."+items[$(this).find(".ui-selected").eq(0).index()]);
+                    var ind = that.repo.find(".ui-selected").index();
+                    window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
                 }
             });
         },

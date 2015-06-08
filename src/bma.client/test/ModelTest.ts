@@ -1,5 +1,6 @@
-﻿describe("BMA.Model.AppModel", () => {
+﻿describe("BMA.Model.AppModel",() => {
 
+    window.Commands = new BMA.CommandRegistry();
     var appModel: BMA.Model.AppModel;
 
     var name = "TestBioModel";
