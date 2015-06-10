@@ -1373,17 +1373,29 @@ body {
                                 border-bottom-color: @lightgrey;
                             }
                         }
+
+                        & >  div {
+                          left: 0;
+                          background-color: inherit;
+                          width: 100%;
+                          overflow: hidden;
+                          position: absolute;
+                          border-radius: 0 0 15px 15px;
+                        }
                     }
                     li.var-button{
                         position: relative;
                     }
             }
+            
 
             .inputs-list-content {
-                            position: absolute;
-                            width: 100%;
+                            //position: absolute;
+                            //width: 100%;
                             padding-bottom: 5px;
-                            overflow: hidden;
+                            overflow-x: hidden;
+                            overflow-y: scroll;
+                            max-height: 100px;
                             z-index: 3;
                             left: 0;
                             top: 22px;
@@ -1397,7 +1409,11 @@ body {
                                     color: darken(@font-color-hover,30%);
                                 }
                             }
+                            &::-webkit-scrollbar, &::-webkit-scrollbar-track {
+                                background-color: transparent;
+                            }
                         }
+           
 
 			.operators{
                 ul {
@@ -1571,6 +1587,11 @@ body {
 				width: 99%;
 				border-collapse: collapse;
 				.default-text;
+                td {
+                    max-width: 200px;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
 			}
 
         // Default BMA Tables
@@ -1584,6 +1605,8 @@ body {
 			    padding: 1px 3px 1px 3px;
 			    color: @darkgrey;
 			    height: 20px;
+                overflow: hidden;
+                text-overflow: ellipsis;
 		    }
 
             tr:first-child td {

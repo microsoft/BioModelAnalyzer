@@ -92,7 +92,16 @@
                         that.initValues = initialValues;
                         that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
                         window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
-                        
+                    }
+                    else {
+                        that.CreateColors();
+                        that.dataForPlot = that.CreateDataForPlot(that.colors);
+                        var variables = that.CreateVariablesView();
+                        that.compactViewer.SetData({ data: { variables: variables }, plot: that.dataForPlot });
+                        var vars = that.appModel.BioModel.Variables.sort((x, y) => {
+                            return x.Id < y.Id ? -1 : 1;
+                        });
+                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: that.initValues });
                     }
                 });
 
@@ -230,14 +239,18 @@
             public CreateColors() {
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
-                    if (this.GetColorById(variables[i].Id) === undefined)
+                    var icolor = this.GetColorById(variables[i].Id)
+                    if (icolor === undefined)
                         this.colors.push({
                             Id: variables[i].Id,
                             Name: variables[i].Name,
                             Color: this.getRandomColor(),
                             Seen: true,
                             Plot: []
-                        })
+                        });
+                    else {
+                        this.colors[icolor].Name = variables[i].Name;
+                    }
                 }
             }
 
