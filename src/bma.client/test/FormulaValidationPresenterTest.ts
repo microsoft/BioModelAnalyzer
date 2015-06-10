@@ -22,19 +22,9 @@
     })
 
     xit("should call Invoke method on command 'FormulaEdited'", (done) => {
-        //var d = $.Deferred();
-        //d.done(function () {
-        //    console.log('Deferred');
-        //});
         spyOn(ajaxTestDriver, "Invoke");
         var formula = "test";
         window.Commands.Execute("FormulaEdited", formula);
-        //var r = ajaxTestDriver.Invoke({ Formula: formula });
-        
-        //r.done(function() {
-        //    console.log("done");
-        //})
-
         expect(ajaxTestDriver.Invoke).toHaveBeenCalledWith("api/Validate", { Formula: formula });
         done();
 
