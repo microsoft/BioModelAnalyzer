@@ -1,4 +1,4 @@
-/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 (function ($) {
@@ -20,21 +20,17 @@
 
                 var item = this;
                 that.listOptions[ind] = {};
-                var children = $(item).children();
+                var option = $(item).children(':first-child');
+                that.listOptions[ind].name = option.text();
+                var buttons = option.next();
+                var children = buttons.children();
                 children.each(function () {
-
                     var child = this;
                     var text = $(child).text();
                     var behavior = $(child).attr("data-behavior");
                     
-                    if (behavior === undefined) {
-                        for (var i = 0; i < ind; i++) {
-                            if (that.listOptions[i].name === text) 
-                                throw ("Options must be different");
-                        }
-                        that.listOptions[ind].name = text;
-                    }
-                    else {
+                    if (behavior !== undefined) {
+                        
                         var command, value = undefined;
                         try {
                             command = $(child).attr("data-command");
@@ -44,6 +40,11 @@
                         }
 
                         switch (behavior) {
+                            case "action":
+                                $(this).bind('click', function () {
+                                    window.Commands.Execute(command, {});
+                                })
+                                break;
                             case "toggle":
                                 if (that.listOptions[ind].toggle === undefined) {
                                     value = command !== undefined ? ($(child).attr("data-default")==="true") : undefined;
@@ -99,16 +100,6 @@
                         }
                     }
                 })
-            });
-            
-            var ftv = $('#fitToViewBtn');
-            ftv.bind('click', function () {
-                window.Commands.Execute('ModelFitToView', {});
-            });
-
-            var svg = $('#exportSVGBtn');
-            svg.bind('click', function () {
-                window.Commands.Execute('SaveSVG', {});
             });
         },
 

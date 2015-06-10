@@ -93,26 +93,32 @@
                         <li>
                             <div class="option-name">Zoom Reset</div>
                             <div class="default-button">
-                                <button id="fitToViewBtn">FIT TO VIEW</button>
+                                <button data-behavior="action" data-command="ModelFitToView" id="fitToViewBtn">FIT TO VIEW</button>
                             </div>
                         </li>
                         <li id="li1">
                             <div class="option-name">Text Labels</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
-                            <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
+                            <div>
+                                <div data-behavior="toggle" data-command="Commands.ToggleLabels" data-default="true"></div>
+                                <div data-behavior="increment" data-command="Commands.LabelsSize" data-default="10"></div>
+                            </div>
                         </li>
                         <li id="li3">
                             <div class="option-name">Grid</div>
-                            <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
+                            <div>
+                                <div data-behavior="toggle" data-command="Commands.ToggleGrid" data-default="true"></div>
+                            </div>
                         </li>
                         <li id="li4">
                             <div class="option-name">Line Width</div>
-                            <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
+                            <div>
+                                <div data-behavior="increment" data-command="Commands.LineWidth" data-default="1"></div>
+                            </div>
                         </li>
                         <li>
                             <div class="option-name">Save Image</div>
                             <ul class="button-list">
-                                <li class="action-button-small grey"><button id="exportSVGBtn"><div class="icon download"></div> SVG</button></li>
+                                <li data-behavior="action" data-command="SaveSVG" class="action-button-small grey"><button id="exportSVGBtn"><div class="icon download"></div> SVG</button></li>
                             </ul>
                         </li>
                     </ul>
