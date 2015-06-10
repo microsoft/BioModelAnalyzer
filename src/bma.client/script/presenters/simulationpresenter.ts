@@ -5,16 +5,22 @@
             private compactViewer: BMA.UIDrivers.ISimulationViewer;
             private expandedViewer: BMA.UIDrivers.ISimulationExpanded;
             private ajax: BMA.UIDrivers.IServiceDriver;
-            private colors;
             private initValues;
-            private dataForPlot;
-            private results;
+            private compactView;
             private expandedSimulationVariables: JQuery;
             private expandedSimulationPlot: JQuery;
             private currentModel: BMA.Model.BioModel;
             private logService: ISessionLog;
             private simulationAccordeon: JQuery;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
+
+            private variables: {
+                Id: number;
+                Color: string;
+                Seen: boolean;
+                Plot: number[];
+                Init: number;
+            }[]
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -32,7 +38,6 @@
                 this.expandedViewer = simulationExpanded;
                 this.logService = logService;
                 this.ajax = ajax;
-                this.colors = [];
                 this.simulationAccordeon = simulationAccordeon;
                 this.messagebox = messagebox;
                 var that = this;
@@ -40,15 +45,13 @@
 
 
                 window.Commands.On("ChangePlotVariables", function (param) {
-                    that.colors[param.ind].Seen = param.check;
+                    that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
                 });
 
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
-                    that.results = [];
-                    that.initValues = param.data;
-                    that.ClearColors();
+                    that.ClearPlot(param.data);
                     try {
                         var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
                         var variables = that.ConvertParam(param.data);
@@ -73,35 +76,37 @@
                         }
 
                         that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
-                        that.initValues = [];
-                        that.results = [];
                         that.expandedSimulationVariables = undefined;
-                        that.CreateColors();
-                        that.ClearColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors);
-                        var variables = that.CreateVariablesView();
-                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined, error: undefined });
-
-                        var vars = that.appModel.BioModel.Variables.sort((x, y) => {
-                            return x.Id < y.Id ? -1 : 1;
+                        that.UpdateVariables();
+                        that.compactView = that.CreateVariablesCompactView();
+                        that.compactViewer.SetData({
+                            data: {
+                                variables: that.compactView,
+                                colorData: undefined
+                            },
+                            plot: undefined,
+                            error: undefined
                         });
-                        var initialValues = [];
-                        for (var ind = 0; ind < vars.length; ind++) {
-                            initialValues.push(vars[ind].RangeFrom);
-                        }
-                        that.initValues = initialValues;
-                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
-                        window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+
+                        var initValues = that.GetInitValues();
+                        that.expandedViewer.Set({
+                            variables: that.appModel.BioModel.Variables,
+                            colors: that.variables,
+                            init: initValues
+                        });
+                        window.Commands.Execute("RunSimulation", { num: 10, data: initValues });
                     }
                     else {
-                        that.CreateColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors);
-                        var variables = that.CreateVariablesView();
-                        that.compactViewer.SetData({ data: { variables: variables }, plot: that.dataForPlot });
-                        var vars = that.appModel.BioModel.Variables.sort((x, y) => {
-                            return x.Id < y.Id ? -1 : 1;
+                        var variables = that.CreateVariablesCompactView();
+                        that.compactViewer.SetData({
+                            data: { variables: variables },
+                            plot: that.variables
                         });
-                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: that.initValues });
+                        that.expandedViewer.Set({
+                            variables: that.appModel.BioModel.Variables,
+                            colors: that.variables,
+                            init: that.GetInitValues()
+                        });
                     }
                 });
 
@@ -117,12 +122,12 @@
                                     full = that.expandedSimulationVariables;
                                 }
                                 else {
-                                    that.expandedViewer.Set({ variables: variables, colors: that.dataForPlot, init: that.initValues });
+                                    that.expandedViewer.Set({ variables: variables, colors: that.variables, init: that.initValues });
                                     full = that.expandedViewer.GetViewer();
                                 }
                                 break;
                             case "SimulationPlot":
-                                full = $('<div></div>').simulationplot({ colors: that.dataForPlot });
+                                full = $('<div></div>').simulationplot({ colors: that.variables });
                                 break;
                             default:
                                 simulationViewer.Show({ tab: undefined });
@@ -145,6 +150,45 @@
                 });
             }
 
+            public GetInitValues() {
+                var inits = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    inits.push(this.variables[i].Init);
+                }
+                return inits;
+            }
+
+            public UpdateVariables() {
+                var that = this;
+                var vars = that.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+                that.variables = [];
+                for (var i = 0; i < vars.length; i++) {
+                    this.variables.push({
+                        Id: vars[i].Id,
+                        Color: this.getRandomColor(),
+                        Seen: true,
+                        Plot: [],
+                        Init: vars[i].RangeFrom
+                    });
+                    this.variables[i].Plot[0] = this.variables[i].Init;
+                }
+            }
+
+            public ClearPlot(init) {
+                for (var i = 0; i < this.variables.length; i++) {
+                    this.variables[i].Plot = [];
+                    this.variables[i].Plot[0] = init[i] || this.variables[i].Init;
+                }
+            }
+
+            public GetById(arr, id) {
+                for (var i = 0; i < arr.length; i++)
+                    if (id === arr[i].Id)
+                        return i;
+                return undefined;
+            }
 
             public CurrentModelChanged() {
                 if (this.currentModel === undefined) {
@@ -172,84 +216,58 @@
                 var that = this;
                 that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                 if (param.num === undefined || param.num === 0) {
-                    var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
-                    that.dataForPlot = that.CreateDataForPlot(that.colors);
-                    that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot, error: undefined });
+                    that.compactViewer.SetData({
+                        data: {
+                            variables: that.compactView,
+                            colorData: colorData
+                        },
+                        plot: that.variables,
+                        error: undefined
+                    });
                     that.expandedViewer.ActiveMode();
                     this.Snapshot();
                     that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     return;
                 }
-                var simulate = {
-                    "Model": param.model,
-                    "Variables": param.variables
-                }
+                else {
+                    var simulate = {
+                        "Model": param.model,
+                        "Variables": param.variables
+                    }
 
-                if (param.variables !== undefined && param.variables !== null)
+                    if (param.variables !== undefined && param.variables !== null) {
 
-                    var result = that.ajax.Invoke(simulate)
-                        .done(function (res) {
-                        if (res.Variables !== null) {
-                            that.results.push(res);
-                            that.expandedViewer.AddResult(res);
-                            var d = that.ConvertResult(res);
-                            that.AddData(d);
-                            that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
-                        }
-                        else {
+                        var result = that.ajax.Invoke(simulate)
+                            .done(function (res) {
+                            if (res.Variables !== null) {
+                                //that.results.push(res);
+                                that.expandedViewer.AddResult(res);
+                                var d = that.ConvertResult(res);
+                                that.AddData(d);
+                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                            }
+                            else {
+                                that.expandedViewer.ActiveMode();
+                                alert("Simulation Error: " + res.ErrorMessages);
+                            }
+                        })
+                            .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                            this.logService.LogSimulationError();
+                            console.log(textStatus);
                             that.expandedViewer.ActiveMode();
-                            alert("Simulation Error: " + res.ErrorMessages);
-                        }
-                    })
-                        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                        this.logService.LogSimulationError();
-                        console.log(textStatus);
-                        that.expandedViewer.ActiveMode();
-                        alert("Simulate error: " + errorThrown);
-                        return;
-                    });
-                else return;
+                            alert("Simulate error: " + errorThrown);
+                            return;
+                        });
+                    }
+                    else return;
+                }
             }
 
             public AddData(d) {
                 if (d !== null) {
-                    var variables = this.appModel.BioModel.Variables.sort((x, y) => {
-                        return x.Id < y.Id ? -1 : 1;
-                    });
                     for (var i = 0; i < d.length; i++) {
-                        var color = this.colors[this.GetColorById(variables[i].Id)];
-                        color.Plot.push(d[i]);
-                    }
-                }
-                return color;
-            }
-
-            public CreateDataForPlot(colors: { Id; Colors; Seen; Plot }) {
-                var result = [];
-                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
-                    return x.Id < y.Id ? -1 : 1;
-                });
-                for (var i = 0; i < variables.length; i++) {
-                    result.push(colors[this.GetColorById(variables[i].Id)]);
-                }
-                return result;
-            }
-
-            public CreateColors() {
-                var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    var icolor = this.GetColorById(variables[i].Id)
-                    if (icolor === undefined)
-                        this.colors.push({
-                            Id: variables[i].Id,
-                            Name: variables[i].Name,
-                            Color: this.getRandomColor(),
-                            Seen: true,
-                            Plot: []
-                        });
-                    else {
-                        this.colors[icolor].Name = variables[i].Name;
+                        this.variables[i].Plot.push(d[i]);
                     }
                 }
             }
@@ -257,15 +275,16 @@
             public CreateCSV(sep): string {
                 var csv = '';
                 var that = this;
-                var data = this.dataForPlot;
+                var data = this.variables;
                 for (var i = 0, len = data.length; i < len; i++) {
-                    var contid = that.appModel.BioModel.GetVariableById(data[i].Id).ContainerId;
+                    var ivar = that.appModel.BioModel.GetVariableById(data[i].Id);
+                    var contid = ivar.ContainerId;
                     var cont = that.appModel.Layout.GetContainerById(contid);
                     if (cont !== undefined) {
                         csv += cont.Name + sep;
                     }
                     else csv += '' + sep;
-                    csv += data[i].Name + sep;
+                    csv += ivar.Name + sep;
                     var plot = data[i].Plot;
                     for (var j = 0, plotl = plot.length; j < plotl; j++) {
                         csv += plot[j] + sep;
@@ -273,27 +292,6 @@
                     csv += "\n";
                 }
                 return csv;
-            }
-
-            public ClearColors() {
-                for (var i = 0; i < this.colors.length; i++) {
-                    this.colors[i].Plot = [];
-                }
-                var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    var color = this.GetColorById(variables[i].Id);
-                    this.colors[color].Plot = [];
-                    this.colors[color].Name = variables[i].Name;
-                    if (this.initValues[i] !== undefined)
-                        this.colors[color].Plot[0] = this.initValues[i];
-                }
-            }
-
-            public GetColorById(id) {
-                for (var i = 0; i < this.colors.length; i++)
-                    if (id === this.colors[i].Id)
-                        return i;
-                return undefined;
             }
 
             public getRandomColor() {
@@ -307,35 +305,43 @@
                 return Math.floor(Math.random() * (max - min + 1) + min);
             }
 
+            public GetResults() {
+                var res = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    res.push(this.variables[i].Plot);
+                }
+                return res;
+            }
+
             public CreateProgressionMinTable() {
                 var table = [];
-                if (this.results.length < 1) return;
-                for (var i = 0; i < this.results[0].Variables.length; i++) {
+                var res = this.GetResults();
+                if (res.length < 1) return;
+                for (var i = 0, len = res.length; i < len; i++) {
                     table[i] = [];
                     table[i][0] = false;
-                    var l = this.results.length;
+                    var l = res[i].length;
                     for (var j = 1; j < l; j++) {
-                        table[i][j] = this.results[j].Variables[i].Value !== this.results[j - 1].Variables[i].Value;
+                        table[i][j] = res[i][j] !== res[i][j - 1];
                     }
                 }
                 return table;
             }
 
-            public CreateVariablesView() {
+            public CreateVariablesCompactView() {
                 var that = this;
                 var table = [];
-                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
-                    return x.Id < y.Id ? -1 : 1;
-                });
-                for (var i = 0; i < variables.length; i++) {
+                var variables = this.appModel.BioModel.Variables;
+                for (var i = 0; i < this.variables.length; i++) {
+                    var ivar = this.appModel.BioModel.GetVariableById(this.variables[i].Id);
                     table[i] = [];
-                    table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color; // color should be there
+                    table[i][0] = this.variables[i].Color; 
                     table[i][1] = (function () {
-                        var cont = that.appModel.Layout.GetContainerById(variables[i].ContainerId);
+                        var cont = that.appModel.Layout.GetContainerById(ivar.ContainerId);
                         return cont !== undefined ? cont.Name : '';
                     })();
-                    table[i][2] = variables[i].Name;
-                    table[i][3] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
+                    table[i][2] = ivar.Name;
+                    table[i][3] = ivar.RangeFrom + ' - ' + ivar.RangeTo;
                 }
                 return table;
             }
@@ -355,10 +361,10 @@
             }
             public ConvertResult(res) {
                 var data = [];
-                if (res.Variables !== undefined && res.Variables !== null)
-                    data = [];
-                for (var i = 0; i < res.Variables.length; i++)
-                    data[i] = res.Variables[i].Value;
+                if (res.Variables !== undefined && res.Variables !== null) {
+                    for (var i = 0; i < res.Variables.length; i++)
+                        data[i] = res.Variables[i].Value;
+                }
                 return data;
             }
         }
