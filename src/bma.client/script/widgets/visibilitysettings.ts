@@ -1,4 +1,4 @@
-﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 (function ($) {
@@ -99,6 +99,16 @@
                         }
                     }
                 })
+            });
+            
+            var ftv = $('#fitToViewBtn');
+            ftv.bind('click', function () {
+                window.Commands.Execute('ModelFitToView', {});
+            });
+
+            var svg = $('#exportSVGBtn');
+            svg.bind('click', function () {
+                window.Commands.Execute('SaveSVG', {});
             });
         },
 
