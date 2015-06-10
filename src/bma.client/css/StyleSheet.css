@@ -253,12 +253,24 @@ ul.button-list li:last-child {
 .button-list .action-button.grey:hover button {
   color: #aaaaaa;
 }
+.action-button.grey:hover button .icon.download,
+.button-list .action-button.grey:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .action-button.grey button,
 .button-list .action-button.grey button {
   font-size: 20px;
   line-height: 100%;
   color: white;
   padding: 5px 7px 5px 7px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .action-button.grey button .icon,
 .button-list .action-button.grey button .icon {
@@ -273,14 +285,6 @@ ul.button-list li:last-child {
 .action-button.grey button .icon.download,
 .button-list .action-button.grey button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.action-button.grey button:hover,
-.button-list .action-button.grey button:hover {
-  color: #aaaaaa;
-}
-.action-button.grey button:hover .icon.download,
-.button-list .action-button.grey button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .action-button.grey.waiting:hover,
 .button-list .action-button.grey.waiting:hover {
@@ -311,12 +315,24 @@ ul.button-list li:last-child {
 .button-list .action-button.green:hover button {
   color: #81bb83;
 }
+.action-button.green:hover button .icon.download,
+.button-list .action-button.green:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .action-button.green button,
 .button-list .action-button.green button {
   font-size: 20px;
   line-height: 100%;
   color: white;
   padding: 5px 7px 5px 7px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .action-button.green button .icon,
 .button-list .action-button.green button .icon {
@@ -331,14 +347,6 @@ ul.button-list li:last-child {
 .action-button.green button .icon.download,
 .button-list .action-button.green button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.action-button.green button:hover,
-.button-list .action-button.green button:hover {
-  color: #81bb83;
-}
-.action-button.green button:hover .icon.download,
-.button-list .action-button.green button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .action-button.green.waiting:hover,
 .button-list .action-button.green.waiting:hover {
@@ -369,12 +377,24 @@ ul.button-list li:last-child {
 .button-list .action-button.red:hover button {
   color: #cf451b;
 }
+.action-button.red:hover button .icon.download,
+.button-list .action-button.red:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .action-button.red button,
 .button-list .action-button.red button {
   font-size: 20px;
   line-height: 100%;
   color: white;
   padding: 5px 7px 5px 7px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .action-button.red button .icon,
 .button-list .action-button.red button .icon {
@@ -389,14 +409,6 @@ ul.button-list li:last-child {
 .action-button.red button .icon.download,
 .button-list .action-button.red button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.action-button.red button:hover,
-.button-list .action-button.red button:hover {
-  color: #cf451b;
-}
-.action-button.red button:hover .icon.download,
-.button-list .action-button.red button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .action-button.red.waiting:hover,
 .button-list .action-button.red.waiting:hover {
@@ -434,12 +446,24 @@ li.action-button {
 .button-list .action-button-small.grey:hover button {
   color: #aaaaaa;
 }
+.action-button-small.grey:hover button .icon.download,
+.button-list .action-button-small.grey:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .action-button-small.grey button,
 .button-list .action-button-small.grey button {
   font-size: 15px;
   line-height: 100%;
   color: white;
   padding: 5px 5px 3px 5px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .action-button-small.grey button .icon,
 .button-list .action-button-small.grey button .icon {
@@ -454,14 +478,6 @@ li.action-button {
 .action-button-small.grey button .icon.download,
 .button-list .action-button-small.grey button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.action-button-small.grey button:hover,
-.button-list .action-button-small.grey button:hover {
-  color: #aaaaaa;
-}
-.action-button-small.grey button:hover .icon.download,
-.button-list .action-button-small.grey button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .action-button-small.grey.waiting:hover,
 .button-list .action-button-small.grey.waiting:hover {
@@ -492,12 +508,24 @@ li.action-button {
 .button-list .action-button-small.green:hover button {
   color: #81bb83;
 }
+.action-button-small.green:hover button .icon.download,
+.button-list .action-button-small.green:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .action-button-small.green button,
 .button-list .action-button-small.green button {
   font-size: 15px;
   line-height: 100%;
   color: white;
   padding: 5px 5px 3px 5px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .action-button-small.green button .icon,
 .button-list .action-button-small.green button .icon {
@@ -512,14 +540,6 @@ li.action-button {
 .action-button-small.green button .icon.download,
 .button-list .action-button-small.green button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.action-button-small.green button:hover,
-.button-list .action-button-small.green button:hover {
-  color: #81bb83;
-}
-.action-button-small.green button:hover .icon.download,
-.button-list .action-button-small.green button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .action-button-small.green.waiting:hover,
 .button-list .action-button-small.green.waiting:hover {
@@ -550,12 +570,24 @@ li.action-button {
 .button-list .action-button-small.red:hover button {
   color: #cf451b;
 }
+.action-button-small.red:hover button .icon.download,
+.button-list .action-button-small.red:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .action-button-small.red button,
 .button-list .action-button-small.red button {
   font-size: 15px;
   line-height: 100%;
   color: white;
   padding: 5px 5px 3px 5px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .action-button-small.red button .icon,
 .button-list .action-button-small.red button .icon {
@@ -570,14 +602,6 @@ li.action-button {
 .action-button-small.red button .icon.download,
 .button-list .action-button-small.red button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.action-button-small.red button:hover,
-.button-list .action-button-small.red button:hover {
-  color: #cf451b;
-}
-.action-button-small.red button:hover .icon.download,
-.button-list .action-button-small.red button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .action-button-small.red.waiting:hover,
 .button-list .action-button-small.red.waiting:hover {
@@ -710,11 +734,22 @@ li.action-button {
 .simulation-popout ul.button-list li.run:hover button {
   color: #81bb83;
 }
+.simulation-popout ul.button-list li.run:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
 .simulation-popout ul.button-list li.run button {
   font-size: 20px;
   line-height: 100%;
   color: white;
   padding: 5px 7px 5px 7px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
 }
 .simulation-popout ul.button-list li.run button .icon {
   display: inline-block;
@@ -727,12 +762,6 @@ li.action-button {
 }
 .simulation-popout ul.button-list li.run button .icon.download {
   background-image: url("../images/download-white.svg");
-}
-.simulation-popout ul.button-list li.run button:hover {
-  color: #81bb83;
-}
-.simulation-popout ul.button-list li.run button:hover .icon.download {
-  background-image: url("../images/download.svg");
 }
 .simulation-popout ul.button-list li.run.waiting:hover {
   background-color: #81bb83;
@@ -1667,14 +1696,22 @@ textarea:focus {
 .variable-editor .functions li:hover .inputs-list-header-expanded .inputs-expandbttn {
   border-bottom-color: #ededed;
 }
+.variable-editor .functions li > div {
+  left: 0;
+  background-color: inherit;
+  width: 100%;
+  overflow: hidden;
+  position: absolute;
+  border-radius: 0 0 15px 15px;
+}
 .variable-editor .functions li.var-button {
   position: relative;
 }
 .variable-editor .inputs-list-content {
-  position: absolute;
-  width: 100%;
   padding-bottom: 5px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 100px;
   z-index: 3;
   left: 0;
   top: 22px;
@@ -1688,6 +1725,10 @@ textarea:focus {
 }
 .variable-editor .inputs-list-content > div:hover {
   color: #b3b3b3;
+}
+.variable-editor .inputs-list-content::-webkit-scrollbar,
+.variable-editor .inputs-list-content::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 .variable-editor .operators ul {
   margin: 0 0 5px 0;
@@ -1896,12 +1937,19 @@ textarea:focus {
 			}*/
 }
 .variables-table td {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.variables-table td {
   vertical-align: middle;
   border: 1px solid #aaaaaa;
   text-align: center;
   padding: 1px 3px 1px 3px;
   color: #606060;
   height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .variables-table tr:first-child td {
   word-break: initial;
@@ -1926,12 +1974,19 @@ textarea:focus {
   margin: 2px 0 0 0;
 }
 .furhter-testing td {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.furhter-testing td {
   vertical-align: middle;
   border: 1px solid #aaaaaa;
   text-align: center;
   padding: 1px 3px 1px 3px;
   color: #606060;
   height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .furhter-testing tr:first-child td {
   word-break: initial;
@@ -1964,6 +2019,11 @@ textarea:focus {
   font-size: 13px;
   line-height: 17px;
   color: #606060;
+}
+.proof-propagation-overview td {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .proof-propagation-overview td {
   border: 1px solid white;
@@ -2076,6 +2136,11 @@ textarea:focus {
   color: #606060;
   width: 99%;
   text-align: center;
+}
+.proof-propagation-table td {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .proof-propagation-table tr:first-child td {
   word-break: initial;

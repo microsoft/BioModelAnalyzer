@@ -4056,13 +4056,13 @@ var BMA;
                 });
             }
             ProofPresenter.prototype.CurrentModelChanged = function () {
-                if (this.currentModel === undefined) {
+                if (this.currentBioModel === undefined || this.currentLayout === undefined) {
                     this.Snapshot();
                     return true;
                 }
                 else {
                     try {
-                        return JSON.stringify(BMA.Model.ExportBioModel(this.currentModel)) !== JSON.stringify(BMA.Model.ExportBioModel(this.appModel.BioModel));
+                        return (JSON.stringify(this.currentBioModel) !== JSON.stringify(this.appModel.BioModel) || JSON.stringify(this.currentLayout) !== JSON.stringify(this.appModel.Layout));
                     }
                     catch (ex) {
                         console.log(ex);
@@ -4071,7 +4071,8 @@ var BMA;
                 }
             };
             ProofPresenter.prototype.Snapshot = function () {
-                this.currentModel = this.appModel.BioModel.Clone();
+                this.currentBioModel = this.appModel.BioModel.Clone();
+                this.currentLayout = this.appModel.Layout.Clone();
             };
             ProofPresenter.prototype.CreateMessage = function (stable, time) {
                 if (stable) {
@@ -4290,6 +4291,16 @@ var BMA;
                         that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
                         window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
                     }
+                    else {
+                        that.CreateColors();
+                        that.dataForPlot = that.CreateDataForPlot(that.colors);
+                        var variables = that.CreateVariablesView();
+                        that.compactViewer.SetData({ data: { variables: variables }, plot: that.dataForPlot });
+                        var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
+                            return x.Id < y.Id ? -1 : 1;
+                        });
+                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: that.initValues });
+                    }
                 });
                 window.Commands.On("Expand", function (param) {
                     if (_this.appModel.BioModel.Variables.length !== 0) {
@@ -4413,7 +4424,8 @@ var BMA;
             SimulationPresenter.prototype.CreateColors = function () {
                 var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
-                    if (this.GetColorById(variables[i].Id) === undefined)
+                    var icolor = this.GetColorById(variables[i].Id);
+                    if (icolor === undefined)
                         this.colors.push({
                             Id: variables[i].Id,
                             Name: variables[i].Name,
@@ -4421,6 +4433,9 @@ var BMA;
                             Seen: true,
                             Plot: []
                         });
+                    else {
+                        this.colors[icolor].Name = variables[i].Name;
+                    }
                 }
             };
             SimulationPresenter.prototype.CreateCSV = function (sep) {
@@ -6802,7 +6817,8 @@ var BMA;
             }
             this.ol.selectable({
                 stop: function () {
-                    window.Commands.Execute("LocalStorageLoadModel", "user." + items[$(this).find(".ui-selected").eq(0).index()]);
+                    var ind = that.repo.find(".ui-selected").index();
+                    window.Commands.Execute("LocalStorageLoadModel", "user." + items[ind]);
                 }
             });
         },
@@ -7431,6 +7447,7 @@ var BMA;
         },
         _destroy: function () {
             this.element.empty();
+            this.element.detach();
         },
         _setOption: function (key, value) {
             var that = this;
@@ -7795,19 +7812,15 @@ jQuery.fn.extend({
             this.items.each(function (ind) {
                 var item = this;
                 that.listOptions[ind] = {};
-                var children = $(item).children();
+                var option = $(item).children(':first-child');
+                that.listOptions[ind].name = option.text();
+                var buttons = option.next();
+                var children = buttons.children();
                 children.each(function () {
                     var child = this;
                     var text = $(child).text();
                     var behavior = $(child).attr("data-behavior");
-                    if (behavior === undefined) {
-                        for (var i = 0; i < ind; i++) {
-                            if (that.listOptions[i].name === text)
-                                throw ("Options must be different");
-                        }
-                        that.listOptions[ind].name = text;
-                    }
-                    else {
+                    if (behavior !== undefined) {
                         var command, value = undefined;
                         try {
                             command = $(child).attr("data-command");
@@ -7816,6 +7829,11 @@ jQuery.fn.extend({
                             console.log("Error binding to command: " + ex);
                         }
                         switch (behavior) {
+                            case "action":
+                                $(this).bind('click', function () {
+                                    window.Commands.Execute(command, {});
+                                });
+                                break;
                             case "toggle":
                                 if (that.listOptions[ind].toggle === undefined) {
                                     value = command !== undefined ? ($(child).attr("data-default") === "true") : undefined;
@@ -7864,14 +7882,6 @@ jQuery.fn.extend({
                         }
                     }
                 });
-            });
-            var ftv = $('#fitToViewBtn');
-            ftv.bind('click', function () {
-                window.Commands.Execute('ModelFitToView', {});
-            });
-            var svg = $('#exportSVGBtn');
-            svg.bind('click', function () {
-                window.Commands.Execute('SaveSVG', {});
             });
         },
         changeButtonONOFFStyle: function (ind) {
