@@ -1785,6 +1785,7 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
+  overflow-y: auto;
   height: 100%;
   font-family: 'Segoe-UI';
   font-size: 13px;
