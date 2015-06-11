@@ -15,7 +15,7 @@
 
                     for (var item in inputs) {
                         if (inputs[item] > 1) {
-                            if (formula.split(item).length - 1 !== inputs[item]) {
+                            if (formula.split(item).length - 1 !== inputs[item] && formula !== "") {
                                 that.editorDriver.SetValidation(false, 'Need equal number of repeating inputs in formula');
                                 return;
                             }
