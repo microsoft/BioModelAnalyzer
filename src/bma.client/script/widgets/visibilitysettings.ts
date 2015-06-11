@@ -95,9 +95,6 @@
                                 }
                                 break;
                         }
-                        if (value === undefined) {
-                            console.log(behavior + ' ' + command + ' ' + value);
-                        }
                     }
                 })
             });
