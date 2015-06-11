@@ -48,7 +48,7 @@
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {
-                    var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                    var plotName = "plot" + i;
                     that._chart.polyline(plotName, undefined);
                 }
 
@@ -66,7 +66,7 @@
                         var y = options.colors[i].Plot;
                         var m = that.Max(y);
                         if (m > max) max = m;
-                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                        var plotName = "plot" + i;
                         var polyline = that._chart.get(plotName);
                         if (polyline !== undefined) {
                             polyline.stroke = options.colors[i].Color;
@@ -90,7 +90,7 @@
                                     p.draw({ y: options.colors[index].Plot, thickness: 8, lineJoin: 'round' });
 
                                     for (var i = 0; i < options.colors.length; i++) {
-                                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                        var plotName = "plot" + i;
                                         var polyline = that._chart.get(plotName);
                                         if (polyline !== undefined) {
                                             polyline.stroke = "lightgray";
@@ -104,7 +104,7 @@
                                     p.isVisible = false;
 
                                     for (var i = 0; i < options.colors.length; i++) {
-                                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                        var plotName = "plot" + i;
                                         var polyline = that._chart.get(plotName);
                                         if (polyline !== undefined) {
                                             polyline.stroke = options.colors[i].Color;
@@ -167,7 +167,7 @@
         },
 
         ChangeVisibility: function (ind, check) {
-            var plotName = this.options.colors[ind].Name === "" || this.options.colors[ind].Name === undefined ? "plot" + ind : this.options.colors[ind].Name;
+            var plotName = "plot" + ind;
             var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
