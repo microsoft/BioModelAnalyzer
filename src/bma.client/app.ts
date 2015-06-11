@@ -124,16 +124,16 @@ function popup_position() {
             popup_half_w = (win_w - my_popup_w) / 2,
             popup_half_h = (win_h - my_popup_h) / 2;
         if (win_w > my_popup_w) {
-            my_popup.css({ 'left': popup_half_w });
+            $(this).css({ 'left': popup_half_w });
         }
         if (win_w < my_popup_w) {
-            my_popup.css({ 'left': 5, });
+            $(this).css({ 'left': 5, });
         }
         if (win_h > my_popup_h) {
-            my_popup.css({ 'top': popup_half_h });
+            $(this).css({ 'top': popup_half_h });
         }
         if (win_h < my_popup_h) {
-            my_popup.css({ 'top': 5 });
+            $(this).css({ 'top': 5 });
         }
     })
 }
