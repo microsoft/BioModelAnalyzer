@@ -8,9 +8,11 @@ describe("VisibilitySettings", () => {
         vsTable = $("<div></div>");
         ul = $('<ul></ul>').appendTo(vsTable);
         li = $("<li></li>").appendTo(ul);
-        op1 = $("<div>option1</div>").appendTo(l1);
-        l1 = $('<div data-behavior="toggle" data-command="command.toggle" data-default="false"></div>').appendTo(li);
-        l2 = $('<div data-behavior="increment" data-command="command.increment" data-default="14"></div>').appendTo(li);
+        op1 = $("<div>option1</div>").appendTo(li);
+        var div = $('<div></div>').appendTo(li);
+        l1 = $('<div data-behavior="toggle" data-command="command.toggle" data-default="false"></div>').appendTo(div);
+        l2 = $('<div data-behavior="increment" data-command="command.increment" data-default="14"></div>').appendTo(div);
+        var act = $('<button data-behavior="action" data-command="ModelFitToView" id="fitToViewBtn">FIT TO VIEW</button>').appendTo(div);
         vsTable.visibilitysettings();
     });
 
@@ -29,7 +31,8 @@ describe("VisibilitySettings", () => {
         vsTable.visibilitysettings("destroy");
         var li2 = $('<li></li>').appendTo(ul);
         var op2 = $('<div>option2</div>').appendTo(li2);
-        var t2 = $('<div data-behavior="toggle" data-default="true" data-command="command"></div>').appendTo(li2);
+        var div2 = $('<div></div>').appendTo(li2);
+        var t2 = $('<div data-behavior="toggle" data-default="true" data-command="command"></div>').appendTo(div2);
         vsTable.visibilitysettings();
         expect(t2.text()).toEqual("ON");
     })
@@ -61,11 +64,11 @@ describe("VisibilitySettings", () => {
     })
 
 
-    it("should ececute ModelFitToView",() => {
-        var ftv = vsTable.find("#fitToViewBtn");
+    it("should execute ModelFitToView",() => {
+        var ftv = vsTable.find("[data-behavior='action']");
         spyOn(window.Commands, "Execute");
         ftv.click();
         expect(ftv.length).toEqual(1);
-        expect(window.Commands.Execute).toHaveBeenCalledWith('ModelFitToView', {});
+        expect(window.Commands.Execute).toHaveBeenCalledWith(ftv.attr('data-command'), {});
     });
 })
