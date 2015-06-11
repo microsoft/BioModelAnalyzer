@@ -20,6 +20,7 @@
                 Seen: boolean;
                 Plot: number[];
                 Init: number;
+                Name: string;
             }[]
 
             constructor(
@@ -41,7 +42,7 @@
                 this.simulationAccordeon = simulationAccordeon;
                 this.messagebox = messagebox;
                 var that = this;
-
+                this.initValues = [];
 
 
                 window.Commands.On("ChangePlotVariables", function (param) {
@@ -88,9 +89,9 @@
                             error: undefined
                         });
 
-                        var initValues = that.GetInitValues();
+                        var initValues = that.initValues;
                         that.expandedViewer.Set({
-                            variables: that.appModel.BioModel.Variables,
+                            variables: that.GetSortedVars(),
                             colors: that.variables,
                             init: initValues
                         });
@@ -98,14 +99,10 @@
                     }
                     else {
                         var variables = that.CreateVariablesCompactView();
+                        var colorData = that.CreateProgressionMinTable();
                         that.compactViewer.SetData({
-                            data: { variables: variables },
+                            data: { variables: variables, colorData: colorData },
                             plot: that.variables
-                        });
-                        that.expandedViewer.Set({
-                            variables: that.appModel.BioModel.Variables,
-                            colors: that.variables,
-                            init: that.GetInitValues()
                         });
                     }
                 });
@@ -113,16 +110,13 @@
                 window.Commands.On("Expand",(param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         var full: JQuery = undefined;
-                        var variables = this.appModel.BioModel.Variables.sort((x, y) => {
-                            return x.Id < y.Id ? -1 : 1;
-                        });
                         switch (param) {
                             case "SimulationVariables":
                                 if (that.expandedSimulationVariables !== undefined) {
                                     full = that.expandedSimulationVariables;
                                 }
                                 else {
-                                    that.expandedViewer.Set({ variables: variables, colors: that.variables, init: that.GetInitValues() });
+                                    that.expandedViewer.Set({ variables: that.GetSortedVars(), colors: that.variables, init: that.initValues });
                                     full = that.expandedViewer.GetViewer();
                                 }
                                 break;
@@ -150,12 +144,11 @@
                 });
             }
 
-            public GetInitValues() {
-                var inits = [];
-                for (var i = 0; i < this.variables.length; i++) {
-                    inits.push(this.variables[i].Init);
-                }
-                return inits;
+            public GetSortedVars() {
+                var vars = this.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+                return vars;
             }
 
             public UpdateVariables() {
@@ -164,22 +157,27 @@
                     return x.Id < y.Id ? -1 : 1;
                 });
                 that.variables = [];
+                that.initValues = [];
                 for (var i = 0; i < vars.length; i++) {
                     this.variables.push({
                         Id: vars[i].Id,
                         Color: this.getRandomColor(),
                         Seen: true,
                         Plot: [],
-                        Init: vars[i].RangeFrom
+                        Init: vars[i].RangeFrom,
+                        Name: vars[i].Name
                     });
                     this.variables[i].Plot[0] = this.variables[i].Init;
+                    this.initValues[i] = this.variables[i].Init;
                 }
             }
 
             public ClearPlot(init) {
+                this.initValues = [];
                 for (var i = 0; i < this.variables.length; i++) {
                     this.variables[i].Plot = [];
-                    this.variables[i].Plot[0] = init[i] || this.variables[i].Init;
+                    this.variables[i].Plot[0] = (init!==undefined) ? init[i] : this.variables[i].Init;
+                    this.initValues.push(this.variables[i].Plot[0]);
                 }
             }
 
@@ -214,7 +212,7 @@
 
             public StartSimulation(param) {
                 var that = this;
-                that.expandedSimulationVariables = that.expandedViewer.GetViewer();
+                
                 if (param.num === undefined || param.num === 0) {
                     var colorData = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({
@@ -225,8 +223,9 @@
                         plot: that.variables,
                         error: undefined
                     });
+                    that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                     that.expandedViewer.ActiveMode();
-                    this.Snapshot();
+                    that.Snapshot();
                     that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     return;
                 }
@@ -241,7 +240,6 @@
                         var result = that.ajax.Invoke(simulate)
                             .done(function (res) {
                             if (res.Variables !== null) {
-                                //that.results.push(res);
                                 that.expandedViewer.AddResult(res);
                                 var d = that.ConvertResult(res);
                                 that.AddData(d);
