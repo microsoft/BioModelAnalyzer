@@ -122,7 +122,7 @@
                                     full = that.expandedSimulationVariables;
                                 }
                                 else {
-                                    that.expandedViewer.Set({ variables: variables, colors: that.variables, init: that.initValues });
+                                    that.expandedViewer.Set({ variables: variables, colors: that.variables, init: that.GetInitValues() });
                                     full = that.expandedViewer.GetViewer();
                                 }
                                 break;
@@ -348,12 +348,9 @@
 
             public ConvertParam(arr) {
                 var res = [];
-                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
-                    return x.Id < y.Id ? -1 : 1;
-                });
                 for (var i = 0; i < arr.length; i++) {
                     res[i] = {
-                        "Id": variables[i].Id,
+                        "Id": this.variables[i].Id,
                         "Value": arr[i]
                     }
                 }

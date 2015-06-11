@@ -217,24 +217,19 @@
             public Stability(ticks) {
                 var containers = [];
                 if (ticks === null) return undefined;
-                var variables = this.appModel.BioModel.Variables;
+
+                var variables = this.appModel.BioModel.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+
                 var allconts = this.appModel.Layout.Containers;
 
                 var stability = [];
-                var l = ticks[0].Variables.length;
-                for (var i = 0; i < l; i++) {
+                for (var i = 0, l = variables.length; i < l; i++) {
                     var ij = ticks[0].Variables[i];
                     var c = ij.Lo === ij.Hi;
-                    var range = '';
-                    if (c) {
-                        range = ij.Lo;
-                    }
-                    else {
-                        range = ij.Lo + ' - ' + ij.Hi;
-                    }
-                    var id = ij.Id;
-                    stability[i] = { id: id, state: c, range: range };
-                    var v = this.appModel.BioModel.GetVariableById(id);
+                    stability[i] = { id: ij.Id, state: c, range: c ? ij.Lo : ij.Lo + ' - ' + ij.Hi };
+                    var v = this.appModel.BioModel.GetVariableById(ij.Id);
                     if (v.ContainerId !== undefined && (!c || containers[v.ContainerId] === undefined))
                         containers[v.ContainerId] = c;
                 }
@@ -258,25 +253,26 @@
             }
 
             public CreateTableView(stability) {
-                var table = [];
+                
                 if (stability === undefined) return { numericData: undefined, colorData: undefined };
+
                 var biomodel = this.appModel.BioModel;
+                var table = [];
                 var color = [];
+
                 for (var i = 0; i < stability.length; i++) {
-                    var st = stability[stability.length - 1 - i];
+                    var st = stability[i];
                     var variable = biomodel.GetVariableById(st.id)
                     table[i] = [];
-                    color[i] = [];
                     table[i][0] = variable.Name;
                     table[i][1] = variable.Formula;
-                    var range = '';
+                    table[i][2] = st.range;
+                    color[i] = [];
                     var c = st.state;
                     if (!c) {
-                        for (var j = 0; j < 3; j++)
+                        for (var j = 0; j < table[i].length; j++)
                             color[i][j] = c;
                     }
-
-                    table[i][2] = st.range;
                 }
                 return { numericData: table, colorData: color };
             }
@@ -290,7 +286,7 @@
                 for (var i = 0; i < v; i++) {
                     color[i] = [];
                     for (var j = 0; j < t; j++) {
-                        var ij = ticks[t - j - 1].Variables[v - 1 - i];
+                        var ij = ticks[t-j-1].Variables[i];
                         color[i][j] = ij.Hi === ij.Lo;
                     }
                 }
@@ -339,11 +335,11 @@
                 for (var j = 0; j < variables.length; j++) {
                     table[j] = [];
                     color[j] = [];
-                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[variables.length - 1 - j].Id).Name;
-                    var v = ticks[0].Variables[variables.length - 1 - j];
+                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
                     color[j][0] = v.Lo === v.Hi;
                     for (var i = 1; i < l + 1; i++) {
-                        var ij = ticks[l - i].Variables[variables.length - 1 - j];
+                        var ij = ticks[l - i].Variables[j];
                         if (ij.Lo === ij.Hi) {
                             table[j][i] = ij.Lo;
                             color[j][i] = true;
