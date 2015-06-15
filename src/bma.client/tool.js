@@ -4085,23 +4085,16 @@ var BMA;
                 var containers = [];
                 if (ticks === null)
                     return undefined;
-                var variables = this.appModel.BioModel.Variables;
+                var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
                 var allconts = this.appModel.Layout.Containers;
                 var stability = [];
-                var l = ticks[0].Variables.length;
-                for (var i = 0; i < l; i++) {
+                for (var i = 0, l = variables.length; i < l; i++) {
                     var ij = ticks[0].Variables[i];
                     var c = ij.Lo === ij.Hi;
-                    var range = '';
-                    if (c) {
-                        range = ij.Lo;
-                    }
-                    else {
-                        range = ij.Lo + ' - ' + ij.Hi;
-                    }
-                    var id = ij.Id;
-                    stability[i] = { id: id, state: c, range: range };
-                    var v = this.appModel.BioModel.GetVariableById(id);
+                    stability[i] = { id: ij.Id, state: c, range: c ? ij.Lo : ij.Lo + ' - ' + ij.Hi };
+                    var v = this.appModel.BioModel.GetVariableById(ij.Id);
                     if (v.ContainerId !== undefined && (!c || containers[v.ContainerId] === undefined))
                         containers[v.ContainerId] = c;
                 }
@@ -4121,25 +4114,24 @@ var BMA;
                 return undefined;
             };
             ProofPresenter.prototype.CreateTableView = function (stability) {
-                var table = [];
                 if (stability === undefined)
                     return { numericData: undefined, colorData: undefined };
                 var biomodel = this.appModel.BioModel;
+                var table = [];
                 var color = [];
                 for (var i = 0; i < stability.length; i++) {
-                    var st = stability[stability.length - 1 - i];
+                    var st = stability[i];
                     var variable = biomodel.GetVariableById(st.id);
                     table[i] = [];
-                    color[i] = [];
                     table[i][0] = variable.Name;
                     table[i][1] = variable.Formula;
-                    var range = '';
+                    table[i][2] = st.range;
+                    color[i] = [];
                     var c = st.state;
                     if (!c) {
-                        for (var j = 0; j < 3; j++)
+                        for (var j = 0; j < table[i].length; j++)
                             color[i][j] = c;
                     }
-                    table[i][2] = st.range;
                 }
                 return { numericData: table, colorData: color };
             };
@@ -4153,7 +4145,7 @@ var BMA;
                 for (var i = 0; i < v; i++) {
                     color[i] = [];
                     for (var j = 0; j < t; j++) {
-                        var ij = ticks[t - j - 1].Variables[v - 1 - i];
+                        var ij = ticks[t - j - 1].Variables[i];
                         color[i][j] = ij.Hi === ij.Lo;
                     }
                 }
@@ -4198,11 +4190,11 @@ var BMA;
                 for (var j = 0; j < variables.length; j++) {
                     table[j] = [];
                     color[j] = [];
-                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[variables.length - 1 - j].Id).Name;
-                    var v = ticks[0].Variables[variables.length - 1 - j];
+                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
                     color[j][0] = v.Lo === v.Hi;
                     for (var i = 1; i < l + 1; i++) {
-                        var ij = ticks[l - i].Variables[variables.length - 1 - j];
+                        var ij = ticks[l - i].Variables[j];
                         if (ij.Lo === ij.Hi) {
                             table[j][i] = ij.Lo;
                             color[j][i] = true;
@@ -4238,19 +4230,17 @@ var BMA;
                 this.expandedViewer = simulationExpanded;
                 this.logService = logService;
                 this.ajax = ajax;
-                this.colors = [];
                 this.simulationAccordeon = simulationAccordeon;
                 this.messagebox = messagebox;
                 var that = this;
+                this.initValues = [];
                 window.Commands.On("ChangePlotVariables", function (param) {
-                    that.colors[param.ind].Seen = param.check;
+                    that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
                 });
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
-                    that.results = [];
-                    that.initValues = param.data;
-                    that.ClearColors();
+                    that.ClearPlot(param.data);
                     try {
                         var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
                         var variables = that.ConvertParam(param.data);
@@ -4272,54 +4262,49 @@ var BMA;
                             return;
                         }
                         that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
-                        that.initValues = [];
-                        that.results = [];
                         that.expandedSimulationVariables = undefined;
-                        that.CreateColors();
-                        that.ClearColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors);
-                        var variables = that.CreateVariablesView();
-                        that.compactViewer.SetData({ data: { variables: variables, colorData: undefined }, plot: undefined, error: undefined });
-                        var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
-                            return x.Id < y.Id ? -1 : 1;
+                        that.UpdateVariables();
+                        that.compactView = that.CreateVariablesCompactView();
+                        that.compactViewer.SetData({
+                            data: {
+                                variables: that.compactView,
+                                colorData: undefined
+                            },
+                            plot: undefined,
+                            error: undefined
                         });
-                        var initialValues = [];
-                        for (var ind = 0; ind < vars.length; ind++) {
-                            initialValues.push(vars[ind].RangeFrom);
-                        }
-                        that.initValues = initialValues;
-                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: initialValues });
-                        window.Commands.Execute("RunSimulation", { num: 10, data: initialValues });
+                        var initValues = that.initValues;
+                        that.expandedViewer.Set({
+                            variables: that.GetSortedVars(),
+                            colors: that.variables,
+                            init: initValues
+                        });
+                        window.Commands.Execute("RunSimulation", { num: 10, data: initValues });
                     }
                     else {
-                        that.CreateColors();
-                        that.dataForPlot = that.CreateDataForPlot(that.colors);
-                        var variables = that.CreateVariablesView();
-                        that.compactViewer.SetData({ data: { variables: variables }, plot: that.dataForPlot });
-                        var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
-                            return x.Id < y.Id ? -1 : 1;
+                        var variables = that.CreateVariablesCompactView();
+                        var colorData = that.CreateProgressionMinTable();
+                        that.compactViewer.SetData({
+                            data: { variables: variables, colorData: colorData },
+                            plot: that.variables
                         });
-                        that.expandedViewer.Set({ variables: vars, colors: that.dataForPlot, init: that.initValues });
                     }
                 });
                 window.Commands.On("Expand", function (param) {
                     if (_this.appModel.BioModel.Variables.length !== 0) {
                         var full = undefined;
-                        var variables = _this.appModel.BioModel.Variables.sort(function (x, y) {
-                            return x.Id < y.Id ? -1 : 1;
-                        });
                         switch (param) {
                             case "SimulationVariables":
                                 if (that.expandedSimulationVariables !== undefined) {
                                     full = that.expandedSimulationVariables;
                                 }
                                 else {
-                                    that.expandedViewer.Set({ variables: variables, colors: that.dataForPlot, init: that.initValues });
+                                    that.expandedViewer.Set({ variables: that.GetSortedVars(), colors: that.variables, init: that.initValues });
                                     full = that.expandedViewer.GetViewer();
                                 }
                                 break;
                             case "SimulationPlot":
-                                full = $('<div></div>').simulationplot({ colors: that.dataForPlot });
+                                full = $('<div></div>').simulationplot({ colors: that.variables });
                                 break;
                             default:
                                 simulationViewer.Show({ tab: undefined });
@@ -4339,6 +4324,46 @@ var BMA;
                     exportService.Export(csv, appModel.BioModel.Name, 'csv');
                 });
             }
+            SimulationPresenter.prototype.GetSortedVars = function () {
+                var vars = this.appModel.BioModel.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+                return vars;
+            };
+            SimulationPresenter.prototype.UpdateVariables = function () {
+                var that = this;
+                var vars = that.appModel.BioModel.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+                that.variables = [];
+                that.initValues = [];
+                for (var i = 0; i < vars.length; i++) {
+                    this.variables.push({
+                        Id: vars[i].Id,
+                        Color: this.getRandomColor(),
+                        Seen: true,
+                        Plot: [],
+                        Init: vars[i].RangeFrom,
+                        Name: vars[i].Name
+                    });
+                    this.variables[i].Plot[0] = this.variables[i].Init;
+                    this.initValues[i] = this.variables[i].Init;
+                }
+            };
+            SimulationPresenter.prototype.ClearPlot = function (init) {
+                this.initValues = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    this.variables[i].Plot = [];
+                    this.variables[i].Plot[0] = (init !== undefined) ? init[i] : this.variables[i].Init;
+                    this.initValues.push(this.variables[i].Plot[0]);
+                }
+            };
+            SimulationPresenter.prototype.GetById = function (arr, id) {
+                for (var i = 0; i < arr.length; i++)
+                    if (id === arr[i].Id)
+                        return i;
+                return undefined;
+            };
             SimulationPresenter.prototype.CurrentModelChanged = function () {
                 if (this.currentModel === undefined) {
                     this.Snapshot();
@@ -4361,96 +4386,72 @@ var BMA;
             };
             SimulationPresenter.prototype.StartSimulation = function (param) {
                 var that = this;
-                that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                 if (param.num === undefined || param.num === 0) {
-                    var variables = that.CreateVariablesView();
                     var colorData = that.CreateProgressionMinTable();
-                    that.dataForPlot = that.CreateDataForPlot(that.colors);
-                    that.compactViewer.SetData({ data: { variables: variables, colorData: colorData }, plot: that.dataForPlot, error: undefined });
+                    that.compactViewer.SetData({
+                        data: {
+                            variables: that.compactView,
+                            colorData: colorData
+                        },
+                        plot: that.variables,
+                        error: undefined
+                    });
+                    that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                     that.expandedViewer.ActiveMode();
-                    this.Snapshot();
+                    that.Snapshot();
                     that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     return;
                 }
-                var simulate = {
-                    "Model": param.model,
-                    "Variables": param.variables
-                };
-                if (param.variables !== undefined && param.variables !== null)
-                    var result = that.ajax.Invoke(simulate).done(function (res) {
-                        if (res.Variables !== null) {
-                            that.results.push(res);
-                            that.expandedViewer.AddResult(res);
-                            var d = that.ConvertResult(res);
-                            that.AddData(d);
-                            that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
-                        }
-                        else {
+                else {
+                    var simulate = {
+                        "Model": param.model,
+                        "Variables": param.variables
+                    };
+                    if (param.variables !== undefined && param.variables !== null) {
+                        var result = that.ajax.Invoke(simulate).done(function (res) {
+                            if (res.Variables !== null) {
+                                that.expandedViewer.AddResult(res);
+                                var d = that.ConvertResult(res);
+                                that.AddData(d);
+                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                            }
+                            else {
+                                that.expandedViewer.ActiveMode();
+                                alert("Simulation Error: " + res.ErrorMessages);
+                            }
+                        }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                            this.logService.LogSimulationError();
+                            console.log(textStatus);
                             that.expandedViewer.ActiveMode();
-                            alert("Simulation Error: " + res.ErrorMessages);
-                        }
-                    }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                        this.logService.LogSimulationError();
-                        console.log(textStatus);
-                        that.expandedViewer.ActiveMode();
-                        alert("Simulate error: " + errorThrown);
+                            alert("Simulate error: " + errorThrown);
+                            return;
+                        });
+                    }
+                    else
                         return;
-                    });
-                else
-                    return;
+                }
             };
             SimulationPresenter.prototype.AddData = function (d) {
                 if (d !== null) {
-                    var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
-                        return x.Id < y.Id ? -1 : 1;
-                    });
                     for (var i = 0; i < d.length; i++) {
-                        var color = this.colors[this.GetColorById(variables[i].Id)];
-                        color.Plot.push(d[i]);
-                    }
-                }
-                return color;
-            };
-            SimulationPresenter.prototype.CreateDataForPlot = function (colors) {
-                var result = [];
-                var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
-                    return x.Id < y.Id ? -1 : 1;
-                });
-                for (var i = 0; i < variables.length; i++) {
-                    result.push(colors[this.GetColorById(variables[i].Id)]);
-                }
-                return result;
-            };
-            SimulationPresenter.prototype.CreateColors = function () {
-                var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    var icolor = this.GetColorById(variables[i].Id);
-                    if (icolor === undefined)
-                        this.colors.push({
-                            Id: variables[i].Id,
-                            Name: variables[i].Name,
-                            Color: this.getRandomColor(),
-                            Seen: true,
-                            Plot: []
-                        });
-                    else {
-                        this.colors[icolor].Name = variables[i].Name;
+                        this.variables[i].Plot.push(d[i]);
                     }
                 }
             };
             SimulationPresenter.prototype.CreateCSV = function (sep) {
                 var csv = '';
                 var that = this;
-                var data = this.dataForPlot;
+                var data = this.variables;
                 for (var i = 0, len = data.length; i < len; i++) {
-                    var contid = that.appModel.BioModel.GetVariableById(data[i].Id).ContainerId;
+                    var ivar = that.appModel.BioModel.GetVariableById(data[i].Id);
+                    var contid = ivar.ContainerId;
                     var cont = that.appModel.Layout.GetContainerById(contid);
                     if (cont !== undefined) {
                         csv += cont.Name + sep;
                     }
                     else
                         csv += '' + sep;
-                    csv += data[i].Name + sep;
+                    csv += ivar.Name + sep;
                     var plot = data[i].Plot;
                     for (var j = 0, plotl = plot.length; j < plotl; j++) {
                         csv += plot[j] + sep;
@@ -4458,25 +4459,6 @@ var BMA;
                     csv += "\n";
                 }
                 return csv;
-            };
-            SimulationPresenter.prototype.ClearColors = function () {
-                for (var i = 0; i < this.colors.length; i++) {
-                    this.colors[i].Plot = [];
-                }
-                var variables = this.appModel.BioModel.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    var color = this.GetColorById(variables[i].Id);
-                    this.colors[color].Plot = [];
-                    this.colors[color].Name = variables[i].Name;
-                    if (this.initValues[i] !== undefined)
-                        this.colors[color].Plot[0] = this.initValues[i];
-                }
-            };
-            SimulationPresenter.prototype.GetColorById = function (id) {
-                for (var i = 0; i < this.colors.length; i++)
-                    if (id === this.colors[i].Id)
-                        return i;
-                return undefined;
             };
             SimulationPresenter.prototype.getRandomColor = function () {
                 var r = this.GetRandomInt(0, 255);
@@ -4487,46 +4469,50 @@ var BMA;
             SimulationPresenter.prototype.GetRandomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
             };
+            SimulationPresenter.prototype.GetResults = function () {
+                var res = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    res.push(this.variables[i].Plot);
+                }
+                return res;
+            };
             SimulationPresenter.prototype.CreateProgressionMinTable = function () {
                 var table = [];
-                if (this.results.length < 1)
+                var res = this.GetResults();
+                if (res.length < 1)
                     return;
-                for (var i = 0; i < this.results[0].Variables.length; i++) {
+                for (var i = 0, len = res.length; i < len; i++) {
                     table[i] = [];
                     table[i][0] = false;
-                    var l = this.results.length;
+                    var l = res[i].length;
                     for (var j = 1; j < l; j++) {
-                        table[i][j] = this.results[j].Variables[i].Value !== this.results[j - 1].Variables[i].Value;
+                        table[i][j] = res[i][j] !== res[i][j - 1];
                     }
                 }
                 return table;
             };
-            SimulationPresenter.prototype.CreateVariablesView = function () {
+            SimulationPresenter.prototype.CreateVariablesCompactView = function () {
                 var that = this;
                 var table = [];
-                var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
-                    return x.Id < y.Id ? -1 : 1;
-                });
-                for (var i = 0; i < variables.length; i++) {
+                var variables = this.appModel.BioModel.Variables;
+                for (var i = 0; i < this.variables.length; i++) {
+                    var ivar = this.appModel.BioModel.GetVariableById(this.variables[i].Id);
                     table[i] = [];
-                    table[i][0] = this.colors[this.GetColorById(variables[i].Id)].Color; // color should be there
+                    table[i][0] = this.variables[i].Color;
                     table[i][1] = (function () {
-                        var cont = that.appModel.Layout.GetContainerById(variables[i].ContainerId);
+                        var cont = that.appModel.Layout.GetContainerById(ivar.ContainerId);
                         return cont !== undefined ? cont.Name : '';
                     })();
-                    table[i][2] = variables[i].Name;
-                    table[i][3] = variables[i].RangeFrom + ' - ' + variables[i].RangeTo;
+                    table[i][2] = ivar.Name;
+                    table[i][3] = ivar.RangeFrom + ' - ' + ivar.RangeTo;
                 }
                 return table;
             };
             SimulationPresenter.prototype.ConvertParam = function (arr) {
                 var res = [];
-                var variables = this.appModel.BioModel.Variables.sort(function (x, y) {
-                    return x.Id < y.Id ? -1 : 1;
-                });
                 for (var i = 0; i < arr.length; i++) {
                     res[i] = {
-                        "Id": variables[i].Id,
+                        "Id": this.variables[i].Id,
                         "Value": arr[i]
                     };
                 }
@@ -4534,10 +4520,10 @@ var BMA;
             };
             SimulationPresenter.prototype.ConvertResult = function (res) {
                 var data = [];
-                if (res.Variables !== undefined && res.Variables !== null)
-                    data = [];
-                for (var i = 0; i < res.Variables.length; i++)
-                    data[i] = res.Variables[i].Value;
+                if (res.Variables !== undefined && res.Variables !== null) {
+                    for (var i = 0; i < res.Variables.length; i++)
+                        data[i] = res.Variables[i].Value;
+                }
                 return data;
             };
             return SimulationPresenter;
@@ -4695,7 +4681,7 @@ var BMA;
                     var inputs = param.inputs;
                     for (var item in inputs) {
                         if (inputs[item] > 1) {
-                            if (formula.split(item).length - 1 !== inputs[item]) {
+                            if (formula.split(item).length - 1 !== inputs[item] && formula !== "") {
                                 that.editorDriver.SetValidation(false, 'Need equal number of repeating inputs in formula');
                                 return;
                             }
@@ -6957,7 +6943,7 @@ var BMA;
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {
-                    var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                    var plotName = "plot" + i;
                     that._chart.polyline(plotName, undefined);
                 }
                 that._chart.isAutoFitEnabled = true;
@@ -6975,7 +6961,7 @@ var BMA;
                         var m = that.Max(y);
                         if (m > max)
                             max = m;
-                        var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                        var plotName = "plot" + i;
                         var polyline = that._chart.get(plotName);
                         if (polyline !== undefined) {
                             polyline.stroke = options.colors[i].Color;
@@ -6996,7 +6982,7 @@ var BMA;
                                 p.isVisible = true;
                                 p.draw({ y: options.colors[index].Plot, thickness: 8, lineJoin: 'round' });
                                 for (var i = 0; i < options.colors.length; i++) {
-                                    var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                    var plotName = "plot" + i;
                                     var polyline = that._chart.get(plotName);
                                     if (polyline !== undefined) {
                                         polyline.stroke = "lightgray";
@@ -7008,7 +6994,7 @@ var BMA;
                             if (p !== undefined) {
                                 p.isVisible = false;
                                 for (var i = 0; i < options.colors.length; i++) {
-                                    var plotName = options.colors[i].Name === "" || options.colors[i].Name === undefined ? "plot" + i : options.colors[i].Name;
+                                    var plotName = "plot" + i;
                                     var polyline = that._chart.get(plotName);
                                     if (polyline !== undefined) {
                                         polyline.stroke = options.colors[i].Color;
@@ -7062,7 +7048,7 @@ var BMA;
             return this._chart;
         },
         ChangeVisibility: function (ind, check) {
-            var plotName = this.options.colors[ind].Name === "" || this.options.colors[ind].Name === undefined ? "plot" + ind : this.options.colors[ind].Name;
+            var plotName = "plot" + ind;
             var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
@@ -7876,9 +7862,6 @@ jQuery.fn.extend({
                                     });
                                 }
                                 break;
-                        }
-                        if (value === undefined) {
-                            console.log(behavior + ' ' + command + ' ' + value);
                         }
                     }
                 });
