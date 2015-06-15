@@ -32,6 +32,8 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\localstoragewidget.ts"/>
+/// <reference path="script\widgets\keyframecompact.ts"/>
+/// <reference path="script\widgets\ltlviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -148,16 +150,10 @@ $(document).ready(function () {
         var dfd = $.Deferred();
 
         loadVersion().done(function (version) {
-            try {
-                loadScript(version);
-                window.setInterval(function() { versionCheck(version); }, 3600000 /* 1 hour */);
-                dfd.resolve();
-            }
-            catch (ex) {
-                dfd.reject(ex.message);
-            }
-        }).fail(function (error) {
-            dfd.reject(error);
+            loadScript(version);
+            window.setInterval(function () { versionCheck(version); }, 3600000 /* 1 hour */);
+            dfd.resolve();
+
         });
 
         return dfd.promise();
@@ -450,6 +446,7 @@ function loadScript(version) {
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
+    $('#tabs-3').ltlviewer();
     var popup = $('<div></div>')
         .addClass('popup-window window')
         .appendTo('body')
@@ -544,7 +541,8 @@ function loadScript(version) {
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
-
+    var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
+    
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
@@ -568,8 +566,8 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-
-
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(keyframecompactDriver);
+    
     //Loading model from URL
     var reserved_key = "InitialModel";
 

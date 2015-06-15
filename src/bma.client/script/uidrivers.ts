@@ -568,5 +568,17 @@ module BMA {
                 var ret = saveTextAs(content, name + '.' + extension);
             }
         }
+
+        export class KeyframesList implements IKeyframesList {
+            private keyframe: JQuery;
+
+            public Add(items) {
+                this.keyframe.keyframecompact('add', items);
+            }
+
+            constructor(keyframe: JQuery) {
+                this.keyframe = keyframe;
+            }
+        }
     }
 } 

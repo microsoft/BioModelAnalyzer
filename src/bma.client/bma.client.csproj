@@ -223,6 +223,7 @@
     <Content Include="images\local.png" />
     <Content Include="images\local.svg" />
     <Content Include="images\logo-crop.png" />
+    <Content Include="images\ltl-icon.png" />
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
@@ -351,6 +352,7 @@
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\LTLpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
@@ -402,7 +404,9 @@
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\keyframecompact.ts" />
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
+    <TypeScriptCompile Include="script\widgets\ltlviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />

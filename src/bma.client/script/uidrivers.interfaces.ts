@@ -145,5 +145,9 @@ module BMA {
             Snapshot(model);
             IsChanged(model);
         }
+
+        export interface IKeyframesList {
+            Add(items);
+        }
     }
 } 
