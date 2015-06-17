@@ -44,6 +44,13 @@ namespace BioModelAnalyzer
         public Tick[] Ticks { get; set; }
     }
 
+    public class AnalysisResultDTO: AnalysisResult
+    {
+        [XmlElement("Loop", Type = typeof(int))]
+        public int Loop { get; set; }
+
+    }
+
     public enum StatusType
     {
         Default,
@@ -54,6 +61,8 @@ namespace BioModelAnalyzer
         NotStabilizing,
         Fixpoint,
         Unknown,
-        Error
+        Error,
+        True,
+        False
     }
 }

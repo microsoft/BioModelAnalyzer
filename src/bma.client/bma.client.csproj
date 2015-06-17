@@ -235,6 +235,7 @@
     <Content Include="images\oscillations-ON.svg" />
     <Content Include="images\oscillations.png" />
     <Content Include="images\oscillations.svg" />
+    <Content Include="images\plus.png" />
     <Content Include="images\pointer ON.png" />
     <Content Include="images\pointer ON.svg" />
     <Content Include="images\pointer-ON.png" />

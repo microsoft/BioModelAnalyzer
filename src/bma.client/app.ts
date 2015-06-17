@@ -555,7 +555,7 @@ function loadScript(version) {
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
-
+    var ltlService = new BMA.UIDrivers.LTLAnalyzeService();
 
     //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
@@ -566,7 +566,7 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(keyframecompactDriver);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(appModel, keyframecompactDriver, ltlService);
     
     //Loading model from URL
     var reserved_key = "InitialModel";
