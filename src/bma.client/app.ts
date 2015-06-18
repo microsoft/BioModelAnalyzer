@@ -542,7 +542,7 @@ function loadScript(version) {
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
-    
+    var ltlrescompDriver = new BMA.UIDrivers.LTLResultsViewer($('#tabs-3').find('#LTLResults'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
@@ -566,7 +566,7 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(appModel, keyframecompactDriver, ltlService);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(appModel, keyframecompactDriver, ltlrescompDriver, ltlService);
     
     //Loading model from URL
     var reserved_key = "InitialModel";

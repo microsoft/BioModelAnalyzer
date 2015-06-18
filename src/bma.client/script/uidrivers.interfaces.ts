@@ -149,5 +149,9 @@ module BMA {
         export interface IKeyframesList {
             Add(items);
         }
+
+        export interface ILTLResultsViewer {
+            Set(result);
+        }
     }
 } 

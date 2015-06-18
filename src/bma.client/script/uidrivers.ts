@@ -592,5 +592,20 @@ module BMA {
                 this.keyframe = keyframe;
             }
         }
+
+        export class LTLResultsViewer implements ILTLResultsViewer {
+            private restable: JQuery;
+
+            constructor(table: JQuery) {
+                this.restable = table;
+            }
+
+            public Set(res) {
+                this.restable.coloredtableviewer({ "colorData": res, type: "color" });
+                this.restable.find(".proof-propagation-overview").addClass("ltl-result-table");
+                this.restable.find('td.propagation-cell-green').removeClass("propagation-cell-green");
+                this.restable.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
+            }
+        }
     }
 } 

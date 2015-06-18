@@ -2030,6 +2030,12 @@ body {
             }
         }
 
+        .ltl-results-tab {
+            .scrollable-results{
+				.scrollbox(150px);
+			}
+        }
+
 	// Popout Windows
         .popup-window {
             position: absolute;
@@ -2370,3 +2376,14 @@ body {
             }
         }
     }
+
+
+    .ltl-result-table {
+            td {
+                border: 1px solid white;
+                background-color: @lightgrey;
+                &.change {
+                    background-color: @sim-yellow;
+                }
+            }
+        }

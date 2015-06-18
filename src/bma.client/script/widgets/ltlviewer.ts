@@ -7,7 +7,7 @@
         },
 
         _create: function () {
-            var elem = this.element;
+            var elem = this.element.addClass('ltl-results-tab');
             var key_div = $('<div></div>').appendTo(elem);
             var key_content = $('<div>TODO: KEYFRAMES</div>').keyframecompact();//.keyframeviewer();
             key_div.resultswindowviewer({
@@ -24,8 +24,8 @@
                 content: temp_content
             });
 
-            var results = $('<div></div>').appendTo(elem);
-            var res_table = $('<div>TODO: RESULTS</div>');
+            var results = $('<div></div>').appendTo(elem).addClass('scrollable-results');
+            var res_table = $('<div id="LTLResults"></div>');
             results.resultswindowviewer({
                 header: "Results",
                 icon: "max",

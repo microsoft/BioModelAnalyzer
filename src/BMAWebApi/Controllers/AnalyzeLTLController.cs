@@ -96,6 +96,7 @@ namespace bma.client.Controllers
                         Ticks = result.Ticks,
                         Status = result.Status,
                         Time = (int)time,
+                        Loop = result.Loop,
                         ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                         DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                         //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
