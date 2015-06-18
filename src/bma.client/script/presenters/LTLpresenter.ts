@@ -26,7 +26,9 @@
                 window.Commands.On("LTLRequested", function () {
                     var model = BMA.Model.ExportBioModel(appModel.BioModel);
                     var proofInput = {
-                        "Model": model,
+                        "Name": model.Name,
+                        "Relationships": model.Relationships,
+                        "Variables": model.Variables,
                         "Formula": "(True)",
                         "Number_of_steps": 100
                     }
@@ -35,6 +37,9 @@
                         .done(function (res) {
                             console.log(res.Loop);
                             alert(res.Status);
+                        })
+                        .fail(function () {
+                            alert("failed");
                         })
                 })
 

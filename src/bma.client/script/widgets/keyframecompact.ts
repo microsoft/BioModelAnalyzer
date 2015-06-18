@@ -5,7 +5,8 @@
     $.widget("BMA.keyframecompact", {
 
         options: {
-            items: ['init']
+            items: ['init'],
+            canedit: false
         },
 
         _create: function () {
@@ -53,21 +54,29 @@
          
         _appendbutton: function (item) {
             var that = this;
-            var btn = $('<div></div>')
-                .addClass('keyframe-btn')
-                .insertBefore(that.content.find('.add'));
-            btn.bind('click', function () {
-                that.content.find('.keyframe-btn').removeClass('selected');
-                $(this).addClass('selected');
-                window.Commands.Execute("KeyframeSelected", { ind: $(this).index() });
-            });
-            var input = $('<input type="text" size="2">').appendTo(btn);
-            input.val(item);
-            input.bind('change input', function () {
-                var ind = $(this).parent().index();
-                that.options.items[ind] = $(this).val();
-                window.Commands.Execute("ChangedKeyframeName", { ind: ind, name: that.options.items[ind] });
-            });
+            if (that.options.canedit) {
+                var btn = $('<div></div>')
+                    .addClass('keyframe-btn mutable')
+                    .insertBefore(that.content.find('.add'));
+                btn.bind('click', function () {
+                    that.content.find('.keyframe-btn').removeClass('selected');
+                    $(this).addClass('selected');
+                    window.Commands.Execute("KeyframeSelected", { ind: $(this).index() });
+                });
+                var input = $('<input type="text" size="2">').appendTo(btn);
+                input.val(item);
+                input.bind('change input', function () {
+                    var ind = $(this).parent().index();
+                    that.options.items[ind] = $(this).val();
+                    window.Commands.Execute("ChangedKeyframeName", { ind: ind, name: that.options.items[ind] });
+                });
+            }
+            else {
+                var btn = $('<div></div>')
+                    .addClass('keyframe-btn')
+                    .insertBefore(that.content.find('.add'));
+                var name = $('<div></div>').text(item).appendTo(btn);
+            }
         }
 
     });

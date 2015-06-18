@@ -720,15 +720,14 @@ let AnalysisResult_of_stability_result (sr:Result.stability_result) =
 let xml_of_ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
     let (loop,model_map) = model
 
-    let getvariable (variable: Map<QN.var,int>) = 
-        let varlist = Array.zeroCreate model_map.Count
-        let i = ref 0
-        while (Map.containsKey !i variable) do     
-            for item in variable do
-                let vrbl = new AnalysisResult.Tick.Variable ()
-                vrbl.Id <- item.Key; vrbl.Hi <- item.Value; vrbl.Lo <- item.Value; 
-                varlist.[i.Value] <- vrbl
-            incr i
+    let getvariables (variable: Map<QN.var,int>) = 
+        let varlist = Array.zeroCreate variable.Count
+        let j = ref 0
+        for item in variable do  
+            let vrbl = new AnalysisResult.Tick.Variable ()
+            vrbl.Id <- item.Key; vrbl.Hi <- item.Value; vrbl.Lo <- item.Value
+            varlist.[j.Value] <- vrbl
+            incr j
         varlist
 
     let ticks = Array.zeroCreate model_map.Count
@@ -736,7 +735,8 @@ let xml_of_ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) 
     while (Map.containsKey !i model_map) do            
         ticks.[i.Value] <- new AnalysisResult.Tick() 
         ticks.[i.Value].Time <- i.Value
-        ticks.[i.Value].Variables <- getvariable (Map.find !i model_map)
+        let vrb = Map.find !i model_map
+        ticks.[i.Value].Variables <- getvariables vrb
         incr i
 //    match result with 
 //    | true -> 

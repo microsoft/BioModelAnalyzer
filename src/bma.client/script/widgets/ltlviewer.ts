@@ -3,7 +3,8 @@
 
 (function ($) {
     $.widget("BMA.ltlviewer", {
-        options: {},
+        options: {
+        },
 
         _create: function () {
             var elem = this.element;

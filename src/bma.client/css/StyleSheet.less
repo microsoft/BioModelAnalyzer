@@ -2336,22 +2336,28 @@ body {
         vertical-align: middle;
         border-radius: 25px;
         position: relative;
-        cursor: pointer; 
+        cursor: default;
         margin: 0 10px 10px 0;
 
         &.add {
-            border: 1px dashed;
+            border: 2px dashed;
+            background-image: url(/images/plus.png);
+            background-size:contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
         }
 
         &.selected {
             border: 3px solid;
         }
 
-        &:hover{
+        &.mutable:hover{
             background-color: @lightgrey;
+            cursor: pointer;
         }
 
-        input{
+        div, input{
             width: 100%;
             text-align: center;
             margin: auto;
@@ -2359,5 +2365,8 @@ body {
             background-color: transparent;
             display: block;
             padding: 0;
+            &:focus {
+                box-shadow: none;
+            }
         }
     }
