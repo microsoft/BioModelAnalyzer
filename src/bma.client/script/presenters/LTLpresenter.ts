@@ -4,16 +4,23 @@
 
             keyframescompact: BMA.UIDrivers.IKeyframesList;
             appModel: BMA.Model.AppModel;
+            currentdraggableelem: any;
+            
+
+
             constructor(
                 appModel: BMA.Model.AppModel,
                 keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
-                resultsDriver: BMA.UIDrivers.ILTLResultsViewer,
-                ajax: BMA.UIDrivers.IServiceDriver
+                //keyframesfullDriver: BMA.UIDrivers.IKeyframesList,
+                ltlviewer: BMA.UIDrivers.ILTLViewer,
+                ajax: BMA.UIDrivers.IServiceDriver,
+                popupViewer: BMA.UIDrivers.IPopup
                 ) {
 
                 var that = this;
                 window.Commands.On("AddKeyframe", function () {
-                    keyframescompactDriver.Add("New");
+                    keyframescompactDriver.AddState("New");
+                    //keyframesfullDriver.AddState("New");
                 });
 
                 window.Commands.On("ChangedKeyframeName", function (item: { ind; name} ) {
@@ -24,26 +31,56 @@
                     alert('selected ind=' + item.ind);
                 });
                 
-                window.Commands.On("LTLRequested", function () {
+                window.Commands.On("LTLRequested", function (param: {formula}) {
                     var model = BMA.Model.ExportBioModel(appModel.BioModel);
                     var proofInput = {
                         "Name": model.Name,
                         "Relationships": model.Relationships,
-                        "Variables": model.Variables,
-                        "Formula": "(True)",
+                        "Variables": appModel.BioModel.Variables,
+                        "Formula": param.formula,
                         "Number_of_steps": 10
                     }
 
                     var result = ajax.Invoke(proofInput)
                         .done(function (res) {
-                            alert(res.Loop);
+                            if (res.Ticks == null) {
+                                alert(res.Error);
+                            }
                             var restbl = that.CreateColoredTable(res.Ticks);
-                            resultsDriver.Set(restbl);
+                            ltlviewer.SetResult(restbl);
                         })
                         .fail(function () {
                             alert("LTL failed");
                         })
-                })
+                });
+
+                window.Commands.On("Expand", (param) => {
+                    switch (param) {
+                        case "LTLStates":
+                            var content: JQuery = $('<div></div>').ltlstatesviewer();
+                            popupViewer.Show({ tab: param, content: content });
+                            ltlviewer.Hide (param);
+                            break;
+                        default:
+                            ltlviewer.Show(undefined);
+                            break;
+                    }
+                });
+
+                window.Commands.On("Collapse",(param) => {
+                    ltlviewer.Show(param);
+                    popupViewer.Hide();
+                });
+
+                window.Commands.On('KeyframeStartDrag',(param) => {
+                    this.currentdraggableelem = param;
+                });
+
+                window.Commands.On("KeyframeDropped",(param: { location: JQuery;}) => {
+                    var cl = window.KeyframesRegistry.Keyframes[this.currentdraggableelem];
+                    var img = $('<img>').attr('src', cl.Icon);
+                    img.appendTo(param.location);
+                });
 
             }
 

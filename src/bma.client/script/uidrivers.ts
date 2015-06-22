@@ -282,6 +282,10 @@ module BMA {
                         break;
                     case "SimulationPlot":
                         header = "Simulation Graph";
+                        break;
+                    case "LTLStates":
+                        header = "LTL States";
+                        break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 popup_position();
@@ -581,30 +585,58 @@ module BMA {
             }
         }
 
-        export class KeyframesList implements IKeyframesList {
+        export class KeyframesViewer implements IKeyframesList {
             private keyframe: JQuery;
-
-            public Add(items) {
-                this.keyframe.keyframecompact('add', items);
-            }
 
             constructor(keyframe: JQuery) {
                 this.keyframe = keyframe;
             }
-        }
 
-        export class LTLResultsViewer implements ILTLResultsViewer {
-            private restable: JQuery;
-
-            constructor(table: JQuery) {
-                this.restable = table;
+            public AddState(items) {
+                this.keyframe.ltlstatesviewer('add', items);
             }
 
-            public Set(res) {
-                this.restable.coloredtableviewer({ "colorData": res, type: "color" });
-                this.restable.find(".proof-propagation-overview").addClass("ltl-result-table");
-                this.restable.find('td.propagation-cell-green').removeClass("propagation-cell-green");
-                this.restable.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
+        }
+
+
+        export class LTLViewer implements ILTLViewer, IKeyframesList {
+
+            private ltlviewer: JQuery;
+
+            constructor(ltlviewer: JQuery) {
+                this.ltlviewer = ltlviewer;
+            }
+
+            public AddState(items) {
+                var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
+                var content = resdiv.resultswindowviewer('option', 'content');
+                content.keyframecompact('add', items);
+            }
+
+            public Show(tab) {
+                if (tab !== undefined) {
+                    var content: JQuery = this.ltlviewer.ltlviewer('Get', tab);
+                    content.show();
+                }
+                else {
+                    this.ltlviewer.ltlviewer('Show', undefined);
+                }
+            }
+
+            public Hide(tab) {
+                if (tab !== undefined) {
+                    var content: JQuery = this.ltlviewer.ltlviewer('Get', tab);
+                    content.hide();
+                }
+            }
+
+            public SetResult(res) {
+                var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLResults');
+                var content: JQuery = resdiv.resultswindowviewer('option', 'content');
+                content.coloredtableviewer({ "colorData": res, type: "color" });
+                content.find(".proof-propagation-overview").addClass("ltl-result-table");
+                content.find('td.propagation-cell-green').removeClass("propagation-cell-green");
+                content.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
             }
         }
     }

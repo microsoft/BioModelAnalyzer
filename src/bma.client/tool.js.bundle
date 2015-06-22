@@ -19,6 +19,7 @@
 	<file>/script/commands.js</file>
 	<file>/script/elementsregistry.js</file>
 	<file>/script/functionsregistry.js</file>
+	<file>/script/keyframesregistry.js</file>
 	<file>/script/localRepository.js</file>
 	<file>/script/changeschecker.js</file> 
 	<file>/script/model/biomodel.js</file>
@@ -52,7 +53,9 @@
 	<file>/script/widgets/userdialog.js</file>
 	<file>/script/widgets/variablesOptionsEditor.js</file>
 	<file>/script/widgets/visibilitysettings.js</file>
+	<file>/script/widgets/keyframetable.js</file>
   <file>/script/widgets/keyframecompact.js</file>
+  <file>/script/widgets/ltlstatesviewer.js</file>
 	<file>/script/widgets/ltlviewer.js</file>
 	<file>/script/presenters/LTLpresenter.js</file>
   </files>

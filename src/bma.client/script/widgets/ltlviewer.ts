@@ -7,30 +7,66 @@
         },
 
         _create: function () {
+            var that = this;
             var elem = this.element.addClass('ltl-results-tab');
-            var key_div = $('<div></div>').appendTo(elem);
+            this.key_div = $('<div></div>').appendTo(elem);
             var key_content = $('<div>TODO: KEYFRAMES</div>').keyframecompact();//.keyframeviewer();
-            key_div.resultswindowviewer({
+            this.key_div.resultswindowviewer({
                 header: "Keyframes",
                 icon: "max",
-                content: key_content
+                content: key_content,
+                tabid: "LTLStates"
             });
 
-            var temp_prop = $('<div></div>').appendTo(elem);
-            var temp_content = $('<div>TODO: TEMPORAL PROPERTIES</div>'); //.temppropviewer();
-            temp_prop.resultswindowviewer({
+            this.temp_prop = $('<div></div>').appendTo(elem);
+            var temp_content = $('<div></div>'); //.temppropviewer();
+            this.formula = $('<input type="text">').appendTo(temp_content);
+            var submit = $('<button>LTLNOW</button>').addClass('action-button green').appendTo(temp_content);
+            submit.click(() => {
+                window.Commands.Execute("LTLRequested", { formula: this.formula.val()});
+            });
+
+            this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
                 icon: "max",
-                content: temp_content
+                content: temp_content,
+                tabid: "LTLTempProp"
             });
 
-            var results = $('<div></div>').appendTo(elem).addClass('scrollable-results');
-            var res_table = $('<div id="LTLResults"></div>');
-            results.resultswindowviewer({
+            this.results = $('<div></div>').appendTo(elem);
+            var res_table = $('<div id="LTLResults"></div>').addClass('scrollable-results');
+            this.results.resultswindowviewer({
                 header: "Results",
                 icon: "max",
-                content: res_table
+                content: res_table,
+                tabid: "LTLResults"
             });
+        },
+
+        _destroy: function () {
+            this.element.empty();
+        },
+
+        Get: function (param) {
+            switch (param) {
+                case "LTLStates":
+                    //alert('widget ' + this.key_content.text());
+                    return this.key_div;
+                case "LTLTempProp":
+                    return this.temp_prop;
+                case "LTLResults":
+                    return this.results;
+                default:
+                    return undefined;
+            }
+        },
+
+        Show: function (param) {
+            if (param == undefined) {
+                this.key_div.show();
+                this.temp_prop.show();
+                this.results.show();
+            }
         }
     });
 } (jQuery)); 

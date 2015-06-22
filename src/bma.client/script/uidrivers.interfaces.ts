@@ -104,6 +104,12 @@ module BMA {
             ActiveMode();
         }
 
+        export interface ILTLViewer {
+            Show(p: string);
+            Hide(p: string);
+            SetResult(result);
+        }
+
         export interface ILocalStorageDriver {
             SetItems(keys);
             AddItem(key, item);
@@ -147,11 +153,7 @@ module BMA {
         }
 
         export interface IKeyframesList {
-            Add(items);
-        }
-
-        export interface ILTLResultsViewer {
-            Set(result);
+            AddState(items);
         }
     }
 } 
