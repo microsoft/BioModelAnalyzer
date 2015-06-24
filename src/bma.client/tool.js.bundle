@@ -58,5 +58,6 @@
   <file>/script/widgets/ltlstatesviewer.js</file>
 	<file>/script/widgets/ltlviewer.js</file>
 	<file>/script/presenters/LTLpresenter.js</file>
+	<file>/script/operatorsregistry.js</file>
   </files>
 </bundle>

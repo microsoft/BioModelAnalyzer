@@ -8,6 +8,7 @@
 /// <reference path="script\elementsregistry.ts"/>
 /// <reference path="script\functionsregistry.ts"/>
 /// <reference path="script\keyframesregistry.ts"/>
+/// <reference path="script\operatorsregistry.ts"/>
 /// <reference path="script\localRepository.ts"/>
 /// <reference path="script\uidrivers.interfaces.ts"/>
 /// <reference path="script\uidrivers.ts"/>
@@ -230,7 +231,7 @@ function loadScript(version) {
       
     //Creating KeyframesRegistry
     window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry();
-
+    window.OperatorsRegistry = new BMA.Operators.OperatorsRegistry();
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 
@@ -667,5 +668,45 @@ function loadScript(version) {
     };
 
     $("label[for='button-pointer']").click();
+
+
+    ///OperatorsRegistry testing
+
+    var first = 'First';
+    var kfrm1 = new BMA.Operators.Keyframe(first);
+    var kfrm2 = new BMA.Operators.Keyframe('Second');
+    var kfrm3 = new BMA.Operators.Keyframe('3rd');
+
+
+    var formulacreator = function (funcname): BMA.Operators.IGetFormula {
+        return function (op: BMA.Operators.Operand[]) {
+            var f = '(' + funcname;
+            for (var i = 0; i < op.length; i++) {
+                f += ' ' + op[i].GetFormula();
+            }
+
+            return f + ')';
+        }
+    }
+
+    var op1 = window.OperatorsRegistry.GetOperatorByName('Eventually');
+    var op2 = window.OperatorsRegistry.GetOperatorByName('Always');
+    var ond1 = new BMA.Operators.Operand(kfrm1);
+    var ond2 = new BMA.Operators.Operand(kfrm2);
+
+    var op = new BMA.Operators.Operation();
+    op.Operator = op1;
+    op.Operands = [ond1, ond2];
+
+
+    var ond3 = new BMA.Operators.Operand(kfrm3);
+
+    var opp = new BMA.Operators.Operation();
+    opp.Operator = op2;
+    opp.Operands = [op, ond3];
+
+    
+
+    console.log(opp.GetFormula());
 
 }
