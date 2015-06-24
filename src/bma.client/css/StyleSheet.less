@@ -2355,7 +2355,7 @@ body {
         }
 
         &.selected {
-            border: 3px solid;
+            border: 2px solid;
         }
 
         &.mutable:hover{
@@ -2363,10 +2363,11 @@ body {
             cursor: pointer;
         }
 
+        
         div, input{
             width: 100%;
             text-align: center;
-            margin: auto;
+            margin-top: 10px;
             border: none;
             background-color: transparent;
             display: block;
@@ -2375,6 +2376,11 @@ body {
                 box-shadow: none;
             }
         }
+
+        input {
+            margin-top: 7px;
+        }
+
     }
 
 
@@ -2403,7 +2409,15 @@ body {
         z-index: 8;
     }
 
-    
+    .keyframe-compact {
+        li {
+            border: none;
+            display: inline-block;
+            a {
+                text-decoration: none;
+            }
+        }
+    }
 
     .keyframe-table {
 
@@ -2423,6 +2437,31 @@ body {
             width: 30px;
             height: 30px;
             background-image:url('../images/ltlimgs/remove.png');
+            cursor: pointer;
             .background-img();
         }
+    }
+
+    .ui-widget-header {
+        background: transparent;
+        border: none;
+        a {
+            margin: 0;
+        }
+        .ui-state-default {
+            background: transparent;
+            background-image: none;
+            border: none;
+        }
+        .ui-state-active {
+            border: none;
+        }
+    }
+
+    .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+        padding: 0;
+    }
+
+    .ui-tabs {
+        border: none;
     }

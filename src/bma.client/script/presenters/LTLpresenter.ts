@@ -10,8 +10,8 @@
 
             constructor(
                 appModel: BMA.Model.AppModel,
+                keyframesfullDriver: BMA.UIDrivers.IKeyframesFull,
                 keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
-                //keyframesfullDriver: BMA.UIDrivers.IKeyframesList,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup
@@ -19,16 +19,17 @@
 
                 var that = this;
                 window.Commands.On("AddKeyframe", function () {
-                    keyframescompactDriver.AddState("New");
-                    //keyframesfullDriver.AddState("New");
+                    var newstate = 'new';
+                    keyframescompactDriver.AddState(newstate);
+                    keyframesfullDriver.AddState(newstate);
                 });
 
                 window.Commands.On("ChangedKeyframeName", function (item: { ind; name} ) {
-                    alert('ind=' + item.ind + ' name=' + item.name);
+                    //alert('ind=' + item.ind + ' name=' + item.name);
                 });
 
                 window.Commands.On("KeyframeSelected", function (item: { ind }) {
-                    alert('selected ind=' + item.ind);
+                    //alert('selected ind=' + item.ind);
                 });
                 
                 window.Commands.On("LTLRequested", function (param: {formula}) {
@@ -43,11 +44,19 @@
 
                     var result = ajax.Invoke(proofInput)
                         .done(function (res) {
-                            if (res.Ticks == null) {
-                                alert(res.Error);
+                        if (res.Ticks == null) {
+                            alert(res.Error);
+                        }
+                        else {
+                            if (res.Status == "True") {
+                                var restbl = that.CreateColoredTable(res.Ticks);
+                                ltlviewer.SetResult(restbl);
                             }
-                            var restbl = that.CreateColoredTable(res.Ticks);
-                            ltlviewer.SetResult(restbl);
+                            else {
+                                ltlviewer.SetResult(undefined);
+                                alert(res.Status);
+                            }
+                        }
                         })
                         .fail(function () {
                             alert("LTL failed");
@@ -57,7 +66,7 @@
                 window.Commands.On("Expand", (param) => {
                     switch (param) {
                         case "LTLStates":
-                            var content: JQuery = $('<div></div>').ltlstatesviewer();
+                            var content = keyframesfullDriver.GetContent();
                             popupViewer.Show({ tab: param, content: content });
                             ltlviewer.Hide (param);
                             break;
@@ -80,6 +89,10 @@
                     var cl = window.KeyframesRegistry.Keyframes[this.currentdraggableelem];
                     var img = $('<img>').attr('src', cl.Icon);
                     img.appendTo(param.location);
+                });
+
+                window.Commands.On('RemoveKeyframe', function () {
+                    keyframesfullDriver.RemovePart('','');
                 });
 
             }

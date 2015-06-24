@@ -10,7 +10,7 @@
             var that = this;
             var elem = this.element.addClass('ltl-results-tab');
             this.key_div = $('<div></div>').appendTo(elem);
-            var key_content = $('<div>TODO: KEYFRAMES</div>').keyframecompact();//.keyframeviewer();
+            var key_content = $('<div></div>').keyframecompact();//.keyframeviewer();
             this.key_div.resultswindowviewer({
                 header: "Keyframes",
                 icon: "max",

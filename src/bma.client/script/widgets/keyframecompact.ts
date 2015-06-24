@@ -11,7 +11,7 @@
 
         _create: function () {
             this.element.addClass('keyframe-compact');
-            this.content = $('<div></div>').appendTo(this.element);
+            this.content = $('<ul></ul>').appendTo(this.element);
             
             var addbttn = $('<div></div>')
                 .addClass('keyframe-btn add')
@@ -55,9 +55,10 @@
         _appendbutton: function (item) {
             var that = this;
             if (that.options.canedit) {
-                var btn = $('<div></div>')
+                var li = $('<li></li>').insertBefore(that.content.find('.add'));
+                var btn = $('<a></a>')
                     .addClass('keyframe-btn mutable')
-                    .insertBefore(that.content.find('.add'));
+                    .appendTo(li);
                 btn.bind('click', function () {
                     that.content.find('.keyframe-btn').removeClass('selected');
                     $(this).addClass('selected');
@@ -72,9 +73,10 @@
                 });
             }
             else {
-                var btn = $('<div></div>')
+                var li = $('<li></li>').insertBefore(that.content.find('.add'));
+                var btn = $('<a></a>')
                     .addClass('keyframe-btn')
-                    .insertBefore(that.content.find('.add'));
+                    .appendTo(li);
                 var name = $('<div></div>').text(item).appendTo(btn);
             }
         }

@@ -585,7 +585,7 @@ module BMA {
             }
         }
 
-        export class KeyframesViewer implements IKeyframesList {
+        export class KeyframesExpandedViewer implements IKeyframesFull {
             private keyframe: JQuery;
 
             constructor(keyframe: JQuery) {
@@ -593,9 +593,16 @@ module BMA {
             }
 
             public AddState(items) {
-                this.keyframe.ltlstatesviewer('add', items);
+                this.keyframe.ltlstatesviewer('addState', items);
             }
 
+            public GetContent() {
+                return this.keyframe;
+            }
+
+            public RemovePart(p1, p2) {
+                //this.keyframe.ltlstatesviewer('removePart', items);
+            }
         }
 
 
@@ -638,6 +645,11 @@ module BMA {
                 content.find('td.propagation-cell-green').removeClass("propagation-cell-green");
                 content.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
             }
+
+            GetContent() {
+                return this.ltlviewer;
+            }
+
         }
     }
 } 

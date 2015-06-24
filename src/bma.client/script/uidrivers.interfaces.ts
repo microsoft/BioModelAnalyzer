@@ -154,6 +154,13 @@ module BMA {
 
         export interface IKeyframesList {
             AddState(items);
+            GetContent();
+        }
+
+        export interface IKeyframesFull {
+            AddState(items);
+            GetContent();
+            RemovePart(keyframe, ind);
         }
     }
 } 
