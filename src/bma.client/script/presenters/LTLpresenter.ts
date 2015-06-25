@@ -5,7 +5,7 @@
             keyframescompact: BMA.UIDrivers.IKeyframesList;
             appModel: BMA.Model.AppModel;
             currentdraggableelem: any;
-            
+            expandedResults: JQuery;
 
 
             constructor(
@@ -18,6 +18,8 @@
                 ) {
 
                 var that = this;
+                this.appModel = appModel;
+
                 window.Commands.On("AddKeyframe", function () {
                     var newstate = 'new';
                     keyframescompactDriver.AddState(newstate);
@@ -51,6 +53,8 @@
                             if (res.Status == "True") {
                                 var restbl = that.CreateColoredTable(res.Ticks);
                                 ltlviewer.SetResult(restbl);
+
+                                that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
                             }
                             else {
                                 ltlviewer.SetResult(undefined);
@@ -69,6 +73,10 @@
                             var content = keyframesfullDriver.GetContent();
                             popupViewer.Show({ tab: param, content: content });
                             ltlviewer.Hide (param);
+                            break;
+                        case "LTLResults":
+                            popupViewer.Show({ tab: param, content: that.expandedResults });
+                            ltlviewer.Hide(param);
                             break;
                         default:
                             ltlviewer.Show(undefined);
@@ -112,6 +120,46 @@
                     }
                 }
                 return color;
+            }
+
+            public CreateExpanded(ticks, color) {
+                var container = $('<div></div>');
+                if (ticks === null) return container;
+                var that = this;
+                var biomodel = this.appModel.BioModel;
+                var variables = biomodel.Variables;
+                var table = [];
+                var colortable  = [];
+                var header = [];
+                var l = ticks.length;
+                header[0] = "Name";
+                for (var i = 0; i < ticks.length; i++) {
+                    header[i + 1] = "T = " + ticks[i].Time;
+                }
+                for (var j = 0; j < variables.length; j++) {
+                    table[j] = [];
+                    colortable[j] = [];
+                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
+                    colortable[j][0] = undefined;
+                    for (var i = 1; i < l+1; i++) {
+                        var ij = ticks[i - 1].Variables[j];
+                        colortable[j][i] = color[j][i - 1];
+                        if (ij.Lo === ij.Hi) {
+                            table[j][i] = ij.Lo;
+                        }
+                        else {
+                            table[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+                container.coloredtableviewer({ header: header, numericData: table, colorData: colortable });
+                container.addClass('scrollable-results');
+                container.children('table').removeClass('variables-table').addClass('proof-propagation-table ltl-result-table');
+                container.find('td.propagation-cell-green').removeClass("propagation-cell-green");
+                container.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
+                container.find("td").eq(0).width(150);
+                return container;
             }
         }
     }

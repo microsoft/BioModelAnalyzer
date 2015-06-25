@@ -73,7 +73,7 @@ describe('Keyframes',() => {
         expect(op1.GetFormula([k1, k2])).toEqual('(Until test1 test2)');
     });
 
-    it('creates operation',() => {
+    it('creates operation with 2 keyframes',() => {
         var k1 = new BMA.Operators.Keyframe('one');
         var k2 = new BMA.Operators.Keyframe('two');
         var k3 = new BMA.Operators.Keyframe('three');
@@ -92,4 +92,36 @@ describe('Keyframes',() => {
         expect(op.GetFormula()).toEqual('(Until one two)');
         expect(opp.GetFormula()).toEqual('(Always three (Until one two))');
     });
+
+    it('creates tree of operations',() => {
+        var k1 = new BMA.Operators.Keyframe('one');
+        var k2 = new BMA.Operators.Keyframe('two');
+        var k3 = new BMA.Operators.Keyframe('three');
+        var k4 = new BMA.Operators.Keyframe('four');
+
+        var op1 = new BMA.Operators.Operator('And', formulacreator('And'));
+        var op2 = new BMA.Operators.Operator('Or', formulacreator('Or'));
+
+        var oper1 = new BMA.Operators.Operation();
+        oper1.Operands = [k1, k2];
+        oper1.Operator = op1;
+
+        var oper2 = new BMA.Operators.Operation();
+        oper2.Operands = [k3, k4];
+        oper2.Operator = op2;
+
+        var oper = new BMA.Operators.Operation(); 
+        oper.Operands = [oper2, oper1];
+        oper.Operator = op2;
+
+        expect(oper.GetFormula()).toEqual('(Or (Or three four) (And one two))');
+
+        var not = new BMA.Operators.Operation();
+        not.Operands = [oper];
+        not.Operator = new BMA.Operators.Operator('Not', formulacreator('Not'));;
+
+        expect(not.GetFormula()).toEqual('(Not (Or (Or three four) (And one two)))');
+    });
+
+
 }); 

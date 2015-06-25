@@ -248,8 +248,10 @@
 
                 for (var j = 0; j < color[i].length; j++) {
                     var td = tds.eq(j);
-                    if (color[i][j]) td.addClass('propagation-cell-green');
-                    else td.addClass('propagation-cell-red');
+                    if (color[i][j] !== undefined) {
+                        if (color[i][j]) td.addClass('propagation-cell-green');
+                        else td.addClass('propagation-cell-red');
+                    }
                 }
             }
             return table;

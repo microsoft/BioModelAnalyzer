@@ -938,7 +938,7 @@ body {
 		.window{
 			padding: 15px;
 			margin:0px;
-			width:400px;
+			//width:400px;
 			background: white;
 			border-radius: @window-radius;
 			.box-shadow(@x:2px, @y:7px, @blur:8px, @color:@shadow);
@@ -1985,6 +1985,7 @@ body {
 
 		.scrollbox(@height){
 			max-height: @height;
+            overflow-x: auto;
 			overflow-y: auto;
 			margin-top: 5px;
 			margin-bottom: 15px;
@@ -2098,7 +2099,9 @@ body {
         .popup-window .simulation-plot-box{
             height: 500px;
         }
-
+        .popup-window .scrollable-results {
+            .scrollbox(500px);
+        }
 
 
 .plot-check {
