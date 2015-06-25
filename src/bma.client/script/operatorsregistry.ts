@@ -5,7 +5,7 @@
 module BMA {
     export module Operators {
 
-        export class Keyframe {
+        export class Keyframe implements IOperand {
             private name: string;
 
             constructor(name: string) {
@@ -30,30 +30,22 @@ module BMA {
                 return this.name;
             }
 
-            public GetFormula(op: Operand[]) {
+            public GetFormula(op: IOperand[]) {
                 return this.fun(op);
             }
         }
 
         export interface IGetFormula {
-            (op: Operand[]): string;
+            (op: IOperand[]): string;
         }
 
-        export class Operand {
-            private operand: Keyframe | Operation;
-
-            public GetFormula() {
-                return this.operand.GetFormula();
-            }
-
-            constructor(operand: Keyframe | Operation) {
-                this.operand = operand;
-            }
+        export interface IOperand {
+            GetFormula(): string;
         }
 
-        export class Operation {
+        export class Operation implements IOperand {
             private operator: Operator;
-            private operands: Operand[];
+            private operands: IOperand[];
             
             public set Operator(op) {
                 this.operator = op;
@@ -64,13 +56,7 @@ module BMA {
             }
 
             public GetFormula() {
-                //alert(this.operator.Name + ' ' + this.operands[0].GetFormula() + ' ' + this.operands[1].GetFormula());
                 return this.operator.GetFormula(this.operands);
-                //var formula = '(' + this.operator.GetFormula(this.operands);
-                //for (var i = 0; i < this.operands.length; i++) {
-                //    formula += ' ' + this.operands[i].GetFormula();
-                //}
-                //return formula + ')';
             }
         }
 
@@ -86,7 +72,7 @@ module BMA {
                     if (this.operators[i].Name === name)
                         return this.operators[i];
                 }
-                throw "There is no operator you want";
+                return undefined;
             }
 
             constructor() {
@@ -94,14 +80,13 @@ module BMA {
                 this.operators = [];
 
                 var formulacreator = function (funcname): IGetFormula {
-                    return function (op: Operand[]) {
-                        var f = '(' + funcname;
-                        for (var i = 0; i < op.length; i++) {
-                            f += ' ' + op[i].GetFormula();
-                        }
-                        
-                        return f + ')';
-                    }
+                    return function (op: IOperand[]) {
+                              var f = '(' + funcname;
+                              for (var i = 0; i < op.length; i++) {
+                                  f += ' ' + op[i].GetFormula();
+                             }
+                              return f + ')';
+                          }
                 }
 
                 this.operators.push(new Operator('Until', formulacreator('Until')));

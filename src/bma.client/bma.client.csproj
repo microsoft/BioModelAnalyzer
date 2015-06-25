@@ -358,7 +358,6 @@
     <TypeScriptCompile Include="script\localRepository.ts" />
     <TypeScriptCompile Include="script\ModelHelper.ts" />
     <TypeScriptCompile Include="script\model\exportimport.ts" />
-    <TypeScriptCompile Include="script\model\keyframes.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\operatorsregistry.ts" />
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
