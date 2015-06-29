@@ -34,13 +34,17 @@
                     //alert('selected ind=' + item.ind);
                 });
                 
-                window.Commands.On("LTLRequested", function (param: {formula}) {
+                window.Commands.On("LTLRequested", function (param: { formula }) {
+
+                    var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
+                    //alert(that.appModel.BioModel.GetIdByName("d"));
+                    //alert(f);
                     var model = BMA.Model.ExportBioModel(appModel.BioModel);
                     var proofInput = {
                         "Name": model.Name,
                         "Relationships": model.Relationships,
-                        "Variables": appModel.BioModel.Variables,
-                        "Formula": param.formula,
+                        "Variables": model.Variables,
+                        "Formula": f,
                         "Number_of_steps": 10
                     }
 
@@ -136,7 +140,7 @@
                 for (var i = 0; i < ticks.length; i++) {
                     header[i + 1] = "T = " + ticks[i].Time;
                 }
-                for (var j = 0; j < variables.length; j++) {
+                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
                     table[j] = [];
                     colortable[j] = [];
                     table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;

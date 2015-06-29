@@ -55,6 +55,16 @@ module BMA {
                 return undefined;
             }
 
+            public GetIdByName(name: string) {
+                var res = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    if (this.variables[i].Name === name) {
+                        res.push(this.variables[i].Id.toString());
+                    }
+                }
+                return res;
+            }
+
             public GetJSON() {
                 var vars = [];
                 for (var i = 0; i < this.variables.length; i++) {

@@ -136,6 +136,11 @@
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
+      <Name>BioCheckAnalyzer64</Name>
+      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\BMAWebApi\BMAWebApi.csproj">
       <Name>BMAWebApi</Name>
       <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
@@ -192,11 +197,6 @@
       <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-      <Name>BioCheckAnalyzer64</Name>
-      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Name>BioCheckAnalyzerCommon</Name>
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>

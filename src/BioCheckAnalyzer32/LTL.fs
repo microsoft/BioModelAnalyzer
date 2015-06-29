@@ -238,13 +238,25 @@ let string_to_LTL_formula (s:string) (network) =
     let rec parse (s: string) (location : int list) = 
         let analyze_proposition (length_of_keyword : int) (s: string) (location : int list) =
             let substring = s.Substring((length_of_keyword + 1), (s.Length - length_of_keyword - 1))
-            let first_space = substring.IndexOf(" ")
-            // Strips out antideath in (> antideath 2)
-            let var_name_str = substring.Substring(0, first_space)
-            // Variable names are matched to QN node names: Loop through all variable names and check against the formula variable name
-            let match_name_function (n : QN.node) = n.name = var_name_str
-            // Strips out 2 in (> antideath 2) 
-            let value_string = substring.Substring(first_space + 1, substring.Length - first_space - 1)
+//            let first_space = substring.IndexOf(" ")
+//            // Strips out antideath in (> antideath 2)
+//            let var_name_str = substring.Substring(0, first_space)
+//            // Variable names are matched to QN node names: Loop through all variable names and check against the formula variable name
+//            let match_name_function (n : QN.node) = n.name = var_name_str
+//
+//
+//
+//            // Strips out 2 in (> antideath 2) 
+//            let value_string = substring.Substring(first_space + 1, substring.Length - first_space - 1)
+
+            ////            Now code for parsing formulas as 'var(*) *' in substring
+
+
+            let length = substring.IndexOf(")") - substring.IndexOf("(") - 1
+            let var_name_str = substring.Substring(4, length)
+            let match_name_function (n : QN.node) = n.var.ToString() = var_name_str
+            let value_string = substring.Substring(4 + length + 1, substring.Length - 4 - length - 1)
+
             if ((List.exists match_name_function network) &&  
                 (value_string.IndexOfAny(non_digit.ToCharArray()) <= 0)) then
                 let var = List.find match_name_function network 

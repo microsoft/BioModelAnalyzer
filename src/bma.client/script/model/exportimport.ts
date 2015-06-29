@@ -72,6 +72,7 @@
                 Name: model.Name,
                 Variables: model.Variables.map(v => {
                     return {
+                        //Name: v.Name, //this is required when ltl finds var by name
                         Id: v.Id,
                         RangeFrom: v.RangeFrom,
                         RangeTo: v.RangeTo,
