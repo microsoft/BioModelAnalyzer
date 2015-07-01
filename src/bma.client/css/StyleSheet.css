@@ -1268,7 +1268,6 @@ ul.command-list li a span {
 .window {
   padding: 15px;
   margin: 0px;
-  width: 400px;
   background: white;
   border-radius: 10px;
   -webkit-box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
@@ -2227,9 +2226,9 @@ textarea:focus {
 }
 .tab-right {
   padding: 15px;
-  margin: 0px;
+  margin: 0;
   width: 400px;
-  min-height: 200px;
+  min-height: 300px;
   background: #FFFFFF;
   -webkit-box-shadow: -5px 4px 6px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: -5px 4px 6px rgba(0, 0, 0, 0.5);
@@ -2274,6 +2273,7 @@ textarea:focus {
 }
 .proof-variables .scrollable-results {
   max-height: 121px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2294,6 +2294,7 @@ textarea:focus {
 }
 .proof-propagation .scrollable-results {
   max-height: 150px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2314,6 +2315,7 @@ textarea:focus {
 }
 .further-testing-box .scrollable-results {
   max-height: 150px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2340,6 +2342,7 @@ textarea:focus {
 }
 .simulation-variables .scrollable-results {
   max-height: 121px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2367,16 +2370,37 @@ textarea:focus {
   display: inline-block;
   vertical-align: top;
 }
+.ltl-results-tab .scrollable-results {
+  max-height: 150px;
+  overflow-x: auto;
+  overflow-y: auto;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+.ltl-results-tab .scrollable-results::-webkit-scrollbar-track {
+  width: 20px;
+  background-color: white;
+}
+.ltl-results-tab .scrollable-results::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #aaaaaa;
+}
+.ltl-results-tab .scrollable-results::-webkit-scrollbar-thumb {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #aaaaaa;
+}
 .popup-window {
   position: absolute;
   z-index: 7;
-  width: 850px;
 }
 .window.proof-variables-popout {
   width: 850px;
 }
 .window.proof-variables-popout .scrollable-results {
   max-height: 500px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2400,6 +2424,7 @@ textarea:focus {
 }
 .window.further-testing-popout .scrollable-results {
   max-height: 480px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2427,6 +2452,7 @@ textarea:focus {
 .window.proof-propagation-popout .scrollable-results {
   overflow-x: scroll;
   max-height: 500px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2458,6 +2484,7 @@ textarea:focus {
 }
 .window.simulation-popout .scrollable-results {
   max-height: 470px;
+  overflow-x: auto;
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
@@ -2484,6 +2511,27 @@ textarea:focus {
 }
 .popup-window .simulation-plot-box {
   height: 500px;
+}
+.popup-window .scrollable-results {
+  max-height: 500px;
+  overflow-x: auto;
+  overflow-y: auto;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+.popup-window .scrollable-results::-webkit-scrollbar-track {
+  width: 20px;
+  background-color: white;
+}
+.popup-window .scrollable-results::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #aaaaaa;
+}
+.popup-window .scrollable-results::-webkit-scrollbar-thumb {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #aaaaaa;
 }
 .plot-check {
   background-image: url("../images/check.svg");
@@ -2734,5 +2782,114 @@ textarea:focus {
     transform: scale(1);
     -webkit-transform: scale(1);
   }
+}
+.keyframe-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid;
+  display: inline-flex;
+  vertical-align: middle;
+  border-radius: 25px;
+  position: relative;
+  cursor: default;
+  margin: 0 10px 10px 0;
+}
+.keyframe-btn.add {
+  border: 2px dashed;
+  background-image: url(/images/plus.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+.keyframe-btn.selected {
+  border: 2px solid;
+}
+.keyframe-btn.mutable:hover {
+  background-color: #ededed;
+  cursor: pointer;
+}
+.keyframe-btn div,
+.keyframe-btn input {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  border: none;
+  background-color: transparent;
+  display: block;
+  padding: 0;
+}
+.keyframe-btn div:focus,
+.keyframe-btn input:focus {
+  box-shadow: none;
+}
+.keyframe-btn input {
+  margin-top: 7px;
+}
+.ltl-result-table td {
+  border: 1px solid white;
+  background-color: #ededed;
+}
+.ltl-result-table td.change {
+  background-color: #fffcb5;
+}
+.keyframe-panel {
+  background-color: #ededed;
+}
+.keyframe-element {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  margin: 4px;
+}
+.keyframe-element-draggable {
+  z-index: 8;
+}
+.keyframe-compact li {
+  border: none;
+  display: inline-block;
+}
+.keyframe-compact li a {
+  text-decoration: none;
+}
+.keyframe-table > table td {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+}
+.keyframe-table > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+.keyframe-table .remove-keyframe {
+  margin-left: 10px;
+  width: 30px;
+  height: 30px;
+  background-image: url('../images/ltlimgs/remove.png');
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.ui-widget-header {
+  background: transparent;
+  border: none;
+}
+.ui-widget-header a {
+  margin: 0;
+}
+.ui-widget-header .ui-state-default {
+  background: transparent;
+  background-image: none;
+  border: none;
+}
+.ui-widget-header .ui-state-active {
+  border: none;
+}
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+  padding: 0;
+}
+.ui-tabs {
+  border: none;
 }
 /*# sourceMappingURL=StyleSheet.css.map */

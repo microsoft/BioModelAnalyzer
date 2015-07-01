@@ -1387,6 +1387,65 @@ var BMA;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=functionsregistry.js.map
+///#source 1 1 /script/keyframesregistry.js
+var BMA;
+(function (BMA) {
+    var Keyframes;
+    (function (Keyframes) {
+        var BMAKeyframe = (function () {
+            function BMAKeyframe(name, icon) {
+                this.name = name;
+                this.icon = icon;
+            }
+            Object.defineProperty(BMAKeyframe.prototype, "Name", {
+                get: function () {
+                    return this.name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(BMAKeyframe.prototype, "Icon", {
+                get: function () {
+                    return this.icon;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return BMAKeyframe;
+        })();
+        Keyframes.BMAKeyframe = BMAKeyframe;
+        var KeyframesRegistry = (function () {
+            function KeyframesRegistry() {
+                var that = this;
+                this.keyframes = [];
+                this.keyframes.push(new BMAKeyframe("var", "images/ltlimgs/var.png"));
+                this.keyframes.push(new BMAKeyframe("num", "images/ltlimgs/123.png"));
+                this.keyframes.push(new BMAKeyframe("equal", "images/ltlimgs/eq.png"));
+                this.keyframes.push(new BMAKeyframe("more", "images/ltlimgs/mo.png"));
+                this.keyframes.push(new BMAKeyframe("less", "images/ltlimgs/le.png"));
+                this.keyframes.push(new BMAKeyframe("moeq", "images/ltlimgs/moeq.png"));
+                this.keyframes.push(new BMAKeyframe("leeq", "images/ltlimgs/leeq.png"));
+            }
+            Object.defineProperty(KeyframesRegistry.prototype, "Keyframes", {
+                get: function () {
+                    return this.keyframes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            KeyframesRegistry.prototype.GetFunctionByName = function (name) {
+                for (var i = 0; i < this.keyframes.length; i++) {
+                    if (this.keyframes[i].Name === name)
+                        return this.keyframes[i];
+                }
+                throw "There is no keyframe as you want";
+            };
+            return KeyframesRegistry;
+        })();
+        Keyframes.KeyframesRegistry = KeyframesRegistry;
+    })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=keyframesregistry.js.map
 ///#source 1 1 /script/localRepository.js
 var BMA;
 (function (BMA) {
@@ -1550,6 +1609,15 @@ var BMA;
                     }
                 }
                 return undefined;
+            };
+            BioModel.prototype.GetIdByName = function (name) {
+                var res = [];
+                for (var i = 0; i < this.variables.length; i++) {
+                    if (this.variables[i].Name === name) {
+                        res.push(this.variables[i].Id.toString());
+                    }
+                }
+                return res;
             };
             BioModel.prototype.GetJSON = function () {
                 var vars = [];
@@ -2186,6 +2254,7 @@ var BMA;
                 Name: model.Name,
                 Variables: model.Variables.map(function (v) {
                     return {
+                        Name: v.Name,
                         Id: v.Id,
                         RangeFrom: v.RangeFrom,
                         RangeTo: v.RangeTo,
@@ -2478,6 +2547,13 @@ var BMA;
                         break;
                     case "SimulationPlot":
                         header = "Simulation Graph";
+                        break;
+                    case "LTLStates":
+                        header = "LTL States";
+                        break;
+                    case "LTLResults":
+                        header = "LTL Results";
+                        break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 popup_position();
@@ -2708,6 +2784,21 @@ var BMA;
             return ProofAnalyzeService;
         })();
         UIDrivers.ProofAnalyzeService = ProofAnalyzeService;
+        var LTLAnalyzeService = (function () {
+            function LTLAnalyzeService() {
+            }
+            LTLAnalyzeService.prototype.Invoke = function (data) {
+                return $.ajax({
+                    type: "POST",
+                    url: "api/AnalyzeLTL",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    dataType: "json"
+                });
+            };
+            return LTLAnalyzeService;
+        })();
+        UIDrivers.LTLAnalyzeService = LTLAnalyzeService;
         var SimulationService = (function () {
             function SimulationService() {
             }
@@ -2744,6 +2835,60 @@ var BMA;
             return ExportService;
         })();
         UIDrivers.ExportService = ExportService;
+        var KeyframesExpandedViewer = (function () {
+            function KeyframesExpandedViewer(keyframe) {
+                this.keyframe = keyframe;
+            }
+            KeyframesExpandedViewer.prototype.AddState = function (items) {
+                this.keyframe.ltlstatesviewer('addState', items);
+            };
+            KeyframesExpandedViewer.prototype.GetContent = function () {
+                return this.keyframe;
+            };
+            KeyframesExpandedViewer.prototype.RemovePart = function (p1, p2) {
+                //this.keyframe.ltlstatesviewer('removePart', items);
+            };
+            return KeyframesExpandedViewer;
+        })();
+        UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
+        var LTLViewer = (function () {
+            function LTLViewer(ltlviewer) {
+                this.ltlviewer = ltlviewer;
+            }
+            LTLViewer.prototype.AddState = function (items) {
+                var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
+                var content = resdiv.resultswindowviewer('option', 'content');
+                content.keyframecompact('add', items);
+            };
+            LTLViewer.prototype.Show = function (tab) {
+                if (tab !== undefined) {
+                    var content = this.ltlviewer.ltlviewer('Get', tab);
+                    content.show();
+                }
+                else {
+                    this.ltlviewer.ltlviewer('Show', undefined);
+                }
+            };
+            LTLViewer.prototype.Hide = function (tab) {
+                if (tab !== undefined) {
+                    var content = this.ltlviewer.ltlviewer('Get', tab);
+                    content.hide();
+                }
+            };
+            LTLViewer.prototype.SetResult = function (res) {
+                var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLResults');
+                var content = resdiv.resultswindowviewer('option', 'content');
+                content.coloredtableviewer({ "colorData": res, type: "color" });
+                content.find(".proof-propagation-overview").addClass("ltl-result-table");
+                content.find('td.propagation-cell-green').removeClass("propagation-cell-green");
+                content.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
+            };
+            LTLViewer.prototype.GetContent = function () {
+                return this.ltlviewer;
+            };
+            return LTLViewer;
+        })();
+        UIDrivers.LTLViewer = LTLViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=uidrivers.js.map
@@ -5898,10 +6043,12 @@ var BMA;
                 ;
                 for (var j = 0; j < color[i].length; j++) {
                     var td = tds.eq(j);
-                    if (color[i][j])
-                        td.addClass('propagation-cell-green');
-                    else
-                        td.addClass('propagation-cell-red');
+                    if (color[i][j] !== undefined) {
+                        if (color[i][j])
+                            td.addClass('propagation-cell-green');
+                        else
+                            td.addClass('propagation-cell-red');
+                    }
                 }
             }
             return table;
@@ -7902,3 +8049,475 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=visibilitysettings.js.map
+///#source 1 1 /script/widgets/keyframetable.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.keyframetable", {
+        options: {
+            id: 0,
+        },
+        _create: function () {
+            var that = this;
+            var elem = this.element.addClass('keyframe-table');
+            var table = $('<table></table>').appendTo(elem);
+            for (var i = 0; i < 5; i++) {
+                var td = $('<td></td>').appendTo(table);
+                td.droppable({
+                    drop: function (event, ui) {
+                        window.Commands.Execute('KeyframeDropped', { location: $(this) });
+                    }
+                });
+            }
+            var remove = $('<div></div>').addClass('remove-keyframe').appendTo(elem);
+            remove.bind('click', function () {
+                window.Commands.Execute('RemoveKeyframe', that.options.id);
+            });
+        },
+        _destroy: function () {
+            this.element.empty();
+        }
+    });
+}(jQuery));
+//# sourceMappingURL=keyframetable.js.map
+///#source 1 1 /script/widgets/keyframecompact.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.keyframecompact", {
+        options: {
+            items: ['init'],
+            canedit: false
+        },
+        _create: function () {
+            this.element.addClass('keyframe-compact');
+            this.content = $('<ul></ul>').appendTo(this.element);
+            var addbttn = $('<div></div>').addClass('keyframe-btn add').appendTo(this.content);
+            addbttn.bind('click', function () {
+                window.Commands.Execute('AddKeyframe', {});
+            });
+            this.refresh();
+        },
+        refresh: function () {
+            var that = this;
+            this.content.children(':not(.add)');
+            var items = this.options.items;
+            items.forEach(function (i) {
+                that._appendbutton(i);
+            });
+        },
+        add: function (items) {
+            var that = this;
+            if (Array.isArray(items)) {
+                items.forEach(function (i) {
+                    that._appendbutton(i);
+                    that.options.items.push('i');
+                });
+            }
+            else {
+                that._appendbutton(items);
+                that.options.items.push(items);
+            }
+        },
+        del: function (ind) {
+            var that = this;
+            this.options.items.splice(ind, 1);
+            this.content.child().eq(ind + 1).detach();
+        },
+        _appendbutton: function (item) {
+            var that = this;
+            if (that.options.canedit) {
+                var li = $('<li></li>').insertBefore(that.content.find('.add'));
+                var btn = $('<a></a>').addClass('keyframe-btn mutable').appendTo(li);
+                btn.bind('click', function () {
+                    that.content.find('.keyframe-btn').removeClass('selected');
+                    $(this).addClass('selected');
+                    window.Commands.Execute("KeyframeSelected", { ind: $(this).index() });
+                });
+                var input = $('<input type="text" size="2">').appendTo(btn);
+                input.val(item);
+                input.bind('change input', function () {
+                    var ind = $(this).parent().index();
+                    that.options.items[ind] = $(this).val();
+                    window.Commands.Execute("ChangedKeyframeName", { ind: ind, name: that.options.items[ind] });
+                });
+            }
+            else {
+                var li = $('<li></li>').insertBefore(that.content.find('.add'));
+                var btn = $('<a></a>').addClass('keyframe-btn').appendTo(li);
+                var name = $('<div></div>').text(item).appendTo(btn);
+            }
+        }
+    });
+}(jQuery));
+//# sourceMappingURL=keyframecompact.js.map
+///#source 1 1 /script/widgets/ltlstatesviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.ltlstatesviewer", {
+        options: {},
+        _create: function () {
+            var that = this;
+            var elem = this.element;
+            var key_div = $('<div></div>').appendTo(elem);
+            this.key_content = $('<div></div>').keyframecompact({ canedit: true });
+            this.key_content.appendTo(key_div);
+            this.elempanel = $('<div></div>').appendTo(elem);
+            this._create_elempanel();
+            var inita = this.key_content.find('a').eq(0);
+            inita.attr('href', '#ltlinit');
+            var inittab = $('<div></div>').attr('id', 'ltlinit').appendTo(elem);
+            this.keyframetable = $('<div></div>').appendTo(inittab);
+            this.keyframetable.keyframetable();
+            this.element.tabs();
+        },
+        _refresh: function () {
+            this.element.tabs('refresh');
+        },
+        _create_elempanel: function () {
+            var ul = $('<div></div>').addClass('keyframe-panel').appendTo(this.elempanel);
+            var kfrms = window.KeyframesRegistry.Keyframes;
+            for (var i = 0, l = kfrms.length; i < l; i++) {
+                var img = kfrms[i].Icon;
+                var li = $('<img>').addClass('keyframe-element').appendTo(ul);
+                li.attr('src', img);
+                li.draggable({
+                    helper: function (event, ui) {
+                        return $('<img>').attr('src', $(this).attr('src')).addClass('keyframe-element-draggable').appendTo('body');
+                    },
+                    scroll: false,
+                    start: function (event, ui) {
+                        window.Commands.Execute('KeyframeStartDrag', $(this).index());
+                    }
+                });
+            }
+            ul.buttonset();
+        },
+        _destroy: function () {
+            this.element.removeClass().empty();
+        },
+        addState: function (items) {
+            this.key_content.keyframecompact('add', items);
+            var li = this.key_content.find('li');
+            var a = li.eq(li.length - 1).children('a').eq(0);
+            var id = 'ltlstatetab' + (li.length - 1).toString();
+            var div = $('<div></div>').attr('id', id).appendTo(this.element);
+            var did = $('<div></div>').keyframetable();
+            did.appendTo(div);
+            a.attr('href', '#' + id);
+            this._refresh();
+        },
+    });
+}(jQuery));
+//# sourceMappingURL=ltlstatesviewer.js.map
+///#source 1 1 /script/widgets/ltlviewer.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.ltlviewer", {
+        options: {},
+        _create: function () {
+            var _this = this;
+            var that = this;
+            var elem = this.element.addClass('ltl-results-tab');
+            this.key_div = $('<div></div>').appendTo(elem);
+            var key_content = $('<div></div>').keyframecompact(); //.keyframeviewer();
+            this.key_div.resultswindowviewer({
+                header: "Keyframes",
+                icon: "max",
+                content: key_content,
+                tabid: "LTLStates"
+            });
+            this.temp_prop = $('<div></div>').appendTo(elem);
+            var temp_content = $('<div></div>'); //.temppropviewer();
+            this.formula = $('<input type="text">').appendTo(temp_content);
+            var submit = $('<button>LTLNOW</button>').addClass('action-button green').appendTo(temp_content);
+            submit.click(function () {
+                window.Commands.Execute("LTLRequested", { formula: _this.formula.val() });
+            });
+            this.temp_prop.resultswindowviewer({
+                header: "Temporal properties",
+                icon: "max",
+                content: temp_content,
+                tabid: "LTLTempProp"
+            });
+            this.results = $('<div></div>').appendTo(elem);
+            var res_table = $('<div id="LTLResults"></div>').addClass('scrollable-results');
+            this.results.resultswindowviewer({
+                header: "Results",
+                icon: "max",
+                content: res_table,
+                tabid: "LTLResults"
+            });
+        },
+        _destroy: function () {
+            this.element.empty();
+        },
+        Get: function (param) {
+            switch (param) {
+                case "LTLStates":
+                    //alert('widget ' + this.key_content.text());
+                    return this.key_div;
+                case "LTLTempProp":
+                    return this.temp_prop;
+                case "LTLResults":
+                    return this.results;
+                default:
+                    return undefined;
+            }
+        },
+        Show: function (param) {
+            if (param == undefined) {
+                this.key_div.show();
+                this.temp_prop.show();
+                this.results.show();
+            }
+        }
+    });
+}(jQuery));
+//# sourceMappingURL=ltlviewer.js.map
+///#source 1 1 /script/presenters/LTLpresenter.js
+var BMA;
+(function (BMA) {
+    var Presenters;
+    (function (Presenters) {
+        var LTLPresenter = (function () {
+            function LTLPresenter(appModel, keyframesfullDriver, keyframescompactDriver, ltlviewer, ajax, popupViewer) {
+                var _this = this;
+                var that = this;
+                this.appModel = appModel;
+                window.Commands.On("AddKeyframe", function () {
+                    var newstate = 'new';
+                    keyframescompactDriver.AddState(newstate);
+                    keyframesfullDriver.AddState(newstate);
+                });
+                window.Commands.On("ChangedKeyframeName", function (item) {
+                    //alert('ind=' + item.ind + ' name=' + item.name);
+                });
+                window.Commands.On("KeyframeSelected", function (item) {
+                    //alert('selected ind=' + item.ind);
+                });
+                window.Commands.On("LTLRequested", function (param) {
+                    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
+                    var model = BMA.Model.ExportBioModel(appModel.BioModel);
+                    var proofInput = {
+                        "Name": model.Name,
+                        "Relationships": model.Relationships,
+                        "Variables": model.Variables,
+                        "Formula": param.formula,
+                        "Number_of_steps": 10
+                    };
+                    var result = ajax.Invoke(proofInput).done(function (res) {
+                        if (res.Ticks == null) {
+                            alert(res.Error);
+                        }
+                        else {
+                            if (res.Status == "True") {
+                                var restbl = that.CreateColoredTable(res.Ticks);
+                                ltlviewer.SetResult(restbl);
+                                that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                            }
+                            else {
+                                ltlviewer.SetResult(undefined);
+                                alert(res.Status);
+                            }
+                        }
+                    }).fail(function () {
+                        alert("LTL failed");
+                    });
+                });
+                window.Commands.On("Expand", function (param) {
+                    switch (param) {
+                        case "LTLStates":
+                            var content = keyframesfullDriver.GetContent();
+                            popupViewer.Show({ tab: param, content: content });
+                            ltlviewer.Hide(param);
+                            break;
+                        case "LTLResults":
+                            popupViewer.Show({ tab: param, content: that.expandedResults });
+                            ltlviewer.Hide(param);
+                            break;
+                        default:
+                            ltlviewer.Show(undefined);
+                            break;
+                    }
+                });
+                window.Commands.On("Collapse", function (param) {
+                    ltlviewer.Show(param);
+                    popupViewer.Hide();
+                });
+                window.Commands.On('KeyframeStartDrag', function (param) {
+                    _this.currentdraggableelem = param;
+                });
+                window.Commands.On("KeyframeDropped", function (param) {
+                    var cl = window.KeyframesRegistry.Keyframes[_this.currentdraggableelem];
+                    var img = $('<img>').attr('src', cl.Icon);
+                    img.appendTo(param.location);
+                });
+                window.Commands.On('RemoveKeyframe', function () {
+                    keyframesfullDriver.RemovePart('', '');
+                });
+            }
+            LTLPresenter.prototype.CreateColoredTable = function (ticks) {
+                var that = this;
+                if (ticks === null)
+                    return undefined;
+                var color = [];
+                var t = ticks.length;
+                var v = ticks[0].Variables.length;
+                for (var i = 0; i < v; i++) {
+                    color[i] = [];
+                    for (var j = 1; j < t; j++) {
+                        var ij = ticks[j].Variables[i];
+                        var pr = ticks[j - 1].Variables[i];
+                        color[i][j] = pr.Hi === ij.Hi;
+                    }
+                }
+                return color;
+            };
+            LTLPresenter.prototype.CreateExpanded = function (ticks, color) {
+                var container = $('<div></div>');
+                if (ticks === null)
+                    return container;
+                var that = this;
+                var biomodel = this.appModel.BioModel;
+                var variables = biomodel.Variables;
+                var table = [];
+                var colortable = [];
+                var header = [];
+                var l = ticks.length;
+                header[0] = "Name";
+                for (var i = 0; i < ticks.length; i++) {
+                    header[i + 1] = "T = " + ticks[i].Time;
+                }
+                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
+                    table[j] = [];
+                    colortable[j] = [];
+                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
+                    colortable[j][0] = undefined;
+                    for (var i = 1; i < l + 1; i++) {
+                        var ij = ticks[i - 1].Variables[j];
+                        colortable[j][i] = color[j][i - 1];
+                        if (ij.Lo === ij.Hi) {
+                            table[j][i] = ij.Lo;
+                        }
+                        else {
+                            table[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+                container.coloredtableviewer({ header: header, numericData: table, colorData: colortable });
+                container.addClass('scrollable-results');
+                container.children('table').removeClass('variables-table').addClass('proof-propagation-table ltl-result-table');
+                container.find('td.propagation-cell-green').removeClass("propagation-cell-green");
+                container.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
+                container.find("td").eq(0).width(150);
+                return container;
+            };
+            return LTLPresenter;
+        })();
+        Presenters.LTLPresenter = LTLPresenter;
+    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=LTLpresenter.js.map
+///#source 1 1 /script/operatorsregistry.js
+var BMA;
+(function (BMA) {
+    var Operators;
+    (function (Operators) {
+        var Keyframe = (function () {
+            function Keyframe(name) {
+                this.name = name;
+            }
+            Keyframe.prototype.GetFormula = function () {
+                return this.name;
+            };
+            return Keyframe;
+        })();
+        Operators.Keyframe = Keyframe;
+        var Operator = (function () {
+            function Operator(name, fun) {
+                this.name = name;
+                this.fun = fun;
+            }
+            Object.defineProperty(Operator.prototype, "Name", {
+                get: function () {
+                    return this.name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Operator.prototype.GetFormula = function (op) {
+                return this.fun(op);
+            };
+            return Operator;
+        })();
+        Operators.Operator = Operator;
+        var Operation = (function () {
+            function Operation() {
+            }
+            Object.defineProperty(Operation.prototype, "Operator", {
+                set: function (op) {
+                    this.operator = op;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Operation.prototype, "Operands", {
+                set: function (op) {
+                    this.operands = op;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Operation.prototype.GetFormula = function () {
+                return this.operator.GetFormula(this.operands);
+            };
+            return Operation;
+        })();
+        Operators.Operation = Operation;
+        var OperatorsRegistry = (function () {
+            function OperatorsRegistry() {
+                var that = this;
+                this.operators = [];
+                var formulacreator = function (funcname) {
+                    return function (op) {
+                        var f = '(' + funcname;
+                        for (var i = 0; i < op.length; i++) {
+                            f += ' ' + op[i].GetFormula();
+                        }
+                        return f + ')';
+                    };
+                };
+                this.operators.push(new Operator('Until', formulacreator('Until')));
+                this.operators.push(new Operator('Release', formulacreator('Release')));
+                this.operators.push(new Operator('And', formulacreator('And')));
+                this.operators.push(new Operator('Or', formulacreator('Or')));
+                this.operators.push(new Operator('Implies', formulacreator('Implies')));
+                this.operators.push(new Operator('Not', formulacreator('Not')));
+                this.operators.push(new Operator('Next', formulacreator('Next')));
+                this.operators.push(new Operator('Always', formulacreator('Always')));
+                this.operators.push(new Operator('Eventually', formulacreator('Eventually')));
+            }
+            Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
+                get: function () {
+                    return this.operators;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            OperatorsRegistry.prototype.GetOperatorByName = function (name) {
+                for (var i = 0; i < this.operators.length; i++) {
+                    if (this.operators[i].Name === name)
+                        return this.operators[i];
+                }
+                return undefined;
+            };
+            return OperatorsRegistry;
+        })();
+        Operators.OperatorsRegistry = OperatorsRegistry;
+    })(Operators = BMA.Operators || (BMA.Operators = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=operatorsregistry.js.map

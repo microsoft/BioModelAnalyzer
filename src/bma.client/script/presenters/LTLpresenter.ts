@@ -36,15 +36,14 @@
                 
                 window.Commands.On("LTLRequested", function (param: { formula }) {
 
-                    var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
-                    //alert(that.appModel.BioModel.GetIdByName("d"));
-                    //alert(f);
+                    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
+                    
                     var model = BMA.Model.ExportBioModel(appModel.BioModel);
                     var proofInput = {
                         "Name": model.Name,
                         "Relationships": model.Relationships,
                         "Variables": model.Variables,
-                        "Formula": f,
+                        "Formula": param.formula,
                         "Number_of_steps": 10
                     }
 
