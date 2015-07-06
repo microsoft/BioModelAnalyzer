@@ -415,11 +415,11 @@
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\keyframecompact.ts" />
-    <TypeScriptCompile Include="script\widgets\keyframetable.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\keyframecompact.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\keyframetable.ts" />
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
-    <TypeScriptCompile Include="script\widgets\ltlstatesviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlstatesviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />

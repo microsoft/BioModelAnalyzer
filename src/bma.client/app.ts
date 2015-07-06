@@ -34,10 +34,10 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\localstoragewidget.ts"/>
-/// <reference path="script\widgets\keyframecompact.ts"/>
-/// <reference path="script\widgets\keyframetable.ts"/>
-/// <reference path="script\widgets\ltlstatesviewer.ts"/>
-/// <reference path="script\widgets\ltlviewer.ts"/>
+/// <reference path="script\widgets\ltl\keyframecompact.ts"/>
+/// <reference path="script\widgets\ltl\keyframetable.ts"/>
+/// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
+/// <reference path="script\widgets\ltl\ltlviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
