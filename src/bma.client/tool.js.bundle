@@ -27,7 +27,8 @@
 	<file>/script/model/analytics.js</file>  
 	<file>/script/model/visualsettings.js</file>
 	<file>/script/model/exportimport.js</file>
-	<file>/script/uidrivers.js</file>
+	<file>/script/uidrivers/commondrivers.js</file>
+  <file>/script/uidrivers/ltldrivers.js</file>
 	<file>/script/presenters/undoredopresenter.js</file>
 	<file>/script/presenters/presenters.js</file>
 	<file>/script/presenters/proofpresenter.js</file>

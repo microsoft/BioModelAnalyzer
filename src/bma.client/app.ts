@@ -10,8 +10,10 @@
 /// <reference path="script\keyframesregistry.ts"/>
 /// <reference path="script\operatorsregistry.ts"/>
 /// <reference path="script\localRepository.ts"/>
-/// <reference path="script\uidrivers.interfaces.ts"/>
-/// <reference path="script\uidrivers.ts"/>
+/// <reference path="script\uidrivers\commoninterfaces.ts"/>
+/// <reference path="script\uidrivers\commondrivers.ts"/>
+/// <reference path="script\uidrivers\commoninterfaces.ts"/>
+/// <reference path="script\uidrivers\commondrivers.ts"/>
 /// <reference path="script\presenters\undoredopresenter.ts"/>
 /// <reference path="script\presenters\presenters.ts"/>
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
@@ -19,7 +21,6 @@
 /// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\changeschecker.ts"/>
-
 /// <reference path="script\widgets\drawingsurface.ts"/>
 /// <reference path="script\widgets\simulationplot.ts"/>
 /// <reference path="script\widgets\simulationviewer.ts"/>

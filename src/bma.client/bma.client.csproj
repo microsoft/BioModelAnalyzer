@@ -356,6 +356,8 @@
     <TypeScriptCompile Include="script\changeschecker.ts" />
     <TypeScriptCompile Include="script\keyframesregistry.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />
+    <TypeScriptCompile Include="script\uidrivers\ltldrivers.ts" />
+    <TypeScriptCompile Include="script\uidrivers\ltlinterfaces.ts" />
     <TypeScriptCompile Include="script\ModelHelper.ts" />
     <TypeScriptCompile Include="script\model\exportimport.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
@@ -436,8 +438,8 @@
     <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
     <TypeScriptCompile Include="script\presenters\presenters.ts" />
-    <TypeScriptCompile Include="script\uidrivers.interfaces.ts" />
-    <TypeScriptCompile Include="script\uidrivers.ts" />
+    <TypeScriptCompile Include="script\uidrivers\commoninterfaces.ts" />
+    <TypeScriptCompile Include="script\uidrivers\commondrivers.ts" />
     <TypeScriptCompile Include="script\XmlModelParser.ts" />
     <TypeScriptCompile Include="test\AccordionTest.ts" />
     <TypeScriptCompile Include="test\AnalyticsTest.ts" />

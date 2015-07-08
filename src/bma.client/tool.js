@@ -2317,10 +2317,10 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=exportimport.js.map
-///#source 1 1 /script/uidrivers.js
-/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="widgets\drawingsurface.ts"/>
+///#source 1 1 /script/uidrivers/commondrivers.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\widgets\drawingsurface.ts"/>
 var BMA;
 (function (BMA) {
     var UIDrivers;
@@ -2835,6 +2835,16 @@ var BMA;
             return ExportService;
         })();
         UIDrivers.ExportService = ExportService;
+    })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=commondrivers.js.map
+///#source 1 1 /script/uidrivers/ltldrivers.js
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+var BMA;
+(function (BMA) {
+    var UIDrivers;
+    (function (UIDrivers) {
         var KeyframesExpandedViewer = (function () {
             function KeyframesExpandedViewer(keyframe) {
                 this.keyframe = keyframe;
@@ -2891,7 +2901,7 @@ var BMA;
         UIDrivers.LTLViewer = LTLViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
-//# sourceMappingURL=uidrivers.js.map
+//# sourceMappingURL=ltldrivers.js.map
 ///#source 1 1 /script/presenters/undoredopresenter.js
 var BMA;
 (function (BMA) {
@@ -2983,7 +2993,7 @@ var BMA;
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\model\biomodel.ts"/>
 /// <reference path="..\model\model.ts"/>
-/// <reference path="..\uidrivers.ts"/>
+/// <reference path="..\uidrivers\commondrivers.ts"/>
 /// <reference path="..\commands.ts"/>
 var BMA;
 (function (BMA) {
@@ -8049,9 +8059,9 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=visibilitysettings.js.map
-///#source 1 1 /script/widgets/keyframetable.js
-/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+///#source 1 1 /script/widgets/ltl/keyframetable.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.keyframetable", {
         options: {
@@ -8080,9 +8090,9 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=keyframetable.js.map
-///#source 1 1 /script/widgets/keyframecompact.js
-/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+///#source 1 1 /script/widgets/ltl/keyframecompact.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.keyframecompact", {
         options: {
@@ -8151,9 +8161,9 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=keyframecompact.js.map
-///#source 1 1 /script/widgets/ltlstatesviewer.js
-/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+///#source 1 1 /script/widgets/ltl/ltlstatesviewer.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.ltlstatesviewer", {
         options: {},
@@ -8211,9 +8221,9 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlstatesviewer.js.map
-///#source 1 1 /script/widgets/ltlviewer.js
-/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+///#source 1 1 /script/widgets/ltl/ltlviewer.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.ltlviewer", {
         options: {},

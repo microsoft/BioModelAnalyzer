@@ -10,8 +10,10 @@
 /// <reference path="script\keyframesregistry.ts"/>
 /// <reference path="script\operatorsregistry.ts"/>
 /// <reference path="script\localRepository.ts"/>
-/// <reference path="script\uidrivers.interfaces.ts"/>
-/// <reference path="script\uidrivers.ts"/>
+/// <reference path="script\uidrivers\commoninterfaces.ts"/>
+/// <reference path="script\uidrivers\commondrivers.ts"/>
+/// <reference path="script\uidrivers\commoninterfaces.ts"/>
+/// <reference path="script\uidrivers\commondrivers.ts"/>
 /// <reference path="script\presenters\undoredopresenter.ts"/>
 /// <reference path="script\presenters\presenters.ts"/>
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
@@ -33,10 +35,10 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\localstoragewidget.ts"/>
-/// <reference path="script\widgets\keyframecompact.ts"/>
-/// <reference path="script\widgets\keyframetable.ts"/>
-/// <reference path="script\widgets\ltlstatesviewer.ts"/>
-/// <reference path="script\widgets\ltlviewer.ts"/>
+/// <reference path="script\widgets\ltl\keyframecompact.ts"/>
+/// <reference path="script\widgets\ltl\keyframetable.ts"/>
+/// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
+/// <reference path="script\widgets\ltl\ltlviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>

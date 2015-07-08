@@ -1,6 +1,6 @@
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\..\script\uidrivers.interfaces.ts"/>
+/// <reference path="..\..\script\uidrivers\commoninterfaces.ts"/>
 var BMA;
 (function (BMA) {
     var Test;

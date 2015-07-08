@@ -1,5 +1,5 @@
-﻿/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+﻿/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 module BMA {
     export module UIDrivers {
@@ -104,12 +104,6 @@ module BMA {
             ActiveMode();
         }
 
-        export interface ILTLViewer {
-            Show(p: string);
-            Hide(p: string);
-            SetResult(result);
-        }
-
         export interface ILocalStorageDriver {
             SetItems(keys);
             AddItem(key, item);
@@ -152,15 +146,6 @@ module BMA {
             IsChanged(model);
         }
 
-        export interface IKeyframesList {
-            AddState(items);
-            GetContent();
-        }
-
-        export interface IKeyframesFull {
-            AddState(items);
-            GetContent();
-            RemovePart(keyframe, ind);
-        }
+       
     }
 } 
