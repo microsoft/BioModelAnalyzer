@@ -356,6 +356,8 @@
     <TypeScriptCompile Include="script\changeschecker.ts" />
     <TypeScriptCompile Include="script\keyframesregistry.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />
+    <TypeScriptCompile Include="script\model\operation.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\temporalproperties.ts" />
     <TypeScriptCompile Include="script\uidrivers\ltldrivers.ts" />
     <TypeScriptCompile Include="script\uidrivers\ltlinterfaces.ts" />
     <TypeScriptCompile Include="script\ModelHelper.ts" />
@@ -365,7 +367,7 @@
     <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\LTLpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\LTLpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />

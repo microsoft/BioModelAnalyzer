@@ -1,4 +1,4 @@
-﻿class TestOperand implements BMA.Operators.IOperand {
+﻿class TestOperand implements BMA.LTLOperations.IOperand {
 
     public test: string;
 
@@ -27,8 +27,8 @@ describe('Keyframes',() => {
     //op.Operator = op1;
     //op.Operands = [kfrm1, kfrm2];
 
-    var formulacreator = function (funcname): BMA.Operators.IGetFormula {
-        return function (op: BMA.Operators.IOperand[]) {
+    var formulacreator = function (funcname): BMA.LTLOperations.IGetFormula {
+        return function (op: BMA.LTLOperations.IOperand[]) {
             var f = '(' + funcname;
             for (var i = 0; i < op.length; i++) {
                 f += ' ' + op[i].GetFormula();
@@ -38,12 +38,12 @@ describe('Keyframes',() => {
     }
 
     it ("creates keyframe with name",() => {
-        var k1 = new BMA.Operators.Keyframe('one');
+        var k1 = new BMA.LTLOperations.Keyframe('one');
         expect(k1.GetFormula()).toEqual('one');
     });
         
     it('creates operator with name and GetFormula()',() => {
-        var op = new BMA.Operators.Operator('name', function (op: BMA.Operators.IOperand[]) {
+        var op = new BMA.LTLOperations.Operator('name', function (op: BMA.LTLOperations.IOperand[]) {
             var f = '';
             for (var i = 0; i < op.length; i++)
                 f += op[i].GetFormula();
@@ -62,7 +62,7 @@ describe('Keyframes',() => {
     it('creates operator for BMA',() => {
         
 
-        var op1 = new BMA.Operators.Operator('Until', formulacreator('Until'));
+        var op1 = new BMA.LTLOperations.Operator('Until', formulacreator('Until'));
 
         var k1 = new TestOperand();
         k1.test = 'test1';
@@ -74,18 +74,18 @@ describe('Keyframes',() => {
     });
 
     it('creates operation with 2 keyframes',() => {
-        var k1 = new BMA.Operators.Keyframe('one');
-        var k2 = new BMA.Operators.Keyframe('two');
-        var k3 = new BMA.Operators.Keyframe('three');
+        var k1 = new BMA.LTLOperations.Keyframe('one');
+        var k2 = new BMA.LTLOperations.Keyframe('two');
+        var k3 = new BMA.LTLOperations.Keyframe('three');
 
-        var op1 = new BMA.Operators.Operator('Until', formulacreator('Until'));
-        var op2 = new BMA.Operators.Operator('Always', formulacreator('Always'));
+        var op1 = new BMA.LTLOperations.Operator('Until', formulacreator('Until'));
+        var op2 = new BMA.LTLOperations.Operator('Always', formulacreator('Always'));
 
-        var op = new BMA.Operators.Operation();
+        var op = new BMA.LTLOperations.Operation();
         op.Operands = [k1, k2];
         op.Operator = op1;
 
-        var opp = new BMA.Operators.Operation(); 
+        var opp = new BMA.LTLOperations.Operation(); 
         opp.Operands = [k3, op];
         opp.Operator = op2;
 
@@ -94,31 +94,31 @@ describe('Keyframes',() => {
     });
 
     it('creates tree of operations',() => {
-        var k1 = new BMA.Operators.Keyframe('one');
-        var k2 = new BMA.Operators.Keyframe('two');
-        var k3 = new BMA.Operators.Keyframe('three');
-        var k4 = new BMA.Operators.Keyframe('four');
+        var k1 = new BMA.LTLOperations.Keyframe('one');
+        var k2 = new BMA.LTLOperations.Keyframe('two');
+        var k3 = new BMA.LTLOperations.Keyframe('three');
+        var k4 = new BMA.LTLOperations.Keyframe('four');
 
-        var op1 = new BMA.Operators.Operator('And', formulacreator('And'));
-        var op2 = new BMA.Operators.Operator('Or', formulacreator('Or'));
+        var op1 = new BMA.LTLOperations.Operator('And', formulacreator('And'));
+        var op2 = new BMA.LTLOperations.Operator('Or', formulacreator('Or'));
 
-        var oper1 = new BMA.Operators.Operation();
+        var oper1 = new BMA.LTLOperations.Operation();
         oper1.Operands = [k1, k2];
         oper1.Operator = op1;
 
-        var oper2 = new BMA.Operators.Operation();
+        var oper2 = new BMA.LTLOperations.Operation();
         oper2.Operands = [k3, k4];
         oper2.Operator = op2;
 
-        var oper = new BMA.Operators.Operation(); 
+        var oper = new BMA.LTLOperations.Operation(); 
         oper.Operands = [oper2, oper1];
         oper.Operator = op2;
 
         expect(oper.GetFormula()).toEqual('(Or (Or three four) (And one two))');
 
-        var not = new BMA.Operators.Operation();
+        var not = new BMA.LTLOperations.Operation();
         not.Operands = [oper];
-        not.Operator = new BMA.Operators.Operator('Not', formulacreator('Not'));;
+        not.Operator = new BMA.LTLOperations.Operator('Not', formulacreator('Not'));;
 
         expect(not.GetFormula()).toEqual('(Not (Or (Or three four) (And one two)))');
     });

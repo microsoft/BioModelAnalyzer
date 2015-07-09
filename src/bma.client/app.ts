@@ -232,7 +232,7 @@ function loadScript(version) {
       
     //Creating KeyframesRegistry
     window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry();
-    window.OperatorsRegistry = new BMA.Operators.OperatorsRegistry();
+    window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
 

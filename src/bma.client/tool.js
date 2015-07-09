@@ -8435,59 +8435,8 @@ var BMA;
 ///#source 1 1 /script/operatorsregistry.js
 var BMA;
 (function (BMA) {
-    var Operators;
-    (function (Operators) {
-        var Keyframe = (function () {
-            function Keyframe(name) {
-                this.name = name;
-            }
-            Keyframe.prototype.GetFormula = function () {
-                return this.name;
-            };
-            return Keyframe;
-        })();
-        Operators.Keyframe = Keyframe;
-        var Operator = (function () {
-            function Operator(name, fun) {
-                this.name = name;
-                this.fun = fun;
-            }
-            Object.defineProperty(Operator.prototype, "Name", {
-                get: function () {
-                    return this.name;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Operator.prototype.GetFormula = function (op) {
-                return this.fun(op);
-            };
-            return Operator;
-        })();
-        Operators.Operator = Operator;
-        var Operation = (function () {
-            function Operation() {
-            }
-            Object.defineProperty(Operation.prototype, "Operator", {
-                set: function (op) {
-                    this.operator = op;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(Operation.prototype, "Operands", {
-                set: function (op) {
-                    this.operands = op;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Operation.prototype.GetFormula = function () {
-                return this.operator.GetFormula(this.operands);
-            };
-            return Operation;
-        })();
-        Operators.Operation = Operation;
+    var LTLOperations;
+    (function (LTLOperations) {
         var OperatorsRegistry = (function () {
             function OperatorsRegistry() {
                 var that = this;
@@ -8501,15 +8450,15 @@ var BMA;
                         return f + ')';
                     };
                 };
-                this.operators.push(new Operator('Until', formulacreator('Until')));
-                this.operators.push(new Operator('Release', formulacreator('Release')));
-                this.operators.push(new Operator('And', formulacreator('And')));
-                this.operators.push(new Operator('Or', formulacreator('Or')));
-                this.operators.push(new Operator('Implies', formulacreator('Implies')));
-                this.operators.push(new Operator('Not', formulacreator('Not')));
-                this.operators.push(new Operator('Next', formulacreator('Next')));
-                this.operators.push(new Operator('Always', formulacreator('Always')));
-                this.operators.push(new Operator('Eventually', formulacreator('Eventually')));
+                this.operators.push(new LTLOperations.Operator('Until', formulacreator('Until')));
+                this.operators.push(new LTLOperations.Operator('Release', formulacreator('Release')));
+                this.operators.push(new LTLOperations.Operator('And', formulacreator('And')));
+                this.operators.push(new LTLOperations.Operator('Or', formulacreator('Or')));
+                this.operators.push(new LTLOperations.Operator('Implies', formulacreator('Implies')));
+                this.operators.push(new LTLOperations.Operator('Not', formulacreator('Not')));
+                this.operators.push(new LTLOperations.Operator('Next', formulacreator('Next')));
+                this.operators.push(new LTLOperations.Operator('Always', formulacreator('Always')));
+                this.operators.push(new LTLOperations.Operator('Eventually', formulacreator('Eventually')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {
@@ -8527,7 +8476,7 @@ var BMA;
             };
             return OperatorsRegistry;
         })();
-        Operators.OperatorsRegistry = OperatorsRegistry;
-    })(Operators = BMA.Operators || (BMA.Operators = {}));
+        LTLOperations.OperatorsRegistry = OperatorsRegistry;
+    })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=operatorsregistry.js.map
