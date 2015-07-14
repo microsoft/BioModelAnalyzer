@@ -2317,6 +2317,82 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=exportimport.js.map
+///#source 1 1 /script/model/operation.js
+var BMA;
+(function (BMA) {
+    var LTLOperations;
+    (function (LTLOperations) {
+        var Keyframe = (function () {
+            function Keyframe(name) {
+                this.name = name;
+            }
+            Keyframe.prototype.GetFormula = function () {
+                return this.name;
+            };
+            return Keyframe;
+        })();
+        LTLOperations.Keyframe = Keyframe;
+        var Operator = (function () {
+            function Operator(name, operandsCount, fun) {
+                this.name = name;
+                this.fun = fun;
+                this.operandsNumber = operandsCount;
+            }
+            Object.defineProperty(Operator.prototype, "Name", {
+                get: function () {
+                    return this.name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Operator.prototype, "OperandsCount", {
+                get: function () {
+                    return this.operandsNumber;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Operator.prototype.GetFormula = function (op) {
+                if (op !== undefined && op.length !== this.operandsNumber) {
+                    throw "Operator " + name + ": invalid operands count";
+                }
+                return this.fun(op);
+            };
+            return Operator;
+        })();
+        LTLOperations.Operator = Operator;
+        var Operation = (function () {
+            function Operation() {
+            }
+            Object.defineProperty(Operation.prototype, "Operator", {
+                get: function () {
+                    return this.operator;
+                },
+                set: function (op) {
+                    this.operator = op;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Operation.prototype, "Operands", {
+                get: function () {
+                    return this.operands;
+                },
+                set: function (op) {
+                    this.operands = op;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Operation.prototype.GetFormula = function () {
+                return this.operator.GetFormula(this.operands);
+            };
+            return Operation;
+        })();
+        LTLOperations.Operation = Operation;
+    })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=operation.js.map
 ///#source 1 1 /script/uidrivers/commondrivers.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
@@ -8450,15 +8526,15 @@ var BMA;
                         return f + ')';
                     };
                 };
-                this.operators.push(new LTLOperations.Operator('Until', formulacreator('Until')));
-                this.operators.push(new LTLOperations.Operator('Release', formulacreator('Release')));
-                this.operators.push(new LTLOperations.Operator('And', formulacreator('And')));
-                this.operators.push(new LTLOperations.Operator('Or', formulacreator('Or')));
-                this.operators.push(new LTLOperations.Operator('Implies', formulacreator('Implies')));
-                this.operators.push(new LTLOperations.Operator('Not', formulacreator('Not')));
-                this.operators.push(new LTLOperations.Operator('Next', formulacreator('Next')));
-                this.operators.push(new LTLOperations.Operator('Always', formulacreator('Always')));
-                this.operators.push(new LTLOperations.Operator('Eventually', formulacreator('Eventually')));
+                this.operators.push(new LTLOperations.Operator('Until', 2, formulacreator('Until')));
+                this.operators.push(new LTLOperations.Operator('Release', 2, formulacreator('Release')));
+                this.operators.push(new LTLOperations.Operator('And', 2, formulacreator('And')));
+                this.operators.push(new LTLOperations.Operator('Or', 2, formulacreator('Or')));
+                this.operators.push(new LTLOperations.Operator('Implies', 2, formulacreator('Implies')));
+                this.operators.push(new LTLOperations.Operator('Not', 2, formulacreator('Not')));
+                this.operators.push(new LTLOperations.Operator('Next', 1, formulacreator('Next')));
+                this.operators.push(new LTLOperations.Operator('Always', 1, formulacreator('Always')));
+                this.operators.push(new LTLOperations.Operator('Eventually', 1, formulacreator('Eventually')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

@@ -159,6 +159,7 @@
     <Content Include="html\callback.html" />
     <Content Include="html\chartSample.html" />
     <Content Include="html\LayoutSample.html" />
+    <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
@@ -424,6 +425,8 @@
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlstatesviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
     <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
@@ -457,7 +460,6 @@
     <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
-    <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
     <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
     <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
     <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />

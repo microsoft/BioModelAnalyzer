@@ -21,12 +21,8 @@ module BMA {
             RemovePart(keyframe, ind);
         }
 
-        export interface ITemporalPropertiesEditor {
-
-        }
-
         export interface ITemporalPropertiesViewer {
-
+            SetOperation(operation: BMA.LTLOperations.Operation);
         }
     }
 } 

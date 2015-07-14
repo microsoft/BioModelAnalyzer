@@ -34,15 +34,15 @@ module BMA {
                           }
                 }
 
-                this.operators.push(new Operator('Until', formulacreator('Until')));
-                this.operators.push(new Operator('Release', formulacreator('Release')));
-                this.operators.push(new Operator('And', formulacreator('And')));
-                this.operators.push(new Operator('Or', formulacreator('Or')));
-                this.operators.push(new Operator('Implies', formulacreator('Implies')));
-                this.operators.push(new Operator('Not', formulacreator('Not')));
-                this.operators.push(new Operator('Next', formulacreator('Next')));
-                this.operators.push(new Operator('Always', formulacreator('Always')));
-                this.operators.push(new Operator('Eventually', formulacreator('Eventually')));
+                this.operators.push(new Operator('Until', 2, formulacreator('Until')));
+                this.operators.push(new Operator('Release', 2, formulacreator('Release')));
+                this.operators.push(new Operator('And', 2, formulacreator('And')));
+                this.operators.push(new Operator('Or', 2, formulacreator('Or')));
+                this.operators.push(new Operator('Implies', 2, formulacreator('Implies')));
+                this.operators.push(new Operator('Not', 2, formulacreator('Not')));
+                this.operators.push(new Operator('Next', 1, formulacreator('Next')));
+                this.operators.push(new Operator('Always', 1, formulacreator('Always')));
+                this.operators.push(new Operator('Eventually', 1, formulacreator('Eventually')));
             }
         }
     }

@@ -14,7 +14,30 @@ module BMA {
             private keyframes: BMA.LTLOperations.Keyframe[];
             private activeOperation: BMA.LTLOperations.Operation;
 
-            constructor() {
+            private selectedOperatorType: string;
+
+            private driver: BMA.UIDrivers.ISVGPlot;
+            private navigationDriver: BMA.UIDrivers.INavigationPanel;
+            private dragService: BMA.UIDrivers.IElementsPanel;
+
+            constructor(
+                svgPlotDriver: BMA.UIDrivers.ISVGPlot,
+                navigationDriver: BMA.UIDrivers.INavigationPanel,
+                dragService: BMA.UIDrivers.IElementsPanel) {
+
+                var that = this;
+
+                this.driver = svgPlotDriver;
+                this.navigationDriver = navigationDriver;
+                this.dragService = dragService;
+
+
+                window.Commands.On("AddOperatorSelect",(type: string) => {
+                    that.selectedOperatorType = type;
+                    that.navigationDriver.TurnNavigation(type === undefined);
+                });
+
+
             }
         }
     }

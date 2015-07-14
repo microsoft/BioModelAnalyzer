@@ -1,6 +1,20 @@
 ﻿module BMA {
     export module LTLOperations {
 
+
+        export interface IGetFormula {
+            (op: IOperand[]): string;
+        }
+
+        export interface IOperand {
+            GetFormula(): string;
+        }
+
+        export interface IOperationLayout {
+            GetSVG(position: { x: number; y: number }): string
+            //FindIntersection(point: { x: number; y: number }): 
+        }
+
         export class Keyframe implements IOperand {
             private name: string;
 
@@ -16,35 +30,45 @@
         export class Operator {
             private name: string;
             private fun: IGetFormula;
+            private operandsNumber: number;
 
-            constructor(name: string, fun: IGetFormula) {
+            constructor(name: string, operandsCount: number, fun: IGetFormula) {
                 this.name = name;
                 this.fun = fun;
+                this.operandsNumber = operandsCount;
             }
 
             get Name() {
                 return this.name;
             }
 
+            get OperandsCount() {
+                return this.operandsNumber;
+            }
+
             public GetFormula(op: IOperand[]) {
+                if (op !== undefined && op.length !== this.operandsNumber) {
+                    throw "Operator " + name + ": invalid operands count";
+                }
                 return this.fun(op);
             }
         }
 
-        export interface IGetFormula {
-            (op: IOperand[]): string;
-        }
-
-        export interface IOperand {
-            GetFormula(): string;
-        }
 
         export class Operation implements IOperand {
             private operator: Operator;
             private operands: IOperand[];
 
+            public get Operator() {
+                return this.operator;
+            }
+
             public set Operator(op) {
                 this.operator = op;
+            }
+
+            public get Operands() {
+                return this.operands;
             }
 
             public set Operands(op) {
@@ -55,6 +79,7 @@
                 return this.operator.GetFormula(this.operands);
             }
         }
+
 
         
     }

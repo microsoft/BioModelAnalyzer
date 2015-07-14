@@ -70,5 +70,69 @@
             return [{ x: x1, y: y1 }, { x: x2, y: y2 }];
         }
 
+        /*
+        export function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
+            var operator = op.Operator;
+            var operands = op.Operands;
+            return GetOperatorSVG(svg, position, operator, operands);
+        }
+
+        export function GetOperandSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand): { svg: any; depthLevel: number } {
+
+            //TODO: Rethink method of distingushing keyframes from operations
+            var operator = (<any>op).Operator;
+
+            if (operator !== undefined) {
+                return GetOperationSVG(svg, position, <BMA.LTLOperations.Operation>op);
+            } else {
+                return {
+                    svg: GetKeyFrameSVG(svg, position, <BMA.LTLOperations.Keyframe>op), depthLevel: 1
+                };
+            }
+        }
+
+        export function GetKeyFrameSVG(svg: any, position: { x: number; y: number }, keyframe: BMA.LTLOperations.Keyframe): string {
+            return "";
+        }
+
+        export function GetOperatorSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operator, operands: BMA.LTLOperations.IOperand[]): { svg: any; depthLevel: number } {
+            if (operands.length !== op.OperandsCount)
+                throw "Invalid Operands Count for Operator's rendering";
+
+            var operandSVGs = [];
+            for (var i = 0; i < operands.length; i++) {
+                operandSVGs.push(GetOperandSVG(svg, position, operands[i]));
+            }
+
+            switch (operands.length) {
+                case 1:
+                    return {
+                        svg: undefined,
+                        depthLevel: (<any>operandSVGs[0]).depthLevel
+                    }
+                    break;
+                case 2:
+                    return {
+                        svg: undefined,
+                        depthLevel: Math.max((<any>operandSVGs[0]).depthLevel,(<any>operandSVGs[1]).depthLevel)
+                    }
+                    break;
+                default:
+                    throw "Rendering of operators with " + operands.length + " operands is not supported"; 
+            }
+        }
+
+        export function bboxText(svgDocument: any, text: string): any {
+            var data = svgDocument.createTextNode(text);
+            var svgns = "";
+            var svgElement = svgDocument.createElementNS(svgns, "text");
+            svgElement.appendChild(data);
+            svgDocument.documentElement.appendChild(svgElement);
+            var bbox = svgElement.getBBox();
+            svgElement.parentNode.removeChild(svgElement);
+            return bbox;
+        }
+        */
+
     }
 }

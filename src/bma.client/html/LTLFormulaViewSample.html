@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>LTL Formula View Sample</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../js/rx.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../js/svgplot.js"></script>
+    <script src="../tool.js"></script>
+
+    <script>
+
+        /*
+        function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
+            var operator = op.Operator;
+            var operands = op.Operands;
+            return GetOperatorSVG(svg, position, operator, operands);
+        }
+
+        function GetOperandSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand): { svg: any; depthLevel: number } {
+
+            //TODO: Rethink method of distingushing keyframes from operations
+            var operator = (<any>op).Operator;
+
+            if (operator !== undefined) {
+                return GetOperationSVG(svg, position, <BMA.LTLOperations.Operation>op);
+            } else {
+                return {
+                    svg: GetKeyFrameSVG(svg, position, <BMA.LTLOperations.Keyframe>op), depthLevel: 1
+                };
+            }
+        }
+
+        function GetKeyFrameSVG(svg: any, position: { x: number; y: number }, keyframe: BMA.LTLOperations.Keyframe): string {
+            return "";
+        }
+
+        function GetOperatorSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operator, operands: BMA.LTLOperations.IOperand[]): { svg: any; depthLevel: number } {
+            if (operands.length !== op.OperandsCount)
+                throw "Invalid Operands Count for Operator's rendering";
+
+            var operandSVGs = [];
+            for (var i = 0; i < operands.length; i++) {
+                operandSVGs.push(GetOperandSVG(svg, position, operands[i]));
+            }
+
+            switch (operands.length) {
+                case 1:
+                    return {
+                        svg: undefined,
+                        depthLevel: (<any>operandSVGs[0]).depthLevel
+                    }
+                    break;
+                case 2:
+                    return {
+                        svg: undefined,
+                        depthLevel: Math.max((<any>operandSVGs[0]).depthLevel,(<any>operandSVGs[1]).depthLevel)
+                    }
+                    break;
+                default:
+                    throw "Rendering of operators with " + operands.length + " operands is not supported"; 
+            }
+        }
+        */
+
+        $(document).ready(function () {
+            var plot = InteractiveDataDisplay.asPlot("figure");
+            var svgPlot = plot.get("svgPlot");
+
+            plot.yDataTransform =
+                        new InteractiveDataDisplay.DataTransform(
+                            function (x) {
+                                return -x;
+                            },
+                            function (y) {
+                                return -y;
+                            },
+                            undefined);
+
+            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(plot.host);
+            plot.navigation.gestureSource = gestureSource;
+            plot.navigation.setVisibleRect({ x: 0, y: 0, width: 800, height: 600 }, false);
+            var svgPlot = plot.get('svgPlot');
+
+            var formulacreator = function (funcname) {
+                return function (op) {
+                    var f = '(' + funcname;
+                    for (var i = 0; i < op.length; i++) {
+                        f += ' ' + op[i].GetFormula();
+                    }
+                    return f + ')';
+                }
+            }
+
+            var k1 = new BMA.LTLOperations.Keyframe('one');
+            var k2 = new BMA.LTLOperations.Keyframe('two');
+            var op1 = new BMA.LTLOperations.Operator('Until', undefined, formulacreator('Until'));
+            var op = new BMA.LTLOperations.Operation();
+            op.Operands = [k1, k2];
+            op.Operator = op1;
+
+            var svg = svgPlot.svg;
+
+            //svg.circle(parent, cx, cy, r, settings)
+            //svgPlot.svg.circle(0, 0, 500, { fill: "white", stroke: "black", transform: "scale(10,1)" });
+
+            var path = svg.createPath();
+            svg.path({
+                fill: "white",
+                stroke: "black",
+                d: "a25,100 -30 0,1 50,-25 l 50,-25"
+            });
+
+            //svg.circle(0, 0, 500, { fill: "white", stroke: "black", transform: "scale(10,1)" });
+            //var opsvg = BMA.SVGHelper.GetOperationSVG(svgPlot.svg, op);
+            //svgPlot.svg.add(opsvg);
+        });
+    </script>
+</head>
+<body>
+    <div id="figure" data-idd-plot="plot" style="width: 800px; height: 600px; border: 1px solid black;">
+        <div id="svgPlot" data-idd-plot="svgPlot"></div>
+    </div>
+</body>
+</html>
