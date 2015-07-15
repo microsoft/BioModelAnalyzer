@@ -454,6 +454,92 @@ var BMA;
             return [{ x: x1, y: y1 }, { x: x2, y: y2 }];
         }
         SVGHelper.GeEllipsePoints = GeEllipsePoints;
+        function CalcAndAssignOperandWidthAndDepth(op, paddingX) {
+            var operator = op.Operator;
+            if (operator !== undefined) {
+                var operands = op.Operands;
+                var layer = 0;
+                var width = GetOperatorWidth(operator, paddingX);
+                for (var i = 0; i < operands.length; i++) {
+                    var calcLW = CalcAndAssignOperandWidthAndDepth(operands[i], paddingX);
+                    layer = Math.max(layer, calcLW.layer);
+                    width += (calcLW.width + paddingX * 2);
+                }
+                op.layer = layer + 1;
+                op.width = width;
+                return {
+                    layer: layer + 1,
+                    width: width
+                };
+            }
+            else {
+                var w = GetKeyframeWidth(op, paddingX);
+                op.layer = 1;
+                op.width = w;
+                return {
+                    layer: 1,
+                    width: w
+                };
+            }
+        }
+        SVGHelper.CalcAndAssignOperandWidthAndDepth = CalcAndAssignOperandWidthAndDepth;
+        function GetOperatorWidth(op, paddingX) {
+            return op.Name.length * 4 + paddingX;
+        }
+        SVGHelper.GetOperatorWidth = GetOperatorWidth;
+        function GetKeyframeWidth(op, paddingX) {
+            return 50 + paddingX;
+        }
+        SVGHelper.GetKeyframeWidth = GetKeyframeWidth;
+        function RenderOperationSVG(svg, position, op, operandPosition) {
+            var paddingX = 20;
+            var operator = op.Operator;
+            if (operator !== undefined) {
+                var operation = op;
+                CalcAndAssignOperandWidthAndDepth(op, paddingX);
+                var halfWidth = op.width / 2;
+                var height = 50 + 10 * op.layer;
+                var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
+                var operands = operation.Operands;
+                var operatorPadding = 1;
+                var operatorW = GetOperatorWidth(operation.Operator, paddingX);
+                switch (operands.length) {
+                    case 1:
+                        svg.text(position.x - halfWidth + paddingX, position.y, operation.Operator.Name, {
+                            "font-size": 10,
+                            "fill": "blue"
+                        });
+                        RenderOperationSVG(svg, {
+                            x: position.x + halfWidth - operands[0].width / 2 - paddingX,
+                            y: position.y
+                        }, operands[0], "right");
+                        break;
+                    case 2:
+                        RenderOperationSVG(svg, {
+                            x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                            y: position.y
+                        }, operands[0], "left");
+                        RenderOperationSVG(svg, {
+                            x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                            y: position.y
+                        }, operands[1], "right");
+                        svg.text(position.x - halfWidth + operands[0].width + paddingX, position.y, operation.Operator.Name, {
+                            "font-size": 10,
+                            "fill": "blue"
+                        });
+                        break;
+                    default:
+                        throw "Rendering of operators with " + operands.length + " operands is not supported";
+                }
+            }
+            else {
+                var keyFrame = op;
+                var w = GetKeyframeWidth(keyFrame, paddingX);
+                var padding = operandPosition === "left" ? paddingX : -paddingX;
+                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "transparent" });
+            }
+        }
+        SVGHelper.RenderOperationSVG = RenderOperationSVG;
     })(SVGHelper = BMA.SVGHelper || (BMA.SVGHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=SVGHelper.js.map
@@ -8526,15 +8612,15 @@ var BMA;
                         return f + ')';
                     };
                 };
-                this.operators.push(new LTLOperations.Operator('Until', 2, formulacreator('Until')));
-                this.operators.push(new LTLOperations.Operator('Release', 2, formulacreator('Release')));
-                this.operators.push(new LTLOperations.Operator('And', 2, formulacreator('And')));
-                this.operators.push(new LTLOperations.Operator('Or', 2, formulacreator('Or')));
-                this.operators.push(new LTLOperations.Operator('Implies', 2, formulacreator('Implies')));
-                this.operators.push(new LTLOperations.Operator('Not', 2, formulacreator('Not')));
-                this.operators.push(new LTLOperations.Operator('Next', 1, formulacreator('Next')));
-                this.operators.push(new LTLOperations.Operator('Always', 1, formulacreator('Always')));
-                this.operators.push(new LTLOperations.Operator('Eventually', 1, formulacreator('Eventually')));
+                this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
+                this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
+                this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
+                this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
+                this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
+                this.operators.push(new LTLOperations.Operator('NOT', 2, formulacreator('Not')));
+                this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
+                this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
+                this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

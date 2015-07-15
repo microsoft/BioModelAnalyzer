@@ -70,18 +70,126 @@
             return [{ x: x1, y: y1 }, { x: x2, y: y2 }];
         }
 
+        export function CalcAndAssignOperandWidthAndDepth(op: BMA.LTLOperations.IOperand, paddingX: number): { layer: number; width: number } {
+            var operator = (<any>op).Operator;
+            if (operator !== undefined) {
+                var operands = (<BMA.LTLOperations.Operation>op).Operands;
+                var layer = 0;
+                var width = GetOperatorWidth(operator, paddingX);
+
+                for (var i = 0; i < operands.length; i++) {
+                    var calcLW = CalcAndAssignOperandWidthAndDepth(operands[i], paddingX);
+                    layer = Math.max(layer, calcLW.layer);
+                    width += (calcLW.width + paddingX * 2);
+                }
+
+                (<any>op).layer = layer + 1;
+                (<any>op).width = width;
+                return {
+                    layer: layer + 1,
+                    width: width
+                }
+            } else {
+                var w = GetKeyframeWidth(<BMA.LTLOperations.Keyframe>op, paddingX);
+                (<any>op).layer = 1;
+                (<any>op).width = w;
+                return {
+                    layer: 1,
+                    width: w
+                }
+            }
+        }
+
+        export function GetOperatorWidth(op: BMA.LTLOperations.Operator, paddingX: number): number {
+            return op.Name.length * 4 + paddingX;
+        }
+
+        export function GetKeyframeWidth(op: BMA.LTLOperations.Keyframe, paddingX: number): number {
+            return 50 + paddingX;
+        }
+
+        export function RenderOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand, operandPosition: string) {
+            var paddingX = 20;
+
+            var operator = (<any>op).Operator;
+            if (operator !== undefined) {
+                var operation = <BMA.LTLOperations.Operation>op;
+
+                CalcAndAssignOperandWidthAndDepth(op, paddingX);
+
+                var halfWidth = (<any>op).width / 2;
+                var height = 50 + 10 * (<any>op).layer;
+
+                var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
+
+                var operands = operation.Operands;
+
+                var operatorPadding = 1;
+                var operatorW = GetOperatorWidth(operation.Operator, paddingX);
+                switch (operands.length) {
+                    case 1:
+
+                        svg.text(position.x - halfWidth + paddingX, position.y, operation.Operator.Name, {
+                            "font-size": 10,
+                            "fill": "blue"
+                        });
+
+                        RenderOperationSVG(svg, {
+                            x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                            y: position.y
+                        },
+                            operands[0], "right");
+
+                        break;
+                    case 2:
+
+                        RenderOperationSVG(svg, {
+                            x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                            y: position.y
+                        },
+                            operands[0], "left");
+
+
+                        RenderOperationSVG(svg, {
+                            x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                            y: position.y
+                        },
+                            operands[1], "right");
+
+                        svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX, position.y, operation.Operator.Name, {
+                            "font-size": 10,
+                            "fill": "blue"
+                        });
+
+                        break;
+                    default:
+                        throw "Rendering of operators with " + operands.length + " operands is not supported";
+
+
+                }
+            } else {
+                var keyFrame = <BMA.LTLOperations.Keyframe>op;
+                var w = GetKeyframeWidth(keyFrame, paddingX);
+                var padding = operandPosition === "left" ? paddingX : -paddingX;
+                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "transparent" });
+            }
+        }
+        
         /*
         export function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
+            var depth = GetOperationDepth(op);
+ 
+ 
             var operator = op.Operator;
             var operands = op.Operands;
             return GetOperatorSVG(svg, position, operator, operands);
         }
-
+ 
         export function GetOperandSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand): { svg: any; depthLevel: number } {
-
+ 
             //TODO: Rethink method of distingushing keyframes from operations
             var operator = (<any>op).Operator;
-
+ 
             if (operator !== undefined) {
                 return GetOperationSVG(svg, position, <BMA.LTLOperations.Operation>op);
             } else {
@@ -90,20 +198,20 @@
                 };
             }
         }
-
+ 
         export function GetKeyFrameSVG(svg: any, position: { x: number; y: number }, keyframe: BMA.LTLOperations.Keyframe): string {
             return "";
         }
-
+ 
         export function GetOperatorSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operator, operands: BMA.LTLOperations.IOperand[]): { svg: any; depthLevel: number } {
             if (operands.length !== op.OperandsCount)
                 throw "Invalid Operands Count for Operator's rendering";
-
+ 
             var operandSVGs = [];
             for (var i = 0; i < operands.length; i++) {
                 operandSVGs.push(GetOperandSVG(svg, position, operands[i]));
             }
-
+ 
             switch (operands.length) {
                 case 1:
                     return {
@@ -121,7 +229,7 @@
                     throw "Rendering of operators with " + operands.length + " operands is not supported"; 
             }
         }
-
+ 
         export function bboxText(svgDocument: any, text: string): any {
             var data = svgDocument.createTextNode(text);
             var svgns = "";

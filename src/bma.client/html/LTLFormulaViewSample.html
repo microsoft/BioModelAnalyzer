@@ -14,6 +14,10 @@
 
     <script>
 
+        function GetOperationDepth(op) {
+
+        }
+
         /*
         function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
             var operator = op.Operator;
@@ -98,26 +102,48 @@
 
             var k1 = new BMA.LTLOperations.Keyframe('one');
             var k2 = new BMA.LTLOperations.Keyframe('two');
-            var op1 = new BMA.LTLOperations.Operator('Until', undefined, formulacreator('Until'));
+            var k3 = new BMA.LTLOperations.Keyframe('three');
+            var op1 = new BMA.LTLOperations.Operator('UNTIL', 2, formulacreator('Until'));
+            var op2 = new BMA.LTLOperations.Operator('NOT', 1, formulacreator('Not'));
+            var op3 = new BMA.LTLOperations.Operator('AND', 2, formulacreator('And'));
+
             var op = new BMA.LTLOperations.Operation();
             op.Operands = [k1, k2];
             op.Operator = op1;
+            var opp = new BMA.LTLOperations.Operation();
+            opp.Operands = [op];
+            opp.Operator = op2;
+
+            var opp2 = new BMA.LTLOperations.Operation();
+            opp2.Operands = [op, k1];
+            opp2.Operator = op2;
+
+
+
+            var oppp = new BMA.LTLOperations.Operation();
+            oppp.Operands = [k3, opp2];
+            oppp.Operator = op3;
+
 
             var svg = svgPlot.svg;
 
             //svg.circle(parent, cx, cy, r, settings)
             //svgPlot.svg.circle(0, 0, 500, { fill: "white", stroke: "black", transform: "scale(10,1)" });
 
-            var path = svg.createPath();
+            //var path = svg.createPath();
+            /*
             svg.path({
                 fill: "white",
                 stroke: "black",
                 d: "a25,100 -30 0,1 50,-25 l 50,-25"
             });
+            */
 
             //svg.circle(0, 0, 500, { fill: "white", stroke: "black", transform: "scale(10,1)" });
             //var opsvg = BMA.SVGHelper.GetOperationSVG(svgPlot.svg, op);
             //svgPlot.svg.add(opsvg);
+            BMA.SVGHelper.RenderOperationSVG(svg, { x: 0, y: 0 }, oppp, undefined);
+
         });
     </script>
 </head>
