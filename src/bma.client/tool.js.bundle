@@ -9,6 +9,8 @@
     <outputDirectory />
   </settings>
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
+  
+  
   <files>
     
 	<file>/js/svgplot.js</file>
@@ -59,7 +61,7 @@
   <file>/script/widgets/ltl/keyframecompact.js</file>
   <file>/script/widgets/ltl/ltlstatesviewer.js</file>
 	<file>/script/widgets/ltl/ltlviewer.js</file>
-	<file>/script/presenters/LTLpresenter.js</file>
+	<file>/script/presenters/ltl/LTLpresenter.js</file>
 	<file>/script/operatorsregistry.js</file>
   </files>
 </bundle>

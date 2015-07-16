@@ -105,11 +105,11 @@
         }
 
         export function GetKeyframeWidth(op: BMA.LTLOperations.Keyframe, paddingX: number): number {
-            return 50 + paddingX;
+            return 25 + paddingX;
         }
 
         export function RenderOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand, operandPosition: string) {
-            var paddingX = 20;
+            var paddingX = 5;
 
             var operator = (<any>op).Operator;
             if (operator !== undefined) {
@@ -118,7 +118,7 @@
                 CalcAndAssignOperandWidthAndDepth(op, paddingX);
 
                 var halfWidth = (<any>op).width / 2;
-                var height = 50 + 10 * (<any>op).layer;
+                var height = 25 + paddingX * (<any>op).layer;
 
                 var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
 
@@ -129,7 +129,7 @@
                 switch (operands.length) {
                     case 1:
 
-                        svg.text(position.x - halfWidth + paddingX, position.y, operation.Operator.Name, {
+                        svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
                             "fill": "blue"
                         });
@@ -156,7 +156,7 @@
                         },
                             operands[1], "right");
 
-                        svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX, position.y, operation.Operator.Name, {
+                        svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
                             "fill": "blue"
                         });
@@ -175,61 +175,6 @@
             }
         }
         
-        /*
-        export function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
-            var depth = GetOperationDepth(op);
- 
- 
-            var operator = op.Operator;
-            var operands = op.Operands;
-            return GetOperatorSVG(svg, position, operator, operands);
-        }
- 
-        export function GetOperandSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand): { svg: any; depthLevel: number } {
- 
-            //TODO: Rethink method of distingushing keyframes from operations
-            var operator = (<any>op).Operator;
- 
-            if (operator !== undefined) {
-                return GetOperationSVG(svg, position, <BMA.LTLOperations.Operation>op);
-            } else {
-                return {
-                    svg: GetKeyFrameSVG(svg, position, <BMA.LTLOperations.Keyframe>op), depthLevel: 1
-                };
-            }
-        }
- 
-        export function GetKeyFrameSVG(svg: any, position: { x: number; y: number }, keyframe: BMA.LTLOperations.Keyframe): string {
-            return "";
-        }
- 
-        export function GetOperatorSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operator, operands: BMA.LTLOperations.IOperand[]): { svg: any; depthLevel: number } {
-            if (operands.length !== op.OperandsCount)
-                throw "Invalid Operands Count for Operator's rendering";
- 
-            var operandSVGs = [];
-            for (var i = 0; i < operands.length; i++) {
-                operandSVGs.push(GetOperandSVG(svg, position, operands[i]));
-            }
- 
-            switch (operands.length) {
-                case 1:
-                    return {
-                        svg: undefined,
-                        depthLevel: (<any>operandSVGs[0]).depthLevel
-                    }
-                    break;
-                case 2:
-                    return {
-                        svg: undefined,
-                        depthLevel: Math.max((<any>operandSVGs[0]).depthLevel,(<any>operandSVGs[1]).depthLevel)
-                    }
-                    break;
-                default:
-                    throw "Rendering of operators with " + operands.length + " operands is not supported"; 
-            }
-        }
- 
         export function bboxText(svgDocument: any, text: string): any {
             var data = svgDocument.createTextNode(text);
             var svgns = "";
@@ -240,7 +185,5 @@
             svgElement.parentNode.removeChild(svgElement);
             return bbox;
         }
-        */
-
     }
 }

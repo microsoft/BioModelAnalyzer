@@ -488,24 +488,24 @@ var BMA;
         }
         SVGHelper.GetOperatorWidth = GetOperatorWidth;
         function GetKeyframeWidth(op, paddingX) {
-            return 50 + paddingX;
+            return 25 + paddingX;
         }
         SVGHelper.GetKeyframeWidth = GetKeyframeWidth;
         function RenderOperationSVG(svg, position, op, operandPosition) {
-            var paddingX = 20;
+            var paddingX = 5;
             var operator = op.Operator;
             if (operator !== undefined) {
                 var operation = op;
                 CalcAndAssignOperandWidthAndDepth(op, paddingX);
                 var halfWidth = op.width / 2;
-                var height = 50 + 10 * op.layer;
+                var height = 25 + paddingX * op.layer;
                 var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
                 var operands = operation.Operands;
                 var operatorPadding = 1;
                 var operatorW = GetOperatorWidth(operation.Operator, paddingX);
                 switch (operands.length) {
                     case 1:
-                        svg.text(position.x - halfWidth + paddingX, position.y, operation.Operator.Name, {
+                        svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
                             "fill": "blue"
                         });
@@ -523,7 +523,7 @@ var BMA;
                             x: position.x + halfWidth - operands[1].width / 2 - paddingX,
                             y: position.y
                         }, operands[1], "right");
-                        svg.text(position.x - halfWidth + operands[0].width + paddingX, position.y, operation.Operator.Name, {
+                        svg.text(position.x - halfWidth + operands[0].width + paddingX, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
                             "fill": "blue"
                         });
@@ -8449,7 +8449,7 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlviewer.js.map
-///#source 1 1 /script/presenters/LTLpresenter.js
+///#source 1 1 /script/presenters/ltl/LTLpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
