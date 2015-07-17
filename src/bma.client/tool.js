@@ -507,7 +507,7 @@ var BMA;
                     case 1:
                         svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
-                            "fill": "blue"
+                            "fill": "black"
                         });
                         RenderOperationSVG(svg, {
                             x: position.x + halfWidth - operands[0].width / 2 - paddingX,
@@ -523,9 +523,10 @@ var BMA;
                             x: position.x + halfWidth - operands[1].width / 2 - paddingX,
                             y: position.y
                         }, operands[1], "right");
-                        svg.text(position.x - halfWidth + operands[0].width + paddingX, position.y + 3, operation.Operator.Name, {
+                        var extraPadding = operands[0].Operator !== undefined ? paddingX : 0;
+                        svg.text(position.x - halfWidth + operands[0].width + paddingX + extraPadding, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
-                            "fill": "blue"
+                            "fill": "black"
                         });
                         break;
                     default:
@@ -536,10 +537,21 @@ var BMA;
                 var keyFrame = op;
                 var w = GetKeyframeWidth(keyFrame, paddingX);
                 var padding = operandPosition === "left" ? paddingX : -paddingX;
-                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "transparent" });
+                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "rgb(238,238,238)" });
             }
         }
         SVGHelper.RenderOperationSVG = RenderOperationSVG;
+        function bboxText(svgDocument, text) {
+            var data = svgDocument.createTextNode(text);
+            var svgns = "";
+            var svgElement = svgDocument.createElementNS(svgns, "text");
+            svgElement.appendChild(data);
+            svgDocument.documentElement.appendChild(svgElement);
+            var bbox = svgElement.getBBox();
+            svgElement.parentNode.removeChild(svgElement);
+            return bbox;
+        }
+        SVGHelper.bboxText = bboxText;
     })(SVGHelper = BMA.SVGHelper || (BMA.SVGHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=SVGHelper.js.map

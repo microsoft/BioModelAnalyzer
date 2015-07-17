@@ -131,7 +131,7 @@
 
                         svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
-                            "fill": "blue"
+                            "fill": "black"
                         });
 
                         RenderOperationSVG(svg, {
@@ -156,9 +156,10 @@
                         },
                             operands[1], "right");
 
-                        svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX, position.y + 3, operation.Operator.Name, {
+                        var extraPadding = (<any>operands[0]).Operator !== undefined ? paddingX: 0;
+                        svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX + extraPadding, position.y + 3, operation.Operator.Name, {
                             "font-size": 10,
-                            "fill": "blue"
+                            "fill": "black"
                         });
 
                         break;
@@ -171,7 +172,7 @@
                 var keyFrame = <BMA.LTLOperations.Keyframe>op;
                 var w = GetKeyframeWidth(keyFrame, paddingX);
                 var padding = operandPosition === "left" ? paddingX : -paddingX;
-                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "transparent" });
+                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "rgb(238,238,238)" });
             }
         }
         
