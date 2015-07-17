@@ -70,6 +70,10 @@
             return [{ x: x1, y: y1 }, { x: x2, y: y2 }];
         }
 
+        export function CreateOperandLayout(op: BMA.LTLOperations.IOperand): any {
+
+        }
+
         export function CalcAndAssignOperandWidthAndDepth(op: BMA.LTLOperations.IOperand, paddingX: number): { layer: number; width: number } {
             var operator = (<any>op).Operator;
             if (operator !== undefined) {
@@ -108,74 +112,6 @@
             return 25 + paddingX;
         }
 
-        export function RenderOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand, operandPosition: string) {
-            var paddingX = 5;
-
-            var operator = (<any>op).Operator;
-            if (operator !== undefined) {
-                var operation = <BMA.LTLOperations.Operation>op;
-
-                CalcAndAssignOperandWidthAndDepth(op, paddingX);
-
-                var halfWidth = (<any>op).width / 2;
-                var height = 25 + paddingX * (<any>op).layer;
-
-                var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
-
-                var operands = operation.Operands;
-
-                var operatorPadding = 1;
-                var operatorW = GetOperatorWidth(operation.Operator, paddingX);
-                switch (operands.length) {
-                    case 1:
-
-                        svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.Operator.Name, {
-                            "font-size": 10,
-                            "fill": "black"
-                        });
-
-                        RenderOperationSVG(svg, {
-                            x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
-                            y: position.y
-                        },
-                            operands[0], "right");
-
-                        break;
-                    case 2:
-
-                        RenderOperationSVG(svg, {
-                            x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
-                            y: position.y
-                        },
-                            operands[0], "left");
-
-
-                        RenderOperationSVG(svg, {
-                            x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                            y: position.y
-                        },
-                            operands[1], "right");
-
-                        var extraPadding = (<any>operands[0]).Operator !== undefined ? paddingX: 0;
-                        svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX + extraPadding, position.y + 3, operation.Operator.Name, {
-                            "font-size": 10,
-                            "fill": "black"
-                        });
-
-                        break;
-                    default:
-                        throw "Rendering of operators with " + operands.length + " operands is not supported";
-
-
-                }
-            } else {
-                var keyFrame = <BMA.LTLOperations.Keyframe>op;
-                var w = GetKeyframeWidth(keyFrame, paddingX);
-                var padding = operandPosition === "left" ? paddingX : -paddingX;
-                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "rgb(238,238,238)" });
-            }
-        }
-        
         export function bboxText(svgDocument: any, text: string): any {
             var data = svgDocument.createTextNode(text);
             var svgns = "";

@@ -22,6 +22,7 @@
 	<file>/script/elementsregistry.js</file>
 	<file>/script/functionsregistry.js</file>
 	<file>/script/keyframesregistry.js</file>
+    
 	<file>/script/localRepository.js</file>
 	<file>/script/changeschecker.js</file> 
 	<file>/script/model/biomodel.js</file>
@@ -30,6 +31,7 @@
 	<file>/script/model/visualsettings.js</file>
 	<file>/script/model/exportimport.js</file>
   <file>/script/model/operation.js</file>
+  <file>/script/model/operationlayout.js</file>
 	<file>/script/uidrivers/commondrivers.js</file>
   <file>/script/uidrivers/ltldrivers.js</file>
 	<file>/script/presenters/undoredopresenter.js</file>

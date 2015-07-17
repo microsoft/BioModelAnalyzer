@@ -454,6 +454,9 @@ var BMA;
             return [{ x: x1, y: y1 }, { x: x2, y: y2 }];
         }
         SVGHelper.GeEllipsePoints = GeEllipsePoints;
+        function CreateOperandLayout(op) {
+        }
+        SVGHelper.CreateOperandLayout = CreateOperandLayout;
         function CalcAndAssignOperandWidthAndDepth(op, paddingX) {
             var operator = op.Operator;
             if (operator !== undefined) {
@@ -491,56 +494,6 @@ var BMA;
             return 25 + paddingX;
         }
         SVGHelper.GetKeyframeWidth = GetKeyframeWidth;
-        function RenderOperationSVG(svg, position, op, operandPosition) {
-            var paddingX = 5;
-            var operator = op.Operator;
-            if (operator !== undefined) {
-                var operation = op;
-                CalcAndAssignOperandWidthAndDepth(op, paddingX);
-                var halfWidth = op.width / 2;
-                var height = 25 + paddingX * op.layer;
-                var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
-                var operands = operation.Operands;
-                var operatorPadding = 1;
-                var operatorW = GetOperatorWidth(operation.Operator, paddingX);
-                switch (operands.length) {
-                    case 1:
-                        svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.Operator.Name, {
-                            "font-size": 10,
-                            "fill": "black"
-                        });
-                        RenderOperationSVG(svg, {
-                            x: position.x + halfWidth - operands[0].width / 2 - paddingX,
-                            y: position.y
-                        }, operands[0], "right");
-                        break;
-                    case 2:
-                        RenderOperationSVG(svg, {
-                            x: position.x - halfWidth + operands[0].width / 2 + paddingX,
-                            y: position.y
-                        }, operands[0], "left");
-                        RenderOperationSVG(svg, {
-                            x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                            y: position.y
-                        }, operands[1], "right");
-                        var extraPadding = operands[0].Operator !== undefined ? paddingX : 0;
-                        svg.text(position.x - halfWidth + operands[0].width + paddingX + extraPadding, position.y + 3, operation.Operator.Name, {
-                            "font-size": 10,
-                            "fill": "black"
-                        });
-                        break;
-                    default:
-                        throw "Rendering of operators with " + operands.length + " operands is not supported";
-                }
-            }
-            else {
-                var keyFrame = op;
-                var w = GetKeyframeWidth(keyFrame, paddingX);
-                var padding = operandPosition === "left" ? paddingX : -paddingX;
-                svg.circle(position.x - padding / 2, position.y, (w - paddingX) / 2, { stroke: "black", fill: "rgb(238,238,238)" });
-            }
-        }
-        SVGHelper.RenderOperationSVG = RenderOperationSVG;
         function bboxText(svgDocument, text) {
             var data = svgDocument.createTextNode(text);
             var svgns = "";
@@ -2491,6 +2444,137 @@ var BMA;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=operation.js.map
+///#source 1 1 /script/model/operationlayout.js
+var BMA;
+(function (BMA) {
+    var LTLOperations;
+    (function (LTLOperations) {
+        var OperationLayout = (function () {
+            function OperationLayout(operation) {
+                this.keyFrameSize = 25;
+                this.emptyLocations = [];
+                this.operation = operation;
+                this.padding = { x: 5, y: 10 };
+                this.emptyLocations = [];
+                this.layout = this.CreateLayout(operation);
+            }
+            Object.defineProperty(OperationLayout.prototype, "Operation", {
+                get: function () {
+                    return this.operation;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "Padding", {
+                get: function () {
+                    return this.padding;
+                },
+                set: function (value) {
+                    this.padding = value;
+                    this.emptyLocations = [];
+                    this.layout = this.CreateLayout(this.operation);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            OperationLayout.prototype.CreateLayout = function (operation) {
+                var that = this;
+                var layout = {};
+                var paddingX = this.padding.x;
+                var op = operation;
+                var operator = op.Operator;
+                if (operator !== undefined) {
+                    layout.operands = [];
+                    layout.operator = operator.Name;
+                    var operands = op.Operands;
+                    var layer = 0;
+                    var width = BMA.SVGHelper.GetOperatorWidth(operator, paddingX);
+                    for (var i = 0; i < operands.length; i++) {
+                        var operand = operands[i];
+                        if (operand !== undefined) {
+                            var calcLW = that.CreateLayout(operand);
+                            layer = Math.max(layer, calcLW.layer);
+                            layout.operands.push(calcLW);
+                            width += (calcLW.width + paddingX * 2);
+                        }
+                        else {
+                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize + paddingX });
+                            width += (this.keyFrameSize + paddingX + 2 * paddingX);
+                        }
+                    }
+                    layout.layer = layer + 1;
+                    layout.width = width;
+                    return layout;
+                }
+                else {
+                    var w = this.keyFrameSize + paddingX;
+                    layout.layer = 1;
+                    layout.width = w;
+                    return layout;
+                }
+            };
+            OperationLayout.prototype.RenderLayoutPart = function (svg, position, layoutPart, operandPosition) {
+                var paddingX = this.padding.x;
+                var paddingY = this.padding.y;
+                if (layoutPart.isEmpty) {
+                    var keyframePadding = operandPosition === "left" ? paddingX : -paddingX;
+                    svg.circle(position.x - keyframePadding / 2, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "red" });
+                }
+                else {
+                    var operator = layoutPart.operator;
+                    if (operator !== undefined) {
+                        var operation = layoutPart;
+                        var halfWidth = layoutPart.width / 2;
+                        var height = 25 + paddingY * layoutPart.layer;
+                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
+                        var operands = operation.operands;
+                        var operatorPadding = 1;
+                        var operatorW = layoutPart.operator.length * 4 + paddingX; //GetOperatorWidth(operation.Operator, paddingX);
+                        switch (operands.length) {
+                            case 1:
+                                svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                    "font-size": 10,
+                                    "fill": "black"
+                                });
+                                this.RenderLayoutPart(svg, {
+                                    x: position.x + halfWidth - operands[0].width / 2 - paddingX,
+                                    y: position.y
+                                }, operands[0], "right");
+                                break;
+                            case 2:
+                                this.RenderLayoutPart(svg, {
+                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                    y: position.y
+                                }, operands[0], "left");
+                                this.RenderLayoutPart(svg, {
+                                    x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                    y: position.y
+                                }, operands[1], "right");
+                                var extraPadding = operands[0].operator !== undefined ? paddingX : 0;
+                                svg.text(position.x - halfWidth + operands[0].width + paddingX + extraPadding, position.y + 3, operation.operator, {
+                                    "font-size": 10,
+                                    "fill": "black"
+                                });
+                                break;
+                            default:
+                                throw "Rendering of operators with " + operands.length + " operands is not supported";
+                        }
+                    }
+                    else {
+                        var keyframePadding = operandPosition === "left" ? paddingX : -paddingX;
+                        svg.circle(position.x - keyframePadding / 2, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                    }
+                }
+            };
+            OperationLayout.prototype.Render = function (svg, position) {
+                this.RenderLayoutPart(svg, position, this.layout, undefined);
+            };
+            return OperationLayout;
+        })();
+        LTLOperations.OperationLayout = OperationLayout;
+    })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=operationlayout.js.map
 ///#source 1 1 /script/uidrivers/commondrivers.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>

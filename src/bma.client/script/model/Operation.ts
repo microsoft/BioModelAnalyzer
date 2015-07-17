@@ -79,8 +79,5 @@
                 return this.operator.GetFormula(this.operands);
             }
         }
-
-
-        
     }
 }  

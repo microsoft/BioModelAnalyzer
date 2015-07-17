@@ -66,7 +66,7 @@
                     }
                     break;
                 default:
-                    throw "Rendering of operators with " + operands.length + " operands is not supported"; 
+                    throw "Rendering of operators with " + operands.length + " operands is not supported";
             }
         }
         */
@@ -89,7 +89,9 @@
             plot.navigation.gestureSource = gestureSource;
             plot.navigation.setVisibleRect({ x: 0, y: 0, width: 800, height: 600 }, false);
             var svgPlot = plot.get('svgPlot');
+            var svg = svgPlot.svg;
 
+            
             var formulacreator = function (funcname) {
                 return function (op) {
                     var f = '(' + funcname;
@@ -99,56 +101,73 @@
                     return f + ')';
                 }
             }
-
             var k1 = new BMA.LTLOperations.Keyframe('one');
             var k2 = new BMA.LTLOperations.Keyframe('two');
             var k3 = new BMA.LTLOperations.Keyframe('three');
             var op1 = new BMA.LTLOperations.Operator('UNTIL', 2, formulacreator('Until'));
             var op2 = new BMA.LTLOperations.Operator('NOT', 1, formulacreator('Not'));
             var op3 = new BMA.LTLOperations.Operator('AND', 2, formulacreator('And'));
-
             var op = new BMA.LTLOperations.Operation();
             op.Operands = [k1, k2];
             op.Operator = op1;
-
             var opp = new BMA.LTLOperations.Operation();
             opp.Operands = [op];
             opp.Operator = op2;
-
             var opp2 = new BMA.LTLOperations.Operation();
             opp2.Operands = [op, k1];
             opp2.Operator = op3;
-
-
-
             var oppp = new BMA.LTLOperations.Operation();
             oppp.Operands = [k3, opp2];
             oppp.Operator = op3;
 
 
-            var svg = svgPlot.svg;
+            var operationLayout = new BMA.LTLOperations.OperationLayout(oppp);
+            //operationLayout.Render(svg, { x: 0, y: 0 });
+            
+            var elementPanel = $("#elementPanel");
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
+            for (var i = 0; i < registry.Operators.length; i++) {
+                var operator = registry.Operators[i];
 
-            //svg.circle(parent, cx, cy, r, settings)
-            //svgPlot.svg.circle(0, 0, 500, { fill: "white", stroke: "black", transform: "scale(10,1)" });
+                $("<input></input>")
+                    .attr("type", "radio")
+                    .attr("id", "btn-" + operator.Name)
+                    .attr("name", "drawing-button")
+                    .attr("data-type", operator.Name)
+                    .appendTo(elementPanel);
 
-            //var path = svg.createPath();
-            /*
-            svg.path({
-                fill: "white",
-                stroke: "black",
-                d: "a25,100 -30 0,1 50,-25 l 50,-25"
+                var label = $("<label></label>").text(operator.Name).attr("for", "btn-" + operator.Name).appendTo(elementPanel);
+
+                label.draggable({ helper: "clone" });
+            }
+
+            elementPanel.buttonset();
+
+            $("#svgPlot").droppable({
+                drop: function (event, ui) {
+                    var op = new BMA.LTLOperations.Operation();
+                    op.Operands = [undefined, undefined];
+                    op.Operator = registry.GetOperatorByName(ui.draggable.text());
+
+                    var cs = svgPlot.getScreenToDataTransform();
+
+                    var position = {
+                        x: cs.screenToDataX(event.pageX - $("#svgPlot").offset().left),
+                        y: -cs.screenToDataY(event.pageY - $("#svgPlot").offset().top)
+                    };
+
+                    var operationLayout = new BMA.LTLOperations.OperationLayout(op);
+                    operationLayout.Render(svg, position);
+                }
             });
-            */
-
-            //svg.circle(0, 0, 500, { fill: "white", stroke: "black", transform: "scale(10,1)" });
-            //var opsvg = BMA.SVGHelper.GetOperationSVG(svgPlot.svg, op);
-            //svgPlot.svg.add(opsvg);
-            BMA.SVGHelper.RenderOperationSVG(svg, { x: 0, y: 0 }, oppp, undefined);
 
         });
     </script>
 </head>
 <body>
+    <div id="elementPanel">
+
+    </div>
     <div id="figure" data-idd-plot="plot" style="width: 800px; height: 600px; border: 1px solid black;">
         <div id="svgPlot" data-idd-plot="svgPlot"></div>
     </div>
