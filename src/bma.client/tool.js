@@ -2455,7 +2455,7 @@ var BMA;
                 this.emptyLocations = [];
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
-                this.emptyLocations = [];
+                this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
             }
             Object.defineProperty(OperationLayout.prototype, "Operation", {
                 get: function () {
@@ -2470,11 +2470,15 @@ var BMA;
                 },
                 set: function (value) {
                     this.padding = value;
-                    this.emptyLocations = [];
+                    this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
                 },
                 enumerable: true,
                 configurable: true
             });
+            OperationLayout.prototype.FindEmptyLocations = function (operation, x, y) {
+                //var layout = this.CreateLayout(operation);
+                return null;
+            };
             OperationLayout.prototype.CreateLayout = function (svg, operation) {
                 var that = this;
                 var layout = {};

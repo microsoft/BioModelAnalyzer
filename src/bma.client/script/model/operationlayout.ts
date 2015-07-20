@@ -12,7 +12,7 @@
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
 
-                this.emptyLocations = [];
+                this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
             }
 
             public get Operation(): Operation {
@@ -25,7 +25,13 @@
 
             public set Padding(value: { x: number; y: number }) {
                 this.padding = value;
-                this.emptyLocations = [];
+                this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
+            }
+
+            private FindEmptyLocations(operation: BMA.LTLOperations.Operation, x: number, y: number): { x: number; y: number }[] {
+                //var layout = this.CreateLayout(operation);
+
+                return null;
             }
 
             private CreateLayout(svg, operation): any {
