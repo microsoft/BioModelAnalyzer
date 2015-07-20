@@ -122,7 +122,7 @@
 
 
             var operationLayout = new BMA.LTLOperations.OperationLayout(oppp);
-            //operationLayout.Render(svg, { x: 0, y: 0 });
+            operationLayout.Render(svg, { x: 0, y: 0 });
             
             var elementPanel = $("#elementPanel");
             var registry = new BMA.LTLOperations.OperatorsRegistry();
@@ -146,8 +146,12 @@
             $("#svgPlot").droppable({
                 drop: function (event, ui) {
                     var op = new BMA.LTLOperations.Operation();
-                    op.Operands = [undefined, undefined];
+
                     op.Operator = registry.GetOperatorByName(ui.draggable.text());
+
+                    op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+
+
 
                     var cs = svgPlot.getScreenToDataTransform();
 
@@ -161,6 +165,8 @@
                 }
             });
 
+            //var bbox = BMA.SVGHelper.bboxText(svg._svg, "UNTIL");
+            //console.log(bbox);
         });
     </script>
 </head>

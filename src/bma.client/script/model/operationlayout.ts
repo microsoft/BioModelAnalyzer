@@ -13,7 +13,6 @@
                 this.padding = { x: 5, y: 10 };
 
                 this.emptyLocations = [];
-                this.layout = this.CreateLayout(operation);
             }
 
             public get Operation(): Operation {
@@ -26,12 +25,10 @@
 
             public set Padding(value: { x: number; y: number }) {
                 this.padding = value;
-
                 this.emptyLocations = [];
-                this.layout = this.CreateLayout(this.operation);
             }
 
-            private CreateLayout(operation): any {
+            private CreateLayout(svg, operation): any {
                 var that = this;
                 var layout: any = {};
 
@@ -44,19 +41,23 @@
                     layout.operator = operator.Name;
                     var operands = (<BMA.LTLOperations.Operation>op).Operands;
                     var layer = 0;
-                    var width = BMA.SVGHelper.GetOperatorWidth(operator, paddingX);
+                    var width = (this.GetOperatorWidth(svg, operator.Name)).width;
+
+                    if (operands.length === 1) {
+                        width += paddingX;
+                    }
 
                     for (var i = 0; i < operands.length; i++) {
                         var operand = operands[i];
 
                         if (operand !== undefined) {
-                            var calcLW = that.CreateLayout(operand);
+                            var calcLW = that.CreateLayout(svg, operand);
                             layer = Math.max(layer, calcLW.layer);
                             layout.operands.push(calcLW);
                             width += (calcLW.width + paddingX * 2);
                         } else {
-                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize + paddingX });
-                            width += (this.keyFrameSize + paddingX + 2 * paddingX);
+                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize });
+                            width += (this.keyFrameSize + 2 * paddingX);
                         }
                     }
 
@@ -64,11 +65,26 @@
                     layout.width = width;
                     return layout;
                 } else {
-                    var w = this.keyFrameSize + paddingX;
+                    var w = this.keyFrameSize;
                     layout.layer = 1;
                     layout.width = w;
                     return layout;
                 }
+            }
+
+            private GetOperatorWidth(svg: any, operator: string): { width: number; height: number } {
+                var t = svg.text(0,0, operator, {
+                    "font-size": 10,
+                    "fill": "black"
+                });
+
+                var bbox = t.getBBox();
+                
+                var result = { width: bbox.width, height: bbox.height };
+
+                svg.remove(t);
+
+                return result;
             }
 
             private RenderLayoutPart(svg: any, position: { x: number; y: number }, layoutPart: any, operandPosition: string) {
@@ -76,8 +92,7 @@
                 var paddingY = this.padding.y;
 
                 if (layoutPart.isEmpty) {
-                    var keyframePadding = operandPosition === "left" ? paddingX : -paddingX;
-                    svg.circle(position.x - keyframePadding / 2, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "red" });
+                    svg.circle(position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "red" });
                 } else {
                     var operator = layoutPart.operator;
                     if (operator !== undefined) {
@@ -91,7 +106,7 @@
                         var operands = operation.operands;
 
                         var operatorPadding = 1;
-                        var operatorW = layoutPart.operator.length * 4 + paddingX; //GetOperatorWidth(operation.Operator, paddingX);
+                        //var operatorW = this.GetOperatorWidth(svg, operation.operator);
                         switch (operands.length) {
                             case 1:
 
@@ -122,8 +137,7 @@
                                 },
                                     operands[1], "right");
 
-                                var extraPadding = (<any>operands[0]).operator !== undefined ? paddingX : 0;
-                                svg.text(position.x - halfWidth + (<any>operands[0]).width + paddingX + extraPadding, position.y + 3, operation.operator, {
+                                svg.text(position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "black"
                                 });
@@ -135,13 +149,13 @@
 
                         }
                     } else {
-                        var keyframePadding = operandPosition === "left" ? paddingX : -paddingX;
-                        svg.circle(position.x - keyframePadding / 2, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        svg.circle(position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
                     }
                 }
             }
 
             public Render(svg: any, position: { x: number; y: number }) {
+                this.layout = this.CreateLayout(svg, this.operation);
                 this.RenderLayoutPart(svg, position, this.layout, undefined);
             }
         }
