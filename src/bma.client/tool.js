@@ -2455,7 +2455,6 @@ var BMA;
                 this.emptyLocations = [];
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
-                this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
             }
             Object.defineProperty(OperationLayout.prototype, "Operation", {
                 get: function () {
@@ -2470,14 +2469,34 @@ var BMA;
                 },
                 set: function (value) {
                     this.padding = value;
-                    this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
                 },
                 enumerable: true,
                 configurable: true
             });
-            OperationLayout.prototype.FindEmptyLocations = function (operation, x, y) {
-                //var layout = this.CreateLayout(operation);
-                return null;
+            OperationLayout.prototype.GetEmptySlotAtPosition = function (x, y) {
+                return this.FindEmptySlotAtPosition(this.layout, x, y);
+            };
+            OperationLayout.prototype.FindEmptySlotAtPosition = function (layout, x, y) {
+                if (layout.isEmpty && Math.sqrt(Math.pow((x - layout.position.x), 2) + Math.pow((y - layout.position.y), 2)) < this.keyFrameSize / 2) {
+                    return {
+                        operation: layout.operationRef,
+                        operandIndex: layout.indexRef
+                    };
+                }
+                else {
+                    if (layout.operands !== undefined) {
+                        var result = undefined;
+                        for (var i = 0; i < layout.operands.length; i++) {
+                            result = this.FindEmptySlotAtPosition(layout.operands[i], x, y);
+                            if (result !== undefined)
+                                return result;
+                        }
+                        return result;
+                    }
+                    else {
+                        return undefined;
+                    }
+                }
             };
             OperationLayout.prototype.CreateLayout = function (svg, operation) {
                 var that = this;
@@ -2491,6 +2510,7 @@ var BMA;
                     var operands = op.Operands;
                     var layer = 0;
                     var width = (this.GetOperatorWidth(svg, operator.Name)).width;
+                    layout.operatorWidth = width;
                     if (operands.length === 1) {
                         width += paddingX;
                     }
@@ -2503,7 +2523,7 @@ var BMA;
                             width += (calcLW.width + paddingX * 2);
                         }
                         else {
-                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize });
+                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize, operationRef: op, indexRef: i });
                             width += (this.keyFrameSize + 2 * paddingX);
                         }
                     }
@@ -2516,6 +2536,27 @@ var BMA;
                     layout.layer = 1;
                     layout.width = w;
                     return layout;
+                }
+            };
+            OperationLayout.prototype.SetPositionOffsets = function (layout, position) {
+                var padding = this.padding;
+                layout.position = position;
+                if (layout.operands !== undefined) {
+                    var w = layout.operatorWidth;
+                    switch (layout.operands.length) {
+                        case 1:
+                            var x = position.x + layout.width / 2 - layout.operands[0].width / 2 - padding.x;
+                            this.SetPositionOffsets(layout.operands[0], { x: x, y: position.y });
+                            break;
+                        case 2:
+                            var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
+                            this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
+                            var x2 = position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
+                            this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
+                            break;
+                        default:
+                            throw "Unsupported number of operands";
+                    }
                 }
             };
             OperationLayout.prototype.GetOperatorWidth = function (svg, operator) {
@@ -2540,7 +2581,7 @@ var BMA;
                         var operation = layoutPart;
                         var halfWidth = layoutPart.width / 2;
                         var height = 25 + paddingY * layoutPart.layer;
-                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
+                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "white" });
                         var operands = operation.operands;
                         var operatorPadding = 1;
                         switch (operands.length) {
@@ -2579,8 +2620,17 @@ var BMA;
             };
             OperationLayout.prototype.Render = function (svg, position) {
                 this.layout = this.CreateLayout(svg, this.operation);
+                this.position = position;
+                this.SetPositionOffsets(this.layout, position);
                 this.RenderLayoutPart(svg, position, this.layout, undefined);
             };
+            Object.defineProperty(OperationLayout.prototype, "Position", {
+                get: function () {
+                    return this.position;
+                },
+                enumerable: true,
+                configurable: true
+            });
             return OperationLayout;
         })();
         LTLOperations.OperationLayout = OperationLayout;

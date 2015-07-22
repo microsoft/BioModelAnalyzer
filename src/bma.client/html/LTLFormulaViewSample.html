@@ -136,12 +136,14 @@
                     .attr("data-type", operator.Name)
                     .appendTo(elementPanel);
 
-                var label = $("<label></label>").text(operator.Name).attr("for", "btn-" + operator.Name).appendTo(elementPanel);
+                var label = $("<label></label>").text(operator.Name).attr("for", "btn-" + operator.Name).css("z-index", 9999999).appendTo(elementPanel);
 
                 label.draggable({ helper: "clone" });
             }
 
             elementPanel.buttonset();
+
+            var operations = [];
 
             $("#svgPlot").droppable({
                 drop: function (event, ui) {
@@ -160,8 +162,23 @@
                         y: -cs.screenToDataY(event.pageY - $("#svgPlot").offset().top)
                     };
 
-                    var operationLayout = new BMA.LTLOperations.OperationLayout(op);
-                    operationLayout.Render(svg, position);
+                    var emptyCell = undefined;
+                    for (var i = 0; i < operations.length; i++) {
+                        emptyCell = operations[i].GetEmptySlotAtPosition(position.x, position.y);
+                        if (emptyCell !== undefined) {
+                            emptyCell.opLayout = operations[i];
+                            break;
+                        }
+                    }
+
+                    if (emptyCell === undefined) {
+                        var operationLayout = new BMA.LTLOperations.OperationLayout(op);
+                        operations.push(operationLayout);
+                        operationLayout.Render(svg, position);
+                    } else {
+                        emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                        emptyCell.opLayout.Render(svg, emptyCell.opLayout.Position);
+                    }
                 }
             });
 

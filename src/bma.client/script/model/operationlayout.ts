@@ -5,14 +5,11 @@
             private layout: any;
             private padding: { x: number; y: number };
             private keyFrameSize = 25;
-
             private emptyLocations = [];
 
             constructor(operation: Operation) {
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
-
-                this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
             }
 
             public get Operation(): Operation {
@@ -25,13 +22,31 @@
 
             public set Padding(value: { x: number; y: number }) {
                 this.padding = value;
-                this.emptyLocations = this.FindEmptyLocations(this.operation, 0, 0);
             }
 
-            private FindEmptyLocations(operation: BMA.LTLOperations.Operation, x: number, y: number): { x: number; y: number }[] {
-                //var layout = this.CreateLayout(operation);
+            public GetEmptySlotAtPosition(x: number, y: number) {
+                return this.FindEmptySlotAtPosition(this.layout, x, y);
+            }
 
-                return null;
+            private FindEmptySlotAtPosition(layout: any, x: number, y: number) {
+                if (layout.isEmpty && Math.sqrt(Math.pow((x - layout.position.x), 2) + Math.pow((y - layout.position.y), 2)) < this.keyFrameSize / 2) {
+                    return {
+                        operation: layout.operationRef,
+                        operandIndex: layout.indexRef
+                    };
+                } else {
+                    if (layout.operands !== undefined) {
+                        var result = undefined;
+                        for (var i = 0; i < layout.operands.length; i++) {
+                            result = this.FindEmptySlotAtPosition(layout.operands[i], x, y);
+                            if (result !== undefined)
+                                return result;
+                        }
+                        return result;
+                    } else {
+                        return undefined;
+                    }
+                }
             }
 
             private CreateLayout(svg, operation): any {
@@ -45,10 +60,13 @@
                 if (operator !== undefined) {
                     layout.operands = [];
                     layout.operator = operator.Name;
+
                     var operands = (<BMA.LTLOperations.Operation>op).Operands;
                     var layer = 0;
                     var width = (this.GetOperatorWidth(svg, operator.Name)).width;
 
+
+                    layout.operatorWidth = width;
                     if (operands.length === 1) {
                         width += paddingX;
                     }
@@ -62,10 +80,13 @@
                             layout.operands.push(calcLW);
                             width += (calcLW.width + paddingX * 2);
                         } else {
-                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize });
+                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize, operationRef: op, indexRef: i });
                             width += (this.keyFrameSize + 2 * paddingX);
+                            
                         }
                     }
+
+
 
                     layout.layer = layer + 1;
                     layout.width = width;
@@ -75,6 +96,31 @@
                     layout.layer = 1;
                     layout.width = w;
                     return layout;
+                }
+            }
+
+            private SetPositionOffsets(layout, position) {
+                var padding = this.padding;
+                layout.position = position
+
+                if (layout.operands !== undefined) {
+                    var w = layout.operatorWidth;
+
+                    switch (layout.operands.length) {
+                        case 1:
+                            var x = position.x + layout.width / 2 - layout.operands[0].width / 2 - padding.x;
+                            this.SetPositionOffsets(layout.operands[0], { x: x, y: position.y });
+                            break;
+                        case 2:
+                            var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
+                            this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
+
+                            var x2 = position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
+                            this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
+                            break;
+                        default:
+                            throw "Unsupported number of operands";
+                    }
                 }
             }
 
@@ -107,7 +153,10 @@
                         var halfWidth = layoutPart.width / 2;
                         var height = 25 + paddingY * layoutPart.layer;
 
-                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "transparent" });
+
+
+                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "white" });
+
 
                         var operands = operation.operands;
 
@@ -162,8 +211,16 @@
 
             public Render(svg: any, position: { x: number; y: number }) {
                 this.layout = this.CreateLayout(svg, this.operation);
+                this.position = position;
+                this.SetPositionOffsets(this.layout, position);
                 this.RenderLayoutPart(svg, position, this.layout, undefined);
             }
+
+            private position;
+            public get Position() {
+                return this.position;
+            }
+
         }
     }
 }
