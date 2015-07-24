@@ -2450,15 +2450,31 @@ var BMA;
     var LTLOperations;
     (function (LTLOperations) {
         var OperationLayout = (function () {
-            function OperationLayout(operation) {
+            function OperationLayout(svg, operation, position) {
                 this.keyFrameSize = 25;
-                this.emptyLocations = [];
+                this.bbox = undefined;
+                this.position = { x: 0, y: 0 };
+                this.renderGroup = undefined;
+                this.svg = svg;
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
+                this.position = position;
+                this.Render();
             }
             Object.defineProperty(OperationLayout.prototype, "Operation", {
                 get: function () {
                     return this.operation;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "Position", {
+                get: function () {
+                    return this.position;
+                },
+                set: function (value) {
+                    this.position = value;
+                    this.Render();
                 },
                 enumerable: true,
                 configurable: true
@@ -2469,6 +2485,14 @@ var BMA;
                 },
                 set: function (value) {
                     this.padding = value;
+                    this.Render();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "BoundingBox", {
+                get: function () {
+                    return this.bbox;
                 },
                 enumerable: true,
                 configurable: true
@@ -2569,11 +2593,11 @@ var BMA;
                 svg.remove(t);
                 return result;
             };
-            OperationLayout.prototype.RenderLayoutPart = function (svg, position, layoutPart, operandPosition) {
+            OperationLayout.prototype.RenderLayoutPart = function (svg, position, layoutPart, options) {
                 var paddingX = this.padding.x;
                 var paddingY = this.padding.y;
                 if (layoutPart.isEmpty) {
-                    svg.circle(position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "red" });
+                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "black" });
                 }
                 else {
                     var operator = layoutPart.operator;
@@ -2581,30 +2605,44 @@ var BMA;
                         var operation = layoutPart;
                         var halfWidth = layoutPart.width / 2;
                         var height = 25 + paddingY * layoutPart.layer;
-                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "white" });
+                        var fill = options && options.fill ? options.fill : "transparent";
+                        var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
+                        var stroke = options && options.stroke ? options.stroke : "black";
+                        var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
+                            stroke: stroke,
+                            fill: fill,
+                            strokeWidth: strokeWidth
+                        });
+                        if (options && options.isRoot) {
+                            this.bbox = {
+                                x: position.x - halfWidth,
+                                y: position.y - height / 2,
+                                width: halfWidth * 2,
+                                height: height
+                            };
+                        }
                         var operands = operation.operands;
-                        var operatorPadding = 1;
                         switch (operands.length) {
                             case 1:
-                                svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "black"
                                 });
                                 this.RenderLayoutPart(svg, {
                                     x: position.x + halfWidth - operands[0].width / 2 - paddingX,
                                     y: position.y
-                                }, operands[0], "right");
+                                }, operands[0], undefined);
                                 break;
                             case 2:
                                 this.RenderLayoutPart(svg, {
                                     x: position.x - halfWidth + operands[0].width / 2 + paddingX,
                                     y: position.y
-                                }, operands[0], "left");
+                                }, operands[0], undefined);
                                 this.RenderLayoutPart(svg, {
                                     x: position.x + halfWidth - operands[1].width / 2 - paddingX,
                                     y: position.y
-                                }, operands[1], "right");
-                                svg.text(position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
+                                }, operands[1], undefined);
+                                svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "black"
                                 });
@@ -2614,23 +2652,22 @@ var BMA;
                         }
                     }
                     else {
-                        svg.circle(position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
                     }
                 }
             };
-            OperationLayout.prototype.Render = function (svg, position) {
+            OperationLayout.prototype.Render = function () {
+                var position = this.position;
+                var svg = this.svg;
+                if (this.renderGroup !== undefined) {
+                    svg.remove(this.renderGroup);
+                }
                 this.layout = this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
-                this.RenderLayoutPart(svg, position, this.layout, undefined);
+                this.renderGroup = svg.group();
+                this.RenderLayoutPart(svg, position, this.layout, { fill: "rgb(217, 255, 182)", stroke: "rgb(154, 205, 145)", strokeWidth: 2, isRoot: true });
             };
-            Object.defineProperty(OperationLayout.prototype, "Position", {
-                get: function () {
-                    return this.position;
-                },
-                enumerable: true,
-                configurable: true
-            });
             return OperationLayout;
         })();
         LTLOperations.OperationLayout = OperationLayout;

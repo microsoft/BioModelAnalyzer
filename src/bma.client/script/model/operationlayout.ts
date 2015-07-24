@@ -5,15 +5,30 @@
             private layout: any;
             private padding: { x: number; y: number };
             private keyFrameSize = 25;
-            private emptyLocations = [];
+            private svg: any;
+            private bbox = undefined;
+            private position: { x: number; y: number } = { x: 0, y: 0 };
 
-            constructor(operation: Operation) {
+            constructor(svg: any, operation: Operation, position: { x: number; y: number }) {
+                this.svg = svg;
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
+                this.position = position;
+
+                this.Render();
             }
 
             public get Operation(): Operation {
                 return this.operation;
+            }
+
+            public get Position(): { x: number; y: number } {
+                return this.position;
+            }
+
+            public set Position(value: { x: number; y: number }) {
+                this.position = value;
+                this.Render();
             }
 
             public get Padding(): { x: number; y: number } {
@@ -22,6 +37,11 @@
 
             public set Padding(value: { x: number; y: number }) {
                 this.padding = value;
+                this.Render();
+            }
+
+            public get BoundingBox(): { x: number; y: number; width: number; height: number } {
+                return this.bbox;
             }
 
             public GetEmptySlotAtPosition(x: number, y: number) {
@@ -82,11 +102,9 @@
                         } else {
                             layout.operands.push({ isEmpty: true, width: this.keyFrameSize, operationRef: op, indexRef: i });
                             width += (this.keyFrameSize + 2 * paddingX);
-                            
+
                         }
                     }
-
-
 
                     layout.layer = layer + 1;
                     layout.width = width;
@@ -125,26 +143,22 @@
             }
 
             private GetOperatorWidth(svg: any, operator: string): { width: number; height: number } {
-                var t = svg.text(0,0, operator, {
+                var t = svg.text(0, 0, operator, {
                     "font-size": 10,
                     "fill": "black"
                 });
-
                 var bbox = t.getBBox();
-                
                 var result = { width: bbox.width, height: bbox.height };
-
                 svg.remove(t);
-
                 return result;
             }
 
-            private RenderLayoutPart(svg: any, position: { x: number; y: number }, layoutPart: any, operandPosition: string) {
+            private RenderLayoutPart(svg: any, position: { x: number; y: number }, layoutPart: any, options: any) {
                 var paddingX = this.padding.x;
                 var paddingY = this.padding.y;
 
                 if (layoutPart.isEmpty) {
-                    svg.circle(position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "red" });
+                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "black" });
                 } else {
                     var operator = layoutPart.operator;
                     if (operator !== undefined) {
@@ -153,19 +167,31 @@
                         var halfWidth = layoutPart.width / 2;
                         var height = 25 + paddingY * layoutPart.layer;
 
+                        var fill = options && options.fill ? options.fill : "transparent";
+                        var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
+                        var stroke = options && options.stroke ? options.stroke : "black";
 
 
-                        var opSVG = svg.rect(position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, { stroke: "black", fill: "white" });
+                        var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
+                            stroke: stroke,
+                            fill: fill,
+                            strokeWidth: strokeWidth
+                        });
 
+                        if (options && options.isRoot) {
+                            this.bbox = {
+                                x: position.x - halfWidth,
+                                y: position.y - height / 2,
+                                width: halfWidth * 2,
+                                height: height
+                            }
+                        }
 
                         var operands = operation.operands;
-
-                        var operatorPadding = 1;
-                        //var operatorW = this.GetOperatorWidth(svg, operation.operator);
                         switch (operands.length) {
                             case 1:
 
-                                svg.text(position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "black"
                                 });
@@ -174,7 +200,7 @@
                                     x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
                                     y: position.y
                                 },
-                                    operands[0], "right");
+                                    operands[0], undefined);
 
                                 break;
                             case 2:
@@ -183,16 +209,16 @@
                                     x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
                                     y: position.y
                                 },
-                                    operands[0], "left");
+                                    operands[0], undefined);
 
 
                                 this.RenderLayoutPart(svg, {
                                     x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
                                     y: position.y
                                 },
-                                    operands[1], "right");
+                                    operands[1], undefined);
 
-                                svg.text(position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
+                                svg.text(this.renderGroup, position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "black"
                                 });
@@ -204,22 +230,28 @@
 
                         }
                     } else {
-                        svg.circle(position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
                     }
                 }
             }
 
-            public Render(svg: any, position: { x: number; y: number }) {
+            private renderGroup = undefined;
+            public Render() {
+                var position = this.position;
+                var svg = this.svg;
+
+                if (this.renderGroup !== undefined) {
+                    svg.remove(this.renderGroup);
+                }
+
                 this.layout = this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
-                this.RenderLayoutPart(svg, position, this.layout, undefined);
+
+                this.renderGroup = svg.group();
+                this.RenderLayoutPart(svg, position, this.layout, { fill: "rgb(217, 255, 182)", stroke: "rgb(154, 205, 145)", strokeWidth: 2, isRoot: true });
             }
 
-            private position;
-            public get Position() {
-                return this.position;
-            }
 
         }
     }

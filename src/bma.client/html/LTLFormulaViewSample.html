@@ -120,9 +120,7 @@
             oppp.Operands = [k3, opp2];
             oppp.Operator = op3;
 
-
-            var operationLayout = new BMA.LTLOperations.OperationLayout(oppp);
-            operationLayout.Render(svg, { x: 0, y: 0 });
+            //var operationLayout = new BMA.LTLOperations.OperationLayout(svg, oppp);
             
             var elementPanel = $("#elementPanel");
             var registry = new BMA.LTLOperations.OperatorsRegistry();
@@ -172,12 +170,12 @@
                     }
 
                     if (emptyCell === undefined) {
-                        var operationLayout = new BMA.LTLOperations.OperationLayout(op);
+                        var operationLayout = new BMA.LTLOperations.OperationLayout(svg, op, position);
                         operations.push(operationLayout);
-                        operationLayout.Render(svg, position);
                     } else {
                         emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                        emptyCell.opLayout.Render(svg, emptyCell.opLayout.Position);
+
+                        emptyCell.opLayout.Position = emptyCell.opLayout.Position;
                     }
                 }
             });
