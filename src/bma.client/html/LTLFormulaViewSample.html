@@ -3,6 +3,9 @@
 <head>
     <title>LTL Formula View Sample</title>
     <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <link rel="stylesheet" href="../css/BMA_less.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/StyleSheet.min.css" type="text/css" />
+
     <script src="../Scripts/jquery-2.1.1.min.js"></script>
     <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
     <script src="../js/jquery.svg.min.js"></script>
@@ -91,7 +94,7 @@
             var svgPlot = plot.get('svgPlot');
             var svg = svgPlot.svg;
 
-            
+
             var formulacreator = function (funcname) {
                 return function (op) {
                     var f = '(' + funcname;
@@ -121,7 +124,7 @@
             oppp.Operator = op3;
 
             //var operationLayout = new BMA.LTLOperations.OperationLayout(svg, oppp);
-            
+
             var elementPanel = $("#elementPanel");
             var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
@@ -134,7 +137,35 @@
                     .attr("data-type", operator.Name)
                     .appendTo(elementPanel);
 
-                var label = $("<label></label>").text(operator.Name).attr("for", "btn-" + operator.Name).css("z-index", 9999999).appendTo(elementPanel);
+                var label = $("<label></label>").attr("data-operator", operator.Name).css("border", "none").css("border-radius", "50px 50px 50px 50px").attr("for", "btn-" + operator.Name).css("z-index", 9999999).appendTo(elementPanel);
+                var img = $("<div></div>").css("overflow", "hidden").attr("title", operator.Name).appendTo(label);
+
+                img.svg({
+                    onLoad: function (svg) {
+                        svg.configure({
+                            width: img.width(),
+                            height: img.height(),
+                            viewBox: "-10 -10 20 20",
+                            preserveAspectRatio: "none meet"
+                        }, true);
+
+                        var op = new BMA.LTLOperations.Operation();
+                        op.Operator = registry.GetOperatorByName(operator.Name);
+                        op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                        var operationLayout = new BMA.LTLOperations.OperationLayout(svg, op, { x: 0, y: 0 });
+
+                        var bbox = operationLayout.BoundingBox;
+                        svg.configure({
+                            width: bbox.width,
+                            height: bbox.height,
+                            viewBox: (bbox.x - 1) + " " + (bbox.y - 1) + " " + (bbox.width + 2) + " " + (bbox.height + 2),
+                            preserveAspectRatio: "none meet"
+                        });
+
+                        img.width(bbox.width).height(bbox.height);
+                        label.width(bbox.width).height(bbox.height);
+                    }
+                });
 
                 label.draggable({ helper: "clone" });
             }
@@ -146,12 +177,8 @@
             $("#svgPlot").droppable({
                 drop: function (event, ui) {
                     var op = new BMA.LTLOperations.Operation();
-
-                    op.Operator = registry.GetOperatorByName(ui.draggable.text());
-
+                    op.Operator = registry.GetOperatorByName(ui.draggable.attr("data-operator"));
                     op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
-
-
 
                     var cs = svgPlot.getScreenToDataTransform();
 
@@ -179,16 +206,15 @@
                     }
                 }
             });
-
-            //var bbox = BMA.SVGHelper.bboxText(svg._svg, "UNTIL");
-            //console.log(bbox);
         });
     </script>
 </head>
 <body>
-    <div id="elementPanel">
 
+    <div id="tools" class="bma-toolbarpanel">
+        <div id="elementPanel" class="elements-toolbar"></div>
     </div>
+
     <div id="figure" data-idd-plot="plot" style="width: 800px; height: 600px; border: 1px solid black;">
         <div id="svgPlot" data-idd-plot="svgPlot"></div>
     </div>
