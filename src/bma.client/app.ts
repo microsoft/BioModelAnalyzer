@@ -645,7 +645,7 @@ function loadScript(version) {
             ProofErrorCount: log.ProofErrorCount,
             SimulationErrorCount: log.SimulationErrorCount,
             FurtherTestingErrorCount: log.FurtherTestingErrorCount,
-            ClientVersion: "BMA HTML5 2.0"
+            ClientVersion: "BMA HTML5 " + version.major + '.' + version.minor + '.' + version.build
         });
         var sendBeacon = navigator['sendBeacon'];
         if (sendBeacon) {
