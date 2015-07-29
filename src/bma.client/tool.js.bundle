@@ -22,8 +22,10 @@
 	<file>/script/elementsregistry.js</file>
 	<file>/script/functionsregistry.js</file>
 	<file>/script/keyframesregistry.js</file>
-    
-	<file>/script/localRepository.js</file>
+  <file>/script/UserLog.js</file>
+  <file>/script/operatorsregistry.js</file>
+
+  <file>/script/localRepository.js</file>
 	<file>/script/changeschecker.js</file> 
 	<file>/script/model/biomodel.js</file>
 	<file>/script/model/model.js</file>
@@ -34,6 +36,7 @@
   <file>/script/model/operationlayout.js</file>
 	<file>/script/uidrivers/commondrivers.js</file>
   <file>/script/uidrivers/ltldrivers.js</file>
+    
 	<file>/script/presenters/undoredopresenter.js</file>
 	<file>/script/presenters/presenters.js</file>
 	<file>/script/presenters/proofpresenter.js</file>
@@ -42,8 +45,11 @@
 	<file>/script/presenters/formulavalidationpresenter.js</file>
 	<file>/script/presenters/furthertestingpresenter.js</file>
 	<file>/script/presenters/localstoragepresenter.js</file>
-	<file>/script/UserLog.js</file>
-	<file>/script/widgets/accordeon.js</file>
+    
+  <file>/script/presenters/ltl/temporalproperties.js</file>
+  <file>/script/presenters/ltl/LTLpresenter.js</file>
+
+  <file>/script/widgets/accordeon.js</file>
 	<file>/script/widgets/bmaslider.js</file>
 	<file>/script/widgets/coloredtableviewer.js</file>
 	<file>/script/widgets/containernameeditor.js</file>
@@ -59,11 +65,11 @@
 	<file>/script/widgets/userdialog.js</file>
 	<file>/script/widgets/variablesOptionsEditor.js</file>
 	<file>/script/widgets/visibilitysettings.js</file>
+    
 	<file>/script/widgets/ltl/keyframetable.js</file>
   <file>/script/widgets/ltl/keyframecompact.js</file>
   <file>/script/widgets/ltl/ltlstatesviewer.js</file>
 	<file>/script/widgets/ltl/ltlviewer.js</file>
-	<file>/script/presenters/ltl/LTLpresenter.js</file>
-	<file>/script/operatorsregistry.js</file>
+    
   </files>
 </bundle>

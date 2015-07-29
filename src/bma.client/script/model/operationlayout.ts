@@ -249,7 +249,7 @@
                 this.SetPositionOffsets(this.layout, position);
 
                 this.renderGroup = svg.group();
-                this.RenderLayoutPart(svg, position, this.layout, { fill: "rgb(217, 255, 182)", stroke: "rgb(154, 205, 145)", strokeWidth: 2, isRoot: true });
+                this.RenderLayoutPart(svg, position, this.layout, { fill: "white", stroke: "black", strokeWidth: 1, isRoot: true });
             }
 
 

@@ -16,117 +16,19 @@
     <script src="../tool.js"></script>
 
     <script>
-
-        function GetOperationDepth(op) {
-
-        }
-
-        /*
-        function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
-            var operator = op.Operator;
-            var operands = op.Operands;
-            return GetOperatorSVG(svg, position, operator, operands);
-        }
-
-        function GetOperandSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand): { svg: any; depthLevel: number } {
-
-            //TODO: Rethink method of distingushing keyframes from operations
-            var operator = (<any>op).Operator;
-
-            if (operator !== undefined) {
-                return GetOperationSVG(svg, position, <BMA.LTLOperations.Operation>op);
-            } else {
-                return {
-                    svg: GetKeyFrameSVG(svg, position, <BMA.LTLOperations.Keyframe>op), depthLevel: 1
-                };
-            }
-        }
-
-        function GetKeyFrameSVG(svg: any, position: { x: number; y: number }, keyframe: BMA.LTLOperations.Keyframe): string {
-            return "";
-        }
-
-        function GetOperatorSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operator, operands: BMA.LTLOperations.IOperand[]): { svg: any; depthLevel: number } {
-            if (operands.length !== op.OperandsCount)
-                throw "Invalid Operands Count for Operator's rendering";
-
-            var operandSVGs = [];
-            for (var i = 0; i < operands.length; i++) {
-                operandSVGs.push(GetOperandSVG(svg, position, operands[i]));
-            }
-
-            switch (operands.length) {
-                case 1:
-                    return {
-                        svg: undefined,
-                        depthLevel: (<any>operandSVGs[0]).depthLevel
-                    }
-                    break;
-                case 2:
-                    return {
-                        svg: undefined,
-                        depthLevel: Math.max((<any>operandSVGs[0]).depthLevel,(<any>operandSVGs[1]).depthLevel)
-                    }
-                    break;
-                default:
-                    throw "Rendering of operators with " + operands.length + " operands is not supported";
-            }
-        }
-        */
-
         $(document).ready(function () {
-            var plot = InteractiveDataDisplay.asPlot("figure");
-            var svgPlot = plot.get("svgPlot");
+            //Creating CommandRegistry
+            window.Commands = new BMA.CommandRegistry();
 
-            plot.yDataTransform =
-                        new InteractiveDataDisplay.DataTransform(
-                            function (x) {
-                                return -x;
-                            },
-                            function (y) {
-                                return -y;
-                            },
-                            undefined);
-
-            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(plot.host);
-            plot.navigation.gestureSource = gestureSource;
-            plot.navigation.setVisibleRect({ x: 0, y: 0, width: 800, height: 600 }, false);
-            var svgPlot = plot.get('svgPlot');
-            var svg = svgPlot.svg;
+            //Creating Operators registry
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
 
 
-            var formulacreator = function (funcname) {
-                return function (op) {
-                    var f = '(' + funcname;
-                    for (var i = 0; i < op.length; i++) {
-                        f += ' ' + op[i].GetFormula();
-                    }
-                    return f + ')';
-                }
-            }
-            var k1 = new BMA.LTLOperations.Keyframe('one');
-            var k2 = new BMA.LTLOperations.Keyframe('two');
-            var k3 = new BMA.LTLOperations.Keyframe('three');
-            var op1 = new BMA.LTLOperations.Operator('UNTIL', 2, formulacreator('Until'));
-            var op2 = new BMA.LTLOperations.Operator('NOT', 1, formulacreator('Not'));
-            var op3 = new BMA.LTLOperations.Operator('AND', 2, formulacreator('And'));
-            var op = new BMA.LTLOperations.Operation();
-            op.Operands = [k1, k2];
-            op.Operator = op1;
-            var opp = new BMA.LTLOperations.Operation();
-            opp.Operands = [op];
-            opp.Operator = op2;
-            var opp2 = new BMA.LTLOperations.Operation();
-            opp2.Operands = [op, k1];
-            opp2.Operator = op3;
-            var oppp = new BMA.LTLOperations.Operation();
-            oppp.Operands = [k3, opp2];
-            oppp.Operator = op3;
-
-            //var operationLayout = new BMA.LTLOperations.OperationLayout(svg, oppp);
+            //Loading widgets
+            var drawingSurface = $("#drawingSurface");
+            drawingSurface.drawingsurface();
 
             var elementPanel = $("#elementPanel");
-            var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
 
@@ -170,53 +72,55 @@
                 label.draggable({ helper: "clone" });
             }
 
+            $("#elementPanel input").click(function (event) {
+                window.Commands.Execute("AddOperatorSelect", $(this).attr("data-type"));
+            });
+
             elementPanel.buttonset();
 
-            var operations = [];
 
-            $("#svgPlot").droppable({
-                drop: function (event, ui) {
-                    var op = new BMA.LTLOperations.Operation();
-                    op.Operator = registry.GetOperatorByName(ui.draggable.attr("data-operator"));
-                    op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
 
-                    var cs = svgPlot.getScreenToDataTransform();
-
-                    var position = {
-                        x: cs.screenToDataX(event.pageX - $("#svgPlot").offset().left),
-                        y: -cs.screenToDataY(event.pageY - $("#svgPlot").offset().top)
-                    };
-
-                    var emptyCell = undefined;
-                    for (var i = 0; i < operations.length; i++) {
-                        emptyCell = operations[i].GetEmptySlotAtPosition(position.x, position.y);
-                        if (emptyCell !== undefined) {
-                            emptyCell.opLayout = operations[i];
-                            break;
-                        }
-                    }
-
-                    if (emptyCell === undefined) {
-                        var operationLayout = new BMA.LTLOperations.OperationLayout(svg, op, position);
-                        operations.push(operationLayout);
-                    } else {
-                        emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-
-                        emptyCell.opLayout.Position = emptyCell.opLayout.Position;
-                    }
-                }
+            $("#button-pointer").click(function (event) {
+                window.Commands.Execute("AddOperatorSelect", undefined);
             });
+
+            $("#undoredotoolbar").buttonset();
+
+            //Loading Drivers
+            var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
+
+
+            //Loading Presenters
+            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(window.Commands, svgPlotDriver, svgPlotDriver, svgPlotDriver);
+
+            svgPlotDriver.SetGridVisibility(false);
         });
     </script>
 </head>
 <body>
-
     <div id="tools" class="bma-toolbarpanel">
+        
+        <div id="undoredotoolbar" class="undoredo-toolbar">
+            <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
+            <label for="button-pointer">
+                <img class="pointer-icon" title="Selection tool" />
+            </label>
+
+            <!--<div class="bma-toolbarpanel-verticalline"></div>-->
+
+            <!--<button id="button-undo">
+                <div class="undo-icon" title="Undo"></div>
+            </button>
+            <button id="button-redo">
+                <div class="redo-icon" title="Redo"></div>
+            </button>-->
+        </div>
+
         <div id="elementPanel" class="elements-toolbar"></div>
     </div>
 
-    <div id="figure" data-idd-plot="plot" style="width: 800px; height: 600px; border: 1px solid black;">
-        <div id="svgPlot" data-idd-plot="svgPlot"></div>
+    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
+        <div id="drawingSurface" class="bma-drawingsurface"></div>
     </div>
 </body>
 </html>

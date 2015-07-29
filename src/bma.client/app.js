@@ -513,12 +513,6 @@ function loadScript(version) {
     else {
         window.Commands.Execute("LocalStorageInitModel", reserved_key);
     }
-    var toolsdivs = $('#tools').children('div');
-    function resize_header_tools() {
-        toolsdivs.each(function () {
-            $(this).toggleClass('box-sizing'); //.css('box-sizing', 'border-box');
-        });
-    }
     var lastversion = window.localStorage.getItem(version_key);
     if (lastversion !== JSON.stringify(version)) {
         var userDialog = $('<div></div>').appendTo('body').userdialog({
