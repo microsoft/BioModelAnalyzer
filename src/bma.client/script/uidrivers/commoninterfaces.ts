@@ -12,7 +12,8 @@ module BMA {
             GetPixelWidth();
             SetGridVisibility(isOn: boolean);
             SetVisibleRect(rect: { x: number; y: number; width: number; height: number });
-            GetSVG() : string;
+            GetSVG(): string;
+            GetSVGRef(): any;
         }
 
         export interface IHider {

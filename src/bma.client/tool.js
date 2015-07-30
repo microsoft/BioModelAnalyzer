@@ -2728,6 +2728,9 @@ var BMA;
             SVGPlotDriver.prototype.GetSVG = function () {
                 return this.svgPlotDiv.drawingsurface("getSVG").toSVG();
             };
+            SVGPlotDriver.prototype.GetSVGRef = function () {
+                return this.svgPlotDiv.drawingsurface("getSVG");
+            };
             SVGPlotDriver.prototype.SetVisibleRect = function (rect) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
             };
@@ -8789,6 +8792,64 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=LTLpresenter.js.map
+///#source 1 1 /script/presenters/ltl/temporalproperties.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\..\model\biomodel.ts"/>
+/// <reference path="..\..\model\model.ts"/>
+/// <reference path="..\..\uidrivers\commoninterfaces.ts"/>
+/// <reference path="..\..\uidrivers\ltlinterfaces.ts"/>
+/// <reference path="..\..\model\operation.ts"/>
+/// <reference path="..\..\commands.ts"/>
+var BMA;
+(function (BMA) {
+    var LTL;
+    (function (LTL) {
+        var TemporalPropertiesPresenter = (function () {
+            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService) {
+                var _this = this;
+                var that = this;
+                this.driver = svgPlotDriver;
+                this.navigationDriver = navigationDriver;
+                this.dragService = dragService;
+                this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
+                this.operations = [];
+                window.Commands.On("AddOperatorSelect", function (type) {
+                    that.selectedOperatorType = type;
+                    that.navigationDriver.TurnNavigation(type === undefined);
+                });
+                window.Commands.On("DrawingSurfaceClick", function (args) {
+                    if (that.selectedOperatorType !== undefined) {
+                        var registry = _this.operatorRegistry;
+                        var position = { x: args.x, y: args.y };
+                        var op = new BMA.LTLOperations.Operation();
+                        op.Operator = registry.GetOperatorByName(that.selectedOperatorType);
+                        op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                        var emptyCell = undefined;
+                        for (var i = 0; i < that.operations.length; i++) {
+                            emptyCell = that.operations[i].GetEmptySlotAtPosition(position.x, position.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.opLayout = that.operations[i];
+                                break;
+                            }
+                        }
+                        if (emptyCell === undefined) {
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
+                            that.operations.push(operationLayout);
+                        }
+                        else {
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                            emptyCell.opLayout.Position = emptyCell.opLayout.Position;
+                        }
+                    }
+                });
+            }
+            return TemporalPropertiesPresenter;
+        })();
+        LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
+    })(LTL = BMA.LTL || (BMA.LTL = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=temporalproperties.js.map
 ///#source 1 1 /script/operatorsregistry.js
 var BMA;
 (function (BMA) {

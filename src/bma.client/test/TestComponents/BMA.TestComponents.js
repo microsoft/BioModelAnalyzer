@@ -49,6 +49,9 @@ var BMA;
             TestSVGPlotDriver.prototype.GetSVG = function () {
                 return "";
             };
+            TestSVGPlotDriver.prototype.GetSVGRef = function () {
+                return undefined;
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;
