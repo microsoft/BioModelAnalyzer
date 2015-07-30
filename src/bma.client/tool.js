@@ -2666,7 +2666,13 @@ var BMA;
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
                 this.renderGroup = svg.group();
-                this.RenderLayoutPart(svg, position, this.layout, { fill: "rgb(217, 255, 182)", stroke: "rgb(154, 205, 145)", strokeWidth: 2, isRoot: true });
+                this.RenderLayoutPart(svg, position, this.layout, { fill: "white", stroke: "black", strokeWidth: 1, isRoot: true });
+            };
+            OperationLayout.prototype.Clear = function () {
+                if (this.renderGroup !== undefined) {
+                    this.svg.remove(this.renderGroup);
+                    this.renderGroup = undefined;
+                }
             };
             return OperationLayout;
         })();
@@ -8825,25 +8831,67 @@ var BMA;
                         var op = new BMA.LTLOperations.Operation();
                         op.Operator = registry.GetOperatorByName(that.selectedOperatorType);
                         op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
-                        var emptyCell = undefined;
-                        for (var i = 0; i < that.operations.length; i++) {
-                            emptyCell = that.operations[i].GetEmptySlotAtPosition(position.x, position.y);
+                        var operation = that.GetOperationAtPoint(args.x, args.y);
+                        if (operation !== undefined) {
+                            var emptyCell = undefined;
+                            emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                             if (emptyCell !== undefined) {
-                                emptyCell.opLayout = that.operations[i];
-                                break;
+                                emptyCell.opLayout = operation;
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                emptyCell.opLayout.Position = emptyCell.opLayout.Position;
                             }
                         }
-                        if (emptyCell === undefined) {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
-                            that.operations.push(operationLayout);
-                        }
                         else {
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                            emptyCell.opLayout.Position = emptyCell.opLayout.Position;
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
+                            if (that.HasIntersections(operationLayout)) {
+                                operationLayout.Clear();
+                            }
+                            else {
+                                that.operations.push(operationLayout);
+                            }
                         }
                     }
                 });
+                var dragSubject = dragService.GetDragSubject();
+                dragSubject.dragStart.subscribe(function (gesture) {
+                    if (that.selectedOperatorType === undefined) {
+                        var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
+                        if (staginOp !== undefined) {
+                            _this.stagingOperation = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture);
+                        }
+                    }
+                });
+                dragSubject.drag.subscribe(function (gesture) {
+                    if (_this.stagingOperation !== undefined) {
+                        _this.stagingOperation.Position = { x: gesture.x1, y: gesture.y1 };
+                    }
+                });
+                dragSubject.dragEnd.subscribe(function (gesture) {
+                    _this.stagingOperation = undefined;
+                });
             }
+            TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
+                var that = this;
+                var operations = this.operations;
+                for (var i = 0; i < operations.length; i++) {
+                    var bbox = operations[i].BoundingBox;
+                    if (bbox.x <= x && (bbox.x + bbox.width) >= x && bbox.y <= y && (bbox.y + bbox.height) >= y) {
+                        return operations[i];
+                    }
+                }
+                return undefined;
+            };
+            TemporalPropertiesPresenter.prototype.HasIntersections = function (operation) {
+                var that = this;
+                var operations = this.operations;
+                var opBbox = operation.BoundingBox;
+                for (var i = 0; i < operations.length; i++) {
+                    var bbox = operations[i].BoundingBox;
+                    if (opBbox.x <= bbox.x + bbox.width && opBbox.x + opBbox.width >= bbox.x && opBbox.y <= bbox.y + bbox.height && opBbox.y + opBbox.height >= bbox.y)
+                        return true;
+                }
+                return false;
+            };
             return TemporalPropertiesPresenter;
         })();
         LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
