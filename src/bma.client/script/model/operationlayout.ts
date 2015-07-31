@@ -8,6 +8,7 @@
             private svg: any;
             private bbox = undefined;
             private position: { x: number; y: number } = { x: 0, y: 0 };
+            private isVisible: boolean = true;
 
             constructor(svg: any, operation: Operation, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -16,6 +17,35 @@
                 this.position = position;
 
                 this.Render();
+            }
+
+            public get KeyFrameSize(): number {
+                return this.keyFrameSize;
+            }
+
+            public set KeyFrameSize(value: number) {
+                if (value > 0) {
+                    this.keyFrameSize = value;
+                    this.Render();
+                } else
+                    throw "KeyFrame Size must be positive";
+            }
+
+
+            public get IsVisible(): boolean {
+                return this.isVisible;
+            }
+
+            public set IsVisible(value: boolean) {
+                if (value !== this.isVisible) {
+                    this.isVisible = value;
+
+                    if (value) {
+                        this.Render();
+                    } else {
+                        this.Clear();
+                    }
+                }
             }
 
             public get Operation(): Operation {
@@ -149,6 +179,7 @@
                 });
                 var bbox = t.getBBox();
                 var result = { width: bbox.width, height: bbox.height };
+                //console.log(operator + ": " + bbox.width);
                 svg.remove(t);
                 return result;
             }
@@ -165,7 +196,7 @@
                         var operation = layoutPart;
 
                         var halfWidth = layoutPart.width / 2;
-                        var height = 25 + paddingY * layoutPart.layer;
+                        var height = this.keyFrameSize + paddingY * layoutPart.layer;
 
                         var fill = options && options.fill ? options.fill : "transparent";
                         var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
@@ -236,7 +267,7 @@
             }
 
             private renderGroup = undefined;
-            public Render() {
+            private Render() {
                 var position = this.position;
                 var svg = this.svg;
 
@@ -252,11 +283,15 @@
                 this.RenderLayoutPart(svg, position, this.layout, { fill: "white", stroke: "black", strokeWidth: 1, isRoot: true });
             }
 
-            public Clear() {
+            private Clear() {
                 if (this.renderGroup !== undefined) {
                     this.svg.remove(this.renderGroup);
                     this.renderGroup = undefined;
                 }
+            }
+
+            public Refresh() {
+                this.Render();
             }
         }
     }

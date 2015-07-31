@@ -13,7 +13,7 @@ module BMA {
             private operations: BMA.LTLOperations.OperationLayout[];
             private keyframes: BMA.LTLOperations.Keyframe[];
             private activeOperation: BMA.LTLOperations.Operation;
-            private stagingOperation: BMA.LTLOperations.OperationLayout;
+            private stagingOperation: { operation: BMA.LTLOperations.OperationLayout; originRef: BMA.LTLOperations.OperationLayout; originIndex: number };
             private selectedOperatorType: string;
 
             private driver: BMA.UIDrivers.ISVGPlot;
@@ -63,7 +63,7 @@ module BMA {
                         } else {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
                             if (that.HasIntersections(operationLayout)) {
-                                operationLayout.Clear();
+                                operationLayout.IsVisible = false;
                             } else {
                                 that.operations.push(operationLayout);
                             }
@@ -78,7 +78,13 @@ module BMA {
                         if (that.selectedOperatorType === undefined) {
                             var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                             if (staginOp !== undefined) {
-                                this.stagingOperation = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture);
+                                that.navigationDriver.TurnNavigation(false);
+                                this.stagingOperation = {
+                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture),
+                                    originRef: staginOp,
+                                    originIndex: this.operations.indexOf(staginOp)
+                                };
+                                staginOp.IsVisible = false;
                             }
                         }
                     });
@@ -86,13 +92,45 @@ module BMA {
                 dragSubject.drag.subscribe(
                     (gesture) => {
                         if (this.stagingOperation !== undefined) {
-                            this.stagingOperation.Position = { x: <number>gesture.x1, y: <number>gesture.y1 };
+                            this.stagingOperation.operation.Position = { x: <number>gesture.x1, y: <number>gesture.y1 };
                         }
                     });
                 
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
-                        this.stagingOperation = undefined;
+                        if (this.stagingOperation !== undefined) {
+                            that.navigationDriver.TurnNavigation(true);
+                            this.stagingOperation.operation.IsVisible = false;
+
+                            var position = this.stagingOperation.operation.Position;
+
+                            if (!this.HasIntersections(this.stagingOperation.operation)) {
+                                this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
+                                this.stagingOperation.originRef.IsVisible = true;
+                            } else {
+                                var operation = this.GetOperationAtPoint(position.x, position.y);
+                                if (operation !== undefined && this.operations.indexOf(operation) !== this.stagingOperation.originIndex) {
+                                    var emptyCell = undefined;
+                                    emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                    if (emptyCell !== undefined) {
+                                        emptyCell.opLayout = operation;
+                                        emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation;
+                                        operation.Refresh();
+
+                                        this.operations.splice(this.stagingOperation.originIndex, 1);
+                                    } else {
+                                        //Operation should stay in its origin place
+                                        this.stagingOperation.originRef.IsVisible = true;
+                                    }
+                                } else {
+                                    this.stagingOperation.originRef.Position = position;
+                                    this.stagingOperation.originRef.IsVisible = true;
+                                }
+                            }
+
+                            this.stagingOperation.operation.IsVisible = false;
+                            this.stagingOperation = undefined;
+                        }
                     });
             }
 
@@ -117,12 +155,11 @@ module BMA {
                 for (var i = 0; i < operations.length; i++) {
                     var bbox = operations[i].BoundingBox;
 
-                    if (opBbox.x <= bbox.x + bbox.width &&
-                        opBbox.x + opBbox.width >= bbox.x &&
-                        opBbox.y <= bbox.y + bbox.height &&
-                        opBbox.y + opBbox.height >= bbox.y)
+                    var isXIntersects = !(opBbox.x > bbox.x + bbox.width || opBbox.x + opBbox.width < bbox.x)
+                    var isYIntersects = !(opBbox.y > bbox.y + bbox.height || opBbox.y + opBbox.height < bbox.y)
+
+                    if (isXIntersects && isYIntersects)
                         return true;
-                         
                 }
 
                 return false;

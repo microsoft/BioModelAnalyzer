@@ -2454,6 +2454,7 @@ var BMA;
                 this.keyFrameSize = 25;
                 this.bbox = undefined;
                 this.position = { x: 0, y: 0 };
+                this.isVisible = true;
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -2461,6 +2462,39 @@ var BMA;
                 this.position = position;
                 this.Render();
             }
+            Object.defineProperty(OperationLayout.prototype, "KeyFrameSize", {
+                get: function () {
+                    return this.keyFrameSize;
+                },
+                set: function (value) {
+                    if (value > 0) {
+                        this.keyFrameSize = value;
+                        this.Render();
+                    }
+                    else
+                        throw "KeyFrame Size must be positive";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "IsVisible", {
+                get: function () {
+                    return this.isVisible;
+                },
+                set: function (value) {
+                    if (value !== this.isVisible) {
+                        this.isVisible = value;
+                        if (value) {
+                            this.Render();
+                        }
+                        else {
+                            this.Clear();
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "Operation", {
                 get: function () {
                     return this.operation;
@@ -2590,6 +2624,7 @@ var BMA;
                 });
                 var bbox = t.getBBox();
                 var result = { width: bbox.width, height: bbox.height };
+                //console.log(operator + ": " + bbox.width);
                 svg.remove(t);
                 return result;
             };
@@ -2604,7 +2639,7 @@ var BMA;
                     if (operator !== undefined) {
                         var operation = layoutPart;
                         var halfWidth = layoutPart.width / 2;
-                        var height = 25 + paddingY * layoutPart.layer;
+                        var height = this.keyFrameSize + paddingY * layoutPart.layer;
                         var fill = options && options.fill ? options.fill : "transparent";
                         var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
                         var stroke = options && options.stroke ? options.stroke : "black";
@@ -2673,6 +2708,9 @@ var BMA;
                     this.svg.remove(this.renderGroup);
                     this.renderGroup = undefined;
                 }
+            };
+            OperationLayout.prototype.Refresh = function () {
+                this.Render();
             };
             return OperationLayout;
         })();
@@ -8844,7 +8882,7 @@ var BMA;
                         else {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
                             if (that.HasIntersections(operationLayout)) {
-                                operationLayout.Clear();
+                                operationLayout.IsVisible = false;
                             }
                             else {
                                 that.operations.push(operationLayout);
@@ -8857,17 +8895,54 @@ var BMA;
                     if (that.selectedOperatorType === undefined) {
                         var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
-                            _this.stagingOperation = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture);
+                            that.navigationDriver.TurnNavigation(false);
+                            _this.stagingOperation = {
+                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture),
+                                originRef: staginOp,
+                                originIndex: _this.operations.indexOf(staginOp)
+                            };
+                            staginOp.IsVisible = false;
                         }
                     }
                 });
                 dragSubject.drag.subscribe(function (gesture) {
                     if (_this.stagingOperation !== undefined) {
-                        _this.stagingOperation.Position = { x: gesture.x1, y: gesture.y1 };
+                        _this.stagingOperation.operation.Position = { x: gesture.x1, y: gesture.y1 };
                     }
                 });
                 dragSubject.dragEnd.subscribe(function (gesture) {
-                    _this.stagingOperation = undefined;
+                    if (_this.stagingOperation !== undefined) {
+                        that.navigationDriver.TurnNavigation(true);
+                        _this.stagingOperation.operation.IsVisible = false;
+                        var position = _this.stagingOperation.operation.Position;
+                        if (!_this.HasIntersections(_this.stagingOperation.operation)) {
+                            _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                            _this.stagingOperation.originRef.IsVisible = true;
+                        }
+                        else {
+                            var operation = _this.GetOperationAtPoint(position.x, position.y);
+                            if (operation !== undefined && _this.operations.indexOf(operation) !== _this.stagingOperation.originIndex) {
+                                var emptyCell = undefined;
+                                emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                if (emptyCell !== undefined) {
+                                    emptyCell.opLayout = operation;
+                                    emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
+                                    operation.Refresh();
+                                    _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                }
+                                else {
+                                    //Operation should stay in its origin place
+                                    _this.stagingOperation.originRef.IsVisible = true;
+                                }
+                            }
+                            else {
+                                _this.stagingOperation.originRef.Position = position;
+                                _this.stagingOperation.originRef.IsVisible = true;
+                            }
+                        }
+                        _this.stagingOperation.operation.IsVisible = false;
+                        _this.stagingOperation = undefined;
+                    }
                 });
             }
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
@@ -8887,7 +8962,9 @@ var BMA;
                 var opBbox = operation.BoundingBox;
                 for (var i = 0; i < operations.length; i++) {
                     var bbox = operations[i].BoundingBox;
-                    if (opBbox.x <= bbox.x + bbox.width && opBbox.x + opBbox.width >= bbox.x && opBbox.y <= bbox.y + bbox.height && opBbox.y + opBbox.height >= bbox.y)
+                    var isXIntersects = !(opBbox.x > bbox.x + bbox.width || opBbox.x + opBbox.width < bbox.x);
+                    var isYIntersects = !(opBbox.y > bbox.y + bbox.height || opBbox.y + opBbox.height < bbox.y);
+                    if (isXIntersects && isYIntersects)
                         return true;
                 }
                 return false;
