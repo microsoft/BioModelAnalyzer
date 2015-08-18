@@ -293,6 +293,15 @@
             public Refresh() {
                 this.Render();
             }
+
+            public CopyOperandFromCursor(x: number, y: number, withCut: boolean): BMA.LTLOperations.IOperand {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
+                    return undefined;
+                } 
+
+
+                return undefined;
+            }
         }
     }
 }

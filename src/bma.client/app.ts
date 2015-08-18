@@ -258,10 +258,6 @@ function loadScript(version) {
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
 
-
-    $("#visibilityOptionsContent")
-
-
     $("#modelNameEditor").val(appModel.BioModel.Name);
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();

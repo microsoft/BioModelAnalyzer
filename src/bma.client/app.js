@@ -210,7 +210,6 @@ function loadScript(version) {
     $("#modelToolbarSlider").bmaaccordion({ position: "left", z_index: 1 });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
-    $("#visibilityOptionsContent");
     $("#modelNameEditor").val(appModel.BioModel.Name);
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();

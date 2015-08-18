@@ -21,66 +21,10 @@
     <script src="../js/idd.js"></script>
     <script src="../js/taphold.js"></script>
     <script src="../tool.min.js"></script>
-    <script src="../app.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <!--<script src="../app.js"></script>-->
 
     <script>
-
-        function GetOperationDepth(op) {
-
-        }
-
-        /*
-        function GetOperationSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operation): string {
-            var operator = op.Operator;
-            var operands = op.Operands;
-            return GetOperatorSVG(svg, position, operator, operands);
-        }
-
-        function GetOperandSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.IOperand): { svg: any; depthLevel: number } {
-
-            //TODO: Rethink method of distingushing keyframes from operations
-            var operator = (<any>op).Operator;
-
-            if (operator !== undefined) {
-                return GetOperationSVG(svg, position, <BMA.LTLOperations.Operation>op);
-            } else {
-                return {
-                    svg: GetKeyFrameSVG(svg, position, <BMA.LTLOperations.Keyframe>op), depthLevel: 1
-                };
-            }
-        }
-
-        function GetKeyFrameSVG(svg: any, position: { x: number; y: number }, keyframe: BMA.LTLOperations.Keyframe): string {
-            return "";
-        }
-
-        function GetOperatorSVG(svg: any, position: { x: number; y: number }, op: BMA.LTLOperations.Operator, operands: BMA.LTLOperations.IOperand[]): { svg: any; depthLevel: number } {
-            if (operands.length !== op.OperandsCount)
-                throw "Invalid Operands Count for Operator's rendering";
-
-            var operandSVGs = [];
-            for (var i = 0; i < operands.length; i++) {
-                operandSVGs.push(GetOperandSVG(svg, position, operands[i]));
-            }
-
-            switch (operands.length) {
-                case 1:
-                    return {
-                        svg: undefined,
-                        depthLevel: (<any>operandSVGs[0]).depthLevel
-                    }
-                    break;
-                case 2:
-                    return {
-                        svg: undefined,
-                        depthLevel: Math.max((<any>operandSVGs[0]).depthLevel,(<any>operandSVGs[1]).depthLevel)
-                    }
-                    break;
-                default:
-                    throw "Rendering of operators with " + operands.length + " operands is not supported";
-            }
-        }
-        */
 
         $(document).ready(function () {
             //Creating CommandRegistry
@@ -126,14 +70,14 @@
 
                         var bbox = operationLayout.BoundingBox;
                         svg.configure({
-                            width: bbox.width,
-                            height: bbox.height,
+                            width: bbox.width + 2,
+                            height: bbox.height + 2,
                             viewBox: (bbox.x - 1) + " " + (bbox.y - 1) + " " + (bbox.width + 2) + " " + (bbox.height + 2),
                             preserveAspectRatio: "none meet"
                         });
 
-                        img.width(bbox.width).height(bbox.height);
-                        label.width(bbox.width).height(bbox.height);
+                        img.width(bbox.width + 2).height(bbox.height + 2);
+                        label.width(bbox.width + 2).height(bbox.height + 2);
                     }
                 });
 
@@ -166,6 +110,82 @@
             svgPlotDriver.SetGridVisibility(false);
 
             $("#tools").css("background-color", "#E4E4E6");
+
+            //Context menu
+
+            var holdCords = {
+                holdX: 0,
+                holdY: 0
+            }
+
+            $(document).on('vmousedown', function (event) {
+
+                holdCords.holdX = event.pageX;
+                holdCords.holdY = event.pageY;
+            });
+
+            $("#drawingSurceContainer").contextmenu({
+                delegate: ".bma-drawingsurface",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                taphold: true,
+                menu: [
+                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
+
+                    {
+                        title: "Size", cmd: "Size", children: [
+                            { title: "1x1", cmd: "ResizeCellTo1x1" },
+                            { title: "2x2", cmd: "ResizeCellTo2x2" },
+                            { title: "3x3", cmd: "ResizeCellTo3x3" },
+                        ],
+                        uiIcon: "ui-icon-arrow-4-diag"
+                    },
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
+
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    var left = x - $(".bma-drawingsurface").offset().left;
+                    var top = y - $(".bma-drawingsurface").offset().top;
+                    //console.log("top " + top);
+                    //console.log("left " + left);
+
+                    window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
+                        left: left,
+                        top: top
+                    });
+                },
+                select: function (event, ui) {
+                    var args = {};
+                    var commandName = "DrawingSurface";
+                    if (ui.cmd === "ResizeCellTo1x1") {
+                        args.size = 1;
+                        commandName += "ResizeCell";
+                    } else if (ui.cmd === "ResizeCellTo2x2") {
+                        args.size = 2;
+                        commandName += "ResizeCell";
+                    } else if (ui.cmd === "ResizeCellTo3x3") {
+                        args.size = 3;
+                        commandName += "ResizeCell";
+                    } else {
+                        commandName += ui.cmd;
+                    }
+
+                    args.left = event.pageX - $(".bma-drawingsurface").offset().left;
+                    args.top = event.pageY - $(".bma-drawingsurface").offset().top;
+                    window.Commands.Execute(commandName, args);
+                }
+            });
+
+            
+            //End of context menu
+
         });
     </script>
 </head>

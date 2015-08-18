@@ -2712,6 +2712,12 @@ var BMA;
             OperationLayout.prototype.Refresh = function () {
                 this.Render();
             };
+            OperationLayout.prototype.CopyOperandFromCursor = function (x, y, withCut) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
+                    return undefined;
+                }
+                return undefined;
+            };
             return OperationLayout;
         })();
         LTLOperations.OperationLayout = OperationLayout;
