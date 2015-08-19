@@ -1497,137 +1497,6 @@ var BMA;
     })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=keyframesregistry.js.map
-///#source 1 1 /script/UserLog.js
-/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-var BMA;
-(function (BMA) {
-    function generateUUID() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return uuid;
-    }
-    ;
-    var SessionLog = (function () {
-        function SessionLog() {
-            this.userId = $.cookie("BMAClient.UserID");
-            if (this.userId === undefined) {
-                this.userId = generateUUID();
-                $.cookie("BMAClient.UserID", this.userId);
-            }
-            this.sessionId = generateUUID();
-            this.logIn = new Date();
-            this.logOut = new Date();
-            this.proofCount = 0;
-            this.simulationCount = 0;
-            this.furtherTestingCount = 0;
-            this.newModelCount = 0;
-            this.saveModelCount = 0;
-            this.importModelCount = 0;
-            this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
-        }
-        SessionLog.prototype.LogProofError = function () {
-            this.proofErrorCount++;
-        };
-        SessionLog.prototype.LogSimulationError = function () {
-            this.simulationErrorCount++;
-        };
-        SessionLog.prototype.LogFurtherTestingError = function () {
-            this.furtherTestingErrorCount++;
-        };
-        SessionLog.prototype.LogProofRun = function () {
-            this.proofCount++;
-        };
-        SessionLog.prototype.LogSimulationRun = function () {
-            this.simulationCount++;
-        };
-        SessionLog.prototype.LogFurtherTestingRun = function () {
-            this.furtherTestingCount++;
-        };
-        SessionLog.prototype.LogNewModelCreated = function () {
-            this.newModelCount++;
-        };
-        SessionLog.prototype.LogImportModel = function () {
-            this.importModelCount++;
-        };
-        SessionLog.prototype.LogSaveModel = function () {
-            this.saveModelCount++;
-        };
-        SessionLog.prototype.CloseSession = function () {
-            this.logOut = new Date();
-            return {
-                Proof: this.proofCount,
-                Simulation: this.simulationCount,
-                FurtherTesting: this.furtherTestingCount,
-                NewModel: this.newModelCount,
-                ImportModel: this.importModelCount,
-                SaveModel: this.saveModelCount,
-                LogIn: this.logIn.toJSON(),
-                LogOut: this.logOut.toJSON(),
-                UserID: this.userId,
-                SessionID: this.sessionId,
-                ProofErrorCount: this.proofErrorCount,
-                SimulationErrorCount: this.simulationErrorCount,
-                FurtherTestingErrorCount: this.furtherTestingErrorCount
-            };
-        };
-        return SessionLog;
-    })();
-    BMA.SessionLog = SessionLog;
-})(BMA || (BMA = {}));
-//# sourceMappingURL=UserLog.js.map
-///#source 1 1 /script/operatorsregistry.js
-var BMA;
-(function (BMA) {
-    var LTLOperations;
-    (function (LTLOperations) {
-        var OperatorsRegistry = (function () {
-            function OperatorsRegistry() {
-                var that = this;
-                this.operators = [];
-                var formulacreator = function (funcname) {
-                    return function (op) {
-                        var f = '(' + funcname;
-                        for (var i = 0; i < op.length; i++) {
-                            f += ' ' + op[i].GetFormula();
-                        }
-                        return f + ')';
-                    };
-                };
-                this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
-                this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
-                this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
-                this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
-                this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
-                this.operators.push(new LTLOperations.Operator('NOT', 1, formulacreator('Not')));
-                this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
-                this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
-                this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
-            }
-            Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
-                get: function () {
-                    return this.operators;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            OperatorsRegistry.prototype.GetOperatorByName = function (name) {
-                for (var i = 0; i < this.operators.length; i++) {
-                    if (this.operators[i].Name === name)
-                        return this.operators[i];
-                }
-                return undefined;
-            };
-            return OperatorsRegistry;
-        })();
-        LTLOperations.OperatorsRegistry = OperatorsRegistry;
-    })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
-})(BMA || (BMA = {}));
-//# sourceMappingURL=operatorsregistry.js.map
 ///#source 1 1 /script/localRepository.js
 var BMA;
 (function (BMA) {
@@ -2585,6 +2454,7 @@ var BMA;
                 this.keyFrameSize = 25;
                 this.bbox = undefined;
                 this.position = { x: 0, y: 0 };
+                this.isVisible = true;
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -2592,6 +2462,39 @@ var BMA;
                 this.position = position;
                 this.Render();
             }
+            Object.defineProperty(OperationLayout.prototype, "KeyFrameSize", {
+                get: function () {
+                    return this.keyFrameSize;
+                },
+                set: function (value) {
+                    if (value > 0) {
+                        this.keyFrameSize = value;
+                        this.Render();
+                    }
+                    else
+                        throw "KeyFrame Size must be positive";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "IsVisible", {
+                get: function () {
+                    return this.isVisible;
+                },
+                set: function (value) {
+                    if (value !== this.isVisible) {
+                        this.isVisible = value;
+                        if (value) {
+                            this.Render();
+                        }
+                        else {
+                            this.Clear();
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "Operation", {
                 get: function () {
                     return this.operation;
@@ -2721,6 +2624,7 @@ var BMA;
                 });
                 var bbox = t.getBBox();
                 var result = { width: bbox.width, height: bbox.height };
+                //console.log(operator + ": " + bbox.width);
                 svg.remove(t);
                 return result;
             };
@@ -2735,7 +2639,7 @@ var BMA;
                     if (operator !== undefined) {
                         var operation = layoutPart;
                         var halfWidth = layoutPart.width / 2;
-                        var height = 25 + paddingY * layoutPart.layer;
+                        var height = this.keyFrameSize + paddingY * layoutPart.layer;
                         var fill = options && options.fill ? options.fill : "transparent";
                         var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
                         var stroke = options && options.stroke ? options.stroke : "black";
@@ -2798,6 +2702,21 @@ var BMA;
                 this.SetPositionOffsets(this.layout, position);
                 this.renderGroup = svg.group();
                 this.RenderLayoutPart(svg, position, this.layout, { fill: "white", stroke: "black", strokeWidth: 1, isRoot: true });
+            };
+            OperationLayout.prototype.Clear = function () {
+                if (this.renderGroup !== undefined) {
+                    this.svg.remove(this.renderGroup);
+                    this.renderGroup = undefined;
+                }
+            };
+            OperationLayout.prototype.Refresh = function () {
+                this.Render();
+            };
+            OperationLayout.prototype.CopyOperandFromCursor = function (x, y, withCut) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
+                    return undefined;
+                }
+                return undefined;
             };
             return OperationLayout;
         })();
@@ -5706,212 +5625,89 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=localstoragepresenter.js.map
-///#source 1 1 /script/presenters/ltl/temporalproperties.js
-/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\..\model\biomodel.ts"/>
-/// <reference path="..\..\model\model.ts"/>
-/// <reference path="..\..\uidrivers\commoninterfaces.ts"/>
-/// <reference path="..\..\uidrivers\ltlinterfaces.ts"/>
-/// <reference path="..\..\model\operation.ts"/>
-/// <reference path="..\..\commands.ts"/>
+///#source 1 1 /script/UserLog.js
+/// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
 (function (BMA) {
-    var LTL;
-    (function (LTL) {
-        var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(commandRegistry, svgPlotDriver, navigationDriver, dragService) {
-                var that = this;
-                this.commands = commandRegistry;
-                this.driver = svgPlotDriver;
-                this.navigationDriver = navigationDriver;
-                this.dragService = dragService;
-                this.operations = [];
-                this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
-                this.svgRef = svgPlotDriver.GetSVGRef();
-                window.Commands.On("AddOperatorSelect", function (type) {
-                    that.selectedOperatorType = type;
-                    that.navigationDriver.TurnNavigation(type === undefined);
-                });
-                window.Commands.On("DrawingSurfaceClick", function (args) {
-                    var position = { x: args.x, y: args.y };
-                    if (that.selectedOperatorType !== undefined) {
-                        var operation = new BMA.LTLOperations.Operation();
-                        operation.Operator = that.operatorRegistry.GetOperatorByName(that.selectedOperatorType);
-                        operation.Operands = operation.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
-                        var emptyCell = undefined;
-                        for (var i = 0; i < that.operations.length; i++) {
-                            emptyCell = that.operations[i].GetEmptySlotAtPosition(position.x, position.y);
-                            if (emptyCell !== undefined) {
-                                emptyCell.opLayout = that.operations[i];
-                                break;
-                            }
-                        }
-                        if (emptyCell === undefined) {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.svgRef, operation, position);
-                            that.operations.push(operationLayout);
-                        }
-                        else {
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = operation;
-                            emptyCell.opLayout.Position = emptyCell.opLayout.Position;
-                        }
-                    }
-                });
+    function generateUUID() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    }
+    ;
+    var SessionLog = (function () {
+        function SessionLog() {
+            this.userId = $.cookie("BMAClient.UserID");
+            if (this.userId === undefined) {
+                this.userId = generateUUID();
+                $.cookie("BMAClient.UserID", this.userId);
             }
-            TemporalPropertiesPresenter.prototype.CheckIntersections = function (point) {
-                return false;
+            this.sessionId = generateUUID();
+            this.logIn = new Date();
+            this.logOut = new Date();
+            this.proofCount = 0;
+            this.simulationCount = 0;
+            this.furtherTestingCount = 0;
+            this.newModelCount = 0;
+            this.saveModelCount = 0;
+            this.importModelCount = 0;
+            this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
+        }
+        SessionLog.prototype.LogProofError = function () {
+            this.proofErrorCount++;
+        };
+        SessionLog.prototype.LogSimulationError = function () {
+            this.simulationErrorCount++;
+        };
+        SessionLog.prototype.LogFurtherTestingError = function () {
+            this.furtherTestingErrorCount++;
+        };
+        SessionLog.prototype.LogProofRun = function () {
+            this.proofCount++;
+        };
+        SessionLog.prototype.LogSimulationRun = function () {
+            this.simulationCount++;
+        };
+        SessionLog.prototype.LogFurtherTestingRun = function () {
+            this.furtherTestingCount++;
+        };
+        SessionLog.prototype.LogNewModelCreated = function () {
+            this.newModelCount++;
+        };
+        SessionLog.prototype.LogImportModel = function () {
+            this.importModelCount++;
+        };
+        SessionLog.prototype.LogSaveModel = function () {
+            this.saveModelCount++;
+        };
+        SessionLog.prototype.CloseSession = function () {
+            this.logOut = new Date();
+            return {
+                Proof: this.proofCount,
+                Simulation: this.simulationCount,
+                FurtherTesting: this.furtherTestingCount,
+                NewModel: this.newModelCount,
+                ImportModel: this.importModelCount,
+                SaveModel: this.saveModelCount,
+                LogIn: this.logIn.toJSON(),
+                LogOut: this.logOut.toJSON(),
+                UserID: this.userId,
+                SessionID: this.sessionId,
+                ProofErrorCount: this.proofErrorCount,
+                SimulationErrorCount: this.simulationErrorCount,
+                FurtherTestingErrorCount: this.furtherTestingErrorCount
             };
-            return TemporalPropertiesPresenter;
-        })();
-        LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
-    })(LTL = BMA.LTL || (BMA.LTL = {}));
+        };
+        return SessionLog;
+    })();
+    BMA.SessionLog = SessionLog;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=temporalproperties.js.map
-///#source 1 1 /script/presenters/ltl/LTLpresenter.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var LTLPresenter = (function () {
-            function LTLPresenter(appModel, keyframesfullDriver, keyframescompactDriver, ltlviewer, ajax, popupViewer) {
-                var _this = this;
-                var that = this;
-                this.appModel = appModel;
-                window.Commands.On("AddKeyframe", function () {
-                    var newstate = 'new';
-                    keyframescompactDriver.AddState(newstate);
-                    keyframesfullDriver.AddState(newstate);
-                });
-                window.Commands.On("ChangedKeyframeName", function (item) {
-                    //alert('ind=' + item.ind + ' name=' + item.name);
-                });
-                window.Commands.On("KeyframeSelected", function (item) {
-                    //alert('selected ind=' + item.ind);
-                });
-                window.Commands.On("LTLRequested", function (param) {
-                    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
-                    var model = BMA.Model.ExportBioModel(appModel.BioModel);
-                    var proofInput = {
-                        "Name": model.Name,
-                        "Relationships": model.Relationships,
-                        "Variables": model.Variables,
-                        "Formula": param.formula,
-                        "Number_of_steps": 10
-                    };
-                    var result = ajax.Invoke(proofInput).done(function (res) {
-                        if (res.Ticks == null) {
-                            alert(res.Error);
-                        }
-                        else {
-                            if (res.Status == "True") {
-                                var restbl = that.CreateColoredTable(res.Ticks);
-                                ltlviewer.SetResult(restbl);
-                                that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
-                            }
-                            else {
-                                ltlviewer.SetResult(undefined);
-                                alert(res.Status);
-                            }
-                        }
-                    }).fail(function () {
-                        alert("LTL failed");
-                    });
-                });
-                window.Commands.On("Expand", function (param) {
-                    switch (param) {
-                        case "LTLStates":
-                            var content = keyframesfullDriver.GetContent();
-                            popupViewer.Show({ tab: param, content: content });
-                            ltlviewer.Hide(param);
-                            break;
-                        case "LTLResults":
-                            popupViewer.Show({ tab: param, content: that.expandedResults });
-                            ltlviewer.Hide(param);
-                            break;
-                        default:
-                            ltlviewer.Show(undefined);
-                            break;
-                    }
-                });
-                window.Commands.On("Collapse", function (param) {
-                    ltlviewer.Show(param);
-                    popupViewer.Hide();
-                });
-                window.Commands.On('KeyframeStartDrag', function (param) {
-                    _this.currentdraggableelem = param;
-                });
-                window.Commands.On("KeyframeDropped", function (param) {
-                    var cl = window.KeyframesRegistry.Keyframes[_this.currentdraggableelem];
-                    var img = $('<img>').attr('src', cl.Icon);
-                    img.appendTo(param.location);
-                });
-                window.Commands.On('RemoveKeyframe', function () {
-                    keyframesfullDriver.RemovePart('', '');
-                });
-            }
-            LTLPresenter.prototype.CreateColoredTable = function (ticks) {
-                var that = this;
-                if (ticks === null)
-                    return undefined;
-                var color = [];
-                var t = ticks.length;
-                var v = ticks[0].Variables.length;
-                for (var i = 0; i < v; i++) {
-                    color[i] = [];
-                    for (var j = 1; j < t; j++) {
-                        var ij = ticks[j].Variables[i];
-                        var pr = ticks[j - 1].Variables[i];
-                        color[i][j] = pr.Hi === ij.Hi;
-                    }
-                }
-                return color;
-            };
-            LTLPresenter.prototype.CreateExpanded = function (ticks, color) {
-                var container = $('<div></div>');
-                if (ticks === null)
-                    return container;
-                var that = this;
-                var biomodel = this.appModel.BioModel;
-                var variables = biomodel.Variables;
-                var table = [];
-                var colortable = [];
-                var header = [];
-                var l = ticks.length;
-                header[0] = "Name";
-                for (var i = 0; i < ticks.length; i++) {
-                    header[i + 1] = "T = " + ticks[i].Time;
-                }
-                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
-                    table[j] = [];
-                    colortable[j] = [];
-                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;
-                    var v = ticks[0].Variables[j];
-                    colortable[j][0] = undefined;
-                    for (var i = 1; i < l + 1; i++) {
-                        var ij = ticks[i - 1].Variables[j];
-                        colortable[j][i] = color[j][i - 1];
-                        if (ij.Lo === ij.Hi) {
-                            table[j][i] = ij.Lo;
-                        }
-                        else {
-                            table[j][i] = ij.Lo + ' - ' + ij.Hi;
-                        }
-                    }
-                }
-                container.coloredtableviewer({ header: header, numericData: table, colorData: colortable });
-                container.addClass('scrollable-results');
-                container.children('table').removeClass('variables-table').addClass('proof-propagation-table ltl-result-table');
-                container.find('td.propagation-cell-green').removeClass("propagation-cell-green");
-                container.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
-                container.find("td").eq(0).width(150);
-                return container;
-            };
-            return LTLPresenter;
-        })();
-        Presenters.LTLPresenter = LTLPresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-//# sourceMappingURL=LTLpresenter.js.map
+//# sourceMappingURL=UserLog.js.map
 ///#source 1 1 /script/widgets/accordeon.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
@@ -8901,3 +8697,335 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlviewer.js.map
+///#source 1 1 /script/presenters/ltl/LTLpresenter.js
+var BMA;
+(function (BMA) {
+    var Presenters;
+    (function (Presenters) {
+        var LTLPresenter = (function () {
+            function LTLPresenter(appModel, keyframesfullDriver, keyframescompactDriver, ltlviewer, ajax, popupViewer) {
+                var _this = this;
+                var that = this;
+                this.appModel = appModel;
+                window.Commands.On("AddKeyframe", function () {
+                    var newstate = 'new';
+                    keyframescompactDriver.AddState(newstate);
+                    keyframesfullDriver.AddState(newstate);
+                });
+                window.Commands.On("ChangedKeyframeName", function (item) {
+                    //alert('ind=' + item.ind + ' name=' + item.name);
+                });
+                window.Commands.On("KeyframeSelected", function (item) {
+                    //alert('selected ind=' + item.ind);
+                });
+                window.Commands.On("LTLRequested", function (param) {
+                    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
+                    var model = BMA.Model.ExportBioModel(appModel.BioModel);
+                    var proofInput = {
+                        "Name": model.Name,
+                        "Relationships": model.Relationships,
+                        "Variables": model.Variables,
+                        "Formula": param.formula,
+                        "Number_of_steps": 10
+                    };
+                    var result = ajax.Invoke(proofInput).done(function (res) {
+                        if (res.Ticks == null) {
+                            alert(res.Error);
+                        }
+                        else {
+                            if (res.Status == "True") {
+                                var restbl = that.CreateColoredTable(res.Ticks);
+                                ltlviewer.SetResult(restbl);
+                                that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                            }
+                            else {
+                                ltlviewer.SetResult(undefined);
+                                alert(res.Status);
+                            }
+                        }
+                    }).fail(function () {
+                        alert("LTL failed");
+                    });
+                });
+                window.Commands.On("Expand", function (param) {
+                    switch (param) {
+                        case "LTLStates":
+                            var content = keyframesfullDriver.GetContent();
+                            popupViewer.Show({ tab: param, content: content });
+                            ltlviewer.Hide(param);
+                            break;
+                        case "LTLResults":
+                            popupViewer.Show({ tab: param, content: that.expandedResults });
+                            ltlviewer.Hide(param);
+                            break;
+                        default:
+                            ltlviewer.Show(undefined);
+                            break;
+                    }
+                });
+                window.Commands.On("Collapse", function (param) {
+                    ltlviewer.Show(param);
+                    popupViewer.Hide();
+                });
+                window.Commands.On('KeyframeStartDrag', function (param) {
+                    _this.currentdraggableelem = param;
+                });
+                window.Commands.On("KeyframeDropped", function (param) {
+                    var cl = window.KeyframesRegistry.Keyframes[_this.currentdraggableelem];
+                    var img = $('<img>').attr('src', cl.Icon);
+                    img.appendTo(param.location);
+                });
+                window.Commands.On('RemoveKeyframe', function () {
+                    keyframesfullDriver.RemovePart('', '');
+                });
+            }
+            LTLPresenter.prototype.CreateColoredTable = function (ticks) {
+                var that = this;
+                if (ticks === null)
+                    return undefined;
+                var color = [];
+                var t = ticks.length;
+                var v = ticks[0].Variables.length;
+                for (var i = 0; i < v; i++) {
+                    color[i] = [];
+                    for (var j = 1; j < t; j++) {
+                        var ij = ticks[j].Variables[i];
+                        var pr = ticks[j - 1].Variables[i];
+                        color[i][j] = pr.Hi === ij.Hi;
+                    }
+                }
+                return color;
+            };
+            LTLPresenter.prototype.CreateExpanded = function (ticks, color) {
+                var container = $('<div></div>');
+                if (ticks === null)
+                    return container;
+                var that = this;
+                var biomodel = this.appModel.BioModel;
+                var variables = biomodel.Variables;
+                var table = [];
+                var colortable = [];
+                var header = [];
+                var l = ticks.length;
+                header[0] = "Name";
+                for (var i = 0; i < ticks.length; i++) {
+                    header[i + 1] = "T = " + ticks[i].Time;
+                }
+                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
+                    table[j] = [];
+                    colortable[j] = [];
+                    table[j][0] = biomodel.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
+                    colortable[j][0] = undefined;
+                    for (var i = 1; i < l + 1; i++) {
+                        var ij = ticks[i - 1].Variables[j];
+                        colortable[j][i] = color[j][i - 1];
+                        if (ij.Lo === ij.Hi) {
+                            table[j][i] = ij.Lo;
+                        }
+                        else {
+                            table[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+                container.coloredtableviewer({ header: header, numericData: table, colorData: colortable });
+                container.addClass('scrollable-results');
+                container.children('table').removeClass('variables-table').addClass('proof-propagation-table ltl-result-table');
+                container.find('td.propagation-cell-green').removeClass("propagation-cell-green");
+                container.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
+                container.find("td").eq(0).width(150);
+                return container;
+            };
+            return LTLPresenter;
+        })();
+        Presenters.LTLPresenter = LTLPresenter;
+    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=LTLpresenter.js.map
+///#source 1 1 /script/presenters/ltl/temporalproperties.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\..\model\biomodel.ts"/>
+/// <reference path="..\..\model\model.ts"/>
+/// <reference path="..\..\uidrivers\commoninterfaces.ts"/>
+/// <reference path="..\..\uidrivers\ltlinterfaces.ts"/>
+/// <reference path="..\..\model\operation.ts"/>
+/// <reference path="..\..\commands.ts"/>
+var BMA;
+(function (BMA) {
+    var LTL;
+    (function (LTL) {
+        var TemporalPropertiesPresenter = (function () {
+            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService) {
+                var _this = this;
+                var that = this;
+                this.driver = svgPlotDriver;
+                this.navigationDriver = navigationDriver;
+                this.dragService = dragService;
+                this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
+                this.operations = [];
+                window.Commands.On("AddOperatorSelect", function (type) {
+                    that.selectedOperatorType = type;
+                    that.navigationDriver.TurnNavigation(type === undefined);
+                });
+                window.Commands.On("DrawingSurfaceClick", function (args) {
+                    if (that.selectedOperatorType !== undefined) {
+                        var registry = _this.operatorRegistry;
+                        var position = { x: args.x, y: args.y };
+                        var op = new BMA.LTLOperations.Operation();
+                        op.Operator = registry.GetOperatorByName(that.selectedOperatorType);
+                        op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                        var operation = that.GetOperationAtPoint(args.x, args.y);
+                        if (operation !== undefined) {
+                            var emptyCell = undefined;
+                            emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.opLayout = operation;
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                emptyCell.opLayout.Position = emptyCell.opLayout.Position;
+                            }
+                        }
+                        else {
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
+                            if (that.HasIntersections(operationLayout)) {
+                                operationLayout.IsVisible = false;
+                            }
+                            else {
+                                that.operations.push(operationLayout);
+                            }
+                        }
+                    }
+                });
+                var dragSubject = dragService.GetDragSubject();
+                dragSubject.dragStart.subscribe(function (gesture) {
+                    if (that.selectedOperatorType === undefined) {
+                        var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
+                        if (staginOp !== undefined) {
+                            that.navigationDriver.TurnNavigation(false);
+                            _this.stagingOperation = {
+                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture),
+                                originRef: staginOp,
+                                originIndex: _this.operations.indexOf(staginOp)
+                            };
+                            staginOp.IsVisible = false;
+                        }
+                    }
+                });
+                dragSubject.drag.subscribe(function (gesture) {
+                    if (_this.stagingOperation !== undefined) {
+                        _this.stagingOperation.operation.Position = { x: gesture.x1, y: gesture.y1 };
+                    }
+                });
+                dragSubject.dragEnd.subscribe(function (gesture) {
+                    if (_this.stagingOperation !== undefined) {
+                        that.navigationDriver.TurnNavigation(true);
+                        _this.stagingOperation.operation.IsVisible = false;
+                        var position = _this.stagingOperation.operation.Position;
+                        if (!_this.HasIntersections(_this.stagingOperation.operation)) {
+                            _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                            _this.stagingOperation.originRef.IsVisible = true;
+                        }
+                        else {
+                            var operation = _this.GetOperationAtPoint(position.x, position.y);
+                            if (operation !== undefined && _this.operations.indexOf(operation) !== _this.stagingOperation.originIndex) {
+                                var emptyCell = undefined;
+                                emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                if (emptyCell !== undefined) {
+                                    emptyCell.opLayout = operation;
+                                    emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
+                                    operation.Refresh();
+                                    _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                }
+                                else {
+                                    //Operation should stay in its origin place
+                                    _this.stagingOperation.originRef.IsVisible = true;
+                                }
+                            }
+                            else {
+                                _this.stagingOperation.originRef.Position = position;
+                                _this.stagingOperation.originRef.IsVisible = true;
+                            }
+                        }
+                        _this.stagingOperation.operation.IsVisible = false;
+                        _this.stagingOperation = undefined;
+                    }
+                });
+            }
+            TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
+                var that = this;
+                var operations = this.operations;
+                for (var i = 0; i < operations.length; i++) {
+                    var bbox = operations[i].BoundingBox;
+                    if (bbox.x <= x && (bbox.x + bbox.width) >= x && bbox.y <= y && (bbox.y + bbox.height) >= y) {
+                        return operations[i];
+                    }
+                }
+                return undefined;
+            };
+            TemporalPropertiesPresenter.prototype.HasIntersections = function (operation) {
+                var that = this;
+                var operations = this.operations;
+                var opBbox = operation.BoundingBox;
+                for (var i = 0; i < operations.length; i++) {
+                    var bbox = operations[i].BoundingBox;
+                    var isXIntersects = !(opBbox.x > bbox.x + bbox.width || opBbox.x + opBbox.width < bbox.x);
+                    var isYIntersects = !(opBbox.y > bbox.y + bbox.height || opBbox.y + opBbox.height < bbox.y);
+                    if (isXIntersects && isYIntersects)
+                        return true;
+                }
+                return false;
+            };
+            return TemporalPropertiesPresenter;
+        })();
+        LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
+    })(LTL = BMA.LTL || (BMA.LTL = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=temporalproperties.js.map
+///#source 1 1 /script/operatorsregistry.js
+var BMA;
+(function (BMA) {
+    var LTLOperations;
+    (function (LTLOperations) {
+        var OperatorsRegistry = (function () {
+            function OperatorsRegistry() {
+                var that = this;
+                this.operators = [];
+                var formulacreator = function (funcname) {
+                    return function (op) {
+                        var f = '(' + funcname;
+                        for (var i = 0; i < op.length; i++) {
+                            f += ' ' + op[i].GetFormula();
+                        }
+                        return f + ')';
+                    };
+                };
+                this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
+                this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
+                this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
+                this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
+                this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
+                this.operators.push(new LTLOperations.Operator('NOT', 1, formulacreator('Not')));
+                this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
+                this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
+                this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
+            }
+            Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
+                get: function () {
+                    return this.operators;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            OperatorsRegistry.prototype.GetOperatorByName = function (name) {
+                for (var i = 0; i < this.operators.length; i++) {
+                    if (this.operators[i].Name === name)
+                        return this.operators[i];
+                }
+                return undefined;
+            };
+            return OperatorsRegistry;
+        })();
+        LTLOperations.OperatorsRegistry = OperatorsRegistry;
+    })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=operatorsregistry.js.map

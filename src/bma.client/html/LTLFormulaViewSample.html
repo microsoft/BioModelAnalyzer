@@ -2,33 +2,43 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>LTL Formula View Sample</title>
-    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="../css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/idd.css" type="text/css" />
     <link rel="stylesheet" href="../css/BMA_less.min.css" type="text/css" />
     <link rel="stylesheet" href="../css/StyleSheet.min.css" type="text/css" />
-
+    <link rel="stylesheet" href="../css/fonts.min.css" type="text/css" />
     <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../js/jquery.browser.min.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
     <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
-    <script src="../js/jquery.svg.min.js"></script>
-    <script src="../js/rx.js"></script>
+    <script src="../js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
     <script src="../js/rx.jQuery.js"></script>
     <script src="../js/idd.js"></script>
-    <script src="../js/svgplot.js"></script>
-    <script src="../tool.js"></script>
+    <script src="../js/taphold.js"></script>
+    <script src="../tool.min.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <!--<script src="../app.js"></script>-->
 
     <script>
+
         $(document).ready(function () {
             //Creating CommandRegistry
             window.Commands = new BMA.CommandRegistry();
-
-            //Creating Operators registry
-            var registry = new BMA.LTLOperations.OperatorsRegistry();
-
 
             //Loading widgets
             var drawingSurface = $("#drawingSurface");
             drawingSurface.drawingsurface();
 
-            var elementPanel = $("#elementPanel");
+            //Loading Drivers
+            var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
+
+            var elementPanel = $("#modelelemtoolbar");
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
 
@@ -39,7 +49,7 @@
                     .attr("data-type", operator.Name)
                     .appendTo(elementPanel);
 
-                var label = $("<label></label>").attr("data-operator", operator.Name).css("border", "none").css("border-radius", "50px 50px 50px 50px").attr("for", "btn-" + operator.Name).css("z-index", 9999999).appendTo(elementPanel);
+                var label = $("<label></label>").attr("data-operator", operator.Name).css("border", "none").css("border-radius", "60px 60px 60px 60px").attr("for", "btn-" + operator.Name).css("z-index", 9999999).appendTo(elementPanel);
                 var img = $("<div></div>").css("overflow", "hidden").attr("title", operator.Name).appendTo(label);
 
                 img.svg({
@@ -55,58 +65,137 @@
                         op.Operator = registry.GetOperatorByName(operator.Name);
                         op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
                         var operationLayout = new BMA.LTLOperations.OperationLayout(svg, op, { x: 0, y: 0 });
+                        operationLayout.Padding = { x: 5, y: 7 };
+                        operationLayout.KeyFrameSize = 15;
 
                         var bbox = operationLayout.BoundingBox;
                         svg.configure({
-                            width: bbox.width,
-                            height: bbox.height,
+                            width: bbox.width + 2,
+                            height: bbox.height + 2,
                             viewBox: (bbox.x - 1) + " " + (bbox.y - 1) + " " + (bbox.width + 2) + " " + (bbox.height + 2),
                             preserveAspectRatio: "none meet"
                         });
 
-                        img.width(bbox.width).height(bbox.height);
-                        label.width(bbox.width).height(bbox.height);
+                        img.width(bbox.width + 2).height(bbox.height + 2);
+                        label.width(bbox.width + 2).height(bbox.height + 2);
                     }
                 });
 
-                label.draggable({ helper: "clone" });
+                label.draggable({
+                    helper: "clone",
+                    start: function (event, ui) {
+                        $(this).draggable("option", "cursorAt", {
+                            left: Math.floor(ui.helper.width() / 2),
+                            top: Math.floor(ui.helper.height() / 2)
+                        });
+                        $('#' + $(this).attr("for")).click();
+                    }
+                });
             }
 
-            $("#elementPanel input").click(function (event) {
+            elementPanel.buttonset();
+            $("#undoredotoolbar").buttonset();
+
+            $("#modelelemtoolbar input").click(function (event) {
                 window.Commands.Execute("AddOperatorSelect", $(this).attr("data-type"));
             });
-
-            elementPanel.buttonset();
-
-
 
             $("#button-pointer").click(function (event) {
                 window.Commands.Execute("AddOperatorSelect", undefined);
             });
 
-            $("#undoredotoolbar").buttonset();
 
-            //Loading Drivers
-            var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
-
-
-            //Loading Presenters
-            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(window.Commands, svgPlotDriver, svgPlotDriver, svgPlotDriver);
+            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver);
 
             svgPlotDriver.SetGridVisibility(false);
+
+            $("#tools").css("background-color", "#E4E4E6");
+
+            //Context menu
+
+            var holdCords = {
+                holdX: 0,
+                holdY: 0
+            }
+
+            $(document).on('vmousedown', function (event) {
+
+                holdCords.holdX = event.pageX;
+                holdCords.holdY = event.pageY;
+            });
+
+            $("#drawingSurceContainer").contextmenu({
+                delegate: ".bma-drawingsurface",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                taphold: true,
+                menu: [
+                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
+
+                    {
+                        title: "Size", cmd: "Size", children: [
+                            { title: "1x1", cmd: "ResizeCellTo1x1" },
+                            { title: "2x2", cmd: "ResizeCellTo2x2" },
+                            { title: "3x3", cmd: "ResizeCellTo3x3" },
+                        ],
+                        uiIcon: "ui-icon-arrow-4-diag"
+                    },
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
+
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    var left = x - $(".bma-drawingsurface").offset().left;
+                    var top = y - $(".bma-drawingsurface").offset().top;
+                    //console.log("top " + top);
+                    //console.log("left " + left);
+
+                    window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
+                        left: left,
+                        top: top
+                    });
+                },
+                select: function (event, ui) {
+                    var args = {};
+                    var commandName = "DrawingSurface";
+                    if (ui.cmd === "ResizeCellTo1x1") {
+                        args.size = 1;
+                        commandName += "ResizeCell";
+                    } else if (ui.cmd === "ResizeCellTo2x2") {
+                        args.size = 2;
+                        commandName += "ResizeCell";
+                    } else if (ui.cmd === "ResizeCellTo3x3") {
+                        args.size = 3;
+                        commandName += "ResizeCell";
+                    } else {
+                        commandName += ui.cmd;
+                    }
+
+                    args.left = event.pageX - $(".bma-drawingsurface").offset().left;
+                    args.top = event.pageY - $(".bma-drawingsurface").offset().top;
+                    window.Commands.Execute(commandName, args);
+                }
+            });
+
+            
+            //End of context menu
+
         });
     </script>
 </head>
 <body>
     <div id="tools" class="bma-toolbarpanel">
-        
         <div id="undoredotoolbar" class="undoredo-toolbar">
             <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
             <label for="button-pointer">
-                <img class="pointer-icon" title="Selection tool" />
+                <div class="pointer-icon" title="Selection tool" ></div>
             </label>
-
-            <!--<div class="bma-toolbarpanel-verticalline"></div>-->
 
             <!--<button id="button-undo">
                 <div class="undo-icon" title="Undo"></div>
@@ -116,11 +205,12 @@
             </button>-->
         </div>
 
-        <div id="elementPanel" class="elements-toolbar"></div>
+        <div id="modelelemtoolbar" class="elements-toolbar"></div>
     </div>
 
     <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
         <div id="drawingSurface" class="bma-drawingsurface"></div>
     </div>
+
 </body>
 </html>

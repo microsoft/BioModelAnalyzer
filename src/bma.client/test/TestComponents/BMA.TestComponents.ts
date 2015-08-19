@@ -72,6 +72,7 @@ module BMA {
             public GetSVGRef(): any {
                 return undefined;
             }
+
             
             //private svg: SVGElement[];
 
