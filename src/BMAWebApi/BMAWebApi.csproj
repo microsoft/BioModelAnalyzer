@@ -106,8 +106,16 @@
     <Compile Include="TimeLimit.cs" />
     <Compile Include="UnityResolver.cs" />
   </ItemGroup>
+  
   <Choose>
-    <When Condition="'$(Platform)'!='x64'" />
+    <When Condition="'$(Platform)'=='x86'">
+      <ItemGroup>
+        <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
+          <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
+          <Name>BioCheckAnalyzer32</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
     <Otherwise>
       <ItemGroup>
         <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
@@ -117,11 +125,9 @@
       </ItemGroup>
     </Otherwise>
   </Choose>
+  
   <ItemGroup>
-    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-      <Name>BioCheckAnalyzer64</Name>
-    </ProjectReference>
+    
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Name>BioCheckAnalyzerCommon</Name>
