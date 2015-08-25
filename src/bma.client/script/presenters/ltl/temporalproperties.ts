@@ -71,7 +71,20 @@ module BMA {
                     }
                 });
 
-                
+
+                dragService.GetMouseMoves().subscribe(
+                    (gesture) => {
+                        for (var i = 0; i < that.operations.length; i++) {
+                            that.operations[i].BorderThickness = 1;
+                        }
+
+                        var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
+                        if (staginOp !== undefined) {
+                            staginOp.BorderThickness = 3;
+                        }
+                    });
+
+
                 var dragSubject = dragService.GetDragSubject();
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
@@ -84,6 +97,7 @@ module BMA {
                                     originRef: staginOp,
                                     originIndex: this.operations.indexOf(staginOp)
                                 };
+                                this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                                 staginOp.IsVisible = false;
                             }
                         }
@@ -94,8 +108,10 @@ module BMA {
                         if (this.stagingOperation !== undefined) {
                             this.stagingOperation.operation.Position = { x: <number>gesture.x1, y: <number>gesture.y1 };
                         }
+
+
                     });
-                
+
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
                         if (this.stagingOperation !== undefined) {
@@ -117,6 +133,7 @@ module BMA {
                                         emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation;
                                         operation.Refresh();
 
+                                        this.operations[this.stagingOperation.originIndex].IsVisible = false;
                                         this.operations.splice(this.stagingOperation.originIndex, 1);
                                     } else {
                                         //Operation should stay in its origin place

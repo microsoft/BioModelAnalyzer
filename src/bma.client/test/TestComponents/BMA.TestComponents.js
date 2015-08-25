@@ -24,6 +24,9 @@ var BMA;
             TestSVGPlotDriver.prototype.GetDragSubject = function () {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             };
+            TestSVGPlotDriver.prototype.GetMouseMoves = function () {
+                return this.svgPlotDiv.drawingsurface("getMouseMoves");
+            };
             TestSVGPlotDriver.prototype.SetZoom = function (zoom) {
                 this.svgPlotDiv.drawingsurface({ zoom: zoom });
             };
@@ -75,6 +78,9 @@ var BMA;
                     dragEnd: { subscribe: function () {
                     } }
                 };
+            };
+            TestElementsPanel.prototype.GetMouseMoves = function () {
+                return null;
             };
             return TestElementsPanel;
         })();

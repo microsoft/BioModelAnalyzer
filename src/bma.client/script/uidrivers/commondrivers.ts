@@ -31,6 +31,10 @@ module BMA {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
             }
 
+            public GetMouseMoves() {
+                return this.svgPlotDiv.drawingsurface("getMouseMoves");
+            }
+
             //public GetZoomSubject() {
             //    return this.svgPlotDiv.drawingsurface("getZoomSubject");
             //}

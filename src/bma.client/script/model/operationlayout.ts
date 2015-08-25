@@ -9,6 +9,8 @@
             private bbox = undefined;
             private position: { x: number; y: number } = { x: 0, y: 0 };
             private isVisible: boolean = true;
+            private scale: { x: number; y: number } = { x: 1, y: 1 };
+            private borderThickness: number = 1;
 
             constructor(svg: any, operation: Operation, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -25,8 +27,10 @@
 
             public set KeyFrameSize(value: number) {
                 if (value > 0) {
-                    this.keyFrameSize = value;
-                    this.Render();
+                    if (value !== this.keyFrameSize) {
+                        this.keyFrameSize = value;
+                        this.Refresh();
+                    }
                 } else
                     throw "KeyFrame Size must be positive";
             }
@@ -48,6 +52,32 @@
                 }
             }
 
+            public get BorderThickness(): number {
+                return this.borderThickness;
+            }
+
+            public set BorderThickness(value: number) {
+                if (value !== this.borderThickness) {
+                    this.borderThickness = value;
+                    this.Refresh();
+                }
+            }
+
+            public get Scale(): { x: number; y: number } {
+                return this.scale;
+            }
+
+            public set Scale(value: { x: number; y: number }) {
+                if (value !== undefined) {
+                    if (value.x !== this.scale.x || value.y !== this.scale.y) {
+                        this.scale = value;
+                        this.Refresh();
+                    }
+                } else {
+                    throw "scale is undefined";
+                }
+            }
+
             public get Operation(): Operation {
                 return this.operation;
             }
@@ -57,8 +87,14 @@
             }
 
             public set Position(value: { x: number; y: number }) {
-                this.position = value;
-                this.Render();
+                if (value !== undefined) {
+                    if (value.x !== this.position.x || value.y !== this.position.y) {
+                        this.position = value;
+                        this.Refresh();
+                    }
+                } else {
+                    throw "position is undefined";
+                }
             }
 
             public get Padding(): { x: number; y: number } {
@@ -66,8 +102,14 @@
             }
 
             public set Padding(value: { x: number; y: number }) {
-                this.padding = value;
-                this.Render();
+                if (value !== undefined) {
+                    if (value.x !== this.padding.x || value.y !== this.padding.y) {
+                        this.padding = value;
+                        this.Refresh();
+                    }
+                } else {
+                    throw "padding is undefined";
+                }
             }
 
             public get BoundingBox(): { x: number; y: number; width: number; height: number } {
@@ -199,24 +241,22 @@
                         var height = this.keyFrameSize + paddingY * layoutPart.layer;
 
                         var fill = options && options.fill ? options.fill : "transparent";
-                        var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
                         var stroke = options && options.stroke ? options.stroke : "black";
 
+                        var strokeWidth = 1;
+                        if (options !== undefined) {
+                            if (options.isRoot) {
+                                strokeWidth = this.borderThickness;
+                            } else if (options.strokeWidth) {
+                                strokeWidth = options.strokeWidth;
+                            }
+                        }
 
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
                             fill: fill,
                             strokeWidth: strokeWidth
                         });
-
-                        if (options && options.isRoot) {
-                            this.bbox = {
-                                x: position.x - halfWidth,
-                                y: position.y - height / 2,
-                                width: halfWidth * 2,
-                                height: height
-                            }
-                        }
 
                         var operands = operation.operands;
                         switch (operands.length) {
@@ -279,8 +319,25 @@
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
 
-                this.renderGroup = svg.group();
-                this.RenderLayoutPart(svg, position, this.layout, { fill: "white", stroke: "black", strokeWidth: 1, isRoot: true });
+                this.renderGroup = svg.group({
+                    transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                });
+
+                var halfWidth = this.layout.width / 2;
+                var height = this.keyFrameSize + this.padding.y * this.layout.layer;
+                this.bbox = {
+                    x: position.x - halfWidth,
+                    y: position.y - height / 2,
+                    width: halfWidth * 2,
+                    height: height
+                }
+
+                this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
+                    fill: "white",
+                    stroke: "black",
+                    strokeWidth: 1,
+                    isRoot: true,
+                });
             }
 
             private Clear() {
@@ -291,16 +348,23 @@
             }
 
             public Refresh() {
-                this.Render();
+                if (this.isVisible)
+                    this.Render();
             }
 
             public CopyOperandFromCursor(x: number, y: number, withCut: boolean): BMA.LTLOperations.IOperand {
                 if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
                     return undefined;
-                } 
+                }
 
 
                 return undefined;
+            }
+
+            public HighlightAtPosition(x: number, y: number) {
+                if (this.layout !== undefined) {
+
+                }
             }
         }
     }

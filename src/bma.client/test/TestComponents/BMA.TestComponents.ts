@@ -5,7 +5,7 @@
 module BMA {
     export module Test {
         export class TestSVGPlotDriver implements BMA.UIDrivers.ISVGPlot, BMA.UIDrivers.IElementsPanel, BMA.UIDrivers.INavigationPanel {
-            
+
             private svgPlotDiv: JQuery;
 
             constructor(svgPlotDiv: JQuery) {
@@ -31,6 +31,10 @@ module BMA {
 
             public GetDragSubject() {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
+            }
+
+            public GetMouseMoves() {
+                return this.svgPlotDiv.drawingsurface("getMouseMoves");
             }
 
             public SetZoom(zoom: number) {
@@ -60,11 +64,11 @@ module BMA {
             public SetCenter(x: number, y: number) {
 
             }
-            
+
             public SetVisibleRect(rect: { x: number; y: number; width: number; height: number }) {
 
             }
-            
+
             public GetSVG(): string {
                 return "";
             }
@@ -127,11 +131,16 @@ module BMA {
         }
 
         export class TestElementsPanel implements BMA.UIDrivers.IElementsPanel {
-            GetDragSubject() { return {
-                dragStart: { subscribe: function () { }},
-                drag: { subscribe: function () { } },
-                dragEnd: { subscribe: function () { } }
-            } }
+            GetDragSubject() {
+                return {
+                    dragStart: { subscribe: function () { } },
+                    drag: { subscribe: function () { } },
+                    dragEnd: { subscribe: function () { } }
+                }
+            }
+            public GetMouseMoves() {
+                return null;
+            }
         }
 
         export class TestVariableEditor implements BMA.UIDrivers.IVariableEditor {

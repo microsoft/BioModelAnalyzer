@@ -61,11 +61,21 @@ namespace BMAWebApi
             tableClient = account.CreateCloudTableClient();
             activityTable = tableClient.GetTableReference("ClientActivity");
             activityTable.CreateIfNotExists();
+
+            
         }
 
         public void Add(ActivityEntity entity)
         {
             activityTable.Execute(TableOperation.Insert(entity));
         }
+
+        //public async ActivityEntity[] GetEntities() 
+        //{
+            //activityTable.r
+            //activityTable. Cloud
+           // activityTable.Execute(TableOperation..Retrieve<ActivityEntity>)
+           //return null;
+        //}
     }
 }

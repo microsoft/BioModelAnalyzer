@@ -15,6 +15,7 @@ declare var Rx: any;
         //_zoomObservable: undefined,
         _zoomObs: undefined,
         _onlyZoomEnabled: false,
+        _mouseMoves: null,
 
         options: {
             isNavigationEnabled: true,
@@ -258,6 +259,18 @@ declare var Rx: any;
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
 
+            this._mouseMoves = that._plot.centralPart.onAsObservable("mousemove").select(function (mm) {
+
+                var cs = svgPlot.getScreenToDataTransform();
+                var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
+                var y0 = -cs.screenToDataY(mm.originalEvent.pageY - plotDiv.offset().top);
+
+                return {
+                    x: x0,
+                    y: y0
+                };
+            });
+
 
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
 
@@ -271,7 +284,6 @@ declare var Rx: any;
                 undefined);
 
             this._plot.yDataTransform = yDT;
-            //this._gridLinesPlot.yDataTransform = yDT;
 
             var width = 1600;
             that.options.zoom = width;
@@ -407,6 +419,10 @@ declare var Rx: any;
 
         getDragSubject: function () {
             return this._dragService;
+        },
+
+        getMouseMoves: function() {
+            return this._mouseMoves;
         },
 
         getPlotX: function (left: number) {

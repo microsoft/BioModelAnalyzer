@@ -80,5 +80,14 @@ namespace bma.client.Controllers
                    // CloudConfigurationManager.GetSetting("StorageConnectionString")));
             logger.Add(entity);
         }
+
+        public string Get()
+        {
+            ActivityAzureLogger logger = new ActivityAzureLogger(
+                CloudStorageAccount.Parse(
+                    RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
+
+            return "";
+        }
     }
 }

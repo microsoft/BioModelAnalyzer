@@ -2455,6 +2455,8 @@ var BMA;
                 this.bbox = undefined;
                 this.position = { x: 0, y: 0 };
                 this.isVisible = true;
+                this.scale = { x: 1, y: 1 };
+                this.borderThickness = 1;
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -2468,8 +2470,10 @@ var BMA;
                 },
                 set: function (value) {
                     if (value > 0) {
-                        this.keyFrameSize = value;
-                        this.Render();
+                        if (value !== this.keyFrameSize) {
+                            this.keyFrameSize = value;
+                            this.Refresh();
+                        }
                     }
                     else
                         throw "KeyFrame Size must be positive";
@@ -2495,6 +2499,37 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(OperationLayout.prototype, "BorderThickness", {
+                get: function () {
+                    return this.borderThickness;
+                },
+                set: function (value) {
+                    if (value !== this.borderThickness) {
+                        this.borderThickness = value;
+                        this.Refresh();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "Scale", {
+                get: function () {
+                    return this.scale;
+                },
+                set: function (value) {
+                    if (value !== undefined) {
+                        if (value.x !== this.scale.x || value.y !== this.scale.y) {
+                            this.scale = value;
+                            this.Refresh();
+                        }
+                    }
+                    else {
+                        throw "scale is undefined";
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "Operation", {
                 get: function () {
                     return this.operation;
@@ -2507,8 +2542,15 @@ var BMA;
                     return this.position;
                 },
                 set: function (value) {
-                    this.position = value;
-                    this.Render();
+                    if (value !== undefined) {
+                        if (value.x !== this.position.x || value.y !== this.position.y) {
+                            this.position = value;
+                            this.Refresh();
+                        }
+                    }
+                    else {
+                        throw "position is undefined";
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -2518,8 +2560,15 @@ var BMA;
                     return this.padding;
                 },
                 set: function (value) {
-                    this.padding = value;
-                    this.Render();
+                    if (value !== undefined) {
+                        if (value.x !== this.padding.x || value.y !== this.padding.y) {
+                            this.padding = value;
+                            this.Refresh();
+                        }
+                    }
+                    else {
+                        throw "padding is undefined";
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -2641,21 +2690,21 @@ var BMA;
                         var halfWidth = layoutPart.width / 2;
                         var height = this.keyFrameSize + paddingY * layoutPart.layer;
                         var fill = options && options.fill ? options.fill : "transparent";
-                        var strokeWidth = options && options.strokeWidth ? options.strokeWidth : 1;
                         var stroke = options && options.stroke ? options.stroke : "black";
+                        var strokeWidth = 1;
+                        if (options !== undefined) {
+                            if (options.isRoot) {
+                                strokeWidth = this.borderThickness;
+                            }
+                            else if (options.strokeWidth) {
+                                strokeWidth = options.strokeWidth;
+                            }
+                        }
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
                             fill: fill,
                             strokeWidth: strokeWidth
                         });
-                        if (options && options.isRoot) {
-                            this.bbox = {
-                                x: position.x - halfWidth,
-                                y: position.y - height / 2,
-                                width: halfWidth * 2,
-                                height: height
-                            };
-                        }
                         var operands = operation.operands;
                         switch (operands.length) {
                             case 1:
@@ -2700,8 +2749,23 @@ var BMA;
                 this.layout = this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
-                this.renderGroup = svg.group();
-                this.RenderLayoutPart(svg, position, this.layout, { fill: "white", stroke: "black", strokeWidth: 1, isRoot: true });
+                this.renderGroup = svg.group({
+                    transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                });
+                var halfWidth = this.layout.width / 2;
+                var height = this.keyFrameSize + this.padding.y * this.layout.layer;
+                this.bbox = {
+                    x: position.x - halfWidth,
+                    y: position.y - height / 2,
+                    width: halfWidth * 2,
+                    height: height
+                };
+                this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
+                    fill: "white",
+                    stroke: "black",
+                    strokeWidth: 1,
+                    isRoot: true,
+                });
             };
             OperationLayout.prototype.Clear = function () {
                 if (this.renderGroup !== undefined) {
@@ -2710,13 +2774,18 @@ var BMA;
                 }
             };
             OperationLayout.prototype.Refresh = function () {
-                this.Render();
+                if (this.isVisible)
+                    this.Render();
             };
             OperationLayout.prototype.CopyOperandFromCursor = function (x, y, withCut) {
                 if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
                     return undefined;
                 }
                 return undefined;
+            };
+            OperationLayout.prototype.HighlightAtPosition = function (x, y) {
+                if (this.layout !== undefined) {
+                }
             };
             return OperationLayout;
         })();
@@ -2750,6 +2819,9 @@ var BMA;
             };
             SVGPlotDriver.prototype.GetDragSubject = function () {
                 return this.svgPlotDiv.drawingsurface("getDragSubject");
+            };
+            SVGPlotDriver.prototype.GetMouseMoves = function () {
+                return this.svgPlotDiv.drawingsurface("getMouseMoves");
             };
             //public GetZoomSubject() {
             //    return this.svgPlotDiv.drawingsurface("getZoomSubject");
@@ -6529,6 +6601,7 @@ var BMA;
         //_zoomObservable: undefined,
         _zoomObs: undefined,
         _onlyZoomEnabled: false,
+        _mouseMoves: null,
         options: {
             isNavigationEnabled: true,
             svg: undefined,
@@ -6719,6 +6792,15 @@ var BMA;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+            this._mouseMoves = that._plot.centralPart.onAsObservable("mousemove").select(function (mm) {
+                var cs = svgPlot.getScreenToDataTransform();
+                var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
+                var y0 = -cs.screenToDataY(mm.originalEvent.pageY - plotDiv.offset().top);
+                return {
+                    x: x0,
+                    y: y0
+                };
+            });
             this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
             var yDT = new InteractiveDataDisplay.DataTransform(function (x) {
                 return -x;
@@ -6726,7 +6808,6 @@ var BMA;
                 return -y;
             }, undefined);
             this._plot.yDataTransform = yDT;
-            //this._gridLinesPlot.yDataTransform = yDT;
             var width = 1600;
             that.options.zoom = width;
             if (this.options.isNavigationEnabled) {
@@ -6853,6 +6934,9 @@ var BMA;
         },
         getDragSubject: function () {
             return this._dragService;
+        },
+        getMouseMoves: function () {
+            return this._mouseMoves;
         },
         getPlotX: function (left) {
             var cs = this._svgPlot.getScreenToDataTransform();
@@ -8896,6 +8980,15 @@ var BMA;
                         }
                     }
                 });
+                dragService.GetMouseMoves().subscribe(function (gesture) {
+                    for (var i = 0; i < that.operations.length; i++) {
+                        that.operations[i].BorderThickness = 1;
+                    }
+                    var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
+                    if (staginOp !== undefined) {
+                        staginOp.BorderThickness = 3;
+                    }
+                });
                 var dragSubject = dragService.GetDragSubject();
                 dragSubject.dragStart.subscribe(function (gesture) {
                     if (that.selectedOperatorType === undefined) {
@@ -8907,6 +9000,7 @@ var BMA;
                                 originRef: staginOp,
                                 originIndex: _this.operations.indexOf(staginOp)
                             };
+                            _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                             staginOp.IsVisible = false;
                         }
                     }
@@ -8934,6 +9028,7 @@ var BMA;
                                     emptyCell.opLayout = operation;
                                     emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
                                     operation.Refresh();
+                                    _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
                                     _this.operations.splice(_this.stagingOperation.originIndex, 1);
                                 }
                                 else {

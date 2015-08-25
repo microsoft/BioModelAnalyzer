@@ -53,6 +53,7 @@ module BMA {
 
         export interface IElementsPanel {
             GetDragSubject(): any;
+            GetMouseMoves(): any;
         }
 
         export interface ITurnableButton {

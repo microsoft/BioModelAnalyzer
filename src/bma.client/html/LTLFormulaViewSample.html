@@ -20,7 +20,7 @@
     <script src="../js/rx.jQuery.js"></script>
     <script src="../js/idd.js"></script>
     <script src="../js/taphold.js"></script>
-    <script src="../tool.min.js"></script>
+    <script src="../tool.js"></script>
     <script src="../js/jquery.ui-contextmenu.js"></script>
     <!--<script src="../app.js"></script>-->
 
@@ -69,15 +69,16 @@
                         operationLayout.KeyFrameSize = 15;
 
                         var bbox = operationLayout.BoundingBox;
+
+                        img.width(bbox.width + 2).height(bbox.height + 2);
+                        label.width(bbox.width + 2).height(bbox.height + 2);
+
                         svg.configure({
                             width: bbox.width + 2,
                             height: bbox.height + 2,
                             viewBox: (bbox.x - 1) + " " + (bbox.y - 1) + " " + (bbox.width + 2) + " " + (bbox.height + 2),
                             preserveAspectRatio: "none meet"
                         });
-
-                        img.width(bbox.width + 2).height(bbox.height + 2);
-                        label.width(bbox.width + 2).height(bbox.height + 2);
                     }
                 });
 
@@ -112,7 +113,7 @@
             $("#tools").css("background-color", "#E4E4E6");
 
             //Context menu
-
+            
             var holdCords = {
                 holdX: 0,
                 holdY: 0
