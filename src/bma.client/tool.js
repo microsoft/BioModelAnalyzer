@@ -2778,12 +2778,15 @@ var BMA;
                     this.Render();
             };
             OperationLayout.prototype.CopyOperandFromCursor = function (x, y, withCut) {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
                     return undefined;
                 }
                 return undefined;
             };
             OperationLayout.prototype.HighlightAtPosition = function (x, y) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
+                    return;
+                }
                 if (this.layout !== undefined) {
                 }
             };

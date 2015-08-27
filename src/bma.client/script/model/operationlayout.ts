@@ -353,7 +353,7 @@
             }
 
             public CopyOperandFromCursor(x: number, y: number, withCut: boolean): BMA.LTLOperations.IOperand {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
                     return undefined;
                 }
 
@@ -362,6 +362,10 @@
             }
 
             public HighlightAtPosition(x: number, y: number) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
+                    return;
+                }
+
                 if (this.layout !== undefined) {
 
                 }
