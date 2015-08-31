@@ -13,7 +13,7 @@ module BMA {
             private operations: BMA.LTLOperations.OperationLayout[];
             private keyframes: BMA.LTLOperations.Keyframe[];
             private activeOperation: BMA.LTLOperations.Operation;
-            private stagingOperation: { operation: BMA.LTLOperations.OperationLayout; originRef: BMA.LTLOperations.OperationLayout; originIndex: number };
+            private stagingOperation: { operation: BMA.LTLOperations.OperationLayout; originRef: BMA.LTLOperations.OperationLayout; originIndex: number; isRoot: boolean };
             private selectedOperatorType: string;
 
             private driver: BMA.UIDrivers.ISVGPlot;
@@ -21,6 +21,7 @@ module BMA {
             private dragService: BMA.UIDrivers.IElementsPanel;
 
             private operatorRegistry: BMA.LTLOperations.OperatorsRegistry;
+            private previousHighlightedOperation: BMA.LTLOperations.OperationLayout;
 
             constructor(
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
@@ -71,18 +72,29 @@ module BMA {
                     }
                 });
 
+                window.Commands.On("TemporalPropertiesEditorCut",(args: {}) => {
+                });
+
+                window.Commands.On("TemporalPropertiesEditorCopy",(args: {}) => {
+                });
+
+                window.Commands.On("TemporalPropertiesEditorPaste",(args: {}) => {
+                });
+
+                window.Commands.On("TemporalPropertiesEditorDelete",(args: {}) => {
+                });
 
                 dragService.GetMouseMoves().subscribe(
                     (gesture) => {
-                        for (var i = 0; i < that.operations.length; i++) {
-                            that.operations[i].BorderThickness = 1;
-                            that.operations[i].Refresh();
+                        if (that.previousHighlightedOperation !== undefined) {
+                            that.previousHighlightedOperation.Refresh();
+                            that.previousHighlightedOperation = undefined;
                         }
 
                         var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
                             staginOp.HighlightAtPosition(gesture.x, gesture.y);
-                            //staginOp.BorderThickness = 3;
+                            that.previousHighlightedOperation = staginOp;
                         }
                     });
 
@@ -94,13 +106,18 @@ module BMA {
                             var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                             if (staginOp !== undefined) {
                                 that.navigationDriver.TurnNavigation(false);
+                                var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                                 this.stagingOperation = {
-                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture),
+                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), unpinned.operation, gesture),
                                     originRef: staginOp,
-                                    originIndex: this.operations.indexOf(staginOp)
+                                    originIndex: this.operations.indexOf(staginOp),
+                                    isRoot: unpinned.isRoot
                                 };
+
+                                console.log("isRoot: " + this.stagingOperation.isRoot);
+
                                 this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                                staginOp.IsVisible = false;
+                                staginOp.IsVisible = !unpinned.isRoot;
                             }
                         }
                     });
@@ -123,11 +140,19 @@ module BMA {
                             var position = this.stagingOperation.operation.Position;
 
                             if (!this.HasIntersections(this.stagingOperation.operation)) {
-                                this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
-                                this.stagingOperation.originRef.IsVisible = true;
+                                if (this.stagingOperation.isRoot) {
+                                    this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
+                                    this.stagingOperation.originRef.IsVisible = true;
+                                } else {
+                                    this.operations.push(
+                                        new BMA.LTLOperations.OperationLayout(
+                                            that.driver.GetSVGRef(),
+                                            this.stagingOperation.operation.Operation,
+                                            this.stagingOperation.operation.Position));
+                                }
                             } else {
                                 var operation = this.GetOperationAtPoint(position.x, position.y);
-                                if (operation !== undefined && this.operations.indexOf(operation) !== this.stagingOperation.originIndex) {
+                                if (operation !== undefined && (!this.stagingOperation.isRoot || this.operations.indexOf(operation) !== this.stagingOperation.originIndex)) {
                                     var emptyCell = undefined;
                                     emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                     if (emptyCell !== undefined) {
@@ -135,11 +160,17 @@ module BMA {
                                         emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation;
                                         operation.Refresh();
 
-                                        this.operations[this.stagingOperation.originIndex].IsVisible = false;
-                                        this.operations.splice(this.stagingOperation.originIndex, 1);
+                                        if (this.stagingOperation.isRoot) {
+                                            this.operations[this.stagingOperation.originIndex].IsVisible = false;
+                                            this.operations.splice(this.stagingOperation.originIndex, 1);
+                                        }
                                     } else {
                                         //Operation should stay in its origin place
-                                        this.stagingOperation.originRef.IsVisible = true;
+                                        if (this.stagingOperation.isRoot) {
+                                            this.stagingOperation.originRef.IsVisible = true;
+                                        } else {
+                                            //TODO: insert back to origin slot
+                                        }
                                     }
                                 } else {
                                     this.stagingOperation.originRef.Position = position;
@@ -174,8 +205,8 @@ module BMA {
                 for (var i = 0; i < operations.length; i++) {
                     var bbox = operations[i].BoundingBox;
 
-                    var isXIntersects = !(opBbox.x > bbox.x + bbox.width || opBbox.x + opBbox.width < bbox.x)
-                    var isYIntersects = !(opBbox.y > bbox.y + bbox.height || opBbox.y + opBbox.height < bbox.y)
+                    var isXIntersects = opBbox.x <= bbox.x + bbox.width && opBbox.x + opBbox.width >= bbox.x;
+                    var isYIntersects = opBbox.y <= bbox.y + bbox.height && opBbox.y + opBbox.height >= bbox.y;
 
                     if (isXIntersects && isYIntersects)
                         return true;
@@ -183,6 +214,8 @@ module BMA {
 
                 return false;
             }
+
+            
         }
     }
 } 

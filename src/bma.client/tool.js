@@ -2544,8 +2544,13 @@ var BMA;
                 set: function (value) {
                     if (value !== undefined) {
                         if (value.x !== this.position.x || value.y !== this.position.y) {
+                            var oldPosition = this.position;
                             this.position = value;
-                            this.Refresh();
+                            this.svg.change(this.renderGroup, {
+                                transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                            });
+                            this.bbox.x = this.bbox.x - oldPosition.x + value.x;
+                            this.bbox.y = this.bbox.y - oldPosition.y + oldPosition.y;
                         }
                     }
                     else {
@@ -2608,6 +2613,7 @@ var BMA;
             OperationLayout.prototype.CreateLayout = function (svg, operation) {
                 var that = this;
                 var layout = {};
+                layout.operation = operation;
                 var paddingX = this.padding.x;
                 var op = operation;
                 var operator = op.Operator;
@@ -2625,6 +2631,8 @@ var BMA;
                         var operand = operands[i];
                         if (operand !== undefined) {
                             var calcLW = that.CreateLayout(svg, operand);
+                            calcLW.parentoperationindex = i;
+                            calcLW.parentoperation = operation;
                             layer = Math.max(layer, calcLW.layer);
                             layout.operands.push(calcLW);
                             width += (calcLW.width + paddingX * 2);
@@ -2840,6 +2848,28 @@ var BMA;
                         });
                     }
                 }
+            };
+            OperationLayout.prototype.PickOperation = function (x, y) {
+                if (this.layout !== undefined) {
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    if (layoutPart !== undefined)
+                        return layoutPart.operation;
+                }
+                return undefined;
+            };
+            OperationLayout.prototype.UnpinOperation = function (x, y) {
+                if (this.layout !== undefined) {
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    if (layoutPart !== undefined && layoutPart.parentoperation !== undefined) {
+                        layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
+                        this.Refresh();
+                    }
+                    return {
+                        operation: layoutPart.operation,
+                        isRoot: layoutPart.parentoperation === undefined
+                    };
+                }
+                return undefined;
             };
             return OperationLayout;
         })();
@@ -9034,14 +9064,23 @@ var BMA;
                         }
                     }
                 });
+                window.Commands.On("TemporalPropertiesEditorCut", function (args) {
+                });
+                window.Commands.On("TemporalPropertiesEditorCopy", function (args) {
+                });
+                window.Commands.On("TemporalPropertiesEditorPaste", function (args) {
+                });
+                window.Commands.On("TemporalPropertiesEditorDelete", function (args) {
+                });
                 dragService.GetMouseMoves().subscribe(function (gesture) {
-                    for (var i = 0; i < that.operations.length; i++) {
-                        that.operations[i].BorderThickness = 1;
-                        that.operations[i].Refresh();
+                    if (that.previousHighlightedOperation !== undefined) {
+                        that.previousHighlightedOperation.Refresh();
+                        that.previousHighlightedOperation = undefined;
                     }
                     var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
                     if (staginOp !== undefined) {
                         staginOp.HighlightAtPosition(gesture.x, gesture.y);
+                        that.previousHighlightedOperation = staginOp;
                     }
                 });
                 var dragSubject = dragService.GetDragSubject();
@@ -9050,13 +9089,16 @@ var BMA;
                         var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
                             that.navigationDriver.TurnNavigation(false);
+                            var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                             _this.stagingOperation = {
-                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), staginOp.Operation, gesture),
+                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), unpinned.operation, gesture),
                                 originRef: staginOp,
-                                originIndex: _this.operations.indexOf(staginOp)
+                                originIndex: _this.operations.indexOf(staginOp),
+                                isRoot: unpinned.isRoot
                             };
+                            console.log("isRoot: " + _this.stagingOperation.isRoot);
                             _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                            staginOp.IsVisible = false;
+                            staginOp.IsVisible = !unpinned.isRoot;
                         }
                     }
                 });
@@ -9071,24 +9113,35 @@ var BMA;
                         _this.stagingOperation.operation.IsVisible = false;
                         var position = _this.stagingOperation.operation.Position;
                         if (!_this.HasIntersections(_this.stagingOperation.operation)) {
-                            _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
-                            _this.stagingOperation.originRef.IsVisible = true;
+                            if (_this.stagingOperation.isRoot) {
+                                _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                                _this.stagingOperation.originRef.IsVisible = true;
+                            }
+                            else {
+                                _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                            }
                         }
                         else {
                             var operation = _this.GetOperationAtPoint(position.x, position.y);
-                            if (operation !== undefined && _this.operations.indexOf(operation) !== _this.stagingOperation.originIndex) {
+                            if (operation !== undefined && (!_this.stagingOperation.isRoot || _this.operations.indexOf(operation) !== _this.stagingOperation.originIndex)) {
                                 var emptyCell = undefined;
                                 emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                 if (emptyCell !== undefined) {
                                     emptyCell.opLayout = operation;
                                     emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
                                     operation.Refresh();
-                                    _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
-                                    _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                    if (_this.stagingOperation.isRoot) {
+                                        _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
+                                        _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                    }
                                 }
                                 else {
                                     //Operation should stay in its origin place
-                                    _this.stagingOperation.originRef.IsVisible = true;
+                                    if (_this.stagingOperation.isRoot) {
+                                        _this.stagingOperation.originRef.IsVisible = true;
+                                    }
+                                    else {
+                                    }
                                 }
                             }
                             else {
@@ -9118,8 +9171,8 @@ var BMA;
                 var opBbox = operation.BoundingBox;
                 for (var i = 0; i < operations.length; i++) {
                     var bbox = operations[i].BoundingBox;
-                    var isXIntersects = !(opBbox.x > bbox.x + bbox.width || opBbox.x + opBbox.width < bbox.x);
-                    var isYIntersects = !(opBbox.y > bbox.y + bbox.height || opBbox.y + opBbox.height < bbox.y);
+                    var isXIntersects = opBbox.x <= bbox.x + bbox.width && opBbox.x + opBbox.width >= bbox.x;
+                    var isYIntersects = opBbox.y <= bbox.y + bbox.height && opBbox.y + opBbox.height >= bbox.y;
                     if (isXIntersects && isYIntersects)
                         return true;
                 }

@@ -89,8 +89,16 @@
             public set Position(value: { x: number; y: number }) {
                 if (value !== undefined) {
                     if (value.x !== this.position.x || value.y !== this.position.y) {
+                        var oldPosition = this.position;
+
                         this.position = value;
-                        this.Refresh();
+
+                        this.svg.change(this.renderGroup, {
+                            transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                        });
+
+                        this.bbox.x = this.bbox.x - oldPosition.x + value.x;
+                        this.bbox.y = this.bbox.y - oldPosition.y + oldPosition.y;
                     }
                 } else {
                     throw "position is undefined";
@@ -144,6 +152,7 @@
             private CreateLayout(svg, operation): any {
                 var that = this;
                 var layout: any = {};
+                layout.operation = operation;
 
                 var paddingX = this.padding.x;
 
@@ -168,6 +177,8 @@
 
                         if (operand !== undefined) {
                             var calcLW = that.CreateLayout(svg, operand);
+                            calcLW.parentoperationindex = i;
+                            calcLW.parentoperation = operation;
                             layer = Math.max(layer, calcLW.layer);
                             layout.operands.push(calcLW);
                             width += (calcLW.width + paddingX * 2);
@@ -437,6 +448,34 @@
                         });
                     }
                 }
+            }
+
+            public PickOperation(x: number, y: number) {
+                if (this.layout !== undefined) {
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    if (layoutPart !== undefined)
+                        return layoutPart.operation;
+                }
+
+                return undefined;
+            }
+
+            public UnpinOperation(x: number, y: number) {
+                if (this.layout !== undefined) {
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+
+                    if (layoutPart !== undefined && layoutPart.parentoperation !== undefined) {
+                        layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
+                        this.Refresh();
+                    }
+
+                    return {
+                        operation: layoutPart.operation,
+                        isRoot: layoutPart.parentoperation === undefined
+                    };
+                }
+
+                return undefined;
             }
         }
     }
