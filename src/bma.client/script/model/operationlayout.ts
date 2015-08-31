@@ -258,6 +258,8 @@
                             strokeWidth: strokeWidth
                         });
 
+                        layoutPart.svgref = opSVG;
+
                         var operands = operation.operands;
                         switch (operands.length) {
                             case 1:
@@ -301,7 +303,7 @@
 
                         }
                     } else {
-                        svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
                     }
                 }
             }
@@ -361,13 +363,79 @@
                 return undefined;
             }
 
-            public HighlightAtPosition(x: number, y: number) {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
-                    return;
+            private GetIntersectedChild(x: number, y: number, position: { x: number; y: number }, layoutPart: any): any {
+                var width = layoutPart.width;
+                var halfWidth = width / 2;
+                var paddingY = this.padding.y;
+                var paddingX = this.padding.x;
+                var height = this.keyFrameSize + paddingY * layoutPart.layer;
+
+                if (x < position.x - halfWidth || x > position.x + halfWidth || y < position.y - height / 2 || y > position.y + height / 2) {
+                    return undefined;
                 }
 
-                if (this.layout !== undefined) {
+                var operands = layoutPart.operands;
 
+                switch (operands.length) {
+                    case 1:
+
+                        if (operands[0].isEmpty)
+                            return layoutPart;
+
+                        var highlighted = this.GetIntersectedChild(x, y, {
+                            x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                            y: position.y
+                        }, operands[0]);
+
+                        return highlighted !== undefined ? highlighted : layoutPart;
+
+                        break;
+                    case 2:
+
+                        if (!operands[0].isEmpty) {
+                            var highlighted1 = this.GetIntersectedChild(x, y, {
+                                x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                y: position.y
+                            }, operands[0]);
+
+                            if (highlighted1 !== undefined) {
+                                return highlighted1;
+                            }
+                        }
+
+                        if (!operands[1].isEmpty) {
+                            var highlighted2 = this.GetIntersectedChild(x, y, {
+                                x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                y: position.y
+                            }, operands[1]);
+
+                            if (highlighted2 !== undefined) {
+                                return highlighted2;
+                            }
+                        }
+
+                        return layoutPart;
+
+                        break;
+                    default:
+                        throw "Highlighting of operators with " + operands.length + " operands is not supported";
+
+                }
+
+                return layoutPart;
+            }
+
+            public HighlightAtPosition(x: number, y: number) {
+                if (this.layout !== undefined) {
+                    this.Refresh();
+
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+
+                    if (layoutPart !== undefined) {
+                        this.svg.change(layoutPart.svgref, {
+                            strokeWidth: 4
+                        });
+                    }
                 }
             }
         }

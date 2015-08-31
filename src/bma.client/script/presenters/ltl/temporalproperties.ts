@@ -58,7 +58,7 @@ module BMA {
                             if (emptyCell !== undefined) {
                                 emptyCell.opLayout = operation;
                                 emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                                emptyCell.opLayout.Position = emptyCell.opLayout.Position;
+                                emptyCell.opLayout.Refresh();
                             }
                         } else {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
@@ -76,11 +76,13 @@ module BMA {
                     (gesture) => {
                         for (var i = 0; i < that.operations.length; i++) {
                             that.operations[i].BorderThickness = 1;
+                            that.operations[i].Refresh();
                         }
 
                         var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
-                            staginOp.BorderThickness = 3;
+                            staginOp.HighlightAtPosition(gesture.x, gesture.y);
+                            //staginOp.BorderThickness = 3;
                         }
                     });
 

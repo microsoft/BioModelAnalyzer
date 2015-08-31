@@ -2705,6 +2705,7 @@ var BMA;
                             fill: fill,
                             strokeWidth: strokeWidth
                         });
+                        layoutPart.svgref = opSVG;
                         var operands = operation.operands;
                         switch (operands.length) {
                             case 1:
@@ -2736,7 +2737,7 @@ var BMA;
                         }
                     }
                     else {
-                        svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
                     }
                 }
             };
@@ -2783,11 +2784,61 @@ var BMA;
                 }
                 return undefined;
             };
-            OperationLayout.prototype.HighlightAtPosition = function (x, y) {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
-                    return;
+            OperationLayout.prototype.GetIntersectedChild = function (x, y, position, layoutPart) {
+                var width = layoutPart.width;
+                var halfWidth = width / 2;
+                var paddingY = this.padding.y;
+                var paddingX = this.padding.x;
+                var height = this.keyFrameSize + paddingY * layoutPart.layer;
+                if (x < position.x - halfWidth || x > position.x + halfWidth || y < position.y - height / 2 || y > position.y + height / 2) {
+                    return undefined;
                 }
+                var operands = layoutPart.operands;
+                switch (operands.length) {
+                    case 1:
+                        if (operands[0].isEmpty)
+                            return layoutPart;
+                        var highlighted = this.GetIntersectedChild(x, y, {
+                            x: position.x + halfWidth - operands[0].width / 2 - paddingX,
+                            y: position.y
+                        }, operands[0]);
+                        return highlighted !== undefined ? highlighted : layoutPart;
+                        break;
+                    case 2:
+                        if (!operands[0].isEmpty) {
+                            var highlighted1 = this.GetIntersectedChild(x, y, {
+                                x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                y: position.y
+                            }, operands[0]);
+                            if (highlighted1 !== undefined) {
+                                return highlighted1;
+                            }
+                        }
+                        if (!operands[1].isEmpty) {
+                            var highlighted2 = this.GetIntersectedChild(x, y, {
+                                x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                y: position.y
+                            }, operands[1]);
+                            if (highlighted2 !== undefined) {
+                                return highlighted2;
+                            }
+                        }
+                        return layoutPart;
+                        break;
+                    default:
+                        throw "Highlighting of operators with " + operands.length + " operands is not supported";
+                }
+                return layoutPart;
+            };
+            OperationLayout.prototype.HighlightAtPosition = function (x, y) {
                 if (this.layout !== undefined) {
+                    this.Refresh();
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    if (layoutPart !== undefined) {
+                        this.svg.change(layoutPart.svgref, {
+                            strokeWidth: 4
+                        });
+                    }
                 }
             };
             return OperationLayout;
@@ -8969,7 +9020,7 @@ var BMA;
                             if (emptyCell !== undefined) {
                                 emptyCell.opLayout = operation;
                                 emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                                emptyCell.opLayout.Position = emptyCell.opLayout.Position;
+                                emptyCell.opLayout.Refresh();
                             }
                         }
                         else {
@@ -8986,10 +9037,11 @@ var BMA;
                 dragService.GetMouseMoves().subscribe(function (gesture) {
                     for (var i = 0; i < that.operations.length; i++) {
                         that.operations[i].BorderThickness = 1;
+                        that.operations[i].Refresh();
                     }
                     var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
                     if (staginOp !== undefined) {
-                        staginOp.BorderThickness = 3;
+                        staginOp.HighlightAtPosition(gesture.x, gesture.y);
                     }
                 });
                 var dragSubject = dragService.GetDragSubject();
