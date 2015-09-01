@@ -105,11 +105,6 @@
                 window.Commands.Execute("AddOperatorSelect", undefined);
             });
 
-
-            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver);
-
-            svgPlotDriver.SetGridVisibility(false);
-
             $("#tools").css("background-color", "#E4E4E6");
 
             //Context menu
@@ -120,7 +115,6 @@
             }
 
             $(document).on('vmousedown', function (event) {
-
                 holdCords.holdX = event.pageX;
                 holdCords.holdY = event.pageY;
             });
@@ -146,18 +140,18 @@
                     //console.log("top " + top);
                     //console.log("left " + left);
 
-                    window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
+                    window.Commands.Execute("TemporalPropertiesEditorContextMenuOpening", {
                         left: left,
                         top: top
                     });
                 },
                 select: function (event, ui) {
                     var args = {};
-                    var commandName = "TemporalPropertiesEditor" + ui.command;
-                    
-
-                    args.left = event.pageX - $(".bma-drawingsurface").offset().left;
-                    args.top = event.pageY - $(".bma-drawingsurface").offset().top;
+                    var commandName = "TemporalPropertiesEditor" + ui.cmd;
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    args.left = x - $(".bma-drawingsurface").offset().left;
+                    args.top = y - $(".bma-drawingsurface").offset().top;
                     window.Commands.Execute(commandName, args);
                 }
             });
@@ -165,6 +159,10 @@
             
             //End of context menu
 
+
+            var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
+            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver);
+            svgPlotDriver.SetGridVisibility(false);
         });
     </script>
 </head>

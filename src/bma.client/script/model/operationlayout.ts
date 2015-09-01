@@ -464,9 +464,13 @@
                 if (this.layout !== undefined) {
                     var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
 
-                    if (layoutPart !== undefined && layoutPart.parentoperation !== undefined) {
-                        layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
-                        this.Refresh();
+                    if (layoutPart !== undefined) {
+                        if (layoutPart.parentoperation !== undefined) {
+                            layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
+                            this.Refresh();
+                        } else {
+                            this.IsVisible = false;
+                        }
                     }
 
                     return {

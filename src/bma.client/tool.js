@@ -2860,9 +2860,14 @@ var BMA;
             OperationLayout.prototype.UnpinOperation = function (x, y) {
                 if (this.layout !== undefined) {
                     var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
-                    if (layoutPart !== undefined && layoutPart.parentoperation !== undefined) {
-                        layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
-                        this.Refresh();
+                    if (layoutPart !== undefined) {
+                        if (layoutPart.parentoperation !== undefined) {
+                            layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
+                            this.Refresh();
+                        }
+                        else {
+                            this.IsVisible = false;
+                        }
                     }
                     return {
                         operation: layoutPart.operation,
@@ -6757,10 +6762,12 @@ var BMA;
                 drop: function (event, ui) {
                     if (that.options.isNavigationEnabled !== true) {
                         var cs = svgPlot.getScreenToDataTransform();
-                        window.Commands.Execute("DrawingSurfaceClick", {
+                        var position = {
                             x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
                             y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
-                        });
+                        };
+                        window.Commands.Execute("DrawingSurfaceClick", position);
+                        window.Commands.Execute("DrawingSurfaceDrop", position);
                     }
                 }
             });
@@ -9032,7 +9039,7 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService) {
+            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService, contextMenu) {
                 var _this = this;
                 var that = this;
                 this.driver = svgPlotDriver;
@@ -9044,7 +9051,7 @@ var BMA;
                     that.selectedOperatorType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
                 });
-                window.Commands.On("DrawingSurfaceClick", function (args) {
+                window.Commands.On("DrawingSurfaceDrop", function (args) {
                     if (that.selectedOperatorType !== undefined) {
                         var registry = _this.operatorRegistry;
                         var position = { x: args.x, y: args.y };
@@ -9072,13 +9079,92 @@ var BMA;
                         }
                     }
                 });
+                window.Commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
+                    var x = that.driver.GetPlotX(args.left);
+                    var y = that.driver.GetPlotY(args.top);
+                    var canPaste = _this.clipboard !== undefined;
+                    var stagingOp = _this.GetOperationAtPoint(x, y);
+                    if (stagingOp !== undefined) {
+                        var emptyCell = stagingOp.GetEmptySlotAtPosition(x, y);
+                        _this.contextElement = {
+                            x: x,
+                            y: y,
+                            operationlayoutref: stagingOp,
+                            emptyslot: emptyCell
+                        };
+                        contextMenu.ShowMenuItems([
+                            { name: "Cut", isVisible: true },
+                            { name: "Copy", isVisible: true },
+                            { name: "Paste", isVisible: emptyCell !== undefined },
+                            { name: "Delete", isVisible: true },
+                        ]);
+                        contextMenu.EnableMenuItems([
+                            { name: "Cut", isEnabled: emptyCell === undefined },
+                            { name: "Copy", isEnabled: emptyCell === undefined },
+                            { name: "Delete", isEnabled: emptyCell === undefined },
+                            { name: "Paste", isEnabled: canPaste }
+                        ]);
+                    }
+                    else {
+                        if (_this.clipboard !== undefined) {
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.clipboard.operation, { x: x, y: y });
+                            canPaste = !_this.HasIntersections(operationLayout);
+                            operationLayout.IsVisible = false;
+                        }
+                        contextMenu.ShowMenuItems([
+                            { name: "Cut", isVisible: false },
+                            { name: "Copy", isVisible: false },
+                            { name: "Paste", isVisible: true },
+                            { name: "Delete", isVisible: false },
+                        ]);
+                        contextMenu.EnableMenuItems([
+                            { name: "Paste", isEnabled: canPaste }
+                        ]);
+                    }
+                });
                 window.Commands.On("TemporalPropertiesEditorCut", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
+                        _this.clipboard = {
+                            operation: unpinned.operation,
+                        };
+                        if (unpinned.isRoot) {
+                            _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
+                            _this.contextElement.operationlayoutref.IsVisible = false;
+                        }
+                    }
                 });
                 window.Commands.On("TemporalPropertiesEditorCopy", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        _this.clipboard = {
+                            operation: _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y).operation
+                        };
+                    }
                 });
                 window.Commands.On("TemporalPropertiesEditorPaste", function (args) {
+                    var x = _this.contextElement.x;
+                    var y = _this.contextElement.y;
+                    if (_this.clipboard !== undefined) {
+                        if (_this.contextElement.emptyslot !== undefined) {
+                            var emptyCell = _this.contextElement.emptyslot;
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = _this.clipboard.operation;
+                            _this.contextElement.operationlayoutref.Refresh();
+                        }
+                        else {
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.clipboard.operation, { x: x, y: y });
+                            _this.operations.push(operationLayout);
+                        }
+                    }
                 });
                 window.Commands.On("TemporalPropertiesEditorDelete", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        if (!_this.contextElement.isRoot) {
+                            _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
+                        }
+                        else {
+                            _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
+                        }
+                    }
                 });
                 dragService.GetMouseMoves().subscribe(function (gesture) {
                     if (that.previousHighlightedOperation !== undefined) {

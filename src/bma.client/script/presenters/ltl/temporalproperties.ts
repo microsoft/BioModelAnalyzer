@@ -30,10 +30,14 @@ module BMA {
             private operatorRegistry: BMA.LTLOperations.OperatorsRegistry;
             private previousHighlightedOperation: BMA.LTLOperations.OperationLayout;
 
+            private clipboard: any;
+            private contextElement: any;
+
             constructor(
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
-                dragService: BMA.UIDrivers.IElementsPanel) {
+                dragService: BMA.UIDrivers.IElementsPanel,
+                contextMenu: BMA.UIDrivers.IContextMenu) {
 
                 var that = this;
 
@@ -49,7 +53,7 @@ module BMA {
                     that.navigationDriver.TurnNavigation(type === undefined);
                 });
 
-                window.Commands.On("DrawingSurfaceClick",(args: { x: number; y: number; screenX: number; screenY: number }) => {
+                window.Commands.On("DrawingSurfaceDrop",(args: { x: number; y: number; screenX: number; screenY: number }) => {
                     if (that.selectedOperatorType !== undefined) {
                         var registry = this.operatorRegistry;
                         var position = { x: args.x, y: args.y };
@@ -79,16 +83,104 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorCut",(args: {}) => {
+                window.Commands.On("TemporalPropertiesEditorContextMenuOpening",(args) => {
+                    var x = that.driver.GetPlotX(args.left);
+                    var y = that.driver.GetPlotY(args.top);
+
+                    var canPaste = this.clipboard !== undefined;
+
+                    var stagingOp = this.GetOperationAtPoint(x, y);
+                    if (stagingOp !== undefined) {
+                        var emptyCell = stagingOp.GetEmptySlotAtPosition(x, y);
+
+                        this.contextElement = {
+                            x: x,
+                            y: y,
+                            operationlayoutref: stagingOp,
+                            emptyslot: emptyCell
+                        };
+
+                        contextMenu.ShowMenuItems([
+                            { name: "Cut", isVisible: true },
+                            { name: "Copy", isVisible: true },
+                            { name: "Paste", isVisible: emptyCell !== undefined },
+                            { name: "Delete", isVisible: true },
+                        ]);
+
+                        contextMenu.EnableMenuItems([
+                            { name: "Cut", isEnabled: emptyCell === undefined },
+                            { name: "Copy", isEnabled: emptyCell === undefined },
+                            { name: "Delete", isEnabled: emptyCell === undefined },
+                            { name: "Paste", isEnabled: canPaste }
+                        ]);
+
+                    } else {
+
+                        if (this.clipboard !== undefined) {
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), this.clipboard.operation, { x: x, y: y });
+                            canPaste = !this.HasIntersections(operationLayout);
+                            operationLayout.IsVisible = false;
+                        }
+
+                        contextMenu.ShowMenuItems([
+                            { name: "Cut", isVisible: false },
+                            { name: "Copy", isVisible: false },
+                            { name: "Paste", isVisible: true },
+                            { name: "Delete", isVisible: false },
+                        ]);
+
+                        contextMenu.EnableMenuItems([
+                            { name: "Paste", isEnabled: canPaste }
+                        ]);
+                    }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorCopy",(args: {}) => {
+                window.Commands.On("TemporalPropertiesEditorCut",(args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
+                        this.clipboard = {
+                            operation: unpinned.operation,
+                        };
+
+                        if (unpinned.isRoot) {
+                            this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
+                            this.contextElement.operationlayoutref.IsVisible = false;
+                        }
+                    }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorPaste",(args: {}) => {
+                window.Commands.On("TemporalPropertiesEditorCopy",(args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        this.clipboard = {
+                            operation: this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y).operation
+                        };
+                    }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorDelete",(args: {}) => {
+                window.Commands.On("TemporalPropertiesEditorPaste",(args: { top: number; left: number }) => {
+                    var x = this.contextElement.x;
+                    var y = this.contextElement.y;
+
+                    if (this.clipboard !== undefined) {
+                        if (this.contextElement.emptyslot !== undefined) {
+                            var emptyCell = this.contextElement.emptyslot;
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = this.clipboard.operation;
+                            this.contextElement.operationlayoutref.Refresh();
+                        } else {
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), this.clipboard.operation, { x: x, y: y });
+                            this.operations.push(operationLayout);
+                        }
+                    }
+                });
+
+                window.Commands.On("TemporalPropertiesEditorDelete",(args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        if (!this.contextElement.isRoot) {
+                            this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
+                        } else {
+                            this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
+                        }
+                    }
                 });
 
                 dragService.GetMouseMoves().subscribe(
