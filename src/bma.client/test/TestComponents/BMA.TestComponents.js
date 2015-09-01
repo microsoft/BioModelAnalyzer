@@ -55,6 +55,9 @@ var BMA;
             TestSVGPlotDriver.prototype.GetSVGRef = function () {
                 return undefined;
             };
+            TestSVGPlotDriver.prototype.GetLightSVGRef = function () {
+                return undefined;
+            };
             return TestSVGPlotDriver;
         })();
         Test.TestSVGPlotDriver = TestSVGPlotDriver;

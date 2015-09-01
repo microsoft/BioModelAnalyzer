@@ -75,6 +75,11 @@ module BMA {
                 return this.svgPlotDiv.drawingsurface("getSVG");
             }
 
+            public GetLightSVGRef() {
+                return this.svgPlotDiv.drawingsurface("getSecondarySVG");
+            }
+
+
             public SetVisibleRect(rect: { x: number; y: number; width: number; height: number }) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
             }

@@ -451,6 +451,10 @@ declare var Rx: any;
 
         getSVG: function () {
             return this._svgPlot.svg;
+        },
+
+        getSecondarySVG: function () {
+            return this._lightSvgPlot.svg;
         }
 
     });

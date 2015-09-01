@@ -98,7 +98,7 @@
                         });
 
                         this.bbox.x = this.bbox.x - oldPosition.x + value.x;
-                        this.bbox.y = this.bbox.y - oldPosition.y + oldPosition.y;
+                        this.bbox.y = this.bbox.y - oldPosition.y + value.y;
                     }
                 } else {
                     throw "position is undefined";
@@ -471,7 +471,9 @@
 
                     return {
                         operation: layoutPart.operation,
-                        isRoot: layoutPart.parentoperation === undefined
+                        isRoot: layoutPart.parentoperation === undefined,
+                        parentoperation: layoutPart.parentoperation,
+                        parentoperationindex: layoutPart.parentoperationindex
                     };
                 }
 

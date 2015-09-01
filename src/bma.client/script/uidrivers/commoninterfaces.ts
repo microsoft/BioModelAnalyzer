@@ -14,6 +14,7 @@ module BMA {
             SetVisibleRect(rect: { x: number; y: number; width: number; height: number });
             GetSVG(): string;
             GetSVGRef(): any;
+            GetLightSVGRef(): any;
         }
 
         export interface IHider {

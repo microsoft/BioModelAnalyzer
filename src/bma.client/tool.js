@@ -2550,7 +2550,7 @@ var BMA;
                                 transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
                             });
                             this.bbox.x = this.bbox.x - oldPosition.x + value.x;
-                            this.bbox.y = this.bbox.y - oldPosition.y + oldPosition.y;
+                            this.bbox.y = this.bbox.y - oldPosition.y + value.y;
                         }
                     }
                     else {
@@ -2866,7 +2866,9 @@ var BMA;
                     }
                     return {
                         operation: layoutPart.operation,
-                        isRoot: layoutPart.parentoperation === undefined
+                        isRoot: layoutPart.parentoperation === undefined,
+                        parentoperation: layoutPart.parentoperation,
+                        parentoperationindex: layoutPart.parentoperationindex
                     };
                 }
                 return undefined;
@@ -2936,6 +2938,9 @@ var BMA;
             };
             SVGPlotDriver.prototype.GetSVGRef = function () {
                 return this.svgPlotDiv.drawingsurface("getSVG");
+            };
+            SVGPlotDriver.prototype.GetLightSVGRef = function () {
+                return this.svgPlotDiv.drawingsurface("getSecondarySVG");
             };
             SVGPlotDriver.prototype.SetVisibleRect = function (rect) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
@@ -7043,6 +7048,9 @@ var BMA;
         },
         getSVG: function () {
             return this._svgPlot.svg;
+        },
+        getSecondarySVG: function () {
+            return this._lightSvgPlot.svg;
         }
     });
 }(jQuery));
@@ -9091,12 +9099,13 @@ var BMA;
                             that.navigationDriver.TurnNavigation(false);
                             var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                             _this.stagingOperation = {
-                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), unpinned.operation, gesture),
+                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
                                 originRef: staginOp,
                                 originIndex: _this.operations.indexOf(staginOp),
-                                isRoot: unpinned.isRoot
+                                isRoot: unpinned.isRoot,
+                                parentoperation: unpinned.parentoperation,
+                                parentoperationindex: unpinned.parentoperationindex
                             };
-                            console.log("isRoot: " + _this.stagingOperation.isRoot);
                             _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                             staginOp.IsVisible = !unpinned.isRoot;
                         }
@@ -9127,7 +9136,7 @@ var BMA;
                                 var emptyCell = undefined;
                                 emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                 if (emptyCell !== undefined) {
-                                    emptyCell.opLayout = operation;
+                                    //emptyCell.opLayout = operation;
                                     emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
                                     operation.Refresh();
                                     if (_this.stagingOperation.isRoot) {
@@ -9141,12 +9150,19 @@ var BMA;
                                         _this.stagingOperation.originRef.IsVisible = true;
                                     }
                                     else {
+                                        _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                        _this.stagingOperation.originRef.Refresh();
                                     }
                                 }
                             }
                             else {
-                                _this.stagingOperation.originRef.Position = position;
-                                _this.stagingOperation.originRef.IsVisible = true;
+                                if (_this.stagingOperation.isRoot) {
+                                    _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                                    _this.stagingOperation.originRef.IsVisible = true;
+                                }
+                                else {
+                                    _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                }
                             }
                         }
                         _this.stagingOperation.operation.IsVisible = false;
@@ -9170,6 +9186,8 @@ var BMA;
                 var operations = this.operations;
                 var opBbox = operation.BoundingBox;
                 for (var i = 0; i < operations.length; i++) {
+                    if (!operations[i].IsVisible)
+                        continue;
                     var bbox = operations[i].BoundingBox;
                     var isXIntersects = opBbox.x <= bbox.x + bbox.width && opBbox.x + opBbox.width >= bbox.x;
                     var isYIntersects = opBbox.y <= bbox.y + bbox.height && opBbox.y + opBbox.height >= bbox.y;
