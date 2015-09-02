@@ -168,7 +168,6 @@
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\StatesEditorSample.html" />
-    <Content Include="html\TableLoaderSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
