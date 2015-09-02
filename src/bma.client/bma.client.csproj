@@ -161,6 +161,7 @@
     <Content Include="html\LayoutSample.html" />
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\OneDriveSample.html" />
+    <Content Include="html\StatesEditorSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
@@ -426,6 +427,7 @@
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlstatesviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
