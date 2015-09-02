@@ -1444,9 +1444,10 @@ var BMA;
     var Keyframes;
     (function (Keyframes) {
         var BMAKeyframe = (function () {
-            function BMAKeyframe(name, icon) {
+            function BMAKeyframe(name, icon, toolType) {
                 this.name = name;
                 this.icon = icon;
+                this.toolType = toolType;
             }
             Object.defineProperty(BMAKeyframe.prototype, "Name", {
                 get: function () {
@@ -1462,6 +1463,13 @@ var BMA;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(BMAKeyframe.prototype, "ToolType", {
+                get: function () {
+                    return this.toolType;
+                },
+                enumerable: true,
+                configurable: true
+            });
             return BMAKeyframe;
         })();
         Keyframes.BMAKeyframe = BMAKeyframe;
@@ -1472,13 +1480,13 @@ var BMA;
                 var that = this;
                 this.keyframes = [];
                 this.imagePath = imagePath;
-                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/ltlimgs/var.png"));
-                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/ltlimgs/123.png"));
-                this.keyframes.push(new BMAKeyframe("equal", this.imagePath + "/ltlimgs/eq.png"));
-                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/ltlimgs/mo.png"));
-                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/ltlimgs/le.png"));
-                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/ltlimgs/moeq.png"));
-                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/ltlimgs/leeq.png"));
+                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/ltlimgs/var.png", "variable"));
+                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/ltlimgs/123.png", "const"));
+                this.keyframes.push(new BMAKeyframe("equal", this.imagePath + "/ltlimgs/eq.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/ltlimgs/mo.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/ltlimgs/le.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/ltlimgs/moeq.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/ltlimgs/leeq.png", "operator"));
             }
             Object.defineProperty(KeyframesRegistry.prototype, "Keyframes", {
                 get: function () {

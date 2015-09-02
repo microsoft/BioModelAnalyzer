@@ -7,6 +7,7 @@ module BMA {
         export class BMAKeyframe {
             private name: string;
             private icon: string;
+            private toolType: string;
 
 
             public get Name(): string {
@@ -17,12 +18,18 @@ module BMA {
                 return this.icon;
             }
 
+            public get ToolType(): string {
+                return this.toolType;
+            }
+
             constructor(
                 name: string,
-                icon: string) {
+                icon: string,
+                toolType: string) {
 
                 this.name = name;
                 this.icon = icon;
+                this.toolType = toolType;
             }
         }
 
@@ -55,13 +62,13 @@ module BMA {
                 this.keyframes = [];
                 this.imagePath = imagePath;
 
-                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/ltlimgs/var.png"));
-                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/ltlimgs/123.png"));
-                this.keyframes.push(new BMAKeyframe("equal",this.imagePath + "/ltlimgs/eq.png"));
-                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/ltlimgs/mo.png"));
-                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/ltlimgs/le.png"));
-                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/ltlimgs/moeq.png"));
-                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/ltlimgs/leeq.png"));
+                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/ltlimgs/var.png", "variable"));
+                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/ltlimgs/123.png", "const"));
+                this.keyframes.push(new BMAKeyframe("equal",this.imagePath + "/ltlimgs/eq.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/ltlimgs/mo.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/ltlimgs/le.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/ltlimgs/moeq.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/ltlimgs/leeq.png", "operator"));
             }                                                   
         }
     }
