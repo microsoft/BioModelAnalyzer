@@ -1466,20 +1466,33 @@ var BMA;
         })();
         Keyframes.BMAKeyframe = BMAKeyframe;
         var KeyframesRegistry = (function () {
-            function KeyframesRegistry() {
+            function KeyframesRegistry(imagePath) {
+                if (imagePath === void 0) { imagePath = "images"; }
+                this.imagePath = "images";
                 var that = this;
                 this.keyframes = [];
-                this.keyframes.push(new BMAKeyframe("var", "images/ltlimgs/var.png"));
-                this.keyframes.push(new BMAKeyframe("num", "images/ltlimgs/123.png"));
-                this.keyframes.push(new BMAKeyframe("equal", "images/ltlimgs/eq.png"));
-                this.keyframes.push(new BMAKeyframe("more", "images/ltlimgs/mo.png"));
-                this.keyframes.push(new BMAKeyframe("less", "images/ltlimgs/le.png"));
-                this.keyframes.push(new BMAKeyframe("moeq", "images/ltlimgs/moeq.png"));
-                this.keyframes.push(new BMAKeyframe("leeq", "images/ltlimgs/leeq.png"));
+                this.imagePath = imagePath;
+                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/ltlimgs/var.png"));
+                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/ltlimgs/123.png"));
+                this.keyframes.push(new BMAKeyframe("equal", this.imagePath + "/ltlimgs/eq.png"));
+                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/ltlimgs/mo.png"));
+                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/ltlimgs/le.png"));
+                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/ltlimgs/moeq.png"));
+                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/ltlimgs/leeq.png"));
             }
             Object.defineProperty(KeyframesRegistry.prototype, "Keyframes", {
                 get: function () {
                     return this.keyframes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(KeyframesRegistry.prototype, "ImagePath", {
+                get: function () {
+                    return this.imagePath;
+                },
+                set: function (value) {
+                    this.imagePath = value;
                 },
                 enumerable: true,
                 configurable: true

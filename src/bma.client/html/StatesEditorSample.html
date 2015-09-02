@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>States Editor Sample</title>
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/LTL_less.css" />
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <script src="../script/widgets/ltl/stateseditor.ts"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            window.Commands = new BMA.CommandRegistry();
+            window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry("../images");
+
+            $("#LTL_states").stateseditor();
+        });
+
+    </script>
+</head>
+<body>
+    <div id="LTL_states"></div>
+</body>
+</html>
