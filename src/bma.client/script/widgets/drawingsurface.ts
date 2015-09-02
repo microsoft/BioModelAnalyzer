@@ -98,12 +98,13 @@ declare var Rx: any;
 
                     if (that.options.isNavigationEnabled !== true) {
                         var cs = svgPlot.getScreenToDataTransform();
+                        var position = {
+                            x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
+                            y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
+                        };
 
-                        window.Commands.Execute("DrawingSurfaceClick",
-                            {
-                                x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
-                                y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
-                            });
+                        window.Commands.Execute("DrawingSurfaceClick", position);
+                        window.Commands.Execute("DrawingSurfaceDrop", position);
                     }
                 }
             });
@@ -451,6 +452,10 @@ declare var Rx: any;
 
         getSVG: function () {
             return this._svgPlot.svg;
+        },
+
+        getSecondarySVG: function () {
+            return this._lightSvgPlot.svg;
         }
 
     });

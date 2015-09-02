@@ -89,8 +89,16 @@
             public set Position(value: { x: number; y: number }) {
                 if (value !== undefined) {
                     if (value.x !== this.position.x || value.y !== this.position.y) {
+                        var oldPosition = this.position;
+
                         this.position = value;
-                        this.Refresh();
+
+                        this.svg.change(this.renderGroup, {
+                            transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                        });
+
+                        this.bbox.x = this.bbox.x - oldPosition.x + value.x;
+                        this.bbox.y = this.bbox.y - oldPosition.y + value.y;
                     }
                 } else {
                     throw "position is undefined";
@@ -144,6 +152,7 @@
             private CreateLayout(svg, operation): any {
                 var that = this;
                 var layout: any = {};
+                layout.operation = operation;
 
                 var paddingX = this.padding.x;
 
@@ -168,6 +177,8 @@
 
                         if (operand !== undefined) {
                             var calcLW = that.CreateLayout(svg, operand);
+                            calcLW.parentoperationindex = i;
+                            calcLW.parentoperation = operation;
                             layer = Math.max(layer, calcLW.layer);
                             layout.operands.push(calcLW);
                             width += (calcLW.width + paddingX * 2);
@@ -258,6 +269,8 @@
                             strokeWidth: strokeWidth
                         });
 
+                        layoutPart.svgref = opSVG;
+
                         var operands = operation.operands;
                         switch (operands.length) {
                             case 1:
@@ -301,7 +314,7 @@
 
                         }
                     } else {
-                        svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
                     }
                 }
             }
@@ -353,7 +366,7 @@
             }
 
             public CopyOperandFromCursor(x: number, y: number, withCut: boolean): BMA.LTLOperations.IOperand {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y) {
+                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
                     return undefined;
                 }
 
@@ -361,10 +374,114 @@
                 return undefined;
             }
 
-            public HighlightAtPosition(x: number, y: number) {
-                if (this.layout !== undefined) {
+            private GetIntersectedChild(x: number, y: number, position: { x: number; y: number }, layoutPart: any): any {
+                var width = layoutPart.width;
+                var halfWidth = width / 2;
+                var paddingY = this.padding.y;
+                var paddingX = this.padding.x;
+                var height = this.keyFrameSize + paddingY * layoutPart.layer;
+
+                if (x < position.x - halfWidth || x > position.x + halfWidth || y < position.y - height / 2 || y > position.y + height / 2) {
+                    return undefined;
+                }
+
+                var operands = layoutPart.operands;
+
+                switch (operands.length) {
+                    case 1:
+
+                        if (operands[0].isEmpty)
+                            return layoutPart;
+
+                        var highlighted = this.GetIntersectedChild(x, y, {
+                            x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                            y: position.y
+                        }, operands[0]);
+
+                        return highlighted !== undefined ? highlighted : layoutPart;
+
+                        break;
+                    case 2:
+
+                        if (!operands[0].isEmpty) {
+                            var highlighted1 = this.GetIntersectedChild(x, y, {
+                                x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                y: position.y
+                            }, operands[0]);
+
+                            if (highlighted1 !== undefined) {
+                                return highlighted1;
+                            }
+                        }
+
+                        if (!operands[1].isEmpty) {
+                            var highlighted2 = this.GetIntersectedChild(x, y, {
+                                x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                y: position.y
+                            }, operands[1]);
+
+                            if (highlighted2 !== undefined) {
+                                return highlighted2;
+                            }
+                        }
+
+                        return layoutPart;
+
+                        break;
+                    default:
+                        throw "Highlighting of operators with " + operands.length + " operands is not supported";
 
                 }
+
+                return layoutPart;
+            }
+
+            public HighlightAtPosition(x: number, y: number) {
+                if (this.layout !== undefined) {
+                    this.Refresh();
+
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+
+                    if (layoutPart !== undefined) {
+                        this.svg.change(layoutPart.svgref, {
+                            strokeWidth: 4
+                        });
+                    }
+                }
+            }
+
+            public PickOperation(x: number, y: number) {
+                if (this.layout !== undefined) {
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    if (layoutPart !== undefined)
+                        return layoutPart.operation;
+                }
+
+                return undefined;
+            }
+
+            public UnpinOperation(x: number, y: number) {
+                if (this.layout !== undefined) {
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+
+                    if (layoutPart !== undefined) {
+                        if (layoutPart.parentoperation !== undefined) {
+                            layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
+                            this.Refresh();
+                        } else {
+                            this.IsVisible = false;
+                        }
+                    }
+
+                    return {
+                        operation: layoutPart.operation,
+                        isRoot: layoutPart.parentoperation === undefined,
+                        parentoperation: layoutPart.parentoperation,
+                        parentoperationindex: layoutPart.parentoperationindex
+                    };
+                }
+
+                return undefined;
             }
         }
     }

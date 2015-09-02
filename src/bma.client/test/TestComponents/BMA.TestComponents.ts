@@ -77,6 +77,9 @@ module BMA {
                 return undefined;
             }
 
+            public GetLightSVGRef(): any {
+                return undefined;
+            }
             
             //private svg: SVGElement[];
 
