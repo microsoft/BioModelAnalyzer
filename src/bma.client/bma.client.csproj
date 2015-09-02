@@ -141,6 +141,12 @@
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
+    <Content Include="css\LTL_less.css">
+      <DependentUpon>LTL_less.less</DependentUpon>
+    </Content>
+    <Content Include="css\LTL_less.min.css">
+      <DependentUpon>LTL_less.css</DependentUpon>
+    </Content>
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>
     </Content>
@@ -161,6 +167,8 @@
     <Content Include="html\LayoutSample.html" />
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\OneDriveSample.html" />
+    <Content Include="html\StatesEditorSample.html" />
+    <Content Include="html\TableLoaderSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
@@ -339,6 +347,10 @@
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
+    <Content Include="css\LTL_less.less" />
+    <Content Include="css\LTL_less.css.map">
+      <DependentUpon>LTL_less.css</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
@@ -426,6 +438,7 @@
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlstatesviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />

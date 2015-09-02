@@ -1,4 +1,4 @@
-/* General Functions */
+﻿/* General Functions */
 .hoverable:hover {
   cursor: pointer;
 }
@@ -1107,10 +1107,10 @@ body {
   -moz-box-shadow: 4px 5px 7px rgba(0, 0, 0, 0.5);
   -o-box-shadow: 4px 5px 7px rgba(0, 0, 0, 0.5);
   box-shadow: 4px 5px 7px rgba(0, 0, 0, 0.5);
-  background-image: -moz-linear-gradient(left, #ededed, #ffffff);
-  background-image: -webkit-linear-gradient(left, #ededed, #ffffff);
-  background-image: -ms-linear-gradient(left, #ededed, #ffffff);
-  background-image: -webkit-gradient(linear, left, #ededed, #ffffff);
+  background-image: -moz-linear-gradient(left, #ededed, white);
+  background-image: -webkit-linear-gradient(left, #ededed, white);
+  background-image: -ms-linear-gradient(left, #ededed, white);
+  background-image: -webkit-gradient(linear, left, #ededed, white);
   vertical-align: top;
   left: -5px;
   width: 220px;
@@ -1786,12 +1786,24 @@ hr {
 .sim-blue {
   background-color: rgba(223, 223, 245, 0.5);
 }
+body {
+  margin: 0px;
+}
 .window-title {
   margin-left: 10px;
   margin-top: 10px;
 }
 img.toolbar {
   width: 399px;
+}
+.toolbar {
+  width: 399px;
+  padding: 5px 7px;
+  background-color: #aaaaaa;
+  vertical-align: middle;
+}
+.toolbar .tool-buttons {
+  margin: 2px 5px 0px 5px;
 }
 .state-button {
   display: inline-block;
@@ -1821,6 +1833,11 @@ img.toolbar {
   margin: 0px;
   background-color: white;
 }
+.LTL-states .description {
+  font-family: 'Segoe-UI-Light';
+  font-size: 14px;
+  margin: 10px;
+}
 .LTL-states table {
   border-collapse: collapse;
   font-family: 'Segoe-UI-Light';
@@ -1831,10 +1848,10 @@ img.toolbar {
   margin: 0px;
 }
 .LTL-states table tr td {
+  width: 55px;
   border: 1px solid #aaaaaa;
   text-align: center;
   margin: 0px;
-  padding: 0px 5px;
 }
 .LTL-states table tr td.variable {
   font-family: 'Segoe-UI';
@@ -1842,7 +1859,6 @@ img.toolbar {
   line-height: 17px;
   color: #606060;
   max-width: 70px;
-  padding: 0px 5px;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -1854,12 +1870,10 @@ img.toolbar {
 .LTL-states table tr td:empty {
   width: 55px;
   height: 55px;
-  padding: 0px;
 }
 .LTL-states table tr td.LTL-line-del {
   width: 55px;
   height: 55px;
-  padding: 0px;
   border: none;
 }
 .LTL-states table tr td.LTL-line-del img {
@@ -1871,7 +1885,6 @@ img.toolbar {
 .LTL-states table tr td.LTL-line-new {
   width: 55px;
   height: 55px;
-  padding: 0px;
   line-height: 47px;
   padding-bottom: 8px;
   border: 1px solid #ededed;
@@ -1962,3 +1975,4 @@ img.toolbar {
 .state:empty:after {
   content: "\00a0";
 }
+/*# sourceMappingURL=LTL_less.css.map */

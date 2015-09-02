@@ -28,15 +28,13 @@
                 var newState = {
                     name: "Init",
                     description: "",
-                    formula: [[
-                        undefined,
-                        { type: "operator", value: "<" },
-                        { type: "variable", value: "var1" },
-                        { type: "operator", value: "<" },
-                        undefined
+                    formula: [
+                        [ undefined,
+                          { type: "operator", value: "<" },
+                          { type: "variable", value: "var1" },
+                          { type: "operator", value: "<" },
+                          undefined ]
                     ]
-                    ]
-
                 };
 
                 this._setOption("states", newState);
@@ -65,9 +63,9 @@
             this._create_toolbar();
 
             this._ltl_states = $("<div></div>").addClass("LTL-states").appendTo(this.element);
-            this._description = $("<input></input>").attr("type", "text").attr("value", "Description").appendTo(this._ltl_states);
+            this._description = $("<input></input>").attr("type", "text").addClass("description").attr("data-row-type", "description").attr("value", "Description").appendTo(this._ltl_states);
 
-            var table = $("<table></table>").addClass("state-condition").appendTo(this._ltl_states);
+            var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "add").appendTo(this._ltl_states);
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
 
@@ -105,10 +103,10 @@
             var idx = this._options.states.indexOf(this._activeState);
             $(this._state_buttons[0].children[idx]).addClass("active");
 
-            for (var i = 1; i < this._ltl_states[0].childElementCount - 1; i++)
-                this._ltl_states[0].removeChild(this._ltl_states[0].children[i]);
+            var children = $(this._ltl_states).find("[data-row-type='condition']").remove();
 
             this._description.value = this._activeState.description;
+
             for (var i = 0; i < this._activeState.formula.length; i++) {
                 this.addCondition();
                 var condition = this._ltl_states[0].children[i + 1];
@@ -116,7 +114,16 @@
                     if (this._activeState.formula[i][j] !== undefined) {
                         if (this._activeState.formula[i][j].type == "variable") {
                             var img = $("<img>").attr("src", this._kfrms[0].Icon).attr("name", this._kfrms[0].Name).addClass("variable").appendTo($(condition.cells[j]));
-                            //var varNam = $("<div>" + this._activeState.formula[i][j].value + "</div>").appendTo($(condition.cells[j]));
+                            if (j == 0) {
+                                $(condition.cells[2]).droppable("option", "accept", ".const");
+
+                                for (var k = 3; k < 5; k++)
+                                    $(condition.cells[k]).droppable("option", "accept", false);
+
+                            } else if (j == 2) {
+                                $(condition.cells[0]).droppable("option", "accept", ".const");
+                                $(condition.cells[4]).droppable("option", "accept", ".const");
+                            }
                         }
                         if (this._activeState.formula[i][j].type == "operator") {
                             var img;
@@ -152,7 +159,21 @@
                         }
                         if (this._activeState.formula[i][j].type == "const") {
                             var img = $("<img>").attr("src", this._kfrms[1].Icon).attr("name", this._kfrms[1].Name).addClass("const").appendTo($(condition.cells[j]));
+                            if (j == 2) {
+                                $(condition.cells[0]).droppable("option", "accept", ".variable");
+
+                                for (var k = 3; k < 5; k++)
+                                    $(condition.cells[k]).droppable("option", "accept", false);
+
+                            } else if (this.cellIndex == 0 || this.cellIndex == 4) {
+                                $(condition.cells[0]).droppable("option", "accept", ".const");
+                                $(condition.cells[4]).droppable("option", "accept", ".const");
+                                $(condition.cells[2]).droppable("option", "accept", ".variable");
+                            }
                         }
+
+                        if (j % 2 == 1) 
+                            $(condition.cells[j]).droppable("option", "accept", ".operations");
                     }
                 }
             }
@@ -162,7 +183,7 @@
             this._kfrms = window.KeyframesRegistry.Keyframes;
 
             for (var i = 0; i < this._kfrms.length; i++) {
-                var keyframe_elem = $("<img>").attr("src", this._kfrms[i].Icon).attr("name", this._kfrms[i].Name).appendTo(this._toolbar);
+                var keyframe_elem = $("<img>").attr("src", this._kfrms[i].Icon).attr("name", this._kfrms[i].Name).addClass("tool-buttons").appendTo(this._toolbar);
 
                 if (i > 1)
                     keyframe_elem.addClass("operations");
@@ -170,20 +191,7 @@
                     keyframe_elem.addClass((i == 0) ? "variable" : "const");
 
                 keyframe_elem.draggable({
-                    helper: "clone", //$("<img>").attr("src", $(this).attr("src")).attr("class", $(this).attr("class")
-
-                    //cursorAt: {
-                    //    top: 60,
-                    //    left: 60
-                    //},
-                    //start: function (event, ui) {
-                    //    $(this).draggable("option", "cursorAt", {
-                    //        top: 70,//Math.floor(ui.helper.width() / 2),
-                    //        left: 50//Math.floor(ui.helper.width() / 2),
-                    //    });
-                    //},
-
-                    //scroll: false
+                    helper: "clone", 
                 });
             }
         },
@@ -191,7 +199,7 @@
         addState: function () {
             var that = this;
             var k = this._options.states.length;
-            var stateName = String.fromCharCode(96 + k);
+            var stateName = String.fromCharCode(64 + k);
             var state = $("<div>" + stateName + "</div>").addClass("state-button").click(function () {
                 var stateIndex = Array.prototype.indexOf.call(that._state_buttons[0].children, this);
 
@@ -226,12 +234,9 @@
 
         _create_states_table: function () {
             var that = this;
-            var table = $("<table></table>").addClass("state-condition");
+            var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "condition");
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
-
-            //var idx = this._options.states.indexOf(this._activeState);
-            //this._options.states[idx].formula.push([undefined, undefined, undefined, undefined, undefined]);
 
             for (var i = 0; i < 5; i++) {
                 var td = $("<td></td>").appendTo(tr);
@@ -239,7 +244,7 @@
                     drop: function (event, ui) {
                         var stateIndex = that._options.states.indexOf(that._activeState);
 
-                        var tableIndex = Array.prototype.indexOf.call(that._ltl_states[0].children, table[0]);
+                        var tableIndex = Array.prototype.indexOf.call(that._ltl_states[0].children, table[0]) - 1;
 
                         switch (ui.draggable[0].name) {
                             case "var": {
@@ -256,10 +261,10 @@
                                     break;
                                 }
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                //    type: "variable",
-                                //    value: "variable"
-                                //};
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "variable",
+                                    value: "variable"
+                                };
                                 break;
                             }
                             case "num": {
@@ -271,53 +276,54 @@
 
                                 } else if (this.cellIndex == 0 || this.cellIndex == 4) {
                                     $(tr[0].cells[0]).droppable("option", "accept", ".const");
+                                    $(tr[0].cells[4]).droppable("option", "accept", ".const");
                                     $(tr[0].cells[2]).droppable("option", "accept", ".variable");
                                 }
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].stateCondition[tableIndex][this.cellIndex] = {
-                                //    type: "const",
-                                //    value: "num"
-                                //}
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "const",
+                                    value: "num"
+                                }
                                 break;
                             }
                             case "equal": {
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].stateCondition[tableIndex][this.cellIndex] = {
-                                //    type: "operator",
-                                //    value: "="
-                                //}
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "operator",
+                                    value: "="
+                                }
                                 break;
                             }
                             case "more": {
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].stateCondition[tableIndex][this.cellIndex] = {
-                                //    type: "operator",
-                                //    value: ">"
-                                //}
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "operator",
+                                    value: ">"
+                                }
                                 break;
                             }
                             case "less": {
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].stateCondition[tableIndex][this.cellIndex] = {
-                                //    type: "operator",
-                                //    value: "<"
-                                //}
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "operator",
+                                    value: "<"
+                                }
                                 break;
                             }
                             case "moeq": {
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].stateCondition[tableIndex][this.cellIndex] = {
-                                //    type: "operator",
-                                //    value: ">="
-                                //}
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "operator",
+                                    value: ">="
+                                }
                                 break;
                             }
                             case "leeq": {
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("class", ui.draggable[0].getAttribute("class")).appendTo(this);
-                                //that.options.states[stateIndex].stateCondition[tableIndex][this.cellIndex] = {
-                                //    type: "operator",
-                                //    value: "<="
-                                //}
+                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    type: "operator",
+                                    value: "<="
+                                }
                                 break;
                             }
                         }
