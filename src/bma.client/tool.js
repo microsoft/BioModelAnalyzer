@@ -9082,13 +9082,15 @@ var BMA;
                 window.Commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
+                    _this.contextElement = {
+                        x: x,
+                        y: y
+                    };
                     var canPaste = _this.clipboard !== undefined;
                     var stagingOp = _this.GetOperationAtPoint(x, y);
                     if (stagingOp !== undefined) {
                         var emptyCell = stagingOp.GetEmptySlotAtPosition(x, y);
                         _this.contextElement = {
-                            x: x,
-                            y: y,
                             operationlayoutref: stagingOp,
                             emptyslot: emptyCell
                         };
@@ -9137,7 +9139,7 @@ var BMA;
                 window.Commands.On("TemporalPropertiesEditorCopy", function (args) {
                     if (_this.contextElement !== undefined) {
                         _this.clipboard = {
-                            operation: _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y).operation
+                            operation: _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y)
                         };
                     }
                 });

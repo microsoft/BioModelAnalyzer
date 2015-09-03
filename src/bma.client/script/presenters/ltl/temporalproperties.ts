@@ -87,6 +87,11 @@ module BMA {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
 
+                    this.contextElement = {
+                        x: x,
+                        y: y
+                    };
+
                     var canPaste = this.clipboard !== undefined;
 
                     var stagingOp = this.GetOperationAtPoint(x, y);
@@ -94,8 +99,6 @@ module BMA {
                         var emptyCell = stagingOp.GetEmptySlotAtPosition(x, y);
 
                         this.contextElement = {
-                            x: x,
-                            y: y,
                             operationlayoutref: stagingOp,
                             emptyslot: emptyCell
                         };
@@ -152,7 +155,7 @@ module BMA {
                 window.Commands.On("TemporalPropertiesEditorCopy",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         this.clipboard = {
-                            operation: this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y).operation
+                            operation: this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y)
                         };
                     }
                 });
