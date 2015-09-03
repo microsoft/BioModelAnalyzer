@@ -228,7 +228,7 @@
             private GetOperatorWidth(svg: any, operator: string): { width: number; height: number } {
                 var t = svg.text(0, 0, operator, {
                     "font-size": 10,
-                    "fill": "black"
+                    "fill": "rgb(96,96,96)"
                 });
                 var bbox = t.getBBox();
                 var result = { width: bbox.width, height: bbox.height };
@@ -242,7 +242,7 @@
                 var paddingY = this.padding.y;
 
                 if (layoutPart.isEmpty) {
-                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "black" });
+                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
                 } else {
                     var operator = layoutPart.operator;
                     if (operator !== undefined) {
@@ -252,7 +252,7 @@
                         var height = this.keyFrameSize + paddingY * layoutPart.layer;
 
                         var fill = options && options.fill ? options.fill : "transparent";
-                        var stroke = options && options.stroke ? options.stroke : "black";
+                        var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
 
                         var strokeWidth = 1;
                         if (options !== undefined) {
@@ -277,7 +277,7 @@
 
                                 svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
-                                    "fill": "black"
+                                    "fill": "rgb(96,96,96)"
                                 });
 
                                 this.RenderLayoutPart(svg, {
@@ -304,7 +304,7 @@
 
                                 svg.text(this.renderGroup, position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
-                                    "fill": "black"
+                                    "fill": "rgb(96,96,96)"
                                 });
 
                                 break;
@@ -314,7 +314,7 @@
 
                         }
                     } else {
-                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
                     }
                 }
             }
@@ -347,7 +347,7 @@
 
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
                     fill: "white",
-                    stroke: "black",
+                    stroke: "rgb(96,96,96)",
                     strokeWidth: 1,
                     isRoot: true,
                 });

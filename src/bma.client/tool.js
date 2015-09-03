@@ -2401,6 +2401,9 @@ var BMA;
             Keyframe.prototype.GetFormula = function () {
                 return this.name;
             };
+            Keyframe.prototype.Clone = function () {
+                return new BMA.LTLOperations.Keyframe(this.name);
+            };
             return Keyframe;
         })();
         LTLOperations.Keyframe = Keyframe;
@@ -2458,6 +2461,16 @@ var BMA;
             });
             Operation.prototype.GetFormula = function () {
                 return this.operator.GetFormula(this.operands);
+            };
+            Operation.prototype.Clone = function () {
+                var operands = [];
+                for (var i = 0; i < this.operands.length; i++) {
+                    operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
+                }
+                var result = new Operation();
+                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.GetFormula);
+                result.Operands = operands;
+                return result;
             };
             return Operation;
         })();
@@ -2698,7 +2711,7 @@ var BMA;
             OperationLayout.prototype.GetOperatorWidth = function (svg, operator) {
                 var t = svg.text(0, 0, operator, {
                     "font-size": 10,
-                    "fill": "black"
+                    "fill": "rgb(96,96,96)"
                 });
                 var bbox = t.getBBox();
                 var result = { width: bbox.width, height: bbox.height };
@@ -2710,7 +2723,7 @@ var BMA;
                 var paddingX = this.padding.x;
                 var paddingY = this.padding.y;
                 if (layoutPart.isEmpty) {
-                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "black" });
+                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
                 }
                 else {
                     var operator = layoutPart.operator;
@@ -2719,7 +2732,7 @@ var BMA;
                         var halfWidth = layoutPart.width / 2;
                         var height = this.keyFrameSize + paddingY * layoutPart.layer;
                         var fill = options && options.fill ? options.fill : "transparent";
-                        var stroke = options && options.stroke ? options.stroke : "black";
+                        var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
                         var strokeWidth = 1;
                         if (options !== undefined) {
                             if (options.isRoot) {
@@ -2740,7 +2753,7 @@ var BMA;
                             case 1:
                                 svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
-                                    "fill": "black"
+                                    "fill": "rgb(96,96,96)"
                                 });
                                 this.RenderLayoutPart(svg, {
                                     x: position.x + halfWidth - operands[0].width / 2 - paddingX,
@@ -2758,7 +2771,7 @@ var BMA;
                                 }, operands[1], undefined);
                                 svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
-                                    "fill": "black"
+                                    "fill": "rgb(96,96,96)"
                                 });
                                 break;
                             default:
@@ -2766,7 +2779,7 @@ var BMA;
                         }
                     }
                     else {
-                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "black", fill: "rgb(238,238,238)" });
+                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
                     }
                 }
             };
@@ -2792,7 +2805,7 @@ var BMA;
                 };
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
                     fill: "white",
-                    stroke: "black",
+                    stroke: "rgb(96,96,96)",
                     strokeWidth: 1,
                     isRoot: true,
                 });
@@ -6781,15 +6794,15 @@ var BMA;
             }
             plotDiv.droppable({
                 drop: function (event, ui) {
+                    var cs = svgPlot.getScreenToDataTransform();
+                    var position = {
+                        x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
+                    };
                     if (that.options.isNavigationEnabled !== true) {
-                        var cs = svgPlot.getScreenToDataTransform();
-                        var position = {
-                            x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
-                            y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
-                        };
                         window.Commands.Execute("DrawingSurfaceClick", position);
-                        window.Commands.Execute("DrawingSurfaceDrop", position);
                     }
+                    window.Commands.Execute("DrawingSurfaceDrop", position);
                 }
             });
             plotDiv.bind("click touchstart", function (arg) {
@@ -9103,16 +9116,17 @@ var BMA;
                 window.Commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
+                    _this.contextElement = {
+                        x: x,
+                        y: y
+                    };
+                    //that.driver.GetLightSVGRef().rect(x - 5, y - 5, 10, 10, { stroke: "red", fill: "transparent" });
                     var canPaste = _this.clipboard !== undefined;
                     var stagingOp = _this.GetOperationAtPoint(x, y);
                     if (stagingOp !== undefined) {
                         var emptyCell = stagingOp.GetEmptySlotAtPosition(x, y);
-                        _this.contextElement = {
-                            x: x,
-                            y: y,
-                            operationlayoutref: stagingOp,
-                            emptyslot: emptyCell
-                        };
+                        _this.contextElement.operationlayoutref = stagingOp;
+                        _this.contextElement.emptyslot = emptyCell;
                         contextMenu.ShowMenuItems([
                             { name: "Cut", isVisible: true },
                             { name: "Copy", isVisible: true },
@@ -9146,8 +9160,9 @@ var BMA;
                 window.Commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
-                            operation: unpinned.operation,
+                            operation: clonned,
                         };
                         if (unpinned.isRoot) {
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
@@ -9157,8 +9172,10 @@ var BMA;
                 });
                 window.Commands.On("TemporalPropertiesEditorCopy", function (args) {
                     if (_this.contextElement !== undefined) {
+                        var operation = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operation !== undefined ? operation.Clone() : undefined;
                         _this.clipboard = {
-                            operation: _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y).operation
+                            operation: clonned
                         };
                     }
                 });
@@ -9166,13 +9183,14 @@ var BMA;
                     var x = _this.contextElement.x;
                     var y = _this.contextElement.y;
                     if (_this.clipboard !== undefined) {
+                        var op = _this.clipboard.operation.Clone();
                         if (_this.contextElement.emptyslot !== undefined) {
                             var emptyCell = _this.contextElement.emptyslot;
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = _this.clipboard.operation;
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
                             _this.contextElement.operationlayoutref.Refresh();
                         }
                         else {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.clipboard.operation, { x: x, y: y });
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, { x: x, y: y });
                             _this.operations.push(operationLayout);
                         }
                     }
@@ -9200,22 +9218,20 @@ var BMA;
                 });
                 var dragSubject = dragService.GetDragSubject();
                 dragSubject.dragStart.subscribe(function (gesture) {
-                    if (that.selectedOperatorType === undefined) {
-                        var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
-                        if (staginOp !== undefined) {
-                            that.navigationDriver.TurnNavigation(false);
-                            var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
-                            _this.stagingOperation = {
-                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
-                                originRef: staginOp,
-                                originIndex: _this.operations.indexOf(staginOp),
-                                isRoot: unpinned.isRoot,
-                                parentoperation: unpinned.parentoperation,
-                                parentoperationindex: unpinned.parentoperationindex
-                            };
-                            _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                            staginOp.IsVisible = !unpinned.isRoot;
-                        }
+                    var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
+                    if (staginOp !== undefined) {
+                        that.navigationDriver.TurnNavigation(false);
+                        var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
+                        _this.stagingOperation = {
+                            operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
+                            originRef: staginOp,
+                            originIndex: _this.operations.indexOf(staginOp),
+                            isRoot: unpinned.isRoot,
+                            parentoperation: unpinned.parentoperation,
+                            parentoperationindex: unpinned.parentoperationindex
+                        };
+                        _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                        staginOp.IsVisible = !unpinned.isRoot;
                     }
                 });
                 dragSubject.drag.subscribe(function (gesture) {
@@ -9239,7 +9255,7 @@ var BMA;
                         }
                         else {
                             var operation = _this.GetOperationAtPoint(position.x, position.y);
-                            if (operation !== undefined && (!_this.stagingOperation.isRoot || _this.operations.indexOf(operation) !== _this.stagingOperation.originIndex)) {
+                            if (operation !== undefined) {
                                 var emptyCell = undefined;
                                 emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                 if (emptyCell !== undefined) {
@@ -9263,12 +9279,13 @@ var BMA;
                                 }
                             }
                             else {
+                                //Operation should stay in its origin place
                                 if (_this.stagingOperation.isRoot) {
-                                    _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
                                     _this.stagingOperation.originRef.IsVisible = true;
                                 }
                                 else {
-                                    _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                    _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                    _this.stagingOperation.originRef.Refresh();
                                 }
                             }
                         }
@@ -9281,6 +9298,8 @@ var BMA;
                 var that = this;
                 var operations = this.operations;
                 for (var i = 0; i < operations.length; i++) {
+                    if (!operations[i].IsVisible)
+                        continue;
                     var bbox = operations[i].BoundingBox;
                     if (bbox.x <= x && (bbox.x + bbox.width) >= x && bbox.y <= y && (bbox.y + bbox.height) >= y) {
                         return operations[i];

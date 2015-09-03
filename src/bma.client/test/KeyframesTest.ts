@@ -6,6 +6,10 @@
         return this.test;
     }
 
+    public Clone() {
+        return undefined;
+    }
+
 }
 
 describe('Keyframes',() => {
