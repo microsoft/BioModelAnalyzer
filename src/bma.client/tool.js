@@ -9234,7 +9234,7 @@ var BMA;
                         }
                         else {
                             var operation = _this.GetOperationAtPoint(position.x, position.y);
-                            if (operation !== undefined && (!_this.stagingOperation.isRoot || _this.operations.indexOf(operation) !== _this.stagingOperation.originIndex)) {
+                            if (operation !== undefined) {
                                 var emptyCell = undefined;
                                 emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                 if (emptyCell !== undefined) {
@@ -9258,12 +9258,13 @@ var BMA;
                                 }
                             }
                             else {
+                                //Operation should stay in its origin place
                                 if (_this.stagingOperation.isRoot) {
-                                    _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
                                     _this.stagingOperation.originRef.IsVisible = true;
                                 }
                                 else {
-                                    _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                    _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                    _this.stagingOperation.originRef.Refresh();
                                 }
                             }
                         }
@@ -9276,6 +9277,8 @@ var BMA;
                 var that = this;
                 var operations = this.operations;
                 for (var i = 0; i < operations.length; i++) {
+                    if (!operations[i].IsVisible)
+                        continue;
                     var bbox = operations[i].BoundingBox;
                     if (bbox.x <= x && (bbox.x + bbox.width) >= x && bbox.y <= y && (bbox.y + bbox.height) >= y) {
                         return operations[i];

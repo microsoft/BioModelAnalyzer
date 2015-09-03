@@ -255,7 +255,7 @@ module BMA {
                                 }
                             } else {
                                 var operation = this.GetOperationAtPoint(position.x, position.y);
-                                if (operation !== undefined && (!this.stagingOperation.isRoot || this.operations.indexOf(operation) !== this.stagingOperation.originIndex)) {
+                                if (operation !== undefined) {
                                     var emptyCell = undefined;
                                     emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                     if (emptyCell !== undefined) {
@@ -277,15 +277,12 @@ module BMA {
                                         }
                                     }
                                 } else {
+                                    //Operation should stay in its origin place
                                     if (this.stagingOperation.isRoot) {
-                                        this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
                                         this.stagingOperation.originRef.IsVisible = true;
                                     } else {
-                                        this.operations.push(
-                                            new BMA.LTLOperations.OperationLayout(
-                                                that.driver.GetSVGRef(),
-                                                this.stagingOperation.operation.Operation,
-                                                this.stagingOperation.operation.Position));
+                                        this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                        this.stagingOperation.originRef.Refresh();
                                     }
                                 }
                             }
@@ -300,6 +297,9 @@ module BMA {
                 var that = this;
                 var operations = this.operations;
                 for (var i = 0; i < operations.length; i++) {
+                    if (!operations[i].IsVisible)
+                        continue;
+
                     var bbox = operations[i].BoundingBox;
 
                     if (bbox.x <= x && (bbox.x + bbox.width) >= x && bbox.y <= y && (bbox.y + bbox.height) >= y) {
