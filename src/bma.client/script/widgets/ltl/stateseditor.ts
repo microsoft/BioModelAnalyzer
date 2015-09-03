@@ -31,7 +31,7 @@
                     formula: [
                         [ undefined,
                           { type: "operator", value: "<" },
-                          { type: "variable", value: "var1" },
+                          { type: "variable", value: "y" },
                           { type: "operator", value: "<" },
                           undefined ]
                     ]
@@ -39,6 +39,9 @@
 
                 this._setOption("states", newState);
             } 
+
+            this._setOption("variables", "x");
+            this._setOption("variables", "y");
 
             this._activeState = this._options.states[0];
 
@@ -128,7 +131,26 @@
                     if (this._activeState.formula[i][j] !== undefined) {
                         if (this._activeState.formula[i][j].type == "variable") {
                             var img = $("<img>").attr("src", this._kfrms[0].Icon).attr("name", this._kfrms[0].Name).attr("data-tool-type", this._kfrms[0].ToolType).appendTo($(condition.cells[j]));
+
+                            //var selectionDiv = $("<div></div>").attr("id", "select").appendTo($(condition.cells[j]));
+                            //var selectionText = $("<div></div>").attr("id", "variable-name").appendTo(selectionDiv);
+                            var selectVariable = $("<select></select>").attr("name", "select-variable").addClass("select-variable").appendTo($(condition.cells[j]));//.change(function () {
+                            //    $(selectionText).text(selectVariable[0].value);
+                            //});
+
+                            for (var k = 0; k < this._options.variables.length; k++)
+                                var option = $("<option>" + this._options.variables[k] + "</option>").attr("value", this._options.variables[k]).appendTo(selectVariable);
+
+                            if (this._options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
+                                selectVariable[0].value = this._activeState.formula[i][j].value;
+                            //$(selectionText).text(selectVariable[0].value);
+
                             if (j == 0) {
+                                $(condition.cells[0]).droppable("option", "accept", function (event) {
+                                    if (event[0].getAttribute("data-tool-type") == "variable")
+                                        return true;
+                                    return false;
+                                });
                                 $(condition.cells[2]).droppable("option", "accept", function (event) {
                                     if (event[0].getAttribute("data-tool-type") == "const")
                                         return true;
@@ -139,6 +161,11 @@
                                     $(condition.cells[k]).droppable("option", "accept", false);
 
                             } else if (j == 2) {
+                                $(condition.cells[2]).droppable("option", "accept", function (event) {
+                                    if (event[0].getAttribute("data-tool-type") == "variable")
+                                        return true;
+                                    return false;
+                                });
                                 $(condition.cells[0]).droppable("option", "accept", function (event) {
                                     if (event[0].getAttribute("data-tool-type") == "const")
                                         return true;
@@ -150,10 +177,14 @@
                                     return false;
                                 });
                             }
-                        }
-                        if (this._activeState.formula[i][j].type == "const") {
+                        } else if (this._activeState.formula[i][j].type == "const") {
                             var img = $("<img>").attr("src", this._kfrms[1].Icon).attr("name", this._kfrms[1].Name).attr("data-tool-type", this._kfrms[1].ToolType).appendTo($(condition.cells[j]));
                             if (j == 2) {
+                                $(condition.cells[2]).droppable("option", "accept", function (event) {
+                                    if (event[0].getAttribute("data-tool-type") == "const")
+                                        return true;
+                                    return false;
+                                });
                                 $(condition.cells[0]).droppable("option", "accept", function (event) {
                                     if (event[0].getAttribute("data-tool-type") == "variable")
                                         return true;
@@ -180,8 +211,7 @@
                                     return false;
                                 });
                             }
-                        }
-                        if (this._activeState.formula[i][j].type == "operator") {
+                        } else if (this._activeState.formula[i][j].type == "operator") {
                             var img;
                             switch (this._activeState.formula[i][j].value) {
                                 case "=": {
@@ -246,7 +276,7 @@
             var newState = {
                 name: stateName,
                 description: "",
-                formula: [],
+                formula: [[]],
             };
             this._setOption("states", newState);
 
@@ -276,12 +306,18 @@
                 td.droppable({
                     drop: function (event, ui) {
                         var stateIndex = that._options.states.indexOf(that._activeState);
-
+                        
                         var tableIndex = Array.prototype.indexOf.call(that._ltlStates[0].children, table[0]) - 1;
+                        $(this).children().remove();
 
                         switch (ui.draggable[0].name) {
                             case "var": {
                                 if (this.cellIndex == 0) {
+                                    $(tr[0].cells[0]).droppable("option", "accept", function (event) {
+                                        if (event[0].getAttribute("data-tool-type") == "variable")
+                                            return true;
+                                        return false;
+                                    });
                                     $(tr[0].cells[2]).droppable("option", "accept", function (event) {
                                         if (event[0].getAttribute("data-tool-type") == "const")
                                             return true;
@@ -292,6 +328,11 @@
                                         $(tr[0].cells[j]).droppable("option", "accept", false);
 
                                 } else if (this.cellIndex == 2) {
+                                    $(tr[0].cells[2]).droppable("option", "accept", function (event) {
+                                        if (event[0].getAttribute("data-tool-type") == "variable")
+                                            return true;
+                                        return false;
+                                    });
                                     $(tr[0].cells[0]).droppable("option", "accept", function (event) {
                                         if (event[0].getAttribute("data-tool-type") == "const")
                                             return true;
@@ -306,14 +347,30 @@
                                     break;
                                 }
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+
+                                //var selectionDiv = $("<div></div>").attr("id", "select").appendTo(this);
+                                //var selectionText = $("<div></div>").attr("id", "variable-name").appendTo(selectionDiv);
+                                var selectVariable = $("<select></select>").attr("name", "select-variable").addClass("select-variable").appendTo(this);//.change(function () {
+                                //    $(selectionText).text(selectVariable[0].value);
+                                //});
+
+                                for (var k = 0; k < that._options.variables.length; k++)
+                                    var option = $("<option>" + that._options.variables[k] + "</option>").attr("value", that._options.variables[k]).appendTo(selectVariable);
+                                //$(selectionText).text(selectVariable[0].value);
+
                                 that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                     type: "variable",
-                                    value: "variable"
+                                    value: selectVariable[0].value
                                 };
                                 break;
                             }
                             case "num": {
                                 if (this.cellIndex == 2) {
+                                    $(tr[0].cells[2]).droppable("option", "accept", function (event) {
+                                        if (event[0].getAttribute("data-tool-type") == "const")
+                                            return true;
+                                        return false;
+                                    });
                                     $(tr[0].cells[0]).droppable("option", "accept", function (event) {
                                         if (event[0].getAttribute("data-tool-type") == "variable")
                                             return true;
