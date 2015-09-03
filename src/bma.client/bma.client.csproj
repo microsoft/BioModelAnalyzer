@@ -141,6 +141,12 @@
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
+    <Content Include="css\LTL.css">
+      <DependentUpon>LTL.less</DependentUpon>
+    </Content>
+    <Content Include="css\LTL.min.css">
+      <DependentUpon>LTL.css</DependentUpon>
+    </Content>
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>
     </Content>
@@ -338,6 +344,10 @@
     <Content Include="css\website.less" />
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
+    </Content>
+    <Content Include="css\LTL.less" />
+    <Content Include="css\LTL.css.map">
+      <DependentUpon>LTL.css</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />

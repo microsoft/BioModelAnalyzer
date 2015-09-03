@@ -8,6 +8,7 @@
 
         export interface IOperand {
             GetFormula(): string;
+            Clone(): IOperand;
         }
 
         export interface IOperationLayout {
@@ -24,6 +25,10 @@
 
             public GetFormula() {
                 return this.name;
+            }
+
+            public Clone() {
+                return new BMA.LTLOperations.Keyframe(this.name);
             }
         }
 
@@ -77,6 +82,18 @@
 
             public GetFormula() {
                 return this.operator.GetFormula(this.operands);
+            }
+
+            public Clone() {
+                var operands = [];
+                for (var i = 0; i < this.operands.length; i++) {
+                    operands.push(this.operands[i].Clone());
+                }
+                var result = new Operation();
+                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.GetFormula);
+                result.Operands = operands;
+
+                return result;
             }
         }
     }

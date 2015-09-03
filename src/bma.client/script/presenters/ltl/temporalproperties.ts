@@ -92,16 +92,16 @@ module BMA {
                         y: y
                     };
 
+                    //that.driver.GetLightSVGRef().rect(x - 5, y - 5, 10, 10, { stroke: "red", fill: "transparent" });
+
                     var canPaste = this.clipboard !== undefined;
 
                     var stagingOp = this.GetOperationAtPoint(x, y);
                     if (stagingOp !== undefined) {
                         var emptyCell = stagingOp.GetEmptySlotAtPosition(x, y);
 
-                        this.contextElement = {
-                            operationlayoutref: stagingOp,
-                            emptyslot: emptyCell
-                        };
+                        this.contextElement.operationlayoutref = stagingOp;
+                        this.contextElement.emptyslot = emptyCell;
 
                         contextMenu.ShowMenuItems([
                             { name: "Cut", isVisible: true },
@@ -141,8 +141,9 @@ module BMA {
                 window.Commands.On("TemporalPropertiesEditorCut",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         this.clipboard = {
-                            operation: unpinned.operation,
+                            operation: clonned,
                         };
 
                         if (unpinned.isRoot) {
@@ -154,8 +155,10 @@ module BMA {
 
                 window.Commands.On("TemporalPropertiesEditorCopy",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
+                        var operation = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operation !== undefined ? operation.Clone() : undefined;
                         this.clipboard = {
-                            operation: this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y)
+                            operation: clonned
                         };
                     }
                 });
@@ -204,23 +207,21 @@ module BMA {
                 var dragSubject = dragService.GetDragSubject();
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
-                        if (that.selectedOperatorType === undefined) {
-                            var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
-                            if (staginOp !== undefined) {
-                                that.navigationDriver.TurnNavigation(false);
-                                var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
-                                this.stagingOperation = {
-                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
-                                    originRef: staginOp,
-                                    originIndex: this.operations.indexOf(staginOp),
-                                    isRoot: unpinned.isRoot,
-                                    parentoperation: unpinned.parentoperation,
-                                    parentoperationindex: unpinned.parentoperationindex
-                                };
+                        var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
+                        if (staginOp !== undefined) {
+                            that.navigationDriver.TurnNavigation(false);
+                            var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
+                            this.stagingOperation = {
+                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
+                                originRef: staginOp,
+                                originIndex: this.operations.indexOf(staginOp),
+                                isRoot: unpinned.isRoot,
+                                parentoperation: unpinned.parentoperation,
+                                parentoperationindex: unpinned.parentoperationindex
+                            };
 
-                                this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                                staginOp.IsVisible = !unpinned.isRoot;
-                            }
+                            this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                            staginOp.IsVisible = !unpinned.isRoot;
                         }
                     });
 

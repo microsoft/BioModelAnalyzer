@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/idd.css" type="text/css" />
     <link rel="stylesheet" href="../css/BMA_less.min.css" type="text/css" />
     <link rel="stylesheet" href="../css/StyleSheet.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/LTL.min.css" type="text/css" />
     <link rel="stylesheet" href="../css/fonts.min.css" type="text/css" />
     <script src="../Scripts/jquery-2.1.1.min.js"></script>
     <script src="../js/jquery.browser.min.js"></script>
@@ -39,59 +40,31 @@
 
             var elementPanel = $("#modelelemtoolbar");
             var registry = new BMA.LTLOperations.OperatorsRegistry();
+            var operatorsDiv = $("#operators");
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
 
-                $("<input></input>")
-                    .attr("type", "radio")
-                    .attr("id", "btn-" + operator.Name)
-                    .attr("name", "drawing-button")
-                    .attr("data-type", operator.Name)
-                    .appendTo(elementPanel);
+                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 100).css("cursor", "pointer").appendTo(operatorsDiv);
+                var spaceStr = "&nbsp;&nbsp;";
+                if (operator.operandsNumber > 1) {
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                    spaceStr = "";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
+                $("<div></div>").addClass("hole").appendTo(opDiv);
 
-                var label = $("<label></label>").attr("data-operator", operator.Name).css("border", "none").css("border-radius", "60px 60px 60px 60px").attr("for", "btn-" + operator.Name).css("z-index", 9999999).appendTo(elementPanel);
-                var img = $("<div></div>").css("overflow", "hidden").attr("title", operator.Name).appendTo(label);
-
-                img.svg({
-                    onLoad: function (svg) {
-                        svg.configure({
-                            width: img.width(),
-                            height: img.height(),
-                            viewBox: "-10 -10 20 20",
-                            preserveAspectRatio: "none meet"
-                        }, true);
-
-                        var op = new BMA.LTLOperations.Operation();
-                        op.Operator = registry.GetOperatorByName(operator.Name);
-                        op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
-                        var operationLayout = new BMA.LTLOperations.OperationLayout(svg, op, { x: 0, y: 0 });
-                        operationLayout.Padding = { x: 5, y: 7 };
-                        operationLayout.KeyFrameSize = 15;
-
-                        var bbox = operationLayout.BoundingBox;
-
-                        img.width(bbox.width + 2).height(bbox.height + 2);
-                        label.width(bbox.width + 2).height(bbox.height + 2);
-
-                        svg.configure({
-                            width: bbox.width + 2,
-                            height: bbox.height + 2,
-                            viewBox: (bbox.x - 1) + " " + (bbox.y - 1) + " " + (bbox.width + 2) + " " + (bbox.height + 2),
-                            preserveAspectRatio: "none meet"
-                        });
-                    }
-                });
-
-                label.draggable({
+                opDiv.draggable({
                     helper: "clone",
                     start: function (event, ui) {
                         $(this).draggable("option", "cursorAt", {
-                            left: Math.floor(ui.helper.width() / 2),
-                            top: Math.floor(ui.helper.height() / 2)
+                            left: 0,//Math.floor(ui.helper.width() / 2),
+                            top: 0//Math.floor(ui.helper.height() / 2)
                         });
-                        $('#' + $(this).attr("for")).click();
+                        window.Commands.Execute("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
+
+                
             }
 
             elementPanel.buttonset();
@@ -108,7 +81,7 @@
             $("#tools").css("background-color", "#E4E4E6");
 
             //Context menu
-            
+
             var holdCords = {
                 holdX: 0,
                 holdY: 0
@@ -137,8 +110,6 @@
                     var y = holdCords.holdX || event.pageY;
                     var left = x - $(".bma-drawingsurface").offset().left;
                     var top = y - $(".bma-drawingsurface").offset().top;
-                    //console.log("top " + top);
-                    //console.log("left " + left);
 
                     window.Commands.Execute("TemporalPropertiesEditorContextMenuOpening", {
                         left: left,
@@ -156,7 +127,7 @@
                 }
             });
 
-            
+
             //End of context menu
 
 
@@ -166,23 +137,57 @@
         });
     </script>
 </head>
-<body>
-    <div id="tools" class="bma-toolbarpanel">
-        <div id="undoredotoolbar" class="undoredo-toolbar">
-            <input type="radio" id="button-pointer" name="drawing-button" checked="checked" />
-            <label for="button-pointer">
-                <div class="pointer-icon" title="Selection tool" ></div>
-            </label>
+<body style="margin: 0;">
+    <div class="window-title">Temporal Properties</div>
 
-            <!--<button id="button-undo">
-                <div class="undo-icon" title="Undo"></div>
-            </button>
-            <button id="button-redo">
-                <div class="redo-icon" title="Redo"></div>
-            </button>-->
+    <div class="temporal-toolbar">
+        <div class="state-buttons">
+            States<br>
+            <div class="btns">
+                <div class="state-button">A</div>
+                <div class="state-button">B</div>
+                <div class="state-button">F</div>
+                <div class="state-button new">+</div>
+            </div>
         </div>
-
-        <div id="modelelemtoolbar" class="elements-toolbar"></div>
+        <div class="temporal-operators">
+            Operators<br>
+            <div id="operators" class="operators">
+                <!--<div class="operator">
+                    <div class="hole"></div>
+                    <div class="label">UNTIL</div>
+                    <div class="hole"></div>
+                </div>
+                <div class="operator">
+                    <div class="hole"></div>
+                    <div class="label">AND</div>
+                    <div class="hole"></div>
+                </div>
+                <div class="operator">
+                    <div class="hole"></div>
+                    <div class="label">OR</div>
+                    <div class="hole"></div>
+                </div>
+                <div class="operator">
+                    <div class="hole"></div>
+                    <div class="label">NEXT</div>
+                    <div class="hole"></div>
+                </div>
+                <br>
+                <div class="operator">
+                    <div class="label">&nbsp;&nbsp;EVENTUALLY</div>
+                    <div class="hole"></div>
+                </div>
+                <div class="operator">
+                    <div class="label">&nbsp;&nbsp;ALWAYS</div>
+                    <div class="hole"></div>
+                </div>
+                <div class="operator">
+                    <div class="label">&nbsp;&nbsp;NOT</div>
+                    <div class="hole"></div>
+                </div>-->
+            </div>
+        </div>
     </div>
 
     <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
