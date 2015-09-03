@@ -67,19 +67,6 @@
                 
             }
 
-            elementPanel.buttonset();
-            $("#undoredotoolbar").buttonset();
-
-            $("#modelelemtoolbar input").click(function (event) {
-                window.Commands.Execute("AddOperatorSelect", $(this).attr("data-type"));
-            });
-
-            $("#button-pointer").click(function (event) {
-                window.Commands.Execute("AddOperatorSelect", undefined);
-            });
-
-            $("#tools").css("background-color", "#E4E4E6");
-
             //Context menu
 
             var holdCords = {
@@ -153,39 +140,7 @@
         <div class="temporal-operators">
             Operators<br>
             <div id="operators" class="operators">
-                <!--<div class="operator">
-                    <div class="hole"></div>
-                    <div class="label">UNTIL</div>
-                    <div class="hole"></div>
-                </div>
-                <div class="operator">
-                    <div class="hole"></div>
-                    <div class="label">AND</div>
-                    <div class="hole"></div>
-                </div>
-                <div class="operator">
-                    <div class="hole"></div>
-                    <div class="label">OR</div>
-                    <div class="hole"></div>
-                </div>
-                <div class="operator">
-                    <div class="hole"></div>
-                    <div class="label">NEXT</div>
-                    <div class="hole"></div>
-                </div>
-                <br>
-                <div class="operator">
-                    <div class="label">&nbsp;&nbsp;EVENTUALLY</div>
-                    <div class="hole"></div>
-                </div>
-                <div class="operator">
-                    <div class="label">&nbsp;&nbsp;ALWAYS</div>
-                    <div class="hole"></div>
-                </div>
-                <div class="operator">
-                    <div class="label">&nbsp;&nbsp;NOT</div>
-                    <div class="hole"></div>
-                </div>-->
+                
             </div>
         </div>
     </div>

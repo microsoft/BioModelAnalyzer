@@ -168,12 +168,14 @@ module BMA {
                     var y = this.contextElement.y;
 
                     if (this.clipboard !== undefined) {
+                        var op = this.clipboard.operation.Clone();
+
                         if (this.contextElement.emptyslot !== undefined) {
                             var emptyCell = this.contextElement.emptyslot;
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = this.clipboard.operation;
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
                             this.contextElement.operationlayoutref.Refresh();
                         } else {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), this.clipboard.operation, { x: x, y: y });
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, { x: x, y: y });
                             this.operations.push(operationLayout);
                         }
                     }

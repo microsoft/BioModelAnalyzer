@@ -87,7 +87,8 @@
             public Clone() {
                 var operands = [];
                 for (var i = 0; i < this.operands.length; i++) {
-                    operands.push(this.operands[i].Clone());
+                    
+                    operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
                 result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.GetFormula);

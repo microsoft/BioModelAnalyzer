@@ -2444,7 +2444,7 @@ var BMA;
             Operation.prototype.Clone = function () {
                 var operands = [];
                 for (var i = 0; i < this.operands.length; i++) {
-                    operands.push(this.operands[i].Clone());
+                    operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
                 result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.GetFormula);
@@ -9162,13 +9162,14 @@ var BMA;
                     var x = _this.contextElement.x;
                     var y = _this.contextElement.y;
                     if (_this.clipboard !== undefined) {
+                        var op = _this.clipboard.operation.Clone();
                         if (_this.contextElement.emptyslot !== undefined) {
                             var emptyCell = _this.contextElement.emptyslot;
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = _this.clipboard.operation;
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
                             _this.contextElement.operationlayoutref.Refresh();
                         }
                         else {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.clipboard.operation, { x: x, y: y });
+                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, { x: x, y: y });
                             _this.operations.push(operationLayout);
                         }
                     }
