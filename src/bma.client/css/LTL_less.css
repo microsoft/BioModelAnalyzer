@@ -1798,6 +1798,8 @@ img.toolbar {
 }
 .toolbar {
   width: 399px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 5px 7px;
   background-color: #aaaaaa;
   vertical-align: middle;
@@ -1805,9 +1807,12 @@ img.toolbar {
 .toolbar .tool-buttons {
   margin: 2px 5px 0px 5px;
 }
+.state-buttons {
+  width: 399px;
+}
 .state-button {
   display: inline-block;
-  margin: 5px 0px 10px 5px;
+  margin: 5px 0px 5px 5px;
   font-family: 'Segoe-UI-Light';
   font-size: 20px;
   line-height: 25px;
@@ -1819,6 +1824,9 @@ img.toolbar {
   color: #606060;
   border: 1px solid #606060;
 }
+.state-button:hover {
+  cursor: pointer;
+}
 .state-button.new {
   color: #ededed;
   border: 1px solid #ededed;
@@ -1828,6 +1836,78 @@ img.toolbar {
   border: 1px solid #aaaaaa;
   cursor: pointer;
 }
+.number-input {
+  width: 49px;
+  font-size: 20px;
+  border: none;
+  text-align: center;
+}
+.variable-select {
+  display: block;
+  float: left;
+  width: 55px;
+  font-size: 14px;
+  color: ButtonText;
+}
+.variable-select p {
+  margin: 0;
+  display: inline-block;
+  width: 30px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+.variable-select .inputs-expandbttn {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  cursor: pointer;
+  border-top: 7px solid #aaa;
+  border-bottom: none;
+  float: right;
+  margin-top: 7px;
+  margin-right: 7px;
+}
+.variable-select .inputs-expandbttn.inputs-list-header-expanded {
+  border-top: none;
+  border-bottom: 7px solid #aaa;
+}
+.variable-select.expanded {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: #ededed;
+  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
+}
+.variables-list {
+  display: block;
+  float: left;
+  width: 55px;
+  font-size: 14px;
+  color: ButtonText;
+  position: absolute;
+  top: 50px;
+  z-index: 3;
+}
+.variables-list div {
+  position: relative;
+  text-align: left;
+  padding-left: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.variables-list div:hover {
+  cursor: pointer;
+  background-color: #606060;
+  border-radius: 5px;
+}
+.variables-list.expanded {
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: #ededed;
+  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
+}
 .LTL-states {
   padding: 0px;
   margin: 0px;
@@ -1836,7 +1916,7 @@ img.toolbar {
 .LTL-states .description {
   font-family: 'Segoe-UI-Light';
   font-size: 14px;
-  margin: 10px;
+  margin-left: 10px;
 }
 .LTL-states table {
   border-collapse: collapse;
@@ -1848,6 +1928,7 @@ img.toolbar {
   margin: 0px;
 }
 .LTL-states table tr td {
+  position: relative;
   width: 55px;
   border: 1px solid #aaaaaa;
   text-align: center;

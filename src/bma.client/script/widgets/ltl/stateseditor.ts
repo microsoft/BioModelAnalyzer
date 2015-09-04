@@ -40,7 +40,7 @@
                 this._setOption("states", newState);
             } 
 
-            this._setOption("variables", "x");
+            this._setOption("variables", "xvariabledfsfsdfsdfsdf");
             this._setOption("variables", "y");
 
             this._activeState = this._options.states[0];
@@ -66,7 +66,12 @@
             this.createToolbar();
 
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
-            this._description = $("<input></input>").attr("type", "text").addClass("description").attr("data-row-type", "description").attr("value", "Description").appendTo(this._ltlStates);
+            this._description = $("<input></input>").attr("type", "text").addClass("description").attr("data-row-type", "description")
+                .attr("value", "Description").appendTo(this._ltlStates).change(function () {
+                var idx = that._options.states.indexOf(that._activeState);
+                that._options.states[idx].description = this.value;
+                that._activeState.description = this.value;
+            });
 
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "add").appendTo(this._ltlStates);
             var tbody = $("<tbody></tbody>").appendTo(table);
@@ -130,20 +135,37 @@
                 for (var j = 0; j < 5; j++) {
                     if (this._activeState.formula[i][j] !== undefined) {
                         if (this._activeState.formula[i][j].type == "variable") {
+                            var currSymbol = this._activeState.formula[i][j];
                             var img = $("<img>").attr("src", this._kfrms[0].Icon).attr("name", this._kfrms[0].Name).attr("data-tool-type", this._kfrms[0].ToolType).appendTo($(condition.cells[j]));
 
-                            //var selectionDiv = $("<div></div>").attr("id", "select").appendTo($(condition.cells[j]));
-                            //var selectionText = $("<div></div>").attr("id", "variable-name").appendTo(selectionDiv);
-                            var selectVariable = $("<select></select>").attr("name", "select-variable").addClass("select-variable").appendTo($(condition.cells[j]));//.change(function () {
-                            //    $(selectionText).text(selectVariable[0].value);
-                            //});
+                            var selectVariable = $("<div></div>").addClass("variable-select").appendTo($(condition.cells[j]));
+                            var variableSelected = $("<p></p>").appendTo(selectVariable);
+                            var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
+
+                            var listOfVariables = $("<div></div>").addClass("variables-list").appendTo($(condition.cells[j])).hide();
+
+                            selectVariable.bind("click", function () {
+                                if (listOfVariables.is(":hidden")) {
+                                    listOfVariables.show();
+                                    expandButton.addClass('inputs-list-header-expanded');
+                                    selectVariable.addClass("expanded");
+                                    listOfVariables.addClass("expanded");
+                                } else {
+                                    listOfVariables.hide();
+                                    expandButton.removeClass('inputs-list-header-expanded');
+                                    selectVariable.removeClass("expanded");
+                                    listOfVariables.removeClass("expanded");
+                                }
+                            });
 
                             for (var k = 0; k < this._options.variables.length; k++)
-                                var option = $("<option>" + this._options.variables[k] + "</option>").attr("value", this._options.variables[k]).appendTo(selectVariable);
+                                var variable = $("<div>" + this._options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
+                                    variableSelected.text(this.innerText);
+                                    currSymbol.value = this.innerText;
+                                });
 
                             if (this._options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
-                                selectVariable[0].value = this._activeState.formula[i][j].value;
-                            //$(selectionText).text(selectVariable[0].value);
+                                variableSelected.text(this._activeState.formula[i][j].value);
 
                             if (j == 0) {
                                 $(condition.cells[0]).droppable("option", "accept", function (event) {
@@ -178,7 +200,13 @@
                                 });
                             }
                         } else if (this._activeState.formula[i][j].type == "const") {
-                            var img = $("<img>").attr("src", this._kfrms[1].Icon).attr("name", this._kfrms[1].Name).attr("data-tool-type", this._kfrms[1].ToolType).appendTo($(condition.cells[j]));
+                            var currNumber = this._activeState.formula[i][j];
+                            var num = $("<input autofocus></input>").attr("type", "number").attr("size", "3").attr("value", parseFloat(this._activeState.formula[i][j].value))
+                                .addClass("number-input").appendTo($(condition.cells[j])).change(function () {
+                                currNumber.value = this.value;
+                                }).onkeypress = function (e) {
+                                    return !(/[А-Яа-яA-Za-z ]/.test(String.fromCharCode(e.charCode)));
+                                };
                             if (j == 2) {
                                 $(condition.cells[2]).droppable("option", "accept", function (event) {
                                     if (event[0].getAttribute("data-tool-type") == "const")
@@ -306,7 +334,7 @@
                 td.droppable({
                     drop: function (event, ui) {
                         var stateIndex = that._options.states.indexOf(that._activeState);
-                        
+                        var cellIndex = this.cellIndex;
                         var tableIndex = Array.prototype.indexOf.call(that._ltlStates[0].children, table[0]) - 1;
                         $(this).children().remove();
 
@@ -348,19 +376,35 @@
                                 }
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
 
-                                //var selectionDiv = $("<div></div>").attr("id", "select").appendTo(this);
-                                //var selectionText = $("<div></div>").attr("id", "variable-name").appendTo(selectionDiv);
-                                var selectVariable = $("<select></select>").attr("name", "select-variable").addClass("select-variable").appendTo(this);//.change(function () {
-                                //    $(selectionText).text(selectVariable[0].value);
-                                //});
+                                var selectVariable = $("<div></div>").addClass("variable-select").appendTo(this);
+                                var variableSelected = $("<p></p>").appendTo(selectVariable);
+                                var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
+
+                                var listOfVariables = $("<div></div>").addClass("variables-list").appendTo(this).hide();
+
+                                selectVariable.bind("click", function () {
+                                    if (listOfVariables.is(":hidden")) {
+                                        listOfVariables.show();
+                                        expandButton.addClass('inputs-list-header-expanded');
+                                        selectVariable.addClass("expanded");
+                                        listOfVariables.addClass("expanded");
+                                    } else {
+                                        listOfVariables.hide();
+                                        expandButton.removeClass('inputs-list-header-expanded');
+                                        selectVariable.removeClass("expanded");
+                                        listOfVariables.removeClass("expanded");
+                                    }
+                                });
 
                                 for (var k = 0; k < that._options.variables.length; k++)
-                                    var option = $("<option>" + that._options.variables[k] + "</option>").attr("value", that._options.variables[k]).appendTo(selectVariable);
-                                //$(selectionText).text(selectVariable[0].value);
+                                    var variable = $("<div>" + that._options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
+                                        variableSelected.text(this.innerText);
+                                        that._options.states[stateIndex].formula[tableIndex][cellIndex].value = this.innerText;
+                                    });
 
                                 that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                     type: "variable",
-                                    value: selectVariable[0].value
+                                    value: variableSelected.text
                                 };
                                 break;
                             }
@@ -397,11 +441,16 @@
                                         return false;
                                     });
                                 }
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+
                                 that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                     type: "const",
-                                    value: "num"
+                                    value: 0
                                 }
+
+                                var currNumber = that._options.states[stateIndex].formula[tableIndex][this.cellIndex];
+                                var num = $("<input autofocus></input>").attr("type", "number").addClass("number-input").attr("size", "3").appendTo(this).change(function () {
+                                    currNumber.value = this.value;
+                                });
                                 break;
                             }
                             case "equal": {

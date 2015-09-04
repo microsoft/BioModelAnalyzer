@@ -141,11 +141,11 @@
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="css\LTL.css">
-      <DependentUpon>LTL.less</DependentUpon>
+    <Content Include="css\LTL_less.css">
+      <DependentUpon>LTL_less.less</DependentUpon>
     </Content>
-    <Content Include="css\LTL.min.css">
-      <DependentUpon>LTL.css</DependentUpon>
+    <Content Include="css\LTL_less.min.css">
+      <DependentUpon>LTL_less.css</DependentUpon>
     </Content>
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>
@@ -346,9 +346,9 @@
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
-    <Content Include="css\LTL.less" />
-    <Content Include="css\LTL.css.map">
-      <DependentUpon>LTL.css</DependentUpon>
+    <Content Include="css\LTL_less.less" />
+    <Content Include="css\LTL_less.css.map">
+      <DependentUpon>LTL_less.css</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
