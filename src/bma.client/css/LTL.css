@@ -1895,6 +1895,7 @@ img.toolbar {
 .temporal-toolbar .state-buttons {
   display: table-cell;
   width: 250px;
+  margin-right: 2px;
 }
 .temporal-toolbar .state-buttons .state-button.new {
   color: white;
@@ -1920,6 +1921,7 @@ img.toolbar {
   height: 21px;
   padding: 2px;
   margin-top: 5px;
+  margin-right: 2px;
 }
 .temporal-toolbar .temporal-operators .operator .label {
   display: inline-block;
