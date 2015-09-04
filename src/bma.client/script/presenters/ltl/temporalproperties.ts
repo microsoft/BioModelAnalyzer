@@ -21,7 +21,7 @@ module BMA {
                 parentoperation: BMA.LTLOperations.Operation;
                 parentoperationindex: number
             };
-            private selectedOperatorType: string;
+            private elementToAdd: { type: string; name: string };
 
             private driver: BMA.UIDrivers.ISVGPlot;
             private navigationDriver: BMA.UIDrivers.INavigationPanel;
@@ -37,7 +37,8 @@ module BMA {
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
-                contextMenu: BMA.UIDrivers.IContextMenu) {
+                contextMenu: BMA.UIDrivers.IContextMenu,
+                statesPresenter: BMA.LTL.StatesPresenter) {
 
                 var that = this;
 
@@ -48,36 +49,49 @@ module BMA {
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
 
-                window.Commands.On("AddOperatorSelect",(type: string) => {
-                    that.selectedOperatorType = type;
-                    that.navigationDriver.TurnNavigation(type === undefined);
+                window.Commands.On("AddOperatorSelect",(operatorName: string) => {
+                    that.elementToAdd = { type: "operator", name: operatorName };
+                });
+
+                window.Commands.On("AddStateSelect",(stateName: string) => {
+                    that.elementToAdd = { type: "state", name: stateName };
                 });
 
                 window.Commands.On("DrawingSurfaceDrop",(args: { x: number; y: number; screenX: number; screenY: number }) => {
-                    if (that.selectedOperatorType !== undefined) {
-                        var registry = this.operatorRegistry;
+                    if (that.elementToAdd !== undefined) {
                         var position = { x: args.x, y: args.y };
-
-                        var op = new BMA.LTLOperations.Operation();
-                        op.Operator = registry.GetOperatorByName(that.selectedOperatorType);
-                        op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
-
                         var operation = that.GetOperationAtPoint(args.x, args.y);
-
+                        var emptyCell = undefined;
                         if (operation !== undefined) {
-                            var emptyCell = undefined;
                             emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
-                            if (emptyCell !== undefined) {
-                                emptyCell.opLayout = operation;
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                                emptyCell.opLayout.Refresh();
-                            }
-                        } else {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
-                            if (that.HasIntersections(operationLayout)) {
-                                operationLayout.IsVisible = false;
+                        }
+
+                        if (that.elementToAdd.type === "operator") {
+                            var registry = this.operatorRegistry;
+
+                            var op = new BMA.LTLOperations.Operation();
+                            op.Operator = registry.GetOperatorByName(that.elementToAdd.name);
+                            op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+
+
+                            if (operation !== undefined) {
+                                if (emptyCell !== undefined) {
+                                    emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                    operation.Refresh();
+                                }
                             } else {
-                                that.operations.push(operationLayout);
+                                var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
+                                if (that.HasIntersections(operationLayout)) {
+                                    operationLayout.IsVisible = false;
+                                } else {
+                                    that.operations.push(operationLayout);
+                                }
+                            }
+                        } else if (that.elementToAdd.type === "state") {
+                            var state = statesPresenter.GetStateByName(that.elementToAdd.name);
+                            if (operation !== undefined && emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = state;
+                                operation.Refresh();
                             }
                         }
                     }

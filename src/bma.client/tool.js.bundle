@@ -63,7 +63,10 @@
   <file>/script/widgets/ltl/keyframecompact.js</file>
   <file>/script/widgets/ltl/ltlstatesviewer.js</file>
 	<file>/script/widgets/ltl/ltlviewer.js</file>
+	<file>/script/widgets/ltl/tpeditor.js</file>
+    
 	<file>/script/presenters/ltl/LTLpresenter.js</file>
+  <file>/script/presenters/ltl/states.js</file>
   <file>/script/presenters/ltl/temporalproperties.js</file>
       
 	<file>/script/operatorsregistry.js</file>

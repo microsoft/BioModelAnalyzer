@@ -370,6 +370,7 @@
     <TypeScriptCompile Include="script\localRepository.ts" />
     <TypeScriptCompile Include="script\model\operation.ts" />
     <TypeScriptCompile Include="script\model\operationlayout.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\states.ts" />
     <TypeScriptCompile Include="script\presenters\ltl\temporalproperties.ts" />
     <TypeScriptCompile Include="script\uidrivers\ltldrivers.ts" />
     <TypeScriptCompile Include="script\uidrivers\ltlinterfaces.ts" />

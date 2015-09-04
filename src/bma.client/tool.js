@@ -2656,7 +2656,7 @@ var BMA;
                     layout.operator = operator.Name;
                     var operands = op.Operands;
                     var layer = 0;
-                    var width = (this.GetOperatorWidth(svg, operator.Name)).width;
+                    var width = (this.GetOperatorWidth(svg, operator.Name, 10)).width;
                     layout.operatorWidth = width;
                     if (operands.length === 1) {
                         width += paddingX;
@@ -2682,8 +2682,9 @@ var BMA;
                 }
                 else {
                     var w = this.keyFrameSize;
-                    layout.layer = 1;
+                    layout.layer = 0;
                     layout.width = w;
+                    layout.name = operation.name;
                     return layout;
                 }
             };
@@ -2708,9 +2709,9 @@ var BMA;
                     }
                 }
             };
-            OperationLayout.prototype.GetOperatorWidth = function (svg, operator) {
+            OperationLayout.prototype.GetOperatorWidth = function (svg, operator, fontSize) {
                 var t = svg.text(0, 0, operator, {
-                    "font-size": 10,
+                    "font-size": fontSize,
                     "fill": "rgb(96,96,96)"
                 });
                 var bbox = t.getBBox();
@@ -2779,7 +2780,18 @@ var BMA;
                         }
                     }
                     else {
-                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        var stateGroup = svg.group(this.renderGroup, {
+                            transform: "translate(" + position.x + ", " + position.y + ")"
+                        });
+                        svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        svg.text(stateGroup, 0, 5, layoutPart.name, {
+                            "font-size": 16,
+                            "fill": "rgb(96,96,96)",
+                            "text-anchor": "middle",
+                            "alignment-baseline": "middle",
+                            "dominant-baseline": "central"
+                        });
+                        layoutPart.svgref = stateGroup;
                     }
                 }
             };
@@ -2836,6 +2848,8 @@ var BMA;
                     return undefined;
                 }
                 var operands = layoutPart.operands;
+                if (operands === undefined)
+                    return layoutPart;
                 switch (operands.length) {
                     case 1:
                         if (operands[0].isEmpty)
@@ -8914,6 +8928,152 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlviewer.js.map
+///#source 1 1 /script/widgets/ltl/tpeditor.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/*
+<div class="window-title">Temporal Properties</div>
+
+    <div class="temporal-toolbar">
+        <div class="state-buttons">
+            States<br>
+            <div class="btns">
+                <div class="state-button">A</div>
+                <div class="state-button">B</div>
+                <div class="state-button">F</div>
+                <div class="state-button new">+</div>
+            </div>
+        </div>
+        <div class="temporal-operators">
+            Operators<br>
+            <div id="operators" class="operators">
+                
+            </div>
+        </div>
+    </div>
+
+    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
+        <div id="drawingSurface" class="bma-drawingsurface"></div>
+    </div>
+ */
+(function ($) {
+    $.widget("BMA.temporalpropertieseditor", {
+        options: {
+            states: ["A", "B", "C"]
+        },
+        _create: function () {
+            var root = this.element;
+            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
+            //Adding states
+            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            for (var i = 0; i < this.options.states.length; i++) {
+                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", this.options.states[i]).css("z-index", 100).css("cursor", "pointer").text(this.options.states[i]).appendTo(statesbtns);
+                stateDiv.draggable({
+                    helper: "clone",
+                    start: function (event, ui) {
+                        $(this).draggable("option", "cursorAt", {
+                            left: Math.floor(ui.helper.width() / 2),
+                            top: Math.floor(ui.helper.height() / 2)
+                        });
+                        window.Commands.Execute("AddStateSelect", $(this).attr("data-state"));
+                    }
+                });
+            }
+            //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
+            //Adding operators
+            var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
+            var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
+            for (var i = 0; i < registry.Operators.length; i++) {
+                var operator = registry.Operators[i];
+                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 100).css("cursor", "pointer").appendTo(operatorsDiv);
+                var spaceStr = "&nbsp;&nbsp;";
+                if (operator.OperandsCount > 1) {
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                    spaceStr = "";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
+                $("<div></div>").addClass("hole").appendTo(opDiv);
+                opDiv.draggable({
+                    helper: "clone",
+                    start: function (event, ui) {
+                        $(this).draggable("option", "cursorAt", {
+                            left: Math.floor(ui.helper.width() / 2),
+                            top: Math.floor(ui.helper.height() / 2)
+                        });
+                        window.Commands.Execute("AddOperatorSelect", $(this).attr("data-operator"));
+                    }
+                });
+            }
+            //Adding drawing surface
+            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").appendTo(root);
+            var drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
+            drawingSurface.drawingsurface();
+            //Context menu
+            var holdCords = {
+                holdX: 0,
+                holdY: 0
+            };
+            $(document).on('vmousedown', function (event) {
+                holdCords.holdX = event.pageX;
+                holdCords.holdY = event.pageY;
+            });
+            drawingSurfaceCnt.contextmenu({
+                delegate: drawingSurfaceCnt,
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                taphold: true,
+                menu: [
+                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    var left = x - drawingSurface.offset().left;
+                    var top = y - drawingSurface.offset().top;
+                    window.Commands.Execute("TemporalPropertiesEditorContextMenuOpening", {
+                        left: left,
+                        top: top
+                    });
+                },
+                select: function (event, ui) {
+                    var args = {};
+                    var commandName = "TemporalPropertiesEditor" + ui.cmd;
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    args.left = x - drawingSurface.offset().left;
+                    args.top = y - drawingSurface.offset().top;
+                    window.Commands.Execute(commandName, args);
+                }
+            });
+        },
+        getContextMenuPanel: function () {
+            return this.element.find(".bma-drawingsurfacecontainer");
+        },
+        getDrawingSurface: function () {
+            return this.element.find(".bma-drawingsurface");
+        },
+        _setOption: function (key, value) {
+            var that = this;
+            switch (key) {
+                default:
+                    break;
+            }
+            this._super(key, value);
+        },
+        destroy: function () {
+            this.element.empty();
+        },
+    });
+}(jQuery));
+//# sourceMappingURL=tpeditor.js.map
 ///#source 1 1 /script/presenters/ltl/LTLpresenter.js
 var BMA;
 (function (BMA) {
@@ -9059,6 +9219,23 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=LTLpresenter.js.map
+///#source 1 1 /script/presenters/ltl/states.js
+var BMA;
+(function (BMA) {
+    var LTL;
+    (function (LTL) {
+        var StatesPresenter = (function () {
+            function StatesPresenter() {
+            }
+            StatesPresenter.prototype.GetStateByName = function (name) {
+                return new BMA.LTLOperations.Keyframe(name);
+            };
+            return StatesPresenter;
+        })();
+        LTL.StatesPresenter = StatesPresenter;
+    })(LTL = BMA.LTL || (BMA.LTL = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=states.js.map
 ///#source 1 1 /script/presenters/ltl/temporalproperties.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
@@ -9073,7 +9250,7 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService, contextMenu) {
+            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
                 var _this = this;
                 var that = this;
                 this.driver = svgPlotDriver;
@@ -9081,34 +9258,46 @@ var BMA;
                 this.dragService = dragService;
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
-                window.Commands.On("AddOperatorSelect", function (type) {
-                    that.selectedOperatorType = type;
-                    that.navigationDriver.TurnNavigation(type === undefined);
+                window.Commands.On("AddOperatorSelect", function (operatorName) {
+                    that.elementToAdd = { type: "operator", name: operatorName };
+                });
+                window.Commands.On("AddStateSelect", function (stateName) {
+                    that.elementToAdd = { type: "state", name: stateName };
                 });
                 window.Commands.On("DrawingSurfaceDrop", function (args) {
-                    if (that.selectedOperatorType !== undefined) {
-                        var registry = _this.operatorRegistry;
+                    if (that.elementToAdd !== undefined) {
                         var position = { x: args.x, y: args.y };
-                        var op = new BMA.LTLOperations.Operation();
-                        op.Operator = registry.GetOperatorByName(that.selectedOperatorType);
-                        op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
                         var operation = that.GetOperationAtPoint(args.x, args.y);
+                        var emptyCell = undefined;
                         if (operation !== undefined) {
-                            var emptyCell = undefined;
                             emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
-                            if (emptyCell !== undefined) {
-                                emptyCell.opLayout = operation;
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                                emptyCell.opLayout.Refresh();
-                            }
                         }
-                        else {
-                            var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
-                            if (that.HasIntersections(operationLayout)) {
-                                operationLayout.IsVisible = false;
+                        if (that.elementToAdd.type === "operator") {
+                            var registry = _this.operatorRegistry;
+                            var op = new BMA.LTLOperations.Operation();
+                            op.Operator = registry.GetOperatorByName(that.elementToAdd.name);
+                            op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                            if (operation !== undefined) {
+                                if (emptyCell !== undefined) {
+                                    emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                    operation.Refresh();
+                                }
                             }
                             else {
-                                that.operations.push(operationLayout);
+                                var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, position);
+                                if (that.HasIntersections(operationLayout)) {
+                                    operationLayout.IsVisible = false;
+                                }
+                                else {
+                                    that.operations.push(operationLayout);
+                                }
+                            }
+                        }
+                        else if (that.elementToAdd.type === "state") {
+                            var state = statesPresenter.GetStateByName(that.elementToAdd.name);
+                            if (operation !== undefined && emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = state;
+                                operation.Refresh();
                             }
                         }
                     }
