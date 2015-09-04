@@ -32,122 +32,20 @@
             window.Commands = new BMA.CommandRegistry();
 
             //Loading widgets
-            var drawingSurface = $("#drawingSurface");
-            drawingSurface.drawingsurface();
+            $("#tpeditor").temporalpropertieseditor();
 
             //Loading Drivers
-            var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
+            var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver($("#tpeditor").temporalpropertieseditor("getDrawingSurface"));
+            var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#tpeditor").temporalpropertieseditor("getContextMenuPanel"));
 
-            var elementPanel = $("#modelelemtoolbar");
-            var registry = new BMA.LTLOperations.OperatorsRegistry();
-            var operatorsDiv = $("#operators");
-            for (var i = 0; i < registry.Operators.length; i++) {
-                var operator = registry.Operators[i];
-
-                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 100).css("cursor", "pointer").appendTo(operatorsDiv);
-                var spaceStr = "&nbsp;&nbsp;";
-                if (operator.operandsNumber > 1) {
-                    $("<div></div>").addClass("hole").appendTo(opDiv);
-                    spaceStr = "";
-                }
-                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
-                $("<div></div>").addClass("hole").appendTo(opDiv);
-
-                opDiv.draggable({
-                    helper: "clone",
-                    start: function (event, ui) {
-                        $(this).draggable("option", "cursorAt", {
-                            left: 0,//Math.floor(ui.helper.width() / 2),
-                            top: 0//Math.floor(ui.helper.height() / 2)
-                        });
-                        window.Commands.Execute("AddOperatorSelect", $(this).attr("data-operator"));
-                    }
-                });
-
-                
-            }
-
-            //Context menu
-
-            var holdCords = {
-                holdX: 0,
-                holdY: 0
-            }
-
-            $(document).on('vmousedown', function (event) {
-                holdCords.holdX = event.pageX;
-                holdCords.holdY = event.pageY;
-            });
-
-            $("#drawingSurceContainer").contextmenu({
-                delegate: ".bma-drawingsurface",
-                autoFocus: true,
-                preventContextMenuForPopup: true,
-                preventSelect: true,
-                taphold: true,
-                menu: [
-                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
-                ],
-                beforeOpen: function (event, ui) {
-                    ui.menu.zIndex(50);
-                    var x = holdCords.holdX || event.pageX;
-                    var y = holdCords.holdX || event.pageY;
-                    var left = x - $(".bma-drawingsurface").offset().left;
-                    var top = y - $(".bma-drawingsurface").offset().top;
-
-                    window.Commands.Execute("TemporalPropertiesEditorContextMenuOpening", {
-                        left: left,
-                        top: top
-                    });
-                },
-                select: function (event, ui) {
-                    var args = {};
-                    var commandName = "TemporalPropertiesEditor" + ui.cmd;
-                    var x = holdCords.holdX || event.pageX;
-                    var y = holdCords.holdX || event.pageY;
-                    args.left = x - $(".bma-drawingsurface").offset().left;
-                    args.top = y - $(".bma-drawingsurface").offset().top;
-                    window.Commands.Execute(commandName, args);
-                }
-            });
-
-
-            //End of context menu
-
-
-            var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
-            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver);
+            //Loading Presenters
+            var statesPresenter = new BMA.LTL.StatesPresenter();
+            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver, statesPresenter);
             svgPlotDriver.SetGridVisibility(false);
         });
     </script>
 </head>
 <body style="margin: 0;">
-    <div class="window-title">Temporal Properties</div>
-
-    <div class="temporal-toolbar">
-        <div class="state-buttons">
-            States<br>
-            <div class="btns">
-                <div class="state-button">A</div>
-                <div class="state-button">B</div>
-                <div class="state-button">F</div>
-                <div class="state-button new">+</div>
-            </div>
-        </div>
-        <div class="temporal-operators">
-            Operators<br>
-            <div id="operators" class="operators">
-                
-            </div>
-        </div>
-    </div>
-
-    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
-        <div id="drawingSurface" class="bma-drawingsurface"></div>
-    </div>
-
+    <div id="tpeditor" style="height: 100%;"></div>
 </body>
 </html>

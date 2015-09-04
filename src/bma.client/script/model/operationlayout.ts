@@ -1,7 +1,7 @@
 ﻿module BMA {
     export module LTLOperations {
         export class OperationLayout {
-            private operation: Operation;
+            private operation: IOperand;
             private layout: any;
             private padding: { x: number; y: number };
             private keyFrameSize = 25;
@@ -12,7 +12,7 @@
             private scale: { x: number; y: number } = { x: 1, y: 1 };
             private borderThickness: number = 1;
 
-            constructor(svg: any, operation: Operation, position: { x: number; y: number }) {
+            constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
@@ -78,7 +78,7 @@
                 }
             }
 
-            public get Operation(): Operation {
+            public get Operation(): IOperand {
                 return this.operation;
             }
 
@@ -164,7 +164,7 @@
 
                     var operands = (<BMA.LTLOperations.Operation>op).Operands;
                     var layer = 0;
-                    var width = (this.GetOperatorWidth(svg, operator.Name)).width;
+                    var width = (this.GetOperatorWidth(svg, operator.Name, 10)).width;
 
 
                     layout.operatorWidth = width;
@@ -194,8 +194,9 @@
                     return layout;
                 } else {
                     var w = this.keyFrameSize;
-                    layout.layer = 1;
+                    layout.layer = 0;
                     layout.width = w;
+                    layout.name = operation.name;
                     return layout;
                 }
             }
@@ -225,9 +226,9 @@
                 }
             }
 
-            private GetOperatorWidth(svg: any, operator: string): { width: number; height: number } {
+            private GetOperatorWidth(svg: any, operator: string, fontSize: number): { width: number; height: number } {
                 var t = svg.text(0, 0, operator, {
-                    "font-size": 10,
+                    "font-size": fontSize,
                     "fill": "rgb(96,96,96)"
                 });
                 var bbox = t.getBBox();
@@ -314,7 +315,19 @@
 
                         }
                     } else {
-                        layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        var stateGroup = svg.group(this.renderGroup, {
+                            transform: "translate(" + position.x + ", " + position.y + ")"
+                        });
+                        svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        svg.text(stateGroup, 0, 5, layoutPart.name, {
+                            "font-size": 16,
+                            "fill": "rgb(96,96,96)",
+                            "text-anchor": "middle", 
+                            "alignment-baseline": "middle",
+                            "dominant-baseline": "central"
+                        });
+
+                        layoutPart.svgref = stateGroup;
                     }
                 }
             }
@@ -386,6 +399,9 @@
                 }
 
                 var operands = layoutPart.operands;
+
+                if (operands === undefined)
+                    return layoutPart;
 
                 switch (operands.length) {
                     case 1:
