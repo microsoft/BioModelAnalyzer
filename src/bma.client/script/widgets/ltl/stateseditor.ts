@@ -84,8 +84,6 @@
                 that.addCondition();
             });
 
-            
-
             this.refresh();
         },
 
@@ -120,6 +118,63 @@
             }
         },
 
+        validation: function (formula) {
+            var varCount = 0;
+            var constCount = 0;
+            for (var i = 0; i < 5; i++) {
+                if (formula[i] !== undefined) {
+                    if (formula[i].type == "operator") {
+                        if (i % 2 == 0)
+                            return false;
+                        if (i == 3 && formula[0] !== undefined && formula[0].type == "variable")
+                            return false;
+                    } else if (formula[i].type == "variable") {
+                        varCount++;
+                        if (varCount > 1 || i % 2 == 1 || i == 4)
+                            return false;
+                    } else if (formula[i].type == "const") {
+                        constCount++;
+                        if (i % 2 == 1 || constCount > 2)
+                            return false;
+                        if (i == 4 && formula[0] !== undefined && formula[0].type == "variable")
+                            return false;
+                    }
+                }
+            }
+            return true;
+        },
+
+        createNewSelect: function (td, currSymbol) {
+            var selectVariable = $("<div></div>").addClass("variable-select").appendTo(td);
+            var variableSelected = $("<p></p>").appendTo(selectVariable);
+            var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
+
+            var listOfVariables = $("<div></div>").addClass("variables-list").appendTo(td).hide();
+
+            selectVariable.bind("click", function () {
+                if (listOfVariables.is(":hidden")) {
+                    listOfVariables.show();
+                    expandButton.addClass('inputs-list-header-expanded');
+                    selectVariable.addClass("expanded");
+                    listOfVariables.addClass("expanded");
+                } else {
+                    listOfVariables.hide();
+                    expandButton.removeClass('inputs-list-header-expanded');
+                    selectVariable.removeClass("expanded");
+                    listOfVariables.removeClass("expanded");
+                }
+            });
+
+            for (var k = 0; k < this._options.variables.length; k++)
+                var variable = $("<div>" + this._options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
+                    variableSelected.text(this.innerText);
+                    currSymbol.value = this.innerText;
+
+                    selectVariable.trigger("click");
+                });
+
+            return selectVariable;
+        },
 
         refresh: function () {
             var idx = this._options.states.indexOf(this._activeState);
@@ -127,118 +182,40 @@
 
             var children = $(this._ltlStates).find("[data-row-type='condition']").remove();
 
-            this._description.value = this._activeState.description;
+            this._description[0].value = this._activeState.description;
 
             for (var i = 0; i < this._activeState.formula.length; i++) {
                 this.addCondition();
-                var condition = this._ltlStates[0].children[i + 1];
+                var table = this._ltlStates[0].children[i + 1];
+                var tbody = table.children[0];
+                var condition = tbody.children[0];
                 for (var j = 0; j < 5; j++) {
                     if (this._activeState.formula[i][j] !== undefined) {
                         if (this._activeState.formula[i][j].type == "variable") {
                             var currSymbol = this._activeState.formula[i][j];
                             var img = $("<img>").attr("src", this._kfrms[0].Icon).attr("name", this._kfrms[0].Name).attr("data-tool-type", this._kfrms[0].ToolType).appendTo($(condition.cells[j]));
 
-                            var selectVariable = $("<div></div>").addClass("variable-select").appendTo($(condition.cells[j]));
-                            var variableSelected = $("<p></p>").appendTo(selectVariable);
-                            var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
-
-                            var listOfVariables = $("<div></div>").addClass("variables-list").appendTo($(condition.cells[j])).hide();
-
-                            selectVariable.bind("click", function () {
-                                if (listOfVariables.is(":hidden")) {
-                                    listOfVariables.show();
-                                    expandButton.addClass('inputs-list-header-expanded');
-                                    selectVariable.addClass("expanded");
-                                    listOfVariables.addClass("expanded");
-                                } else {
-                                    listOfVariables.hide();
-                                    expandButton.removeClass('inputs-list-header-expanded');
-                                    selectVariable.removeClass("expanded");
-                                    listOfVariables.removeClass("expanded");
-                                }
-                            });
-
-                            for (var k = 0; k < this._options.variables.length; k++)
-                                var variable = $("<div>" + this._options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
-                                    variableSelected.text(this.innerText);
-                                    currSymbol.value = this.innerText;
-                                });
+                            var selectVariable = this.createNewSelect($(condition.cells[j]), currSymbol);
 
                             if (this._options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
-                                variableSelected.text(this._activeState.formula[i][j].value);
-
-                            if (j == 0) {
-                                $(condition.cells[0]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "variable")
-                                        return true;
-                                    return false;
-                                });
-                                $(condition.cells[2]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "const")
-                                        return true;
-                                    return false;
-                                });
-
-                                for (var k = 3; k < 5; k++)
-                                    $(condition.cells[k]).droppable("option", "accept", false);
-
-                            } else if (j == 2) {
-                                $(condition.cells[2]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "variable")
-                                        return true;
-                                    return false;
-                                });
-                                $(condition.cells[0]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "const")
-                                        return true;
-                                    return false;
-                                });
-                                $(condition.cells[4]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "const")
-                                        return true;
-                                    return false;
-                                });
-                            }
+                                $(selectVariable[0].children[0]).text(this._activeState.formula[i][j].value);
                         } else if (this._activeState.formula[i][j].type == "const") {
                             var currNumber = this._activeState.formula[i][j];
-                            var num = $("<input autofocus></input>").attr("type", "number").attr("size", "3").attr("value", parseFloat(this._activeState.formula[i][j].value))
+                            var num = $("<input autofocus></input>").attr("value", parseFloat(this._activeState.formula[i][j].value))
                                 .addClass("number-input").appendTo($(condition.cells[j])).change(function () {
                                 currNumber.value = this.value;
-                                }).onkeypress = function (e) {
-                                    return !(/[А-Яа-яA-Za-z ]/.test(String.fromCharCode(e.charCode)));
-                                };
-                            if (j == 2) {
-                                $(condition.cells[2]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "const")
-                                        return true;
-                                    return false;
                                 });
-                                $(condition.cells[0]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "variable")
-                                        return true;
-                                    return false;
-                                });
-
-                                for (var k = 3; k < 5; k++)
-                                    $(condition.cells[k]).droppable("option", "accept", false);
-
-                            } else if (this.cellIndex == 0 || this.cellIndex == 4) {
-                                $(condition.cells[0]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "const")
-                                        return true;
-                                    return false;
-                                });
-                                $(condition.cells[4]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "const")
-                                        return true;
-                                    return false;
-                                });
-                                $(condition.cells[2]).droppable("option", "accept", function (event) {
-                                    if (event[0].getAttribute("data-tool-type") == "variable")
-                                        return true;
-                                    return false;
-                                });
-                            }
+                            //$(num).spinner({
+                            //    spin: function (event, ui) {
+                            //        if (ui.value > 999) {
+                            //            $(this).spinner("value", -999);
+                            //            return false;
+                            //        } else if (ui.value < -999) {
+                            //            $(this).spinner("value", 999);
+                            //            return false;
+                            //        }
+                            //    }
+                            //});
                         } else if (this._activeState.formula[i][j].type == "operator") {
                             var img;
                             switch (this._activeState.formula[i][j].value) {
@@ -270,19 +247,10 @@
                                 default: break;
                             } 
                         }
-                        if (j % 2 == 1) 
-                            $(condition.cells[j]).droppable("option", "accept", function (event) {
-                                if (event[0].getAttribute("data-tool-type") == "operator")
-                                    return true;
-                                return false;
-                            });
-                        else 
-                            $(condition.cells[j]).droppable("option", "accept", function (event) {
-                                if (event[0].getAttribute("data-tool-type") == "variable" || event[0].getAttribute("data-tool-type") == "const")
-                                    return true;
-                                return false;
-                            });
                     }
+                    if (!this.validation(this._activeState.formula[i]))
+                        $(condition).addClass("error");
+                    else $(condition).removeClass("error");
                 }
             }
         },
@@ -336,121 +304,43 @@
                         var stateIndex = that._options.states.indexOf(that._activeState);
                         var cellIndex = this.cellIndex;
                         var tableIndex = Array.prototype.indexOf.call(that._ltlStates[0].children, table[0]) - 1;
-                        $(this).children().remove();
+                        $(this.children).remove();
 
                         switch (ui.draggable[0].name) {
                             case "var": {
-                                if (this.cellIndex == 0) {
-                                    $(tr[0].cells[0]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "variable")
-                                            return true;
-                                        return false;
-                                    });
-                                    $(tr[0].cells[2]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "const")
-                                            return true;
-                                        return false;
-                                    });
-
-                                    for (var j = 3; j < 5; j++)
-                                        $(tr[0].cells[j]).droppable("option", "accept", false);
-
-                                } else if (this.cellIndex == 2) {
-                                    $(tr[0].cells[2]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "variable")
-                                            return true;
-                                        return false;
-                                    });
-                                    $(tr[0].cells[0]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "const")
-                                            return true;
-                                        return false;
-                                    });
-                                    $(tr[0].cells[4]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "const")
-                                            return true;
-                                        return false;
-                                    });
-                                } else {
-                                    break;
-                                }
                                 var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
-
-                                var selectVariable = $("<div></div>").addClass("variable-select").appendTo(this);
-                                var variableSelected = $("<p></p>").appendTo(selectVariable);
-                                var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
-
-                                var listOfVariables = $("<div></div>").addClass("variables-list").appendTo(this).hide();
-
-                                selectVariable.bind("click", function () {
-                                    if (listOfVariables.is(":hidden")) {
-                                        listOfVariables.show();
-                                        expandButton.addClass('inputs-list-header-expanded');
-                                        selectVariable.addClass("expanded");
-                                        listOfVariables.addClass("expanded");
-                                    } else {
-                                        listOfVariables.hide();
-                                        expandButton.removeClass('inputs-list-header-expanded');
-                                        selectVariable.removeClass("expanded");
-                                        listOfVariables.removeClass("expanded");
-                                    }
-                                });
-
-                                for (var k = 0; k < that._options.variables.length; k++)
-                                    var variable = $("<div>" + that._options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
-                                        variableSelected.text(this.innerText);
-                                        that._options.states[stateIndex].formula[tableIndex][cellIndex].value = this.innerText;
-                                    });
 
                                 that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                     type: "variable",
-                                    value: variableSelected.text
+                                    value: 0
                                 };
+
+                                var selectVariable = that.createNewSelect(this, that._options.states[stateIndex].formula[tableIndex][cellIndex]);
+
                                 break;
                             }
                             case "num": {
-                                if (this.cellIndex == 2) {
-                                    $(tr[0].cells[2]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "const")
-                                            return true;
-                                        return false;
-                                    });
-                                    $(tr[0].cells[0]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "variable")
-                                            return true;
-                                        return false;
-                                    });
-
-                                    for (var j = 3; j < 5; j++)
-                                        $(tr[0].cells[j]).droppable("option", "accept", false);
-
-                                } else if (this.cellIndex == 0 || this.cellIndex == 4) {
-                                    $(tr[0].cells[0]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "const")
-                                            return true;
-                                        return false;
-                                    });
-                                    $(tr[0].cells[4]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "const")
-                                            return true;
-                                        return false;
-                                    });
-                                    $(tr[0].cells[2]).droppable("option", "accept", function (event) {
-                                        if (event[0].getAttribute("data-tool-type") == "variable")
-                                            return true;
-                                        return false;
-                                    });
-                                }
-
                                 that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                     type: "const",
                                     value: 0
                                 }
 
                                 var currNumber = that._options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                                var num = $("<input autofocus></input>").attr("type", "number").addClass("number-input").attr("size", "3").appendTo(this).change(function () {
+                                var num = $("<input autofocus></input>").addClass("number-input").appendTo(this).change(function () {
                                     currNumber.value = this.value;
                                 });
+
+                                //$(num).spinner({
+                                //    spin: function (event, ui) {
+                                //        if (ui.value > 999) {
+                                //            $(this).spinner("value", -999);
+                                //            return false;
+                                //        } else if (ui.value < -999) {
+                                //            $(this).spinner("value", 999);
+                                //            return false;
+                                //        }
+                                //    }
+                                //});
                                 break;
                             }
                             case "equal": {
@@ -493,22 +383,13 @@
                                 }
                                 break;
                             }
+                            default: break;
                         }
+                        if (!that.validation(that._options.states[stateIndex].formula[tableIndex]))
+                            $(this.parentElement).addClass("error");
+                        else $(this.parentElement).removeClass("error");
                     }
                 });
-
-                if (i % 2 == 1)
-                    td.droppable("option", "accept", function (event) {
-                        if (event[0].getAttribute("data-tool-type") == "operator")
-                            return true;
-                        return false;
-                    });
-                else
-                    td.droppable("option", "accept", function (event) {
-                        if (event[0].getAttribute("data-tool-type") == "variable" || event[0].getAttribute("data-tool-type") == "const")
-                            return true;
-                        return false;
-                    });
             }
             var td = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
                 $(table).remove();

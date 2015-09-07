@@ -1837,8 +1837,8 @@ img.toolbar {
   cursor: pointer;
 }
 .number-input {
-  width: 49px;
-  font-size: 20px;
+  width: 30px;
+  font-size: 0.5em !important;
   border: none;
   text-align: center;
 }
@@ -1926,6 +1926,9 @@ img.toolbar {
 }
 .LTL-states table tr {
   margin: 0px;
+}
+.LTL-states table tr.error td {
+  border: 1px solid red;
 }
 .LTL-states table tr td {
   position: relative;
@@ -2056,4 +2059,4 @@ img.toolbar {
 .state:empty:after {
   content: "\00a0";
 }
-/*# sourceMappingURL=LTL.css.map */
+/*# sourceMappingURL=LTL_less.css.map */
