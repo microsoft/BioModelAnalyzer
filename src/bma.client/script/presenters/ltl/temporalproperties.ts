@@ -135,7 +135,7 @@ module BMA {
 
                         if (this.clipboard !== undefined) {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), this.clipboard.operation, { x: x, y: y });
-                            canPaste = !this.HasIntersections(operationLayout);
+                            canPaste = !this.HasIntersections(operationLayout) && this.clipboard.operation.operator !== undefined;
                             operationLayout.IsVisible = false;
                         }
 
@@ -257,15 +257,21 @@ module BMA {
                             var position = this.stagingOperation.operation.Position;
 
                             if (!this.HasIntersections(this.stagingOperation.operation)) {
-                                if (this.stagingOperation.isRoot) {
-                                    this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
-                                    this.stagingOperation.originRef.IsVisible = true;
+                                if (this.stagingOperation.operation.IsOperation) {
+                                    if (this.stagingOperation.isRoot) {
+                                        this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
+                                        this.stagingOperation.originRef.IsVisible = true;
+                                    } else {
+                                        this.operations.push(
+                                            new BMA.LTLOperations.OperationLayout(
+                                                that.driver.GetSVGRef(),
+                                                this.stagingOperation.operation.Operation,
+                                                this.stagingOperation.operation.Position));
+                                    }
                                 } else {
-                                    this.operations.push(
-                                        new BMA.LTLOperations.OperationLayout(
-                                            that.driver.GetSVGRef(),
-                                            this.stagingOperation.operation.Operation,
-                                            this.stagingOperation.operation.Position));
+                                    //State should state in its origin place
+                                    this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                    this.stagingOperation.originRef.Refresh();
                                 }
                             } else {
                                 var operation = this.GetOperationAtPoint(position.x, position.y);

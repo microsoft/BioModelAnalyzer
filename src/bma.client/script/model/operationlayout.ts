@@ -21,6 +21,10 @@
                 this.Render();
             }
 
+            public get IsOperation(): boolean {
+                return (<BMA.LTLOperations.Operation>this.operation).Operator !== undefined;
+            }
+
             public get KeyFrameSize(): number {
                 return this.keyFrameSize;
             }

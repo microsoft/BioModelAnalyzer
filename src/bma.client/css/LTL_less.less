@@ -45,7 +45,7 @@ img.toolbar{
     &:hover{
         cursor: pointer;
     }
-	&.new{
+	&.new{ 
 		color: @lightgrey;
 		border: 1px solid @lightgrey;
 		&:hover{
@@ -232,6 +232,7 @@ img.toolbar{
 	.state-buttons{
 		display: table-cell;
 		width: 250px;
+        margin-right: 2px;
 		.state-button{
 			&.new{
 				color: white;
@@ -251,7 +252,32 @@ img.toolbar{
 		display:table-cell;
 		vertical-align: top;
 		width:450px;
-
+		
+		.operator{
+			display:inline-block;
+			color:@darkgrey;
+			background-color: white;
+			border: 1px solid @darkgrey;
+			border-radius: 25px;
+			height:21px;
+			padding: 2px;
+			margin-top: 5px;
+            margin-right: 2px;
+			.label{
+				display: inline-block;
+				vertical-align: top;
+				margin-top: 2px;
+				//padding:0px 2px 0px 2px;
+			}
+			.hole{
+				display: inline-block;
+				margin: 3px 2px 0px 2px;
+				background-color: @darkgrey;
+				border-radius: 25px;
+				width:15px;
+				height: 15px;
+			}
+		}
 	}
 }
 

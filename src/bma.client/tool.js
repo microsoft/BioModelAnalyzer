@@ -2498,6 +2498,13 @@ var BMA;
                 this.position = position;
                 this.Render();
             }
+            Object.defineProperty(OperationLayout.prototype, "IsOperation", {
+                get: function () {
+                    return this.operation.Operator !== undefined;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "KeyFrameSize", {
                 get: function () {
                     return this.keyFrameSize;
@@ -9332,7 +9339,7 @@ var BMA;
                     else {
                         if (_this.clipboard !== undefined) {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.clipboard.operation, { x: x, y: y });
-                            canPaste = !_this.HasIntersections(operationLayout);
+                            canPaste = !_this.HasIntersections(operationLayout) && _this.clipboard.operation.operator !== undefined;
                             operationLayout.IsVisible = false;
                         }
                         contextMenu.ShowMenuItems([
@@ -9434,12 +9441,19 @@ var BMA;
                         _this.stagingOperation.operation.IsVisible = false;
                         var position = _this.stagingOperation.operation.Position;
                         if (!_this.HasIntersections(_this.stagingOperation.operation)) {
-                            if (_this.stagingOperation.isRoot) {
-                                _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
-                                _this.stagingOperation.originRef.IsVisible = true;
+                            if (_this.stagingOperation.operation.IsOperation) {
+                                if (_this.stagingOperation.isRoot) {
+                                    _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                                    _this.stagingOperation.originRef.IsVisible = true;
+                                }
+                                else {
+                                    _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                }
                             }
                             else {
-                                _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                //State should state in its origin place
+                                _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                _this.stagingOperation.originRef.Refresh();
                             }
                         }
                         else {
