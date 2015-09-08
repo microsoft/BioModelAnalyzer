@@ -1838,7 +1838,7 @@ img.toolbar {
 }
 .number-input {
   width: 30px;
-  font-size: 0.5em !important;
+  font-size: 18px;
   border: none;
   text-align: center;
 }
@@ -1882,8 +1882,9 @@ img.toolbar {
 }
 .variables-list {
   display: block;
+  padding: 2px;
   float: left;
-  width: 55px;
+  width: 51px;
   font-size: 14px;
   color: ButtonText;
   position: absolute;

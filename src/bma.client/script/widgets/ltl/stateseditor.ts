@@ -36,12 +36,11 @@
                           undefined ]
                     ]
                 };
-
-                this._setOption("states", newState);
+                this._options.states.push(newState);
             } 
 
-            this._setOption("variables", "xvariabledfsfsdfsdfsdf");
-            this._setOption("variables", "y");
+            this._options.variables.push("xvariabledfsfsdfsdfsdf");
+            this._options.variables.push("y");
 
             this._activeState = this._options.states[0];
 
@@ -88,6 +87,7 @@
         },
 
         _setOption: function (key, value) {
+            var that = this;
             switch (key) {
                 case "variables": {
                     this._options.variables.push(value);
@@ -128,6 +128,8 @@
                             return false;
                         if (i == 3 && formula[0] !== undefined && formula[0].type == "variable")
                             return false;
+                        if (i == 3 && formula[2] !== undefined && formula[2].type == "const")
+                            return false;
                     } else if (formula[i].type == "variable") {
                         varCount++;
                         if (varCount > 1 || i % 2 == 1 || i == 4)
@@ -135,6 +137,11 @@
                     } else if (formula[i].type == "const") {
                         constCount++;
                         if (i % 2 == 1 || constCount > 2)
+                            return false;
+                        if (i == 0 && formula[2] !== undefined && formula[2].type != "variable")
+                            return false;
+                        if (i == 2 && ((formula[0] !== undefined && formula[0].type != "variable") ||
+                            formula[4] !== undefined))
                             return false;
                         if (i == 4 && formula[0] !== undefined && formula[0].type == "variable")
                             return false;
@@ -201,21 +208,15 @@
                                 $(selectVariable[0].children[0]).text(this._activeState.formula[i][j].value);
                         } else if (this._activeState.formula[i][j].type == "const") {
                             var currNumber = this._activeState.formula[i][j];
-                            var num = $("<input autofocus></input>").attr("value", parseFloat(this._activeState.formula[i][j].value))
-                                .addClass("number-input").appendTo($(condition.cells[j])).change(function () {
+                            var num = $("<input autofocus></input>").attr("type", "text").attr("min", "0").attr("max", "100")
+                                .attr("value", parseFloat(this._activeState.formula[i][j].value)).attr("size", "1")
+                                .attr("value", "0").addClass("number-input").appendTo($(condition.cells[j]));
+
+                            num.bind("input change", function () {
+                                if (this.value > 100) this.value = 100;
+                                if (this.value < - 99) this.value = -99;
                                 currNumber.value = this.value;
-                                });
-                            //$(num).spinner({
-                            //    spin: function (event, ui) {
-                            //        if (ui.value > 999) {
-                            //            $(this).spinner("value", -999);
-                            //            return false;
-                            //        } else if (ui.value < -999) {
-                            //            $(this).spinner("value", 999);
-                            //            return false;
-                            //        }
-                            //    }
-                            //});
+                            });
                         } else if (this._activeState.formula[i][j].type == "operator") {
                             var img;
                             switch (this._activeState.formula[i][j].value) {
@@ -304,90 +305,90 @@
                         var stateIndex = that._options.states.indexOf(that._activeState);
                         var cellIndex = this.cellIndex;
                         var tableIndex = Array.prototype.indexOf.call(that._ltlStates[0].children, table[0]) - 1;
-                        $(this.children).remove();
 
-                        switch (ui.draggable[0].name) {
-                            case "var": {
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                        var formula = that._options.states[stateIndex].formula[tableIndex].slice(0);
 
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "variable",
-                                    value: 0
-                                };
+                        formula[this.cellIndex] = {
+                            type: ui.draggable[0].getAttribute("data-tool-type"),
+                            value: 0
+                        };
 
-                                var selectVariable = that.createNewSelect(this, that._options.states[stateIndex].formula[tableIndex][cellIndex]);
+                        if (that.validation(formula)) {
 
-                                break;
-                            }
-                            case "num": {
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "const",
-                                    value: 0
-                                }
+                            $(this.children).remove();
 
-                                var currNumber = that._options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                                var num = $("<input autofocus></input>").addClass("number-input").appendTo(this).change(function () {
-                                    currNumber.value = this.value;
-                                });
+                            switch (ui.draggable[0].name) {
+                                case "var": {
+                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
 
-                                //$(num).spinner({
-                                //    spin: function (event, ui) {
-                                //        if (ui.value > 999) {
-                                //            $(this).spinner("value", -999);
-                                //            return false;
-                                //        } else if (ui.value < -999) {
-                                //            $(this).spinner("value", 999);
-                                //            return false;
-                                //        }
-                                //    }
-                                //});
-                                break;
-                            }
-                            case "equal": {
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "operator",
-                                    value: "="
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "variable",
+                                        value: 0
+                                    };
+
+                                    var selectVariable = that.createNewSelect(this, that._options.states[stateIndex].formula[tableIndex][cellIndex]);
+
+                                    break;
                                 }
-                                break;
-                            }
-                            case "more": {
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "operator",
-                                    value: ">"
+                                case "num": {
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "const",
+                                        value: 0
+                                    }
+
+                                    var currNumber = that._options.states[stateIndex].formula[tableIndex][this.cellIndex];
+                                    var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
+
+                                    num.bind("input change", function () {
+                                        if (this.value > 100) this.value = 100;
+                                        if (this.value < -99) this.value = -99;
+                                        currNumber.value = this.value;
+                                    });
+                                    break;
                                 }
-                                break;
-                            }
-                            case "less": {
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "operator",
-                                    value: "<"
+                                case "equal": {
+                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "operator",
+                                        value: "="
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                            case "moeq": {
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "operator",
-                                    value: ">="
+                                case "more": {
+                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "operator",
+                                        value: ">"
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                            case "leeq": {
-                                var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
-                                that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
-                                    type: "operator",
-                                    value: "<="
+                                case "less": {
+                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "operator",
+                                        value: "<"
+                                    }
+                                    break;
                                 }
-                                break;
+                                case "moeq": {
+                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "operator",
+                                        value: ">="
+                                    }
+                                    break;
+                                }
+                                case "leeq": {
+                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                        type: "operator",
+                                        value: "<="
+                                    }
+                                    break;
+                                }
+                                default: break;
                             }
-                            default: break;
                         }
-                        if (!that.validation(that._options.states[stateIndex].formula[tableIndex]))
-                            $(this.parentElement).addClass("error");
-                        else $(this.parentElement).removeClass("error");
                     }
                 });
             }
@@ -398,4 +399,11 @@
             return table;
         }
     });
-})(jQuery);
+}(jQuery));
+
+interface JQuery {
+    stateseditor(): JQuery;
+    //stateseditor(settings: Object): JQuery;
+    //stateseditor(optionLiteral: string, optionName: string): any;
+    //stateseditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+} 
