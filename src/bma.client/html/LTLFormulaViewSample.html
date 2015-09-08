@@ -33,6 +33,7 @@
 
             //Loading widgets
             $("#tpeditor").temporalpropertieseditor();
+            $("#tpviewer").temporalpropertiesviewer();
 
             //Loading Drivers
             var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver($("#tpeditor").temporalpropertieseditor("getDrawingSurface"));
@@ -42,10 +43,15 @@
             var statesPresenter = new BMA.LTL.StatesPresenter();
             var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver, statesPresenter);
             svgPlotDriver.SetGridVisibility(false);
+
+            window.Commands.On("TemporalPropertiesOperationsChanged", function (args) {
+                $("#tpviewer").temporalpropertiesviewer({ operations: args.operations });
+            });
         });
     </script>
 </head>
 <body style="margin: 0;">
-    <div id="tpeditor" style="height: 100%;"></div>
+    <div id="tpeditor" style="width: 800px; height: 600px; overflow: hidden;"></div>
+    <div id="tpviewer"></div>
 </body>
 </html>

@@ -24,5 +24,9 @@ module BMA {
         export interface ITemporalPropertiesViewer {
             SetOperation(operation: BMA.LTLOperations.Operation);
         }
+
+        export interface ITemporalPropertiesEditor {
+            GetContent();
+        }
     }
 } 

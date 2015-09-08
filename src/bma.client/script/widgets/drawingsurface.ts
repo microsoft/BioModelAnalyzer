@@ -102,10 +102,10 @@ declare var Rx: any;
                         y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
                     };
                     if (that.options.isNavigationEnabled !== true) {
-                        window.Commands.Execute("DrawingSurfaceClick", position);
+                        that._executeCommand("DrawingSurfaceClick", position);
                     }
 
-                    window.Commands.Execute("DrawingSurfaceDrop", position);
+                    that._executeCommand("DrawingSurfaceDrop", position);
 
                 }
             });
@@ -117,7 +117,7 @@ declare var Rx: any;
                     arg = arg.originalEvent;
                 }
 
-                window.Commands.Execute("DrawingSurfaceClick",
+                that._executeCommand("DrawingSurfaceClick",
                     {
                         x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                         y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
@@ -126,21 +126,10 @@ declare var Rx: any;
                     });
             });
 
-            /*
-            plotDiv.bind("mousemove", function (arg) {
-                var cs = svgPlot.getScreenToDataTransform();
 
-                if (arg.originalEvent !== undefined) {
-                    arg = arg.originalEvent;
-                }
-
-                window.Commands.Execute("DrawingSurfaceMouseMove",
-                    {
-                        x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
-                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
-                    });
+            plotDiv.mousedown(function (e) {
+                e.stopPropagation();
             });
-            */
 
             plotDiv.dblclick(function (arg) {
                 var cs = svgPlot.getScreenToDataTransform();
@@ -149,7 +138,7 @@ declare var Rx: any;
                     arg = arg.originalEvent;
                 }
 
-                window.Commands.Execute("DrawingSurfaceDoubleClick",
+                that._executeCommand("DrawingSurfaceDoubleClick",
                     {
                         x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                         y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
@@ -302,7 +291,7 @@ declare var Rx: any;
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
             that._plot.host.bind("visibleRectChanged", function (args) {
                 if (Math.round(that._plot.visibleRect.width) !== that.options.zoom) {
-                    window.Commands.Execute("VisibleRectChanged", that._plot.visibleRect.width);
+                    that._executeCommand("VisibleRectChanged", that._plot.visibleRect.width);
                 }
             })
 
@@ -316,6 +305,14 @@ declare var Rx: any;
                 this._plot.host.width(this.element.width());
                 this._plot.host.height(this.element.height());
                 this._plot.requestUpdateLayout();
+            }
+        },
+
+        _executeCommand: function (commandName, args) {
+            if (this.options.commands !== undefined) {
+                this.options.commands.Execute(commandName, args);
+            } else {
+                window.Commands.Execute(commandName, args);
             }
         },
 

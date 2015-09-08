@@ -1786,6 +1786,9 @@ hr {
 .sim-blue {
   background-color: rgba(223, 223, 245, 0.5);
 }
+body {
+  margin: 0;
+}
 .window-title {
   margin-left: 10px;
   margin-top: 10px;
@@ -1795,7 +1798,7 @@ img.toolbar {
 }
 .state-button {
   display: inline-block;
-  margin: 5px 0px 10px 5px;
+  margin: 5px 0 10px 5px;
   font-family: 'Segoe-UI-Light';
   font-size: 20px;
   line-height: 25px;
@@ -1817,8 +1820,8 @@ img.toolbar {
   cursor: pointer;
 }
 .LTL-states {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   background-color: white;
 }
 .LTL-states table {

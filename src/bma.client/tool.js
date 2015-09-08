@@ -3509,6 +3509,16 @@ var BMA;
             return LTLViewer;
         })();
         UIDrivers.LTLViewer = LTLViewer;
+        var TemporalPropertiesEditorDriver = (function () {
+            function TemporalPropertiesEditorDriver(tpeditor) {
+                this.tpeditor = tpeditor;
+            }
+            TemporalPropertiesEditorDriver.prototype.GetContent = function () {
+                return this.tpeditor;
+            };
+            return TemporalPropertiesEditorDriver;
+        })();
+        UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ltldrivers.js.map
@@ -6800,9 +6810,9 @@ var BMA;
                         y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
                     };
                     if (that.options.isNavigationEnabled !== true) {
-                        window.Commands.Execute("DrawingSurfaceClick", position);
+                        that._executeCommand("DrawingSurfaceClick", position);
                     }
-                    window.Commands.Execute("DrawingSurfaceDrop", position);
+                    that._executeCommand("DrawingSurfaceDrop", position);
                 }
             });
             plotDiv.bind("click touchstart", function (arg) {
@@ -6810,34 +6820,22 @@ var BMA;
                 if (arg.originalEvent !== undefined) {
                     arg = arg.originalEvent;
                 }
-                window.Commands.Execute("DrawingSurfaceClick", {
+                that._executeCommand("DrawingSurfaceClick", {
                     x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
                     screenX: arg.pageX - plotDiv.offset().left,
                     screenY: arg.pageY - plotDiv.offset().top
                 });
             });
-            /*
-            plotDiv.bind("mousemove", function (arg) {
-                var cs = svgPlot.getScreenToDataTransform();
-
-                if (arg.originalEvent !== undefined) {
-                    arg = arg.originalEvent;
-                }
-
-                window.Commands.Execute("DrawingSurfaceMouseMove",
-                    {
-                        x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
-                        y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
-                    });
+            plotDiv.mousedown(function (e) {
+                e.stopPropagation();
             });
-            */
             plotDiv.dblclick(function (arg) {
                 var cs = svgPlot.getScreenToDataTransform();
                 if (arg.originalEvent !== undefined) {
                     arg = arg.originalEvent;
                 }
-                window.Commands.Execute("DrawingSurfaceDoubleClick", {
+                that._executeCommand("DrawingSurfaceDoubleClick", {
                     x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
                 });
@@ -6952,7 +6950,7 @@ var BMA;
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
             that._plot.host.bind("visibleRectChanged", function (args) {
                 if (Math.round(that._plot.visibleRect.width) !== that.options.zoom) {
-                    window.Commands.Execute("VisibleRectChanged", that._plot.visibleRect.width);
+                    that._executeCommand("VisibleRectChanged", that._plot.visibleRect.width);
                 }
             });
             $(window).resize(function () {
@@ -6966,6 +6964,14 @@ var BMA;
                 this._plot.host.width(this.element.width());
                 this._plot.host.height(this.element.height());
                 this._plot.requestUpdateLayout();
+            }
+        },
+        _executeCommand: function (commandName, args) {
+            if (this.options.commands !== undefined) {
+                this.options.commands.Execute(commandName, args);
+            }
+            else {
+                window.Commands.Execute(commandName, args);
             }
         },
         _setOption: function (key, value) {
@@ -8855,7 +8861,6 @@ jQuery.fn.extend({
     $.widget("BMA.ltlviewer", {
         options: {},
         _create: function () {
-            var _this = this;
             var that = this;
             var elem = this.element.addClass('ltl-results-tab');
             this.key_div = $('<div></div>').appendTo(elem);
@@ -8867,18 +8872,22 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
+            /*
             var temp_content = $('<div></div>'); //.temppropviewer();
             this.formula = $('<input type="text">').appendTo(temp_content);
             var submit = $('<button>LTLNOW</button>').addClass('action-button green').appendTo(temp_content);
-            submit.click(function () {
-                window.Commands.Execute("LTLRequested", { formula: _this.formula.val() });
+            submit.click(() => {
+                window.Commands.Execute("LTLRequested", { formula: this.formula.val()});
             });
+            */
+            var temp_content = $('<div></div>').temporalpropertiesviewer();
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
                 icon: "max",
                 content: temp_content,
                 tabid: "LTLTempProp"
             });
+            /*
             this.results = $('<div></div>').appendTo(elem);
             var res_table = $('<div id="LTLResults"></div>').addClass('scrollable-results');
             this.results.resultswindowviewer({
@@ -8887,6 +8896,7 @@ jQuery.fn.extend({
                 content: res_table,
                 tabid: "LTLResults"
             });
+            */
         },
         _destroy: function () {
             this.element.empty();
@@ -8908,7 +8918,6 @@ jQuery.fn.extend({
             if (param == undefined) {
                 this.key_div.show();
                 this.temp_prop.show();
-                this.results.show();
             }
         }
     });
@@ -8917,37 +8926,14 @@ jQuery.fn.extend({
 ///#source 1 1 /script/widgets/ltl/tpeditor.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/*
-<div class="window-title">Temporal Properties</div>
-
-    <div class="temporal-toolbar">
-        <div class="state-buttons">
-            States<br>
-            <div class="btns">
-                <div class="state-button">A</div>
-                <div class="state-button">B</div>
-                <div class="state-button">F</div>
-                <div class="state-button new">+</div>
-            </div>
-        </div>
-        <div class="temporal-operators">
-            Operators<br>
-            <div id="operators" class="operators">
-                
-            </div>
-        </div>
-    </div>
-
-    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
-        <div id="drawingSurface" class="bma-drawingsurface"></div>
-    </div>
- */
 (function ($) {
     $.widget("BMA.temporalpropertieseditor", {
+        _drawingSurface: undefined,
         options: {
             states: ["A", "B", "C"]
         },
         _create: function () {
+            var that = this;
             var root = this.element;
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
@@ -8963,7 +8949,7 @@ jQuery.fn.extend({
                             left: Math.floor(ui.helper.width() / 2),
                             top: Math.floor(ui.helper.height() / 2)
                         });
-                        window.Commands.Execute("AddStateSelect", $(this).attr("data-state"));
+                        that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
                 });
             }
@@ -8989,14 +8975,18 @@ jQuery.fn.extend({
                             left: Math.floor(ui.helper.width() / 2),
                             top: Math.floor(ui.helper.height() / 2)
                         });
-                        window.Commands.Execute("AddOperatorSelect", $(this).attr("data-operator"));
+                        that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
             }
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").appendTo(root);
-            var drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
-            drawingSurface.drawingsurface();
+            this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
+            this._drawingSurface.drawingsurface();
+            var drawingSurface = this._drawingSurface;
+            if (that.options.commands !== undefined) {
+                drawingSurface.drawingsurface({ commands: that.options.commands });
+            }
             //Context menu
             var holdCords = {
                 holdX: 0,
@@ -9024,7 +9014,7 @@ jQuery.fn.extend({
                     var y = holdCords.holdX || event.pageY;
                     var left = x - drawingSurface.offset().left;
                     var top = y - drawingSurface.offset().top;
-                    window.Commands.Execute("TemporalPropertiesEditorContextMenuOpening", {
+                    that._executeCommand("TemporalPropertiesEditorContextMenuOpening", {
                         left: left,
                         top: top
                     });
@@ -9036,7 +9026,7 @@ jQuery.fn.extend({
                     var y = holdCords.holdX || event.pageY;
                     args.left = x - drawingSurface.offset().left;
                     args.top = y - drawingSurface.offset().top;
-                    window.Commands.Execute(commandName, args);
+                    that._executeCommand(commandName, args);
                 }
             });
         },
@@ -9046,9 +9036,19 @@ jQuery.fn.extend({
         getDrawingSurface: function () {
             return this.element.find(".bma-drawingsurface");
         },
+        _executeCommand: function (commandName, args) {
+            if (this.options.commands !== undefined) {
+                this.options.commands.Execute(commandName, args);
+            }
+            else {
+                window.Commands.Execute(commandName, args);
+            }
+        },
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
+                case "commands":
+                    this._drawingSurface.drawingsurface({ commands: value });
                 default:
                     break;
             }
@@ -9060,13 +9060,75 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=tpeditor.js.map
+///#source 1 1 /script/widgets/ltl/tpviewer.js
+(function ($) {
+    $.widget("BMA.temporalpropertiesviewer", {
+        _svg: undefined,
+        options: {
+            operations: [],
+            padding: { x: 5, y: 5 }
+        },
+        _create: function () {
+            var that = this;
+            var root = this.element;
+            root.css("overflow-y", "auto").css("overflow-x", "hidden");
+            root.svg({
+                onLoad: function (svg) {
+                    that._svg = svg;
+                    svg.configure({
+                        width: root.width(),
+                        height: root.height(),
+                        viewBox: "0 0 " + root.width() + " " + root.height(),
+                        preserveAspectRatio: "none meet"
+                    }, true);
+                    that.refresh();
+                }
+            });
+        },
+        refresh: function () {
+            if (this._svg !== undefined) {
+                this._svg.clear();
+                var operations = this.options.operations;
+                var currentPos = { x: 0, y: 0 };
+                var height = this.options.padding.y;
+                var width = 0;
+                for (var i = 0; i < operations.length; i++) {
+                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i], { x: 0, y: 0 });
+                    var opbbox = opLayout.BoundingBox;
+                    opLayout.Position = { x: opbbox.width / 2, y: height + opbbox.height / 2 };
+                    height += opbbox.height + this.options.padding.y;
+                    width = Math.max(width, opbbox.width);
+                }
+                width += 2 * this.options.padding.x;
+                height += this.options.padding.y;
+            }
+        },
+        _setOption: function (key, value) {
+            var that = this;
+            switch (key) {
+                case "operations":
+                    break;
+                case "padding":
+                    break;
+                default:
+                    break;
+            }
+            this._super(key, value);
+            this.refresh();
+        },
+        destroy: function () {
+            this.element.empty();
+        },
+    });
+}(jQuery));
+//# sourceMappingURL=tpviewer.js.map
 ///#source 1 1 /script/presenters/ltl/LTLpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(appModel, keyframesfullDriver, keyframescompactDriver, ltlviewer, ajax, popupViewer) {
+            function LTLPresenter(appModel, keyframesfullDriver, keyframescompactDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -9117,9 +9179,9 @@ var BMA;
                             popupViewer.Show({ tab: param, content: content });
                             ltlviewer.Hide(param);
                             break;
-                        case "LTLResults":
-                            popupViewer.Show({ tab: param, content: that.expandedResults });
-                            ltlviewer.Hide(param);
+                        case "LTLTempProp":
+                            var tpeditor = temporlapropertieseditor.GetContent();
+                            popupViewer.Show({ tab: param, content: tpeditor });
                             break;
                         default:
                             ltlviewer.Show(undefined);
@@ -9236,21 +9298,22 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
+            function TemporalPropertiesPresenter(commands, svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
                 var _this = this;
                 var that = this;
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
                 this.dragService = dragService;
+                this.commands = commands;
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
-                window.Commands.On("AddOperatorSelect", function (operatorName) {
+                commands.On("AddOperatorSelect", function (operatorName) {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });
-                window.Commands.On("AddStateSelect", function (stateName) {
+                commands.On("AddStateSelect", function (stateName) {
                     that.elementToAdd = { type: "state", name: stateName };
                 });
-                window.Commands.On("DrawingSurfaceDrop", function (args) {
+                commands.On("DrawingSurfaceDrop", function (args) {
                     if (that.elementToAdd !== undefined) {
                         var position = { x: args.x, y: args.y };
                         var operation = that.GetOperationAtPoint(args.x, args.y);
@@ -9286,9 +9349,10 @@ var BMA;
                                 operation.Refresh();
                             }
                         }
+                        _this.OnOperationsChanged();
                     }
                 });
-                window.Commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
+                commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
                     _this.contextElement = {
@@ -9332,7 +9396,7 @@ var BMA;
                         ]);
                     }
                 });
-                window.Commands.On("TemporalPropertiesEditorCut", function (args) {
+                commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
@@ -9343,9 +9407,10 @@ var BMA;
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
                             _this.contextElement.operationlayoutref.IsVisible = false;
                         }
+                        _this.OnOperationsChanged();
                     }
                 });
-                window.Commands.On("TemporalPropertiesEditorCopy", function (args) {
+                commands.On("TemporalPropertiesEditorCopy", function (args) {
                     if (_this.contextElement !== undefined) {
                         var operation = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = operation !== undefined ? operation.Clone() : undefined;
@@ -9354,7 +9419,7 @@ var BMA;
                         };
                     }
                 });
-                window.Commands.On("TemporalPropertiesEditorPaste", function (args) {
+                commands.On("TemporalPropertiesEditorPaste", function (args) {
                     var x = _this.contextElement.x;
                     var y = _this.contextElement.y;
                     if (_this.clipboard !== undefined) {
@@ -9368,9 +9433,10 @@ var BMA;
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, { x: x, y: y });
                             _this.operations.push(operationLayout);
                         }
+                        _this.OnOperationsChanged();
                     }
                 });
-                window.Commands.On("TemporalPropertiesEditorDelete", function (args) {
+                commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
                         if (!_this.contextElement.isRoot) {
                             _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
@@ -9378,6 +9444,7 @@ var BMA;
                         else {
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
                         }
+                        _this.OnOperationsChanged();
                     }
                 });
                 dragService.GetMouseMoves().subscribe(function (gesture) {
@@ -9473,6 +9540,7 @@ var BMA;
                         }
                         _this.stagingOperation.operation.IsVisible = false;
                         _this.stagingOperation = undefined;
+                        _this.OnOperationsChanged();
                     }
                 });
             }
@@ -9503,6 +9571,13 @@ var BMA;
                         return true;
                 }
                 return false;
+            };
+            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function () {
+                var ops = [];
+                for (var i = 0; i < this.operations.length; i++) {
+                    ops.push(this.operations[i].Operation.Clone());
+                }
+                this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
             };
             return TemporalPropertiesPresenter;
         })();

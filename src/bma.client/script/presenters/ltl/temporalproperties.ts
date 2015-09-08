@@ -33,7 +33,10 @@ module BMA {
             private clipboard: any;
             private contextElement: any;
 
+            private commands: BMA.CommandRegistry;
+
             constructor(
+                commands: BMA.CommandRegistry,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
@@ -45,19 +48,20 @@ module BMA {
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
                 this.dragService = dragService;
+                this.commands = commands;
 
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
 
-                window.Commands.On("AddOperatorSelect",(operatorName: string) => {
+                commands.On("AddOperatorSelect",(operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });
 
-                window.Commands.On("AddStateSelect",(stateName: string) => {
+                commands.On("AddStateSelect",(stateName: string) => {
                     that.elementToAdd = { type: "state", name: stateName };
                 });
 
-                window.Commands.On("DrawingSurfaceDrop",(args: { x: number; y: number; screenX: number; screenY: number }) => {
+                commands.On("DrawingSurfaceDrop",(args: { x: number; y: number; screenX: number; screenY: number }) => {
                     if (that.elementToAdd !== undefined) {
                         var position = { x: args.x, y: args.y };
                         var operation = that.GetOperationAtPoint(args.x, args.y);
@@ -94,10 +98,12 @@ module BMA {
                                 operation.Refresh();
                             }
                         }
+
+                        this.OnOperationsChanged();
                     }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorContextMenuOpening",(args) => {
+                commands.On("TemporalPropertiesEditorContextMenuOpening",(args) => {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
 
@@ -152,7 +158,7 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorCut",(args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorCut",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
@@ -164,10 +170,12 @@ module BMA {
                             this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
                             this.contextElement.operationlayoutref.IsVisible = false;
                         }
+
+                        this.OnOperationsChanged();
                     }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorCopy",(args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorCopy",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         var operation = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = operation !== undefined ? operation.Clone() : undefined;
@@ -177,7 +185,7 @@ module BMA {
                     }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorPaste",(args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorPaste",(args: { top: number; left: number }) => {
                     var x = this.contextElement.x;
                     var y = this.contextElement.y;
 
@@ -192,16 +200,20 @@ module BMA {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, { x: x, y: y });
                             this.operations.push(operationLayout);
                         }
+
+                        this.OnOperationsChanged();
                     }
                 });
 
-                window.Commands.On("TemporalPropertiesEditorDelete",(args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorDelete",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         if (!this.contextElement.isRoot) {
                             this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         } else {
                             this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
                         }
+
+                        this.OnOperationsChanged();
                     }
                 });
 
@@ -309,6 +321,7 @@ module BMA {
 
                             this.stagingOperation.operation.IsVisible = false;
                             this.stagingOperation = undefined;
+                            this.OnOperationsChanged();
                         }
                     });
             }
@@ -348,6 +361,14 @@ module BMA {
                 }
 
                 return false;
+            }
+
+            private OnOperationsChanged() {
+                var ops = [];
+                for (var i = 0; i < this.operations.length; i++) {
+                    ops.push(this.operations[i].Operation.Clone());
+                }
+                this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
             }
         }
     }

@@ -12,6 +12,7 @@
                 appModel: BMA.Model.AppModel,
                 keyframesfullDriver: BMA.UIDrivers.IKeyframesFull,
                 keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
+                temporlapropertieseditor: BMA.UIDrivers.ITemporalPropertiesEditor,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup
@@ -75,11 +76,15 @@
                         case "LTLStates":
                             var content = keyframesfullDriver.GetContent();
                             popupViewer.Show({ tab: param, content: content });
-                            ltlviewer.Hide (param);
-                            break;
-                        case "LTLResults":
-                            popupViewer.Show({ tab: param, content: that.expandedResults });
                             ltlviewer.Hide(param);
+                            break;
+                        //case "LTLResults":
+                        //    popupViewer.Show({ tab: param, content: that.expandedResults });
+                        //    ltlviewer.Hide(param);
+                        //    break;
+                        case "LTLTempProp":
+                            var tpeditor = temporlapropertieseditor.GetContent();
+                            popupViewer.Show({ tab: param, content: tpeditor });
                             break;
                         default:
                             ltlviewer.Show(undefined);
