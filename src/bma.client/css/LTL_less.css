@@ -1787,7 +1787,7 @@ hr {
   background-color: rgba(223, 223, 245, 0.5);
 }
 body {
-  margin: 0px;
+  margin: 0;
 }
 .window-title {
   margin-left: 10px;
@@ -1910,8 +1910,8 @@ img.toolbar {
   box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
 }
 .LTL-states {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   background-color: white;
 }
 .LTL-states .description {

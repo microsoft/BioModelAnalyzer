@@ -440,6 +440,7 @@
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
     <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
     <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />

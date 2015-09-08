@@ -1,39 +1,17 @@
 ﻿/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
-/*
-<div class="window-title">Temporal Properties</div>
-
-    <div class="temporal-toolbar">
-        <div class="state-buttons">
-            States<br>
-            <div class="btns">
-                <div class="state-button">A</div>
-                <div class="state-button">B</div>
-                <div class="state-button">F</div>
-                <div class="state-button new">+</div>
-            </div>
-        </div>
-        <div class="temporal-operators">
-            Operators<br>
-            <div id="operators" class="operators">
-                
-            </div>
-        </div>
-    </div>
-
-    <div id="drawingSurceContainer" class="bma-drawingsurfacecontainer">
-        <div id="drawingSurface" class="bma-drawingsurface"></div>
-    </div> 
- */
-
 (function ($) {
     $.widget("BMA.temporalpropertieseditor", {
+        _drawingSurface: undefined,
+
         options: {
             states: [ "A", "B", "C" ]
         },
 
         _create: function () {
+            var that = this;
+
             var root = this.element;
 
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
@@ -59,7 +37,7 @@
                             left: Math.floor(ui.helper.width() / 2),
                             top: Math.floor(ui.helper.height() / 2)
                         });
-                        window.Commands.Execute("AddStateSelect", $(this).attr("data-state"));
+                        that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
                 });
             }
@@ -95,17 +73,20 @@
                             left: Math.floor(ui.helper.width() / 2),
                             top: Math.floor(ui.helper.height() / 2)
                         });
-                        window.Commands.Execute("AddOperatorSelect", $(this).attr("data-operator"));
+                        that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
             }
 
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").appendTo(root);
-            var drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
-            drawingSurface.drawingsurface();
+            this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
+            this._drawingSurface.drawingsurface();
+            var drawingSurface = this._drawingSurface;
 
-            
+            if (that.options.commands !== undefined) {
+                drawingSurface.drawingsurface({ commands: that.options.commands });
+            }            
 
             //Context menu
             var holdCords = {
@@ -137,7 +118,7 @@
                     var left = x - drawingSurface.offset().left;
                     var top = y - drawingSurface.offset().top;
 
-                    window.Commands.Execute("TemporalPropertiesEditorContextMenuOpening", {
+                    that._executeCommand("TemporalPropertiesEditorContextMenuOpening", {
                         left: left,
                         top: top
                     });
@@ -149,7 +130,7 @@
                     var y = holdCords.holdX || event.pageY;
                     args.left = x - drawingSurface.offset().left;
                     args.top = y - drawingSurface.offset().top;
-                    window.Commands.Execute(commandName, args);
+                    that._executeCommand(commandName, args);
                 }
             });
         },
@@ -162,9 +143,19 @@
             return this.element.find(".bma-drawingsurface");
         },
 
+        _executeCommand: function (commandName, args) {
+            if (this.options.commands !== undefined) {
+                this.options.commands.Execute(commandName, args);
+            } else {
+                window.Commands.Execute(commandName, args);
+            }
+        },
+
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
+                case "commands":
+                    this._drawingSurface.drawingsurface({ commands: value });
                 default:
                     break;
             }

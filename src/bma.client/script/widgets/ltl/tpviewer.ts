@@ -1,100 +1,86 @@
-﻿/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+﻿(function ($) {
+    $.widget("BMA.temporalpropertiesviewer", {
+        _svg: undefined,
 
-(function ($) {
-    $.widget("BMA.tpformulaoptions", {
-
-        _registry: null,
-        _container: null,
-        _commands: null,
+        options: {
+            operations: [],
+            padding: { x: 5, y: 5 }
+        },
 
         _create: function () {
             var that = this;
-            that._container = $("<div></div>").addClass("ltl-tpotions-toolbar").appendTo(this.element);
-        },
+            var root = this.element;
 
-        _createContent: function () {
-            var that = this;
-            if (that._registry !== null && that._container !== null) {
-                that._container.empty();
-                var elements = that._registry.Operators();
-                var elementPanel = that._container;
-                for (var i = 0; i < elements.length; i++) {
-                    var elem = elements[i];
-                    var input = $("<input></input>")
-                        .attr("type", "radio")
-                        .attr("id", "btn-" + elem.Type)
-                        .attr("name", "drawing-button")
-                        .attr("data-type", elem.Type)
-                        .appendTo(elementPanel);
-
-                    var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
-                    var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
-                }
+            root.css("overflow-y", "auto").css("overflow-x", "hidden");
 
 
-                elementPanel.children("input").next().draggable({
+            root.svg({
+                onLoad: function (svg) {
+                    that._svg = svg;
 
-                    helper: function (event, ui) {
-                        var classes = $(this).children().children().attr("class").split(" ");
-                        return $('<div></div>').addClass(classes[0]).addClass("draggable-helper-element").appendTo('body');
-                    },
+                    svg.configure({
+                        width: root.width(),
+                        height: root.height(),
+                        viewBox: "0 0 " + root.width() + " " + root.height(),//"0 0 1 1",
+                        preserveAspectRatio: "none meet"
+                    }, true);
 
-                    scroll: false,
-
-                    start: function (event, ui) {
-                        $(this).draggable("option", "cursorAt", {
-                            left: Math.floor(ui.helper.width() / 2),
-                            top: Math.floor(ui.helper.height() / 2)
-                        });
-                        $('#' + $(this).attr("for")).click();
-                    }
-                });
-
-                $("#modelelemtoolbar input").click(function (event) {
-                    window.Commands.Execute("AddLTLOperatorSelect", $(this).attr("data-type"));
-                });
-
-                elementPanel.buttonset();
-
-            }
-        },
-
-        _subscribeToClick: function (inp, name) {
-            inp.click(function () {
-                if (this.commands !== null) {
-                    this.commands.Execute("AddLTLOperatorSelect", name);
+                    that.refresh();
                 }
             });
+           
         },
 
+        refresh: function () {
+            if (this._svg !== undefined) {
+                this._svg.clear();
+                var operations = this.options.operations;
+                var currentPos = { x: 0, y: 0 };
+                var height = this.options.padding.y;
+                var width = 0;
+                for (var i = 0; i < operations.length; i++) {
+                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i], { x: 0, y: 0 });
+                    var opbbox = opLayout.BoundingBox;
+                    opLayout.Position = { x: opbbox.width / 2, y: height + opbbox.height / 2 };
+                    height += opbbox.height + this.options.padding.y;
+                    width = Math.max(width, opbbox.width);
+                }
+
+                width += 2 * this.options.padding.x;
+                height += this.options.padding.y;
+
+                /*
+                this._svg.configure({
+                    viewBox: "0 0 " + width + " " + height,
+                }, true);
+                */
+            }
+        },
 
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
-                case "registry":
-                    that._registry = value;
-                    that._createContent();
+                case "operations":
+                    //this.refresh();
                     break;
-                case "commands":
-                    that.commands = value;
+                case "padding":
+                    //this.refresh();
+                    break;
+                default:
                     break;
             }
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
+            this._super(key, value);
+            this.refresh();
         },
 
         destroy: function () {
-            $.Widget.prototype.destroy.call(this);
-        }
-
+            this.element.empty();
+        },
     });
 } (jQuery));
 
 interface JQuery {
-    tpformulaoptions(): JQuery;
-    tpformulaoptions(settings: Object): JQuery;
-    tpformulaoptions(optionLiteral: string, optionName: string): any;
-    tpformulaoptions(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+    temporalpropertieseditor(): any;
+    temporalpropertieseditor(settings: Object): any;
+    temporalpropertieseditor(methodName: string, arg: any): any;
 }
- 

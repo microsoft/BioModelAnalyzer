@@ -19,12 +19,16 @@
             });
 
             this.temp_prop = $('<div></div>').appendTo(elem);
+
+            /*
             var temp_content = $('<div></div>'); //.temppropviewer();
             this.formula = $('<input type="text">').appendTo(temp_content);
             var submit = $('<button>LTLNOW</button>').addClass('action-button green').appendTo(temp_content);
             submit.click(() => {
                 window.Commands.Execute("LTLRequested", { formula: this.formula.val()});
             });
+            */
+            var temp_content = $('<div></div>').temporalpropertiesviewer();
 
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
@@ -33,6 +37,7 @@
                 tabid: "LTLTempProp"
             });
 
+            /*
             this.results = $('<div></div>').appendTo(elem);
             var res_table = $('<div id="LTLResults"></div>').addClass('scrollable-results');
             this.results.resultswindowviewer({
@@ -41,6 +46,7 @@
                 content: res_table,
                 tabid: "LTLResults"
             });
+            */
         },
 
         _destroy: function () {
@@ -65,7 +71,7 @@
             if (param == undefined) {
                 this.key_div.show();
                 this.temp_prop.show();
-                this.results.show();
+                //this.results.show();
             }
         }
     });

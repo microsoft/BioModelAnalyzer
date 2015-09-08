@@ -182,6 +182,7 @@ function loadScript(version) {
     $('.version-number').text('v. ' + version.major + '.' + version.minor + '.' + version.build);
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
+    var ltlCommands = new BMA.CommandRegistry();
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
     //Creating FunctionsRegistry
@@ -462,8 +463,17 @@ function loadScript(version) {
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
+    //LTL Drivers
     var keyframesFull = $('<div></div>').ltlstatesviewer();
     var keyframesExpandedViewer = new BMA.UIDrivers.KeyframesExpandedViewer(keyframesFull);
+    var tpEditor = $("<div></div>").width(800).height(600);
+    //tpEditor.appendTo($("#hiddenContainer"));
+    tpEditor.temporalpropertieseditor({ commands: ltlCommands });
+    //$("#hiddenContainer").hide();
+    var tpEditorDriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(tpEditor);
+    var tpSvgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(tpEditor.temporalpropertieseditor("getDrawingSurface"));
+    tpSvgPlotDriver.SetGridVisibility(false);
+    var tpContextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(tpEditor.temporalpropertieseditor("getContextMenuPanel"));
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
@@ -481,7 +491,10 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(appModel, keyframesExpandedViewer, ltlDriver, ltlDriver, ltlService, popupDriver);
+    //LTL Presenters
+    var statesPresenter = new BMA.LTL.StatesPresenter();
+    var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(ltlCommands, tpSvgPlotDriver, tpSvgPlotDriver, tpSvgPlotDriver, tpContextMenuDriver, statesPresenter);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(appModel, keyframesExpandedViewer, ltlDriver, tpEditorDriver, ltlDriver, ltlService, popupDriver);
     //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();

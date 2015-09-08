@@ -69,5 +69,18 @@ module BMA {
                 return this.ltlviewer;
             }
         }
+
+        export class TemporalPropertiesEditorDriver implements ITemporalPropertiesEditor {
+
+            private tpeditor: JQuery;
+
+            constructor(tpeditor: JQuery) {
+                this.tpeditor = tpeditor;
+            }
+
+            public GetContent() {
+                return this.tpeditor;
+            }
+        }
     }
 }
