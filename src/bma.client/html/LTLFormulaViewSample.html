@@ -41,8 +41,7 @@
 
             //Loading Presenters
             var statesPresenter = new BMA.LTL.StatesPresenter();
-            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver, statesPresenter);
-            svgPlotDriver.SetGridVisibility(false);
+            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(window.Commands, svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver, statesPresenter);
 
             window.Commands.On("TemporalPropertiesOperationsChanged", function (args) {
                 $("#tpviewer").temporalpropertiesviewer({ operations: args.operations });

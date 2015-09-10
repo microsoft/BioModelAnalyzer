@@ -247,7 +247,7 @@
                 var paddingY = this.padding.y;
 
                 if (layoutPart.isEmpty) {
-                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
+                    layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
                 } else {
                     var operator = layoutPart.operator;
                     if (operator !== undefined) {
@@ -391,7 +391,7 @@
                 return undefined;
             }
 
-            private GetIntersectedChild(x: number, y: number, position: { x: number; y: number }, layoutPart: any): any {
+            private GetIntersectedChild(x: number, y: number, position: { x: number; y: number }, layoutPart: any, accountEmpty: boolean): any {
                 var width = layoutPart.width;
                 var halfWidth = width / 2;
                 var paddingY = this.padding.y;
@@ -410,13 +410,24 @@
                 switch (operands.length) {
                     case 1:
 
-                        if (operands[0].isEmpty)
+                        if (operands[0].isEmpty) {
+                            if (accountEmpty) {
+                                var pos = {
+                                    x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                                    y: position.y
+                                };
+
+                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
+                                    return operands[0];
+                            }
+
                             return layoutPart;
+                        }
 
                         var highlighted = this.GetIntersectedChild(x, y, {
                             x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
                             y: position.y
-                        }, operands[0]);
+                        }, operands[0], accountEmpty);
 
                         return highlighted !== undefined ? highlighted : layoutPart;
 
@@ -427,10 +438,20 @@
                             var highlighted1 = this.GetIntersectedChild(x, y, {
                                 x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
                                 y: position.y
-                            }, operands[0]);
+                            }, operands[0], accountEmpty);
 
                             if (highlighted1 !== undefined) {
                                 return highlighted1;
+                            }
+                        } else {
+                            if (accountEmpty) {
+                                var pos = {
+                                    x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                    y: position.y
+                                };
+
+                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
+                                    return operands[0];
                             }
                         }
 
@@ -438,10 +459,20 @@
                             var highlighted2 = this.GetIntersectedChild(x, y, {
                                 x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
                                 y: position.y
-                            }, operands[1]);
+                            }, operands[1], accountEmpty);
 
                             if (highlighted2 !== undefined) {
                                 return highlighted2;
+                            }
+                        } else {
+                            if (accountEmpty) {
+                                var pos = {
+                                    x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                    y: position.y
+                                };
+
+                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
+                                    return operands[1];
                             }
                         }
 
@@ -460,19 +491,25 @@
                 if (this.layout !== undefined) {
                     this.Refresh();
 
-                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, true);
 
                     if (layoutPart !== undefined) {
-                        this.svg.change(layoutPart.svgref, {
-                            strokeWidth: 4
-                        });
+                        if (layoutPart.isEmpty) {
+                            this.svg.change(layoutPart.svgref, {
+                                fill: "lightgray"
+                            });
+                        } else {
+                            this.svg.change(layoutPart.svgref, {
+                                strokeWidth: 4
+                            });
+                        }
                     }
                 }
             }
 
             public PickOperation(x: number, y: number) {
                 if (this.layout !== undefined) {
-                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, false);
                     if (layoutPart !== undefined)
                         return layoutPart.operation;
                 }
@@ -482,7 +519,7 @@
 
             public UnpinOperation(x: number, y: number) {
                 if (this.layout !== undefined) {
-                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, false);
 
                     if (layoutPart !== undefined) {
                         if (layoutPart.parentoperation !== undefined) {

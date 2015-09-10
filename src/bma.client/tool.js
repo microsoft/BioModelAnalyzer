@@ -2710,7 +2710,7 @@ var BMA;
                 var paddingX = this.padding.x;
                 var paddingY = this.padding.y;
                 if (layoutPart.isEmpty) {
-                    svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
+                    layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
                 }
                 else {
                     var operator = layoutPart.operator;
@@ -2824,7 +2824,7 @@ var BMA;
                 }
                 return undefined;
             };
-            OperationLayout.prototype.GetIntersectedChild = function (x, y, position, layoutPart) {
+            OperationLayout.prototype.GetIntersectedChild = function (x, y, position, layoutPart, accountEmpty) {
                 var width = layoutPart.width;
                 var halfWidth = width / 2;
                 var paddingY = this.padding.y;
@@ -2838,12 +2838,21 @@ var BMA;
                     return layoutPart;
                 switch (operands.length) {
                     case 1:
-                        if (operands[0].isEmpty)
+                        if (operands[0].isEmpty) {
+                            if (accountEmpty) {
+                                var pos = {
+                                    x: position.x + halfWidth - operands[0].width / 2 - paddingX,
+                                    y: position.y
+                                };
+                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
+                                    return operands[0];
+                            }
                             return layoutPart;
+                        }
                         var highlighted = this.GetIntersectedChild(x, y, {
                             x: position.x + halfWidth - operands[0].width / 2 - paddingX,
                             y: position.y
-                        }, operands[0]);
+                        }, operands[0], accountEmpty);
                         return highlighted !== undefined ? highlighted : layoutPart;
                         break;
                     case 2:
@@ -2851,18 +2860,38 @@ var BMA;
                             var highlighted1 = this.GetIntersectedChild(x, y, {
                                 x: position.x - halfWidth + operands[0].width / 2 + paddingX,
                                 y: position.y
-                            }, operands[0]);
+                            }, operands[0], accountEmpty);
                             if (highlighted1 !== undefined) {
                                 return highlighted1;
+                            }
+                        }
+                        else {
+                            if (accountEmpty) {
+                                var pos = {
+                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                    y: position.y
+                                };
+                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
+                                    return operands[0];
                             }
                         }
                         if (!operands[1].isEmpty) {
                             var highlighted2 = this.GetIntersectedChild(x, y, {
                                 x: position.x + halfWidth - operands[1].width / 2 - paddingX,
                                 y: position.y
-                            }, operands[1]);
+                            }, operands[1], accountEmpty);
                             if (highlighted2 !== undefined) {
                                 return highlighted2;
+                            }
+                        }
+                        else {
+                            if (accountEmpty) {
+                                var pos = {
+                                    x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                    y: position.y
+                                };
+                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
+                                    return operands[1];
                             }
                         }
                         return layoutPart;
@@ -2875,17 +2904,24 @@ var BMA;
             OperationLayout.prototype.HighlightAtPosition = function (x, y) {
                 if (this.layout !== undefined) {
                     this.Refresh();
-                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, true);
                     if (layoutPart !== undefined) {
-                        this.svg.change(layoutPart.svgref, {
-                            strokeWidth: 4
-                        });
+                        if (layoutPart.isEmpty) {
+                            this.svg.change(layoutPart.svgref, {
+                                fill: "lightgray"
+                            });
+                        }
+                        else {
+                            this.svg.change(layoutPart.svgref, {
+                                strokeWidth: 4
+                            });
+                        }
                     }
                 }
             };
             OperationLayout.prototype.PickOperation = function (x, y) {
                 if (this.layout !== undefined) {
-                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, false);
                     if (layoutPart !== undefined)
                         return layoutPart.operation;
                 }
@@ -2893,7 +2929,7 @@ var BMA;
             };
             OperationLayout.prototype.UnpinOperation = function (x, y) {
                 if (this.layout !== undefined) {
-                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout);
+                    var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, false);
                     if (layoutPart !== undefined) {
                         if (layoutPart.parentoperation !== undefined) {
                             layoutPart.parentoperation.operands[layoutPart.parentoperationindex] = undefined;
@@ -8984,6 +9020,9 @@ jQuery.fn.extend({
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
+            drawingSurface.drawingsurface({
+                gridVisibility: false
+            });
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
             }
@@ -9442,7 +9481,9 @@ var BMA;
                             _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         }
                         else {
-                            _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
+                            var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
+                            _this.contextElement.operationlayoutref.IsVisible = false;
+                            _this.operations.splice(ind, 1);
                         }
                         _this.OnOperationsChanged();
                     }
@@ -9478,14 +9519,23 @@ var BMA;
                 });
                 dragSubject.drag.subscribe(function (gesture) {
                     if (_this.stagingOperation !== undefined) {
-                        _this.stagingOperation.operation.Position = { x: gesture.x1, y: gesture.y1 };
+                        var bbox = _this.stagingOperation.operation.BoundingBox;
+                        _this.stagingOperation.operation.Position = { x: gesture.x1 + _this.stagingOperation.operation.Scale.x * bbox.width / 2, y: gesture.y1 + _this.stagingOperation.operation.Scale.y * bbox.height / 2 };
                     }
                 });
                 dragSubject.dragEnd.subscribe(function (gesture) {
                     if (_this.stagingOperation !== undefined) {
                         that.navigationDriver.TurnNavigation(true);
                         _this.stagingOperation.operation.IsVisible = false;
-                        var position = _this.stagingOperation.operation.Position;
+                        var bbox = _this.stagingOperation.operation.BoundingBox;
+                        var position = {
+                            x: _this.stagingOperation.operation.Position.x - _this.stagingOperation.operation.Scale.x * bbox.width / 2,
+                            y: _this.stagingOperation.operation.Position.y - _this.stagingOperation.operation.Scale.y * bbox.height / 2,
+                        };
+                        _this.stagingOperation.operation.Position = {
+                            x: position.x + bbox.width / 2,
+                            y: position.y + bbox.height / 2
+                        };
                         if (!_this.HasIntersections(_this.stagingOperation.operation)) {
                             if (_this.stagingOperation.operation.IsOperation) {
                                 if (_this.stagingOperation.isRoot) {
