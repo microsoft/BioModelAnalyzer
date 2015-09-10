@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>LTL-state-tool-greq</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="LTL-assets" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="LTL-state-tool-greq" sketch:type="MSArtboardGroup" fill="#606060">
+            <path d="M22.0820312,13.5683594 L9.484375,19.9257812 L9.484375,17.6992188 L18.9179688,13.1728516 L18.9179688,13.0849609 L9.484375,7.85546875 L9.484375,5.67285156 L22.0820312,12.71875 L22.0820312,13.5683594 Z M22.6679688,23.6757812 L8.8984375,23.6757812 L8.8984375,21.7275391 L22.6679688,21.7275391 L22.6679688,23.6757812 Z" id="≥" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>
