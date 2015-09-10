@@ -7,7 +7,7 @@
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
-        _kfrms: null,
+        _keyframes: null,
         _description: null,
         _ltlStates: null,
         _ltlAddConditionButton: null,
@@ -45,11 +45,12 @@
             this._activeState = this._options.states[0];
 
             for (var i = 0; i < this._options.states.length; i++) {
-                var stateButton = $("<div>" + this._options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons).click(function () {
-                    var stateIndex = Array.prototype.indexOf.call(that._stateButtons[0].children, this);
+                var stateButton = $("<div>" + this._options.states[i].name + "</div>").attr("data-state-name", this._options.states[i].name)
+                    .addClass("state-button").appendTo(this._stateButtons).click(function () {
+                    var stateIndex = Array.prototype.indexOf.call(that._stateButtons.children, this);
 
                     var idx = that._options.states.indexOf(that._activeState);
-                    $(that._stateButtons[0].children[idx]).removeClass("active");
+                    $(that._stateButtons.children[idx]).removeClass("active");
 
                     that._activeState = that._options.states[stateIndex];
 
@@ -107,10 +108,11 @@
 
 
         createToolbar: function () {
-            this._kfrms = window.KeyframesRegistry.Keyframes;
+            this._keyframes = window.KeyframesRegistry.Keyframes;
 
-            for (var i = 0; i < this._kfrms.length; i++) {
-                var keyframe_elem = $("<img>").attr("src", this._kfrms[i].Icon).attr("name", this._kfrms[i].Name).addClass("tool-buttons").attr("data-tool-type", this._kfrms[i].ToolType).appendTo(this._toolbar);
+            for (var i = 0; i < this._keyframes.length; i++) {
+                var keyframe_elem = $("<img>").attr("src", this._keyframes[i].Icon).attr("name", this._keyframes[i].Name).addClass("tool-buttons")
+                    .attr("data-tool-type", this._keyframes[i].ToolType).appendTo(this._toolbar);
 
                 keyframe_elem.draggable({
                     helper: "clone",
@@ -200,7 +202,7 @@
                     if (this._activeState.formula[i][j] !== undefined) {
                         if (this._activeState.formula[i][j].type == "variable") {
                             var currSymbol = this._activeState.formula[i][j];
-                            var img = $("<img>").attr("src", this._kfrms[0].Icon).attr("name", this._kfrms[0].Name).attr("data-tool-type", this._kfrms[0].ToolType).appendTo($(condition.cells[j]));
+                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).attr("data-tool-type", this._keyframes[0].ToolType).appendTo($(condition.cells[j]));
 
                             var selectVariable = this.createNewSelect($(condition.cells[j]), currSymbol);
 
@@ -309,7 +311,7 @@
                         var formula = that._options.states[stateIndex].formula[tableIndex].slice(0);
 
                         formula[this.cellIndex] = {
-                            type: ui.draggable[0].getAttribute("data-tool-type"),
+                            type: ui.draggable.attr("data-tool-type"),
                             value: 0
                         };
 
@@ -319,7 +321,7 @@
 
                             switch (ui.draggable[0].name) {
                                 case "var": {
-                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
 
                                     that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "variable",
@@ -347,7 +349,7 @@
                                     break;
                                 }
                                 case "equal": {
-                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
                                     that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: "="
@@ -355,7 +357,7 @@
                                     break;
                                 }
                                 case "more": {
-                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
                                     that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: ">"
@@ -363,7 +365,7 @@
                                     break;
                                 }
                                 case "less": {
-                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
                                     that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: "<"
@@ -371,7 +373,7 @@
                                     break;
                                 }
                                 case "moeq": {
-                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
                                     that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: ">="
@@ -379,7 +381,7 @@
                                     break;
                                 }
                                 case "leeq": {
-                                    var img = $("<img>").attr("src", ui.draggable[0].getAttribute("src")).attr("data-tool-type", ui.draggable[0].getAttribute("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
                                     that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: "<="
@@ -401,9 +403,9 @@
     });
 }(jQuery));
 
-interface JQuery {
-    stateseditor(): JQuery;
-    //stateseditor(settings: Object): JQuery;
-    //stateseditor(optionLiteral: string, optionName: string): any;
-    //stateseditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-} 
+//interface JQuery {
+//    stateseditor(): JQuery;
+//    stateseditor(settings: Object): JQuery;
+//    stateseditor(optionLiteral: string, optionName: string): any;
+//    stateseditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+//} 
