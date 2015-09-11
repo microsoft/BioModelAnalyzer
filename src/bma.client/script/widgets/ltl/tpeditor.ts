@@ -83,6 +83,9 @@
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
+            drawingSurface.drawingsurface({
+                gridVisibility: false
+            });
 
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
@@ -92,7 +95,7 @@
             var holdCords = {
                 holdX: 0,
                 holdY: 0
-            }
+            };
 
             $(document).on('vmousedown', function (event) {
                 holdCords.holdX = event.pageX;

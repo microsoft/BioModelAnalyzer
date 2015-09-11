@@ -210,7 +210,10 @@ module BMA {
                         if (!this.contextElement.isRoot) {
                             this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         } else {
-                            this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
+                            var ind = this.operations.indexOf(this.contextElement.operationlayoutref);
+                            this.contextElement.operationlayoutref.IsVisible = false;
+                            this.operations.splice(ind, 1);
+
                         }
 
                         this.OnOperationsChanged();
@@ -256,7 +259,8 @@ module BMA {
                 dragSubject.drag.subscribe(
                     (gesture) => {
                         if (this.stagingOperation !== undefined) {
-                            this.stagingOperation.operation.Position = { x: <number>gesture.x1, y: <number>gesture.y1 };
+                            var bbox = this.stagingOperation.operation.BoundingBox;
+                            this.stagingOperation.operation.Position = { x: <number>gesture.x1 + this.stagingOperation.operation.Scale.x * bbox.width / 2, y: <number>gesture.y1 + this.stagingOperation.operation.Scale.y * bbox.height / 2 };
                         }
                     });
 
@@ -266,7 +270,15 @@ module BMA {
                             that.navigationDriver.TurnNavigation(true);
                             this.stagingOperation.operation.IsVisible = false;
 
-                            var position = this.stagingOperation.operation.Position;
+                            var bbox = this.stagingOperation.operation.BoundingBox;
+                            var position = {
+                                x: this.stagingOperation.operation.Position.x - this.stagingOperation.operation.Scale.x * bbox.width / 2,
+                                y: this.stagingOperation.operation.Position.y - this.stagingOperation.operation.Scale.y * bbox.height / 2,
+                            };
+                            this.stagingOperation.operation.Position = {
+                                x: position.x + bbox.width / 2,
+                                y: position.y + bbox.height / 2
+                            };
 
                             if (!this.HasIntersections(this.stagingOperation.operation)) {
                                 if (this.stagingOperation.operation.IsOperation) {
