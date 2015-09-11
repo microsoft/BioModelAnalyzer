@@ -15,11 +15,14 @@
 
         _options: {
             variables: [],
-            states: []
+            states: [],
+            minConst: -99,
+            maxConst: 100,
         },
 
         _create: function () {
             var that = this;
+            this.element.addClass("window").addClass("LTL-states");
             this._windowTitle = $("<div>LTL States</div>").addClass("window-title").appendTo(this.element);
 
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
@@ -29,15 +32,15 @@
                     name: "Init",
                     description: "",
                     formula: [
-                        [ undefined,
-                          { type: "operator", value: "<" },
-                          { type: "variable", value: "y" },
-                          { type: "operator", value: "<" },
-                          undefined ]
+                        [undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined]
                     ]
                 };
                 this._options.states.push(newState);
-            } 
+            }
 
             this._options.variables.push("xvariabledfsfsdfsdfsdf");
             this._options.variables.push("y");
@@ -47,13 +50,13 @@
             for (var i = 0; i < this._options.states.length; i++) {
                 var stateButton = $("<div>" + this._options.states[i].name + "</div>").attr("data-state-name", this._options.states[i].name)
                     .addClass("state-button").appendTo(this._stateButtons).click(function () {
-                    var stateIndex = Array.prototype.indexOf.call(that._stateButtons.children, this);
-
-                    var idx = that._options.states.indexOf(that._activeState);
-                    $(that._stateButtons.children[idx]).removeClass("active");
-
-                    that._activeState = that._options.states[stateIndex];
-
+                    that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
+                    for (var j = 0; j < that._options.states.length; j++) {
+                        if (that._options.states[j].name == $(this).attr("data-state-name")) {
+                            that._activeState = that._options.states[j];
+                            break;
+                        }
+                    }
                     that.refresh();
                 });
             }
@@ -62,16 +65,16 @@
                 that.addState();
             });
 
-            this._toolbar = $("<div></div>").addClass("toolbar").appendTo(this.element);
+            this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this.createToolbar();
 
-            this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
-            this._description = $("<input></input>").attr("type", "text").addClass("description").attr("data-row-type", "description")
-                .attr("value", "Description").appendTo(this._ltlStates).change(function () {
+            this._description = $("<input></input>").attr("type", "text").addClass("state-description").attr("size", "15").attr("data-row-type", "description")
+                .attr("placeholder", "Description").appendTo(this.element).change(function () {
                 var idx = that._options.states.indexOf(that._activeState);
                 that._options.states[idx].description = this.value;
                 that._activeState.description = this.value;
             });
+            this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
 
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "add").appendTo(this._ltlStates);
             var tbody = $("<tbody></tbody>").appendTo(table);
@@ -95,9 +98,23 @@
                     break;
                 }
                 case "states": {
-                    this._options.states.push(value);
+                    try {
+                        if (this.validation(value.formula))
+                            this._options.states.push(value);
+                        else throw "The state " + value.name + " has wrong formula";
+                    }
+                    catch (ex) { };
                     break;
                 }
+                case "minConst": {
+                    this._options.minConst = value;
+                    break;
+                }
+                case "maxConst": {
+                    this._options.maxConst = value;
+                    break;
+                }
+                default: break;
             }
             this._super(key, value);
         },
@@ -111,7 +128,7 @@
             this._keyframes = window.KeyframesRegistry.Keyframes;
 
             for (var i = 0; i < this._keyframes.length; i++) {
-                var keyframe_elem = $("<img>").attr("src", this._keyframes[i].Icon).attr("name", this._keyframes[i].Name).addClass("tool-buttons")
+                var keyframe_elem = $("<img>").attr("src", this._keyframes[i].Icon).attr("name", this._keyframes[i].Name).addClass("state-tool")
                     .attr("data-tool-type", this._keyframes[i].ToolType).appendTo(this._toolbar);
 
                 keyframe_elem.draggable({
@@ -186,74 +203,83 @@
         },
 
         refresh: function () {
-            var idx = this._options.states.indexOf(this._activeState);
-            $(this._stateButtons[0].children[idx]).addClass("active");
+            var that = this;
+            this._stateButtons.find("[data-state-name='" + this._activeState.name + "']").addClass("active");
+            $(this._ltlStates).find("[data-row-type='condition']").remove();
 
-            var children = $(this._ltlStates).find("[data-row-type='condition']").remove();
-
-            this._description[0].value = this._activeState.description;
+            this._description.val(this._activeState.description);
 
             for (var i = 0; i < this._activeState.formula.length; i++) {
                 this.addCondition();
-                var table = this._ltlStates[0].children[i + 1];
-                var tbody = table.children[0];
-                var condition = tbody.children[0];
+                var table = this._ltlStates.children().eq(i);
+                var tbody = table.children().eq(0);
+                var condition = tbody.children().eq(0);
+
                 for (var j = 0; j < 5; j++) {
                     if (this._activeState.formula[i][j] !== undefined) {
-                        if (this._activeState.formula[i][j].type == "variable") {
-                            var currSymbol = this._activeState.formula[i][j];
-                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).attr("data-tool-type", this._keyframes[0].ToolType).appendTo($(condition.cells[j]));
 
-                            var selectVariable = this.createNewSelect($(condition.cells[j]), currSymbol);
+                        if (this._activeState.formula[i][j].type == "variable") {
+
+                            var currSymbol = this._activeState.formula[i][j];
+                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name)
+                                .attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
+
+                            var selectVariable = this.createNewSelect(condition.children().eq(j), currSymbol);
 
                             if (this._options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
-                                $(selectVariable[0].children[0]).text(this._activeState.formula[i][j].value);
+                                selectVariable.children().eq(0).text(this._activeState.formula[i][j].value);
+
                         } else if (this._activeState.formula[i][j].type == "const") {
+
                             var currNumber = this._activeState.formula[i][j];
                             var num = $("<input autofocus></input>").attr("type", "text").attr("min", "0").attr("max", "100")
                                 .attr("value", parseFloat(this._activeState.formula[i][j].value)).attr("size", "1")
-                                .attr("value", "0").addClass("number-input").appendTo($(condition.cells[j]));
+                                .addClass("number-input").appendTo(condition.children().eq(j));
 
                             num.bind("input change", function () {
-                                if (this.value > 100) this.value = 100;
-                                if (this.value < - 99) this.value = -99;
+                                if (parseFloat(this.value) > that._options.maxConst) this.value = that._options.maxConst;
+                                if (parseFloat(this.value) < that._options.minConst) this.value = that._options.minConst;
                                 currNumber.value = this.value;
                             });
+
                         } else if (this._activeState.formula[i][j].type == "operator") {
+
                             var img;
                             switch (this._activeState.formula[i][j].value) {
                                 case "=": {
                                     var keyframe = window.KeyframesRegistry.GetFunctionByName("equal");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name).attr("data-tool-type", keyframe.ToolType).appendTo($(condition.cells[j]));
+                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
+                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
                                     break;
                                 }
                                 case "<": {
                                     var keyframe = window.KeyframesRegistry.GetFunctionByName("less");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name).attr("data-tool-type", keyframe.ToolType).appendTo($(condition.cells[j]));
+                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
+                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
                                     break;
                                 }
                                 case "<=": {
                                     var keyframe = window.KeyframesRegistry.GetFunctionByName("leeq");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name).attr("data-tool-type", keyframe.ToolType).appendTo($(condition.cells[j]));
+                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
+                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
                                     break;
                                 }
                                 case ">": {
                                     var keyframe = window.KeyframesRegistry.GetFunctionByName("more");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name).attr("data-tool-type", keyframe.ToolType).appendTo($(condition.cells[j]));
+                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
+                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
                                     break;
                                 }
                                 case ">=": {
                                     var keyframe = window.KeyframesRegistry.GetFunctionByName("moeq");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name).attr("data-tool-type", keyframe.ToolType).appendTo($(condition.cells[j]));
+                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
+                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
                                     break;
                                 }
                                 default: break;
-                            } 
+                            }
                         }
                     }
-                    if (!this.validation(this._activeState.formula[i]))
-                        $(condition).addClass("error");
-                    else $(condition).removeClass("error");
                 }
             }
         },
@@ -262,16 +288,17 @@
             var that = this;
             var k = this._options.states.length;
             var stateName = String.fromCharCode(64 + k);
-            var state = $("<div>" + stateName + "</div>").addClass("state-button").click(function () {
-                var stateIndex = Array.prototype.indexOf.call(that._stateButtons[0].children, this);
-
-                var idx = that._options.states.indexOf(that._activeState);
-                $(that._stateButtons[0].children[idx]).removeClass("active");
-
-                that._activeState = that._options.states[stateIndex];
-
+            var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").click(function () {
+                that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
+                for (var j = 0; j < that._options.states.length; j++) {
+                    if (that._options.states[j].name == $(this).attr("data-state-name")) {
+                        that._activeState = that._options.states[j];
+                        break;
+                    }
+                }
                 that.refresh();
             });
+
             var newState = {
                 name: stateName,
                 description: "",
@@ -279,22 +306,14 @@
             };
             this._setOption("states", newState);
 
-            var idx = this._options.states.indexOf(this._activeState);
-            $(this._stateButtons[0].children[idx]).removeClass("active");
-
+            that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
             this._activeState = this._options.states[k];
-
-            this._stateButtons[0].insertBefore(state[0], this._stateButtons[0].lastChild);
+            state.insertBefore(this._stateButtons.children().last());
 
             this.refresh();
         },
 
         addCondition: function () {
-            var table = this.createStatesTable();
-            this._ltlStates[0].insertBefore(table[0], this._ltlStates[0].lastChild);
-        },
-
-        createStatesTable: function () {
             var that = this;
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "condition");
             var tbody = $("<tbody></tbody>").appendTo(table);
@@ -306,7 +325,7 @@
                     drop: function (event, ui) {
                         var stateIndex = that._options.states.indexOf(that._activeState);
                         var cellIndex = this.cellIndex;
-                        var tableIndex = Array.prototype.indexOf.call(that._ltlStates[0].children, table[0]) - 1;
+                        var tableIndex = table.index();
 
                         var formula = that._options.states[stateIndex].formula[tableIndex].slice(0);
 
@@ -339,11 +358,12 @@
                                     }
 
                                     var currNumber = that._options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                                    var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
+                                    var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0")
+                                        .attr("max", "100").addClass("number-input").appendTo(this);
 
                                     num.bind("input change", function () {
-                                        if (this.value > 100) this.value = 100;
-                                        if (this.value < -99) this.value = -99;
+                                        if (parseFloat(this.value) > that._options.maxConst) this.value = that._options.maxConst;
+                                        if (parseFloat(this.value) < that._options.minConst) this.value = that._options.minConst;
                                         currNumber.value = this.value;
                                     });
                                     break;
@@ -394,18 +414,21 @@
                     }
                 });
             }
+
             var td = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
                 $(table).remove();
             });
-            td[0].appendChild(($("<img>").attr("src", "../images/ltlimgs/remove.png"))[0]);
-            return table;
-        }
+            var delTable = $("<img>").attr("src", "../images/ltlimgs/remove.png").appendTo(td);
+
+            table.insertBefore(this._ltlStates.children().last());
+        },
     });
 }(jQuery));
 
-//interface JQuery {
-//    stateseditor(): JQuery;
-//    stateseditor(settings: Object): JQuery;
-//    stateseditor(optionLiteral: string, optionName: string): any;
-//    stateseditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-//} 
+interface JQuery {
+    stateseditor(): JQuery;
+    stateseditor(settings: Object): JQuery;
+    stateseditor(optionLiteral: string, optionName: string): any;
+    stateseditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+    stateseditor(methodName: string, methodValue: any): JQuery;
+} 

@@ -552,8 +552,6 @@ input:-ms-input-placeholder {
   font-size: 20px;
   line-height: 27px;
   margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
   font-family: 'Segoe-UI-Light';
 }
 textarea {
@@ -577,8 +575,6 @@ textarea:focus {
   font-size: 20px;
   line-height: 27px;
   margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
   font-family: 'Segoe-UI-Light';
 }
 .proof-state {
@@ -1127,8 +1123,6 @@ body {
   font-size: 20px;
   line-height: 27px;
   margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
   width: 170px;
 }
 .model-toolbar .model-name input:focus {
@@ -1223,8 +1217,6 @@ body {
   font-size: 20px;
   line-height: 27px;
   margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
   font-family: 'Segoe-UI-Light';
 }
 .variable-editor .spacer {
@@ -1270,8 +1262,6 @@ body {
   font-size: 20px;
   line-height: 27px;
   margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
   font-family: 'Segoe-UI-Light';
   color: #606060;
 }
@@ -1312,8 +1302,6 @@ body {
   font-size: 20px;
   line-height: 27px;
   margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
   font-family: 'Segoe-UI-Light';
 }
 .dialog {
@@ -1499,6 +1487,124 @@ body {
 .window.simulation-popout .scrollable-results .small-simulation-popout-table {
   display: inline-block;
   width: 250px;
+}
+.window.LTL-states {
+  width: 340px;
+  padding: 0px 0px 10px 0px;
+}
+.window.LTL-states .window-title {
+  padding: 10px 0px 0px 10px;
+}
+.state-description {
+  margin: 10px 0px 0px 10px;
+  width: 80%;
+}
+.state-buttons {
+  margin-left: 5px;
+}
+.state-buttons .state-button {
+  display: inline-block;
+  margin: 5px 0px 10px 5px;
+  font-family: 'Segoe-UI-Light';
+  font-size: 20px;
+  line-height: 25px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 100px;
+  background-color: white;
+  color: #606060;
+  border: 1px solid #606060;
+}
+.state-buttons .state-button.new {
+  color: #ededed;
+  border: 1px solid #ededed;
+}
+.state-buttons .state-button.new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  cursor: pointer;
+}
+.state-toolbar {
+  background-color: #aaaaaa;
+  padding: 5px 5px 0px 10px;
+}
+.state-toolbar .state-tool {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  margin: 0px 5px 0px 0px;
+}
+.state-toolbar .state-tool img {
+  padding: 0px;
+  margin: 0px;
+}
+.LTL-states {
+  padding: 0px;
+  margin: 0px;
+  background-color: white;
+}
+.LTL-states table {
+  border-collapse: collapse;
+  font-family: 'Segoe-UI-Light';
+  font-size: 40px;
+  margin: 10px;
+}
+.LTL-states table tr {
+  margin: 0px;
+}
+.LTL-states table tr td {
+  border: 1px solid #aaaaaa;
+  text-align: center;
+  margin: 0px;
+  padding: 0px 5px;
+}
+.LTL-states table tr td.variable {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  max-width: 70px;
+  padding: 0px 5px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.LTL-states table tr td.variable img {
+  height: 35px;
+}
+.LTL-states table tr td:empty {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+}
+.LTL-states table tr td.LTL-line-del {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+  border: none;
+}
+.LTL-states table tr td.LTL-line-del img {
+  max-width: 25px;
+}
+.LTL-states table tr td.LTL-line-del:hover {
+  cursor: pointer;
+}
+.LTL-states table tr td.LTL-line-new {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+  line-height: 47px;
+  padding-bottom: 8px;
+  border: 1px solid #ededed;
+  color: #ededed;
+}
+.LTL-states table tr td.LTL-line-new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  cursor: pointer;
 }
 /* File I/O Tab */
 /* 
@@ -1789,51 +1895,52 @@ hr {
 body {
   margin: 0;
 }
-.window-title {
-  margin-left: 10px;
-  margin-top: 10px;
+/*.window-title{
+	margin-left: 10px;
+	margin-top:10px;
+}*/
+/*.state-toolbar {
+    margin-top:10px;
+    margin-bottom:10px;
+    padding:5px 7px;
+	background-color: @midgrey;
+    vertical-align: middle;
+    .tool-buttons{
+        margin: 2px 5px 0px 5px;
+    }
+}*/
+.state-toolbar {
+  margin-top: 5px;
 }
-img.toolbar {
-  width: 399px;
+.state-toolbar .state-tool {
+  margin: 0 10px 0 0;
 }
-.toolbar {
-  width: 399px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 5px 7px;
-  background-color: #aaaaaa;
-  vertical-align: middle;
+.state-buttons .state-button {
+  margin: 5px 5px 5px 5px;
+  /*font-family: 'Segoe-UI-Light';
+	    font-size: 20px;
+	    line-height:25px;
+	    width:30px;
+	    height:30px;
+	    text-align: center;
+	    border-radius: 100px;
+	    background-color: white;
+	    color: @darkgrey;
+	    border: 1px solid @darkgrey;
+	    &.new{ 
+		    color: @lightgrey;
+		    border: 1px solid @lightgrey;
+		    &:hover{
+			    color: @midgrey;
+			    border: 1px solid @midgrey;
+			    cursor: pointer;
+		    }
+	    }*/
 }
-.toolbar .tool-buttons {
-  margin: 2px 5px 0px 5px;
+.state-buttons .state-button.active {
+  border: 3px solid #606060;
 }
-.state-buttons {
-  width: 399px;
-}
-.state-button {
-  display: inline-block;
-  margin: 5px 0px 5px 5px;
-  font-family: 'Segoe-UI-Light';
-  font-size: 20px;
-  line-height: 25px;
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  border-radius: 100px;
-  background-color: white;
-  color: #606060;
-  border: 1px solid #606060;
-}
-.state-button:hover {
-  cursor: pointer;
-}
-.state-button.new {
-  color: #ededed;
-  border: 1px solid #ededed;
-}
-.state-button.new:hover {
-  color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+.state-buttons .state-button:hover {
   cursor: pointer;
 }
 .number-input {
@@ -1909,15 +2016,14 @@ img.toolbar {
   background-color: #ededed;
   box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
 }
+.description {
+  margin: 10px 0 0 10px;
+  width: 80%;
+}
 .LTL-states {
   padding: 0;
   margin: 0;
   background-color: white;
-}
-.LTL-states .description {
-  font-family: 'Segoe-UI-Light';
-  font-size: 14px;
-  margin-left: 10px;
 }
 .LTL-states table {
   border-collapse: collapse;
@@ -1933,7 +2039,6 @@ img.toolbar {
 }
 .LTL-states table tr td {
   position: relative;
-  width: 55px;
   border: 1px solid #aaaaaa;
   text-align: center;
   margin: 0px;
