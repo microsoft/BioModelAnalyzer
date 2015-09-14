@@ -34,8 +34,8 @@
                     helper: "clone",
                     start: function (event, ui) {
                         $(this).draggable("option", "cursorAt", {
-                            left: Math.floor(ui.helper.width() / 2),
-                            top: Math.floor(ui.helper.height() / 2)
+                            left: 0,   //Math.floor(ui.helper.width() / 2),
+                            top: 0     //Math.floor(ui.helper.height() / 2)
                         });
                         that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
@@ -70,8 +70,8 @@
                     helper: "clone",
                     start: function (event, ui) {
                         $(this).draggable("option", "cursorAt", {
-                            left: Math.floor(ui.helper.width() / 2),
-                            top: Math.floor(ui.helper.height() / 2)
+                            left: 0,   //Math.floor(ui.helper.width() / 2),
+                            top: 0     //Math.floor(ui.helper.height() / 2)
                         });
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
