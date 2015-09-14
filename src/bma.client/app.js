@@ -466,14 +466,7 @@ function loadScript(version) {
     //LTL Drivers
     var keyframesFull = $('<div></div>').ltlstatesviewer();
     var keyframesExpandedViewer = new BMA.UIDrivers.KeyframesExpandedViewer(keyframesFull);
-    var tpEditor = $("<div></div>").width(800).height(600);
-    //tpEditor.appendTo($("#hiddenContainer"));
-    tpEditor.temporalpropertieseditor({ commands: ltlCommands });
-    //$("#hiddenContainer").hide();
-    var tpEditorDriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(tpEditor);
-    var tpSvgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(tpEditor.temporalpropertieseditor("getDrawingSurface"));
-    tpSvgPlotDriver.SetGridVisibility(false);
-    var tpContextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(tpEditor.temporalpropertieseditor("getContextMenuPanel"));
+    var tpeditordriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(ltlCommands, popup);
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
@@ -492,9 +485,7 @@ function loadScript(version) {
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
     //LTL Presenters
-    var statesPresenter = new BMA.LTL.StatesPresenter();
-    var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(ltlCommands, tpSvgPlotDriver, tpSvgPlotDriver, tpSvgPlotDriver, tpContextMenuDriver, statesPresenter);
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(appModel, keyframesExpandedViewer, ltlDriver, tpEditorDriver, ltlDriver, ltlService, popupDriver);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, keyframesExpandedViewer, ltlDriver, tpeditordriver, ltlDriver, ltlService, popupDriver);
     //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();

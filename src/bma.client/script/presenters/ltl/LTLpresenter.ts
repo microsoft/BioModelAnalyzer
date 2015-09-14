@@ -9,6 +9,7 @@
 
 
             constructor(
+                commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
                 keyframesfullDriver: BMA.UIDrivers.IKeyframesFull,
                 keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
@@ -20,6 +21,8 @@
 
                 var that = this;
                 this.appModel = appModel;
+
+                
 
                 window.Commands.On("AddKeyframe", function () {
                     var newstate = 'new';
@@ -83,8 +86,17 @@
                         //    ltlviewer.Hide(param);
                         //    break;
                         case "LTLTempProp":
-                            var tpeditor = temporlapropertieseditor.GetContent();
-                            popupViewer.Show({ tab: param, content: tpeditor });
+                            temporlapropertieseditor.Show();
+
+                            var statesPresenter = new BMA.LTL.StatesPresenter();
+                            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(
+                                commands,
+                                temporlapropertieseditor.GetSVGDriver(),
+                                temporlapropertieseditor.GetNavigationDriver(),
+                                temporlapropertieseditor.GetDragService(),
+                                temporlapropertieseditor.GetContextMenuDriver(),
+                                statesPresenter);
+
                             break;
                         default:
                             ltlviewer.Show(undefined);
@@ -93,6 +105,7 @@
                 });
 
                 window.Commands.On("Collapse",(param) => {
+                    temporlapropertieseditor.Hide();
                     ltlviewer.Show(param);
                     popupViewer.Hide();
                 });

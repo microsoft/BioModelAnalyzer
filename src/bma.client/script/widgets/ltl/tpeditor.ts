@@ -6,7 +6,8 @@
         _drawingSurface: undefined,
 
         options: {
-            states: [ "A", "B", "C" ]
+            states: ["A", "B", "C"],
+            drawingSurfaceHeight: 500
         },
 
         _create: function () {
@@ -25,7 +26,7 @@
                 var stateDiv = $("<div></div>")
                     .addClass("state-button")
                     .attr("data-state", this.options.states[i])
-                    .css("z-index", 100)
+                    .css("z-index", 6)
                     .css("cursor", "pointer")
                     .text(this.options.states[i])
                     .appendTo(statesbtns);
@@ -54,7 +55,7 @@
                 var opDiv = $("<div></div>")
                     .addClass("operator")
                     .attr("data-operator", operator.Name)
-                    .css("z-index", 100)
+                    .css("z-index", 6)
                     .css("cursor", "pointer")
                     .appendTo(operatorsDiv);
 
@@ -79,7 +80,7 @@
             }
 
             //Adding drawing surface
-            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").appendTo(root);
+            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").height(this.options.drawingSurfaceHeight).appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;

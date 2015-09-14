@@ -71,15 +71,54 @@ module BMA {
         }
 
         export class TemporalPropertiesEditorDriver implements ITemporalPropertiesEditor {
-
+            private popupWindow: JQuery;
             private tpeditor: JQuery;
+            private commands: ICommandRegistry;
+            private svgDriver: SVGPlotDriver;
+            private contextMenuDriver: IContextMenu;
 
-            constructor(tpeditor: JQuery) {
-                this.tpeditor = tpeditor;
+            constructor(commands: ICommandRegistry, popupWindow: JQuery) {
+                this.popupWindow = popupWindow;
+                this.commands = commands;
             }
 
-            public GetContent() {
-                return this.tpeditor;
+            public Show() {
+                var shouldInit = this.tpeditor === undefined;
+                if (shouldInit) {
+                    this.tpeditor = $("<div></div>").width(800);
+                }
+
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min" });
+                popup_position();
+                this.popupWindow.show();
+
+                if (shouldInit) {
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands });
+                    this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
+                    this.svgDriver.SetGridVisibility(false);
+
+                    this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
+                }
+            }
+
+            Hide() {
+                this.popupWindow.hide();
+            }
+
+            GetSVGDriver(): ISVGPlot {
+                return this.svgDriver;
+            }
+
+            GetNavigationDriver(): INavigationPanel {
+                return this.svgDriver;
+            }
+
+            GetDragService(): IElementsPanel {
+                return this.svgDriver;
+            }
+
+            GetContextMenuDriver(): IContextMenu {
+                return this.contextMenuDriver;
             }
         }
     }

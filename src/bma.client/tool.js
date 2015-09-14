@@ -3567,11 +3567,39 @@ var BMA;
         })();
         UIDrivers.LTLViewer = LTLViewer;
         var TemporalPropertiesEditorDriver = (function () {
-            function TemporalPropertiesEditorDriver(tpeditor) {
-                this.tpeditor = tpeditor;
+            function TemporalPropertiesEditorDriver(commands, popupWindow) {
+                this.popupWindow = popupWindow;
+                this.commands = commands;
             }
-            TemporalPropertiesEditorDriver.prototype.GetContent = function () {
-                return this.tpeditor;
+            TemporalPropertiesEditorDriver.prototype.Show = function () {
+                var shouldInit = this.tpeditor === undefined;
+                if (shouldInit) {
+                    this.tpeditor = $("<div></div>").width(800);
+                }
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min" });
+                popup_position();
+                this.popupWindow.show();
+                if (shouldInit) {
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands });
+                    this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
+                    this.svgDriver.SetGridVisibility(false);
+                    this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
+                }
+            };
+            TemporalPropertiesEditorDriver.prototype.Hide = function () {
+                this.popupWindow.hide();
+            };
+            TemporalPropertiesEditorDriver.prototype.GetSVGDriver = function () {
+                return this.svgDriver;
+            };
+            TemporalPropertiesEditorDriver.prototype.GetNavigationDriver = function () {
+                return this.svgDriver;
+            };
+            TemporalPropertiesEditorDriver.prototype.GetDragService = function () {
+                return this.svgDriver;
+            };
+            TemporalPropertiesEditorDriver.prototype.GetContextMenuDriver = function () {
+                return this.contextMenuDriver;
             };
             return TemporalPropertiesEditorDriver;
         })();
@@ -8987,7 +9015,8 @@ jQuery.fn.extend({
     $.widget("BMA.temporalpropertieseditor", {
         _drawingSurface: undefined,
         options: {
-            states: ["A", "B", "C"]
+            states: ["A", "B", "C"],
+            drawingSurfaceHeight: 500
         },
         _create: function () {
             var that = this;
@@ -8998,7 +9027,7 @@ jQuery.fn.extend({
             var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             for (var i = 0; i < this.options.states.length; i++) {
-                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", this.options.states[i]).css("z-index", 100).css("cursor", "pointer").text(this.options.states[i]).appendTo(statesbtns);
+                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", this.options.states[i]).css("z-index", 6).css("cursor", "pointer").text(this.options.states[i]).appendTo(statesbtns);
                 stateDiv.draggable({
                     helper: "clone",
                     start: function (event, ui) {
@@ -9017,7 +9046,7 @@ jQuery.fn.extend({
             var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
-                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 100).css("cursor", "pointer").appendTo(operatorsDiv);
+                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 6).css("cursor", "pointer").appendTo(operatorsDiv);
                 var spaceStr = "&nbsp;&nbsp;";
                 if (operator.OperandsCount > 1) {
                     $("<div></div>").addClass("hole").appendTo(opDiv);
@@ -9037,7 +9066,7 @@ jQuery.fn.extend({
                 });
             }
             //Adding drawing surface
-            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").appendTo(root);
+            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").height(this.options.drawingSurfaceHeight).appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
@@ -9188,7 +9217,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(appModel, keyframesfullDriver, keyframescompactDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
+            function LTLPresenter(commands, appModel, keyframesfullDriver, keyframescompactDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -9240,8 +9269,9 @@ var BMA;
                             ltlviewer.Hide(param);
                             break;
                         case "LTLTempProp":
-                            var tpeditor = temporlapropertieseditor.GetContent();
-                            popupViewer.Show({ tab: param, content: tpeditor });
+                            temporlapropertieseditor.Show();
+                            var statesPresenter = new BMA.LTL.StatesPresenter();
+                            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), statesPresenter);
                             break;
                         default:
                             ltlviewer.Show(undefined);
@@ -9249,6 +9279,7 @@ var BMA;
                     }
                 });
                 window.Commands.On("Collapse", function (param) {
+                    temporlapropertieseditor.Hide();
                     ltlviewer.Show(param);
                     popupViewer.Hide();
                 });

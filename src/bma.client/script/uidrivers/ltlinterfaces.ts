@@ -26,7 +26,16 @@ module BMA {
         }
 
         export interface ITemporalPropertiesEditor {
-            GetContent();
+            Show();
+            Hide();
+            GetSVGDriver(): ISVGPlot;
+            GetNavigationDriver(): INavigationPanel;
+            GetDragService(): IElementsPanel;
+            GetContextMenuDriver(): IContextMenu;
+        }
+
+        export interface ILTLPopupService {
+            CreateTemporalPropertiesEditor(div): ITemporalPropertiesEditor;
         }
     }
 } 
