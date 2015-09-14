@@ -21,7 +21,7 @@
                     svg.configure({
                         width: root.width(),
                         height: root.height(),
-                        viewBox: "0 0 " + root.width() + " " + root.height(),//"0 0 1 1",
+                        viewBox: "0 0 " + root.width() + " " + root.height(),
                         preserveAspectRatio: "none meet"
                     }, true);
 
@@ -80,7 +80,7 @@
 } (jQuery));
 
 interface JQuery {
-    temporalpropertieseditor(): any;
-    temporalpropertieseditor(settings: Object): any;
-    temporalpropertieseditor(methodName: string, arg: any): any;
+    temporalpropertiesviewer(): any;
+    temporalpropertiesviewer(settings: Object): any;
+    temporalpropertiesviewer(methodName: string, arg: any): any;
 }

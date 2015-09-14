@@ -3563,6 +3563,9 @@ var BMA;
             LTLViewer.prototype.GetContent = function () {
                 return this.ltlviewer;
             };
+            LTLViewer.prototype.GetTemporalPropertiesViewer = function () {
+                return new BMA.UIDrivers.TemporalPropertiesViewer(this.ltlviewer.ltlviewer("GetTPViewer"));
+            };
             return LTLViewer;
         })();
         UIDrivers.LTLViewer = LTLViewer;
@@ -3604,6 +3607,16 @@ var BMA;
             return TemporalPropertiesEditorDriver;
         })();
         UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
+        var TemporalPropertiesViewer = (function () {
+            function TemporalPropertiesViewer(tpviewer) {
+                this.tpviewer = tpviewer;
+            }
+            TemporalPropertiesViewer.prototype.SetOperations = function (operations) {
+                this.tpviewer.temporalpropertiesviewer({ operations: operations });
+            };
+            return TemporalPropertiesViewer;
+        })();
+        UIDrivers.TemporalPropertiesViewer = TemporalPropertiesViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ltldrivers.js.map
@@ -8965,11 +8978,11 @@ jQuery.fn.extend({
                 window.Commands.Execute("LTLRequested", { formula: this.formula.val()});
             });
             */
-            var temp_content = $('<div></div>').temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').height(150).temporalpropertiesviewer();
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
                 icon: "max",
-                content: temp_content,
+                content: this.temp_content,
                 tabid: "LTLTempProp"
             });
             /*
@@ -8998,6 +9011,9 @@ jQuery.fn.extend({
                 default:
                     return undefined;
             }
+        },
+        GetTPViewer: function () {
+            return this.temp_content;
         },
         Show: function (param) {
             if (param == undefined) {
@@ -9217,7 +9233,9 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, keyframesfullDriver, keyframescompactDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
+            function LTLPresenter(commands, appModel, keyframesfullDriver, keyframescompactDriver, temporlapropertieseditor, 
+                //temporalpropertiesviewer: BMA.UIDrivers.ITemporalPropertiesViewer,
+                ltlviewer, ajax, popupViewer) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -9270,8 +9288,12 @@ var BMA;
                             break;
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
-                            var statesPresenter = new BMA.LTL.StatesPresenter();
-                            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), statesPresenter);
+                            if (_this.statespresenter === undefined) {
+                                _this.statespresenter = new BMA.LTL.StatesPresenter();
+                            }
+                            if (_this.tppresenter === undefined) {
+                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), _this.statespresenter);
+                            }
                             break;
                         default:
                             ltlviewer.Show(undefined);
@@ -9293,6 +9315,9 @@ var BMA;
                 });
                 window.Commands.On('RemoveKeyframe', function () {
                     keyframesfullDriver.RemovePart('', '');
+                });
+                commands.On("TemporalPropertiesOperationsChanged", function (args) {
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations);
                 });
             }
             LTLPresenter.prototype.CreateColoredTable = function (ticks) {

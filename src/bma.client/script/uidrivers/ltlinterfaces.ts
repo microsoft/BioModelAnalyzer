@@ -8,6 +8,7 @@ module BMA {
             Show(p: string);
             Hide(p: string);
             SetResult(result);
+            GetTemporalPropertiesViewer(): BMA.UIDrivers.ITemporalPropertiesViewer;
         }
 
         export interface IKeyframesList {
@@ -21,10 +22,6 @@ module BMA {
             RemovePart(keyframe, ind);
         }
 
-        export interface ITemporalPropertiesViewer {
-            SetOperation(operation: BMA.LTLOperations.Operation);
-        }
-
         export interface ITemporalPropertiesEditor {
             Show();
             Hide();
@@ -34,8 +31,8 @@ module BMA {
             GetContextMenuDriver(): IContextMenu;
         }
 
-        export interface ILTLPopupService {
-            CreateTemporalPropertiesEditor(div): ITemporalPropertiesEditor;
+        export interface ITemporalPropertiesViewer {
+            SetOperations(operations: BMA.LTLOperations.IOperand[]);
         }
     }
 } 
