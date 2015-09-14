@@ -68,6 +68,10 @@ module BMA {
             GetContent() {
                 return this.ltlviewer;
             }
+
+            GetTemporalPropertiesViewer() {
+                return new BMA.UIDrivers.TemporalPropertiesViewer(this.ltlviewer.ltlviewer("GetTPViewer"));
+            }
         }
 
         export class TemporalPropertiesEditorDriver implements ITemporalPropertiesEditor {
@@ -119,6 +123,17 @@ module BMA {
 
             GetContextMenuDriver(): IContextMenu {
                 return this.contextMenuDriver;
+            }
+        }
+
+        export class TemporalPropertiesViewer implements ITemporalPropertiesViewer {
+            private tpviewer: JQuery;
+            constructor(tpviewer: JQuery) {
+                this.tpviewer = tpviewer;
+            }
+
+            public SetOperations(operations: BMA.LTLOperations.IOperand[]) {
+                this.tpviewer.temporalpropertiesviewer({ operations: operations });
             }
         }
     }

@@ -28,12 +28,12 @@
                 window.Commands.Execute("LTLRequested", { formula: this.formula.val()});
             });
             */
-            var temp_content = $('<div></div>').temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').height(150).temporalpropertiesviewer();
 
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
                 icon: "max",
-                content: temp_content,
+                content: this.temp_content,
                 tabid: "LTLTempProp"
             });
 
@@ -65,6 +65,10 @@
                 default:
                     return undefined;
             }
+        },
+
+        GetTPViewer: function () {
+            return this.temp_content;
         },
 
         Show: function (param) {

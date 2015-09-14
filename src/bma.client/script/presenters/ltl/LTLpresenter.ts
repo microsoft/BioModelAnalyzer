@@ -7,6 +7,8 @@
             currentdraggableelem: any;
             expandedResults: JQuery;
 
+            tppresenter: BMA.LTL.TemporalPropertiesPresenter;
+            statespresenter: BMA.LTL.StatesPresenter;
 
             constructor(
                 commands: BMA.CommandRegistry,
@@ -14,6 +16,7 @@
                 keyframesfullDriver: BMA.UIDrivers.IKeyframesFull,
                 keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
                 temporlapropertieseditor: BMA.UIDrivers.ITemporalPropertiesEditor,
+                //temporalpropertiesviewer: BMA.UIDrivers.ITemporalPropertiesViewer,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup
@@ -88,14 +91,19 @@
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
 
-                            var statesPresenter = new BMA.LTL.StatesPresenter();
-                            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(
-                                commands,
-                                temporlapropertieseditor.GetSVGDriver(),
-                                temporlapropertieseditor.GetNavigationDriver(),
-                                temporlapropertieseditor.GetDragService(),
-                                temporlapropertieseditor.GetContextMenuDriver(),
-                                statesPresenter);
+                            if (this.statespresenter === undefined) {
+                                this.statespresenter = new BMA.LTL.StatesPresenter(); 
+                            }
+
+                            if (this.tppresenter === undefined) {
+                                this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
+                                    commands,
+                                    temporlapropertieseditor.GetSVGDriver(),
+                                    temporlapropertieseditor.GetNavigationDriver(),
+                                    temporlapropertieseditor.GetDragService(),
+                                    temporlapropertieseditor.GetContextMenuDriver(),
+                                    this.statespresenter);
+                            }
 
                             break;
                         default:
@@ -123,6 +131,8 @@
                 window.Commands.On('RemoveKeyframe', function () {
                     keyframesfullDriver.RemovePart('','');
                 });
+
+                commands.On("TemporalPropertiesOperationsChanged", function (args) { ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations); });
 
             }
 
