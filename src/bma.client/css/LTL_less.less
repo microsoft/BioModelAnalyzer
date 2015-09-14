@@ -66,7 +66,6 @@ body{
 
 .variable-select {
     display:block;
-    float:left;
     width:55px;
     font-size:14px;
     color:ButtonText;
@@ -90,7 +89,7 @@ body{
         border-bottom:none;
         float:right;
         margin-top:7px;
-        margin-right:7px;
+        margin-right:5px;
             &.inputs-list-header-expanded {
                 border-top:none;
                 border-bottom:7px solid #aaa;
@@ -126,7 +125,7 @@ body{
             background-color:@darkgrey;
             border-radius:5px;
 		}
-		}
+	}
     &.expanded {
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
@@ -151,7 +150,7 @@ body{
 		margin:10px;
 
 		tr{
-			margin:0px;
+			margin:0;
             &.error {
                 td {
                     border:1px solid red;
@@ -161,8 +160,9 @@ body{
                 position:relative;
 				border: 1px solid @midgrey;
 				text-align: center;
-				margin:0px;
-				//padding:0px 5px;
+				margin:0;
+                min-width:55px;
+				padding:0;
 				.default-cell(){
 					width: 55px;
 					height: 55px;
@@ -172,8 +172,8 @@ body{
 				
 				&.variable{
 					.default-text();
-					max-width:70px;
-					//padding: 0px 5px;
+					max-width:55px;
+					padding: 0;
 					text-align: left;
 					white-space: nowrap;
 					overflow: hidden;

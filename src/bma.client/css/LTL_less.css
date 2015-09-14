@@ -1951,7 +1951,6 @@ body {
 }
 .variable-select {
   display: block;
-  float: left;
   width: 55px;
   font-size: 14px;
   color: ButtonText;
@@ -1975,7 +1974,7 @@ body {
   border-bottom: none;
   float: right;
   margin-top: 7px;
-  margin-right: 7px;
+  margin-right: 5px;
 }
 .variable-select .inputs-expandbttn.inputs-list-header-expanded {
   border-top: none;
@@ -2032,7 +2031,7 @@ body {
   margin: 10px;
 }
 .LTL-states table tr {
-  margin: 0px;
+  margin: 0;
 }
 .LTL-states table tr.error td {
   border: 1px solid red;
@@ -2041,14 +2040,17 @@ body {
   position: relative;
   border: 1px solid #aaaaaa;
   text-align: center;
-  margin: 0px;
+  margin: 0;
+  min-width: 55px;
+  padding: 0;
 }
 .LTL-states table tr td.variable {
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
   color: #606060;
-  max-width: 70px;
+  max-width: 55px;
+  padding: 0;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
