@@ -62,13 +62,13 @@ module BMA {
                 this.keyframes = [];
                 this.imagePath = imagePath;
 
-                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/ltlimgs/var.png", "variable"));
-                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/ltlimgs/123.png", "const"));
-                this.keyframes.push(new BMAKeyframe("equal",this.imagePath + "/ltlimgs/eq.png", "operator"));
-                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/ltlimgs/mo.png", "operator"));
-                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/ltlimgs/le.png", "operator"));
-                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/ltlimgs/moeq.png", "operator"));
-                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/ltlimgs/leeq.png", "operator"));
+                this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/LTL-state-tool-var.svg", "variable"));
+                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/LTL-state-tool-num.svg", "const"));
+                this.keyframes.push(new BMAKeyframe("equal", this.imagePath + "/LTL-state-tool-equ.svg", "operator"));
+                this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/LTL-state-tool-gre.svg", "operator"));
+                this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/LTL-state-tool-les.svg", "operator"));
+                this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/LTL-state-tool-greq.svg", "operator"));
+                this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/LTL-state-tool-lesq.svg", "operator"));
             }                                                   
         }
     }

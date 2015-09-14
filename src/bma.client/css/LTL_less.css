@@ -1909,6 +1909,9 @@ body {
         margin: 2px 5px 0px 5px;
     }
 }*/
+.window.LTL-states {
+  width: 355px;
+}
 .state-toolbar {
   margin-top: 5px;
 }
@@ -2075,9 +2078,9 @@ body {
   cursor: pointer;
 }
 .LTL-states table tr td.LTL-line-new {
-  width: 55px;
-  height: 55px;
+  height: 47px;
   line-height: 47px;
+  padding: 0;
   padding-bottom: 8px;
   border: 1px solid #ededed;
   color: #ededed;

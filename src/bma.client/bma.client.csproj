@@ -232,6 +232,13 @@
     <Content Include="images\local.svg" />
     <Content Include="images\logo-crop.png" />
     <Content Include="images\ltl-icon.png" />
+    <Content Include="images\LTL-state-tool-equ.svg" />
+    <Content Include="images\LTL-state-tool-gre.svg" />
+    <Content Include="images\LTL-state-tool-greq.svg" />
+    <Content Include="images\LTL-state-tool-les.svg" />
+    <Content Include="images\LTL-state-tool-lesq.svg" />
+    <Content Include="images\LTL-state-tool-num.svg" />
+    <Content Include="images\LTL-state-tool-var.svg" />
     <Content Include="images\ltlimgs\123.png" />
     <Content Include="images\ltlimgs\eq.png" />
     <Content Include="images\ltlimgs\mo.png" />
@@ -275,6 +282,8 @@
     <Content Include="images\saveicon.png" />
     <Content Include="images\savelocally.png" />
     <Content Include="images\savelocally.svg" />
+    <Content Include="images\state-line-del.svg" />
+    <Content Include="images\state-variable.svg" />
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />

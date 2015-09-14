@@ -128,8 +128,9 @@
             this._keyframes = window.KeyframesRegistry.Keyframes;
 
             for (var i = 0; i < this._keyframes.length; i++) {
+                var stateTool = $("<div></div>").addClass("state-tool").appendTo(this._toolbar);
                 var keyframe_elem = $("<img>").attr("src", this._keyframes[i].Icon).attr("name", this._keyframes[i].Name).addClass("state-tool")
-                    .attr("data-tool-type", this._keyframes[i].ToolType).appendTo(this._toolbar);
+                    .attr("data-tool-type", this._keyframes[i].ToolType).appendTo(stateTool);
 
                 keyframe_elem.draggable({
                     helper: "clone",
@@ -418,7 +419,7 @@
             var td = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
                 $(table).remove();
             });
-            var delTable = $("<img>").attr("src", "../images/ltlimgs/remove.png").appendTo(td);
+            var delTable = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(td);
 
             table.insertBefore(this._ltlStates.children().last());
         },
