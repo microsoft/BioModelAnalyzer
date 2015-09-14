@@ -29,7 +29,7 @@
 
             if (this._options.states.length < 1) {
                 var newState = {
-                    name: "Init",
+                    name: "A",
                     description: "",
                     formula: [
                         [undefined,
@@ -287,7 +287,7 @@
         addState: function () {
             var that = this;
             var k = this._options.states.length;
-            var stateName = String.fromCharCode(64 + k);
+            var stateName = String.fromCharCode(63 + k);
             var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").click(function () {
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                 for (var j = 0; j < that._options.states.length; j++) {
