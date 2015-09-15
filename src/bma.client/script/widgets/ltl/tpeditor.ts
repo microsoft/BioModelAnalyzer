@@ -90,7 +90,9 @@
 
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
-            }            
+            }  
+            
+            drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });          
 
             //Context menu
             var holdCords = {

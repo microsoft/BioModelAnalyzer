@@ -28,9 +28,9 @@
                 
 
                 window.Commands.On("AddKeyframe", function () {
-                    var newstate = 'new';
-                    keyframescompactDriver.AddState(newstate);
-                    keyframesfullDriver.AddState(newstate);
+                    //var newstate = 'new';
+                    //keyframescompactDriver.AddState(newstate);
+                    //keyframesfullDriver.AddState(newstate);
                 });
 
                 window.Commands.On("ChangedKeyframeName", function (item: { ind; name} ) {
@@ -129,7 +129,7 @@
                 });
 
                 window.Commands.On('RemoveKeyframe', function () {
-                    keyframesfullDriver.RemovePart('','');
+                    //keyframesfullDriver.RemovePart('','');
                 });
 
                 commands.On("TemporalPropertiesOperationsChanged", function (args) { ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations); });

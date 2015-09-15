@@ -552,7 +552,7 @@ function loadScript(version) {
     changesCheckerTool.Snapshot(appModel);
 
     //LTL Drivers
-    var keyframesFull: JQuery = $('<div></div>').ltlstatesviewer();
+    var keyframesFull: JQuery = $('<div></div>').stateseditor();
     var keyframesExpandedViewer = new BMA.UIDrivers.KeyframesExpandedViewer(keyframesFull);
 
     var tpeditordriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(ltlCommands, popup);

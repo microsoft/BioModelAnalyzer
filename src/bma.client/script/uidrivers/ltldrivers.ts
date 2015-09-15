@@ -12,7 +12,7 @@ module BMA {
             }
 
             public AddState(items) {
-                this.keyframe.ltlstatesviewer('addState', items);
+                //this.keyframe.ltlstatesviewer('addState', items);
             }
 
             public GetContent() {
