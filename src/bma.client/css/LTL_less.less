@@ -5,13 +5,11 @@
 .window.LTL-states {
     width: 340px;
     padding: 0px 0px 10px 0px;
-
-/*.window-title{
+    /*.window-title{
 	margin-left: 10px;
 	margin-top:10px;
 }*/
-
-/*.state-toolbar {
+    /*.state-toolbar {
     margin-top:10px;
     margin-bottom:10px;
     padding:5px 7px;
@@ -21,31 +19,35 @@
         margin: 2px 5px 0px 5px;
     }
 }*/
-
-.window.LTL-states {
-    width:355px;
-}
-
-.state-toolbar {
-    margin-top:5px;
-    .state-tool {
-        margin:0 10px 0 0;
+    .window.LTL-states {
+        width: 355px;
     }
-}
-.state-buttons {
-    width:355px;
-    margin-left:0;
-    .state-button{
-	    //display:inline-block;
-	    margin:5px;
-        margin-left:0;
-        &.active{
-		    border: 3px solid @darkgrey;
-	    }
-        &:hover{
-            cursor: pointer;
+
+    .state-toolbar {
+        margin-top: 5px;
+
+        .state-tool {
+            margin: 0 10px 0 0;
         }
-	    /*font-family: 'Segoe-UI-Light';
+    }
+
+    .state-buttons {
+        width: 355px;
+        margin-left: 0;
+
+        .state-button {
+            //display:inline-block;
+            margin: 5px;
+            margin-left: 0;
+
+            &.active {
+                border: 3px solid @darkgrey;
+            }
+
+            &:hover {
+                cursor: pointer;
+            }
+            /*font-family: 'Segoe-UI-Light';
 	    font-size: 20px;
 	    line-height:25px;
 	    width:30px;
@@ -64,295 +66,300 @@
 			    cursor: pointer;
 		    }
 	    }*/
-    }
-}
-
-.number-input {
-    width:30px;
-    font-size:18px;
-    border:none;
-    text-align:center;
-}
-
-.variable-select {
-    display:block;
-    width:55px;
-    font-size:14px;
-    color:ButtonText;
-    p {
-        margin:0;
-        display:inline-block;
-        width:30px;
-        overflow:hidden;
-        text-align:left;
-        text-overflow:ellipsis;
+        }
     }
 
-    .inputs-expandbttn{
-        display:inline-block;
-        width:0;
-        height:0;
-        border-left:5px solid transparent;
-        border-right:5px solid transparent;
-        cursor:pointer;
-        border-top:7px solid #aaa;
-        border-bottom:none;
-        float:right;
-        margin-top:7px;
-        margin-right:5px;
+    .number-input {
+        width: 30px;
+        font-size: 18px;
+        border: none;
+        text-align: center;
+    }
+
+    .variable-select {
+        display: block;
+        width: 55px;
+        font-size: 14px;
+        color: ButtonText;
+
+        p {
+            margin: 0;
+            display: inline-block;
+            width: 30px;
+            overflow: hidden;
+            text-align: left;
+            text-overflow: ellipsis;
+        }
+
+        .inputs-expandbttn {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            cursor: pointer;
+            border-top: 7px solid #aaa;
+            border-bottom: none;
+            float: right;
+            margin-top: 7px;
+            margin-right: 5px;
+
             &.inputs-list-header-expanded {
-                border-top:none;
-                border-bottom:7px solid #aaa;
+                border-top: none;
+                border-bottom: 7px solid #aaa;
             }
+        }
+
+        &.expanded {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            background-color: @lightgrey;
+            box-shadow: 2px 7px 8px rgba(0,0,0,0.5);
+        }
     }
 
-    &.expanded {
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        background-color:@lightgrey;
-        box-shadow: 2px 7px 8px rgba(0,0,0,0.5);
+    .variables-list {
+        display: block;
+        padding: 2px;
+        float: left;
+        width: 51px;
+        font-size: 14px;
+        color: ButtonText;
+        position: absolute;
+        top: 50px;
+        z-index: 3;
+
+        div {
+            position: relative;
+            text-align: left;
+            padding-left: 3px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &:hover {
+                cursor: pointer;
+                background-color: @darkgrey;
+                border-radius: 5px;
+            }
+        }
+
+        &.expanded {
+            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 5px;
+            background-color: @lightgrey;
+            box-shadow: 2px 7px 8px rgba(0,0,0,0.5);
+        }
     }
-}
 
-.variables-list{
-    display:block;
-    padding: 2px;
-    float:left;
-    width:51px;
-    font-size:14px;
-    color:ButtonText;
-    position:absolute;
-    top:50px;
-    z-index:3;
-    div {
-        position:relative;
-        text-align: left;
-        padding-left: 3px;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        &:hover{
-			cursor: pointer;
-            background-color:@darkgrey;
-            border-radius:5px;
-		}
-	}
-    &.expanded {
-        border-bottom-right-radius: 5px;
-        border-bottom-left-radius: 5px;
-        background-color:@lightgrey;
-        box-shadow: 2px 7px 8px rgba(0,0,0,0.5);
-	}
-}
+    .state-description {
+        margin: 0;
+        margin-top: 10px;
+        width: 80%;
+    }
 
-.state-description {
-    margin:0;
-    margin-top:10px;
-    width: 80%;
-}
+    .LTL-states {
+        padding: 0;
+        margin: 0;
+        background-color: white;
+        max-height: 270px;
+        overflow-y: scroll;
 
-.LTL-states{
-	padding:0;
-	margin:0;
-	background-color:white;
-    max-height:270px;
-    overflow-y:scroll;
-	table{
-		border-collapse: collapse;
-		font-family: 'Segoe-UI-Light';
-		font-size: 40px;
-		margin:10px;
-        margin-left:0;
+        table {
+            border-collapse: collapse;
+            font-family: 'Segoe-UI-Light';
+            font-size: 40px;
+            margin: 10px;
+            margin-left: 0;
 
-		tr{
-			margin:0;
-            &.error {
+            tr {
+                margin: 0;
+
+                &.error {
+                    td {
+                        border: 1px solid red;
+                    }
+                }
+
                 td {
-                    border:1px solid red;
+                    position: relative;
+                    border: 1px solid @midgrey;
+                    text-align: center;
+                    margin: 0;
+                    min-width: 55px;
+                    padding: 0;
+
+                    .default-cell() {
+                        width: 55px;
+                        height: 55px;
+                        //padding: 0px 5px;
+                    }
+
+                    &.variable {
+                        .default-text();
+                        max-width: 55px;
+                        padding: 0;
+                        text-align: left;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+
+                        img {
+                            height: 35px;
+                        }
+                    }
+
+                    &:empty {
+                        .default-cell();
+                        //padding:0px 5px;
+                    }
+
+                    &.LTL-line-del {
+                        .default-cell();
+                        border: none;
+
+                        img {
+                            max-width: 25px;
+                        }
+
+                        &:hover {
+                            cursor: pointer;
+                        }
+                    }
+
+                    &.LTL-line-new {
+                        //.default-cell();
+                        height: 47px;
+                        line-height: 47px;
+                        padding: 0;
+                        padding-bottom: 8px;
+                        border: 1px solid @lightgrey;
+                        color: @lightgrey;
+
+                        &:hover {
+                            color: @midgrey;
+                            border: 1px solid @midgrey;
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
-			td{
-                position:relative;
-				border: 1px solid @midgrey;
-				text-align: center;
-				margin:0;
-                min-width:55px;
-				padding:0;
-				.default-cell(){
-					width: 55px;
-					height: 55px;
-					//padding: 0px 5px;
+        }
+    }
+    // LTL State editor
+    // Temporal Properties
+    .temporal-toolbar {
+        padding: 10px;
+        //display: table;
+        background-color: @midgrey;
+        .default-text();
+        color: white;
 
-				}
-				
-				&.variable{
-					.default-text();
-					max-width:55px;
-					padding: 0;
-					text-align: left;
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					img{
-						height: 35px;
-					}
-				}
-				
-				&:empty{
-					.default-cell();
-					//padding:0px 5px;
-				}
-				&.LTL-line-del{
-					.default-cell();
-					border: none;
-					img{
-						max-width: 25px;
-					}
-					&:hover{
-						cursor: pointer;
-					}
-				}
-				&.LTL-line-new{
-					//.default-cell();
-                    height:47px;
-					line-height: 47px;
-                    padding:0;
-					padding-bottom: 8px;
-					border: 1px solid @lightgrey;
-					color: @lightgrey;
-					&:hover{
-						color: @midgrey;
-						border: 1px solid @midgrey;
-						cursor: pointer;
-					}
-				}
-			}
-		}
-	}
-}
-
-// LTL State editor
-
-	
-		
-	
-
-
-// Temporal Properties
-
-.temporal-toolbar {
-    padding: 10px;
-	//display: table;
-	background-color: @midgrey;
-	.default-text();
-	color: white;
-	
-    .state-buttons {
-		display: table-cell;
-		width: 250px;
-        margin-right: 2px;
-
-        .state-button {
-            &.new {
-				color: white;
-				background-color: @midgrey;
-				border: 1px solid white;
-
-                &:hover {
-					color: @lightgrey;
-					border: 1px solid @lightgrey;
-					cursor: pointer;
-				}
-			}
-		}
-	}
-	
-
-    .temporal-operators {
-        display: table-cell;
-		vertical-align: top;
-        width: 450px;
-		
-        .operator {
-            display: inline-block;
-            color: @darkgrey;
-			background-color: white;
-			border: 1px solid @darkgrey;
-			border-radius: 25px;
-            height: 21px;
-			padding: 2px;
-			margin-top: 5px;
+        .state-buttons {
+            display: table-cell;
+            width: 250px;
             margin-right: 2px;
 
-            .label {
-				display: inline-block;
-				vertical-align: top;
-				margin-top: 2px;
-				//padding:0px 2px 0px 2px;
-			}
+            .state-button {
+                &.new {
+                    color: white;
+                    background-color: @midgrey;
+                    border: 1px solid white;
 
-            .hole {
-				display: inline-block;
-				margin: 3px 2px 0px 2px;
-				background-color: @darkgrey;
-				border-radius: 25px;
-                width: 15px;
-				height: 15px;
-			}
-		}
-	}
+                    &:hover {
+                        color: @lightgrey;
+                        border: 1px solid @lightgrey;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+
+
+        .temporal-operators {
+            display: table-cell;
+            vertical-align: top;
+            width: 450px;
+
+            .operator {
+                display: inline-block;
+                color: @darkgrey;
+                background-color: white;
+                border: 1px solid @darkgrey;
+                border-radius: 25px;
+                height: 21px;
+                padding: 2px;
+                margin-top: 5px;
+                margin-right: 2px;
+
+                .label {
+                    display: inline-block;
+                    vertical-align: top;
+                    margin-top: 2px;
+                    //padding:0px 2px 0px 2px;
+                }
+
+                .hole {
+                    display: inline-block;
+                    margin: 3px 2px 0px 2px;
+                    background-color: @darkgrey;
+                    border-radius: 25px;
+                    width: 15px;
+                    height: 15px;
+                }
+            }
+        }
+    }
+    // Bubbles
+    .container() {
+        .default-text();
+        text-align: center;
+        display: inline-block;
+        background: #FFFFFF;
+        border: 1px solid @darkgrey;
+        border-radius: 100px;
+        line-height: 20px;
+    }
+
+    .pill {
+        .container;
+        padding: 7px 7px;
+        vertical-align: middle;
+    }
+
+    .active {
+        border: 3px solid @darkgrey;
+    }
+
+    .true {
+        background-color: @lightgreen;
+        border: 2px solid @green;
+
+        & div {
+            background-color: @lightgreen;
+        }
+    }
+
+    .false {
+        border: 2px solid @darkred;
+        background-color: @red;
+
+        & div {
+            background-color: @red;
+        }
+    }
+
+    .state {
+        .container;
+        width: 20px;
+        height: 20px;
+        background-color: @lightgrey;
+
+        &:empty {
+            &:after {
+                content: "\00a0";
+            }
+
+            background-color: @darkgrey;
+        }
+    }
 }
-
-
-// Bubbles
-.container() {
-		.default-text();
-		text-align: center;
-		display: inline-block;
-		background: #FFFFFF;
-		border: 1px solid @darkgrey;
-		border-radius: 100px;
-		line-height: 20px;
-	}
-
-.pill {
-		.container;
-		padding: 7px 7px;
-		vertical-align: middle;
-	}
-
-.active {
-		border: 3px solid @darkgrey;
-	}
-
-.true {
-		background-color: @lightgreen;
-		border: 2px solid @green;
-
-    & div {
-			background-color: @lightgreen;
-		}
-	}
-
-.false {
-		border: 2px solid @darkred;
-		background-color: @red;
-
-    & div {
-			background-color: @red;
-		}
-	}
-
-.state {
-		.container;
-    width: 20px;
-    height: 20px;
-		background-color: @lightgrey;
-
-    &:empty {
-        &:after {
-            content: "\00a0";
-			}
-
-			background-color: @darkgrey;
-		}
-	}
