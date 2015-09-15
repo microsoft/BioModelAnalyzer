@@ -429,6 +429,9 @@
             }
 
             var td = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
+                var stateIndex = that._options.states.indexOf(that._activeState);
+                var tableIndex = table.index();
+                that._options.states[stateIndex].formula.splice(tableIndex, 1);
                 $(table).remove();
             });
             var delTable = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(td);
