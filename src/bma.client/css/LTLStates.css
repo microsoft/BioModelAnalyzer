@@ -3135,6 +3135,47 @@ textarea:focus {
 .state-buttons .state-button:hover {
   cursor: pointer;
 }
+.state-compact {
+  width: 400px;
+  background-color: white;
+  padding: 15px;
+}
+.state-compact .state-button-empty {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80px;
+  height: 80px;
+  font-family: 'Segoe-UI-Light';
+  font-size: 50px;
+  line-height: 70px;
+  text-align: center;
+  border-radius: 100px;
+  background-color: white;
+  color: #606060;
+  border: 2px solid #606060;
+}
+.state-compact .state-button-empty:hover {
+  color: #aaaaaa;
+  border: 2px solid #aaaaaa;
+  cursor: pointer;
+}
+.state-compact .state-placeholder {
+  font-size: 17px;
+  text-align: center;
+  margin-top: 10px;
+}
+.state-compact .state-options-window .pointer {
+  margin-left: auto;
+  margin-right: auto;
+  border-top: none;
+  border-bottom: 7px solid #aaa;
+  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
+}
+.state-compact .state-options-window .state-options {
+  width: 120px;
+  height: 120px;
+  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
+}
 .number-input {
   width: 30px;
   font-size: 18px;

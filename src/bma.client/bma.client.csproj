@@ -457,6 +457,7 @@
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlstatesviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
