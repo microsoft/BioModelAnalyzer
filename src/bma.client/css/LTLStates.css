@@ -2892,6 +2892,400 @@ textarea:focus {
 .ui-tabs {
   border: none;
 }
+.window.LTL-states {
+  width: 340px;
+  padding: 0px 0px 10px 0px;
+}
+.window.LTL-states .window-title {
+  padding: 10px 0px 0px 10px;
+}
+.state-description {
+  margin: 10px 0px 0px 10px;
+  width: 80%;
+}
+.state-buttons {
+  margin-left: 5px;
+}
+.state-buttons .state-button {
+  display: inline-block;
+  margin: 5px 0px 10px 5px;
+  font-family: 'Segoe-UI-Light';
+  font-size: 20px;
+  line-height: 25px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 100px;
+  background-color: white;
+  color: #606060;
+  border: 1px solid #606060;
+}
+.state-buttons .state-button.new {
+  color: #ededed;
+  border: 1px solid #ededed;
+}
+.state-buttons .state-button.new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  cursor: pointer;
+}
+.state-toolbar {
+  background-color: #aaaaaa;
+  padding: 5px 5px 0px 10px;
+}
+.state-toolbar .state-tool {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  margin: 0px 5px 0px 0px;
+}
+.state-toolbar .state-tool img {
+  padding: 0px;
+  margin: 0px;
+}
+.LTL-states {
+  padding: 0px;
+  margin: 0px;
+  background-color: white;
+}
+.LTL-states table {
+  border-collapse: collapse;
+  font-family: 'Segoe-UI-Light';
+  font-size: 40px;
+  margin: 10px;
+}
+.LTL-states table tr {
+  margin: 0px;
+}
+.LTL-states table tr td {
+  border: 1px solid #aaaaaa;
+  text-align: center;
+  margin: 0px;
+  padding: 0px 5px;
+}
+.LTL-states table tr td.variable {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  max-width: 70px;
+  padding: 0px 5px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.LTL-states table tr td.variable img {
+  height: 35px;
+}
+.LTL-states table tr td:empty {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+}
+.LTL-states table tr td.LTL-line-del {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+  border: none;
+}
+.LTL-states table tr td.LTL-line-del img {
+  max-width: 25px;
+}
+.LTL-states table tr td.LTL-line-del:hover {
+  cursor: pointer;
+}
+.LTL-states table tr td.LTL-line-new {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+  line-height: 47px;
+  padding-bottom: 8px;
+  border: 1px solid #ededed;
+  color: #ededed;
+}
+.LTL-states table tr td.LTL-line-new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  cursor: pointer;
+}
+.window.LTL-states {
+  width: 355px;
+}
+.state-toolbar {
+  margin-top: 5px;
+}
+.state-toolbar .state-tool {
+  margin: 0 10px 0 0;
+}
+.state-buttons {
+  width: 355px;
+  margin-left: 0;
+}
+.state-buttons .state-button {
+  margin: 5px;
+  margin-left: 0;
+}
+.state-buttons .state-button.active {
+  border: 3px solid #606060;
+}
+.state-buttons .state-button:hover {
+  cursor: pointer;
+}
+.number-input {
+  width: 30px;
+  font-size: 18px;
+  border: none;
+  text-align: center;
+}
+.variable-select {
+  display: block;
+  width: 55px;
+  font-size: 14px;
+  color: ButtonText;
+}
+.variable-select p {
+  margin: 0;
+  display: inline-block;
+  width: 30px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+.variable-select .inputs-expandbttn {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  cursor: pointer;
+  border-top: 7px solid #aaa;
+  border-bottom: none;
+  float: right;
+  margin-top: 7px;
+  margin-right: 5px;
+}
+.variable-select .inputs-expandbttn.inputs-list-header-expanded {
+  border-top: none;
+  border-bottom: 7px solid #aaa;
+}
+.variable-select.expanded {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: #ededed;
+  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
+}
+.variables-list {
+  display: block;
+  padding: 2px;
+  float: left;
+  width: 51px;
+  font-size: 14px;
+  color: ButtonText;
+  position: absolute;
+  top: 50px;
+  z-index: 3;
+}
+.variables-list div {
+  position: relative;
+  text-align: left;
+  padding-left: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.variables-list div:hover {
+  cursor: pointer;
+  background-color: #606060;
+  border-radius: 5px;
+}
+.variables-list.expanded {
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: #ededed;
+  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
+}
+.state-description {
+  margin: 0;
+  margin-top: 10px;
+  width: 80%;
+}
+.LTL-states {
+  padding: 0;
+  margin: 0;
+  background-color: white;
+  max-height: 270px;
+  overflow-y: scroll;
+}
+.LTL-states table {
+  border-collapse: collapse;
+  font-family: 'Segoe-UI-Light';
+  font-size: 40px;
+  margin: 10px;
+  margin-left: 0;
+}
+.LTL-states table tr {
+  margin: 0;
+}
+.LTL-states table tr.error td {
+  border: 1px solid red;
+}
+.LTL-states table tr td {
+  position: relative;
+  border: 1px solid #aaaaaa;
+  text-align: center;
+  margin: 0;
+  min-width: 55px;
+  padding: 0;
+}
+.LTL-states table tr td.variable {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  max-width: 55px;
+  padding: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.LTL-states table tr td.variable img {
+  height: 35px;
+}
+.LTL-states table tr td:empty {
+  width: 55px;
+  height: 55px;
+}
+.LTL-states table tr td.LTL-line-del {
+  width: 55px;
+  height: 55px;
+  border: none;
+}
+.LTL-states table tr td.LTL-line-del img {
+  max-width: 25px;
+}
+.LTL-states table tr td.LTL-line-del:hover {
+  cursor: pointer;
+}
+.LTL-states table tr td.LTL-line-new {
+  height: 47px;
+  line-height: 47px;
+  padding: 0;
+  padding-bottom: 8px;
+  border: 1px solid #ededed;
+  color: #ededed;
+}
+.LTL-states table tr td.LTL-line-new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  cursor: pointer;
+}
+.temporal-toolbar {
+  padding: 10px;
+  background-color: #aaaaaa;
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  color: white;
+}
+.temporal-toolbar .state-buttons {
+  display: table-cell;
+  width: 250px;
+  margin-right: 2px;
+}
+.temporal-toolbar .state-buttons .state-button.new {
+  color: white;
+  background-color: #aaaaaa;
+  border: 1px solid white;
+}
+.temporal-toolbar .state-buttons .state-button.new:hover {
+  color: #ededed;
+  border: 1px solid #ededed;
+  cursor: pointer;
+}
+.temporal-toolbar .temporal-operators {
+  display: table-cell;
+  vertical-align: top;
+  width: 450px;
+}
+.temporal-toolbar .temporal-operators .operator {
+  display: inline-block;
+  color: #606060;
+  background-color: white;
+  border: 1px solid #606060;
+  border-radius: 25px;
+  height: 21px;
+  padding: 2px;
+  margin-top: 5px;
+  margin-right: 2px;
+}
+.temporal-toolbar .temporal-operators .operator .label {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2px;
+}
+.temporal-toolbar .temporal-operators .operator .hole {
+  display: inline-block;
+  margin: 3px 2px 0px 2px;
+  background-color: #606060;
+  border-radius: 25px;
+  width: 15px;
+  height: 15px;
+}
+.pill {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  text-align: center;
+  display: inline-block;
+  background: #FFFFFF;
+  border: 1px solid #606060;
+  border-radius: 100px;
+  line-height: 20px;
+  padding: 7px 7px;
+  vertical-align: middle;
+}
+.active {
+  border: 3px solid #606060;
+}
+.true {
+  background-color: #d9ffb6;
+  border: 2px solid #81bb83;
+}
+.true div {
+  background-color: #d9ffb6;
+}
+.false {
+  border: 2px solid #cf451b;
+  background-color: #feb6b2;
+}
+.false div {
+  background-color: #feb6b2;
+}
+.state {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  text-align: center;
+  display: inline-block;
+  background: #FFFFFF;
+  border: 1px solid #606060;
+  border-radius: 100px;
+  line-height: 20px;
+  width: 20px;
+  height: 20px;
+  background-color: #ededed;
+}
+.state:empty {
+  background-color: #606060;
+}
+.state:empty:after {
+  content: "\00a0";
+}
 .state-toolbar {
   margin-top: 5px;
 }

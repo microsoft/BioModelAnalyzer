@@ -2895,76 +2895,157 @@ textarea:focus {
 .window.LTL-states {
   width: 340px;
   padding: 0px 0px 10px 0px;
-  /*.window-title{
-	margin-left: 10px;
-	margin-top:10px;
-}*/
-  /*.state-toolbar {
-    margin-top:10px;
-    margin-bottom:10px;
-    padding:5px 7px;
-	background-color: @midgrey;
-    vertical-align: middle;
-    .tool-buttons{
-        margin: 2px 5px 0px 5px;
-    }
-}*/
 }
-.window.LTL-states .window.LTL-states {
-  width: 355px;
+.window.LTL-states .window-title {
+  padding: 10px 0px 0px 10px;
 }
-.window.LTL-states .state-toolbar {
-  margin-top: 5px;
+.state-description {
+  margin: 10px 0px 0px 10px;
+  width: 80%;
 }
-.window.LTL-states .state-toolbar .state-tool {
-  margin: 0 10px 0 0;
+.state-buttons {
+  margin-left: 5px;
 }
-.window.LTL-states .state-buttons {
-  width: 355px;
-  margin-left: 0;
+.state-buttons .state-button {
+  display: inline-block;
+  margin: 5px 0px 10px 5px;
+  font-family: 'Segoe-UI-Light';
+  font-size: 20px;
+  line-height: 25px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  border-radius: 100px;
+  background-color: white;
+  color: #606060;
+  border: 1px solid #606060;
 }
-.window.LTL-states .state-buttons .state-button {
-  margin: 5px;
-  margin-left: 0;
-  /*font-family: 'Segoe-UI-Light';
-	    font-size: 20px;
-	    line-height:25px;
-	    width:30px;
-	    height:30px;
-	    text-align: center;
-	    border-radius: 100px;
-	    background-color: white;
-	    color: @darkgrey;
-	    border: 1px solid @darkgrey;
-	    &.new{ 
-		    color: @lightgrey;
-		    border: 1px solid @lightgrey;
-		    &:hover{
-			    color: @midgrey;
-			    border: 1px solid @midgrey;
-			    cursor: pointer;
-		    }
-	    }*/
+.state-buttons .state-button.new {
+  color: #ededed;
+  border: 1px solid #ededed;
 }
-.window.LTL-states .state-buttons .state-button.active {
-  border: 3px solid #606060;
-}
-.window.LTL-states .state-buttons .state-button:hover {
+.state-buttons .state-button.new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
   cursor: pointer;
 }
-.window.LTL-states .number-input {
+.state-toolbar {
+  background-color: #aaaaaa;
+  padding: 5px 5px 0px 10px;
+}
+.state-toolbar .state-tool {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  margin: 0px 5px 0px 0px;
+}
+.state-toolbar .state-tool img {
+  padding: 0px;
+  margin: 0px;
+}
+.LTL-states {
+  padding: 0px;
+  margin: 0px;
+  background-color: white;
+}
+.LTL-states table {
+  border-collapse: collapse;
+  font-family: 'Segoe-UI-Light';
+  font-size: 40px;
+  margin: 10px;
+}
+.LTL-states table tr {
+  margin: 0px;
+}
+.LTL-states table tr td {
+  border: 1px solid #aaaaaa;
+  text-align: center;
+  margin: 0px;
+  padding: 0px 5px;
+}
+.LTL-states table tr td.variable {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  max-width: 70px;
+  padding: 0px 5px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.LTL-states table tr td.variable img {
+  height: 35px;
+}
+.LTL-states table tr td:empty {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+}
+.LTL-states table tr td.LTL-line-del {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+  border: none;
+}
+.LTL-states table tr td.LTL-line-del img {
+  max-width: 25px;
+}
+.LTL-states table tr td.LTL-line-del:hover {
+  cursor: pointer;
+}
+.LTL-states table tr td.LTL-line-new {
+  width: 55px;
+  height: 55px;
+  padding: 0px;
+  line-height: 47px;
+  padding-bottom: 8px;
+  border: 1px solid #ededed;
+  color: #ededed;
+}
+.LTL-states table tr td.LTL-line-new:hover {
+  color: #aaaaaa;
+  border: 1px solid #aaaaaa;
+  cursor: pointer;
+}
+.window.LTL-states {
+  width: 355px;
+}
+.state-toolbar {
+  margin-top: 5px;
+}
+.state-toolbar .state-tool {
+  margin: 0 10px 0 0;
+}
+.state-buttons {
+  width: 355px;
+  margin-left: 0;
+}
+.state-buttons .state-button {
+  margin: 5px;
+  margin-left: 0;
+}
+.state-buttons .state-button.active {
+  border: 3px solid #606060;
+}
+.state-buttons .state-button:hover {
+  cursor: pointer;
+}
+.number-input {
   width: 30px;
   font-size: 18px;
   border: none;
   text-align: center;
 }
-.window.LTL-states .variable-select {
+.variable-select {
   display: block;
   width: 55px;
   font-size: 14px;
   color: ButtonText;
 }
-.window.LTL-states .variable-select p {
+.variable-select p {
   margin: 0;
   display: inline-block;
   width: 30px;
@@ -2972,7 +3053,7 @@ textarea:focus {
   text-align: left;
   text-overflow: ellipsis;
 }
-.window.LTL-states .variable-select .inputs-expandbttn {
+.variable-select .inputs-expandbttn {
   display: inline-block;
   width: 0;
   height: 0;
@@ -2985,17 +3066,17 @@ textarea:focus {
   margin-top: 7px;
   margin-right: 5px;
 }
-.window.LTL-states .variable-select .inputs-expandbttn.inputs-list-header-expanded {
+.variable-select .inputs-expandbttn.inputs-list-header-expanded {
   border-top: none;
   border-bottom: 7px solid #aaa;
 }
-.window.LTL-states .variable-select.expanded {
+.variable-select.expanded {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: #ededed;
   box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
 }
-.window.LTL-states .variables-list {
+.variables-list {
   display: block;
   padding: 2px;
   float: left;
@@ -3006,50 +3087,50 @@ textarea:focus {
   top: 50px;
   z-index: 3;
 }
-.window.LTL-states .variables-list div {
+.variables-list div {
   position: relative;
   text-align: left;
   padding-left: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.window.LTL-states .variables-list div:hover {
+.variables-list div:hover {
   cursor: pointer;
   background-color: #606060;
   border-radius: 5px;
 }
-.window.LTL-states .variables-list.expanded {
+.variables-list.expanded {
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: #ededed;
   box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
 }
-.window.LTL-states .state-description {
+.state-description {
   margin: 0;
   margin-top: 10px;
   width: 80%;
 }
-.window.LTL-states .LTL-states {
+.LTL-states {
   padding: 0;
   margin: 0;
   background-color: white;
   max-height: 270px;
   overflow-y: scroll;
 }
-.window.LTL-states .LTL-states table {
+.LTL-states table {
   border-collapse: collapse;
   font-family: 'Segoe-UI-Light';
   font-size: 40px;
   margin: 10px;
   margin-left: 0;
 }
-.window.LTL-states .LTL-states table tr {
+.LTL-states table tr {
   margin: 0;
 }
-.window.LTL-states .LTL-states table tr.error td {
+.LTL-states table tr.error td {
   border: 1px solid red;
 }
-.window.LTL-states .LTL-states table tr td {
+.LTL-states table tr td {
   position: relative;
   border: 1px solid #aaaaaa;
   text-align: center;
@@ -3057,7 +3138,7 @@ textarea:focus {
   min-width: 55px;
   padding: 0;
 }
-.window.LTL-states .LTL-states table tr td.variable {
+.LTL-states table tr td.variable {
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
@@ -3069,25 +3150,25 @@ textarea:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.window.LTL-states .LTL-states table tr td.variable img {
+.LTL-states table tr td.variable img {
   height: 35px;
 }
-.window.LTL-states .LTL-states table tr td:empty {
+.LTL-states table tr td:empty {
   width: 55px;
   height: 55px;
 }
-.window.LTL-states .LTL-states table tr td.LTL-line-del {
+.LTL-states table tr td.LTL-line-del {
   width: 55px;
   height: 55px;
   border: none;
 }
-.window.LTL-states .LTL-states table tr td.LTL-line-del img {
+.LTL-states table tr td.LTL-line-del img {
   max-width: 25px;
 }
-.window.LTL-states .LTL-states table tr td.LTL-line-del:hover {
+.LTL-states table tr td.LTL-line-del:hover {
   cursor: pointer;
 }
-.window.LTL-states .LTL-states table tr td.LTL-line-new {
+.LTL-states table tr td.LTL-line-new {
   height: 47px;
   line-height: 47px;
   padding: 0;
@@ -3095,12 +3176,12 @@ textarea:focus {
   border: 1px solid #ededed;
   color: #ededed;
 }
-.window.LTL-states .LTL-states table tr td.LTL-line-new:hover {
+.LTL-states table tr td.LTL-line-new:hover {
   color: #aaaaaa;
   border: 1px solid #aaaaaa;
   cursor: pointer;
 }
-.window.LTL-states .temporal-toolbar {
+.temporal-toolbar {
   padding: 10px;
   background-color: #aaaaaa;
   font-family: 'Segoe-UI';
@@ -3109,27 +3190,27 @@ textarea:focus {
   color: #606060;
   color: white;
 }
-.window.LTL-states .temporal-toolbar .state-buttons {
+.temporal-toolbar .state-buttons {
   display: table-cell;
   width: 250px;
   margin-right: 2px;
 }
-.window.LTL-states .temporal-toolbar .state-buttons .state-button.new {
+.temporal-toolbar .state-buttons .state-button.new {
   color: white;
   background-color: #aaaaaa;
   border: 1px solid white;
 }
-.window.LTL-states .temporal-toolbar .state-buttons .state-button.new:hover {
+.temporal-toolbar .state-buttons .state-button.new:hover {
   color: #ededed;
   border: 1px solid #ededed;
   cursor: pointer;
 }
-.window.LTL-states .temporal-toolbar .temporal-operators {
+.temporal-toolbar .temporal-operators {
   display: table-cell;
   vertical-align: top;
   width: 450px;
 }
-.window.LTL-states .temporal-toolbar .temporal-operators .operator {
+.temporal-toolbar .temporal-operators .operator {
   display: inline-block;
   color: #606060;
   background-color: white;
@@ -3140,12 +3221,12 @@ textarea:focus {
   margin-top: 5px;
   margin-right: 2px;
 }
-.window.LTL-states .temporal-toolbar .temporal-operators .operator .label {
+.temporal-toolbar .temporal-operators .operator .label {
   display: inline-block;
   vertical-align: top;
   margin-top: 2px;
 }
-.window.LTL-states .temporal-toolbar .temporal-operators .operator .hole {
+.temporal-toolbar .temporal-operators .operator .hole {
   display: inline-block;
   margin: 3px 2px 0px 2px;
   background-color: #606060;
@@ -3153,7 +3234,7 @@ textarea:focus {
   width: 15px;
   height: 15px;
 }
-.window.LTL-states .pill {
+.pill {
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
@@ -3167,24 +3248,24 @@ textarea:focus {
   padding: 7px 7px;
   vertical-align: middle;
 }
-.window.LTL-states .active {
+.active {
   border: 3px solid #606060;
 }
-.window.LTL-states .true {
+.true {
   background-color: #d9ffb6;
   border: 2px solid #81bb83;
 }
-.window.LTL-states .true div {
+.true div {
   background-color: #d9ffb6;
 }
-.window.LTL-states .false {
+.false {
   border: 2px solid #cf451b;
   background-color: #feb6b2;
 }
-.window.LTL-states .false div {
+.false div {
   background-color: #feb6b2;
 }
-.window.LTL-states .state {
+.state {
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
@@ -3199,10 +3280,10 @@ textarea:focus {
   height: 20px;
   background-color: #ededed;
 }
-.window.LTL-states .state:empty {
+.state:empty {
   background-color: #606060;
 }
-.window.LTL-states .state:empty:after {
+.state:empty:after {
   content: "\00a0";
 }
 /*# sourceMappingURL=LTL_less.css.map */

@@ -147,11 +147,11 @@
     <Content Include="css\LTL_less.min.css">
       <DependentUpon>LTL_less.css</DependentUpon>
     </Content>
-    <Content Include="css\StatesEditorStyles.css">
-      <DependentUpon>StatesEditorStyles.less</DependentUpon>
+    <Content Include="css\LTLStates.css">
+      <DependentUpon>LTLStates.less</DependentUpon>
     </Content>
-    <Content Include="css\StatesEditorStyles.min.css">
-      <DependentUpon>StatesEditorStyles.css</DependentUpon>
+    <Content Include="css\LTLStates.min.css">
+      <DependentUpon>LTLStates.css</DependentUpon>
     </Content>
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>
@@ -365,9 +365,9 @@
     <Content Include="css\LTL_less.css.map">
       <DependentUpon>LTL_less.css</DependentUpon>
     </Content>
-    <Content Include="css\StatesEditorStyles.less" />
-    <Content Include="css\StatesEditorStyles.css.map">
-      <DependentUpon>StatesEditorStyles.css</DependentUpon>
+    <Content Include="css\LTLStates.less" />
+    <Content Include="css\LTLStates.css.map">
+      <DependentUpon>LTLStates.css</DependentUpon>
     </Content>
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
