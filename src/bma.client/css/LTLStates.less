@@ -10,10 +10,11 @@
 .state-buttons {
     width:355px;
     margin-left:0;
+
     .state-button{
-	    //display:inline-block;
 	    margin:5px;
         margin-left:0;
+
         &.active{
 		    border: 3px solid @darkgrey;
 	    }
@@ -36,6 +37,7 @@
     width:55px;
     font-size:14px;
     color:ButtonText;
+
     p {
         margin:0;
         display:inline-block;
@@ -57,6 +59,7 @@
         float:right;
         margin-top:7px;
         margin-right:5px;
+
             &.inputs-list-header-expanded {
                 border-top:none;
                 border-bottom:7px solid #aaa;
@@ -81,18 +84,21 @@
     position:absolute;
     top:50px;
     z-index:3;
+     
     div {
         position:relative;
         text-align: left;
         padding-left: 3px;
         overflow:hidden;
         text-overflow:ellipsis;
+
         &:hover{
 			cursor: pointer;
             background-color:@darkgrey;
             border-radius:5px;
 		}
 	}
+
     &.expanded {
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
@@ -104,70 +110,24 @@
 .state-description {
     margin:0;
     margin-top:10px;
-    width: 80%;
 }
 
 .LTL-states{
-	padding:0;
-	margin:0;
-	background-color:white;
     max-height:270px;
     overflow-y:auto;
+
 	table{
-		border-collapse: collapse;
-		font-family: 'Segoe-UI-Light';
-		font-size: 40px;
-		margin:10px;
         margin-left:0;
 
 		tr{
-			margin:0;
-            &.error {
-                td {
-                    border:1px solid red;
-                }
-            }
+
 			td{
                 position:relative;
-				border: 1px solid @midgrey;
-				text-align: center;
-				margin:0;
                 min-width:55px;
 				padding:0;
-				.default-cell(){
-					width: 55px;
-					height: 55px;
-					//padding: 0px 5px;
-
-				}
 				
-				&:empty{
-					.default-cell();
-					//padding:0px 5px;
-				}
-				&.LTL-line-del{
-					.default-cell();
-					border: none;
-					img{
-						max-width: 25px;
-					}
-					&:hover{
-						cursor: pointer;
-					}
-				}
 				&.LTL-line-new{
-					//.default-cell();
                     height:47px;
-					line-height: 47px;
-                    padding:0;
-					padding-bottom: 8px;
-					border: 1px solid @lightgrey;
-					color: @lightgrey;
-					&:hover{
-						color: @midgrey;
-						border: 1px solid @midgrey;
-						cursor: pointer;
-					}
 				}
 			}
 		}

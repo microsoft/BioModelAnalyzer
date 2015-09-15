@@ -3010,177 +3010,6 @@ textarea:focus {
   border: 1px solid #aaaaaa;
   cursor: pointer;
 }
-.window.LTL-states {
-  width: 355px;
-}
-.state-toolbar {
-  margin-top: 5px;
-}
-.state-toolbar .state-tool {
-  margin: 0 10px 0 0;
-}
-.state-buttons {
-  width: 355px;
-  margin-left: 0;
-}
-.state-buttons .state-button {
-  margin: 5px;
-  margin-left: 0;
-}
-.state-buttons .state-button.active {
-  border: 3px solid #606060;
-}
-.state-buttons .state-button:hover {
-  cursor: pointer;
-}
-.number-input {
-  width: 30px;
-  font-size: 18px;
-  border: none;
-  text-align: center;
-}
-.variable-select {
-  display: block;
-  width: 55px;
-  font-size: 14px;
-  color: ButtonText;
-}
-.variable-select p {
-  margin: 0;
-  display: inline-block;
-  width: 30px;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: ellipsis;
-}
-.variable-select .inputs-expandbttn {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  cursor: pointer;
-  border-top: 7px solid #aaa;
-  border-bottom: none;
-  float: right;
-  margin-top: 7px;
-  margin-right: 5px;
-}
-.variable-select .inputs-expandbttn.inputs-list-header-expanded {
-  border-top: none;
-  border-bottom: 7px solid #aaa;
-}
-.variable-select.expanded {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  background-color: #ededed;
-  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
-}
-.variables-list {
-  display: block;
-  padding: 2px;
-  float: left;
-  width: 51px;
-  font-size: 14px;
-  color: ButtonText;
-  position: absolute;
-  top: 50px;
-  z-index: 3;
-}
-.variables-list div {
-  position: relative;
-  text-align: left;
-  padding-left: 3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.variables-list div:hover {
-  cursor: pointer;
-  background-color: #606060;
-  border-radius: 5px;
-}
-.variables-list.expanded {
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  background-color: #ededed;
-  box-shadow: 2px 7px 8px rgba(0, 0, 0, 0.5);
-}
-.state-description {
-  margin: 0;
-  margin-top: 10px;
-  width: 80%;
-}
-.LTL-states {
-  padding: 0;
-  margin: 0;
-  background-color: white;
-  max-height: 270px;
-  overflow-y: scroll;
-}
-.LTL-states table {
-  border-collapse: collapse;
-  font-family: 'Segoe-UI-Light';
-  font-size: 40px;
-  margin: 10px;
-  margin-left: 0;
-}
-.LTL-states table tr {
-  margin: 0;
-}
-.LTL-states table tr.error td {
-  border: 1px solid red;
-}
-.LTL-states table tr td {
-  position: relative;
-  border: 1px solid #aaaaaa;
-  text-align: center;
-  margin: 0;
-  min-width: 55px;
-  padding: 0;
-}
-.LTL-states table tr td.variable {
-  font-family: 'Segoe-UI';
-  font-size: 13px;
-  line-height: 17px;
-  color: #606060;
-  max-width: 55px;
-  padding: 0;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.LTL-states table tr td.variable img {
-  height: 35px;
-}
-.LTL-states table tr td:empty {
-  width: 55px;
-  height: 55px;
-}
-.LTL-states table tr td.LTL-line-del {
-  width: 55px;
-  height: 55px;
-  border: none;
-}
-.LTL-states table tr td.LTL-line-del img {
-  max-width: 25px;
-}
-.LTL-states table tr td.LTL-line-del:hover {
-  cursor: pointer;
-}
-.LTL-states table tr td.LTL-line-new {
-  height: 47px;
-  line-height: 47px;
-  padding: 0;
-  padding-bottom: 8px;
-  border: 1px solid #ededed;
-  color: #ededed;
-}
-.LTL-states table tr td.LTL-line-new:hover {
-  color: #aaaaaa;
-  border: 1px solid #aaaaaa;
-  cursor: pointer;
-}
 .temporal-toolbar {
   padding: 10px;
   background-color: #aaaaaa;
@@ -3381,62 +3210,20 @@ textarea:focus {
 .state-description {
   margin: 0;
   margin-top: 10px;
-  width: 80%;
 }
 .LTL-states {
-  padding: 0;
-  margin: 0;
-  background-color: white;
   max-height: 270px;
   overflow-y: auto;
 }
 .LTL-states table {
-  border-collapse: collapse;
-  font-family: 'Segoe-UI-Light';
-  font-size: 40px;
-  margin: 10px;
   margin-left: 0;
-}
-.LTL-states table tr {
-  margin: 0;
-}
-.LTL-states table tr.error td {
-  border: 1px solid red;
 }
 .LTL-states table tr td {
   position: relative;
-  border: 1px solid #aaaaaa;
-  text-align: center;
-  margin: 0;
   min-width: 55px;
   padding: 0;
 }
-.LTL-states table tr td:empty {
-  width: 55px;
-  height: 55px;
-}
-.LTL-states table tr td.LTL-line-del {
-  width: 55px;
-  height: 55px;
-  border: none;
-}
-.LTL-states table tr td.LTL-line-del img {
-  max-width: 25px;
-}
-.LTL-states table tr td.LTL-line-del:hover {
-  cursor: pointer;
-}
 .LTL-states table tr td.LTL-line-new {
   height: 47px;
-  line-height: 47px;
-  padding: 0;
-  padding-bottom: 8px;
-  border: 1px solid #ededed;
-  color: #ededed;
 }
-.LTL-states table tr td.LTL-line-new:hover {
-  color: #aaaaaa;
-  border: 1px solid #aaaaaa;
-  cursor: pointer;
-}
-/*# sourceMappingURL=StatesEditorStyles.css.map */
+/*# sourceMappingURL=LTLStates.css.map */
