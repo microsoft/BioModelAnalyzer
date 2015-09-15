@@ -1943,3 +1943,63 @@ hr {
   border-radius: 5px;
   background-color: #aaaaaa;
 }
+.window.temporal-properties {
+  width: 650px;
+  height: 500px;
+  padding: 0px 0px 10px 0px;
+}
+.window.temporal-properties .window-title {
+  padding: 10px 0px 0px 10px;
+}
+.temporal-toolbar {
+  padding: 10px;
+  margin-top: 5px;
+  background-color: #aaaaaa;
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  color: white;
+}
+.temporal-toolbar .state-buttons {
+  display: table-cell;
+  width: 250px;
+}
+.temporal-toolbar .state-buttons .state-button.new {
+  color: white;
+  background-color: #aaaaaa;
+  border: 1px solid white;
+}
+.temporal-toolbar .state-buttons .state-button.new:hover {
+  color: #ededed;
+  border: 1px solid #ededed;
+  cursor: pointer;
+}
+.temporal-toolbar .temporal-operators {
+  display: table-cell;
+  vertical-align: top;
+  width: 450px;
+}
+.temporal-toolbar .temporal-operators .operator {
+  display: inline-block;
+  color: #606060;
+  background-color: white;
+  border: 1px solid #606060;
+  border-radius: 25px;
+  height: 21px;
+  padding: 2px;
+  margin-top: 5px;
+}
+.temporal-toolbar .temporal-operators .operator .label {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2px;
+}
+.temporal-toolbar .temporal-operators .operator .hole {
+  display: inline-block;
+  margin: 3px 2px 0px 2px;
+  background-color: #606060;
+  border-radius: 25px;
+  width: 15px;
+  height: 15px;
+}

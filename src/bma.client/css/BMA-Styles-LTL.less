@@ -190,5 +190,74 @@
 		}
 		
 
+// Temporal Properties
+
+.window.temporal-properties{
+	width: 650px;
+	height: 500px;
+	padding:0px 0px 10px 0px;
+	.window-title{
+		padding: 10px 0px 0px 10px;
+	}
+}
+
+.temporal-toolbar{
+	padding:10px;
+	margin-top: 5px;
+	//display: table;
+	background-color: @midgrey;
+	.default-text();
+	color: white;
+	
+	.state-buttons{
+		display: table-cell;
+		width: 250px;
+		.state-button{
+			&.new{
+				color: white;
+				background-color: @midgrey;
+				border: 1px solid white;
+				&:hover{
+					color: @lightgrey;
+					border: 1px solid @lightgrey;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+	
+
+	.temporal-operators{
+		display:table-cell;
+		vertical-align: top;
+		width:450px;
+		
+		.operator{
+			display:inline-block;
+			color:@darkgrey;
+			background-color: white;
+			border: 1px solid @darkgrey;
+			border-radius: 25px;
+			height:21px;
+			padding: 2px;
+			margin-top: 5px;
+			.label{
+				display: inline-block;
+				vertical-align: top;
+				margin-top: 2px;
+				//padding:0px 2px 0px 2px;
+			}
+			.hole{
+				display: inline-block;
+				margin: 3px 2px 0px 2px;
+				background-color: @darkgrey;
+				border-radius: 25px;
+				width:15px;
+				height: 15px;
+			}
+		}
+	}
+}
+
 
 
