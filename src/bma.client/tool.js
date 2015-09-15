@@ -9029,7 +9029,6 @@ jQuery.fn.extend({
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.stateseditor", {
-        //_windowTitle: null,
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
@@ -9047,15 +9046,19 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
-            //this.element.addClass("window").addClass("LTL-states");
-            //this._windowTitle = $("<div>LTL States</div>").addClass("window-title").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             if (this._options.states.length < 1) {
                 var newState = {
                     name: "A",
                     description: "",
                     formula: [
-                        [undefined, undefined, undefined, undefined, undefined]
+                        [
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined
+                        ]
                     ]
                 };
                 this._options.states.push(newState);
@@ -9077,6 +9080,7 @@ jQuery.fn.extend({
             }
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
+                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateAdded" });
             });
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this.createToolbar();
@@ -9084,6 +9088,7 @@ jQuery.fn.extend({
                 var idx = that._options.states.indexOf(that._activeState);
                 that._options.states[idx].description = this.value;
                 that._activeState.description = this.value;
+                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
             });
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "add").appendTo(this._ltlStates);
@@ -9094,6 +9099,7 @@ jQuery.fn.extend({
                 var emptyFormula = [undefined, undefined, undefined, undefined, undefined];
                 that._options.states[idx].formula.push(emptyFormula);
                 that.addCondition();
+                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
             });
             this.refresh();
         },
@@ -9187,6 +9193,7 @@ jQuery.fn.extend({
             return true;
         },
         createNewSelect: function (td, currSymbol) {
+            var that = this;
             var selectVariable = $("<div></div>").addClass("variable-select").appendTo(td);
             var variableSelected = $("<p></p>").appendTo(selectVariable);
             var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
@@ -9210,6 +9217,7 @@ jQuery.fn.extend({
                     variableSelected.text(this.innerText);
                     currSymbol.value = this.innerText;
                     selectVariable.trigger("click");
+                    that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
                 });
             return selectVariable;
         },
@@ -9241,6 +9249,7 @@ jQuery.fn.extend({
                                 if (parseFloat(this.value) < that._options.minConst)
                                     this.value = that._options.minConst;
                                 currNumber.value = this.value;
+                                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
                             });
                         }
                         else if (this._activeState.formula[i][j].type == "operator") {
@@ -9345,6 +9354,7 @@ jQuery.fn.extend({
                                         if (parseFloat(this.value) < that._options.minConst)
                                             this.value = that._options.minConst;
                                         currNumber.value = this.value;
+                                        that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
                                     });
                                     break;
                                 }
@@ -9390,6 +9400,7 @@ jQuery.fn.extend({
                                 }
                                 default: break;
                             }
+                            that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
                         }
                     }
                 });
@@ -9399,6 +9410,7 @@ jQuery.fn.extend({
                 var tableIndex = table.index();
                 that._options.states[stateIndex].formula.splice(tableIndex, 1);
                 $(table).remove();
+                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
             });
             var delTable = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(td);
             table.insertBefore(this._ltlStates.children().last());
