@@ -162,6 +162,7 @@
 							}
 
 							&.active{
+								border: 0px;
 								background-color: @midgrey;
 								color:white;
 							}
@@ -259,5 +260,93 @@
 	}
 }
 
+
+// Bubbles
+	.container(){
+		.default-text();
+		text-align: center;
+		display: inline-block;
+		background: #FFFFFF;
+		border: 1px solid @darkgrey;
+		border-radius: 100px;
+		line-height: 20px;
+	}
+
+	.pill{
+		display: inline-block;
+		.container;
+		padding: 7px 7px;
+		vertical-align: middle;
+		
+		&.active{
+		border: 3px solid @darkgrey;
+		}
+
+		&.true{
+		background-color: @lightgreen;
+		border: 2px solid @green;
+		& div{
+			background-color: @lightgreen;
+		}
+		}
+
+			&.false{
+			border: 2px solid @darkred;
+			background-color: @red;
+			& div{
+				background-color: @red;
+			}
+		}
+	
+		
+	}
+
+
+
+
+
+
+
+	.state{
+		.container;
+		width:20px;
+		height:20px;
+		background-color: @lightgrey;
+		&:empty{
+			&:after{
+				content:"\00a0";
+			}
+			background-color: @darkgrey;
+		}
+	}
+
+// Test Button
+
+	.LTL-test{
+		display: inline-block;
+	}
+
+	.LTL-test-results{
+		display:inline-block;
+		vertical-align: middle;
+		width: 130px;
+		padding: 5px 5px 0px 5px;
+		margin-left: 10px;
+		.border-radius(5px);
+		&.true{
+			border: 1px solid @green;
+			color:@green;
+		}
+		&.false{
+			border: 1px solid @darkred;
+			color:@darkred;
+			.pill-button-box{
+				.pill-button{
+					margin-top: 5px;
+					margin-bottom: 0px;
+				}
+			}	
+		}
+	}
 
 

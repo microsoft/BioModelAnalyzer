@@ -1926,6 +1926,7 @@ hr {
   background-color: #ededed;
 }
 .variable-picker table td .scrollable a.active {
+  border: 0px;
   background-color: #aaaaaa;
   color: white;
 }
@@ -2002,4 +2003,83 @@ hr {
   border-radius: 25px;
   width: 15px;
   height: 15px;
+}
+.pill {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  text-align: center;
+  display: inline-block;
+  background: #FFFFFF;
+  border: 1px solid #606060;
+  border-radius: 100px;
+  line-height: 20px;
+  padding: 7px 7px;
+  vertical-align: middle;
+}
+.pill.active {
+  border: 3px solid #606060;
+}
+.pill.true {
+  background-color: #d9ffb6;
+  border: 2px solid #81bb83;
+}
+.pill.true div {
+  background-color: #d9ffb6;
+}
+.pill.false {
+  border: 2px solid #cf451b;
+  background-color: #feb6b2;
+}
+.pill.false div {
+  background-color: #feb6b2;
+}
+.state {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  text-align: center;
+  display: inline-block;
+  background: #FFFFFF;
+  border: 1px solid #606060;
+  border-radius: 100px;
+  line-height: 20px;
+  width: 20px;
+  height: 20px;
+  background-color: #ededed;
+}
+.state:empty {
+  background-color: #606060;
+}
+.state:empty:after {
+  content: "\00a0";
+}
+.LTL-test {
+  display: inline-block;
+}
+.LTL-test-results {
+  display: inline-block;
+  vertical-align: middle;
+  width: 130px;
+  padding: 5px 5px 0px 5px;
+  margin-left: 10px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+}
+.LTL-test-results.true {
+  border: 1px solid #81bb83;
+  color: #81bb83;
+}
+.LTL-test-results.false {
+  border: 1px solid #cf451b;
+  color: #cf451b;
+}
+.LTL-test-results.false .pill-button-box .pill-button {
+  margin-top: 5px;
+  margin-bottom: 0px;
 }

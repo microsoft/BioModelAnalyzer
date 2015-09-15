@@ -3431,9 +3431,150 @@ Variables Table</p>
 </div>
 </div>
 
+<p class="guide-text">Basic Formula</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small grey"><button>TEST</button></li>
+	</ul>
+
+</div>
+</div>
+
+<p class="guide-text">Simulation Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill true">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results true">
+	Simulation Found<br>12 steps<br>
+	<ul class="button-list">
+		<li><button>OPEN</button></li>
+	</ul>
+</div>
+</div>
 
 
+</div>
 
+<p class="guide-text">Simulation Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill true">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small green"><button>OPEN</button></li>
+	</ul>
+
+</div>
+</div>
+
+<p class="guide-text">Simulation Not Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill false">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results false">
+	No Simulation Found<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button>TEST AGAIN</button></li>
+	</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">Simulation Not Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill false">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small red"><button>OPEN</button></li>
+	</ul>
+
+</div>
+</div>
+
+</div>
 </div>
 
 		
