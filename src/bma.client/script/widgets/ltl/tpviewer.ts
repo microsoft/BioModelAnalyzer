@@ -1,6 +1,7 @@
 ﻿(function ($) {
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
+        _pixelOffset: 10,
 
         options: {
             operations: [],
@@ -11,17 +12,19 @@
             var that = this;
             var root = this.element;
 
-            root.css("overflow-y", "auto").css("overflow-x", "hidden");
+            root.css("overflow-y", "auto").css("overflow-x", "auto");
 
+            var svgdiv = $("<div></div>").appendTo(root);
 
-            root.svg({
+            var pixofs = this._pixelOffset;
+            svgdiv.svg({
                 onLoad: function (svg) {
                     that._svg = svg;
 
                     svg.configure({
-                        width: root.width(),
-                        height: root.height(),
-                        viewBox: "0 0 " + root.width() + " " + root.height(),
+                        width: root.width() - pixofs,
+                        height: svgdiv.height() - pixofs,
+                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (svgdiv.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
 

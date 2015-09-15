@@ -82,7 +82,7 @@
                         case "LTLStates":
                             var content = keyframesfullDriver.GetContent();
                             popupViewer.Show({ tab: param, content: content });
-                            ltlviewer.Hide(param);
+                            //ltlviewer.Hide(param);
                             break;
                         //case "LTLResults":
                         //    popupViewer.Show({ tab: param, content: that.expandedResults });
@@ -114,7 +114,7 @@
 
                 window.Commands.On("Collapse",(param) => {
                     temporlapropertieseditor.Hide();
-                    ltlviewer.Show(param);
+                    //ltlviewer.Show(param);
                     popupViewer.Hide();
                 });
 
