@@ -9029,7 +9029,7 @@ jQuery.fn.extend({
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.stateseditor", {
-        _windowTitle: null,
+        //_windowTitle: null,
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
@@ -9043,11 +9043,12 @@ jQuery.fn.extend({
             states: [],
             minConst: -99,
             maxConst: 100,
+            commands: null
         },
         _create: function () {
             var that = this;
-            this.element.addClass("window").addClass("LTL-states");
-            this._windowTitle = $("<div>LTL States</div>").addClass("window-title").appendTo(this.element);
+            //this.element.addClass("window").addClass("LTL-states");
+            //this._windowTitle = $("<div>LTL States</div>").addClass("window-title").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             if (this._options.states.length < 1) {
                 var newState = {
@@ -9123,12 +9124,24 @@ jQuery.fn.extend({
                     this._options.maxConst = value;
                     break;
                 }
+                case "commands": {
+                    this._options.commands = value;
+                    break;
+                }
                 default: break;
             }
             this._super(key, value);
         },
         _setOptions: function (options) {
             this._super(options);
+        },
+        executeCommand: function (commandName, args) {
+            if (this._options.commands !== undefined) {
+                this._options.commands.Execute(commandName, args);
+            }
+            else {
+                window.Commands.Execute(commandName, args);
+            }
         },
         createToolbar: function () {
             this._keyframes = window.KeyframesRegistry.Keyframes;
