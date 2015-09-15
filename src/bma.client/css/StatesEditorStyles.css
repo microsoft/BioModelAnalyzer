@@ -2030,7 +2030,7 @@ body {
   margin: 0;
   background-color: white;
   max-height: 270px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .LTL-states table {
   border-collapse: collapse;
