@@ -9536,6 +9536,7 @@ jQuery.fn.extend({
 (function ($) {
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
+        _pixelOffset: 10,
         options: {
             operations: [],
             padding: { x: 5, y: 5 }
@@ -9543,14 +9544,16 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             var root = this.element;
-            root.css("overflow-y", "auto").css("overflow-x", "hidden");
-            root.svg({
+            root.css("overflow-y", "auto").css("overflow-x", "auto");
+            var svgdiv = $("<div></div>").appendTo(root);
+            var pixofs = this._pixelOffset;
+            svgdiv.svg({
                 onLoad: function (svg) {
                     that._svg = svg;
                     svg.configure({
-                        width: root.width(),
-                        height: root.height(),
-                        viewBox: "0 0 " + root.width() + " " + root.height(),
+                        width: root.width() - pixofs,
+                        height: svgdiv.height() - pixofs,
+                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (svgdiv.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
                     that.refresh();
@@ -9651,7 +9654,6 @@ var BMA;
                         case "LTLStates":
                             var content = keyframesfullDriver.GetContent();
                             popupViewer.Show({ tab: param, content: content });
-                            ltlviewer.Hide(param);
                             break;
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
@@ -9669,7 +9671,7 @@ var BMA;
                 });
                 window.Commands.On("Collapse", function (param) {
                     temporlapropertieseditor.Hide();
-                    ltlviewer.Show(param);
+                    //ltlviewer.Show(param);
                     popupViewer.Hide();
                 });
                 window.Commands.On('KeyframeStartDrag', function (param) {
@@ -9921,10 +9923,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
-                        if (!_this.contextElement.isRoot) {
-                            _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
-                        }
-                        else {
+                        var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
+                        if (op.isRoot) {
                             var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
                             _this.contextElement.operationlayoutref.IsVisible = false;
                             _this.operations.splice(ind, 1);

@@ -207,15 +207,12 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorDelete",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        if (!this.contextElement.isRoot) {
-                            this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
-                        } else {
+                        var op = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
+                        if (op.isRoot) {
                             var ind = this.operations.indexOf(this.contextElement.operationlayoutref);
                             this.contextElement.operationlayoutref.IsVisible = false;
                             this.operations.splice(ind, 1);
-
                         }
-
                         this.OnOperationsChanged();
                     }
                 });
