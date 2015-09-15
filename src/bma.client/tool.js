@@ -9042,7 +9042,7 @@ jQuery.fn.extend({
             states: [],
             minConst: -99,
             maxConst: 100,
-            commands: null
+            commands: undefined
         },
         _create: function () {
             var that = this;
@@ -9144,9 +9144,6 @@ jQuery.fn.extend({
         executeCommand: function (commandName, args) {
             if (this._options.commands !== undefined) {
                 this._options.commands.Execute(commandName, args);
-            }
-            else {
-                window.Commands.Execute(commandName, args);
             }
         },
         createToolbar: function () {
