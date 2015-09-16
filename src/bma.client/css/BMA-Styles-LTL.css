@@ -1952,6 +1952,32 @@ hr {
 .window.temporal-properties .window-title {
   padding: 10px 0px 0px 10px;
 }
+.temporal-dropzones {
+  position: absolute;
+  bottom: 0px;
+  width: 630px;
+  height: 60px;
+  padding: 15px 10px;
+}
+.temporal-dropzones .dropzone {
+  display: inline-block;
+  height: 100%;
+  width: 308px;
+  text-align: center;
+}
+.temporal-dropzones .dropzone img {
+  margin-top: 10px;
+}
+.temporal-dropzones .dropzone.delete {
+  border: 1px solid #cf451b;
+}
+.temporal-dropzones .dropzone.copy {
+  border: 1px solid #606060;
+  margin-right: 5px;
+}
+.temporal-dropzones .dropzone:hover {
+  background-color: #ededed;
+}
 .temporal-toolbar {
   padding: 10px;
   margin-top: 5px;

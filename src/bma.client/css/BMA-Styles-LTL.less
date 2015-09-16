@@ -202,6 +202,33 @@
 	}
 }
 
+.temporal-dropzones{
+	position: absolute;
+	bottom:0px;
+	width:630px;
+	height: 60px;
+	padding:15px 10px;
+	.dropzone{
+		display: inline-block;
+		height:100%;
+		width:308px;
+		text-align: center;
+		img{
+			margin-top: 10px;
+		}
+		&.delete{
+			border: 1px solid @darkred;
+		}
+		&.copy{
+			border: 1px solid @darkgrey;
+			margin-right: 5px;
+		}
+		&:hover{
+				background-color: @lightgrey;
+			}
+	}
+}
+
 .temporal-toolbar{
 	padding:10px;
 	margin-top: 5px;
