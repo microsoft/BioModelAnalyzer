@@ -42,10 +42,14 @@
                 this.options.states.push(newState);
             }
 
+<<<<<<< HEAD
             this.options.variables.push("xvariabledfsfsdfsdfsdf");
             this.options.variables.push("y");
 
             this._activeState = this.options.states[0];
+=======
+            this._activeState = this._options.states[0];
+>>>>>>> 3bde5210a4df74c6ef67dd1eb0092e6c6d8ceaab
 
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name)
@@ -107,11 +111,21 @@
                     break;
                 }
                 case "states": {
+<<<<<<< HEAD
                     this.options.states = [];
                     for (var i = 0; i < value.length; i++) {
                         this.options.states.push(value[i]);
                         this.addState(value[i]);
                     }
+=======
+                    this._options.states = [];
+                    if (value !== undefined && value.length > 0) {
+                        for (var i = 0; i < value.length; i++) {
+                            this._options.states.push(value[i]);
+                        }
+                    }
+                    this.refresh();
+>>>>>>> 3bde5210a4df74c6ef67dd1eb0092e6c6d8ceaab
                     break;
                 }
                 case "minConst": {
