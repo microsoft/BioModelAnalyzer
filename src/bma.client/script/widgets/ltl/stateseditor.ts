@@ -12,7 +12,7 @@
         _ltlAddConditionButton: null,
         _activeState: null,
 
-        _options: {
+        options: {
             variables: [],
             states: [],
             minConst: -99,
@@ -25,7 +25,7 @@
 
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
 
-            if (this._options.states.length < 1) {
+            if (this.options.states.length < 1) {
                 var newState = {
                     name: "A",
                     description: "",
@@ -39,21 +39,21 @@
                         ]
                     ]
                 };
-                this._options.states.push(newState);
+                this.options.states.push(newState);
             }
 
-            this._options.variables.push("xvariabledfsfsdfsdfsdf");
-            this._options.variables.push("y");
+            this.options.variables.push("xvariabledfsfsdfsdfsdf");
+            this.options.variables.push("y");
 
-            this._activeState = this._options.states[0];
+            this._activeState = this.options.states[0];
 
-            for (var i = 0; i < this._options.states.length; i++) {
-                var stateButton = $("<div>" + this._options.states[i].name + "</div>").attr("data-state-name", this._options.states[i].name)
+            for (var i = 0; i < this.options.states.length; i++) {
+                var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name)
                     .addClass("state-button").appendTo(this._stateButtons).click(function () {
                     that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
-                    for (var j = 0; j < that._options.states.length; j++) {
-                        if (that._options.states[j].name == $(this).attr("data-state-name")) {
-                            that._activeState = that._options.states[j];
+                    for (var j = 0; j < that.options.states.length; j++) {
+                        if (that.options.states[j].name == $(this).attr("data-state-name")) {
+                            that._activeState = that.options.states[j];
                             break;
                         }
                     }
@@ -64,7 +64,7 @@
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
 
-                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateAdded" });
+                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
             });
 
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
@@ -72,11 +72,11 @@
 
             this._description = $("<input></input>").attr("type", "text").addClass("state-description").attr("size", "15").attr("data-row-type", "description")
                 .attr("placeholder", "Description").appendTo(this.element).change(function () {
-                var idx = that._options.states.indexOf(that._activeState);
-                that._options.states[idx].description = this.value;
+                var idx = that.options.states.indexOf(that._activeState);
+                that.options.states[idx].description = this.value;
                 that._activeState.description = this.value;
 
-                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
+                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
             });
 
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
@@ -86,12 +86,12 @@
             var tr = $("<tr></tr>").appendTo(tbody);
 
             this._ltlAddConditionButton = $("<td>+</td>").addClass("LTL-line-new").appendTo(tr).click(function () {
-                var idx = that._options.states.indexOf(that._activeState);
+                var idx = that.options.states.indexOf(that._activeState);
                 var emptyFormula = [undefined, undefined, undefined, undefined, undefined];
-                that._options.states[idx].formula.push(emptyFormula);
+                that.options.states[idx].formula.push(emptyFormula);
                 that.addCondition();
 
-                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
+                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
             });
 
             this.refresh();
@@ -101,28 +101,29 @@
             var that = this;
             switch (key) {
                 case "variables": {
-                    this._options.variables.push(value);
+                    this.options.varables = [];
+                    for (var i = 0; i < value.length; i++)
+                        this.options.variables.push(value[i]);
                     break;
                 }
                 case "states": {
-                    try {
-                        if (this.validation(value.formula))
-                            this._options.states.push(value);
-                        else throw "The state " + value.name + " has wrong formula";
+                    this.options.states = [];
+                    for (var i = 0; i < value.length; i++) {
+                        this.options.states.push(value[i]);
+                        this.addState(value[i]);
                     }
-                    catch (ex) { };
                     break;
                 }
                 case "minConst": {
-                    this._options.minConst = value;
+                    this.options.minConst = value;
                     break;
                 }
                 case "maxConst": {
-                    this._options.maxConst = value;
+                    this.options.maxConst = value;
                     break;
                 }
                 case "commands": {
-                    this._options.commands = value;
+                    this.options.commands = value;
                     break;
                 }
                 default: break;
@@ -135,8 +136,8 @@
         },
 
         executeCommand: function (commandName, args) {
-            if (this._options.commands !== undefined) {
-                this._options.commands.Execute(commandName, args);
+            if (this.options.commands !== undefined) {
+                this.options.commands.Execute(commandName, args);
             } 
         },
 
@@ -209,14 +210,14 @@
                 }
             });
 
-            for (var k = 0; k < this._options.variables.length; k++)
-                var variable = $("<div>" + this._options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
+            for (var k = 0; k < this.options.variables.length; k++)
+                var variable = $("<div>" + this.options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
                     variableSelected.text(this.innerText);
                     currSymbol.value = this.innerText;
 
                     selectVariable.trigger("click");
 
-                    that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" })
+                    that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" })
                 });
 
             return selectVariable;
@@ -246,7 +247,7 @@
 
                             var selectVariable = this.createNewSelect(condition.children().eq(j), currSymbol);
 
-                            if (this._options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
+                            if (this.options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
                                 selectVariable.children().eq(0).text(this._activeState.formula[i][j].value);
 
                         } else if (this._activeState.formula[i][j].type == "const") {
@@ -257,11 +258,11 @@
                                 .addClass("number-input").appendTo(condition.children().eq(j));
 
                             num.bind("input change", function () {
-                                if (parseFloat(this.value) > that._options.maxConst) this.value = that._options.maxConst;
-                                if (parseFloat(this.value) < that._options.minConst) this.value = that._options.minConst;
+                                if (parseFloat(this.value) > that.options.maxConst) this.value = that.options.maxConst;
+                                if (parseFloat(this.value) < that.options.minConst) this.value = that.options.minConst;
                                 currNumber.value = this.value;
 
-                                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
+                                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
                             });
 
                         } else if (this._activeState.formula[i][j].type == "operator") {
@@ -306,30 +307,37 @@
             }
         },
 
-        addState: function () {
+        addState: function (state = null) {
             var that = this;
-            var k = this._options.states.length;
-            var stateName = String.fromCharCode(65 + k);
+            var k = this.options.states.length;
+            var stateName;
+            if (state == null) {
+                stateName = String.fromCharCode(65 + k);
+                
+                var newState = {
+                    name: stateName,
+                    description: "",
+                    formula: [[]],
+                };
+
+                this.options.states.push(newState);
+            } else {
+                stateName = state.name;
+            }
+
             var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").click(function () {
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
-                for (var j = 0; j < that._options.states.length; j++) {
-                    if (that._options.states[j].name == $(this).attr("data-state-name")) {
-                        that._activeState = that._options.states[j];
+                for (var j = 0; j < that.options.states.length; j++) {
+                    if (that.options.states[j].name == $(this).attr("data-state-name")) {
+                        that._activeState = that.options.states[j];
                         break;
                     }
                 }
                 that.refresh();
             });
 
-            var newState = {
-                name: stateName,
-                description: "",
-                formula: [[]],
-            };
-            this._setOption("states", newState);
-
             that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
-            this._activeState = this._options.states[k];
+            this._activeState = this.options.states[k];
             state.insertBefore(this._stateButtons.children().last());
 
             this.refresh();
@@ -345,11 +353,11 @@
                 var td = $("<td></td>").appendTo(tr);
                 td.droppable({
                     drop: function (event, ui) {
-                        var stateIndex = that._options.states.indexOf(that._activeState);
+                        var stateIndex = that.options.states.indexOf(that._activeState);
                         var cellIndex = this.cellIndex;
                         var tableIndex = table.index();
 
-                        var formula = that._options.states[stateIndex].formula[tableIndex].slice(0);
+                        var formula = that.options.states[stateIndex].formula[tableIndex].slice(0);
 
                         formula[this.cellIndex] = {
                             type: ui.draggable.attr("data-tool-type"),
@@ -364,37 +372,37 @@
                                 case "var": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
 
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "variable",
                                         value: 0
                                     };
 
-                                    var selectVariable = that.createNewSelect(this, that._options.states[stateIndex].formula[tableIndex][cellIndex]);
+                                    var selectVariable = that.createNewSelect(this, that.options.states[stateIndex].formula[tableIndex][cellIndex]);
 
                                     break;
                                 }
                                 case "num": {
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "const",
                                         value: 0
                                     }
 
-                                    var currNumber = that._options.states[stateIndex].formula[tableIndex][this.cellIndex];
+                                    var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
                                     var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0")
                                         .attr("max", "100").addClass("number-input").appendTo(this);
 
                                     num.bind("input change", function () {
-                                        if (parseFloat(this.value) > that._options.maxConst) this.value = that._options.maxConst;
-                                        if (parseFloat(this.value) < that._options.minConst) this.value = that._options.minConst;
+                                        if (parseFloat(this.value) > that.options.maxConst) this.value = that.options.maxConst;
+                                        if (parseFloat(this.value) < that.options.minConst) this.value = that.options.minConst;
                                         currNumber.value = this.value;
 
-                                        that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
+                                        that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
                                     });
                                     break;
                                 }
                                 case "equal": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: "="
                                     }
@@ -402,7 +410,7 @@
                                 }
                                 case "more": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: ">"
                                     }
@@ -410,7 +418,7 @@
                                 }
                                 case "less": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: "<"
                                     }
@@ -418,7 +426,7 @@
                                 }
                                 case "moeq": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: ">="
                                     }
@@ -426,7 +434,7 @@
                                 }
                                 case "leeq": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
-                                    that._options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                    that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "operator",
                                         value: "<="
                                     }
@@ -435,19 +443,19 @@
                                 default: break;
                             }
 
-                            that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
+                            that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
                         }
                     }
                 });
             }
 
             var td = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
-                var stateIndex = that._options.states.indexOf(that._activeState);
+                var stateIndex = that.options.states.indexOf(that._activeState);
                 var tableIndex = table.index();
-                that._options.states[stateIndex].formula.splice(tableIndex, 1);
+                that.options.states[stateIndex].formula.splice(tableIndex, 1);
                 $(table).remove();
 
-                that.executeCommand("StatesChanged", { states: that._options.states, changeType: "stateModified" });
+                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
             });
             var delTable = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(td);
 
