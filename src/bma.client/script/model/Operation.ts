@@ -11,16 +11,15 @@
             Clone(): IOperand;
         }
 
-        export interface IOperationLayout {
-            GetSVG(position: { x: number; y: number }): string
-            //FindIntersection(point: { x: number; y: number }): 
-        }
-
-        export class Keyframe implements IOperand {
+        export class NameOperand implements IOperand {
             private name: string;
 
             constructor(name: string) {
                 this.name = name;
+            }
+
+            public get Name(): string {
+                return this.name;
             }
 
             public GetFormula() {
@@ -28,7 +27,140 @@
             }
 
             public Clone() {
-                return new BMA.LTLOperations.Keyframe(this.name);
+                return new NameOperand(this.name);
+            }
+        }
+
+        export class ConstOperand implements IOperand {
+            private const: number;
+
+            constructor(value: number) {
+                this.const = value;
+            }
+
+            public get Value(): number {
+                return this.const;
+            }
+
+            public GetFormula() {
+                return this.const.toString();
+            }
+
+            public Clone() {
+                return new ConstOperand(this.const);
+            }
+        }
+
+        export class KeyframeEquation implements IOperand {
+            private leftOperand: NameOperand | ConstOperand;
+            private rightOperand: NameOperand | ConstOperand;
+            private operator: string;
+
+            constructor(leftOperand: NameOperand | ConstOperand, operator: string, rightOperand: NameOperand | ConstOperand) {
+                this.leftOperand = leftOperand;
+                this.rightOperand = rightOperand;
+                this.operator = operator;
+            }
+
+            public get LeftOperand() {
+                return this.leftOperand;
+            }
+
+            public get RightOperand() {
+                return this.rightOperand;
+            }
+
+            public get Operator() {
+                return this.operator;
+            }
+
+            public GetFormula() {
+                return "(" + this.leftOperand + " " + this.operator + " " + this.rightOperand + ")";
+            }
+
+            public Clone() {
+                return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
+            }
+        }
+
+        export class DoubleKeyframeEquation implements IOperand {
+            private leftOperand: NameOperand | ConstOperand;
+            private middleOperand: NameOperand | ConstOperand;
+            private rightOperand: NameOperand | ConstOperand;
+            private leftOperator: string;
+            private rightOperator: string;
+
+
+            constructor(leftOperand: NameOperand | ConstOperand, leftOperator: string, middleOperand: NameOperand | ConstOperand, rightOperator: string, rightOperand: NameOperand | ConstOperand) {
+                this.leftOperand = leftOperand;
+                this.rightOperand = rightOperand;
+                this.middleOperand = middleOperand;
+                this.leftOperator = leftOperator;
+                this.rightOperator = rightOperator;
+            }
+
+            public get LeftOperand() {
+                return this.leftOperand;
+            }
+
+            public get RightOperand() {
+                return this.rightOperand;
+            }
+
+            public get MiddleOperand() {
+                return this.middleOperand;
+            }
+
+            public get LeftOperator() {
+                return this.leftOperator;
+            }
+
+            public get RightOperator() {
+                return this.rightOperator;
+            }
+
+            public GetFormula() {
+                return "(" + this.leftOperand.GetFormula() + " " + this.leftOperator + " " + this.middleOperand.GetFormula() + ") AND (" + this.middleOperand.GetFormula() + " " + this.rightOperator + " " + this.rightOperand.GetFormula() + ")";
+            }
+
+            public Clone() {
+                return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
+            }
+        }
+
+        export class Keyframe implements IOperand {
+            private name: string;
+            private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
+
+            constructor(name: string, operands: (KeyframeEquation | DoubleKeyframeEquation)[]) {
+                this.name = name;
+                this.operands = operands;
+            }
+
+            public get Name(): string {
+                return this.name;
+            }
+
+            public get Operands(): (KeyframeEquation | DoubleKeyframeEquation)[] {
+                return this.operands;
+            }
+
+            public GetFormula() {
+                if (this.operands === undefined || this.operands.length < 1) {
+                    return "";
+                } else {
+                    var formula = "";
+                    for (var i = 0; i < this.operands.length; i++) {
+                        formula += this.operands[i].GetFormula();
+                        if (i < this.operands.length - 1) {
+                            formula += " AND ";
+                        }
+                    }
+                }
+            }
+
+            public Clone() {
+                return new BMA.LTLOperations.Keyframe(this.name, this.operands.slice(0));
             }
         }
 

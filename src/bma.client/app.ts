@@ -552,10 +552,8 @@ function loadScript(version) {
     changesCheckerTool.Snapshot(appModel);
 
     //LTL Drivers
-    var keyframesFull: JQuery = $('<div></div>').stateseditor();
-    var keyframesExpandedViewer = new BMA.UIDrivers.KeyframesExpandedViewer(keyframesFull);
-
     var tpeditordriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(ltlCommands, popup);
+    var stateseditordriver = new BMA.UIDrivers.StatesEditorDriver(ltlCommands, popup);
 
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
@@ -577,7 +575,7 @@ function loadScript(version) {
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
 
     //LTL Presenters
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, keyframesExpandedViewer, ltlDriver, tpeditordriver, ltlDriver, ltlService, popupDriver);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, ltlDriver, tpeditordriver, ltlDriver, ltlService, popupDriver);
     
     //Loading model from URL
     var reserved_key = "InitialModel";

@@ -22,6 +22,12 @@ module BMA {
             RemovePart(keyframe, ind);
         }
 
+        export interface IStatesEditor {
+            SetStates(states: BMA.LTLOperations.Keyframe[]);
+            Show();
+            Hide();
+        }
+
         export interface ITemporalPropertiesEditor {
             Show();
             Hide();

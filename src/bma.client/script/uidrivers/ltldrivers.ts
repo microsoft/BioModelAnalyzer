@@ -126,6 +126,99 @@ module BMA {
             }
         }
 
+        export class StatesEditorDriver implements IStatesEditor {
+            private popupWindow: JQuery;
+            private commands: ICommandRegistry;
+            private statesEditor: JQuery;
+            private statesToSet: BMA.LTLOperations.Keyframe[];
+
+            constructor(commands: ICommandRegistry, popupWindow: JQuery) {
+                this.popupWindow = popupWindow;
+                this.commands = commands;
+            }
+
+            public Show() {
+                var shouldInit = this.statesEditor === undefined;
+                if (shouldInit) {
+                    this.statesEditor = $("<div></div>");
+                }
+
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.statesEditor, icon: "min" });
+                popup_position();
+                this.popupWindow.show();
+
+                if (shouldInit) {
+                    this.statesEditor.stateseditor({ commands: this.commands });
+                    if (this.statesToSet !== undefined) {
+                        this.statesEditor.stateseditor({ states: this.statesToSet });
+                        this.statesToSet = undefined;
+                    } 
+                }
+            }
+
+            public Hide() {
+                this.popupWindow.hide();
+            }
+
+            public SetStates(states: BMA.LTLOperations.Keyframe[]) {
+                    var wstates = [];
+                    for (var i = 0; i < states.length; i++) {
+                        var s = states[i];
+                        var ws = {
+                            name: s.Name,
+                            formula: []
+                        };
+                        for (var j = 0; j < s.Operands.length; j++) {
+                            var opnd = s.Operands[j];
+
+                            ws.formula.push({
+                                type: (<any>opnd.LeftOperand).Name === undefined ? "const" : "variable",
+                                value: (<any>opnd.LeftOperand).Name === undefined ? (<any>opnd.LeftOperand).Value : (<any>opnd.LeftOperand).Name
+                            });
+
+                            if ((<any>opnd).MiddleOperand !== undefined) {
+                                var leftop = (<any>opnd).LeftOperator;
+                                ws.formula.push({
+                                    type: "operator",
+                                    value: leftop
+                                });
+
+                                var middle = (<any>opnd).MiddleOperand;
+                                ws.formula.push({
+                                    type: middle.Name === undefined ? "const" : "variable",
+                                    value: middle.Name === undefined ? middle.Value : middle.Name
+                                });
+
+                                var rightop = (<any>opnd).RightOperator;
+                                ws.formula.push({
+                                    type: "operator",
+                                    value: rightop
+                                });
+
+                            } else {
+                                ws.formula.push({
+                                    type: "operator",
+                                    value: (<any>opnd).Operator
+                                });
+                            }
+
+                            ws.formula.push({
+                                type: (<any>opnd.RightOperand).Name === undefined ? "const" : "variable",
+                                value: (<any>opnd.RightOperand).Name === undefined ? (<any>opnd.RightOperand).Value : (<any>opnd.RightOperand).Name
+                            });
+                        }
+
+                        wstates.push(ws);
+                    }
+
+                    if (this.statesEditor !== undefined) {
+                        this.statesEditor.stateseditor({ states: wstates });
+                    } else {
+                        this.statesToSet = wstates;
+                    }
+            }
+        }
+
         export class TemporalPropertiesViewer implements ITemporalPropertiesViewer {
             private tpviewer: JQuery;
             constructor(tpviewer: JQuery) {

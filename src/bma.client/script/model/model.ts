@@ -7,6 +7,8 @@ module BMA {
             private model: BMA.Model.BioModel;
             private layout: BMA.Model.Layout;
             private proofResult: BMA.Model.ProofResult = undefined;
+            private states: BMA.LTLOperations.Keyframe[] = [];
+            private operations: BMA.LTLOperations.Operation[] = [];
 
             public get BioModel(): BMA.Model.BioModel {
                 return this.model;
@@ -27,6 +29,25 @@ module BMA {
                 this.layout = value;
                 //TODO: update inner components (analytics)
             }
+
+            public get States(): BMA.LTLOperations.Keyframe[] {
+                return this.states;
+            }
+
+            public set States(value: BMA.LTLOperations.Keyframe[]) {
+                this.states = value;
+                //TODO: update inner components (ltl)
+            }
+
+            public get Operations(): BMA.LTLOperations.Operation[] {
+                return this.operations;
+            }
+
+            public set Operations(value: BMA.LTLOperations.Operation[]) {
+                this.operations = value;
+                //TODO: update inner components (ltl)
+            }
+
 
             public get ProofResult() {
                 return this.proofResult;
@@ -133,6 +154,9 @@ module BMA {
             constructor() {
                 this.model = new BMA.Model.BioModel("model 1", [], []);
                 this.layout = new BMA.Model.Layout([], []);
+                this.states = [
+                    new BMA.LTLOperations.Keyframe("Init", [])
+                ];
             }
         }
     }

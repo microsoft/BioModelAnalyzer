@@ -42,9 +42,6 @@
                 this._options.states.push(newState);
             }
 
-            this._options.variables.push("xvariabledfsfsdfsdfsdf");
-            this._options.variables.push("y");
-
             this._activeState = this._options.states[0];
 
             for (var i = 0; i < this._options.states.length; i++) {
@@ -105,12 +102,13 @@
                     break;
                 }
                 case "states": {
-                    try {
-                        if (this.validation(value.formula))
-                            this._options.states.push(value);
-                        else throw "The state " + value.name + " has wrong formula";
+                    this._options.states = [];
+                    if (value !== undefined && value.length > 0) {
+                        for (var i = 0; i < value.length; i++) {
+                            this._options.states.push(value[i]);
+                        }
                     }
-                    catch (ex) { };
+                    this.refresh();
                     break;
                 }
                 case "minConst": {

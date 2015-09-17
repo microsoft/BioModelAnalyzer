@@ -13,10 +13,9 @@
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
-                keyframesfullDriver: BMA.UIDrivers.IKeyframesFull,
+                statesEditorDriver: BMA.UIDrivers.IStatesEditor,
                 keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
                 temporlapropertieseditor: BMA.UIDrivers.ITemporalPropertiesEditor,
-                //temporalpropertiesviewer: BMA.UIDrivers.ITemporalPropertiesViewer,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup
@@ -25,22 +24,9 @@
                 var that = this;
                 this.appModel = appModel;
 
-                
+                this.statespresenter = new BMA.LTL.StatesPresenter(this.appModel, statesEditorDriver); 
 
-                window.Commands.On("AddKeyframe", function () {
-                    //var newstate = 'new';
-                    //keyframescompactDriver.AddState(newstate);
-                    //keyframesfullDriver.AddState(newstate);
-                });
-
-                window.Commands.On("ChangedKeyframeName", function (item: { ind; name} ) {
-                    //alert('ind=' + item.ind + ' name=' + item.name);
-                });
-
-                window.Commands.On("KeyframeSelected", function (item: { ind }) {
-                    //alert('selected ind=' + item.ind);
-                });
-                
+                /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {
 
                     //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
@@ -76,24 +62,16 @@
                             alert("LTL failed");
                         })
                 });
+                */
 
                 window.Commands.On("Expand", (param) => {
                     switch (param) {
                         case "LTLStates":
-                            var content = keyframesfullDriver.GetContent();
-                            popupViewer.Show({ tab: param, content: content });
-                            //ltlviewer.Hide(param);
+                            statesEditorDriver.Show();
                             break;
-                        //case "LTLResults":
-                        //    popupViewer.Show({ tab: param, content: that.expandedResults });
-                        //    ltlviewer.Hide(param);
-                        //    break;
+
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
-
-                            if (this.statespresenter === undefined) {
-                                this.statespresenter = new BMA.LTL.StatesPresenter(); 
-                            }
 
                             if (this.tppresenter === undefined) {
                                 this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
@@ -114,28 +92,14 @@
 
                 window.Commands.On("Collapse",(param) => {
                     temporlapropertieseditor.Hide();
-                    //ltlviewer.Show(param);
+                    statesEditorDriver.Hide();
                     popupViewer.Hide();
                 });
 
-                window.Commands.On('KeyframeStartDrag',(param) => {
-                    this.currentdraggableelem = param;
-                });
-
-                window.Commands.On("KeyframeDropped",(param: { location: JQuery;}) => {
-                    var cl = window.KeyframesRegistry.Keyframes[this.currentdraggableelem];
-                    var img = $('<img>').attr('src', cl.Icon);
-                    img.appendTo(param.location);
-                });
-
-                window.Commands.On('RemoveKeyframe', function () {
-                    //keyframesfullDriver.RemovePart('','');
-                });
-
                 commands.On("TemporalPropertiesOperationsChanged", function (args) { ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations); });
-
             }
 
+            /*
             public CreateColoredTable(ticks): any {
                 var that = this;
                 if (ticks === null) return undefined;
@@ -192,6 +156,7 @@
                 container.find("td").eq(0).width(150);
                 return container;
             }
+            */
         }
     }
 } 
