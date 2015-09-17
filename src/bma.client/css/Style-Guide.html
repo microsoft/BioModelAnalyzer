@@ -35,6 +35,7 @@
 		<ul>
 			<li><a href="#proof-analysis">Proof Analysis</a></li>
 			<li><a href="#simulation">Simulation Analysis</a></li>
+			<li><a href="#LTL">LTL</a></li>
 		</ul>
 </div>
 
@@ -3323,7 +3324,7 @@ Variables Table</p>
 </div>
 </div>
 
-<p class="guide-text">State Editor</p>
+<p class="guide-text">Variable Editor</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 <div class="variable-picker">
@@ -3364,6 +3365,226 @@ Variables Table</p>
 	
 </div>
 </div>
+</div>
+
+<p class="guide-text">Temporal Properties Editor</p>
+<p class="bug-note">Please note the drop-zones at the bottom should appear only when the user is dragging a formula</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window temporal-properties">
+<div class="window-title">Temporal Properties</div>	
+<div class="temporal-toolbar">
+		
+			<div class="state-buttons">
+			States<br>
+			<div class="btns">
+				<div class="state-button">A</div>
+				<div class="state-button">B</div>
+				<div class="state-button">F</div>
+				<div class="state-button new">+</div>
+			</div>
+			</div>
+
+			<div class="temporal-operators">
+				Operators<br>
+			<div class="operators">
+				<div class="operator">
+					<div class="hole"></div> 
+					<div class="label">UNTIL</div> 
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="hole"></div>
+					<div class="label">AND</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="hole"></div>
+					<div class="label">OR</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="hole"></div>
+					<div class="label">NEXT</div>
+					<div class="hole"></div>
+				</div>
+				<br>
+				<div class="operator">
+					<div class="label">&nbsp;&nbsp;EVENTUALLY</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="label">&nbsp;&nbsp;ALWAYS</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="label">&nbsp;&nbsp;NOT</div>
+					<div class="hole"></div>
+				</div>
+				
+			</div>
+			</div>
+
+</div>
+
+<div class="temporal-dropzones">
+	<DIV class="dropzone copy">
+		<img src="../images/LTL-copy.svg" alt="">
+	</DIV>
+	<div class="dropzone delete">
+			<img src="../images/LTL-delete.svg" alt="">
+	</div>
+	
+</div>
+</div>
+
+
+</div>
+</div>
+
+<p class="guide-text">Basic Formula</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small grey"><button>TEST</button></li>
+	</ul>
+
+</div>
+</div>
+
+<p class="guide-text">Simulation Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill true">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results true">
+	Simulation Found<br>12 steps<br>
+	<ul class="button-list">
+		<li><button>OPEN</button></li>
+	</ul>
+</div>
+</div>
+
+
+</div>
+
+<p class="guide-text">Simulation Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill true">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small green"><button>OPEN</button></li>
+	</ul>
+
+</div>
+</div>
+
+<p class="guide-text">Simulation Not Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill false">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results false">
+	No Simulation Found<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button>TEST AGAIN</button></li>
+	</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">Simulation Not Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill false">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small red"><button>OPEN</button></li>
+	</ul>
+
+</div>
+</div>
+
 </div>
 </div>
 
