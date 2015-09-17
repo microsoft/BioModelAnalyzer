@@ -9322,17 +9322,9 @@ jQuery.fn.extend({
                 };
                 this.options.states.push(newState);
             }
-<<<<<<< HEAD
-            this.options.variables.push("xvariabledfsfsdfsdfsdf");
-            this.options.variables.push("y");
             this._activeState = this.options.states[0];
             for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").appendTo(this._stateButtons).click(function () {
-=======
-            this._activeState = this._options.states[0];
-            for (var i = 0; i < this._options.states.length; i++) {
-                var stateButton = $("<div>" + this._options.states[i].name + "</div>").attr("data-state-name", this._options.states[i].name).addClass("state-button").appendTo(this._stateButtons).click(function () {
->>>>>>> 3bde5210a4df74c6ef67dd1eb0092e6c6d8ceaab
+                var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").addClass("state").appendTo(this._stateButtons).click(function () {
                     that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                     for (var j = 0; j < that.options.states.length; j++) {
                         if (that.options.states[j].name == $(this).attr("data-state-name")) {
@@ -9378,21 +9370,12 @@ jQuery.fn.extend({
                     break;
                 }
                 case "states": {
-<<<<<<< HEAD
                     this.options.states = [];
+                    this._stateButtons.children(".state").remove();
                     for (var i = 0; i < value.length; i++) {
                         this.options.states.push(value[i]);
                         this.addState(value[i]);
                     }
-=======
-                    this._options.states = [];
-                    if (value !== undefined && value.length > 0) {
-                        for (var i = 0; i < value.length; i++) {
-                            this._options.states.push(value[i]);
-                        }
-                    }
-                    this.refresh();
->>>>>>> 3bde5210a4df74c6ef67dd1eb0092e6c6d8ceaab
                     break;
                 }
                 case "minConst": {
@@ -9560,9 +9543,10 @@ jQuery.fn.extend({
         addState: function (state) {
             if (state === void 0) { state = null; }
             var that = this;
-            var k = this.options.states.length;
             var stateName;
+            var idx;
             if (state == null) {
+                var k = this.options.states.length;
                 stateName = String.fromCharCode(65 + k);
                 var newState = {
                     name: stateName,
@@ -9570,11 +9554,13 @@ jQuery.fn.extend({
                     formula: [[]],
                 };
                 this.options.states.push(newState);
+                idx = k;
             }
             else {
                 stateName = state.name;
+                idx = this.options.states.indexOf(state);
             }
-            var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").click(function () {
+            var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").addClass("state").click(function () {
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                 for (var j = 0; j < that.options.states.length; j++) {
                     if (that.options.states[j].name == $(this).attr("data-state-name")) {
@@ -9585,7 +9571,7 @@ jQuery.fn.extend({
                 that.refresh();
             });
             that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
-            this._activeState = this.options.states[k];
+            this._activeState = this.options.states[idx];
             state.insertBefore(this._stateButtons.children().last());
             this.refresh();
         },
