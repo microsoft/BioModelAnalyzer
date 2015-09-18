@@ -42,6 +42,18 @@
                 this.options.states.push(newState);
             }
 
+            var var1 = {
+                name: "cell1",
+                vars: ["var1", "var2"]
+            };
+
+            var var2 = {
+                name: "cell2",
+                vars: ["cell2var", "varcell"]
+            };
+            this.options.variables.push(var1);
+            this.options.variables.push(var2);
+
             this._activeState = this.options.states[0];
 
             for (var i = 0; i < this.options.states.length; i++) {
@@ -136,7 +148,7 @@
         executeCommand: function (commandName, args) {
             if (this.options.commands !== undefined) {
                 this.options.commands.Execute(commandName, args);
-            } 
+            }
         },
 
         createToolbar: function () {
@@ -188,37 +200,68 @@
 
         createNewSelect: function (td, currSymbol) {
             var that = this;
+
             var selectVariable = $("<div></div>").addClass("variable-select").appendTo(td);
             var variableSelected = $("<p></p>").appendTo(selectVariable);
             var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
 
-            var listOfVariables = $("<div></div>").addClass("variables-list").appendTo(td).hide();
+            var variablePicker = $("<div></div>").addClass("variable-picker").appendTo(td).hide();
+            var table = $("<table></table>").appendTo(variablePicker);
+            var tbody = $("<tbody></tbody>").appendTo(table);
+
+            var tr = $("<tr></tr>").appendTo(tbody);
+            var tdContainer = $("<td></td>").appendTo(tr);
+            var imgContainer = $("<img></img>").attr("src", "../images/container.svg").appendTo(tdContainer);
+            var tdVariable = $("<td></td>").appendTo(tr);
+            var imgVariable = $("<img></img>").attr("src", "../images/variable.svg").appendTo(tdVariable);
+
+            var trList = $("<tr></tr>").appendTo(tbody);
+            var tdContainersList = $("<td></td>").addClass("list").appendTo(trList);
+            var divContainers = $("<div></div>").addClass("scrollable").appendTo(tdContainersList);
+            var tdVariablesList = $("<td></td>").addClass("list").appendTo(trList);
+            var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
+
+            for (var i = 0; i < this.options.variables.length; i++) {
+                var containers = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-name", this.options.variables[i].name)
+                    .appendTo(divContainers).click(function () {
+                    var currConteiner = this;
+                    divContainers.find(".active").removeClass("active");
+                    divVariables.children().remove();
+                    var idx = $(this).index();
+                    $(this).addClass("active");
+                    for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
+                        var variables = $("<a>" + that.options.variables[idx].vars[j] + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                            .appendTo(divVariables).click(function () {
+                            divVariables.find(".active").removeClass("active");
+                            $(this).addClass("active");
+
+                            variableSelected.text(this.innerText);
+                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: this.innerText };
+
+                            if (!variablePicker.is(":hidden"))
+                                selectVariable.trigger("click");
+                        });
+                    }
+                });
+            }
+
+            divContainers.children().eq(0).trigger("click");
 
             selectVariable.bind("click", function () {
-                if (listOfVariables.is(":hidden")) {
-                    listOfVariables.show();
+                if (variablePicker.is(":hidden")) {
+                    variablePicker.show();
                     expandButton.addClass('inputs-list-header-expanded');
                     selectVariable.addClass("expanded");
-                    listOfVariables.addClass("expanded");
+                    variablePicker.addClass("expanded");
                 } else {
-                    listOfVariables.hide();
+                    variablePicker.hide();
                     expandButton.removeClass('inputs-list-header-expanded');
                     selectVariable.removeClass("expanded");
-                    listOfVariables.removeClass("expanded");
+                    variablePicker.removeClass("expanded");
                 }
             });
 
-            for (var k = 0; k < this.options.variables.length; k++)
-                var variable = $("<div>" + this.options.variables[k] + "</div>").appendTo(listOfVariables).click(function () {
-                    variableSelected.text(this.innerText);
-                    currSymbol.value = this.innerText;
-
-                    selectVariable.trigger("click");
-
-                    that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" })
-                });
-
-            return selectVariable;
+            return trList;
         },
 
         refresh: function () {
@@ -243,10 +286,15 @@
                             var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name)
                                 .attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
 
-                            var selectVariable = this.createNewSelect(condition.children().eq(j), currSymbol);
+                            var trList = this.createNewSelect(condition.children().eq(j), currSymbol);
+                            var td = condition.children().eq(j);
+                            var tdContainers = trList.children().eq(0);
+                            var divContainers = tdContainers.children().eq(0);
+                            var tdVariables = trList.children().eq(1);
+                            var divVariables = tdVariables.children().eq(0);
 
-                            if (this.options.variables.indexOf(this._activeState.formula[i][j].value) > -1)
-                                selectVariable.children().eq(0).text(this._activeState.formula[i][j].value);
+                            divContainers.find("[data-container-name=" + this._activeState.formula[i][j].value.container + "]").trigger("click");
+                            divVariables.find("[data-variable-name=" + this._activeState.formula[i][j].value.variable + "]").trigger("click");
 
                         } else if (this._activeState.formula[i][j].type == "const") {
 
@@ -312,7 +360,7 @@
             if (state == null) {
                 var k = this.options.states.length;
                 stateName = String.fromCharCode(65 + k);
-                
+
                 var newState = {
                     name: stateName,
                     description: "",
@@ -378,8 +426,7 @@
                                         value: 0
                                     };
 
-                                    var selectVariable = that.createNewSelect(this, that.options.states[stateIndex].formula[tableIndex][cellIndex]);
-
+                                    var variablePicker = that.createNewSelect(this, that.options.states[stateIndex].formula[tableIndex][cellIndex]);
                                     break;
                                 }
                                 case "num": {
@@ -463,7 +510,7 @@
             table.insertBefore(this._ltlStates.children().last());
         },
     });
-}(jQuery));
+} (jQuery));
 
 interface JQuery {
     stateseditor(): JQuery;
