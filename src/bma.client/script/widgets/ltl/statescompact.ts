@@ -18,6 +18,8 @@
 
             this.element.addClass("state-compact");
             this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).click(function () {
+
+                /*
                 var newState = {
                     name: "A",
                     description: "",
@@ -41,6 +43,9 @@
                 that._emptyStatePlaceholder.hide();
 
                 that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+                */
+
+                that.executeCommand("AddFirstStateRequested", {});
             });
 
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);

@@ -14,7 +14,6 @@
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
                 statesEditorDriver: BMA.UIDrivers.IStatesEditor,
-                keyframescompactDriver: BMA.UIDrivers.IKeyframesList,
                 temporlapropertieseditor: BMA.UIDrivers.ITemporalPropertiesEditor,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
@@ -24,7 +23,7 @@
                 var that = this;
                 this.appModel = appModel;
 
-                this.statespresenter = new BMA.LTL.StatesPresenter(this.appModel, statesEditorDriver); 
+                this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer()); 
 
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {
