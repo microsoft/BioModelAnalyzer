@@ -209,7 +209,29 @@ module BMA {
                 this.commands = commands;
 
                 commands.On("StatesChanged",(args) => {
-                    
+                    var states = args.states;
+                    var wstates = [];
+
+                    for (var i = 0; i < states.length; i++) {
+                        var ops = [];
+                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                        var s = states[i].formula;
+                        for (var j = 0; j < s.length; j++) {
+                            var f = s[j];
+                            var op = undefined;
+                            if (f[3] !== undefined || f[4] !== undefined) {
+                                var operator
+                                //op = new BMA.LTLOperations.DoubleKeyframeEquation();
+
+                            } else {
+                                //op = new BMA.LTLOperations.KeyframeEquation();
+                            }
+                            //ops.push(op);
+                        }
+                        wstates.push(ws);
+                    }
+
+                    commands.Execute("KeyframesChanged", { states: wstates });
                 });
             }
 

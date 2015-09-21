@@ -3854,6 +3854,24 @@ var BMA;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
                 commands.On("StatesChanged", function (args) {
+                    var states = args.states;
+                    var wstates = [];
+                    for (var i = 0; i < states.length; i++) {
+                        var ops = [];
+                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                        var s = states[i].formula;
+                        for (var j = 0; j < s.length; j++) {
+                            var f = s[j];
+                            var op = undefined;
+                            if (f[3] !== undefined || f[4] !== undefined) {
+                                var operator;
+                            }
+                            else {
+                            }
+                        }
+                        wstates.push(ws);
+                    }
+                    commands.Execute("KeyframesChanged", { states: wstates });
                 });
             }
             StatesEditorDriver.prototype.Show = function () {
@@ -10176,9 +10194,9 @@ var BMA;
                 commands.On("AddFirstStateRequested", function (args) {
                     stateseditordriver.Show();
                 });
-                commands.On("StatesChanged", function (args) {
-                    appModel.States = args.States;
-                    that.statesViewer.SetStates(args.States);
+                commands.On("KeyframesChanged", function (args) {
+                    appModel.States = args.states;
+                    that.statesViewer.SetStates(args.states);
                 });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
