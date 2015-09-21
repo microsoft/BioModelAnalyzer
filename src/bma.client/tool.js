@@ -3747,6 +3747,9 @@ var BMA;
             LTLViewer.prototype.GetTemporalPropertiesViewer = function () {
                 return new BMA.UIDrivers.TemporalPropertiesViewer(this.ltlviewer.ltlviewer("GetTPViewer"));
             };
+            LTLViewer.prototype.GetStatesViewer = function () {
+                return new BMA.UIDrivers.StatesViewerDriver(this.ltlviewer.ltlviewer("GetStatesViewer"));
+            };
             return LTLViewer;
         })();
         UIDrivers.LTLViewer = LTLViewer;
@@ -3788,10 +3791,70 @@ var BMA;
             return TemporalPropertiesEditorDriver;
         })();
         UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
+        var StatesViewerDriver = (function () {
+            function StatesViewerDriver(statesViewer) {
+                this.statesViewer = statesViewer;
+            }
+            StatesViewerDriver.prototype.SetCommands = function (commands) {
+                this.statesViewer.statescompact({ commands: commands });
+            };
+            StatesViewerDriver.prototype.SetStates = function (states) {
+                var wstates = [];
+                for (var i = 0; i < states.length; i++) {
+                    var s = states[i];
+                    var ws = {
+                        name: s.Name,
+                        formula: []
+                    };
+                    for (var j = 0; j < s.Operands.length; j++) {
+                        var opnd = s.Operands[j];
+                        ws.formula.push({
+                            type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
+                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : opnd.LeftOperand.Name
+                        });
+                        if (opnd.MiddleOperand !== undefined) {
+                            var leftop = opnd.LeftOperator;
+                            ws.formula.push({
+                                type: "operator",
+                                value: leftop
+                            });
+                            var middle = opnd.MiddleOperand;
+                            ws.formula.push({
+                                type: middle.Name === undefined ? "const" : "variable",
+                                value: middle.Name === undefined ? middle.Value : middle.Name
+                            });
+                            var rightop = opnd.RightOperator;
+                            ws.formula.push({
+                                type: "operator",
+                                value: rightop
+                            });
+                        }
+                        else {
+                            ws.formula.push({
+                                type: "operator",
+                                value: opnd.Operator
+                            });
+                        }
+                        ws.formula.push({
+                            type: opnd.RightOperand.Name === undefined ? "const" : "variable",
+                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : opnd.RightOperand.Name
+                        });
+                    }
+                    wstates.push(ws);
+                }
+                if (this.statesViewer !== undefined) {
+                    this.statesViewer.statescompact({ states: wstates });
+                }
+            };
+            return StatesViewerDriver;
+        })();
+        UIDrivers.StatesViewerDriver = StatesViewerDriver;
         var StatesEditorDriver = (function () {
             function StatesEditorDriver(commands, popupWindow) {
                 this.popupWindow = popupWindow;
                 this.commands = commands;
+                commands.On("StatesChanged", function (args) {
+                });
             }
             StatesEditorDriver.prototype.Show = function () {
                 var shouldInit = this.statesEditor === undefined;
@@ -9221,22 +9284,14 @@ jQuery.fn.extend({
             var that = this;
             var elem = this.element.addClass('ltl-results-tab');
             this.key_div = $('<div></div>').appendTo(elem);
-            var key_content = $('<div></div>').keyframecompact(); //.keyframeviewer();
+            this.key_content = $('<div></div>').width(400).statescompact();
             this.key_div.resultswindowviewer({
-                header: "Keyframes",
+                header: "States",
                 icon: "max",
-                content: key_content,
+                content: that.key_content,
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            /*
-            var temp_content = $('<div></div>'); //.temppropviewer();
-            this.formula = $('<input type="text">').appendTo(temp_content);
-            var submit = $('<button>LTLNOW</button>').addClass('action-button green').appendTo(temp_content);
-            submit.click(() => {
-                window.Commands.Execute("LTLRequested", { formula: this.formula.val()});
-            });
-            */
             this.temp_content = $('<div></div>').height(150).temporalpropertiesviewer();
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
@@ -9244,16 +9299,6 @@ jQuery.fn.extend({
                 content: this.temp_content,
                 tabid: "LTLTempProp"
             });
-            /*
-            this.results = $('<div></div>').appendTo(elem);
-            var res_table = $('<div id="LTLResults"></div>').addClass('scrollable-results');
-            this.results.resultswindowviewer({
-                header: "Results",
-                icon: "max",
-                content: res_table,
-                tabid: "LTLResults"
-            });
-            */
         },
         _destroy: function () {
             this.element.empty();
@@ -9261,7 +9306,6 @@ jQuery.fn.extend({
         Get: function (param) {
             switch (param) {
                 case "LTLStates":
-                    //alert('widget ' + this.key_content.text());
                     return this.key_div;
                 case "LTLTempProp":
                     return this.temp_prop;
@@ -9273,6 +9317,9 @@ jQuery.fn.extend({
         },
         GetTPViewer: function () {
             return this.temp_content;
+        },
+        GetStatesViewer: function () {
+            return this.key_content;
         },
         Show: function (param) {
             if (param == undefined) {
@@ -9738,6 +9785,7 @@ jQuery.fn.extend({
             var that = this;
             this.element.addClass("state-compact");
             this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).click(function () {
+                /*
                 var newState = {
                     name: "A",
                     description: "",
@@ -9751,12 +9799,18 @@ jQuery.fn.extend({
                         ]
                     ]
                 };
+
                 that.options.states.push(newState);
-                var stateButton = $("<div>" + newState.name + "</div>").attr("data-state-name", newState.name).addClass("state-button").appendTo(that._stateButtons);
+                var stateButton = $("<div>" + newState.name + "</div>").attr("data-state-name", newState.name)
+                    .addClass("state-button").appendTo(that._stateButtons);
+
                 that._stateButtons.show();
                 that._emptyStateAddButton.hide();
                 that._emptyStatePlaceholder.hide();
+
                 that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+                */
+                that.executeCommand("AddFirstStateRequested", {});
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
@@ -9784,9 +9838,16 @@ jQuery.fn.extend({
                         this.options.states.push(value[i]);
                         var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name).addClass("state-button").appendTo(this._stateButtons);
                     }
-                    this._stateButtons.show();
-                    this._emptyStateAddButton.hide();
-                    this._emptyStatePlaceholder.hide();
+                    if (this.options.states.length == 0) {
+                        this._stateButtons.hide();
+                        this._emptyStateAddButton.show();
+                        this._emptyStatePlaceholder.show();
+                    }
+                    else {
+                        this._stateButtons.show();
+                        this._emptyStateAddButton.hide();
+                        this._emptyStatePlaceholder.hide();
+                    }
                     this.refresh();
                     break;
                 }
@@ -10025,11 +10086,11 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, keyframescompactDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
-                this.statespresenter = new BMA.LTL.StatesPresenter(this.appModel, statesEditorDriver);
+                this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {
 
@@ -10104,10 +10165,21 @@ var BMA;
     var LTL;
     (function (LTL) {
         var StatesPresenter = (function () {
-            function StatesPresenter(appModel, stateseditordriver) {
+            function StatesPresenter(commands, appModel, stateseditordriver, statesviewerdriver) {
+                var that = this;
                 this.appModel = appModel;
                 this.statesEditor = stateseditordriver;
+                this.statesViewer = statesviewerdriver;
                 this.statesEditor.SetStates(appModel.States);
+                this.statesViewer.SetStates(appModel.States);
+                this.statesViewer.SetCommands(commands);
+                commands.On("AddFirstStateRequested", function (args) {
+                    stateseditordriver.Show();
+                });
+                commands.On("StatesChanged", function (args) {
+                    appModel.States = args.States;
+                    that.statesViewer.SetStates(args.States);
+                });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
                 var keyframes = this.appModel.States;

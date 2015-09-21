@@ -78,10 +78,15 @@
                         var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                             .addClass("state-button").appendTo(this._stateButtons);
                     }
-
-                    this._stateButtons.show();
-                    this._emptyStateAddButton.hide();
-                    this._emptyStatePlaceholder.hide();
+                    if (this.options.states.length == 0) {
+                        this._stateButtons.hide();
+                        this._emptyStateAddButton.show();
+                        this._emptyStatePlaceholder.show();
+                    } else {
+                        this._stateButtons.show();
+                        this._emptyStateAddButton.hide();
+                        this._emptyStatePlaceholder.hide();
+                    }
 
                     this.refresh();
                     break;

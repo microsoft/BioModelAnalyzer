@@ -3136,9 +3136,8 @@ textarea:focus {
   cursor: pointer;
 }
 .state-compact {
-  width: 400px;
-  background-color: white;
-  padding: 15px;
+  margin-top: 5px;
+  margin-bottom: 15px;
 }
 .state-compact .state-button-empty {
   margin-left: auto;
