@@ -9381,6 +9381,8 @@ jQuery.fn.extend({
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.stateseditor", {
+        _emptyStateAddButton: null,
+        _emptyStatePlaceholder: null,
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
@@ -9398,38 +9400,18 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
+            this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).hide().click(function () {
+                that._emptyStateAddButton.hide();
+                that._emptyStatePlaceholder.hide();
+                that._stateButtons.show();
+                that._toolbar.show();
+                that._description.show();
+                that._ltlStates.show();
+                that.addState();
+                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+            });
+            this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element).hide();
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
-            /*
-            if (this.options.states.length < 1) {
-                var newState = {
-                    name: "A",
-                    description: "",
-                    formula: [
-                        [
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined
-                        ]
-                    ]
-                };
-                this.options.states.push(newState);
-            }
-
-            var var1 = {
-                name: "cell1",
-                vars: ["var1", "var2"]
-            };
-
-            var var2 = {
-                name: "cell2",
-                vars: ["cell2var", "varcell"]
-            };
-            this.options.variables.push(var1);
-            this.options.variables.push(var2);
-            */
-            this._activeState = this.options.states[0];
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").addClass("state").appendTo(this._stateButtons).click(function () {
                     that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
@@ -9465,13 +9447,24 @@ jQuery.fn.extend({
                 that.addCondition();
                 that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
             });
-            this.refresh();
+            if (this.options.states.length == 0) {
+                this._emptyStateAddButton.show();
+                this._emptyStatePlaceholder.show();
+                this._stateButtons.hide();
+                this._toolbar.hide();
+                this._description.hide();
+                this._ltlStates.hide();
+            }
+            else {
+                this._activeState = this.options.states[0];
+                this.refresh();
+            }
         },
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
                 case "variables": {
-                    this.options.varables = [];
+                    this.options.variables = [];
                     for (var i = 0; i < value.length; i++)
                         this.options.variables.push(value[i]);
                     break;
@@ -9688,10 +9681,20 @@ jQuery.fn.extend({
                 var newState = {
                     name: stateName,
                     description: "",
-                    formula: [[]],
+                    formula: [
+                        [
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined
+                        ]
+                    ],
                 };
                 this.options.states.push(newState);
                 idx = k;
+                if (k == 0)
+                    this._activeState = this.options.states[k];
             }
             else {
                 stateName = state.name;
