@@ -72,6 +72,10 @@ module BMA {
             GetTemporalPropertiesViewer() {
                 return new BMA.UIDrivers.TemporalPropertiesViewer(this.ltlviewer.ltlviewer("GetTPViewer"));
             }
+
+            GetStatesViewer() {
+                return new BMA.UIDrivers.StatesViewerDriver(this.ltlviewer.ltlviewer("GetStatesViewer"));
+            }
         }
 
         export class TemporalPropertiesEditorDriver implements ITemporalPropertiesEditor {
@@ -126,6 +130,74 @@ module BMA {
             }
         }
 
+        export class StatesViewerDriver implements IStatesViewer {
+            private statesViewer: JQuery;
+
+            constructor(statesViewer: JQuery) {
+                this.statesViewer = statesViewer;
+            }
+
+            public SetCommands(commands: BMA.CommandRegistry) {
+                this.statesViewer.statescompact({ commands: commands });
+            }
+
+            public SetStates(states: BMA.LTLOperations.Keyframe[]) {
+                var wstates = [];
+                for (var i = 0; i < states.length; i++) {
+                    var s = states[i];
+                    var ws = {
+                        name: s.Name,
+                        formula: []
+                    };
+                    for (var j = 0; j < s.Operands.length; j++) {
+                        var opnd = s.Operands[j];
+
+                        ws.formula.push({
+                            type: (<any>opnd.LeftOperand).Name === undefined ? "const" : "variable",
+                            value: (<any>opnd.LeftOperand).Name === undefined ? (<any>opnd.LeftOperand).Value : (<any>opnd.LeftOperand).Name
+                        });
+
+                        if ((<any>opnd).MiddleOperand !== undefined) {
+                            var leftop = (<any>opnd).LeftOperator;
+                            ws.formula.push({
+                                type: "operator",
+                                value: leftop
+                            });
+
+                            var middle = (<any>opnd).MiddleOperand;
+                            ws.formula.push({
+                                type: middle.Name === undefined ? "const" : "variable",
+                                value: middle.Name === undefined ? middle.Value : middle.Name
+                            });
+
+                            var rightop = (<any>opnd).RightOperator;
+                            ws.formula.push({
+                                type: "operator",
+                                value: rightop
+                            });
+
+                        } else {
+                            ws.formula.push({
+                                type: "operator",
+                                value: (<any>opnd).Operator
+                            });
+                        }
+
+                        ws.formula.push({
+                            type: (<any>opnd.RightOperand).Name === undefined ? "const" : "variable",
+                            value: (<any>opnd.RightOperand).Name === undefined ? (<any>opnd.RightOperand).Value : (<any>opnd.RightOperand).Name
+                        });
+                    }
+
+                    wstates.push(ws);
+                }
+
+                if (this.statesViewer !== undefined) {
+                    this.statesViewer.statescompact({ states: wstates });
+                }
+            }
+        }
+
         export class StatesEditorDriver implements IStatesEditor {
             private popupWindow: JQuery;
             private commands: ICommandRegistry;
@@ -135,6 +207,10 @@ module BMA {
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
                 this.commands = commands;
+
+                commands.On("StatesChanged",(args) => {
+                    
+                });
             }
 
             public Show() {
@@ -152,7 +228,7 @@ module BMA {
                     if (this.statesToSet !== undefined) {
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;
-                    } 
+                    }
                 }
             }
 
@@ -161,61 +237,61 @@ module BMA {
             }
 
             public SetStates(states: BMA.LTLOperations.Keyframe[]) {
-                    var wstates = [];
-                    for (var i = 0; i < states.length; i++) {
-                        var s = states[i];
-                        var ws = {
-                            name: s.Name,
-                            formula: []
-                        };
-                        for (var j = 0; j < s.Operands.length; j++) {
-                            var opnd = s.Operands[j];
+                var wstates = [];
+                for (var i = 0; i < states.length; i++) {
+                    var s = states[i];
+                    var ws = {
+                        name: s.Name,
+                        formula: []
+                    };
+                    for (var j = 0; j < s.Operands.length; j++) {
+                        var opnd = s.Operands[j];
 
+                        ws.formula.push({
+                            type: (<any>opnd.LeftOperand).Name === undefined ? "const" : "variable",
+                            value: (<any>opnd.LeftOperand).Name === undefined ? (<any>opnd.LeftOperand).Value : (<any>opnd.LeftOperand).Name
+                        });
+
+                        if ((<any>opnd).MiddleOperand !== undefined) {
+                            var leftop = (<any>opnd).LeftOperator;
                             ws.formula.push({
-                                type: (<any>opnd.LeftOperand).Name === undefined ? "const" : "variable",
-                                value: (<any>opnd.LeftOperand).Name === undefined ? (<any>opnd.LeftOperand).Value : (<any>opnd.LeftOperand).Name
+                                type: "operator",
+                                value: leftop
                             });
 
-                            if ((<any>opnd).MiddleOperand !== undefined) {
-                                var leftop = (<any>opnd).LeftOperator;
-                                ws.formula.push({
-                                    type: "operator",
-                                    value: leftop
-                                });
-
-                                var middle = (<any>opnd).MiddleOperand;
-                                ws.formula.push({
-                                    type: middle.Name === undefined ? "const" : "variable",
-                                    value: middle.Name === undefined ? middle.Value : middle.Name
-                                });
-
-                                var rightop = (<any>opnd).RightOperator;
-                                ws.formula.push({
-                                    type: "operator",
-                                    value: rightop
-                                });
-
-                            } else {
-                                ws.formula.push({
-                                    type: "operator",
-                                    value: (<any>opnd).Operator
-                                });
-                            }
-
+                            var middle = (<any>opnd).MiddleOperand;
                             ws.formula.push({
-                                type: (<any>opnd.RightOperand).Name === undefined ? "const" : "variable",
-                                value: (<any>opnd.RightOperand).Name === undefined ? (<any>opnd.RightOperand).Value : (<any>opnd.RightOperand).Name
+                                type: middle.Name === undefined ? "const" : "variable",
+                                value: middle.Name === undefined ? middle.Value : middle.Name
+                            });
+
+                            var rightop = (<any>opnd).RightOperator;
+                            ws.formula.push({
+                                type: "operator",
+                                value: rightop
+                            });
+
+                        } else {
+                            ws.formula.push({
+                                type: "operator",
+                                value: (<any>opnd).Operator
                             });
                         }
 
-                        wstates.push(ws);
+                        ws.formula.push({
+                            type: (<any>opnd.RightOperand).Name === undefined ? "const" : "variable",
+                            value: (<any>opnd.RightOperand).Name === undefined ? (<any>opnd.RightOperand).Value : (<any>opnd.RightOperand).Name
+                        });
                     }
 
-                    if (this.statesEditor !== undefined) {
-                        this.statesEditor.stateseditor({ states: wstates });
-                    } else {
-                        this.statesToSet = wstates;
-                    }
+                    wstates.push(ws);
+                }
+
+                if (this.statesEditor !== undefined) {
+                    this.statesEditor.stateseditor({ states: wstates });
+                } else {
+                    this.statesToSet = wstates;
+                }
             }
         }
 

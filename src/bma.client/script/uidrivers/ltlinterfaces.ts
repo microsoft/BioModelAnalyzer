@@ -9,6 +9,7 @@ module BMA {
             Hide(p: string);
             SetResult(result);
             GetTemporalPropertiesViewer(): BMA.UIDrivers.ITemporalPropertiesViewer;
+            GetStatesViewer(): BMA.UIDrivers.IStatesViewer;
         }
 
         export interface IKeyframesList {
@@ -26,6 +27,11 @@ module BMA {
             SetStates(states: BMA.LTLOperations.Keyframe[]);
             Show();
             Hide();
+        }
+
+        export interface IStatesViewer {
+            SetCommands(commands: BMA.CommandRegistry);
+            SetStates(states: BMA.LTLOperations.Keyframe[]);
         }
 
         export interface ITemporalPropertiesEditor {
