@@ -25,6 +25,7 @@ module BMA {
 
         export interface IStatesEditor {
             SetStates(states: BMA.LTLOperations.Keyframe[]);
+            SetModel(model: BMA.Model.BioModel);
             Show();
             Hide();
         }

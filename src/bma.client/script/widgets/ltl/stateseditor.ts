@@ -25,6 +25,7 @@
 
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
 
+            /*
             if (this.options.states.length < 1) {
                 var newState = {
                     name: "A",
@@ -53,6 +54,7 @@
             };
             this.options.variables.push(var1);
             this.options.variables.push(var2);
+            */
 
             this._activeState = this.options.states[0];
 

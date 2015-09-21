@@ -28,7 +28,12 @@
                 temporlapropertieseditor.SetStates(appModel.States);
                 commands.On("KeyframesChanged",(args) => {
                     temporlapropertieseditor.SetStates(args.states);
-                })
+                });
+
+                statesEditorDriver.SetModel(appModel.BioModel);
+                window.Commands.On("AppModelChanged",(args) => {
+                    statesEditorDriver.SetModel(appModel.BioModel);
+                });
 
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {

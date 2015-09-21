@@ -3896,10 +3896,30 @@ var BMA;
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;
                     }
+                    if (this.variablesToSet !== undefined) {
+                        this.statesEditor.stateseditor({ variables: this.variablesToSet });
+                        this.variablesToSet = undefined;
+                    }
                 }
             };
             StatesEditorDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
+            };
+            StatesEditorDriver.prototype.SetModel = function (model) {
+                var allGroup = {
+                    name: "ALL",
+                    vars: []
+                };
+                for (var i = 0; i < model.Variables.length; i++) {
+                    allGroup.vars.push(model.Variables[i].Name);
+                }
+                var variables = [allGroup];
+                if (this.statesEditor !== undefined) {
+                    this.statesEditor.stateseditor({ variables: variables });
+                }
+                else {
+                    this.variablesToSet = variables;
+                }
             };
             StatesEditorDriver.prototype.SetStates = function (states) {
                 var wstates = [];
@@ -9379,6 +9399,7 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+            /*
             if (this.options.states.length < 1) {
                 var newState = {
                     name: "A",
@@ -9395,16 +9416,19 @@ jQuery.fn.extend({
                 };
                 this.options.states.push(newState);
             }
+
             var var1 = {
                 name: "cell1",
                 vars: ["var1", "var2"]
             };
+
             var var2 = {
                 name: "cell2",
                 vars: ["cell2var", "varcell"]
             };
             this.options.variables.push(var1);
             this.options.variables.push(var2);
+            */
             this._activeState = this.options.states[0];
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").addClass("state").appendTo(this._stateButtons).click(function () {
@@ -10132,6 +10156,10 @@ var BMA;
                 temporlapropertieseditor.SetStates(appModel.States);
                 commands.On("KeyframesChanged", function (args) {
                     temporlapropertieseditor.SetStates(args.states);
+                });
+                statesEditorDriver.SetModel(appModel.BioModel);
+                window.Commands.On("AppModelChanged", function (args) {
+                    statesEditorDriver.SetModel(appModel.BioModel);
                 });
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {

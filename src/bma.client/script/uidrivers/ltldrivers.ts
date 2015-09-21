@@ -212,6 +212,7 @@ module BMA {
             private commands: ICommandRegistry;
             private statesEditor: JQuery;
             private statesToSet: BMA.LTLOperations.Keyframe[];
+            private variablesToSet;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -260,11 +261,35 @@ module BMA {
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;
                     }
+                    if (this.variablesToSet !== undefined) {
+                        this.statesEditor.stateseditor({ variables: this.variablesToSet });
+                        this.variablesToSet = undefined;
+                    }
+
                 }
             }
 
             public Hide() {
                 this.popupWindow.hide();
+            }
+
+            public SetModel(model: BMA.Model.BioModel) {
+                var allGroup = {
+                    name: "ALL",
+                    vars: []
+                };
+
+                for (var i = 0; i < model.Variables.length; i++) {
+                    allGroup.vars.push(model.Variables[i].Name);
+                }
+
+                var variables = [ allGroup ];
+
+                if (this.statesEditor !== undefined) {
+                    this.statesEditor.stateseditor({ variables: variables });
+                } else {
+                    this.variablesToSet = variables;
+                }
             }
 
             public SetStates(states: BMA.LTLOperations.Keyframe[]) {
