@@ -37,6 +37,7 @@
 
                 that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
             });
+
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element).hide();
 
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
@@ -117,6 +118,14 @@
                         this.options.states.push(value[i]);
                         this.addState(value[i]);
                     }
+                    if (this.options.states.length != 0) {
+                        that._emptyStateAddButton.hide();
+                        that._emptyStatePlaceholder.hide();
+                        that._stateButtons.show();
+                        that._toolbar.show();
+                        that._description.show();
+                        that._ltlStates.show();
+                    } 
                     break;
                 }
                 case "minConst": {
@@ -225,13 +234,20 @@
                     var idx = $(this).index();
                     $(this).addClass("active");
                     for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
-                        var variables = $("<a>" + that.options.variables[idx].vars[j] + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                        var variableName = that.options.variables[idx].vars[j];
+                        if (that.options.variables[idx].vars[j] == "")
+                            variableName = "Unnamed";
+                        var variables = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
                             .appendTo(divVariables).click(function () {
                             divVariables.find(".active").removeClass("active");
                             $(this).addClass("active");
 
-                            variableSelected.text(this.innerText);
-                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: this.innerText };
+                            if ($(this).attr("data-variable-name") == "")
+                                variableSelected.text("Unnamed");
+                            else
+                                variableSelected.text($(this).attr("data-variable-name"));
+
+                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: $(this).attr("data-variable-name") };
 
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
@@ -288,8 +304,8 @@
                             var tdVariables = trList.children().eq(1);
                             var divVariables = tdVariables.children().eq(0);
 
-                            divContainers.find("[data-container-name=" + this._activeState.formula[i][j].value.container + "]").trigger("click");
-                            divVariables.find("[data-variable-name=" + this._activeState.formula[i][j].value.variable + "]").trigger("click");
+                            divContainers.find("[data-container-name='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
+                            divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
 
                         } else if (this._activeState.formula[i][j].type == "const") {
 
@@ -391,7 +407,8 @@
                 that.refresh();
             });
 
-            that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
+            if(this._activeState != null)
+                that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
             this._activeState = this.options.states[idx]; 
             state.insertBefore(this._stateButtons.children().last());
 

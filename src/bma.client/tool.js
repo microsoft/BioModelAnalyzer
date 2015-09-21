@@ -9476,6 +9476,14 @@ jQuery.fn.extend({
                         this.options.states.push(value[i]);
                         this.addState(value[i]);
                     }
+                    if (this.options.states.length != 0) {
+                        that._emptyStateAddButton.hide();
+                        that._emptyStatePlaceholder.hide();
+                        that._stateButtons.show();
+                        that._toolbar.show();
+                        that._description.show();
+                        that._ltlStates.show();
+                    }
                     break;
                 }
                 case "minConst": {
@@ -9571,11 +9579,17 @@ jQuery.fn.extend({
                     var idx = $(this).index();
                     $(this).addClass("active");
                     for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
-                        var variables = $("<a>" + that.options.variables[idx].vars[j] + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j]).appendTo(divVariables).click(function () {
+                        var variableName = that.options.variables[idx].vars[j];
+                        if (that.options.variables[idx].vars[j] == "")
+                            variableName = "Unnamed";
+                        var variables = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j]).appendTo(divVariables).click(function () {
                             divVariables.find(".active").removeClass("active");
                             $(this).addClass("active");
-                            variableSelected.text(this.innerText);
-                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: this.innerText };
+                            if ($(this).attr("data-variable-name") == "")
+                                variableSelected.text("Unnamed");
+                            else
+                                variableSelected.text($(this).attr("data-variable-name"));
+                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: $(this).attr("data-variable-name") };
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
                         });
@@ -9620,8 +9634,8 @@ jQuery.fn.extend({
                             var divContainers = tdContainers.children().eq(0);
                             var tdVariables = trList.children().eq(1);
                             var divVariables = tdVariables.children().eq(0);
-                            divContainers.find("[data-container-name=" + this._activeState.formula[i][j].value.container + "]").trigger("click");
-                            divVariables.find("[data-variable-name=" + this._activeState.formula[i][j].value.variable + "]").trigger("click");
+                            divContainers.find("[data-container-name='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
+                            divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
                         }
                         else if (this._activeState.formula[i][j].type == "const") {
                             var currNumber = this._activeState.formula[i][j];
@@ -9710,7 +9724,8 @@ jQuery.fn.extend({
                 }
                 that.refresh();
             });
-            that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
+            if (this._activeState != null)
+                that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
             this._activeState = this.options.states[idx];
             state.insertBefore(this._stateButtons.children().last());
             this.refresh();
@@ -10093,7 +10108,9 @@ jQuery.fn.extend({
             var that = this;
             var root = this.element;
             root.css("overflow-y", "auto").css("overflow-x", "auto");
+            this.attentionDiv = $("<div></div>").text("No temporal properties. Open editor to create some").appendTo(root);
             var svgdiv = $("<div></div>").appendTo(root);
+            this.svgdiv = svgdiv;
             var pixofs = this._pixelOffset;
             svgdiv.svg({
                 onLoad: function (svg) {
@@ -10107,6 +10124,7 @@ jQuery.fn.extend({
                     that.refresh();
                 }
             });
+            svgdiv.hide();
         },
         refresh: function () {
             if (this._svg !== undefined) {
@@ -10124,12 +10142,28 @@ jQuery.fn.extend({
                 }
                 width += 2 * this.options.padding.x;
                 height += this.options.padding.y;
+                console.log("width: " + width + " height: " + height);
+                this.svgdiv.width(width);
+                this.svgdiv.height(height);
+                this._svg.configure({
+                    width: width,
+                    height: height,
+                    viewBox: "0 0 " + width + " " + height
+                }, true);
             }
         },
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
                 case "operations":
+                    if (value !== undefined && value.length > 0) {
+                        that.svgdiv.show();
+                        that.attentionDiv.hide();
+                    }
+                    else {
+                        that.svgdiv.hide();
+                        that.attentionDiv.show();
+                    }
                     break;
                 case "padding":
                     break;
@@ -10239,6 +10273,7 @@ var BMA;
     (function (LTL) {
         var StatesPresenter = (function () {
             function StatesPresenter(commands, appModel, stateseditordriver, statesviewerdriver) {
+                var _this = this;
                 var that = this;
                 this.appModel = appModel;
                 this.statesEditor = stateseditordriver;
@@ -10247,6 +10282,12 @@ var BMA;
                 this.statesViewer.SetStates(appModel.States);
                 this.statesViewer.SetCommands(commands);
                 commands.On("AddFirstStateRequested", function (args) {
+                    if (appModel.States.length === 0) {
+                        var newState = new BMA.LTLOperations.Keyframe("A", []);
+                        appModel.States.push(newState);
+                        _this.statesEditor.SetStates(appModel.States);
+                        _this.statesViewer.SetStates(appModel.States);
+                    }
                     stateseditordriver.Show();
                 });
                 commands.On("KeyframesChanged", function (args) {
