@@ -6,30 +6,23 @@
         _drawingSurface: undefined,
 
         options: {
-            states: ["A", "B", "C"],
+            states: [],
             drawingSurfaceHeight: 500
         },
 
-        _create: function () {
+        _refreshStates: function () {
             var that = this;
-
-            var root = this.element;
-
-            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
-            
-            //Adding states
-            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
-            var statesbtns = $("<div></div>").addClass("btns").appendTo(states);
-            //TODO: add states properly
+            this.statesbtns.empty();
             for (var i = 0; i < this.options.states.length; i++) {
+                var stateName = this.options.states[i].Name;
+
                 var stateDiv = $("<div></div>")
                     .addClass("state-button")
-                    .attr("data-state", this.options.states[i])
+                    .attr("data-state", stateName)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
-                    .text(this.options.states[i])
-                    .appendTo(statesbtns);
+                    .text(stateName)
+                    .appendTo(that.statesbtns);
 
                 stateDiv.draggable({
                     helper: "clone",
@@ -42,6 +35,20 @@
                     }
                 });
             }
+        },
+
+        _create: function () {
+            var that = this;
+
+            var root = this.element;
+
+            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
+            
+            //Adding states
+            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
+            this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            this._refreshStates();
             //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
 
             //Adding operators
@@ -159,13 +166,19 @@
 
         _setOption: function (key, value) {
             var that = this;
+            var needRefreshStates = false;
             switch (key) {
                 case "commands":
                     this._drawingSurface.drawingsurface({ commands: value });
+                case "states":
+                    needRefreshStates = true;
                 default:
                     break;
             }
             this._super(key, value);
+            if (needRefreshStates) {
+                this._refreshStates();
+            }
         },
 
         destroy: function () {

@@ -84,6 +84,7 @@ module BMA {
             private commands: ICommandRegistry;
             private svgDriver: SVGPlotDriver;
             private contextMenuDriver: IContextMenu;
+            private statesToSet = [];
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -101,7 +102,7 @@ module BMA {
                 this.popupWindow.show();
 
                 if (shouldInit) {
-                    this.tpeditor.temporalpropertieseditor({ commands: this.commands });
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet });
                     this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
                     this.svgDriver.SetGridVisibility(false);
 
@@ -127,6 +128,14 @@ module BMA {
 
             GetContextMenuDriver(): IContextMenu {
                 return this.contextMenuDriver;
+            }
+
+            SetStates(states: BMA.LTLOperations.Keyframe[]) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ states: states });
+                } else {
+                    this.statesToSet = states;
+                }
             }
         }
 

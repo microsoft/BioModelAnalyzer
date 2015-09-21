@@ -155,7 +155,7 @@ module BMA {
                 this.model = new BMA.Model.BioModel("model 1", [], []);
                 this.layout = new BMA.Model.Layout([], []);
                 this.states = [
-                    new BMA.LTLOperations.Keyframe("Init", [])
+                    //new BMA.LTLOperations.Keyframe("Init", [])
                 ];
             }
         }

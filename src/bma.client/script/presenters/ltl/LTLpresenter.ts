@@ -25,6 +25,11 @@
 
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer()); 
 
+                temporlapropertieseditor.SetStates(appModel.States);
+                commands.On("KeyframesChanged",(args) => {
+                    temporlapropertieseditor.SetStates(args.states);
+                })
+
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {
 

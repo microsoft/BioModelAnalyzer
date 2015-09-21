@@ -22,7 +22,7 @@
 
             this.temp_prop = $('<div></div>').appendTo(elem);
 
-            this.temp_content = $('<div></div>').height(150).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).height(150).temporalpropertiesviewer();
 
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",

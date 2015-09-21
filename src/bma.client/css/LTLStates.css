@@ -3115,6 +3115,10 @@ textarea:focus {
 .state:empty:after {
   content: "\00a0";
 }
+.btns {
+  overflow-y: auto;
+  height: 64px;
+}
 .state-toolbar {
   margin-top: 5px;
 }

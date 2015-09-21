@@ -37,6 +37,7 @@ module BMA {
         export interface ITemporalPropertiesEditor {
             Show();
             Hide();
+            SetStates(states: BMA.LTLOperations.Keyframe[]);
             GetSVGDriver(): ISVGPlot;
             GetNavigationDriver(): INavigationPanel;
             GetDragService(): IElementsPanel;

@@ -2038,7 +2038,6 @@ var BMA;
                 this.model = new BMA.Model.BioModel("model 1", [], []);
                 this.layout = new BMA.Model.Layout([], []);
                 this.states = [
-                    new BMA.LTLOperations.Keyframe("Init", [])
                 ];
             }
             Object.defineProperty(AppModel.prototype, "BioModel", {
@@ -3755,6 +3754,7 @@ var BMA;
         UIDrivers.LTLViewer = LTLViewer;
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
+                this.statesToSet = [];
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
@@ -3767,7 +3767,7 @@ var BMA;
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
-                    this.tpeditor.temporalpropertieseditor({ commands: this.commands });
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet });
                     this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
                     this.svgDriver.SetGridVisibility(false);
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
@@ -3787,6 +3787,14 @@ var BMA;
             };
             TemporalPropertiesEditorDriver.prototype.GetContextMenuDriver = function () {
                 return this.contextMenuDriver;
+            };
+            TemporalPropertiesEditorDriver.prototype.SetStates = function (states) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ states: states });
+                }
+                else {
+                    this.statesToSet = states;
+                }
             };
             return TemporalPropertiesEditorDriver;
         })();
@@ -9310,7 +9318,7 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            this.temp_content = $('<div></div>').height(150).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).height(150).temporalpropertiesviewer();
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
                 icon: "max",
@@ -9851,19 +9859,15 @@ jQuery.fn.extend({
     $.widget("BMA.temporalpropertieseditor", {
         _drawingSurface: undefined,
         options: {
-            states: ["A", "B", "C"],
+            states: [],
             drawingSurfaceHeight: 500
         },
-        _create: function () {
+        _refreshStates: function () {
             var that = this;
-            var root = this.element;
-            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
-            //Adding states
-            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
-            var statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            this.statesbtns.empty();
             for (var i = 0; i < this.options.states.length; i++) {
-                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", this.options.states[i]).css("z-index", 6).css("cursor", "pointer").text(this.options.states[i]).appendTo(statesbtns);
+                var stateName = this.options.states[i].Name;
+                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", stateName).css("z-index", 6).css("cursor", "pointer").text(stateName).appendTo(that.statesbtns);
                 stateDiv.draggable({
                     helper: "clone",
                     start: function (event, ui) {
@@ -9875,6 +9879,16 @@ jQuery.fn.extend({
                     }
                 });
             }
+        },
+        _create: function () {
+            var that = this;
+            var root = this.element;
+            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
+            //Adding states
+            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
+            this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            this._refreshStates();
             //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
@@ -9972,13 +9986,19 @@ jQuery.fn.extend({
         },
         _setOption: function (key, value) {
             var that = this;
+            var needRefreshStates = false;
             switch (key) {
                 case "commands":
                     this._drawingSurface.drawingsurface({ commands: value });
+                case "states":
+                    needRefreshStates = true;
                 default:
                     break;
             }
             this._super(key, value);
+            if (needRefreshStates) {
+                this._refreshStates();
+            }
         },
         destroy: function () {
             this.element.empty();
@@ -10006,8 +10026,8 @@ jQuery.fn.extend({
                     that._svg = svg;
                     svg.configure({
                         width: root.width() - pixofs,
-                        height: svgdiv.height() - pixofs,
-                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (svgdiv.height() - pixofs),
+                        height: root.height() - pixofs,
+                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
                     that.refresh();
@@ -10062,6 +10082,10 @@ var BMA;
                 var that = this;
                 this.appModel = appModel;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
+                temporlapropertieseditor.SetStates(appModel.States);
+                commands.On("KeyframesChanged", function (args) {
+                    temporlapropertieseditor.SetStates(args.states);
+                });
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {
 
