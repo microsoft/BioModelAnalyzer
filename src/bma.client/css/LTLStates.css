@@ -3248,6 +3248,7 @@ textarea:focus {
   position: absolute;
   z-index: 3;
   width: 115px;
+  border: 1px solid #aaaaaa;
 }
 .variable-picker table {
   margin: 0;
@@ -3262,41 +3263,43 @@ textarea:focus {
 .variable-picker table tr {
   vertical-align: top;
 }
-.variable-picker table td {
+.variable-picker table tr td {
   min-width: 50px;
+  border: none;
 }
-.variable-picker table td.list {
+.variable-picker table tr td.list {
   height: 85px;
 }
-.variable-picker table td .scrollable {
+.variable-picker table tr td .scrollable {
   width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0px 2px 0px 0px;
 }
-.variable-picker table td .scrollable a {
+.variable-picker table tr td .scrollable a {
   display: block;
   text-decoration: none;
 }
-.variable-picker table td .scrollable a:hover {
+.variable-picker table tr td .scrollable a:hover {
   background-color: #ededed;
+  cursor: pointer;
 }
-.variable-picker table td .scrollable a.active {
+.variable-picker table tr td .scrollable a.active {
   border: 0px;
   background-color: #aaaaaa;
   color: white;
 }
-.variable-picker table td .scrollable::-webkit-scrollbar-track {
+.variable-picker table tr td .scrollable::-webkit-scrollbar-track {
   width: 10px;
   background-color: white;
 }
-.variable-picker table td .scrollable::-webkit-scrollbar {
+.variable-picker table tr td .scrollable::-webkit-scrollbar {
   width: 5px;
   height: 5px;
   background-color: #aaaaaa;
 }
-.variable-picker table td .scrollable::-webkit-scrollbar-thumb {
+.variable-picker table tr td .scrollable::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
   background-color: #aaaaaa;
