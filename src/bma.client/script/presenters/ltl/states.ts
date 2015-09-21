@@ -21,9 +21,9 @@
                     stateseditordriver.Show();
                 });
 
-                commands.On("StatesChanged",(args) => {
-                    appModel.States = args.States;
-                    that.statesViewer.SetStates(args.States);
+                commands.On("KeyframesChanged",(args) => {
+                    appModel.States = args.states;
+                    that.statesViewer.SetStates(args.states);
                 });
             }
 
