@@ -10236,6 +10236,7 @@ var BMA;
     (function (LTL) {
         var StatesPresenter = (function () {
             function StatesPresenter(commands, appModel, stateseditordriver, statesviewerdriver) {
+                var _this = this;
                 var that = this;
                 this.appModel = appModel;
                 this.statesEditor = stateseditordriver;
@@ -10244,6 +10245,12 @@ var BMA;
                 this.statesViewer.SetStates(appModel.States);
                 this.statesViewer.SetCommands(commands);
                 commands.On("AddFirstStateRequested", function (args) {
+                    if (appModel.States.length === 0) {
+                        var newState = new BMA.LTLOperations.Keyframe("A", []);
+                        appModel.States.push(newState);
+                        _this.statesEditor.SetStates(appModel.States);
+                        _this.statesViewer.SetStates(appModel.States);
+                    }
                     stateseditordriver.Show();
                 });
                 commands.On("KeyframesChanged", function (args) {
