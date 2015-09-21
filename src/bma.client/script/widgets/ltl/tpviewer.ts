@@ -23,8 +23,8 @@
 
                     svg.configure({
                         width: root.width() - pixofs,
-                        height: svgdiv.height() - pixofs,
-                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (svgdiv.height() - pixofs),
+                        height: root.height() - pixofs,
+                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
 

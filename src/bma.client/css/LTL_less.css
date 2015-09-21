@@ -3115,4 +3115,8 @@ textarea:focus {
 .state:empty:after {
   content: "\00a0";
 }
+.btns {
+  overflow-y: auto;
+  height: 64px;
+}
 /*# sourceMappingURL=LTL_less.css.map */
