@@ -10090,7 +10090,9 @@ jQuery.fn.extend({
             var that = this;
             var root = this.element;
             root.css("overflow-y", "auto").css("overflow-x", "auto");
+            this.attentionDiv = $("<div></div>").text("No temporal properties. Open editor to create some").appendTo(root);
             var svgdiv = $("<div></div>").appendTo(root);
+            this.svgdiv = svgdiv;
             var pixofs = this._pixelOffset;
             svgdiv.svg({
                 onLoad: function (svg) {
@@ -10104,6 +10106,7 @@ jQuery.fn.extend({
                     that.refresh();
                 }
             });
+            svgdiv.hide();
         },
         refresh: function () {
             if (this._svg !== undefined) {
@@ -10121,12 +10124,28 @@ jQuery.fn.extend({
                 }
                 width += 2 * this.options.padding.x;
                 height += this.options.padding.y;
+                console.log("width: " + width + " height: " + height);
+                this.svgdiv.width(width);
+                this.svgdiv.height(height);
+                this._svg.configure({
+                    width: width,
+                    height: height,
+                    viewBox: "0 0 " + width + " " + height
+                }, true);
             }
         },
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
                 case "operations":
+                    if (value !== undefined && value.length > 0) {
+                        that.svgdiv.show();
+                        that.attentionDiv.hide();
+                    }
+                    else {
+                        that.svgdiv.hide();
+                        that.attentionDiv.show();
+                    }
                     break;
                 case "padding":
                     break;
