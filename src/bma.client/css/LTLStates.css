@@ -3244,98 +3244,71 @@ textarea:focus {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
-.variable-picker {
+.LTL-states .variable-picker {
   position: absolute;
+  top: 60px;
+  left: -1px;
   z-index: 3;
   width: 115px;
   border: 1px solid #aaaaaa;
 }
-.variable-picker table {
+.LTL-states .variable-picker table {
+  width: 100%;
   margin: 0;
   font-size: 11px;
   background-color: white;
   border-collapse: collapse;
 }
-.variable-picker table img {
+.LTL-states .variable-picker table img {
   width: 20px;
   height: 20px;
 }
-.variable-picker table tr {
+.LTL-states .variable-picker table tr {
   vertical-align: top;
 }
-.variable-picker table tr td {
+.LTL-states .variable-picker table tr td {
   min-width: 50px;
   border: none;
+  text-align: left;
+  padding: 2px 0 0 2px;
 }
-.variable-picker table tr td.list {
-  height: 85px;
+.LTL-states .variable-picker table tr td.list {
+  max-height: 85px;
 }
-.variable-picker table tr td .scrollable {
+.LTL-states .variable-picker table tr td .scrollable {
   width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0px 2px 0px 0px;
 }
-.variable-picker table tr td .scrollable a {
+.LTL-states .variable-picker table tr td .scrollable a {
   display: block;
   text-decoration: none;
 }
-.variable-picker table tr td .scrollable a:hover {
+.LTL-states .variable-picker table tr td .scrollable a:hover {
   background-color: #ededed;
   cursor: pointer;
 }
-.variable-picker table tr td .scrollable a.active {
+.LTL-states .variable-picker table tr td .scrollable a.active {
   border: 0px;
   background-color: #aaaaaa;
   color: white;
 }
-.variable-picker table tr td .scrollable::-webkit-scrollbar-track {
+.LTL-states .variable-picker table tr td .scrollable::-webkit-scrollbar-track {
   width: 10px;
   background-color: white;
 }
-.variable-picker table tr td .scrollable::-webkit-scrollbar {
+.LTL-states .variable-picker table tr td .scrollable::-webkit-scrollbar {
   width: 5px;
   height: 5px;
   background-color: #aaaaaa;
 }
-.variable-picker table tr td .scrollable::-webkit-scrollbar-thumb {
+.LTL-states .variable-picker table tr td .scrollable::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
   background-color: #aaaaaa;
 }
-/*.variables-list{
-    display:block;
-    padding: 2px;
-    float:left;
-    width:51px;
-    font-size:14px;
-    color:ButtonText;
-    position:absolute;
-    top:50px;
-    z-index:3;
-     
-    div {
-        position:relative;
-        text-align: left;
-        padding-left: 3px;
-        overflow:hidden;
-        text-overflow:ellipsis;
-
-        &:hover{
-			cursor: pointer;
-            background-color:@darkgrey;
-            border-radius:5px;
-		}
-	}
-
-    &.expanded {
-        border-bottom-right-radius: 5px;
-        border-bottom-left-radius: 5px;
-        background-color:@lightgrey;
-        box-shadow: 2px 7px 8px rgba(0,0,0,0.5);
-	}
-}*/
 .state-description {
   margin: 0;
   margin-top: 10px;
