@@ -434,6 +434,16 @@ declare var Rx: any;
             return -cs.screenToDataY(top);
         },
 
+        getLeft: function (x: number) {
+            var cs = this._svgPlot.getTransform();
+            return -cs.dataToScreenX(x);
+        },
+
+        getTop: function (y: number) {
+            var cs = this._svgPlot.getTransform();
+            return -cs.dataToScreenY(y);
+        },
+
         getPixelWidth: function () {
             var cs = this._svgPlot.getScreenToDataTransform();
             return cs.screenToDataX(1) - cs.screenToDataX(0);
@@ -454,6 +464,10 @@ declare var Rx: any;
 
         getSecondarySVG: function () {
             return this._lightSvgPlot.svg;
+        },
+
+        getCentralPart: function () {
+            return this._svgPlot.centralPart;
         }
 
     });

@@ -162,8 +162,8 @@ module BMA {
                         var opnd = s.Operands[j];
 
                         ws.formula.push({
-                            type: (<any>opnd.LeftOperand).Name === undefined ? "const" : "variable",
-                            value: (<any>opnd.LeftOperand).Name === undefined ? (<any>opnd.LeftOperand).Value : (<any>opnd.LeftOperand).Name
+                            type: (<any>opnd).LeftOperand.Name === undefined ? "const" : "variable",
+                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : (<any>opnd).LeftOperand.Name
                         });
 
                         if ((<any>opnd).MiddleOperand !== undefined) {
@@ -193,8 +193,8 @@ module BMA {
                         }
 
                         ws.formula.push({
-                            type: (<any>opnd.RightOperand).Name === undefined ? "const" : "variable",
-                            value: (<any>opnd.RightOperand).Name === undefined ? (<any>opnd.RightOperand).Value : (<any>opnd.RightOperand).Name
+                            type: (<any>opnd).RightOperand.Name === undefined ? "const" : "variable",
+                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : (<any>opnd).RightOperand.Name
                         });
                     }
 
@@ -273,7 +273,7 @@ module BMA {
                 this.popupWindow.hide();
             }
 
-            public SetModel(model: BMA.Model.BioModel) {
+            public SetModel(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 var allGroup = {
                     name: "ALL",
                     vars: []
@@ -304,8 +304,8 @@ module BMA {
                         var opnd = s.Operands[j];
 
                         ws.formula.push({
-                            type: (<any>opnd.LeftOperand).Name === undefined ? "const" : "variable",
-                            value: (<any>opnd.LeftOperand).Name === undefined ? (<any>opnd.LeftOperand).Value : (<any>opnd.LeftOperand).Name
+                            type: (<any>opnd).LeftOperand.Name === undefined ? "const" : "variable",
+                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : (<any>opnd).LeftOperand.Name
                         });
 
                         if ((<any>opnd).MiddleOperand !== undefined) {
@@ -335,8 +335,8 @@ module BMA {
                         }
 
                         ws.formula.push({
-                            type: (<any>opnd.RightOperand).Name === undefined ? "const" : "variable",
-                            value: (<any>opnd.RightOperand).Name === undefined ? (<any>opnd.RightOperand).Value : (<any>opnd.RightOperand).Name
+                            type: (<any>opnd).RightOperand.Name === undefined ? "const" : "variable",
+                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : (<any>opnd).RightOperand.Name
                         });
                     }
 

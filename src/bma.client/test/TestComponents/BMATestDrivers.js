@@ -154,6 +154,9 @@ var BMA;
             NavigationTestDriver.prototype.SetCenter = function (x, y) {
                 this.center = { x: x, y: y };
             };
+            NavigationTestDriver.prototype.GetNavigationSurface = function () {
+                return undefined;
+            };
             return NavigationTestDriver;
         })();
         Test.NavigationTestDriver = NavigationTestDriver;

@@ -9,6 +9,8 @@ module BMA {
             SetGrid(x0: number, y0: number, xStep: number, yStep: number);
             GetPlotX(left: number);
             GetPlotY(top: number);
+            GetLeft(x: number);
+            GetTop(y: number);
             GetPixelWidth();
             SetGridVisibility(isOn: boolean);
             SetVisibleRect(rect: { x: number; y: number; width: number; height: number });
@@ -22,6 +24,7 @@ module BMA {
         }
 
         export interface INavigationPanel {
+            GetNavigationSurface(): JQuery;
             TurnNavigation(isOn: boolean);
             SetZoom(zoom: number);
             SetCenter(x: number, y: number);

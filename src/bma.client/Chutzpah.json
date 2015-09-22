@@ -32,7 +32,9 @@
          {"Path": "script/", "Include": "*.ts" },
          {"Path": "script/model", "Include":"*.ts"},
          {"Path": "script/presenters", "Include": "*.ts" },
-         {"Path": "script/widgets", "Include":"*.ts"},
+         { "Path": "script/widgets", "Include": "*.ts" },
+         { "Path": "script/uidrivers", "Include": "*.ts" },
+
 
          {"Path": "app.ts"},
          {"Path": "Silverlight.js"},

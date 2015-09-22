@@ -49,6 +49,14 @@ module BMA {
                 return this.svgPlotDiv.drawingsurface("getPlotY", top);
             }
 
+            public GetLeft(left: number) {
+                return left;
+            }
+
+            public GetTop(top: number) {
+                return top;
+            }
+
             public GetPixelWidth() {
                 return this.svgPlotDiv.drawingsurface("getPixelWidth");
             }
@@ -78,6 +86,10 @@ module BMA {
             }
 
             public GetLightSVGRef(): any {
+                return undefined;
+            }
+
+            public GetNavigationSurface() {
                 return undefined;
             }
             
