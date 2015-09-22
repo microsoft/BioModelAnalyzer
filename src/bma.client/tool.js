@@ -2461,7 +2461,7 @@ var BMA;
         })();
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
-            function KeyframeEquation(leftOperand, operator, rightOperand) {
+            function KeyframeEquation(leftOperand /*NameOperand | ConstOperand*/, operator, rightOperand /*NameOperand | ConstOperand*/) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.operator = operator;
@@ -2497,7 +2497,7 @@ var BMA;
         })();
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
-            function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
+            function DoubleKeyframeEquation(leftOperand /*NameOperand | ConstOperand*/, leftOperator, middleOperand /*NameOperand | ConstOperandIOperand*/, rightOperator, rightOperand /*NameOperand | ConstOperand*/) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.middleOperand = middleOperand;
@@ -2549,7 +2549,7 @@ var BMA;
         })();
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var Keyframe = (function () {
-            function Keyframe(name, operands) {
+            function Keyframe(name, operands /*(KeyframeEquation | DoubleKeyframeEquation)[];*/) {
                 this.name = name;
                 this.operands = operands;
             }
@@ -3197,6 +3197,12 @@ var BMA;
             SVGPlotDriver.prototype.GetPlotY = function (top) {
                 return this.svgPlotDiv.drawingsurface("getPlotY", top);
             };
+            SVGPlotDriver.prototype.GetLeft = function (x) {
+                return this.svgPlotDiv.drawingsurface("getLeft", x);
+            };
+            SVGPlotDriver.prototype.GetTop = function (y) {
+                return this.svgPlotDiv.drawingsurface("getTop", y);
+            };
             SVGPlotDriver.prototype.GetPixelWidth = function () {
                 return this.svgPlotDiv.drawingsurface("getPixelWidth");
             };
@@ -3220,6 +3226,9 @@ var BMA;
             };
             SVGPlotDriver.prototype.SetVisibleRect = function (rect) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
+            };
+            SVGPlotDriver.prototype.GetNavigationSurface = function () {
+                return this.svgPlotDiv.drawingsurface("getCentralPart");
             };
             return SVGPlotDriver;
         })();
@@ -3931,7 +3940,7 @@ var BMA;
             StatesEditorDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
             };
-            StatesEditorDriver.prototype.SetModel = function (model) {
+            StatesEditorDriver.prototype.SetModel = function (model, layout) {
                 var allGroup = {
                     name: "ALL",
                     vars: []
@@ -7574,6 +7583,14 @@ var BMA;
             var cs = this._svgPlot.getScreenToDataTransform();
             return -cs.screenToDataY(top);
         },
+        getLeft: function (x) {
+            var cs = this._svgPlot.getTransform();
+            return -cs.dataToScreenX(x);
+        },
+        getTop: function (y) {
+            var cs = this._svgPlot.getTransform();
+            return -cs.dataToScreenY(y);
+        },
         getPixelWidth: function () {
             var cs = this._svgPlot.getScreenToDataTransform();
             return cs.screenToDataX(1) - cs.screenToDataX(0);
@@ -7590,6 +7607,9 @@ var BMA;
         },
         getSecondarySVG: function () {
             return this._lightSvgPlot.svg;
+        },
+        getCentralPart: function () {
+            return this._svgPlot.centralPart;
         }
     });
 }(jQuery));
@@ -10221,9 +10241,9 @@ var BMA;
                 commands.On("KeyframesChanged", function (args) {
                     temporlapropertieseditor.SetStates(args.states);
                 });
-                statesEditorDriver.SetModel(appModel.BioModel);
+                statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged", function (args) {
-                    statesEditorDriver.SetModel(appModel.BioModel);
+                    statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 });
                 /*
                 window.Commands.On("LTLRequested", function (param: { formula }) {

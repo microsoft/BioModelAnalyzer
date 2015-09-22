@@ -30,9 +30,9 @@
                     temporlapropertieseditor.SetStates(args.states);
                 });
 
-                statesEditorDriver.SetModel(appModel.BioModel);
+                statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged",(args) => {
-                    statesEditorDriver.SetModel(appModel.BioModel);
+                    statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 });
 
                 /*

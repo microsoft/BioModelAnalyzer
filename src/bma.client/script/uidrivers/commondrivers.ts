@@ -51,6 +51,14 @@ module BMA {
                 return this.svgPlotDiv.drawingsurface("getPlotY", top);
             }
 
+            public GetLeft(x: number) {
+                return this.svgPlotDiv.drawingsurface("getLeft", x);
+            }
+
+            public GetTop(y: number) {
+                return this.svgPlotDiv.drawingsurface("getTop", y);
+            }
+
             public GetPixelWidth() {
                 return this.svgPlotDiv.drawingsurface("getPixelWidth");
             }
@@ -82,6 +90,10 @@ module BMA {
 
             public SetVisibleRect(rect: { x: number; y: number; width: number; height: number }) {
                 this.svgPlotDiv.drawingsurface({ "visibleRect": rect });
+            }
+
+            public GetNavigationSurface() {
+                return this.svgPlotDiv.drawingsurface("getCentralPart");
             }
         }
 

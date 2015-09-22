@@ -36,6 +36,12 @@ var BMA;
             TestSVGPlotDriver.prototype.GetPlotY = function (top) {
                 return this.svgPlotDiv.drawingsurface("getPlotY", top);
             };
+            TestSVGPlotDriver.prototype.GetLeft = function (left) {
+                return left;
+            };
+            TestSVGPlotDriver.prototype.GetTop = function (top) {
+                return top;
+            };
             TestSVGPlotDriver.prototype.GetPixelWidth = function () {
                 return this.svgPlotDiv.drawingsurface("getPixelWidth");
             };
@@ -56,6 +62,9 @@ var BMA;
                 return undefined;
             };
             TestSVGPlotDriver.prototype.GetLightSVGRef = function () {
+                return undefined;
+            };
+            TestSVGPlotDriver.prototype.GetNavigationSurface = function () {
                 return undefined;
             };
             return TestSVGPlotDriver;

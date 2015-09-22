@@ -4,40 +4,41 @@
     "TypeScriptCodeGenTarget" : "ES5",
     "RootReferencePathMode":"SettingsFileDirectory",
 
-    "References": [
+     "References": [
 
-    { "Path": "Scripts/jasmine.js" },
-    { "Path": "Scripts/jasmine-html.js" },
-        {"Path": "Scripts/jquery-2.1.1.min.js"},
-        {"Path": "Scripts/jquery-ui-1.10.4.js"},
-        {"Path": "Scripts/typings/jquery/jquery.d.ts"},
-        {"Path": "Scripts/typings/jqueryui/jqueryui.d.ts"},
-        {"Path": "Scripts/jasmine/jasmine.js"},
-        {"Path": "Scripts/typings/jasmine/jasmine.d.ts"},
-        {"Path": "Scripts/jasmine/jasmine-jquery/jasmine-jquery.d.ts"},
-        {"Path": "Scripts/jasmine/jasmine-matchers/jasmine-jquery.d.ts"},
+        { "Path": "Scripts/jasmine.js" },
+        { "Path": "Scripts/jasmine-html.js" },
+         {"Path": "Scripts/jquery-2.1.1.min.js"},
+         {"Path": "Scripts/jquery-ui-1.10.4.js"},
+         {"Path": "Scripts/typings/jquery/jquery.d.ts"},
+         {"Path": "Scripts/typings/jqueryui/jqueryui.d.ts"},
+         {"Path": "Scripts/jasmine/jasmine.js"},
+         {"Path": "Scripts/typings/jasmine/jasmine.d.ts"},
+         {"Path": "Scripts/jasmine/jasmine-jquery/jasmine-jquery.d.ts"},
+         {"Path": "Scripts/jasmine/jasmine-matchers/jasmine-jquery.d.ts"},
 
-        {"Path": "Scripts/rx.js" },
+         {"Path": "Scripts/rx.js" },
 
 
-        {"Path": "js/jquery.ui-contextmenu.js" },
-        {"Path": "js/jquery.svg.js" },
-        {"Path": "js/jquery.cookie.js" },
-        {"Path": "js/rx.jQuery.js" },
-        {"Path": "js/idd.js"},
-        {"Path": "js/svgplot.js"},
-        {"Path": "js/scalablegridlinesplot.js"},
-        {"Path": "js/FileSaver.js" },
+         {"Path": "js/jquery.ui-contextmenu.js" },
+         {"Path": "js/jquery.svg.js" },
+         {"Path": "js/jquery.cookie.js" },
+         {"Path": "js/rx.jQuery.js" },
+         {"Path": "js/idd.js"},
+         {"Path": "js/svgplot.js"},
+         {"Path": "js/scalablegridlinesplot.js"},
+         {"Path": "js/FileSaver.js" },
 
-        {"Path": "script/", "Include": "*.ts" },
-        {"Path": "script/model", "Include":"*.ts"},
-        {"Path": "script/presenters", "Include": "*.ts"},
-        {"Path": "script/uidrivers", "Include": "*.ts"},
-        {"Path": "script/widgets", "Include":"*.ts"},
+         {"Path": "script/", "Include": "*.ts" },
+         {"Path": "script/model", "Include":"*.ts"},
+         {"Path": "script/presenters", "Include": "*.ts" },
+         { "Path": "script/widgets", "Include": "*.ts" },
+         { "Path": "script/uidrivers", "Include": "*.ts" },
 
-        {"Path": "app.ts"},
-        {"Path": "Silverlight.js"},
-        {"Path": "test/TestComponents/", "Include": "*.ts"}
-    ],
-    "Tests":  [{ "Include":  "*/test/*.ts" }]
+
+         {"Path": "app.ts"},
+         {"Path": "Silverlight.js"},
+         {"Path": "test/TestComponents/", "Include": "*.ts"}
+     ],
+     "Tests":  [{ "Include":  "*/test/*.ts" }]
 }
