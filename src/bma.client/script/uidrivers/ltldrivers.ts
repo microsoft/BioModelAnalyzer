@@ -251,7 +251,7 @@ module BMA {
                     this.statesEditor = $("<div></div>");
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.statesEditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min" });
                 popup_position();
                 this.popupWindow.show();
 
