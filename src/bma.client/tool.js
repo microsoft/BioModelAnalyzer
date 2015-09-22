@@ -3861,27 +3861,48 @@ var BMA;
             function StatesEditorDriver(commands, popupWindow) {
                 this.popupWindow = popupWindow;
                 this.commands = commands;
-                commands.On("StatesChanged", function (args) {
-                    var states = args.states;
-                    var wstates = [];
-                    for (var i = 0; i < states.length; i++) {
-                        var ops = [];
-                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
-                        var s = states[i].formula;
-                        for (var j = 0; j < s.length; j++) {
-                            var f = s[j];
-                            var op = undefined;
-                            if (f[3] !== undefined || f[4] !== undefined) {
-                                var operator;
-                            }
-                            else {
+            }
+            StatesEditorDriver.prototype.Convert = function (args) {
+                var states = args.states;
+                var wstates = [];
+                for (var i = 0; i < states.length; i++) {
+                    var ops = [];
+                    var formulas = states[i].formula;
+                    var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                    var op = undefined;
+                    for (var j = 0; j < formulas.length; j++) {
+                        var f = formulas[j];
+                        if (f[0] !== undefined && f[0] == "variable") {
+                            if (f[1] !== undefined && f[2] != undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), f[1].value, new BMA.LTLOperations.ConstOperand(f[2].value));
+                                ops.push(op);
                             }
                         }
-                        wstates.push(ws);
+                        else if (f[2] !== undefined && f[2] == "variable") {
+                            if (f[0] !== undefined && f[1] !== undefined && f[3] !== undefined && f[4] !== undefined) {
+                                op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value), f[1].value, new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
+                                ops.push(op);
+                            }
+                            else if (f[0] !== undefined && f[1] !== undefined && f[3] == undefined && f[4] == undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value), f[1].value, new BMA.LTLOperations.NameOperand(f[2].value.variable));
+                                ops.push(op);
+                            }
+                            else if (f[0] == undefined && f[1] == undefined && f[3] !== undefined && f[4] !== undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
+                                ops.push(op);
+                            }
+                        }
+                        else if (f[4] !== undefined && f[4] == "variable") {
+                            if (f[2] !== undefined && f[3] !== undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(f[2].value), f[3].value, new BMA.LTLOperations.NameOperand(f[4].value.variable));
+                                ops.push(op);
+                            }
+                        }
                     }
-                    commands.Execute("KeyframesChanged", { states: wstates });
-                });
-            }
+                    wstates.push(ws);
+                }
+                return wstates;
+            };
             StatesEditorDriver.prototype.Show = function () {
                 var shouldInit = this.statesEditor === undefined;
                 if (shouldInit) {
@@ -3891,7 +3912,12 @@ var BMA;
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
-                    this.statesEditor.stateseditor({ commands: this.commands });
+                    var that = this;
+                    var onStatesUpdated = function (args) {
+                        var wstates = that.Convert(args);
+                        that.commands.Execute("KeyframesChanged", { states: wstates });
+                    };
+                    this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated });
                     if (this.statesToSet !== undefined) {
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;
@@ -9396,7 +9422,7 @@ jQuery.fn.extend({
             states: [],
             minConst: -99,
             maxConst: 100,
-            commands: undefined
+            onStatesUpdated: undefined,
         },
         _create: function () {
             var that = this;
@@ -9408,7 +9434,7 @@ jQuery.fn.extend({
                 that._description.show();
                 that._ltlStates.show();
                 that.addState();
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element).hide();
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
@@ -9426,7 +9452,7 @@ jQuery.fn.extend({
             }
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this.createToolbar();
@@ -9434,7 +9460,7 @@ jQuery.fn.extend({
                 var idx = that.options.states.indexOf(that._activeState);
                 that.options.states[idx].description = this.value;
                 that._activeState.description = this.value;
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "add").appendTo(this._ltlStates);
@@ -9445,7 +9471,7 @@ jQuery.fn.extend({
                 var emptyFormula = [undefined, undefined, undefined, undefined, undefined];
                 that.options.states[idx].formula.push(emptyFormula);
                 that.addCondition();
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             if (this.options.states.length == 0) {
                 this._emptyStateAddButton.show();
@@ -9494,8 +9520,8 @@ jQuery.fn.extend({
                     this.options.maxConst = value;
                     break;
                 }
-                case "commands": {
-                    this.options.commands = value;
+                case "onStatesUpdated": {
+                    this.options.onStatesUpdated = value;
                     break;
                 }
                 default: break;
@@ -9505,9 +9531,9 @@ jQuery.fn.extend({
         _setOptions: function (options) {
             this._super(options);
         },
-        executeCommand: function (commandName, args) {
-            if (this.options.commands !== undefined) {
-                this.options.commands.Execute(commandName, args);
+        executeStatesUpdate: function (args) {
+            if (this.options.onStatesUpdated !== undefined) {
+                this.options.onStatesUpdated(args);
             }
         },
         createToolbar: function () {
@@ -9592,6 +9618,7 @@ jQuery.fn.extend({
                             currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: $(this).attr("data-variable-name") };
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
+                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
                     }
                 });
@@ -9646,7 +9673,7 @@ jQuery.fn.extend({
                                 if (parseFloat(this.value) < that.options.minConst)
                                     this.value = that.options.minConst;
                                 currNumber.value = this.value;
-                                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                             });
                         }
                         else if (this._activeState.formula[i][j].type == "operator") {
@@ -9772,7 +9799,7 @@ jQuery.fn.extend({
                                         if (parseFloat(this.value) < that.options.minConst)
                                             this.value = that.options.minConst;
                                         currNumber.value = this.value;
-                                        that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                                     });
                                     break;
                                 }
@@ -9818,7 +9845,7 @@ jQuery.fn.extend({
                                 }
                                 default: break;
                             }
-                            that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         }
                     }
                 });
@@ -9828,7 +9855,7 @@ jQuery.fn.extend({
                 var tableIndex = table.index();
                 that.options.states[stateIndex].formula.splice(tableIndex, 1);
                 $(table).remove();
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             var delTable = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(td);
             table.insertBefore(this._ltlStates.children().last());

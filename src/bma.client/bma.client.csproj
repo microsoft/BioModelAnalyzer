@@ -485,6 +485,7 @@
     <TypeScriptCompile Include="test\AnalyticsTest.ts" />
     <TypeScriptCompile Include="test\ExportImportTest.ts" />
     <TypeScriptCompile Include="test\BiomodelTest.ts" />
+    <TypeScriptCompile Include="test\FormulaConvertationTests.ts" />
     <TypeScriptCompile Include="test\KeyframesTest.ts" />
     <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
     <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />

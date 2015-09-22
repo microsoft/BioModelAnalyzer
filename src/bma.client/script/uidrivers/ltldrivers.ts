@@ -217,32 +217,49 @@ module BMA {
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
                 this.commands = commands;
+            }
 
-                commands.On("StatesChanged",(args) => {
-                    var states = args.states;
-                    var wstates = [];
-
-                    for (var i = 0; i < states.length; i++) {
-                        var ops = [];
-                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
-                        var s = states[i].formula;
-                        for (var j = 0; j < s.length; j++) {
-                            var f = s[j];
-                            var op = undefined;
-                            if (f[3] !== undefined || f[4] !== undefined) {
-                                var operator
-                                //op = new BMA.LTLOperations.DoubleKeyframeEquation();
-
-                            } else {
-                                //op = new BMA.LTLOperations.KeyframeEquation();
+            public Convert(args: any) {
+                var states = args.states;
+                var wstates = [];
+                for (var i = 0; i < states.length; i++) {
+                    var ops = [];
+                    var formulas = states[i].formula;
+                    var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                    var op = undefined;
+                    for (var j = 0; j < formulas.length; j++) {
+                        var f = formulas[j];
+                        if (f[0] !== undefined && f[0] == "variable") {
+                            if (f[1] !== undefined && f[2] != undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                                    f[1].value, new BMA.LTLOperations.ConstOperand(f[2].value));
+                                ops.push(op);
                             }
-                            //ops.push(op);
+                        } else if (f[2] !== undefined && f[2] == "variable") {
+                            if (f[0] !== undefined && f[1] !== undefined && f[3] !== undefined && f[4] !== undefined) {
+                                op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value), f[1].value,
+                                    new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
+                                ops.push(op);
+                            } else if (f[0] !== undefined && f[1] !== undefined && f[3] == undefined && f[4] == undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value), f[1].value,
+                                    new BMA.LTLOperations.NameOperand(f[2].value.variable));
+                                ops.push(op);
+                            } else if (f[0] == undefined && f[1] == undefined && f[3] !== undefined && f[4] !== undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value,
+                                    new BMA.LTLOperations.ConstOperand(f[4].value));
+                                ops.push(op);
+                            }
+                        } else if (f[4] !== undefined && f[4] == "variable") {
+                            if (f[2] !== undefined && f[3] !== undefined) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(f[2].value),
+                                    f[3].value, new BMA.LTLOperations.NameOperand(f[4].value.variable));
+                                ops.push(op);
+                            }
                         }
-                        wstates.push(ws);
                     }
-
-                    commands.Execute("KeyframesChanged", { states: wstates });
-                });
+                    wstates.push(ws);
+                }
+                return wstates;
             }
 
             public Show() {
@@ -256,7 +273,13 @@ module BMA {
                 this.popupWindow.show();
 
                 if (shouldInit) {
-                    this.statesEditor.stateseditor({ commands: this.commands });
+                    var that = this;
+                    var onStatesUpdated = function (args) {
+                        var wstates = that.Convert(args);
+                        that.commands.Execute("KeyframesChanged", { states: wstates });
+                    };
+
+                    this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated });
                     if (this.statesToSet !== undefined) {
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;

@@ -19,7 +19,7 @@
             states: [],
             minConst: -99,
             maxConst: 100,
-            commands: undefined
+            onStatesUpdated: undefined,
         },
 
         _create: function () {
@@ -35,7 +35,7 @@
 
                 that.addState();
 
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
 
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element).hide();
@@ -59,7 +59,7 @@
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
 
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
 
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
@@ -71,7 +71,7 @@
                 that.options.states[idx].description = this.value;
                 that._activeState.description = this.value;
 
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
 
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
@@ -86,7 +86,7 @@
                 that.options.states[idx].formula.push(emptyFormula);
                 that.addCondition();
 
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
 
             if (this.options.states.length == 0) {
@@ -136,8 +136,8 @@
                     this.options.maxConst = value;
                     break;
                 }
-                case "commands": {
-                    this.options.commands = value;
+                case "onStatesUpdated": {
+                    this.options.onStatesUpdated = value;
                     break;
                 }
                 default: break;
@@ -149,9 +149,9 @@
             this._super(options);
         },
 
-        executeCommand: function (commandName, args) {
-            if (this.options.commands !== undefined) {
-                this.options.commands.Execute(commandName, args);
+        executeStatesUpdate: function (args) {
+            if (this.options.onStatesUpdated !== undefined) {
+                this.options.onStatesUpdated(args);
             }
         },
 
@@ -251,6 +251,8 @@
 
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
+
+                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
                     }
                 });
@@ -319,7 +321,7 @@
                                 if (parseFloat(this.value) < that.options.minConst) this.value = that.options.minConst;
                                 currNumber.value = this.value;
 
-                                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                             });
 
                         } else if (this._activeState.formula[i][j].type == "operator") {
@@ -467,7 +469,7 @@
                                         if (parseFloat(this.value) < that.options.minConst) this.value = that.options.minConst;
                                         currNumber.value = this.value;
 
-                                        that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                                     });
                                     break;
                                 }
@@ -514,7 +516,7 @@
                                 default: break;
                             }
 
-                            that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         }
                     }
                 });
@@ -526,7 +528,7 @@
                 that.options.states[stateIndex].formula.splice(tableIndex, 1);
                 $(table).remove();
 
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateModified" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             var delTable = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(td);
 
