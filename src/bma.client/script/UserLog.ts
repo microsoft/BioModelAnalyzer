@@ -52,10 +52,10 @@ module BMA {
 
         constructor() {
             this.userId = $.cookie("BMAClient.UserID");
-            if (this.userId === undefined) {
+            if (this.userId === undefined) 
                 this.userId = generateUUID();
-                $.cookie("BMAClient.UserID", this.userId);
-            }
+            $.cookie("BMAClient.UserID", this.userId, { expires: 365 * 10 }); // Set cookie with persistent user ID that will last for 10 years from now
+
             this.sessionId = generateUUID();
 
             this.logIn = new Date();
