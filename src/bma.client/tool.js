@@ -2461,7 +2461,7 @@ var BMA;
         })();
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
-            function KeyframeEquation(leftOperand /*NameOperand | ConstOperand*/, operator, rightOperand /*NameOperand | ConstOperand*/) {
+            function KeyframeEquation(leftOperand, operator, rightOperand) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.operator = operator;
@@ -2497,7 +2497,7 @@ var BMA;
         })();
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
-            function DoubleKeyframeEquation(leftOperand /*NameOperand | ConstOperand*/, leftOperator, middleOperand /*NameOperand | ConstOperandIOperand*/, rightOperator, rightOperand /*NameOperand | ConstOperand*/) {
+            function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.middleOperand = middleOperand;
@@ -2549,7 +2549,7 @@ var BMA;
         })();
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var Keyframe = (function () {
-            function Keyframe(name, operands /*(KeyframeEquation | DoubleKeyframeEquation)[];*/) {
+            function Keyframe(name, operands) {
                 this.name = name;
                 this.operands = operands;
             }
@@ -6328,10 +6328,9 @@ var BMA;
     var SessionLog = (function () {
         function SessionLog() {
             this.userId = $.cookie("BMAClient.UserID");
-            if (this.userId === undefined) {
+            if (this.userId === undefined)
                 this.userId = generateUUID();
-                $.cookie("BMAClient.UserID", this.userId);
-            }
+            $.cookie("BMAClient.UserID", this.userId, { expires: 365 * 10 }); // Set cookie with persistent user ID that will last for 10 years from now
             this.sessionId = generateUUID();
             this.logIn = new Date();
             this.logOut = new Date();

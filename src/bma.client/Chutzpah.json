@@ -3,7 +3,12 @@
     "TestHarnessLocationMode": "TestFileAdjacent",     
     "TypeScriptCodeGenTarget" : "ES5",
     "RootReferencePathMode":"SettingsFileDirectory",
-
+    "Compile": {
+       "Extensions": [".ts"],
+       "ExtensionsWithNoOutput": [".d.ts"],
+       "Executable": "%msbuildexe%",
+       "Arguments": "/t:CompileTS "
+     },
      "References": [
 
         { "Path": "Scripts/jasmine.js" },
