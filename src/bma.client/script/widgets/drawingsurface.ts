@@ -16,6 +16,7 @@ declare var Rx: any;
         _zoomObs: undefined,
         _onlyZoomEnabled: false,
         _mouseMoves: null,
+        _domPlot: null,
 
         options: {
             isNavigationEnabled: true,
@@ -61,7 +62,7 @@ declare var Rx: any;
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
-
+            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
@@ -71,6 +72,8 @@ declare var Rx: any;
 
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;
+
+            this._domPlot = that._plot.get(domPlotDiv[0]);
 
             this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
             //rectsPlot.draw({ rects: [{ x: 0, y: 0, width: 500, height: 500, fill: "red" }] })
@@ -276,6 +279,17 @@ declare var Rx: any;
 
             this._plot.yDataTransform = yDT;
 
+            /*
+            this._domPlot.yDataTransform = new InteractiveDataDisplay.DataTransform(
+                function (x) {
+                    return x;
+                },
+                function (y) {
+                    return y;
+                },
+                undefined);
+            */
+
             var width = 1600;
             that.options.zoom = width;
 
@@ -467,7 +481,7 @@ declare var Rx: any;
         },
 
         getCentralPart: function () {
-            return this._svgPlot.centralPart;
+            return this._domPlot;
         }
 
     });

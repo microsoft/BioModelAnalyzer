@@ -140,10 +140,120 @@
     }
 }
 
+// Variable Picker
+.variable-picker {
+    width: 115px;
+    border: 1px solid @midgrey;
+
+    table {
+        font-size: 11px;
+
+        img {
+            width: 20px;
+        }
+
+        tr {
+            vertical-align: top;
+        }
+
+        td {
+            min-width: 50px;
+
+            &.list {
+                height: 85px;
+            }
+
+            .scrollable {
+                width: 100%;
+                height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 0px 2px 0px 0px;
+
+                a {
+                    display: block;
+                    text-decoration: none;
+
+                    &:hover {
+                        background-color: @lightgrey;
+                    }
+
+                    &.active {
+                        border: 0px;
+                        background-color: @midgrey;
+                        color: white;
+                    }
+                }
+
+                &::-webkit-scrollbar-track {
+                    width: 10px;
+                    background-color: white;
+                }
+
+                &::-webkit-scrollbar {
+                    width: 5px;
+                    height: 5px;
+                    background-color: @midgrey;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    padding: 5px;
+                    border-radius: 5px;
+                    background-color: @midgrey;
+                }
+            }
+        }
+    }
+}
+
+
 // Temporal Properties
+
+.window.temporal-properties {
+    width: 650px;
+    height: 500px;
+    padding: 0px 0px 10px 0px;
+
+    .window-title {
+        padding: 10px 0px 0px 10px;
+    }
+}
+
+.temporal-dropzones {
+    position: absolute;
+    bottom: 0px;
+    width: 630px;
+    height: 60px;
+    padding: 15px 10px;
+
+    .dropzone {
+        display: inline-block;
+        height: 100%;
+        width: 308px;
+        text-align: center;
+
+        img {
+            margin-top: 10px;
+        }
+
+        &.delete {
+            border: 1px solid @darkred;
+        }
+
+        &.copy {
+            border: 1px solid @darkgrey;
+            margin-right: 5px;
+        }
+
+        &:hover {
+            background-color: @lightgrey;
+        }
+    }
+}
 
 .temporal-toolbar {
     padding: 10px;
+    margin-top: 5px;
     //display: table;
     background-color: @midgrey;
     .default-text();
@@ -152,7 +262,6 @@
     .state-buttons {
         display: table-cell;
         width: 250px;
-        margin-right: 2px;
 
         .state-button {
             &.new {
@@ -184,7 +293,6 @@
             height: 21px;
             padding: 2px;
             margin-top: 5px;
-            margin-right: 2px;
 
             .label {
                 display: inline-block;
@@ -218,32 +326,39 @@
 }
 
 .pill {
+    display: inline-block;
     .container;
     padding: 7px 7px;
     vertical-align: middle;
-}
 
-.active {
-    border: 3px solid @darkgrey;
-}
+    &.active {
+        border: 3px solid @darkgrey;
+    }
 
-.true {
-    background-color: @lightgreen;
-    border: 2px solid @green;
-
-    & div {
+    &.true {
         background-color: @lightgreen;
+        border: 2px solid @green;
+
+        & div {
+            background-color: @lightgreen;
+        }
     }
-}
 
-.false {
-    border: 2px solid @darkred;
-    background-color: @red;
-
-    & div {
+    &.false {
+        border: 2px solid @darkred;
         background-color: @red;
+
+        & div {
+            background-color: @red;
+        }
     }
 }
+
+
+
+
+
+
 
 .state {
     .container;
@@ -257,6 +372,38 @@
         }
 
         background-color: @darkgrey;
+    }
+}
+
+// Test Button
+
+.LTL-test {
+    display: inline-block;
+}
+
+.LTL-test-results {
+    display: inline-block;
+    vertical-align: middle;
+    width: 130px;
+    padding: 5px 5px 0px 5px;
+    margin-left: 10px;
+    .border-radius(5px);
+
+    &.true {
+        border: 1px solid @green;
+        color: @green;
+    }
+
+    &.false {
+        border: 1px solid @darkred;
+        color: @darkred;
+
+        .pill-button-box {
+            .pill-button {
+                margin-top: 5px;
+                margin-bottom: 0px;
+            }
+        }
     }
 }
 
