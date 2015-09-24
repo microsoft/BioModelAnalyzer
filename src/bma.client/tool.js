@@ -3897,38 +3897,113 @@ var BMA;
                     var ops = [];
                     var formulas = states[i].formula;
                     var op = undefined;
+                    var isEmpty = false;
                     for (var j = 0; j < formulas.length; j++) {
+                        var op = undefined;
                         var f = formulas[j];
                         if (f[0] !== undefined && f[0].type == "variable") {
-                            if (f[1] !== undefined && f[2] != undefined) {
-                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), f[1].value, new BMA.LTLOperations.ConstOperand(f[2].value));
+                            if (f[1] !== undefined && f[2] !== undefined) {
+                                if (f[1].value == ">=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), ">", new BMA.LTLOperations.ConstOperand(f[2].value - 1));
+                                else if (f[1].value == "<=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[2].value + 1));
+                                else if (f[1].value == "=")
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[2].value - 1), "<", new BMA.LTLOperations.NameOperand(f[0].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[2].value + 1));
+                                else
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), f[1].value, new BMA.LTLOperations.ConstOperand(f[2].value));
                                 ops.push(op);
                             }
                         }
                         else if (f[2] !== undefined && f[2].type == "variable") {
                             if (f[0] !== undefined && f[1] !== undefined && f[3] !== undefined && f[4] !== undefined) {
-                                op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value), f[1].value, new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
+                                var leftConst = f[0].value;
+                                var leftOperand = f[1].value;
+                                var rightConst = f[4].value;
+                                var rightOperand = f[3].value;
+                                var leftEqual = false;
+                                var rightEqual = false;
+                                if (leftOperand == "<=") {
+                                    leftConst++;
+                                    leftOperand = "<";
+                                }
+                                else if (leftOperand == ">=") {
+                                    leftConst--;
+                                    leftOperand = ">";
+                                }
+                                else if (leftOperand == "=") {
+                                    leftEqual = true;
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(leftConst - 1), "<", new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(leftConst + 1));
+                                    ops.push(op);
+                                }
+                                if (rightOperand == "<=") {
+                                    rightConst++;
+                                    rightOperand = "<";
+                                }
+                                else if (rightOperand == ">=") {
+                                    rightConst--;
+                                    rightOperand = ">";
+                                }
+                                else if (rightOperand == "=") {
+                                    rightEqual = true;
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(rightConst - 1), "<", new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(rightConst + 1));
+                                    ops.push(op);
+                                }
+                                if (!(leftEqual && rightEqual)) {
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(leftConst), leftOperand, new BMA.LTLOperations.NameOperand(f[2].value.variable), rightOperand, new BMA.LTLOperations.ConstOperand(rightConst));
+                                    ops.push(op);
+                                }
+                                else if (leftEqual) {
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), rightOperand, new BMA.LTLOperations.ConstOperand(rightConst));
+                                    ops.push(op);
+                                }
+                                else if (rightEqual) {
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), leftOperand, new BMA.LTLOperations.ConstOperand(leftConst));
+                                    ops.push(op);
+                                }
+                            }
+                            else if (f[0] !== undefined && f[1] !== undefined && f[3] === undefined && f[4] === undefined) {
+                                if (f[1].value == ">=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), ">", new BMA.LTLOperations.ConstOperand(f[0].value - 1));
+                                else if (f[1].value == "<=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[0].value + 1));
+                                else if (f[1].value == "=")
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value - 1), "<", new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[0].value + 1));
+                                else
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[1].value, new BMA.LTLOperations.ConstOperand(f[0].value));
                                 ops.push(op);
                             }
-                            else if (f[0] !== undefined && f[1] !== undefined && f[3] == undefined && f[4] == undefined) {
-                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(f[0].value), f[1].value, new BMA.LTLOperations.NameOperand(f[2].value.variable));
-                                ops.push(op);
-                            }
-                            else if (f[0] == undefined && f[1] == undefined && f[3] !== undefined && f[4] !== undefined) {
-                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
+                            else if (f[0] === undefined && f[1] === undefined && f[3] !== undefined && f[4] !== undefined) {
+                                if (f[3].value == ">=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), ">", new BMA.LTLOperations.ConstOperand(f[4].value - 1));
+                                else if (f[3].value == "<=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[4].value + 1));
+                                else if (f[3].value == "=")
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[4].value - 1), "<", new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[4].value + 1));
+                                else
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
                                 ops.push(op);
                             }
                         }
                         else if (f[4] !== undefined && f[4].type == "variable") {
                             if (f[2] !== undefined && f[3] !== undefined) {
-                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(f[2].value), f[3].value, new BMA.LTLOperations.NameOperand(f[4].value.variable));
+                                if (f[3].value == ">=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable), ">", new BMA.LTLOperations.ConstOperand(f[2].value - 1));
+                                else if (f[3].value == "<=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[2].value + 1));
+                                else if (f[3].value == "=")
+                                    op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(f[2].value - 1), "<", new BMA.LTLOperations.NameOperand(f[4].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[2].value + 1));
+                                else
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[2].value));
                                 ops.push(op);
                             }
                         }
+                        if (op === undefined)
+                            isEmpty = true;
                     }
-                    //if (ops.length != 0) {
-                    var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
-                    wstates.push(ws);
+                    if (ops.length != 0 && !isEmpty) {
+                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                        wstates.push(ws);
+                    }
                 }
                 return wstates;
             };

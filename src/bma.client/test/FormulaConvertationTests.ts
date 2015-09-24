@@ -16,7 +16,7 @@
         doubleEquation = [];
     });
 
-    it("single finished equation",() => {
+    it("keyframe equation",() => {
         keyframes = [];
         states.push({
             name: "state1",
