@@ -168,7 +168,7 @@
             editor.bmaeditor("destroy");
         })
 
-        xit("shouldn't show inputs list on click on 'var()' function when it is no inputs",() => {
+        it("shouldn't show inputs list on click on 'var()' function when it is no inputs",() => {
             var functions = editor.find(".list-of-functions").children("ul").children("li");
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
             functions.eq(0).click();
