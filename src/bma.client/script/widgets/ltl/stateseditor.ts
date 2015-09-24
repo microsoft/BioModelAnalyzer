@@ -59,7 +59,7 @@
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
 
-                //that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
 
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
