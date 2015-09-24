@@ -75,7 +75,7 @@
             }
 
             public GetFormula() {
-                return "(" + this.leftOperand + " " + this.operator + " " + this.rightOperand + ")";
+                return "(" + this.leftOperand.GetFormula() + " " + this.operator + " " + this.rightOperand.GetFormula() + ")";
             }
 
             public Clone() {
@@ -149,13 +149,14 @@
                 if (this.operands === undefined || this.operands.length < 1) {
                     return "";
                 } else {
-                    var formula = "";
+                    var formula = "(";
                     for (var i = 0; i < this.operands.length; i++) {
                         formula += this.operands[i].GetFormula();
                         if (i < this.operands.length - 1) {
                             formula += " AND ";
                         }
                     }
+                    return formula + ')';
                 }
             }
 

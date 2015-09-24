@@ -7,7 +7,6 @@
     var states = [];
     var equation = [];
     var doubleEquation = [];
-    var args = { states: null, variables: null };
 
     beforeEach(() => {
         statesEditorDriver = new BMA.UIDrivers.StatesEditorDriver(ltlCommands, popup);
@@ -41,8 +40,7 @@
         });
         equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(56), ">=", new BMA.LTLOperations.NameOperand("var1"))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state1", equation));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("single unfinished equation",() => {
@@ -60,8 +58,7 @@
             ]
         });
         keyframes.push(new BMA.LTLOperations.Keyframe("state2", []));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("double unfinished equation and single finished equation",() => {
@@ -87,8 +84,7 @@
         });
         equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(56), ">=", new BMA.LTLOperations.NameOperand("var1"))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state3", equation));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
     
     it("double finished equation",() => {
@@ -109,8 +105,7 @@
         doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(56), ">=",
             new BMA.LTLOperations.NameOperand("var1"), ">=", new BMA.LTLOperations.ConstOperand(56))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state4", doubleEquation));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("double unfinished equation", ()=> {
@@ -129,11 +124,10 @@
                 ],
             });
         keyframes.push(new BMA.LTLOperations.Keyframe("state5", []));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
-    it("double unfinished equation",() => {
+    it("single unfinished equation",() => {
         states.push(
             {
                 name: "state6",
@@ -149,8 +143,7 @@
                 ],
             });
         keyframes.push(new BMA.LTLOperations.Keyframe("state6", []));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("single finished equation",() => {
@@ -170,8 +163,7 @@
             });
         equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.ConstOperand(56), ">=", new BMA.LTLOperations.NameOperand("var1"))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state7", equation));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("single finished equation",() => {
@@ -191,8 +183,7 @@
             });
         equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), ">=", new BMA.LTLOperations.ConstOperand(56))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state8", equation));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("unfinished equation",() => {
@@ -211,8 +202,7 @@
                 ],
             });
         keyframes.push(new BMA.LTLOperations.Keyframe("state9", []));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("unfinished equation",() => {
@@ -231,8 +221,7 @@
                 ],
             });
         keyframes.push(new BMA.LTLOperations.Keyframe("state10", []));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
     it("unfinished equation",() => {
@@ -251,7 +240,6 @@
                 ],
             });
         keyframes.push(new BMA.LTLOperations.Keyframe("state11", []));
-        args = { states: states, variables: null };
-        expect(statesEditorDriver.Convert(args)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 }); 

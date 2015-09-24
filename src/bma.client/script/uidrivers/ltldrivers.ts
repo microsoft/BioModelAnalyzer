@@ -219,8 +219,7 @@ module BMA {
                 this.commands = commands;
             }
 
-            public Convert(args: any) {
-                var states = args.states;
+            public Convert(states: any) {
                 var wstates = [];
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
@@ -256,8 +255,10 @@ module BMA {
                             }
                         }
                     }
-                    var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
-                    wstates.push(ws);
+                    //if (ops.length != 0) {
+                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                        wstates.push(ws);
+                    //}
                 }
                 return wstates;
             }
@@ -275,7 +276,7 @@ module BMA {
                 if (shouldInit) {
                     var that = this;
                     var onStatesUpdated = function (args) {
-                        var wstates = that.Convert(args);
+                        var wstates = that.Convert(args.states);
                         that.commands.Execute("KeyframesChanged", { states: wstates });
                     };
 

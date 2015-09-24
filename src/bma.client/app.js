@@ -332,7 +332,7 @@ function loadScript(version) {
     for (var i = 0; i < elements.length; i++) {
         var elem = elements[i];
         $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
-        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
+        var label = $("<label></label>").addClass("drawingsurface-droppable").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({

@@ -2488,7 +2488,7 @@ var BMA;
                 configurable: true
             });
             KeyframeEquation.prototype.GetFormula = function () {
-                return "(" + this.leftOperand + " " + this.operator + " " + this.rightOperand + ")";
+                return "(" + this.leftOperand.GetFormula() + " " + this.operator + " " + this.rightOperand.GetFormula() + ")";
             };
             KeyframeEquation.prototype.Clone = function () {
                 return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
@@ -2572,13 +2572,14 @@ var BMA;
                     return "";
                 }
                 else {
-                    var formula = "";
+                    var formula = "(";
                     for (var i = 0; i < this.operands.length; i++) {
                         formula += this.operands[i].GetFormula();
                         if (i < this.operands.length - 1) {
                             formula += " AND ";
                         }
                     }
+                    return formula + ')';
                 }
             };
             Keyframe.prototype.Clone = function () {
@@ -2678,6 +2679,25 @@ var BMA;
                 this.position = position;
                 this.Render();
             }
+            Object.defineProperty(OperationLayout.prototype, "IsCompleted", {
+                get: function () {
+                    return this.checkIsCompleted(this.operation);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            OperationLayout.prototype.checkIsCompleted = function (operation) {
+                if (operation.Operator !== undefined) {
+                    var operands = operation.Operands;
+                    for (var i = 0; i < operands.length; i++) {
+                        if (operands[i] === undefined)
+                            return false;
+                        else if (!this.checkIsCompleted(operands[i]))
+                            return false;
+                    }
+                }
+                return true;
+            };
             Object.defineProperty(OperationLayout.prototype, "IsOperation", {
                 get: function () {
                     return this.operation.Operator !== undefined;
@@ -3871,8 +3891,7 @@ var BMA;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
-            StatesEditorDriver.prototype.Convert = function (args) {
-                var states = args.states;
+            StatesEditorDriver.prototype.Convert = function (states) {
                 var wstates = [];
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
@@ -3907,6 +3926,7 @@ var BMA;
                             }
                         }
                     }
+                    //if (ops.length != 0) {
                     var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
                     wstates.push(ws);
                 }
@@ -3923,7 +3943,7 @@ var BMA;
                 if (shouldInit) {
                     var that = this;
                     var onStatesUpdated = function (args) {
-                        var wstates = that.Convert(args);
+                        var wstates = that.Convert(args.states);
                         that.commands.Execute("KeyframesChanged", { states: wstates });
                     };
                     this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated });
@@ -7244,11 +7264,22 @@ var BMA;
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: 50
+            zoom: 50,
+            dropFilter: ["drawingsurface-droppable"]
         },
         _plotSettings: {
             MinWidth: 0.01,
             MaxWidth: 1e5
+        },
+        _checkDropFilter: function (ui) {
+            if (this.options !== undefined && this.options.dropFilter !== undefined) {
+                var classes = this.options.dropFilter;
+                for (var i = 0; i < classes.length; i++) {
+                    if (ui.hasClass(classes[i]))
+                        return true;
+                }
+            }
+            return false;
         },
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
@@ -7307,6 +7338,9 @@ var BMA;
             }
             plotDiv.droppable({
                 drop: function (event, ui) {
+                    event.stopPropagation();
+                    if (!that._checkDropFilter(ui.draggable))
+                        return;
                     var cs = svgPlot.getScreenToDataTransform();
                     var position = {
                         x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
@@ -7323,6 +7357,7 @@ var BMA;
                 if (arg.originalEvent !== undefined) {
                     arg = arg.originalEvent;
                 }
+                arg.stopPropagation();
                 that._executeCommand("DrawingSurfaceClick", {
                     x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
@@ -7509,18 +7544,20 @@ var BMA;
                 case "isNavigationEnabled":
                     if (value === true) {
                         if (this._onlyZoomEnabled === true) {
-                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                                return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
-                            });
-                            this._plot.navigation.gestureSource = gestureSource;
+                            this._setGestureSource(false);
+                            //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                            //    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                            //});
+                            //this._plot.navigation.gestureSource = gestureSource;
                             this._onlyZoomEnabled = false;
                         }
                     }
                     else {
-                        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                            return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
-                        });
-                        this._plot.navigation.gestureSource = gestureSource;
+                        this._setGestureSource(true);
+                        //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                        //    return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
+                        //});
+                        //this._plot.navigation.gestureSource = gestureSource;
                         this._onlyZoomEnabled = true;
                     }
                     break;
@@ -7568,6 +7605,14 @@ var BMA;
                     break;
             }
             this._super(key, value);
+        },
+        _setGestureSource: function (onlyZoom) {
+            var that = this;
+            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                var constraint = onlyZoom ? g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) : g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                return constraint;
+            });
+            this._plot.navigation.gestureSource = gestureSource;
         },
         _setOptions: function (options) {
             this._super(options);
@@ -9484,7 +9529,7 @@ jQuery.fn.extend({
             }
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
+                //that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this.createToolbar();
@@ -10015,7 +10060,7 @@ jQuery.fn.extend({
             this.statesbtns.empty();
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateName = this.options.states[i].Name;
-                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", stateName).css("z-index", 6).css("cursor", "pointer").text(stateName).appendTo(that.statesbtns);
+                var stateDiv = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", stateName).css("z-index", 6).css("cursor", "pointer").text(stateName).appendTo(that.statesbtns);
                 stateDiv.draggable({
                     helper: "clone",
                     start: function (event, ui) {
@@ -10044,7 +10089,7 @@ jQuery.fn.extend({
             var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
-                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 6).css("cursor", "pointer").appendTo(operatorsDiv);
+                var opDiv = $("<div></div>").addClass("operator").addClass("ltl-tp-droppable").attr("data-operator", operator.Name).css("z-index", 6).css("cursor", "pointer").appendTo(operatorsDiv);
                 var spaceStr = "&nbsp;&nbsp;";
                 if (operator.OperandsCount > 1) {
                     $("<div></div>").addClass("hole").appendTo(opDiv);
@@ -10069,7 +10114,8 @@ jQuery.fn.extend({
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
-                gridVisibility: false
+                gridVisibility: false,
+                dropFilter: ["ltl-tp-droppable"]
             });
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
@@ -10558,6 +10604,9 @@ var BMA;
                             parentoperation: unpinned.parentoperation,
                             parentoperationindex: unpinned.parentoperationindex
                         };
+                        if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                            that.controlPanels[that.stagingOperation.originIndex].hide();
+                        }
                         _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                         staginOp.IsVisible = !unpinned.isRoot;
                     }
@@ -10690,6 +10739,14 @@ var BMA;
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
+                    btn.click(function (arg) {
+                        if (op.IsCompleted) {
+                            alert(op.Operation.GetFormula());
+                        }
+                        else {
+                            alert("Incompleted!");
+                        }
+                    });
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(opDiv);
                 }

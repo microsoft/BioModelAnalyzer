@@ -21,6 +21,25 @@
                 this.Render();
             }
 
+            public get IsCompleted(): boolean {
+                return this.checkIsCompleted(this.operation);
+            }
+
+            private checkIsCompleted(operation: IOperand) {
+                if ((<BMA.LTLOperations.Operation>operation).Operator !== undefined) {
+                    var operands = (<BMA.LTLOperations.Operation>operation).Operands;
+
+                    for (var i = 0; i < operands.length; i++) {
+                        if (operands[i] === undefined)
+                            return false;
+                        else if (!this.checkIsCompleted(operands[i]))
+                            return false;
+                    }
+                } 
+
+                return true;
+            }
+
             public get IsOperation(): boolean {
                 return (<BMA.LTLOperations.Operation>this.operation).Operator !== undefined;
             }

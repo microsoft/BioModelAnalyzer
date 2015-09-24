@@ -26,7 +26,7 @@ module BMA {
 
                 var formulacreator = function (funcname): IGetFormula {
                     return function (op: IOperand[]) {
-                              var f = '(' + funcname;
+                        var f = '(' + funcname;
                               for (var i = 0; i < op.length; i++) {
                                   f += ' ' + op[i].GetFormula();
                              }
