@@ -369,6 +369,7 @@
     <Content Include="css\LTLStates.css.map">
       <DependentUpon>LTLStates.css</DependentUpon>
     </Content>
+    <Content Include="css\BMA-Styles-LTL.less" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />

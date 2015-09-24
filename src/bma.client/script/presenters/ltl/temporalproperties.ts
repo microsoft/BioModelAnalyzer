@@ -35,6 +35,9 @@ module BMA {
 
             private commands: BMA.CommandRegistry;
 
+            private controlPanels = [];
+            private controlPanelPadding = 3;
+
             constructor(
                 commands: BMA.CommandRegistry,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
@@ -377,6 +380,35 @@ module BMA {
                 for (var i = 0; i < this.operations.length; i++) {
                     ops.push(this.operations[i].Operation.Clone());
                 }
+
+                var cps = this.controlPanels;
+                var dom = this.navigationDriver.GetNavigationSurface();
+
+                for (var i = 0; i < cps.length; i++) {
+                    dom.remove(cps[i]);
+                }
+                this.controlPanels = [];
+
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    var bbox = op.BoundingBox;
+                    var opDiv = $("<div></div>");
+
+                    /*
+                    <ul class= "button-list LTL-test" >
+                        <li class= "action-button-small grey" > <button>TEST < /button></li >
+                    </ul>
+                    */
+
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button>TEST </button>").appendTo(li);
+
+
+                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
+                    this.controlPanels.push(opDiv);
+                }
+
                 this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
             }
         }

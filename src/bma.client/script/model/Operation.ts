@@ -52,11 +52,11 @@
         }
 
         export class KeyframeEquation implements IOperand {
-            private leftOperand: IOperand; //NameOperand | ConstOperand;
-            private rightOperand: IOperand; //NameOperand | ConstOperand;
+            private leftOperand: NameOperand | ConstOperand;
+            private rightOperand: NameOperand | ConstOperand;
             private operator: string;
 
-            constructor(leftOperand: IOperand /*NameOperand | ConstOperand*/, operator: string, rightOperand: IOperand /*NameOperand | ConstOperand*/) {
+            constructor(leftOperand: NameOperand | ConstOperand, operator: string, rightOperand: NameOperand | ConstOperand) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.operator = operator;
@@ -84,14 +84,14 @@
         }
 
         export class DoubleKeyframeEquation implements IOperand {
-            private leftOperand: IOperand; /*NameOperand | ConstOperand*/
-            private middleOperand: IOperand; /*NameOperand | ConstOperand*/
-            private rightOperand: IOperand; /*NameOperand | ConstOperand*/
+            private leftOperand: NameOperand | ConstOperand
+            private middleOperand: NameOperand | ConstOperand
+            private rightOperand: NameOperand | ConstOperand
             private leftOperator: string;
             private rightOperator: string;
 
 
-            constructor(leftOperand: IOperand /*NameOperand | ConstOperand*/, leftOperator: string, middleOperand: IOperand /*NameOperand | ConstOperandIOperand*/, rightOperator: string, rightOperand: IOperand /*NameOperand | ConstOperand*/) {
+            constructor(leftOperand: NameOperand | ConstOperand, leftOperator: string, middleOperand: NameOperand | ConstOperand, rightOperator: string, rightOperand: NameOperand | ConstOperand) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.middleOperand = middleOperand;
@@ -130,9 +130,9 @@
 
         export class Keyframe implements IOperand {
             private name: string;
-            private operands: IOperand[]; /*(KeyframeEquation | DoubleKeyframeEquation)[];*/
+            private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
 
-            constructor(name: string, operands: IOperand[] /*(KeyframeEquation | DoubleKeyframeEquation)[];*/) {
+            constructor(name: string, operands: (KeyframeEquation | DoubleKeyframeEquation)[]) {
                 this.name = name;
                 this.operands = operands;
             }
@@ -141,7 +141,7 @@
                 return this.name;
             }
 
-            public get Operands(): IOperand[] /*(KeyframeEquation | DoubleKeyframeEquation)[];*/ {
+            public get Operands(): (KeyframeEquation | DoubleKeyframeEquation)[] {
                 return this.operands;
             }
 

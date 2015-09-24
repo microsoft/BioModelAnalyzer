@@ -3010,8 +3010,95 @@ textarea:focus {
   border: 1px solid #aaaaaa;
   cursor: pointer;
 }
+.variable-picker {
+  width: 115px;
+  border: 1px solid #aaaaaa;
+}
+.variable-picker table {
+  font-size: 11px;
+}
+.variable-picker table img {
+  width: 20px;
+}
+.variable-picker table tr {
+  vertical-align: top;
+}
+.variable-picker table td {
+  min-width: 50px;
+}
+.variable-picker table td.list {
+  height: 85px;
+}
+.variable-picker table td .scrollable {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0px 2px 0px 0px;
+}
+.variable-picker table td .scrollable a {
+  display: block;
+  text-decoration: none;
+}
+.variable-picker table td .scrollable a:hover {
+  background-color: #ededed;
+}
+.variable-picker table td .scrollable a.active {
+  border: 0px;
+  background-color: #aaaaaa;
+  color: white;
+}
+.variable-picker table td .scrollable::-webkit-scrollbar-track {
+  width: 10px;
+  background-color: white;
+}
+.variable-picker table td .scrollable::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #aaaaaa;
+}
+.variable-picker table td .scrollable::-webkit-scrollbar-thumb {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #aaaaaa;
+}
+.window.temporal-properties {
+  width: 650px;
+  height: 500px;
+  padding: 0px 0px 10px 0px;
+}
+.window.temporal-properties .window-title {
+  padding: 10px 0px 0px 10px;
+}
+.temporal-dropzones {
+  position: absolute;
+  bottom: 0px;
+  width: 630px;
+  height: 60px;
+  padding: 15px 10px;
+}
+.temporal-dropzones .dropzone {
+  display: inline-block;
+  height: 100%;
+  width: 308px;
+  text-align: center;
+}
+.temporal-dropzones .dropzone img {
+  margin-top: 10px;
+}
+.temporal-dropzones .dropzone.delete {
+  border: 1px solid #cf451b;
+}
+.temporal-dropzones .dropzone.copy {
+  border: 1px solid #606060;
+  margin-right: 5px;
+}
+.temporal-dropzones .dropzone:hover {
+  background-color: #ededed;
+}
 .temporal-toolbar {
   padding: 10px;
+  margin-top: 5px;
   background-color: #aaaaaa;
   font-family: 'Segoe-UI';
   font-size: 13px;
@@ -3022,7 +3109,6 @@ textarea:focus {
 .temporal-toolbar .state-buttons {
   display: table-cell;
   width: 250px;
-  margin-right: 2px;
 }
 .temporal-toolbar .state-buttons .state-button.new {
   color: white;
@@ -3048,7 +3134,6 @@ textarea:focus {
   height: 21px;
   padding: 2px;
   margin-top: 5px;
-  margin-right: 2px;
 }
 .temporal-toolbar .temporal-operators .operator .label {
   display: inline-block;
@@ -3077,21 +3162,21 @@ textarea:focus {
   padding: 7px 7px;
   vertical-align: middle;
 }
-.active {
+.pill.active {
   border: 3px solid #606060;
 }
-.true {
+.pill.true {
   background-color: #d9ffb6;
   border: 2px solid #81bb83;
 }
-.true div {
+.pill.true div {
   background-color: #d9ffb6;
 }
-.false {
+.pill.false {
   border: 2px solid #cf451b;
   background-color: #feb6b2;
 }
-.false div {
+.pill.false div {
   background-color: #feb6b2;
 }
 .state {
@@ -3114,6 +3199,33 @@ textarea:focus {
 }
 .state:empty:after {
   content: "\00a0";
+}
+.LTL-test {
+  display: inline-block;
+}
+.LTL-test-results {
+  display: inline-block;
+  vertical-align: middle;
+  width: 130px;
+  padding: 5px 5px 0px 5px;
+  margin-left: 10px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+}
+.LTL-test-results.true {
+  border: 1px solid #81bb83;
+  color: #81bb83;
+}
+.LTL-test-results.false {
+  border: 1px solid #cf451b;
+  color: #cf451b;
+}
+.LTL-test-results.false .pill-button-box .pill-button {
+  margin-top: 5px;
+  margin-bottom: 0px;
 }
 .btns {
   overflow-y: auto;

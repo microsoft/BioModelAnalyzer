@@ -2461,7 +2461,7 @@ var BMA;
         })();
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
-            function KeyframeEquation(leftOperand /*NameOperand | ConstOperand*/, operator, rightOperand /*NameOperand | ConstOperand*/) {
+            function KeyframeEquation(leftOperand, operator, rightOperand) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.operator = operator;
@@ -2497,7 +2497,7 @@ var BMA;
         })();
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
-            function DoubleKeyframeEquation(leftOperand /*NameOperand | ConstOperand*/, leftOperator, middleOperand /*NameOperand | ConstOperandIOperand*/, rightOperator, rightOperand /*NameOperand | ConstOperand*/) {
+            function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.middleOperand = middleOperand;
@@ -2549,7 +2549,7 @@ var BMA;
         })();
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var Keyframe = (function () {
-            function Keyframe(name, operands /*(KeyframeEquation | DoubleKeyframeEquation)[];*/) {
+            function Keyframe(name, operands) {
                 this.name = name;
                 this.operands = operands;
             }
@@ -6354,10 +6354,9 @@ var BMA;
     var SessionLog = (function () {
         function SessionLog() {
             this.userId = $.cookie("BMAClient.UserID");
-            if (this.userId === undefined) {
+            if (this.userId === undefined)
                 this.userId = generateUUID();
-                $.cookie("BMAClient.UserID", this.userId);
-            }
+            $.cookie("BMAClient.UserID", this.userId, { expires: 365 * 10 }); // Set cookie with persistent user ID that will last for 10 years from now
             this.sessionId = generateUUID();
             this.logIn = new Date();
             this.logOut = new Date();
@@ -7241,6 +7240,7 @@ var BMA;
         _zoomObs: undefined,
         _onlyZoomEnabled: false,
         _mouseMoves: null,
+        _domPlot: null,
         options: {
             isNavigationEnabled: true,
             svg: undefined,
@@ -7277,12 +7277,14 @@ var BMA;
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;
+            this._domPlot = that._plot.get(domPlotDiv[0]);
             this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
             //rectsPlot.draw({ rects: [{ x: 0, y: 0, width: 500, height: 500, fill: "red" }] })
             if (this.options.svg !== undefined) {
@@ -7437,6 +7439,16 @@ var BMA;
                 return -y;
             }, undefined);
             this._plot.yDataTransform = yDT;
+            /*
+            this._domPlot.yDataTransform = new InteractiveDataDisplay.DataTransform(
+                function (x) {
+                    return x;
+                },
+                function (y) {
+                    return y;
+                },
+                undefined);
+            */
             var width = 1600;
             that.options.zoom = width;
             if (this.options.isNavigationEnabled) {
@@ -7609,7 +7621,7 @@ var BMA;
             return this._lightSvgPlot.svg;
         },
         getCentralPart: function () {
-            return this._svgPlot.centralPart;
+            return this._domPlot;
         }
     });
 }(jQuery));
@@ -10372,6 +10384,8 @@ var BMA;
         var TemporalPropertiesPresenter = (function () {
             function TemporalPropertiesPresenter(commands, svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
                 var _this = this;
+                this.controlPanels = [];
+                this.controlPanelPadding = 3;
                 var that = this;
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
@@ -10657,6 +10671,27 @@ var BMA;
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     ops.push(this.operations[i].Operation.Clone());
+                }
+                var cps = this.controlPanels;
+                var dom = this.navigationDriver.GetNavigationSurface();
+                for (var i = 0; i < cps.length; i++) {
+                    dom.remove(cps[i]);
+                }
+                this.controlPanels = [];
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    var bbox = op.BoundingBox;
+                    var opDiv = $("<div></div>");
+                    /*
+                    <ul class= "button-list LTL-test" >
+                        <li class= "action-button-small grey" > <button>TEST < /button></li >
+                    </ul>
+                    */
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button>TEST </button>").appendTo(li);
+                    dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
+                    this.controlPanels.push(opDiv);
                 }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
             };
