@@ -2678,6 +2678,25 @@ var BMA;
                 this.position = position;
                 this.Render();
             }
+            Object.defineProperty(OperationLayout.prototype, "IsCompleted", {
+                get: function () {
+                    return this.checkIsCompleted(this.operation);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            OperationLayout.prototype.checkIsCompleted = function (operation) {
+                if (operation.Operator !== undefined) {
+                    var operands = operation.Operands;
+                    for (var i = 0; i < operands.length; i++) {
+                        if (operands[i] === undefined)
+                            return false;
+                        else if (!this.checkIsCompleted(operands[i]))
+                            return false;
+                    }
+                }
+                return true;
+            };
             Object.defineProperty(OperationLayout.prototype, "IsOperation", {
                 get: function () {
                     return this.operation.Operator !== undefined;
@@ -10557,6 +10576,9 @@ var BMA;
                             parentoperation: unpinned.parentoperation,
                             parentoperationindex: unpinned.parentoperationindex
                         };
+                        if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                            that.controlPanels[that.stagingOperation.originIndex].hide();
+                        }
                         _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                         staginOp.IsVisible = !unpinned.isRoot;
                     }
@@ -10689,6 +10711,14 @@ var BMA;
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
+                    btn.click(function (arg) {
+                        if (op.IsCompleted) {
+                            alert(op.Operation.GetFormula());
+                        }
+                        else {
+                            alert("Incompleted!");
+                        }
+                    });
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(opDiv);
                 }
