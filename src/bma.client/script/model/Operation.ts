@@ -75,7 +75,7 @@
             }
 
             public GetFormula() {
-                return "(" + this.leftOperand.GetFormula() + " " + this.operator + " " + this.rightOperand.GetFormula() + ")";
+                return "(" + this.operator + " " + this.leftOperand.GetFormula() + " " + this.rightOperand.GetFormula() + ")";
             }
 
             public Clone() {
@@ -120,7 +120,7 @@
             }
 
             public GetFormula() {
-                return "(" + this.leftOperand.GetFormula() + " " + this.leftOperator + " " + this.middleOperand.GetFormula() + ") AND (" + this.middleOperand.GetFormula() + " " + this.rightOperator + " " + this.rightOperand.GetFormula() + ")";
+                return "(And " + "(" + this.leftOperator + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
             }
 
             public Clone() {
@@ -149,14 +149,16 @@
                 if (this.operands === undefined || this.operands.length < 1) {
                     return "";
                 } else {
-                    var formula = "(";
-                    for (var i = 0; i < this.operands.length; i++) {
-                        formula += this.operands[i].GetFormula();
-                        if (i < this.operands.length - 1) {
-                            formula += " AND ";
-                        }
+                    if (this.operands.length === 1)
+                        return this.operands[0].GetFormula();
+
+                    var formula = this.operands[this.operands.length - 1].GetFormula();
+
+                    for (var i = this.operands.length - 2; i >= 0; i--) {
+                        formula = "(And " + this.operands[i].GetFormula() + " " + formula + ")";
                     }
-                    return formula + ')';
+
+                    return formula;
                 }
             }
 
@@ -220,7 +222,7 @@
             public Clone() {
                 var operands = [];
                 for (var i = 0; i < this.operands.length; i++) {
-                    
+
                     operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();

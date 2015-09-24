@@ -2488,7 +2488,7 @@ var BMA;
                 configurable: true
             });
             KeyframeEquation.prototype.GetFormula = function () {
-                return "(" + this.leftOperand.GetFormula() + " " + this.operator + " " + this.rightOperand.GetFormula() + ")";
+                return "(" + this.operator + " " + this.leftOperand.GetFormula() + " " + this.rightOperand.GetFormula() + ")";
             };
             KeyframeEquation.prototype.Clone = function () {
                 return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
@@ -2540,7 +2540,7 @@ var BMA;
                 configurable: true
             });
             DoubleKeyframeEquation.prototype.GetFormula = function () {
-                return "(" + this.leftOperand.GetFormula() + " " + this.leftOperator + " " + this.middleOperand.GetFormula() + ") AND (" + this.middleOperand.GetFormula() + " " + this.rightOperator + " " + this.rightOperand.GetFormula() + ")";
+                return "(And " + "(" + this.leftOperator + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
             };
             DoubleKeyframeEquation.prototype.Clone = function () {
                 return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
@@ -2572,14 +2572,13 @@ var BMA;
                     return "";
                 }
                 else {
-                    var formula = "(";
-                    for (var i = 0; i < this.operands.length; i++) {
-                        formula += this.operands[i].GetFormula();
-                        if (i < this.operands.length - 1) {
-                            formula += " AND ";
-                        }
+                    if (this.operands.length === 1)
+                        return this.operands[0].GetFormula();
+                    var formula = this.operands[this.operands.length - 1].GetFormula();
+                    for (var i = this.operands.length - 2; i >= 0; i--) {
+                        formula = "(And " + this.operands[i].GetFormula() + " " + formula + ")";
                     }
-                    return formula + ')';
+                    return formula;
                 }
             };
             Keyframe.prototype.Clone = function () {
