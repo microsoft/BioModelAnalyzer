@@ -21,12 +21,25 @@ declare var Rx: any;
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: 50
+            zoom: 50,
+            dropFilter: ["drawingsurface-droppable"]
         },
 
         _plotSettings: {
             MinWidth: 0.01,
             MaxWidth: 1e5
+        },
+
+        _checkDropFilter: function (ui) {
+            if (this.options !== undefined && this.options.dropFilter !== undefined) {
+                var classes = this.options.dropFilter;
+                for (var i = 0; i < classes.length; i++) {
+                    if (ui.hasClass(classes[i]))
+                        return true;
+                }
+            }
+
+            return false;
         },
 
 
@@ -98,6 +111,9 @@ declare var Rx: any;
 
             plotDiv.droppable({
                 drop: function (event, ui) {
+                    event.stopPropagation();
+                    if (!that._checkDropFilter(ui.draggable))
+                        return;
 
                     var cs = svgPlot.getScreenToDataTransform();
                     var position = {
@@ -119,6 +135,8 @@ declare var Rx: any;
                 if (arg.originalEvent !== undefined) {
                     arg = arg.originalEvent;
                 }
+
+                arg.stopPropagation();
 
                 that._executeCommand("DrawingSurfaceClick",
                     {
@@ -352,17 +370,19 @@ declare var Rx: any;
                 case "isNavigationEnabled":
                     if (value === true) {
                         if (this._onlyZoomEnabled === true) {
-                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                                return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
-                            });
-                            this._plot.navigation.gestureSource = gestureSource;
+                            this._setGestureSource(false);
+                            //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                            //    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                            //});
+                            //this._plot.navigation.gestureSource = gestureSource;
                             this._onlyZoomEnabled = false;
                         }
                     } else {
-                        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                            return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
-                        });
-                        this._plot.navigation.gestureSource = gestureSource;
+                        this._setGestureSource(true);
+                        //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                        //    return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
+                        //});
+                        //this._plot.navigation.gestureSource = gestureSource;
                         this._onlyZoomEnabled = true;
                     }
                     break;
@@ -411,6 +431,17 @@ declare var Rx: any;
                     break;
             }
             this._super(key, value);
+        },
+
+        _setGestureSource: function (onlyZoom) {
+            var that = this;
+            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                var constraint = onlyZoom ?
+                    g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) :
+                    g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                return constraint;
+            });
+            this._plot.navigation.gestureSource = gestureSource;
         },
 
         _setOptions: function (options) {

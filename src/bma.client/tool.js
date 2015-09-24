@@ -7218,11 +7218,22 @@ var BMA;
         options: {
             isNavigationEnabled: true,
             svg: undefined,
-            zoom: 50
+            zoom: 50,
+            dropFilter: ["drawingsurface-droppable"]
         },
         _plotSettings: {
             MinWidth: 0.01,
             MaxWidth: 1e5
+        },
+        _checkDropFilter: function (ui) {
+            if (this.options !== undefined && this.options.dropFilter !== undefined) {
+                var classes = this.options.dropFilter;
+                for (var i = 0; i < classes.length; i++) {
+                    if (ui.hasClass(classes[i]))
+                        return true;
+                }
+            }
+            return false;
         },
         _svgLoaded: function () {
             if (this.options.svg !== undefined && this._svgPlot !== undefined) {
@@ -7281,6 +7292,9 @@ var BMA;
             }
             plotDiv.droppable({
                 drop: function (event, ui) {
+                    event.stopPropagation();
+                    if (!that._checkDropFilter(ui.draggable))
+                        return;
                     var cs = svgPlot.getScreenToDataTransform();
                     var position = {
                         x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
@@ -7297,6 +7311,7 @@ var BMA;
                 if (arg.originalEvent !== undefined) {
                     arg = arg.originalEvent;
                 }
+                arg.stopPropagation();
                 that._executeCommand("DrawingSurfaceClick", {
                     x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
@@ -7483,18 +7498,20 @@ var BMA;
                 case "isNavigationEnabled":
                     if (value === true) {
                         if (this._onlyZoomEnabled === true) {
-                            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                                return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
-                            });
-                            this._plot.navigation.gestureSource = gestureSource;
+                            this._setGestureSource(false);
+                            //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                            //    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                            //});
+                            //this._plot.navigation.gestureSource = gestureSource;
                             this._onlyZoomEnabled = false;
                         }
                     }
                     else {
-                        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                            return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
-                        });
-                        this._plot.navigation.gestureSource = gestureSource;
+                        this._setGestureSource(true);
+                        //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                        //    return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
+                        //});
+                        //this._plot.navigation.gestureSource = gestureSource;
                         this._onlyZoomEnabled = true;
                     }
                     break;
@@ -7542,6 +7559,14 @@ var BMA;
                     break;
             }
             this._super(key, value);
+        },
+        _setGestureSource: function (onlyZoom) {
+            var that = this;
+            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                var constraint = onlyZoom ? g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) : g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                return constraint;
+            });
+            this._plot.navigation.gestureSource = gestureSource;
         },
         _setOptions: function (options) {
             this._super(options);
@@ -9988,7 +10013,7 @@ jQuery.fn.extend({
             this.statesbtns.empty();
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateName = this.options.states[i].Name;
-                var stateDiv = $("<div></div>").addClass("state-button").attr("data-state", stateName).css("z-index", 6).css("cursor", "pointer").text(stateName).appendTo(that.statesbtns);
+                var stateDiv = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", stateName).css("z-index", 6).css("cursor", "pointer").text(stateName).appendTo(that.statesbtns);
                 stateDiv.draggable({
                     helper: "clone",
                     start: function (event, ui) {
@@ -10017,7 +10042,7 @@ jQuery.fn.extend({
             var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
-                var opDiv = $("<div></div>").addClass("operator").attr("data-operator", operator.Name).css("z-index", 6).css("cursor", "pointer").appendTo(operatorsDiv);
+                var opDiv = $("<div></div>").addClass("operator").addClass("ltl-tp-droppable").attr("data-operator", operator.Name).css("z-index", 6).css("cursor", "pointer").appendTo(operatorsDiv);
                 var spaceStr = "&nbsp;&nbsp;";
                 if (operator.OperandsCount > 1) {
                     $("<div></div>").addClass("hole").appendTo(opDiv);
@@ -10042,7 +10067,8 @@ jQuery.fn.extend({
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
-                gridVisibility: false
+                gridVisibility: false,
+                dropFilter: ["ltl-tp-droppable"]
             });
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });

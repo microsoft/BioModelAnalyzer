@@ -18,6 +18,7 @@
 
                 var stateDiv = $("<div></div>")
                     .addClass("state-button")
+                    .addClass("ltl-tp-droppable")
                     .attr("data-state", stateName)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
@@ -61,6 +62,7 @@
 
                 var opDiv = $("<div></div>")
                     .addClass("operator")
+                    .addClass("ltl-tp-droppable")
                     .attr("data-operator", operator.Name)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
@@ -92,7 +94,8 @@
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
-                gridVisibility: false
+                gridVisibility: false,
+                dropFilter: ["ltl-tp-droppable"]
             });
 
             if (that.options.commands !== undefined) {

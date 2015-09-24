@@ -386,7 +386,7 @@ function loadScript(version) {
             .attr("data-type", elem.Type)
             .appendTo(elementPanel);
 
-        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
+        var label = $("<label></label>").addClass("drawingsurface-droppable").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
 
