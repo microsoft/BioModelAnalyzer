@@ -35,8 +35,8 @@
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 });
 
-                /*
-                window.Commands.On("LTLRequested", function (param: { formula }) {
+                
+                commands.On("LTLRequested", function (param: { formula }) {
 
                     //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
                     
@@ -55,23 +55,24 @@
                             alert(res.Error);
                         }
                         else {
-                            if (res.Status == "True") {
-                                var restbl = that.CreateColoredTable(res.Ticks);
-                                ltlviewer.SetResult(restbl);
+                            alert(res.Status);
 
-                                that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
-                            }
-                            else {
-                                ltlviewer.SetResult(undefined);
-                                alert(res.Status);
-                            }
+                            //if (res.Status == "True") {
+                                //var restbl = that.CreateColoredTable(res.Ticks);
+                                //ltlviewer.SetResult(restbl);
+                                //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                            //}
+                            //else {
+                                //ltlviewer.SetResult(undefined);
+                                //alert(res.Status);
+                            //}
                         }
                         })
                         .fail(function () {
                             alert("LTL failed");
                         })
                 });
-                */
+                
 
                 window.Commands.On("Expand", (param) => {
                     switch (param) {
