@@ -10399,11 +10399,8 @@ var BMA;
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 });
-                /*
-                window.Commands.On("LTLRequested", function (param: { formula }) {
-
+                commands.On("LTLRequested", function (param) {
                     //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
-                    
                     var model = BMA.Model.ExportBioModel(appModel.BioModel);
                     var proofInput = {
                         "Name": model.Name,
@@ -10411,31 +10408,18 @@ var BMA;
                         "Variables": model.Variables,
                         "Formula": param.formula,
                         "Number_of_steps": 10
-                    }
-
-                    var result = ajax.Invoke(proofInput)
-                        .done(function (res) {
+                    };
+                    var result = ajax.Invoke(proofInput).done(function (res) {
                         if (res.Ticks == null) {
                             alert(res.Error);
                         }
                         else {
-                            if (res.Status == "True") {
-                                var restbl = that.CreateColoredTable(res.Ticks);
-                                ltlviewer.SetResult(restbl);
-
-                                that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
-                            }
-                            else {
-                                ltlviewer.SetResult(undefined);
-                                alert(res.Status);
-                            }
+                            alert(res.Status);
                         }
-                        })
-                        .fail(function () {
-                            alert("LTL failed");
-                        })
+                    }).fail(function () {
+                        alert("LTL failed");
+                    });
                 });
-                */
                 window.Commands.On("Expand", function (param) {
                     switch (param) {
                         case "LTLStates":
@@ -10494,6 +10478,9 @@ var BMA;
                 commands.On("KeyframesChanged", function (args) {
                     appModel.States = args.states;
                     that.statesViewer.SetStates(args.states);
+                });
+                commands.On("UpdateStatesEditorOptions", function (args) {
+                    that.statesEditor.SetModel(that.appModel.BioModel, that.appModel.Layout);
                 });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
@@ -10812,7 +10799,20 @@ var BMA;
                 }
                 return false;
             };
+            TemporalPropertiesPresenter.prototype.SubscribeOnTestRequested = function (btn, operation) {
+                var that = this;
+                btn.click(function (arg) {
+                    if (operation.IsCompleted) {
+                        //alert(op.Operation.GetFormula());
+                        var formula = operation.Operation.GetFormula();
+                        that.commands.Execute("LTLRequested", { formula: formula });
+                    }
+                    else {
+                    }
+                });
+            };
             TemporalPropertiesPresenter.prototype.OnOperationsChanged = function () {
+                var that = this;
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     ops.push(this.operations[i].Operation.Clone());
@@ -10835,14 +10835,7 @@ var BMA;
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
-                    btn.click(function (arg) {
-                        if (op.IsCompleted) {
-                            alert(op.Operation.GetFormula());
-                        }
-                        else {
-                            alert("Incompleted!");
-                        }
-                    });
+                    that.SubscribeOnTestRequested(btn, op);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(opDiv);
                 }

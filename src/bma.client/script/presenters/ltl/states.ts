@@ -32,6 +32,10 @@
                     appModel.States = args.states;
                     that.statesViewer.SetStates(args.states);
                 });
+
+                commands.On("UpdateStatesEditorOptions",(args) => {
+                    that.statesEditor.SetModel(that.appModel.BioModel, that.appModel.Layout);
+                })
             }
 
             public GetStateByName(name: string): BMA.LTLOperations.Keyframe {

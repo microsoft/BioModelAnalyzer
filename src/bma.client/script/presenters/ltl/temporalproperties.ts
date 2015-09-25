@@ -379,7 +379,24 @@ module BMA {
                 return false;
             }
 
+            private SubscribeOnTestRequested(btn: JQuery, operation: BMA.LTLOperations.OperationLayout) {
+                var that = this;
+
+                btn.click(function (arg) {
+                        if (operation.IsCompleted) {
+                        //alert(op.Operation.GetFormula());
+                        var formula = operation.Operation.GetFormula();
+                        that.commands.Execute("LTLRequested", { formula: formula });
+                    } else {
+                        //alert("Incompleted!");
+                        //TODO: highlight incompleted parts
+                    }
+                });
+            }
+
             private OnOperationsChanged() {
+                var that = this;
+
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     ops.push(this.operations[i].Operation.Clone());
@@ -407,14 +424,8 @@ module BMA {
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
-                    btn.click(function (arg) {
-                        if (op.IsCompleted) {
-                            alert(op.Operation.GetFormula());
-                        } else {
-                            alert("Incompleted!");
-                        }
-                    });
-
+                    
+                    that.SubscribeOnTestRequested(btn, op);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(opDiv);
