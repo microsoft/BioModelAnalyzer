@@ -388,8 +388,7 @@ module BMA {
                         var formula = operation.Operation.GetFormula();
                         that.commands.Execute("LTLRequested", { formula: formula });
                     } else {
-                        //alert("Incompleted!");
-                        //TODO: highlight incompleted parts
+                            operation.HighlightEmptySlots("red");
                     }
                 });
             }

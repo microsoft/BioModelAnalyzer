@@ -3004,12 +3004,14 @@ var BMA;
                             transform: "translate(" + position.x + ", " + position.y + ")"
                         });
                         svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
-                        svg.text(stateGroup, 0, 5, layoutPart.name, {
+                        var textGroup = svg.group(stateGroup, {});
+                        var label = svg.text(textGroup, 0, 0, layoutPart.name, {
                             "font-size": 16,
                             "fill": "rgb(96,96,96)",
-                            "text-anchor": "middle",
-                            "alignment-baseline": "middle",
-                            "dominant-baseline": "central"
+                        });
+                        var bbox = label.getBBox();
+                        this.svg.change(textGroup, {
+                            transform: "translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
                         });
                         layoutPart.svgref = stateGroup;
                     }
@@ -3181,6 +3183,27 @@ var BMA;
                     };
                 }
                 return undefined;
+            };
+            OperationLayout.prototype.HiglightEmptySlotsInternal = function (color, layoutPart) {
+                if (layoutPart !== undefined) {
+                    if (layoutPart.isEmpty) {
+                        this.svg.change(layoutPart.svgref, {
+                            fill: color
+                        });
+                    }
+                    else {
+                        if (layoutPart.operands !== undefined) {
+                            for (var i = 0; i < layoutPart.operands.length; i++) {
+                                this.HiglightEmptySlotsInternal(color, layoutPart.operands[i]);
+                            }
+                        }
+                    }
+                }
+            };
+            OperationLayout.prototype.HighlightEmptySlots = function (color) {
+                if (this.layout !== undefined) {
+                    this.HiglightEmptySlotsInternal(color, this.layout);
+                }
             };
             return OperationLayout;
         })();
@@ -10800,6 +10823,7 @@ var BMA;
                         that.commands.Execute("LTLRequested", { formula: formula });
                     }
                     else {
+                        operation.HighlightEmptySlots("red");
                     }
                 });
             };
