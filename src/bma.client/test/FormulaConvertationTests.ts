@@ -31,7 +31,7 @@
                 ]
             ],
         });
-        equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), ">", new BMA.LTLOperations.ConstOperand(55))];
+        equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state1", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
@@ -344,6 +344,28 @@
             new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(55), "<",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state14", doubleEquation));
+        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
+    });
+
+    it("state with double finished keyframe equation with '=' and '>='",() => {
+        states.push(
+            {
+                name: "state15",
+                description: "",
+                formula: [
+                    [
+                        { type: "const", value: 4 },
+                        { type: "operator", value: ">" },
+                        { type: "variable", value: { container: "cell", variable: "var1" } },
+                        { type: "operator", value: "=" },
+                        { type: "const", value: 56 },
+                    ],
+                ],
+            });
+        doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(3), "<",
+            new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(5)),
+            new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(55))];
+        keyframes.push(new BMA.LTLOperations.Keyframe("state6", doubleEquation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 }); 

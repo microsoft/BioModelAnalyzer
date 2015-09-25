@@ -253,10 +253,10 @@ module BMA {
                                 var leftEqual = false;
                                 var rightEqual = false;
                                 if (leftOperand == "<=") {
-                                    leftConst++;
+                                    leftConst--;
                                     leftOperand = "<";
                                 } else if (leftOperand == ">=") {
-                                    leftConst--;
+                                    leftConst++;
                                     leftOperand = ">";
                                 } else if (leftOperand == "=") {
                                     leftEqual = true;
@@ -285,22 +285,29 @@ module BMA {
                                         new BMA.LTLOperations.ConstOperand(rightConst));
                                     ops.push(op);
                                 } else if (rightEqual && !leftEqual) {
+                                    if (leftOperand == ">")
+                                        leftOperand = "<";
+                                    else leftOperand = ">";
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), leftOperand,
                                         new BMA.LTLOperations.ConstOperand(leftConst));
                                     ops.push(op);
                                 }
                             } else if (f[0] !== undefined && f[1] !== undefined && f[3] === undefined && f[4] === undefined) {
                                 if (f[1].value == ">=")
-                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), ">",
-                                        new BMA.LTLOperations.ConstOperand(parseFloat(f[0].value) - 1));
-                                else if (f[1].value == "<=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), "<",
                                         new BMA.LTLOperations.ConstOperand(parseFloat(f[0].value) + 1));
+                                else if (f[1].value == "<=")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), ">",
+                                        new BMA.LTLOperations.ConstOperand(parseFloat(f[0].value) - 1));
                                 else if (f[1].value == "=")
                                     op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(parseFloat(f[0].value) - 1), "<",
                                         new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[0].value) + 1));
-                                else op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[1].value,
-                                    new BMA.LTLOperations.ConstOperand(f[0].value));
+                                else if (f[1].value == "<")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), ">",
+                                        new BMA.LTLOperations.ConstOperand(f[0].value));
+                                else if (f[1].value == ">")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), "<",
+                                        new BMA.LTLOperations.ConstOperand(f[0].value));
                                 ops.push(op);
                             } else if (f[0] === undefined && f[1] === undefined && f[3] !== undefined && f[4] !== undefined) {
                                 if (f[3].value == ">=")
@@ -320,15 +327,19 @@ module BMA {
                             if (f[2] !== undefined && f[3] !== undefined) {
                                 if (f[3].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable),
-                                        ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1));
+                                        "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) + 1));
                                 else if (f[3].value == "<=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable),
-                                        "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) + 1));
+                                        ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1));
                                 else if (f[3].value == "=")
                                     op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1), "<",
                                         new BMA.LTLOperations.NameOperand(f[4].value.variable), "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) + 1));
-                                else op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable),
-                                    f[3].value, new BMA.LTLOperations.ConstOperand(f[2].value));
+                                else if (f[3].value == ">")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable),
+                                        "<", new BMA.LTLOperations.ConstOperand(f[2].value));
+                                else if (f[3].value == "<")
+                                    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable),
+                                        ">", new BMA.LTLOperations.ConstOperand(f[2].value));
                                 ops.push(op);
                             }
                         }
