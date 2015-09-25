@@ -120,11 +120,26 @@
             }
 
             public GetFormula() {
-                return "(And " + "(" + this.leftOperator + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
+                return "(And " + "(" + this.Invert(this.leftOperator) + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
             }
 
             public Clone() {
                 return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
+            }
+
+            private Invert(operator: string): string {
+                switch (operator) {
+                    case ">":
+                        return "<";
+                    case "<":
+                        return ">";
+                    case ">=":
+                        return "<=";
+                    case "<=":
+                        return ">=";
+                    default:
+                        return operator;
+                }
             }
         }
 
