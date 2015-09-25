@@ -2540,10 +2540,24 @@ var BMA;
                 configurable: true
             });
             DoubleKeyframeEquation.prototype.GetFormula = function () {
-                return "(And " + "(" + this.leftOperator + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
+                return "(And " + "(" + this.Invert(this.leftOperator) + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
             };
             DoubleKeyframeEquation.prototype.Clone = function () {
                 return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
+            };
+            DoubleKeyframeEquation.prototype.Invert = function (operator) {
+                switch (operator) {
+                    case ">":
+                        return "<";
+                    case "<":
+                        return ">";
+                    case ">=":
+                        return "<=";
+                    case "<=":
+                        return ">=";
+                    default:
+                        return operator;
+                }
             };
             return DoubleKeyframeEquation;
         })();
