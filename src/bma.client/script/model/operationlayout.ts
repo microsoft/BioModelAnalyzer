@@ -11,6 +11,7 @@
             private isVisible: boolean = true;
             private scale: { x: number; y: number } = { x: 1, y: 1 };
             private borderThickness: number = 1;
+            private fill: string = undefined;
 
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -71,6 +72,22 @@
                         this.Render();
                     } else {
                         this.Clear();
+                    }
+                }
+            }
+
+            public get Fill(): string {
+                return this.fill;
+            }
+
+            public set Fill(value: string) {
+                if (value !== this.fill) {
+                    this.fill = value;
+
+                    if (this.renderGroup !== undefined) {
+                        this.svg.change(this.renderGroup, {
+                            fill: this.fill
+                        });
                     }
                 }
             }
@@ -249,6 +266,29 @@
                 }
             }
 
+            /*
+            private UpdateFill() {
+                if (this.layout !== undefined) {
+
+                    var updateFillOfPart = function (layoutPart) {
+                        if (layoutPart !== undefined) {
+                            this.svg.change(layoutPart.svgref, {
+                                fill: this.fill
+                            });
+
+                            if (layoutPart.operands !== undefined) {
+                                for (var i = 0; i < layoutPart.operands.length; i++) {
+                                    updateFillOfPart(layoutPart.operands[i]);
+                                }
+                            }
+                        }
+                    }
+
+                    updateFillOfPart(this.layout);
+                }
+            }
+            */
+
             private GetOperatorWidth(svg: any, operator: string, fontSize: number): { width: number; height: number } {
                 var t = svg.text(0, 0, operator, {
                     "font-size": fontSize,
@@ -289,7 +329,7 @@
 
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
-                            fill: fill,
+                            //fill: fill,
                             strokeWidth: strokeWidth
                         });
 
@@ -378,7 +418,8 @@
                 this.SetPositionOffsets(this.layout, position);
 
                 this.renderGroup = svg.group({
-                    transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                    transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")",
+                    fill: this.fill === undefined ? "white" : this.fill,
                 });
 
                 var halfWidth = this.layout.width / 2;
@@ -391,7 +432,6 @@
                 }
 
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
-                    fill: "white",
                     stroke: "rgb(96,96,96)",
                     strokeWidth: 1,
                     isRoot: true,

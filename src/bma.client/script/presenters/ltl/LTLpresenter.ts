@@ -36,42 +36,42 @@
                 });
 
                 
-                commands.On("LTLRequested", function (param: { formula }) {
+                //commands.On("LTLRequested", function (param: { formula }) {
 
-                    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
+                //    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
                     
-                    var model = BMA.Model.ExportBioModel(appModel.BioModel);
-                    var proofInput = {
-                        "Name": model.Name,
-                        "Relationships": model.Relationships,
-                        "Variables": model.Variables,
-                        "Formula": param.formula,
-                        "Number_of_steps": 10
-                    }
+                //    var model = BMA.Model.ExportBioModel(appModel.BioModel);
+                //    var proofInput = {
+                //        "Name": model.Name,
+                //        "Relationships": model.Relationships,
+                //        "Variables": model.Variables,
+                //        "Formula": param.formula,
+                //        "Number_of_steps": 10
+                //    }
 
-                    var result = ajax.Invoke(proofInput)
-                        .done(function (res) {
-                        if (res.Ticks == null) {
-                            alert(res.Error);
-                        }
-                        else {
-                            alert(res.Status);
+                //    var result = ajax.Invoke(proofInput)
+                //        .done(function (res) {
+                //        if (res.Ticks == null) {
+                //            alert(res.Error);
+                //        }
+                //        else {
+                //            alert(res.Status);
 
-                            //if (res.Status == "True") {
-                                //var restbl = that.CreateColoredTable(res.Ticks);
-                                //ltlviewer.SetResult(restbl);
-                                //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
-                            //}
-                            //else {
-                                //ltlviewer.SetResult(undefined);
-                                //alert(res.Status);
-                            //}
-                        }
-                        })
-                        .fail(function () {
-                            alert("LTL failed");
-                        })
-                });
+                //            //if (res.Status == "True") {
+                //                //var restbl = that.CreateColoredTable(res.Ticks);
+                //                //ltlviewer.SetResult(restbl);
+                //                //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                //            //}
+                //            //else {
+                //                //ltlviewer.SetResult(undefined);
+                //                //alert(res.Status);
+                //            //}
+                //        }
+                //        })
+                //        .fail(function () {
+                //            alert("LTL failed");
+                //        })
+                //});
                 
 
                 window.Commands.On("Expand", (param) => {
@@ -86,6 +86,8 @@
                             if (this.tppresenter === undefined) {
                                 this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
                                     commands,
+                                    appModel,
+                                    ajax,
                                     temporlapropertieseditor.GetSVGDriver(),
                                     temporlapropertieseditor.GetNavigationDriver(),
                                     temporlapropertieseditor.GetDragService(),

@@ -2685,6 +2685,7 @@ var BMA;
                 this.isVisible = true;
                 this.scale = { x: 1, y: 1 };
                 this.borderThickness = 1;
+                this.fill = undefined;
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -2747,6 +2748,23 @@ var BMA;
                         }
                         else {
                             this.Clear();
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "Fill", {
+                get: function () {
+                    return this.fill;
+                },
+                set: function (value) {
+                    if (value !== this.fill) {
+                        this.fill = value;
+                        if (this.renderGroup !== undefined) {
+                            this.svg.change(this.renderGroup, {
+                                fill: this.fill
+                            });
                         }
                     }
                 },
@@ -2929,6 +2947,28 @@ var BMA;
                     }
                 }
             };
+            /*
+            private UpdateFill() {
+                if (this.layout !== undefined) {
+
+                    var updateFillOfPart = function (layoutPart) {
+                        if (layoutPart !== undefined) {
+                            this.svg.change(layoutPart.svgref, {
+                                fill: this.fill
+                            });
+
+                            if (layoutPart.operands !== undefined) {
+                                for (var i = 0; i < layoutPart.operands.length; i++) {
+                                    updateFillOfPart(layoutPart.operands[i]);
+                                }
+                            }
+                        }
+                    }
+
+                    updateFillOfPart(this.layout);
+                }
+            }
+            */
             OperationLayout.prototype.GetOperatorWidth = function (svg, operator, fontSize) {
                 var t = svg.text(0, 0, operator, {
                     "font-size": fontSize,
@@ -2965,7 +3005,7 @@ var BMA;
                         }
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
-                            fill: fill,
+                            //fill: fill,
                             strokeWidth: strokeWidth
                         });
                         layoutPart.svgref = opSVG;
@@ -3027,7 +3067,8 @@ var BMA;
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
                 this.renderGroup = svg.group({
-                    transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")"
+                    transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")",
+                    fill: this.fill === undefined ? "white" : this.fill,
                 });
                 var halfWidth = this.layout.width / 2;
                 var height = this.keyFrameSize + this.padding.y * this.layout.layer;
@@ -3038,7 +3079,6 @@ var BMA;
                     height: height
                 };
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
-                    fill: "white",
                     stroke: "rgb(96,96,96)",
                     strokeWidth: 1,
                     isRoot: true,
@@ -10422,27 +10462,38 @@ var BMA;
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 });
-                commands.On("LTLRequested", function (param) {
-                    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
-                    var model = BMA.Model.ExportBioModel(appModel.BioModel);
-                    var proofInput = {
-                        "Name": model.Name,
-                        "Relationships": model.Relationships,
-                        "Variables": model.Variables,
-                        "Formula": param.formula,
-                        "Number_of_steps": 10
-                    };
-                    var result = ajax.Invoke(proofInput).done(function (res) {
-                        if (res.Ticks == null) {
-                            alert(res.Error);
-                        }
-                        else {
-                            alert(res.Status);
-                        }
-                    }).fail(function () {
-                        alert("LTL failed");
-                    });
-                });
+                //commands.On("LTLRequested", function (param: { formula }) {
+                //    //var f = BMA.Model.MapVariableNames(param.formula, name => that.appModel.BioModel.GetIdByName(name));
+                //    var model = BMA.Model.ExportBioModel(appModel.BioModel);
+                //    var proofInput = {
+                //        "Name": model.Name,
+                //        "Relationships": model.Relationships,
+                //        "Variables": model.Variables,
+                //        "Formula": param.formula,
+                //        "Number_of_steps": 10
+                //    }
+                //    var result = ajax.Invoke(proofInput)
+                //        .done(function (res) {
+                //        if (res.Ticks == null) {
+                //            alert(res.Error);
+                //        }
+                //        else {
+                //            alert(res.Status);
+                //            //if (res.Status == "True") {
+                //                //var restbl = that.CreateColoredTable(res.Ticks);
+                //                //ltlviewer.SetResult(restbl);
+                //                //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                //            //}
+                //            //else {
+                //                //ltlviewer.SetResult(undefined);
+                //                //alert(res.Status);
+                //            //}
+                //        }
+                //        })
+                //        .fail(function () {
+                //            alert("LTL failed");
+                //        })
+                //});
                 window.Commands.On("Expand", function (param) {
                     switch (param) {
                         case "LTLStates":
@@ -10451,7 +10502,7 @@ var BMA;
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
                             if (_this.tppresenter === undefined) {
-                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), _this.statespresenter);
+                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), _this.statespresenter);
                             }
                             break;
                         default:
@@ -10534,11 +10585,13 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(commands, svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
+            function TemporalPropertiesPresenter(commands, appModel, ajax, svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
                 var _this = this;
                 this.controlPanels = [];
                 this.controlPanelPadding = 3;
                 var that = this;
+                this.appModel = appModel;
+                this.ajax = ajax;
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
                 this.dragService = dragService;
@@ -10826,9 +10879,30 @@ var BMA;
                 var that = this;
                 btn.click(function (arg) {
                     if (operation.IsCompleted) {
-                        //alert(op.Operation.GetFormula());
                         var formula = operation.Operation.GetFormula();
-                        that.commands.Execute("LTLRequested", { formula: formula });
+                        var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        var proofInput = {
+                            "Name": model.Name,
+                            "Relationships": model.Relationships,
+                            "Variables": model.Variables,
+                            "Formula": formula,
+                            "Number_of_steps": 10
+                        };
+                        var result = that.ajax.Invoke(proofInput).done(function (res) {
+                            if (res.Ticks == null) {
+                                alert(res.Error);
+                            }
+                            else {
+                                if (res.Status === "True") {
+                                    operation.Fill = "rgb(217,255,182)";
+                                }
+                                else {
+                                    operation.Fill = "rgb(254,172,158)";
+                                }
+                            }
+                        }).fail(function () {
+                            alert("LTL failed");
+                        });
                     }
                     else {
                         operation.HighlightEmptySlots("red");

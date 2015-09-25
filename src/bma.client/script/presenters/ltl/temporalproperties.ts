@@ -38,8 +38,13 @@ module BMA {
             private controlPanels = [];
             private controlPanelPadding = 3;
 
+            private appModel: BMA.Model.AppModel;
+            private ajax: BMA.UIDrivers.IServiceDriver;
+
             constructor(
                 commands: BMA.CommandRegistry,
+                appModel: BMA.Model.AppModel,
+                ajax: BMA.UIDrivers.IServiceDriver,
                 svgPlotDriver: BMA.UIDrivers.ISVGPlot,
                 navigationDriver: BMA.UIDrivers.INavigationPanel,
                 dragService: BMA.UIDrivers.IElementsPanel,
@@ -47,7 +52,8 @@ module BMA {
                 statesPresenter: BMA.LTL.StatesPresenter) {
 
                 var that = this;
-
+                this.appModel = appModel;
+                this.ajax = ajax;
                 this.driver = svgPlotDriver;
                 this.navigationDriver = navigationDriver;
                 this.dragService = dragService;
@@ -383,12 +389,50 @@ module BMA {
                 var that = this;
 
                 btn.click(function (arg) {
-                        if (operation.IsCompleted) {
-                        //alert(op.Operation.GetFormula());
+                    if (operation.IsCompleted) {
+
                         var formula = operation.Operation.GetFormula();
-                        that.commands.Execute("LTLRequested", { formula: formula });
+
+                        var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                        var proofInput = {
+                            "Name": model.Name,
+                            "Relationships": model.Relationships,
+                            "Variables": model.Variables,
+                            "Formula": formula,
+                            "Number_of_steps": 10
+                        }
+
+                        var result = that.ajax.Invoke(proofInput)
+                            .done(function (res) {
+                            if (res.Ticks == null) {
+                                alert(res.Error);
+                            }
+                            else {
+                                if (res.Status === "True") {
+                                    operation.Fill = "rgb(217,255,182)";
+                                } else {
+                                    operation.Fill = "rgb(254,172,158)";
+                                }
+
+                                //if (res.Status == "True") {
+                                //var restbl = that.CreateColoredTable(res.Ticks);
+                                //ltlviewer.SetResult(restbl);
+                                //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                                //}
+                                //else {
+                                //ltlviewer.SetResult(undefined);
+                                //alert(res.Status);
+                                //}
+                            }
+                        })
+                            .fail(function () {
+                            alert("LTL failed");
+                        })
+
+
+                        //that.commands.Execute("LTLRequested", { formula: formula });
                     } else {
-                            operation.HighlightEmptySlots("red");
+                        operation.HighlightEmptySlots("red");
                     }
                 });
             }
@@ -423,7 +467,7 @@ module BMA {
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
-                    
+
                     that.SubscribeOnTestRequested(btn, op);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
