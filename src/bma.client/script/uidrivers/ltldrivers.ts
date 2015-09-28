@@ -371,7 +371,11 @@ module BMA {
                         that.commands.Execute("KeyframesChanged", { states: wstates });
                     };
 
-                    this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated });
+                    var onComboBoxOpen = function () {
+                        that.commands.Execute("UpdateStatesEditorOptions", {});
+                    };
+
+                    this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated, onComboBoxOpen: onComboBoxOpen });
                     if (this.statesToSet !== undefined) {
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;

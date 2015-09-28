@@ -20,6 +20,7 @@
             minConst: -99,
             maxConst: 100,
             onStatesUpdated: undefined,
+            onComboBoxOpen: undefined,
         },
 
         _create: function () {
@@ -140,6 +141,10 @@
                     this.options.onStatesUpdated = value;
                     break;
                 }
+                case "onComboBoxOpen": {
+                    this.options.onComboBoxOpen = value;
+                    break;
+                }
                 default: break;
             }
             this._super(key, value);
@@ -152,6 +157,12 @@
         executeStatesUpdate: function (args) {
             if (this.options.onStatesUpdated !== undefined) {
                 this.options.onStatesUpdated(args);
+            }
+        },
+
+        executeonComboBoxOpen: function (args) {
+            if (this.options.onComboBoxOpen !== undefined) {
+                this.options.onComboBoxOpen();
             }
         },
 
@@ -220,6 +231,31 @@
             var imgVariable = $("<img></img>").attr("src", "../images/variable.svg").appendTo(tdVariable);
 
             var trList = $("<tr></tr>").appendTo(tbody);
+
+            this.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
+            
+            selectVariable.bind("click", function () {
+                if (variablePicker.is(":hidden")) {
+                    that.executeonComboBoxOpen();
+                    that.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
+                    variablePicker.show();
+                    expandButton.addClass('inputs-list-header-expanded');
+                    selectVariable.addClass("expanded");
+                    variablePicker.addClass("expanded");
+                } else {
+                    variablePicker.hide();
+                    expandButton.removeClass('inputs-list-header-expanded');
+                    selectVariable.removeClass("expanded");
+                    variablePicker.removeClass("expanded");
+                }
+            });
+
+            return trList;
+        },
+
+        updateVariablePicker: function (trList, variablePicker, variableSelected, selectVariable, currSymbol) {
+            var that = this;
+            trList.children().remove();
             var tdContainersList = $("<td></td>").addClass("list").appendTo(trList);
             var divContainers = $("<div></div>").addClass("scrollable").appendTo(tdContainersList);
             var tdVariablesList = $("<td></td>").addClass("list").appendTo(trList);
@@ -259,22 +295,6 @@
             }
 
             divContainers.children().eq(0).trigger("click");
-
-            selectVariable.bind("click", function () {
-                if (variablePicker.is(":hidden")) {
-                    variablePicker.show();
-                    expandButton.addClass('inputs-list-header-expanded');
-                    selectVariable.addClass("expanded");
-                    variablePicker.addClass("expanded");
-                } else {
-                    variablePicker.hide();
-                    expandButton.removeClass('inputs-list-header-expanded');
-                    selectVariable.removeClass("expanded");
-                    variablePicker.removeClass("expanded");
-                }
-            });
-
-            return trList;
         },
 
         refresh: function () {
