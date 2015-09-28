@@ -541,6 +541,36 @@
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         }
                     }
+                }).dblclick(function () {
+                    var stateIndex = that.options.states.indexOf(that._activeState);
+                    var cellIndex = this.cellIndex;
+                    var tableIndex = table.index();
+
+                    var formula = that.options.states[stateIndex].formula[tableIndex].slice(0);
+
+                    formula[this.cellIndex] = {
+                        type: "const",
+                        value: 0
+                    };
+
+                    if (that.validation(formula)) {
+                        that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                            type: "const",
+                            value: 0
+                        }
+
+                        var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
+                        var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0")
+                            .attr("max", "100").addClass("number-input").appendTo(this);
+
+                        num.bind("input change", function () {
+                            if (parseFloat(this.value) > that.options.maxConst) this.value = that.options.maxConst;
+                            if (parseFloat(this.value) < that.options.minConst) this.value = that.options.minConst;
+                            currNumber.value = this.value;
+
+                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                        });
+                    }
                 });
             }
 

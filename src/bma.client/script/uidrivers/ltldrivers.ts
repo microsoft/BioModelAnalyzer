@@ -220,7 +220,7 @@ module BMA {
             }
 
             public Convert(states: any) {
-                var wstates = [];
+                var wstates: BMA.LTLOperations.Keyframe[] = [];
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
                     var formulas = states[i].formula;
@@ -398,11 +398,23 @@ module BMA {
                     vars: []
                 };
 
-                for (var i = 0; i < model.Variables.length; i++) {
-                    allGroup.vars.push(model.Variables[i].Name);
+                var variables = [allGroup];
+
+                for (var i = 0; i < layout.Containers.length; i++) {
+                    variables.push({
+                        name: layout.Containers[i].Name,
+                        vars: []
+                    });
                 }
 
-                var variables = [ allGroup ];
+                for (var i = 0; i < model.Variables.length; i++) {
+                    allGroup.vars.push(model.Variables[i].Name);
+                    for (var j = 0; j < variables.length; j++) {
+                        var container = layout.GetContainerById(model.Variables[i].ContainerId);
+                        if (container !== undefined && variables[j].name == container.Name)
+                            variables[j].vars.push(model.Variables[i].Name);
+                    }
+                }
 
                 if (this.statesEditor !== undefined) {
                     this.statesEditor.stateseditor({ variables: variables });
