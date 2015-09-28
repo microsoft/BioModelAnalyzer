@@ -117,6 +117,8 @@
                     this._stateButtons.children(".state").remove();
                     for (var i = 0; i < value.length; i++) {
                         this.options.states.push(value[i]);
+                        if (value[i].formula.length == 0)
+                            value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
                         this.addState(value[i]);
                     }
                     if (this.options.states.length != 0) {
@@ -126,7 +128,7 @@
                         that._toolbar.show();
                         that._description.show();
                         that._ltlStates.show();
-                    } 
+                    }
                     break;
                 }
                 case "minConst": {

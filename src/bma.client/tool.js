@@ -9740,6 +9740,8 @@ jQuery.fn.extend({
                     this._stateButtons.children(".state").remove();
                     for (var i = 0; i < value.length; i++) {
                         this.options.states.push(value[i]);
+                        if (value[i].formula.length == 0)
+                            value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
                         this.addState(value[i]);
                     }
                     if (this.options.states.length != 0) {
@@ -10186,8 +10188,10 @@ jQuery.fn.extend({
                     this.options.states = [];
                     this._stateButtons.children().remove();
                     for (var i = 0; i < value.length; i++) {
-                        this.options.states.push(value[i]);
-                        var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name).addClass("state-button").appendTo(this._stateButtons);
+                        if (value[i].formula.length != 0) {
+                            this.options.states.push(value[i]);
+                            var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name).addClass("state-button").appendTo(this._stateButtons);
+                        }
                     }
                     if (this.options.states.length == 0) {
                         this._stateButtons.hide();
