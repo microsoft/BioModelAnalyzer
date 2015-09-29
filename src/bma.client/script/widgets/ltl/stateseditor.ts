@@ -13,6 +13,7 @@
         _ltlStates: null,
         _ltlAddConditionButton: null,
         _activeState: null,
+        _activeVariable: null,
 
         options: {
             variables: [],
@@ -264,7 +265,7 @@
             var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
 
             for (var i = 0; i < this.options.variables.length; i++) {
-                var containers = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-name", this.options.variables[i].name)
+                var containers = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
                     .appendTo(divContainers).click(function () {
                     var currConteiner = this;
                     divContainers.find(".active").removeClass("active");
@@ -285,15 +286,23 @@
                             else
                                 variableSelected.text($(this).attr("data-variable-name"));
 
-                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: $(this).attr("data-variable-name") };
+                            currSymbol.value = { container: $(currConteiner).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                            that._activeVariable = {
+                                containerId: $(currConteiner).attr("data-container-id"), variable: $(this).attr("data-variable-name")
+                            };
 
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
 
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-                        });
+                            });
+                        if (that._activeVariable != null && that._activeVariable.containerId == $(currConteiner).attr("data-container-id")
+                            && that._activeVariable.variable == that.options.variables[idx].vars[j])
+                            variables.addClass(".active");
                     }
-                });
+                    });
+                if (this._activeVariable != null && this._activeVariable.containerId == this.options.variables[i].id)
+                    containers.addClass(".active");
             }
 
             divContainers.children().eq(0).trigger("click");
@@ -328,7 +337,7 @@
                             var tdVariables = trList.children().eq(1);
                             var divVariables = tdVariables.children().eq(0);
 
-                            divContainers.find("[data-container-name='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
+                            divContainers.find("[data-container-id='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
                             divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
 
                         } else if (this._activeState.formula[i][j].type == "const") {

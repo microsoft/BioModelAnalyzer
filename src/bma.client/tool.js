@@ -4125,22 +4125,24 @@ var BMA;
             StatesEditorDriver.prototype.SetModel = function (model, layout) {
                 var allGroup = {
                     name: "ALL",
+                    id: 0,
                     vars: []
                 };
-                var variables = [allGroup];
-                for (var i = 0; i < layout.Containers.length; i++) {
-                    variables.push({
-                        name: layout.Containers[i].Name,
-                        vars: []
-                    });
-                }
                 for (var i = 0; i < model.Variables.length; i++) {
                     allGroup.vars.push(model.Variables[i].Name);
-                    for (var j = 0; j < variables.length; j++) {
-                        var container = layout.GetContainerById(model.Variables[i].ContainerId);
-                        if (container !== undefined && variables[j].name == container.Name)
-                            variables[j].vars.push(model.Variables[i].Name);
+                }
+                var variables = [allGroup];
+                for (var i = 0; i < layout.Containers.length; i++) {
+                    var vars = [];
+                    for (var j = 0; j < model.Variables.length; j++) {
+                        if (layout.Containers[i].Id == model.Variables[j].ContainerId)
+                            vars.push(model.Variables[j].Name);
                     }
+                    variables.push({
+                        name: layout.Containers[i].Name,
+                        id: layout.Containers[i].Id,
+                        vars: vars
+                    });
                 }
                 if (this.statesEditor !== undefined) {
                     this.statesEditor.stateseditor({ variables: variables });
@@ -9667,6 +9669,7 @@ jQuery.fn.extend({
         _ltlStates: null,
         _ltlAddConditionButton: null,
         _activeState: null,
+        _activeVariable: null,
         options: {
             variables: [],
             states: [],
@@ -9882,7 +9885,7 @@ jQuery.fn.extend({
             var tdVariablesList = $("<td></td>").addClass("list").appendTo(trList);
             var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
             for (var i = 0; i < this.options.variables.length; i++) {
-                var containers = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-name", this.options.variables[i].name).appendTo(divContainers).click(function () {
+                var containers = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id).appendTo(divContainers).click(function () {
                     var currConteiner = this;
                     divContainers.find(".active").removeClass("active");
                     divVariables.children().remove();
@@ -9899,16 +9902,26 @@ jQuery.fn.extend({
                                 variableSelected.text("Unnamed");
                             else
                                 variableSelected.text($(this).attr("data-variable-name"));
-                            currSymbol.value = { container: $(currConteiner).attr("data-container-name"), variable: $(this).attr("data-variable-name") };
+                            currSymbol.value = { container: $(currConteiner).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                            that._activeVariable = {
+                                containerId: $(currConteiner).attr("data-container-id"),
+                                variable: $(this).attr("data-variable-name")
+                            };
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
+                        if (that._activeVariable != null && that._activeVariable.containerId == $(currConteiner).attr("data-container-id") && that._activeVariable.variable == that.options.variables[idx].vars[j])
+                            variables.addClass("active");
                     }
                 });
+                if (this._activeVariable != null && this._activeVariable.containerId == this.options.variables[i].id)
+                    containers.trigger("click");
             }
-            divContainers.children().eq(0).trigger("click");
+            if (this._activeVariable == null)
+                divContainers.children().eq(0).trigger("click");
         },
+
         refresh: function () {
             var that = this;
             this._stateButtons.find("[data-state-name='" + this._activeState.name + "']").addClass("active");
@@ -9930,7 +9943,7 @@ jQuery.fn.extend({
                             var divContainers = tdContainers.children().eq(0);
                             var tdVariables = trList.children().eq(1);
                             var divVariables = tdVariables.children().eq(0);
-                            divContainers.find("[data-container-name='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
+                            divContainers.find("[data-container-id='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
                             divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
                         }
                         else if (this._activeState.formula[i][j].type == "const") {
@@ -10174,31 +10187,6 @@ jQuery.fn.extend({
             var that = this;
             this.element.addClass("state-compact");
             this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).click(function () {
-                /*
-                var newState = {
-                    name: "A",
-                    description: "",
-                    formula: [
-                        [
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined
-                        ]
-                    ]
-                };
-
-                that.options.states.push(newState);
-                var stateButton = $("<div>" + newState.name + "</div>").attr("data-state-name", newState.name)
-                    .addClass("state-button").appendTo(that._stateButtons);
-
-                that._stateButtons.show();
-                that._emptyStateAddButton.hide();
-                that._emptyStatePlaceholder.hide();
-
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
-                */
                 that.executeCommand("AddFirstStateRequested", {});
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
@@ -10208,6 +10196,7 @@ jQuery.fn.extend({
                     //that._stateOptionsWindow = $("<div></div>").addClass("state-options-window").appendTo(that.element);
                     //var windowPointer = $("<div></div>").addClass("pointer").appendTo(that._stateOptionsWindow);
                     //var stateOptions = $("<div></div>").addClass("state-options").appendTo(that._stateOptionsWindow);
+                }).click(function () {
                 });
             }
             if (this.options.states.length == 0) {

@@ -18,33 +18,6 @@
 
             this.element.addClass("state-compact");
             this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).click(function () {
-
-                /*
-                var newState = {
-                    name: "A",
-                    description: "",
-                    formula: [
-                        [
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined
-                        ]
-                    ]
-                };
-
-                that.options.states.push(newState);
-                var stateButton = $("<div>" + newState.name + "</div>").attr("data-state-name", newState.name)
-                    .addClass("state-button").appendTo(that._stateButtons);
-
-                that._stateButtons.show();
-                that._emptyStateAddButton.hide();
-                that._emptyStatePlaceholder.hide();
-
-                that.executeCommand("StatesChanged", { states: that.options.states, changeType: "stateAdded" });
-                */
-
                 that.executeCommand("AddFirstStateRequested", {});
             });
 
@@ -57,6 +30,7 @@
                     //that._stateOptionsWindow = $("<div></div>").addClass("state-options-window").appendTo(that.element);
                     //var windowPointer = $("<div></div>").addClass("pointer").appendTo(that._stateOptionsWindow);
                     //var stateOptions = $("<div></div>").addClass("state-options").appendTo(that._stateOptionsWindow);
+                }).click(function () {
                 });
             }
 

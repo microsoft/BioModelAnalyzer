@@ -395,25 +395,29 @@ module BMA {
             public SetModel(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 var allGroup = {
                     name: "ALL",
+                    id: 0,
                     vars: []
                 };
+
+                for (var i = 0; i < model.Variables.length; i++) {
+                    allGroup.vars.push(model.Variables[i].Name);
+                }
 
                 var variables = [allGroup];
 
                 for (var i = 0; i < layout.Containers.length; i++) {
+                    var vars = [];
+                    
+                    for (var j = 0; j < model.Variables.length; j++) {
+                        if (layout.Containers[i].Id == model.Variables[j].ContainerId)
+                            vars.push(model.Variables[j].Name);
+                    }
+
                     variables.push({
                         name: layout.Containers[i].Name,
-                        vars: []
+                        id: layout.Containers[i].Id,
+                        vars: vars
                     });
-                }
-
-                for (var i = 0; i < model.Variables.length; i++) {
-                    allGroup.vars.push(model.Variables[i].Name);
-                    for (var j = 0; j < variables.length; j++) {
-                        var container = layout.GetContainerById(model.Variables[i].ContainerId);
-                        if (container !== undefined && variables[j].name == container.Name)
-                            variables[j].vars.push(model.Variables[i].Name);
-                    }
                 }
 
                 if (this.statesEditor !== undefined) {
