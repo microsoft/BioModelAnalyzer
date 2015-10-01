@@ -9669,7 +9669,6 @@ jQuery.fn.extend({
         _ltlStates: null,
         _ltlAddConditionButton: null,
         _activeState: null,
-        _activeVariable: null,
         options: {
             variables: [],
             states: [],
@@ -9903,25 +9902,20 @@ jQuery.fn.extend({
                             else
                                 variableSelected.text($(this).attr("data-variable-name"));
                             currSymbol.value = { container: $(currConteiner).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
-                            that._activeVariable = {
-                                containerId: $(currConteiner).attr("data-container-id"),
-                                variable: $(this).attr("data-variable-name")
-                            };
                             if (!variablePicker.is(":hidden"))
                                 selectVariable.trigger("click");
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
-                        if (that._activeVariable != null && that._activeVariable.containerId == $(currConteiner).attr("data-container-id") && that._activeVariable.variable == that.options.variables[idx].vars[j])
+                        if (currSymbol.value != 0 && currSymbol.value.container == $(currConteiner).attr("data-container-id") && currSymbol.value.variable == that.options.variables[idx].vars[j])
                             variables.addClass("active");
                     }
                 });
-                if (this._activeVariable != null && this._activeVariable.containerId == this.options.variables[i].id)
+                if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
                     containers.trigger("click");
             }
-            if (this._activeVariable == null)
+            if (currSymbol.value == 0)
                 divContainers.children().eq(0).trigger("click");
         },
-
         refresh: function () {
             var that = this;
             this._stateButtons.find("[data-state-name='" + this._activeState.name + "']").addClass("active");
@@ -10131,29 +10125,31 @@ jQuery.fn.extend({
                         }
                     }
                 }).dblclick(function () {
-                    var stateIndex = that.options.states.indexOf(that._activeState);
-                    var cellIndex = this.cellIndex;
-                    var tableIndex = table.index();
-                    var formula = that.options.states[stateIndex].formula[tableIndex].slice(0);
-                    formula[this.cellIndex] = {
-                        type: "const",
-                        value: 0
-                    };
-                    if (that.validation(formula)) {
-                        that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                    if (this.childElementCount == 0) {
+                        var stateIndex = that.options.states.indexOf(that._activeState);
+                        var cellIndex = this.cellIndex;
+                        var tableIndex = table.index();
+                        var formula = that.options.states[stateIndex].formula[tableIndex].slice(0);
+                        formula[this.cellIndex] = {
                             type: "const",
                             value: 0
                         };
-                        var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                        var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
-                        num.bind("input change", function () {
-                            if (parseFloat(this.value) > that.options.maxConst)
-                                this.value = that.options.maxConst;
-                            if (parseFloat(this.value) < that.options.minConst)
-                                this.value = that.options.minConst;
-                            currNumber.value = this.value;
-                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-                        });
+                        if (that.validation(formula)) {
+                            that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
+                                type: "const",
+                                value: 0
+                            };
+                            var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
+                            var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
+                            num.bind("input change", function () {
+                                if (parseFloat(this.value) > that.options.maxConst)
+                                    this.value = that.options.maxConst;
+                                if (parseFloat(this.value) < that.options.minConst)
+                                    this.value = that.options.minConst;
+                                currNumber.value = this.value;
+                                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                            });
+                        }
                     }
                 });
             }
