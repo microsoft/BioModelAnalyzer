@@ -23,14 +23,15 @@
 
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
 
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
+                that.executeCommand("AddFirstStateRequested", {});
+            });
 
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons).hover(function () {
                     //that._stateOptionsWindow = $("<div></div>").addClass("state-options-window").appendTo(that.element);
                     //var windowPointer = $("<div></div>").addClass("pointer").appendTo(that._stateOptionsWindow);
                     //var stateOptions = $("<div></div>").addClass("state-options").appendTo(that._stateOptionsWindow);
-                }).click(function () {
                 });
             }
 
