@@ -229,7 +229,7 @@ module BMA {
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
                         var f = formulas[j];
-                        if (f[0] !== undefined && f[0].type == "variable") {
+                        if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0) {
                             if (f[1] !== undefined && f[2] !== undefined) {
                                 if (f[1].value == ">=") 
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
@@ -244,7 +244,7 @@ module BMA {
                                     f[1].value, new BMA.LTLOperations.ConstOperand(f[2].value));
                                 ops.push(op);
                             }
-                        } else if (f[2] !== undefined && f[2].type == "variable") {
+                        } else if (f[2] !== undefined && f[2].type == "variable" && f[2].value != 0) {
                             if (f[0] !== undefined && f[1] !== undefined && f[3] !== undefined && f[4] !== undefined) {
                                 var leftConst = parseFloat(f[0].value);
                                 var leftOperand = f[1].value;
@@ -323,7 +323,7 @@ module BMA {
                                     new BMA.LTLOperations.ConstOperand(f[4].value));
                                 ops.push(op);
                             }
-                        } else if (f[4] !== undefined && f[4].type == "variable") {
+                        } else if (f[4] !== undefined && f[4].type == "variable" && f[4].value != 0) {
                             if (f[2] !== undefined && f[3] !== undefined) {
                                 if (f[3].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable),
