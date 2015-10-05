@@ -102,7 +102,10 @@
                 drawingSurface.drawingsurface({ commands: that.options.commands });
             }  
             
-            drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });          
+            drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } }); 
+            drawingSurface.drawingsurface({
+                isLightSVGTop: true
+            });         
 
             //Context menu
             var holdCords = {

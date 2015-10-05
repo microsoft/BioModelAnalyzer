@@ -630,6 +630,47 @@
                     this.HiglightEmptySlotsInternal(color, this.layout);
                 }
             }
+
+
+            private RefreshStatesInOperation(operation: BMA.LTLOperations.IOperand, states: BMA.LTLOperations.Keyframe[]) {
+                if (operation === undefined)
+                    return;
+
+                if ((<any>operation).Operator !== undefined) {
+                    var operands = (<any>operation).Operands;
+
+                    for (var i = 0; i < operands.length; i++) {
+                        var op = operands[i];
+
+                        if (op === undefined)
+                            continue;
+
+                        if ((<any>op).Operator !== undefined) {
+                            this.RefreshStatesInOperation(operands[i], states);
+                        } else {
+                            var name = (<any>op).Name;
+                            if (name !== undefined) {
+                                var updated = false;
+                                for (var j = 0; j < states.length; j++) {
+                                    if (states[j].Name === name) {
+                                        operands[i] = states[j];
+                                        updated = true;
+                                        break;
+                                    }
+                                }
+                                if (!updated) {
+                                    operands[i] = undefined;
+                                }
+                            }
+                        }
+                    }
+                } 
+            }
+
+            public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {
+                this.RefreshStatesInOperation(this.operation, states);
+                //this.Refresh();
+            }
         }
     }
 }

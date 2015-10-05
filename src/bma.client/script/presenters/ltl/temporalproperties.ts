@@ -41,6 +41,10 @@ module BMA {
             private appModel: BMA.Model.AppModel;
             private ajax: BMA.UIDrivers.IServiceDriver;
 
+            private ltlcompactviewfactory: BMA.UIDrivers.ILTLResultsViewerFactory;
+            private isUpdateControlRequested = false;
+
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -59,8 +63,11 @@ module BMA {
                 this.dragService = dragService;
                 this.commands = commands;
 
+                this.ltlcompactviewfactory = new BMA.UIDrivers.LTLResultsViewerFactory();
+
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
+
 
                 commands.On("AddOperatorSelect",(operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };
@@ -169,6 +176,8 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorCut",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
+                        this.contextElement.operationlayoutref.Fill = "white";
+
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         this.clipboard = {
@@ -216,6 +225,8 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorDelete",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
+                        this.contextElement.operationlayoutref.Fill = "white";
+
                         var op = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         if (op.isRoot) {
                             var ind = this.operations.indexOf(this.contextElement.operationlayoutref);
@@ -223,6 +234,22 @@ module BMA {
                             this.operations.splice(ind, 1);
                         }
                         this.OnOperationsChanged();
+                    }
+                });
+
+                commands.On("KeyframesChanged",(args: { states: BMA.LTLOperations.Keyframe[] }) => {
+                    this.ClearResults();
+                    for (var i = 0; i < this.operations.length; i++) {
+                        var op = this.operations[i];
+                        op.RefreshStates(args.states);
+                    }
+                    that.isUpdateControlRequested = true;
+                });
+
+                commands.On("TemporalPropertiesEditorExpanded",(args) => {
+                    if (that.isUpdateControlRequested) {
+                        that.UpdateControlPanels();
+                        that.isUpdateControlRequested = false;
                     }
                 });
 
@@ -246,6 +273,8 @@ module BMA {
                     (gesture) => {
                         var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
+                            staginOp.Fill = "white";
+
                             that.navigationDriver.TurnNavigation(false);
                             var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                             this.stagingOperation = {
@@ -261,7 +290,7 @@ module BMA {
                                 that.controlPanels[that.stagingOperation.originIndex].hide();
                             }
 
-                            this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                            //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                             staginOp.IsVisible = !unpinned.isRoot;
                         }
                     });
@@ -385,56 +414,96 @@ module BMA {
                 return false;
             }
 
-            private SubscribeOnTestRequested(btn: JQuery, operation: BMA.LTLOperations.OperationLayout) {
+            private PerformLTL(operation: BMA.LTLOperations.OperationLayout, driver: BMA.UIDrivers.ICompactLTLResultsViewer, cp) {
+                var that = this;
+                cp.Steps = driver.GetSteps();
+
+                if (operation.IsCompleted) {
+
+                    var formula = operation.Operation.GetFormula();
+
+                    var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    var proofInput = {
+                        "Name": model.Name,
+                        "Relationships": model.Relationships,
+                        "Variables": model.Variables,
+                        "Formula": formula,
+                        "Number_of_steps": driver.GetSteps()
+                    }
+
+                    var result = that.ajax.Invoke(proofInput)
+                        .done(function (res) {
+                        if (res.Ticks == null) {
+                            alert(res.Error);
+                        }
+                        else {
+                            if (res.Status === "True") {
+                                driver.SetStatus("success");
+                                cp.status = "success";
+                                operation.Fill = "rgb(217,255,182)";
+                            } else {
+                                driver.SetStatus("fail");
+                                cp.status = "fail";
+                                operation.Fill = "rgb(254,172,158)";
+                            }
+
+                            //if (res.Status == "True") {
+                            //var restbl = that.CreateColoredTable(res.Ticks);
+                            //ltlviewer.SetResult(restbl);
+                            //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
+                            //}
+                            //else {
+                            //ltlviewer.SetResult(undefined);
+                            //alert(res.Status);
+                            //}
+                        }
+                    })
+                        .fail(function () {
+                        alert("LTL failed");
+                    })
+
+
+                    //that.commands.Execute("LTLRequested", { formula: formula });
+                } else {
+                    operation.HighlightEmptySlots("red");
+                }
+            }
+
+            private ClearResults() {
+                for (var i = 0; i < this.operations.length; i++) {
+                    this.operations[i].Fill = "white";
+                }
+            }
+
+            private UpdateControlPanels() {
                 var that = this;
 
-                btn.click(function (arg) {
-                    if (operation.IsCompleted) {
+                var cps = this.controlPanels;
+                var dom = this.navigationDriver.GetNavigationSurface();
 
-                        var formula = operation.Operation.GetFormula();
+                for (var i = 0; i < cps.length; i++) {
+                    dom.remove(cps[i].dommarker);
+                }
 
-                        var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
-                        var proofInput = {
-                            "Name": model.Name,
-                            "Relationships": model.Relationships,
-                            "Variables": model.Variables,
-                            "Formula": formula,
-                            "Number_of_steps": 10
-                        }
+                this.controlPanels = [];
 
-                        var result = that.ajax.Invoke(proofInput)
-                            .done(function (res) {
-                            if (res.Ticks == null) {
-                                alert(res.Error);
-                            }
-                            else {
-                                if (res.Status === "True") {
-                                    operation.Fill = "rgb(217,255,182)";
-                                } else {
-                                    operation.Fill = "rgb(254,172,158)";
-                                }
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    var bbox = op.BoundingBox;
+                    var opDiv = $("<div></div>");
+                    var cp = {
+                        dommarker: opDiv,
+                        status: "notstarted"
+                    };
+                    var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
+                    driver.SetStatus("notstarted");
+                    driver.SetLTLRequestedCallback(() => {
+                        that.PerformLTL(op, driver, cp);
+                    });
 
-                                //if (res.Status == "True") {
-                                //var restbl = that.CreateColoredTable(res.Ticks);
-                                //ltlviewer.SetResult(restbl);
-                                //that.expandedResults = that.CreateExpanded(res.Ticks, restbl);
-                                //}
-                                //else {
-                                //ltlviewer.SetResult(undefined);
-                                //alert(res.Status);
-                                //}
-                            }
-                        })
-                            .fail(function () {
-                            alert("LTL failed");
-                        })
-
-
-                        //that.commands.Execute("LTLRequested", { formula: formula });
-                    } else {
-                        operation.HighlightEmptySlots("red");
-                    }
-                });
+                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
+                    this.controlPanels.push(cp);
+                }
             }
 
             private OnOperationsChanged() {
@@ -445,34 +514,7 @@ module BMA {
                     ops.push(this.operations[i].Operation.Clone());
                 }
 
-                var cps = this.controlPanels;
-                var dom = this.navigationDriver.GetNavigationSurface();
-
-                for (var i = 0; i < cps.length; i++) {
-                    dom.remove(cps[i]);
-                }
-                this.controlPanels = [];
-
-                for (var i = 0; i < this.operations.length; i++) {
-                    var op = this.operations[i];
-                    var bbox = op.BoundingBox;
-                    var opDiv = $("<div></div>");
-
-                    /*
-                    <ul class= "button-list LTL-test" >
-                        <li class= "action-button-small grey" > <button>TEST < /button></li >
-                    </ul>
-                    */
-
-                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                    var btn = $("<button>TEST </button>").appendTo(li);
-
-                    that.SubscribeOnTestRequested(btn, op);
-
-                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
-                    this.controlPanels.push(opDiv);
-                }
+                this.UpdateControlPanels();
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
             }

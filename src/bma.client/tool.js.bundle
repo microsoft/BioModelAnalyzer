@@ -65,7 +65,7 @@
 	<file>/script/widgets/ltl/ltlviewer.js</file>
   <file>/script/widgets/ltl/stateseditor.js</file>
   <file>/script/widgets/ltl/statescompact.js</file>
-
+  <file>/script/widgets/ltl/compactltlresult.js</file>
   <file>/script/widgets/ltl/tpeditor.js</file>
   <file>/script/widgets/ltl/tpviewer.js</file>
 

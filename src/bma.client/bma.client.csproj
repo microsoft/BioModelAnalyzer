@@ -453,6 +453,7 @@
     <Content Include="js\jquery.svgdom.min.js" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
     <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\compactltlresult.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\keyframecompact.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\keyframetable.ts" />
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />

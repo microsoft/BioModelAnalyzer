@@ -146,6 +146,8 @@ function popup_position() {
 }
 
 $(document).ready(function () {
+    //InteractiveDataDisplay.ZIndexDOMMarkers = 10;
+
     var snipper = $('<div></div>').addClass('spinner').appendTo($('.loading-text'));
     for (var i = 1; i < 4; i++) {
         $('<div></div>').addClass('bounce' + i).appendTo(snipper);

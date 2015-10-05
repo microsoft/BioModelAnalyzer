@@ -75,6 +75,7 @@ declare var Rx: any;
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            this.lightSVGDiv = svgPlotDiv2;
             var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
 
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
@@ -428,6 +429,13 @@ declare var Rx: any;
                 case "rects":
                     this._rectsPlot.draw({ rects: value });
                     this._plot.requestUpdateLayout();
+                    break;
+                case "isLightSVGTop":
+                    if (value) {
+                        //this.lightSVGDiv.css("z-index", 1501);
+                    } else {
+                        //this.lightSVGDiv.css("z-index", undefined);
+                    }
                     break;
             }
             this._super(key, value);

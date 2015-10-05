@@ -231,7 +231,7 @@ module BMA {
                         var f = formulas[j];
                         if (f[0] !== undefined && f[0].type == "variable") {
                             if (f[1] !== undefined && f[2] !== undefined) {
-                                if (f[1].value == ">=") 
+                                if (f[1].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
                                         ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1));
                                 else if (f[1].value == "<=")
@@ -407,7 +407,7 @@ module BMA {
 
                 for (var i = 0; i < layout.Containers.length; i++) {
                     var vars = [];
-                    
+
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
                             vars.push(model.Variables[j].Name);
@@ -494,6 +494,50 @@ module BMA {
 
             public SetOperations(operations: BMA.LTLOperations.IOperand[]) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
+            }
+        }
+
+        export class LTLResultsViewerFactory implements ILTLResultsViewerFactory {
+            constructor() {
+            }
+
+            CreateCompactLTLViewer(div: JQuery) {
+                return new LTLResultsCompactViewer(div);
+            }
+        }
+
+        export class LTLResultsCompactViewer implements ICompactLTLResultsViewer {
+            private compactltlresult: JQuery = undefined;
+            private steps: number = 10;
+            private ltlrequested;
+
+            constructor(compactltlresult: JQuery) {
+                var that = this;
+
+                this.compactltlresult = compactltlresult;
+                this.compactltlresult.compactltlresult({
+                    status: "notstarted",
+                    isexpanded: false,
+                    ontestrequested: function () {
+                        if (that.ltlrequested !== undefined)
+                            that.ltlrequested();
+                    },
+                    onstepschanged: function (steps) {
+                        that.steps = steps;
+                    }
+                });
+            }
+
+            public SetStatus(status: string) {
+                this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
+            }
+
+            public GetSteps(): number {
+                return this.steps;
+            }
+
+            public SetLTLRequestedCallback(callback) {
+                this.ltlrequested = callback;
             }
         }
     }

@@ -83,6 +83,8 @@
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
 
+                            commands.Execute("TemporalPropertiesEditorExpanded", {});
+
                             if (this.tppresenter === undefined) {
                                 this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
                                     commands,
@@ -108,7 +110,9 @@
                     popupViewer.Hide();
                 });
 
-                commands.On("TemporalPropertiesOperationsChanged", function (args) { ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations); });
+                commands.On("TemporalPropertiesOperationsChanged", function (args) {
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations);
+                });
             }
 
             /*

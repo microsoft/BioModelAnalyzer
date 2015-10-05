@@ -48,5 +48,15 @@ module BMA {
         export interface ITemporalPropertiesViewer {
             SetOperations(operations: BMA.LTLOperations.IOperand[]);
         }
+
+        export interface ILTLResultsViewerFactory {
+            CreateCompactLTLViewer(div: JQuery): ICompactLTLResultsViewer;
+        }
+
+        export interface ICompactLTLResultsViewer {
+            SetStatus(status: string);
+            GetSteps(): number;
+            SetLTLRequestedCallback(callback: any);
+        }
     }
 } 
