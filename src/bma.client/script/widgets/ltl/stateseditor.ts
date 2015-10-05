@@ -340,7 +340,7 @@
                         } else if (this._activeState.formula[i][j].type == "const") {
 
                             var currNumber = this._activeState.formula[i][j];
-                            var num = $("<input autofocus></input>").attr("type", "text").attr("min", "0").attr("max", "100")
+                            var num = $("<input></input>").attr("type", "text").attr("min", "0").attr("max", "100")
                                 .attr("value", parseFloat(this._activeState.formula[i][j].value)).attr("size", "1")
                                 .addClass("number-input").appendTo(condition.children().eq(j));
 
@@ -351,6 +351,8 @@
 
                                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                             });
+
+                            num.trigger("focus");
 
                         } else if (this._activeState.formula[i][j].type == "operator") {
 
@@ -489,7 +491,7 @@
                                     }
 
                                     var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                                    var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0")
+                                    var num = $("<input></input>").attr("type", "text").attr("value", "0").attr("min", "0")
                                         .attr("max", "100").addClass("number-input").appendTo(this);
 
                                     num.bind("input change", function () {
@@ -499,6 +501,8 @@
 
                                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                                     });
+
+                                    num.trigger("focus");
                                     break;
                                 }
                                 case "equal": {
@@ -567,7 +571,7 @@
                             }
 
                             var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                            var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0")
+                            var num = $("<input></input>").attr("type", "text").attr("value", "0").attr("min", "0")
                                 .attr("max", "100").addClass("number-input").appendTo(this);
 
                             num.bind("input change", function () {
@@ -577,6 +581,9 @@
 
                                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                             });
+
+                            num.trigger("change");
+                            num.trigger("focus");
                         }
                     }
                 });

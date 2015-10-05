@@ -4012,7 +4012,7 @@ var BMA;
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
                         var f = formulas[j];
-                        if (f[0] !== undefined && f[0].type == "variable") {
+                        if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0) {
                             if (f[1] !== undefined && f[2] !== undefined) {
                                 if (f[1].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1));
@@ -4025,7 +4025,7 @@ var BMA;
                                 ops.push(op);
                             }
                         }
-                        else if (f[2] !== undefined && f[2].type == "variable") {
+                        else if (f[2] !== undefined && f[2].type == "variable" && f[2].value != 0) {
                             if (f[0] !== undefined && f[1] !== undefined && f[3] !== undefined && f[4] !== undefined) {
                                 var leftConst = parseFloat(f[0].value);
                                 var leftOperand = f[1].value;
@@ -4101,7 +4101,7 @@ var BMA;
                                 ops.push(op);
                             }
                         }
-                        else if (f[4] !== undefined && f[4].type == "variable") {
+                        else if (f[4] !== undefined && f[4].type == "variable" && f[4].value != 0) {
                             if (f[2] !== undefined && f[3] !== undefined) {
                                 if (f[3].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable), "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) + 1));
@@ -10023,7 +10023,7 @@ jQuery.fn.extend({
                         }
                         else if (this._activeState.formula[i][j].type == "const") {
                             var currNumber = this._activeState.formula[i][j];
-                            var num = $("<input autofocus></input>").attr("type", "text").attr("min", "0").attr("max", "100").attr("value", parseFloat(this._activeState.formula[i][j].value)).attr("size", "1").addClass("number-input").appendTo(condition.children().eq(j));
+                            var num = $("<input></input>").attr("type", "text").attr("min", "0").attr("max", "100").attr("value", parseFloat(this._activeState.formula[i][j].value)).attr("size", "1").addClass("number-input").appendTo(condition.children().eq(j));
                             num.bind("input change", function () {
                                 if (parseFloat(this.value) > that.options.maxConst)
                                     this.value = that.options.maxConst;
@@ -10032,6 +10032,7 @@ jQuery.fn.extend({
                                 currNumber.value = this.value;
                                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                             });
+                            num.trigger("focus");
                         }
                         else if (this._activeState.formula[i][j].type == "operator") {
                             var img;
@@ -10149,7 +10150,7 @@ jQuery.fn.extend({
                                         value: 0
                                     };
                                     var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                                    var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
+                                    var num = $("<input></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
                                     num.bind("input change", function () {
                                         if (parseFloat(this.value) > that.options.maxConst)
                                             this.value = that.options.maxConst;
@@ -10158,6 +10159,7 @@ jQuery.fn.extend({
                                         currNumber.value = this.value;
                                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                                     });
+                                    num.trigger("focus");
                                     break;
                                 }
                                 case "equal": {
@@ -10221,7 +10223,7 @@ jQuery.fn.extend({
                                 value: 0
                             };
                             var currNumber = that.options.states[stateIndex].formula[tableIndex][this.cellIndex];
-                            var num = $("<input autofocus></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
+                            var num = $("<input></input>").attr("type", "text").attr("value", "0").attr("min", "0").attr("max", "100").addClass("number-input").appendTo(this);
                             num.bind("input change", function () {
                                 if (parseFloat(this.value) > that.options.maxConst)
                                     this.value = that.options.maxConst;
@@ -10230,6 +10232,8 @@ jQuery.fn.extend({
                                 currNumber.value = this.value;
                                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                             });
+                            num.trigger("change");
+                            num.trigger("focus");
                         }
                     }
                 });
@@ -10267,13 +10271,14 @@ jQuery.fn.extend({
                 that.executeCommand("AddFirstStateRequested", {});
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
+                that.executeCommand("AddFirstStateRequested", {});
+            });
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons).hover(function () {
                     //that._stateOptionsWindow = $("<div></div>").addClass("state-options-window").appendTo(that.element);
                     //var windowPointer = $("<div></div>").addClass("pointer").appendTo(that._stateOptionsWindow);
                     //var stateOptions = $("<div></div>").addClass("state-options").appendTo(that._stateOptionsWindow);
-                }).click(function () {
                 });
             }
             if (this.options.states.length == 0) {
