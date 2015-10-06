@@ -126,6 +126,9 @@
                             if (that.options.ontestrequested !== undefined) {
                                 that.options.ontestrequested();
                             }
+                            //if (that.options.onexpanded !== undefined) {
+                            //    that.options.onexpanded();
+                            //}
                         });
 
                     } else {

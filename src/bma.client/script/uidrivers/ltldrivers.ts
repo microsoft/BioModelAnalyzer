@@ -492,7 +492,7 @@ module BMA {
                 this.tpviewer = tpviewer;
             }
 
-            public SetOperations(operations: BMA.LTLOperations.IOperand[]) {
+            public SetOperations(operations: { operation: BMA.LTLOperations.IOperand[]; status: string }) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
             }
         }

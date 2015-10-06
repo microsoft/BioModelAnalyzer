@@ -2686,6 +2686,7 @@ var BMA;
                 this.scale = { x: 1, y: 1 };
                 this.borderThickness = 1;
                 this.fill = undefined;
+                this.status = "nottested";
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -2712,6 +2713,31 @@ var BMA;
                 }
                 return true;
             };
+            Object.defineProperty(OperationLayout.prototype, "AnalysisStatus", {
+                get: function () {
+                    return this.status;
+                },
+                set: function (value) {
+                    switch (value) {
+                        case "nottested":
+                            this.status = value;
+                            this.Fill = "white";
+                            break;
+                        case "success":
+                            this.status = value;
+                            this.Fill = "rgb(217,255,182)";
+                            break;
+                        case "fail":
+                            this.status = value;
+                            this.Fill = "rgb(254, 172, 158)";
+                            break;
+                        default:
+                            throw "Invalid status!";
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "IsOperation", {
                 get: function () {
                     return this.operation.Operator !== undefined;
@@ -10446,6 +10472,9 @@ jQuery.fn.extend({
                             if (that.options.ontestrequested !== undefined) {
                                 that.options.ontestrequested();
                             }
+                            //if (that.options.onexpanded !== undefined) {
+                            //    that.options.onexpanded();
+                            //}
                         });
                     }
                     else {
@@ -10689,7 +10718,8 @@ jQuery.fn.extend({
                 var height = this.options.padding.y;
                 var width = 0;
                 for (var i = 0; i < operations.length; i++) {
-                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i], { x: 0, y: 0 });
+                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
+                    opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
                     opLayout.Position = { x: opbbox.width / 2, y: height + opbbox.height / 2 };
                     height += opbbox.height + this.options.padding.y;
@@ -10808,7 +10838,7 @@ var BMA;
                     popupViewer.Hide();
                 });
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
-                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations);
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
             }
             return LTLPresenter;
@@ -10983,7 +11013,7 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
-                        _this.contextElement.operationlayoutref.Fill = "white";
+                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
@@ -11024,7 +11054,7 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
-                        _this.contextElement.operationlayoutref.Fill = "white";
+                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         if (op.isRoot) {
                             var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
@@ -11063,7 +11093,7 @@ var BMA;
                 dragSubject.dragStart.subscribe(function (gesture) {
                     var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                     if (staginOp !== undefined) {
-                        staginOp.Fill = "white";
+                        staginOp.AnalysisStatus = "nottested";
                         that.navigationDriver.TurnNavigation(false);
                         var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                         _this.stagingOperation = {
@@ -11186,9 +11216,8 @@ var BMA;
                 }
                 return false;
             };
-            TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, driver, cp) {
+            TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, domplot, driver) {
                 var that = this;
-                cp.Steps = driver.GetSteps();
                 if (operation.IsCompleted) {
                     var formula = operation.Operation.GetFormula();
                     var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
@@ -11206,14 +11235,14 @@ var BMA;
                         else {
                             if (res.Status === "True") {
                                 driver.SetStatus("success");
-                                cp.status = "success";
-                                operation.Fill = "rgb(217,255,182)";
+                                operation.AnalysisStatus = "success";
                             }
                             else {
                                 driver.SetStatus("fail");
-                                cp.status = "fail";
-                                operation.Fill = "rgb(254,172,158)";
+                                operation.AnalysisStatus = "fail";
                             }
+                            domplot.updateLayout();
+                            that.OnOperationsChanged(true);
                         }
                     }).fail(function () {
                         alert("LTL failed");
@@ -11225,13 +11254,13 @@ var BMA;
             };
             TemporalPropertiesPresenter.prototype.ClearResults = function () {
                 for (var i = 0; i < this.operations.length; i++) {
-                    this.operations[i].Fill = "white";
+                    this.operations[i].AnalysisStatus = "nottested";
                 }
             };
-            TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, op, cp) {
+            TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, domplot, op) {
                 var that = this;
                 driver.SetLTLRequestedCallback(function () {
-                    that.PerformLTL(op, driver, cp);
+                    that.PerformLTL(op, domplot, driver);
                 });
             };
             TemporalPropertiesPresenter.prototype.SubscribeToLTLCompactExpand = function (driver, domplot) {
@@ -11257,20 +11286,23 @@ var BMA;
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus("notstarted");
-                    that.SubscribeToLTLRequest(driver, op, cp);
+                    that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
                 }
             };
-            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function () {
+            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (onlyStatus) {
+                if (onlyStatus === void 0) { onlyStatus = false; }
                 var that = this;
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
-                    ops.push(this.operations[i].Operation.Clone());
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
-                this.UpdateControlPanels();
-                this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
+                if (!onlyStatus) {
+                    this.UpdateControlPanels();
+                }
+                this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };
             return TemporalPropertiesPresenter;
         })();

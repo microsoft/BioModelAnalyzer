@@ -176,7 +176,7 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorCut",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        this.contextElement.operationlayoutref.Fill = "white";
+                        this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
 
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
@@ -225,7 +225,7 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorDelete",(args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        this.contextElement.operationlayoutref.Fill = "white";
+                        this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
 
                         var op = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         if (op.isRoot) {
@@ -273,7 +273,7 @@ module BMA {
                     (gesture) => {
                         var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
-                            staginOp.Fill = "white";
+                            staginOp.AnalysisStatus = "nottested";
 
                             that.navigationDriver.TurnNavigation(false);
                             var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
@@ -414,9 +414,8 @@ module BMA {
                 return false;
             }
 
-            private PerformLTL(operation: BMA.LTLOperations.OperationLayout, driver: BMA.UIDrivers.ICompactLTLResultsViewer, cp) {
+            private PerformLTL(operation: BMA.LTLOperations.OperationLayout, domplot, driver: BMA.UIDrivers.ICompactLTLResultsViewer) {
                 var that = this;
-                cp.Steps = driver.GetSteps();
 
                 if (operation.IsCompleted) {
 
@@ -439,13 +438,14 @@ module BMA {
                         else {
                             if (res.Status === "True") {
                                 driver.SetStatus("success");
-                                cp.status = "success";
-                                operation.Fill = "rgb(217,255,182)";
+                                operation.AnalysisStatus = "success";
                             } else {
                                 driver.SetStatus("fail");
-                                cp.status = "fail";
-                                operation.Fill = "rgb(254,172,158)";
+                                operation.AnalysisStatus = "fail";
                             }
+
+                            domplot.updateLayout();
+                            that.OnOperationsChanged(true);
 
                             //if (res.Status == "True") {
                             //var restbl = that.CreateColoredTable(res.Ticks);
@@ -471,14 +471,14 @@ module BMA {
 
             private ClearResults() {
                 for (var i = 0; i < this.operations.length; i++) {
-                    this.operations[i].Fill = "white";
+                    this.operations[i].AnalysisStatus = "nottested";
                 }
             }
 
-            private SubscribeToLTLRequest(driver, op, cp) {
+            private SubscribeToLTLRequest(driver, domplot, op) {
                 var that = this;
                 driver.SetLTLRequestedCallback(() => {
-                    that.PerformLTL(op, driver, cp);
+                    that.PerformLTL(op, domplot, driver);
                 });
             }
 
@@ -510,7 +510,7 @@ module BMA {
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus("notstarted");
-                    that.SubscribeToLTLRequest(driver, op, cp);
+                    that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
@@ -518,17 +518,19 @@ module BMA {
                 }
             }
 
-            private OnOperationsChanged() {
+            private OnOperationsChanged(onlyStatus: boolean = false) {
                 var that = this;
 
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
-                    ops.push(this.operations[i].Operation.Clone());
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
 
-                this.UpdateControlPanels();
+                if (!onlyStatus) {
+                    this.UpdateControlPanels();
+                }
 
-                this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
+                this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }
         }
     }

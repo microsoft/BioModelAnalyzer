@@ -12,6 +12,7 @@
             private scale: { x: number; y: number } = { x: 1, y: 1 };
             private borderThickness: number = 1;
             private fill: string = undefined;
+            private status: string = "nottested";
 
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -39,6 +40,29 @@
                 }
 
                 return true;
+            }
+
+            public get AnalysisStatus(): string {
+                return this.status;
+            }
+
+            public set AnalysisStatus(value: string) {
+                switch (value) {
+                    case "nottested":
+                        this.status = value;
+                        this.Fill = "white";
+                        break;
+                    case "success":
+                        this.status = value;
+                        this.Fill = "rgb(217,255,182)";
+                        break;
+                    case "fail":
+                        this.status = value;
+                        this.Fill = "rgb(254, 172, 158)";
+                        break;
+                    default:
+                        throw "Invalid status!";
+                }
             }
 
             public get IsOperation(): boolean {

@@ -46,7 +46,7 @@ module BMA {
         }
 
         export interface ITemporalPropertiesViewer {
-            SetOperations(operations: BMA.LTLOperations.IOperand[]);
+            SetOperations(operations: { operation: BMA.LTLOperations.IOperand[]; status: string });
         }
 
         export interface ILTLResultsViewerFactory {

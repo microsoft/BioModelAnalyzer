@@ -111,7 +111,7 @@
                 });
 
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
-                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations);
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
             }
 
