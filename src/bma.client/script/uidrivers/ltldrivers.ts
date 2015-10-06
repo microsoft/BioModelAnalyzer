@@ -231,7 +231,7 @@ module BMA {
                         var f = formulas[j];
                         if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0) {
                             if (f[1] !== undefined && f[2] !== undefined) {
-                                if (f[1].value == ">=") 
+                                if (f[1].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
                                         ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1));
                                 else if (f[1].value == "<=")
@@ -407,7 +407,7 @@ module BMA {
 
                 for (var i = 0; i < layout.Containers.length; i++) {
                     var vars = [];
-                    
+
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
                             vars.push(model.Variables[j].Name);
@@ -492,9 +492,190 @@ module BMA {
                 this.tpviewer = tpviewer;
             }
 
-            public SetOperations(operations: BMA.LTLOperations.IOperand[]) {
+            public SetOperations(operations: { operation: BMA.LTLOperations.IOperand[]; status: string }) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
             }
+        }
+
+        export class LTLResultsViewerFactory implements ILTLResultsViewerFactory {
+            constructor() {
+            }
+
+            CreateCompactLTLViewer(div: JQuery) {
+                return new LTLResultsCompactViewer(div);
+            }
+        }
+
+        export class LTLResultsCompactViewer implements ICompactLTLResultsViewer {
+            private compactltlresult: JQuery = undefined;
+            private steps: number = 10;
+            private ltlrequested;
+            private expandedcallback;
+
+            constructor(compactltlresult: JQuery) {
+                var that = this;
+
+                this.compactltlresult = compactltlresult;
+                this.compactltlresult.compactltlresult({
+                    status: "notstarted",
+                    isexpanded: false,
+                    ontestrequested: function () {
+                        if (that.ltlrequested !== undefined)
+                            that.ltlrequested();
+                    },
+                    onstepschanged: function (steps) {
+                        that.steps = steps;
+                    },
+                    onexpanded: function () {
+                        if (that.expandedcallback !== undefined) {
+                            that.expandedcallback();
+                        }
+                    }
+                });
+            }
+
+            public SetStatus(status: string) {
+                this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
+            }
+
+            public GetSteps(): number {
+                return this.steps;
+            }
+
+            public SetLTLRequestedCallback(callback) {
+                this.ltlrequested = callback;
+            }
+
+            public SetOnExpandedCallback(callback) {
+                this.expandedcallback = callback;
+            }
+        }
+
+        export class LTLResultsViewer implements ILTLResultsViewer {
+            private popupWindow: JQuery;
+            private commands: ICommandRegistry;
+            private ltlResultsViewer: JQuery;
+            private initValues;
+            private header;
+            private numericData;
+            private colorData;
+
+            private colors:{
+                Id: number;
+                Color: string;
+                Seen: boolean;
+                Plot: number[];
+                Init: number;
+                Name: string;
+            }[];
+
+            constructor(commands: ICommandRegistry, popupWindow: JQuery) {
+                this.popupWindow = popupWindow;
+                this.commands = commands;
+            }
+
+            public Show() {
+                var shouldInit = this.ltlResultsViewer === undefined;
+                if (shouldInit) {
+                    this.ltlResultsViewer = $("<div></div>");
+                }
+
+                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min" });
+                popup_position();
+                this.popupWindow.show();
+
+                if (shouldInit) {
+                }
+            }
+
+            public Hide() {
+                this.popupWindow.hide();
+            }
+
+            public SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any) {
+                var that = this;
+
+                //for simulation plot
+                var vars = model.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+
+                that.colors = [];
+                that.initValues = [];
+                for (var i = 0; i < vars.length; i++) {
+                    this.colors.push({
+                        Id: vars[i].Id,
+                        Color: this.getRandomColor(),
+                        Seen: true,
+                        Plot: [],
+                        Init: vars[i].RangeFrom,
+                        Name: vars[i].Name
+                    });
+                    this.colors[i].Plot[0] = this.colors[i].Init;
+                    this.initValues[i] = this.colors[i].Init;
+                }
+
+                //for colored table
+                var coloredTable = this.CreateColoredTable(ticks);
+
+                this.numericData = [];
+                this.colorData = [];
+                this.header = [];
+                var l = ticks.length;
+                this.header[0] = "Name";
+                for (var i = 0; i < ticks.length; i++) {
+                    this.header[i + 1] = "T = " + ticks[i].Time;
+                }
+                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
+                    this.numericData[j] = [];
+                    this.colorData[j] = [];
+                    this.numericData[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
+                    this.colorData[j][0] = undefined;
+                    for (var i = 1; i < l + 1; i++) {
+                        var ij = ticks[i - 1].Variables[j];
+                        this.colorData[j][i] = coloredTable[j][i - 1];
+                        if (ij.Lo === ij.Hi) {
+                            this.numericData[j][i] = ij.Lo;
+                        }
+                        else {
+                            this.numericData[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+
+                if (this.ltlResultsViewer !== undefined) 
+                    this.ltlResultsViewer.ltlresultsviewer({colors: that.colors, header: that.header, numericData: that.numericData, colorData: that.colorData});
+            }
+
+            public CreateColoredTable(ticks): any {
+                var that = this;
+                if (ticks === null) return undefined;
+                var color = [];
+                var t = ticks.length;
+                var v = ticks[0].Variables.length;
+                for (var i = 0; i < v; i++) {
+                    color[i] = [];
+                    for (var j = 1; j < t; j++) {
+                        var ij = ticks[j].Variables[i];
+                        var pr = ticks[j - 1].Variables[i];
+                        color[i][j] = pr.Hi === ij.Hi;
+                    }
+                }
+                return color;
+            }
+
+            public getRandomColor() {
+                var r = this.GetRandomInt(0, 255);
+                var g = this.GetRandomInt(0, 255);
+                var b = this.GetRandomInt(0, 255);
+                return "rgb(" + r + ", " + g + ", " + b + ")";
+            }
+
+            public GetRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+
         }
     }
 }

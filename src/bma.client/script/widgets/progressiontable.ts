@@ -7,7 +7,8 @@
             interval: undefined, // table with interval of values
             data: undefined, // table with data
             header: "Initial Value",
-            init: undefined
+            init: undefined,
+            canEditInitialValue: true,
         },
 
         _create: function () {
@@ -62,21 +63,23 @@
                     else
                         input.val(init);
 
-                    var random = $('<td></td>')
-                        .addClass("random-small bma-random-icon2 hoverable")
-                        .appendTo(tr);
-                    //random.filter(':nth-child(even)').addClass('bma-random-icon1');
-                    //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
-                    random.bind("click", function () {
-                        var prev = parseInt($(this).prev().children("input").eq(0).val());
-                        var index = $(this).parent().index() - 1;
-                        var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
-                        $(this).prev().children("input").eq(0).val(randomValue);//randomValue);
-                        if (randomValue !== prev)
-                            $(this).parent().addClass('red');
-                        else 
-                            $(this).parent().removeClass('red');
-                    })
+                    if (that.options.canEditInitialValue) {
+                        var random = $('<td></td>')
+                            .addClass("random-small bma-random-icon2 hoverable")
+                            .appendTo(tr);
+                        //random.filter(':nth-child(even)').addClass('bma-random-icon1');
+                        //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
+                        random.bind("click", function () {
+                            var prev = parseInt($(this).prev().children("input").eq(0).val());
+                            var index = $(this).parent().index() - 1;
+                            var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
+                            $(this).prev().children("input").eq(0).val(randomValue);//randomValue);
+                            if (randomValue !== prev)
+                                $(this).parent().addClass('red');
+                            else
+                                $(this).parent().removeClass('red');
+                        });
+                    }
                 }
             }
         },
@@ -198,6 +201,10 @@
                 case "data":
                     this.options.data = value;
                     this.InitData();
+                    break;
+                case "canEditInitialValue":
+                    this.options.canEditInitialValue = value;
+                    this.RefreshInit();
                     break;
             }
             this._super(key, value);

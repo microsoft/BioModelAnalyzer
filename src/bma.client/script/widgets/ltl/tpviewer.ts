@@ -48,7 +48,8 @@
                 var height = this.options.padding.y;
                 var width = 0;
                 for (var i = 0; i < operations.length; i++) {
-                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i], { x: 0, y: 0 });
+                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
+                    opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
                     opLayout.Position = { x: opbbox.width / 2, y: height + opbbox.height / 2 };
                     height += opbbox.height + this.options.padding.y;

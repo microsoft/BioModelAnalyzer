@@ -12,6 +12,7 @@
             private scale: { x: number; y: number } = { x: 1, y: 1 };
             private borderThickness: number = 1;
             private fill: string = undefined;
+            private status: string = "nottested";
 
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -39,6 +40,29 @@
                 }
 
                 return true;
+            }
+
+            public get AnalysisStatus(): string {
+                return this.status;
+            }
+
+            public set AnalysisStatus(value: string) {
+                switch (value) {
+                    case "nottested":
+                        this.status = value;
+                        this.Fill = "white";
+                        break;
+                    case "success":
+                        this.status = value;
+                        this.Fill = "rgb(217,255,182)";
+                        break;
+                    case "fail":
+                        this.status = value;
+                        this.Fill = "rgb(254, 172, 158)";
+                        break;
+                    default:
+                        throw "Invalid status!";
+                }
             }
 
             public get IsOperation(): boolean {
@@ -629,6 +653,47 @@
                 if (this.layout !== undefined) {
                     this.HiglightEmptySlotsInternal(color, this.layout);
                 }
+            }
+
+
+            private RefreshStatesInOperation(operation: BMA.LTLOperations.IOperand, states: BMA.LTLOperations.Keyframe[]) {
+                if (operation === undefined)
+                    return;
+
+                if ((<any>operation).Operator !== undefined) {
+                    var operands = (<any>operation).Operands;
+
+                    for (var i = 0; i < operands.length; i++) {
+                        var op = operands[i];
+
+                        if (op === undefined)
+                            continue;
+
+                        if ((<any>op).Operator !== undefined) {
+                            this.RefreshStatesInOperation(operands[i], states);
+                        } else {
+                            var name = (<any>op).Name;
+                            if (name !== undefined) {
+                                var updated = false;
+                                for (var j = 0; j < states.length; j++) {
+                                    if (states[j].Name === name) {
+                                        operands[i] = states[j];
+                                        updated = true;
+                                        break;
+                                    }
+                                }
+                                if (!updated) {
+                                    operands[i] = undefined;
+                                }
+                            }
+                        }
+                    }
+                } 
+            }
+
+            public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {
+                this.RefreshStatesInOperation(this.operation, states);
+                //this.Refresh();
             }
         }
     }

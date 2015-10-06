@@ -2510,6 +2510,7 @@ textarea:focus {
   width: 250px;
 }
 .popup-window .simulation-plot-box {
+  width: 800px;
   height: 500px;
 }
 .popup-window .scrollable-results {
@@ -3208,7 +3209,7 @@ textarea:focus {
   vertical-align: middle;
   width: 130px;
   padding: 5px 5px 0px 5px;
-  margin-left: 10px;
+  /*margin-left: 10px;*/
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   -ms-border-radius: 5px;
@@ -3361,9 +3362,19 @@ textarea:focus {
   height: 500px;
   overflow: auto;
 }
+.ltlresultsviewer .ltl-results .ltl-results-tables {
+  min-width: 40%;
+  float: left;
+  height: 87%;
+  margin: 5px;
+}
+.ltlresultsviewer .ltl-results .steps-container {
+  float: right;
+  margin: 5px;
+}
 .ltlresultsviewer .ltl-results .variables-table {
   height: 100%;
-  width: 100%;
+  width: 80%;
   overflow-x: auto;
   overflow-y: auto;
 }

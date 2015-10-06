@@ -286,7 +286,8 @@ module BMA {
                     .removeClass('further-testing-popout')
                     .removeClass('proof-propagation-popout')
                     .removeClass('proof-variables-popout')
-                    .removeClass('simulation-popout');
+                    .removeClass('simulation-popout')
+                    //.removeClass('analysis-popout');
 
                 switch (params.tab) {
                     case "ProofVariables": 
@@ -307,12 +308,7 @@ module BMA {
                         break;
                     case "SimulationPlot":
                         header = "Simulation Graph";
-                        break;
-                    case "LTLStates":
-                        header = "LTL States";
-                        break;
-                    case "LTLResults":
-                        header = "LTL Results";
+                        //this.popupWindow.addClass('analysis-popout');
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });

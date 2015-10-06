@@ -46,7 +46,24 @@ module BMA {
         }
 
         export interface ITemporalPropertiesViewer {
-            SetOperations(operations: BMA.LTLOperations.IOperand[]);
+            SetOperations(operations: { operation: BMA.LTLOperations.IOperand[]; status: string });
+        }
+
+        export interface ILTLResultsViewerFactory {
+            CreateCompactLTLViewer(div: JQuery): ICompactLTLResultsViewer;
+        }
+
+        export interface ICompactLTLResultsViewer {
+            SetStatus(status: string);
+            GetSteps(): number;
+            SetLTLRequestedCallback(callback: any);
+            SetOnExpandedCallback(callback: any);
+        }
+
+        export interface ILTLResultsViewer {
+            Show();
+            Hide();
+            SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any);//to do: Set proper type for ticks
         }
     }
 } 

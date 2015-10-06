@@ -2686,6 +2686,7 @@ var BMA;
                 this.scale = { x: 1, y: 1 };
                 this.borderThickness = 1;
                 this.fill = undefined;
+                this.status = "nottested";
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -2712,6 +2713,31 @@ var BMA;
                 }
                 return true;
             };
+            Object.defineProperty(OperationLayout.prototype, "AnalysisStatus", {
+                get: function () {
+                    return this.status;
+                },
+                set: function (value) {
+                    switch (value) {
+                        case "nottested":
+                            this.status = value;
+                            this.Fill = "white";
+                            break;
+                        case "success":
+                            this.status = value;
+                            this.Fill = "rgb(217,255,182)";
+                            break;
+                        case "fail":
+                            this.status = value;
+                            this.Fill = "rgb(254, 172, 158)";
+                            break;
+                        default:
+                            throw "Invalid status!";
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "IsOperation", {
                 get: function () {
                     return this.operation.Operator !== undefined;
@@ -3245,6 +3271,41 @@ var BMA;
                     this.HiglightEmptySlotsInternal(color, this.layout);
                 }
             };
+            OperationLayout.prototype.RefreshStatesInOperation = function (operation, states) {
+                if (operation === undefined)
+                    return;
+                if (operation.Operator !== undefined) {
+                    var operands = operation.Operands;
+                    for (var i = 0; i < operands.length; i++) {
+                        var op = operands[i];
+                        if (op === undefined)
+                            continue;
+                        if (op.Operator !== undefined) {
+                            this.RefreshStatesInOperation(operands[i], states);
+                        }
+                        else {
+                            var name = op.Name;
+                            if (name !== undefined) {
+                                var updated = false;
+                                for (var j = 0; j < states.length; j++) {
+                                    if (states[j].Name === name) {
+                                        operands[i] = states[j];
+                                        updated = true;
+                                        break;
+                                    }
+                                }
+                                if (!updated) {
+                                    operands[i] = undefined;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            OperationLayout.prototype.RefreshStates = function (states) {
+                this.RefreshStatesInOperation(this.operation, states);
+                //this.Refresh();
+            };
             return OperationLayout;
         })();
         LTLOperations.OperationLayout = OperationLayout;
@@ -3499,12 +3560,6 @@ var BMA;
                         break;
                     case "SimulationPlot":
                         header = "Simulation Graph";
-                        break;
-                    case "LTLStates":
-                        header = "LTL States";
-                        break;
-                    case "LTLResults":
-                        header = "LTL Results";
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
@@ -4215,6 +4270,151 @@ var BMA;
             return TemporalPropertiesViewer;
         })();
         UIDrivers.TemporalPropertiesViewer = TemporalPropertiesViewer;
+        var LTLResultsViewerFactory = (function () {
+            function LTLResultsViewerFactory() {
+            }
+            LTLResultsViewerFactory.prototype.CreateCompactLTLViewer = function (div) {
+                return new LTLResultsCompactViewer(div);
+            };
+            return LTLResultsViewerFactory;
+        })();
+        UIDrivers.LTLResultsViewerFactory = LTLResultsViewerFactory;
+        var LTLResultsCompactViewer = (function () {
+            function LTLResultsCompactViewer(compactltlresult) {
+                this.compactltlresult = undefined;
+                this.steps = 10;
+                var that = this;
+                this.compactltlresult = compactltlresult;
+                this.compactltlresult.compactltlresult({
+                    status: "notstarted",
+                    isexpanded: false,
+                    ontestrequested: function () {
+                        if (that.ltlrequested !== undefined)
+                            that.ltlrequested();
+                    },
+                    onstepschanged: function (steps) {
+                        that.steps = steps;
+                    },
+                    onexpanded: function () {
+                        if (that.expandedcallback !== undefined) {
+                            that.expandedcallback();
+                        }
+                    }
+                });
+            }
+            LTLResultsCompactViewer.prototype.SetStatus = function (status) {
+                this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
+            };
+            LTLResultsCompactViewer.prototype.GetSteps = function () {
+                return this.steps;
+            };
+            LTLResultsCompactViewer.prototype.SetLTLRequestedCallback = function (callback) {
+                this.ltlrequested = callback;
+            };
+            LTLResultsCompactViewer.prototype.SetOnExpandedCallback = function (callback) {
+                this.expandedcallback = callback;
+            };
+            return LTLResultsCompactViewer;
+        })();
+        UIDrivers.LTLResultsCompactViewer = LTLResultsCompactViewer;
+        var LTLResultsViewer = (function () {
+            function LTLResultsViewer(commands, popupWindow) {
+                this.popupWindow = popupWindow;
+                this.commands = commands;
+            }
+            LTLResultsViewer.prototype.Show = function () {
+                var shouldInit = this.ltlResultsViewer === undefined;
+                if (shouldInit) {
+                    this.ltlResultsViewer = $("<div></div>");
+                }
+                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min" });
+                popup_position();
+                this.popupWindow.show();
+                if (shouldInit) {
+                }
+            };
+            LTLResultsViewer.prototype.Hide = function () {
+                this.popupWindow.hide();
+            };
+            LTLResultsViewer.prototype.SetData = function (model, layout, ticks) {
+                var that = this;
+                //for simulation plot
+                var vars = model.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+                that.colors = [];
+                that.initValues = [];
+                for (var i = 0; i < vars.length; i++) {
+                    this.colors.push({
+                        Id: vars[i].Id,
+                        Color: this.getRandomColor(),
+                        Seen: true,
+                        Plot: [],
+                        Init: vars[i].RangeFrom,
+                        Name: vars[i].Name
+                    });
+                    this.colors[i].Plot[0] = this.colors[i].Init;
+                    this.initValues[i] = this.colors[i].Init;
+                }
+                //for colored table
+                var coloredTable = this.CreateColoredTable(ticks);
+                this.numericData = [];
+                this.colorData = [];
+                this.header = [];
+                var l = ticks.length;
+                this.header[0] = "Name";
+                for (var i = 0; i < ticks.length; i++) {
+                    this.header[i + 1] = "T = " + ticks[i].Time;
+                }
+                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
+                    this.numericData[j] = [];
+                    this.colorData[j] = [];
+                    this.numericData[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
+                    this.colorData[j][0] = undefined;
+                    for (var i = 1; i < l + 1; i++) {
+                        var ij = ticks[i - 1].Variables[j];
+                        this.colorData[j][i] = coloredTable[j][i - 1];
+                        if (ij.Lo === ij.Hi) {
+                            this.numericData[j][i] = ij.Lo;
+                        }
+                        else {
+                            this.numericData[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+                if (this.ltlResultsViewer !== undefined)
+                    this.ltlResultsViewer.ltlresultsviewer({ colors: that.colors, header: that.header, numericData: that.numericData, colorData: that.colorData });
+            };
+            LTLResultsViewer.prototype.CreateColoredTable = function (ticks) {
+                var that = this;
+                if (ticks === null)
+                    return undefined;
+                var color = [];
+                var t = ticks.length;
+                var v = ticks[0].Variables.length;
+                for (var i = 0; i < v; i++) {
+                    color[i] = [];
+                    for (var j = 1; j < t; j++) {
+                        var ij = ticks[j].Variables[i];
+                        var pr = ticks[j - 1].Variables[i];
+                        color[i][j] = pr.Hi === ij.Hi;
+                    }
+                }
+                return color;
+            };
+            LTLResultsViewer.prototype.getRandomColor = function () {
+                var r = this.GetRandomInt(0, 255);
+                var g = this.GetRandomInt(0, 255);
+                var b = this.GetRandomInt(0, 255);
+                return "rgb(" + r + ", " + g + ", " + b + ")";
+            };
+            LTLResultsViewer.prototype.GetRandomInt = function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+            return LTLResultsViewer;
+        })();
+        UIDrivers.LTLResultsViewer = LTLResultsViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ltldrivers.js.map
@@ -7483,6 +7683,7 @@ var BMA;
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            this.lightSVGDiv = svgPlotDiv2;
             var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
@@ -7778,6 +7979,12 @@ var BMA;
                     this._rectsPlot.draw({ rects: value });
                     this._plot.requestUpdateLayout();
                     break;
+                case "isLightSVGTop":
+                    if (value) {
+                    }
+                    else {
+                    }
+                    break;
             }
             this._super(key, value);
         },
@@ -7855,7 +8062,8 @@ var BMA;
             interval: undefined,
             data: undefined,
             header: "Initial Value",
-            init: undefined
+            init: undefined,
+            canEditInitialValue: true,
         },
         _create: function () {
             var that = this;
@@ -7898,19 +8106,21 @@ var BMA;
                         input.val(init[0]);
                     else
                         input.val(init);
-                    var random = $('<td></td>').addClass("random-small bma-random-icon2 hoverable").appendTo(tr);
-                    //random.filter(':nth-child(even)').addClass('bma-random-icon1');
-                    //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
-                    random.bind("click", function () {
-                        var prev = parseInt($(this).prev().children("input").eq(0).val());
-                        var index = $(this).parent().index() - 1;
-                        var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
-                        $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
-                        if (randomValue !== prev)
-                            $(this).parent().addClass('red');
-                        else
-                            $(this).parent().removeClass('red');
-                    });
+                    if (that.options.canEditInitialValue) {
+                        var random = $('<td></td>').addClass("random-small bma-random-icon2 hoverable").appendTo(tr);
+                        //random.filter(':nth-child(even)').addClass('bma-random-icon1');
+                        //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
+                        random.bind("click", function () {
+                            var prev = parseInt($(this).prev().children("input").eq(0).val());
+                            var index = $(this).parent().index() - 1;
+                            var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
+                            $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
+                            if (randomValue !== prev)
+                                $(this).parent().addClass('red');
+                            else
+                                $(this).parent().removeClass('red');
+                        });
+                    }
                 }
             }
         },
@@ -8020,6 +8230,10 @@ var BMA;
                 case "data":
                     this.options.data = value;
                     this.InitData();
+                    break;
+                case "canEditInitialValue":
+                    this.options.canEditInitialValue = value;
+                    this.RefreshInit();
                     break;
             }
             this._super(key, value);
@@ -10254,6 +10468,164 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=statescompact.js.map
+///#source 1 1 /script/widgets/ltl/compactltlresult.js
+/// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.compactltlresult", {
+        options: {
+            status: "notstarted",
+            isexpanded: false,
+            steps: 10,
+            ontestrequested: undefined,
+            onstepschanged: undefined,
+            onexpanded: undefined
+        },
+        _create: function () {
+            this.element.empty();
+            this.maindiv = $("<div></div>").appendTo(this.element);
+            this._createView();
+        },
+        _createView: function () {
+            var that = this;
+            this.maindiv.empty();
+            var opDiv = this.maindiv;
+            switch (this.options.status) {
+                case "notstarted":
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button>TEST </button>").appendTo(li);
+                    btn.click(function () {
+                        if (that.options.ontestrequested !== undefined) {
+                            that.options.ontestrequested();
+                        }
+                    });
+                    break;
+                case "success":
+                    if (this.options.isexpanded) {
+                        /*
+                         <div class="LTL-test-results true">
+                            Simulation Found<br>12 steps<br>
+                            <ul class="button-list">
+                            <li><button>OPEN</button></li>
+                            </ul>
+                            </div>
+                        */
+                        var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
+                        ltlresdiv.html("Simulation Found<br>" + that.options.steps + " steps<br>");
+                        var ul = $("<ul></ul>").addClass("button-list").css("margin", "0 0 5px 0").appendTo(ltlresdiv);
+                        var li = $("<li></li>").appendTo(ul);
+                        var btn = $("<button>OPEN </button>").appendTo(li);
+                        btn.click(function () {
+                            alert("Coming soon!");
+                        });
+                    }
+                    else {
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
+                        var btn = $("<button>OPEN </button>").appendTo(li);
+                        btn.click(function () {
+                            that.options.isexpanded = true;
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
+                    }
+                    break;
+                case "fail":
+                    if (this.options.isexpanded) {
+                        /*
+                         <div class="LTL-test-results false">
+                            No Simulation Found<br>
+                            12 steps <div class="pill-button-box">
+                            <div class="pill-button"><button>-</button></div>
+                            <div class="pill-button"><button>+</button></div>
+                        </div><br>
+                            <ul class="button-list">
+                                <li><button>TEST AGAIN</button></li>
+                            </ul>
+                        </div>
+                         */
+                        var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
+                        var fr = $("<div>No Simulation Found</div>").appendTo(ltlresdiv);
+                        var sr = $("<div></div>").appendTo(ltlresdiv);
+                        var d = $("<div>" + that.options.steps + " steps</div>").css("display", "inline-block").appendTo(sr);
+                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var minusb = $("<button>-</button>").appendTo(minusd);
+                        minusb.click(function (e) {
+                            that.options.steps--;
+                            d.text(that.options.steps + " steps");
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                        });
+                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusb = $("<button>+</button>").appendTo(plusd);
+                        plusb.click(function (e) {
+                            that.options.steps++;
+                            d.text(that.options.steps + " steps");
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                        });
+                        var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltlresdiv);
+                        var li = $("<li></li>").appendTo(ul);
+                        var btn = $("<button>TEST AGAIN</button>").appendTo(li);
+                        btn.click(function () {
+                            if (that.options.ontestrequested !== undefined) {
+                                that.options.ontestrequested();
+                            }
+                            //if (that.options.onexpanded !== undefined) {
+                            //    that.options.onexpanded();
+                            //}
+                        });
+                    }
+                    else {
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("red").appendTo(ul);
+                        var btn = $("<button>OPEN </button>").appendTo(li);
+                        btn.click(function () {
+                            that.options.isexpanded = true;
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
+                    }
+                    break;
+                default:
+                    break;
+            }
+        },
+        _setOption: function (key, value) {
+            var that = this;
+            var needRefreshStates = false;
+            switch (key) {
+                case "status":
+                    needRefreshStates = true;
+                    break;
+                case "isexpanded":
+                    needRefreshStates = true;
+                    break;
+                default:
+                    break;
+            }
+            this._super(key, value);
+            if (needRefreshStates) {
+                this._createView();
+            }
+        },
+        _setOptions: function (options) {
+            this._super(options);
+        },
+        _destroy: function () {
+            this.element.empty();
+        }
+    });
+}(jQuery));
+//# sourceMappingURL=compactltlresult.js.map
 ///#source 1 1 /script/widgets/ltl/tpeditor.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
@@ -10330,6 +10702,9 @@ jQuery.fn.extend({
                 drawingSurface.drawingsurface({ commands: that.options.commands });
             }
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
+            drawingSurface.drawingsurface({
+                isLightSVGTop: true
+            });
             //Context menu
             var holdCords = {
                 holdX: 0,
@@ -10448,7 +10823,8 @@ jQuery.fn.extend({
                 var height = this.options.padding.y;
                 var width = 0;
                 for (var i = 0; i < operations.length; i++) {
-                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i], { x: 0, y: 0 });
+                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
+                    opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
                     opLayout.Position = { x: opbbox.width / 2, y: height + opbbox.height / 2 };
                     height += opbbox.height + this.options.padding.y;
@@ -10551,6 +10927,7 @@ var BMA;
                             break;
                         case "LTLTempProp":
                             temporlapropertieseditor.Show();
+                            commands.Execute("TemporalPropertiesEditorExpanded", {});
                             if (_this.tppresenter === undefined) {
                                 _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), _this.statespresenter);
                             }
@@ -10566,7 +10943,7 @@ var BMA;
                     popupViewer.Hide();
                 });
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
-                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args.operations);
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
             }
             return LTLPresenter;
@@ -10639,6 +11016,7 @@ var BMA;
                 var _this = this;
                 this.controlPanels = [];
                 this.controlPanelPadding = 3;
+                this.isUpdateControlRequested = false;
                 var that = this;
                 this.appModel = appModel;
                 this.ajax = ajax;
@@ -10646,6 +11024,7 @@ var BMA;
                 this.navigationDriver = navigationDriver;
                 this.dragService = dragService;
                 this.commands = commands;
+                this.ltlcompactviewfactory = new BMA.UIDrivers.LTLResultsViewerFactory();
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
                 commands.On("AddOperatorSelect", function (operatorName) {
@@ -10739,6 +11118,7 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
+                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
@@ -10779,6 +11159,7 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
+                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         if (op.isRoot) {
                             var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
@@ -10786,6 +11167,20 @@ var BMA;
                             _this.operations.splice(ind, 1);
                         }
                         _this.OnOperationsChanged();
+                    }
+                });
+                commands.On("KeyframesChanged", function (args) {
+                    _this.ClearResults();
+                    for (var i = 0; i < _this.operations.length; i++) {
+                        var op = _this.operations[i];
+                        op.RefreshStates(args.states);
+                    }
+                    that.isUpdateControlRequested = true;
+                });
+                commands.On("TemporalPropertiesEditorExpanded", function (args) {
+                    if (that.isUpdateControlRequested) {
+                        that.UpdateControlPanels();
+                        that.isUpdateControlRequested = false;
                     }
                 });
                 dragService.GetMouseMoves().subscribe(function (gesture) {
@@ -10803,6 +11198,7 @@ var BMA;
                 dragSubject.dragStart.subscribe(function (gesture) {
                     var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                     if (staginOp !== undefined) {
+                        staginOp.AnalysisStatus = "nottested";
                         that.navigationDriver.TurnNavigation(false);
                         var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                         _this.stagingOperation = {
@@ -10814,9 +11210,9 @@ var BMA;
                             parentoperationindex: unpinned.parentoperationindex
                         };
                         if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                            that.controlPanels[that.stagingOperation.originIndex].hide();
+                            that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
                         }
-                        _this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                        //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                         staginOp.IsVisible = !unpinned.isRoot;
                     }
                 });
@@ -10925,69 +11321,93 @@ var BMA;
                 }
                 return false;
             };
-            TemporalPropertiesPresenter.prototype.SubscribeOnTestRequested = function (btn, operation) {
+            TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, domplot, driver) {
                 var that = this;
-                btn.click(function (arg) {
-                    if (operation.IsCompleted) {
-                        var formula = operation.Operation.GetFormula();
-                        var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
-                        var proofInput = {
-                            "Name": model.Name,
-                            "Relationships": model.Relationships,
-                            "Variables": model.Variables,
-                            "Formula": formula,
-                            "Number_of_steps": 10
-                        };
-                        var result = that.ajax.Invoke(proofInput).done(function (res) {
-                            if (res.Ticks == null) {
-                                alert(res.Error);
+                if (operation.IsCompleted) {
+                    var formula = operation.Operation.GetFormula();
+                    var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    var proofInput = {
+                        "Name": model.Name,
+                        "Relationships": model.Relationships,
+                        "Variables": model.Variables,
+                        "Formula": formula,
+                        "Number_of_steps": driver.GetSteps()
+                    };
+                    var result = that.ajax.Invoke(proofInput).done(function (res) {
+                        if (res.Ticks == null) {
+                            alert(res.Error);
+                        }
+                        else {
+                            if (res.Status === "True") {
+                                driver.SetStatus("success");
+                                operation.AnalysisStatus = "success";
                             }
                             else {
-                                if (res.Status === "True") {
-                                    operation.Fill = "rgb(217,255,182)";
-                                }
-                                else {
-                                    operation.Fill = "rgb(254,172,158)";
-                                }
+                                driver.SetStatus("fail");
+                                operation.AnalysisStatus = "fail";
                             }
-                        }).fail(function () {
-                            alert("LTL failed");
-                        });
-                    }
-                    else {
-                        operation.HighlightEmptySlots("red");
-                    }
+                            domplot.updateLayout();
+                            that.OnOperationsChanged(true);
+                        }
+                    }).fail(function () {
+                        alert("LTL failed");
+                    });
+                }
+                else {
+                    operation.HighlightEmptySlots("red");
+                }
+            };
+            TemporalPropertiesPresenter.prototype.ClearResults = function () {
+                for (var i = 0; i < this.operations.length; i++) {
+                    this.operations[i].AnalysisStatus = "nottested";
+                }
+            };
+            TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, domplot, op) {
+                var that = this;
+                driver.SetLTLRequestedCallback(function () {
+                    that.PerformLTL(op, domplot, driver);
                 });
             };
-            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function () {
+            TemporalPropertiesPresenter.prototype.SubscribeToLTLCompactExpand = function (driver, domplot) {
+                driver.SetOnExpandedCallback(function () {
+                    domplot.updateLayout();
+                });
+            };
+            TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
                 var that = this;
-                var ops = [];
-                for (var i = 0; i < this.operations.length; i++) {
-                    ops.push(this.operations[i].Operation.Clone());
-                }
                 var cps = this.controlPanels;
                 var dom = this.navigationDriver.GetNavigationSurface();
                 for (var i = 0; i < cps.length; i++) {
-                    dom.remove(cps[i]);
+                    dom.remove(cps[i].dommarker);
                 }
                 this.controlPanels = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
                     var bbox = op.BoundingBox;
                     var opDiv = $("<div></div>");
-                    /*
-                    <ul class= "button-list LTL-test" >
-                        <li class= "action-button-small grey" > <button>TEST < /button></li >
-                    </ul>
-                    */
-                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                    var btn = $("<button>TEST </button>").appendTo(li);
-                    that.SubscribeOnTestRequested(btn, op);
+                    var cp = {
+                        dommarker: opDiv,
+                        status: "notstarted"
+                    };
+                    var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
+                    driver.SetStatus("notstarted");
+                    that.SubscribeToLTLRequest(driver, dom, op);
+                    that.SubscribeToLTLCompactExpand(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
-                    this.controlPanels.push(opDiv);
+                    this.controlPanels.push(cp);
                 }
-                this.commands.Execute("TemporalPropertiesOperationsChanged", { operations: ops });
+            };
+            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (onlyStatus) {
+                if (onlyStatus === void 0) { onlyStatus = false; }
+                var that = this;
+                var ops = [];
+                for (var i = 0; i < this.operations.length; i++) {
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
+                }
+                if (!onlyStatus) {
+                    this.UpdateControlPanels();
+                }
+                this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };
             return TemporalPropertiesPresenter;
         })();
