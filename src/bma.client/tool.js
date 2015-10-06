@@ -3535,12 +3535,6 @@ var BMA;
                     case "SimulationPlot":
                         header = "Simulation Graph";
                         break;
-                    case "LTLStates":
-                        header = "LTL States";
-                        break;
-                    case "LTLResults":
-                        header = "LTL Results";
-                        break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
                 popup_position();
