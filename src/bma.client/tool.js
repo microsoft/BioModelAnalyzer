@@ -11070,6 +11070,7 @@ var BMA;
                         var op = _this.operations[i];
                         op.RefreshStates(args.states);
                     }
+                    that.OnOperationsChanged(false);
                     that.isUpdateControlRequested = true;
                 });
                 commands.On("TemporalPropertiesEditorExpanded", function (args) {
@@ -11242,7 +11243,7 @@ var BMA;
                                 operation.AnalysisStatus = "fail";
                             }
                             domplot.updateLayout();
-                            that.OnOperationsChanged(true);
+                            that.OnOperationsChanged(false);
                         }
                     }).fail(function () {
                         alert("LTL failed");
@@ -11292,14 +11293,14 @@ var BMA;
                     this.controlPanels.push(cp);
                 }
             };
-            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (onlyStatus) {
-                if (onlyStatus === void 0) { onlyStatus = false; }
+            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (updateControls) {
+                if (updateControls === void 0) { updateControls = true; }
                 var that = this;
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
-                if (!onlyStatus) {
+                if (updateControls) {
                     this.UpdateControlPanels();
                 }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);

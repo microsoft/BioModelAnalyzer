@@ -243,6 +243,7 @@ module BMA {
                         var op = this.operations[i];
                         op.RefreshStates(args.states);
                     }
+                    that.OnOperationsChanged(false);
                     that.isUpdateControlRequested = true;
                 });
 
@@ -445,7 +446,7 @@ module BMA {
                             }
 
                             domplot.updateLayout();
-                            that.OnOperationsChanged(true);
+                            that.OnOperationsChanged(false);
 
                             //if (res.Status == "True") {
                             //var restbl = that.CreateColoredTable(res.Ticks);
@@ -518,7 +519,7 @@ module BMA {
                 }
             }
 
-            private OnOperationsChanged(onlyStatus: boolean = false) {
+            private OnOperationsChanged(updateControls: boolean = true) {
                 var that = this;
 
                 var ops = [];
@@ -526,7 +527,7 @@ module BMA {
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
 
-                if (!onlyStatus) {
+                if (updateControls) {
                     this.UpdateControlPanels();
                 }
 
