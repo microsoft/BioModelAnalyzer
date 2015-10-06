@@ -3270,11 +3270,6 @@ textarea:focus {
   border: 2px solid #aaaaaa;
   cursor: pointer;
 }
-.state-placeholder {
-  font-size: 17px;
-  text-align: center;
-  margin-top: 10px;
-}
 .state-compact {
   margin-top: 5px;
   margin-bottom: 15px;
@@ -3356,6 +3351,51 @@ textarea:focus {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
+.ltlresultsviewer {
+  width: 1200px;
+}
+.ltlresultsviewer .ltl-results {
+  display: block;
+  float: left;
+  width: 45%;
+  height: 500px;
+  overflow: auto;
+}
+.ltlresultsviewer .ltl-results .variables-table {
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+.ltlresultsviewer .ltl-results .variables-table tbody tr td {
+  width: 50px;
+}
+.ltlresultsviewer .ltl-results.simulation-plot-box {
+  margin-top: 0;
+  margin-left: 20px;
+}
+.ltlresultsviewer .ltl-results.simulation-plot-box .idd-plot-master {
+  width: 85%!important;
+}
+.ltlresultsviewer .ltl-results.simulation-plot-box .simulationplot-legend-legendcontainer {
+  height: 100%;
+  width: 15%;
+}
+.LTL-states {
+  max-height: 270px;
+  overflow-y: auto;
+}
+.LTL-states table {
+  margin-left: 0;
+}
+.LTL-states table tr td {
+  position: relative;
+  min-width: 55px;
+  padding: 0;
+}
+.LTL-states table tr td.LTL-line-new {
+  height: 47px;
+}
 .LTL-states .variable-picker {
   position: absolute;
   top: 60px;
@@ -3392,7 +3432,7 @@ textarea:focus {
   height: 85px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0px 2px 0px 0px;
+  padding: 0 2px 0 0;
 }
 .LTL-states .variable-picker table tr td .scrollable a {
   display: block;
@@ -3403,7 +3443,7 @@ textarea:focus {
   cursor: pointer;
 }
 .LTL-states .variable-picker table tr td .scrollable a.active {
-  border: 0px;
+  border: 0;
   background-color: #aaaaaa;
   color: white;
 }
@@ -3424,20 +3464,5 @@ textarea:focus {
 .state-description {
   margin: 0;
   margin-top: 10px;
-}
-.LTL-states {
-  max-height: 270px;
-  overflow-y: auto;
-}
-.LTL-states table {
-  margin-left: 0;
-}
-.LTL-states table tr td {
-  position: relative;
-  min-width: 55px;
-  padding: 0;
-}
-.LTL-states table tr td.LTL-line-new {
-  height: 47px;
 }
 /*# sourceMappingURL=LTLStates.css.map */

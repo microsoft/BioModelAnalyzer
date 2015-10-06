@@ -174,6 +174,7 @@
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\StatesEditorSample.html" />
+    <Content Include="html\StatesSimulationSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
@@ -460,6 +461,7 @@
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlresultsviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />

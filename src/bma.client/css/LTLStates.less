@@ -7,6 +7,7 @@
         margin:0 10px 0 0;
     }
 }
+
 .state-buttons {
     width:355px;
     margin-left:0;
@@ -26,31 +27,25 @@
 }
 
 .state-button-empty{
-        margin-left: auto;
-        margin-right: auto;
-        width: 80px;
-        height: 80px;
-        font-family: 'Segoe-UI-Light';
-        font-size: 50px;
-        line-height: 70px;
-        text-align: center;
-        border-radius: 100px;
-        background-color: white;
-        color: @darkgrey;
-        border: 2px solid @darkgrey;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80px;
+    height: 80px;
+    font-family: 'Segoe-UI-Light';
+    font-size: 50px;
+    line-height: 70px;
+    text-align: center;
+    border-radius: 100px;
+    background-color: white;
+    color: @darkgrey;
+    border: 2px solid @darkgrey;
 
-        &:hover {
-                color: @midgrey;
-                border: 2px solid @midgrey;
-                cursor: pointer;
-        }
+    &:hover {
+            color: @midgrey;
+            border: 2px solid @midgrey;
+            cursor: pointer;
     }
-
-    .state-placeholder {
-        font-size:17px;
-        text-align:center;
-        margin-top: 10px;
-    }
+}
 
 .state-compact {
     margin-top:5px;
@@ -145,8 +140,69 @@
     }
 }
 
-// Variable Picker
+.ltlresultsviewer {
+    width:1200px;
+
+    .ltl-results{
+        display:block;
+        float:left;
+        width:45%;
+        height:500px;
+        overflow:auto;
+
+        .variables-table {
+            height:100%;
+            width:100%;
+            overflow-x:auto;
+            overflow-y:auto;
+            tbody {
+
+                tr {
+
+                    td{
+                        width:50px;
+                    }
+                }
+            }
+        }
+
+        &.simulation-plot-box {
+            margin-top:0;
+            margin-left: 20px;
+            .idd-plot-master {
+                width:85%!important;
+            }
+            .simulationplot-legend-legendcontainer {
+                height:100%;
+                width:15%;
+            }
+        }
+    }
+}
+
 .LTL-states {
+
+    max-height:270px;
+    overflow-y:auto;
+
+	table{
+        margin-left:0;
+
+		tr{
+
+			td{
+                position:relative;
+                min-width:55px;
+				padding:0;
+				
+				&.LTL-line-new{
+                    height:47px;
+				}
+			}
+		}
+	}
+
+    // Variable Picker
     .variable-picker{
         position:absolute;
         top: 60px;
@@ -183,7 +239,7 @@
 				        height:85px;
 				        overflow-y: auto;
 				        overflow-x: hidden;
-				        padding:0px 2px 0px 0px;
+				        padding:0 2px 0 0;
 				        a{
 					        display: block;
 					        text-decoration: none;
@@ -193,7 +249,7 @@
 					        }
 
 					        &.active{
-						        border: 0px;
+						        border: 0;
 						        background-color: @midgrey;
 						        color:white;
 					        }
@@ -225,26 +281,4 @@
 .state-description {
     margin:0;
     margin-top:10px;
-}
-
-.LTL-states{
-    max-height:270px;
-    overflow-y:auto;
-
-	table{
-        margin-left:0;
-
-		tr{
-
-			td{
-                position:relative;
-                min-width:55px;
-				padding:0;
-				
-				&.LTL-line-new{
-                    height:47px;
-				}
-			}
-		}
-	}
 }
