@@ -44,7 +44,6 @@ module BMA {
             private ltlcompactviewfactory: BMA.UIDrivers.ILTLResultsViewerFactory;
             private isUpdateControlRequested = false;
 
-
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -243,6 +242,7 @@ module BMA {
                         var op = this.operations[i];
                         op.RefreshStates(args.states);
                     }
+                    that.OnOperationsChanged(false);
                     that.isUpdateControlRequested = true;
                 });
 
@@ -250,6 +250,10 @@ module BMA {
                     if (that.isUpdateControlRequested) {
                         that.UpdateControlPanels();
                         that.isUpdateControlRequested = false;
+                    }
+
+                    for (var i = 0; i < that.operations.length; i++) {
+                        that.operations[i].Refresh();
                     }
                 });
 
@@ -445,7 +449,7 @@ module BMA {
                             }
 
                             domplot.updateLayout();
-                            that.OnOperationsChanged(true);
+                            that.OnOperationsChanged(false);
 
                             //if (res.Status == "True") {
                             //var restbl = that.CreateColoredTable(res.Ticks);
@@ -466,6 +470,7 @@ module BMA {
                     //that.commands.Execute("LTLRequested", { formula: formula });
                 } else {
                     operation.HighlightEmptySlots("red");
+                    driver.SetStatus("nottested");
                 }
             }
 
@@ -506,10 +511,10 @@ module BMA {
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
-                        status: "notstarted"
+                        status: "nottested"
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
-                    driver.SetStatus("notstarted");
+                    driver.SetStatus("nottested");
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
 
@@ -518,7 +523,7 @@ module BMA {
                 }
             }
 
-            private OnOperationsChanged(onlyStatus: boolean = false) {
+            private OnOperationsChanged(updateControls: boolean = true) {
                 var that = this;
 
                 var ops = [];
@@ -526,7 +531,7 @@ module BMA {
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
 
-                if (!onlyStatus) {
+                if (updateControls) {
                     this.UpdateControlPanels();
                 }
 

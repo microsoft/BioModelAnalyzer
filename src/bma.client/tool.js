@@ -3972,7 +3972,8 @@ var BMA;
                     var s = states[i];
                     var ws = {
                         name: s.Name,
-                        formula: []
+                        formula: [],
+                        tooltip: s.GetFormula()
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
@@ -4286,7 +4287,7 @@ var BMA;
                 var that = this;
                 this.compactltlresult = compactltlresult;
                 this.compactltlresult.compactltlresult({
-                    status: "notstarted",
+                    status: "nottested",
                     isexpanded: false,
                     ontestrequested: function () {
                         if (that.ltlrequested !== undefined)
@@ -10431,6 +10432,11 @@ jQuery.fn.extend({
                         if (value[i].formula.length != 0) {
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name).addClass("state-button").appendTo(this._stateButtons);
+                            stateButton.tooltip({
+                                content: value[i].tooltip,
+                                show: null,
+                                items: "div.state-button"
+                            });
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -10474,7 +10480,7 @@ jQuery.fn.extend({
 (function ($) {
     $.widget("BMA.compactltlresult", {
         options: {
-            status: "notstarted",
+            status: "nottested",
             isexpanded: false,
             steps: 10,
             ontestrequested: undefined,
@@ -10491,12 +10497,14 @@ jQuery.fn.extend({
             this.maindiv.empty();
             var opDiv = this.maindiv;
             switch (this.options.status) {
-                case "notstarted":
+                case "nottested":
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
                     btn.click(function () {
                         if (that.options.ontestrequested !== undefined) {
+                            btn.empty();
+                            that.createWaitAnim().appendTo(btn);
                             that.options.ontestrequested();
                         }
                     });
@@ -10598,6 +10606,20 @@ jQuery.fn.extend({
                 default:
                     break;
             }
+        },
+        createWaitAnim: function () {
+            /*
+             <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+             */
+            var anim = $("<div></div>").addClass("spinner");
+            $("<div></div>").addClass("bounce1").appendTo(anim);
+            $("<div></div>").addClass("bounce2").appendTo(anim);
+            $("<div></div>").addClass("bounce3").appendTo(anim);
+            return anim;
         },
         _setOption: function (key, value) {
             var that = this;
@@ -11175,12 +11197,16 @@ var BMA;
                         var op = _this.operations[i];
                         op.RefreshStates(args.states);
                     }
+                    that.OnOperationsChanged(false);
                     that.isUpdateControlRequested = true;
                 });
                 commands.On("TemporalPropertiesEditorExpanded", function (args) {
                     if (that.isUpdateControlRequested) {
                         that.UpdateControlPanels();
                         that.isUpdateControlRequested = false;
+                    }
+                    for (var i = 0; i < that.operations.length; i++) {
+                        that.operations[i].Refresh();
                     }
                 });
                 dragService.GetMouseMoves().subscribe(function (gesture) {
@@ -11347,7 +11373,7 @@ var BMA;
                                 operation.AnalysisStatus = "fail";
                             }
                             domplot.updateLayout();
-                            that.OnOperationsChanged(true);
+                            that.OnOperationsChanged(false);
                         }
                     }).fail(function () {
                         alert("LTL failed");
@@ -11355,6 +11381,7 @@ var BMA;
                 }
                 else {
                     operation.HighlightEmptySlots("red");
+                    driver.SetStatus("nottested");
                 }
             };
             TemporalPropertiesPresenter.prototype.ClearResults = function () {
@@ -11387,24 +11414,24 @@ var BMA;
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
-                        status: "notstarted"
+                        status: "nottested"
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
-                    driver.SetStatus("notstarted");
+                    driver.SetStatus("nottested");
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
                 }
             };
-            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (onlyStatus) {
-                if (onlyStatus === void 0) { onlyStatus = false; }
+            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (updateControls) {
+                if (updateControls === void 0) { updateControls = true; }
                 var that = this;
                 var ops = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
-                if (!onlyStatus) {
+                if (updateControls) {
                     this.UpdateControlPanels();
                 }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);

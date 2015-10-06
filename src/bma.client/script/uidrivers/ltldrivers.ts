@@ -156,8 +156,10 @@ module BMA {
                     var s = states[i];
                     var ws = {
                         name: s.Name,
-                        formula: []
+                        formula: [],
+                        tooltip: s.GetFormula()
                     };
+
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
 
@@ -517,7 +519,7 @@ module BMA {
 
                 this.compactltlresult = compactltlresult;
                 this.compactltlresult.compactltlresult({
-                    status: "notstarted",
+                    status: "nottested",
                     isexpanded: false,
                     ontestrequested: function () {
                         if (that.ltlrequested !== undefined)

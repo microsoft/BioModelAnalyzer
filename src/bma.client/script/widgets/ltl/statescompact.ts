@@ -53,6 +53,11 @@
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                                 .addClass("state-button").appendTo(this._stateButtons);
+                            stateButton.tooltip({
+                                content: value[i].tooltip,
+                                show: null,
+                                items: "div.state-button"
+                            });
                         }
                     }
                     if (this.options.states.length == 0) {
