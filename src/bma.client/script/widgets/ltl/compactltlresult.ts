@@ -9,7 +9,8 @@
             isexpanded: false,
             steps: 10,
             ontestrequested: undefined,
-            onstepschanged: undefined
+            onstepschanged: undefined,
+            onexpanded: undefined
         },
 
         _create: function () {
@@ -68,6 +69,9 @@
                         btn.click(function () {
                             that.options.isexpanded = true;
                             that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
                         });
                     }
 
@@ -132,6 +136,9 @@
                         btn.click(function () {
                             that.options.isexpanded = true;
                             that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
                         });
                     }
 

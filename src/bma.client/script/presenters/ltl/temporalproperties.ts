@@ -475,10 +475,16 @@ module BMA {
                 }
             }
 
-            private SubscribeToDriver(driver, op, cp) {
+            private SubscribeToLTLRequest(driver, op, cp) {
                 var that = this;
                 driver.SetLTLRequestedCallback(() => {
                     that.PerformLTL(op, driver, cp);
+                });
+            }
+
+            private SubscribeToLTLCompactExpand(driver, domplot) {
+                driver.SetOnExpandedCallback(() => {
+                    domplot.updateLayout();
                 });
             }
 
@@ -504,7 +510,8 @@ module BMA {
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus("notstarted");
-                    that.SubscribeToDriver(driver, op, cp);
+                    that.SubscribeToLTLRequest(driver, op, cp);
+                    that.SubscribeToLTLCompactExpand(driver, dom);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);

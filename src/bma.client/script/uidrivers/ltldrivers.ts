@@ -510,6 +510,7 @@ module BMA {
             private compactltlresult: JQuery = undefined;
             private steps: number = 10;
             private ltlrequested;
+            private expandedcallback;
 
             constructor(compactltlresult: JQuery) {
                 var that = this;
@@ -524,6 +525,11 @@ module BMA {
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                    },
+                    onexpanded: function () {
+                        if (that.expandedcallback !== undefined) {
+                            that.expandedcallback();
+                        }
                     }
                 });
             }
@@ -538,6 +544,10 @@ module BMA {
 
             public SetLTLRequestedCallback(callback) {
                 this.ltlrequested = callback;
+            }
+
+            public SetOnExpandedCallback(callback) {
+                this.expandedcallback = callback;
             }
         }
     }

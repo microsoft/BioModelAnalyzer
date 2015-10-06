@@ -3208,7 +3208,7 @@ textarea:focus {
   vertical-align: middle;
   width: 130px;
   padding: 5px 5px 0px 5px;
-  margin-left: 10px;
+  /*margin-left: 10px;*/
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   -ms-border-radius: 5px;

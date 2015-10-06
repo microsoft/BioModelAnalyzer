@@ -57,6 +57,7 @@ module BMA {
             SetStatus(status: string);
             GetSteps(): number;
             SetLTLRequestedCallback(callback: any);
+            SetOnExpandedCallback(callback: any);
         }
     }
 } 

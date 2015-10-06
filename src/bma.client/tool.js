@@ -4274,6 +4274,11 @@ var BMA;
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                    },
+                    onexpanded: function () {
+                        if (that.expandedcallback !== undefined) {
+                            that.expandedcallback();
+                        }
                     }
                 });
             }
@@ -4285,6 +4290,9 @@ var BMA;
             };
             LTLResultsCompactViewer.prototype.SetLTLRequestedCallback = function (callback) {
                 this.ltlrequested = callback;
+            };
+            LTLResultsCompactViewer.prototype.SetOnExpandedCallback = function (callback) {
+                this.expandedcallback = callback;
             };
             return LTLResultsCompactViewer;
         })();
@@ -10345,7 +10353,8 @@ jQuery.fn.extend({
             isexpanded: false,
             steps: 10,
             ontestrequested: undefined,
-            onstepschanged: undefined
+            onstepschanged: undefined,
+            onexpanded: undefined
         },
         _create: function () {
             this.element.empty();
@@ -10393,6 +10402,9 @@ jQuery.fn.extend({
                         btn.click(function () {
                             that.options.isexpanded = true;
                             that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
                         });
                     }
                     break;
@@ -10449,6 +10461,9 @@ jQuery.fn.extend({
                         btn.click(function () {
                             that.options.isexpanded = true;
                             that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
                         });
                     }
                     break;
@@ -11219,10 +11234,15 @@ var BMA;
                     this.operations[i].Fill = "white";
                 }
             };
-            TemporalPropertiesPresenter.prototype.SubscribeToDriver = function (driver, op, cp) {
+            TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, op, cp) {
                 var that = this;
                 driver.SetLTLRequestedCallback(function () {
                     that.PerformLTL(op, driver, cp);
+                });
+            };
+            TemporalPropertiesPresenter.prototype.SubscribeToLTLCompactExpand = function (driver, domplot) {
+                driver.SetOnExpandedCallback(function () {
+                    domplot.updateLayout();
                 });
             };
             TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
@@ -11243,7 +11263,8 @@ var BMA;
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus("notstarted");
-                    that.SubscribeToDriver(driver, op, cp);
+                    that.SubscribeToLTLRequest(driver, op, cp);
+                    that.SubscribeToLTLCompactExpand(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
                 }

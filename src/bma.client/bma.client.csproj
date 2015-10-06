@@ -616,8 +616,6 @@
       <DependentUpon>tool.js</DependentUpon>
     </Content>
     <Content Include="version.txt" />
-    <Content Include="videos\BMA-trailer.mp4" />
-    <Content Include="videos\BMA.mp4" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
     <Content Include="test\data\2var_unstable.xml">
@@ -637,7 +635,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
     <Content Include="tool.js.bundle">
       <SubType>Designer</SubType>
     </Content>
