@@ -287,7 +287,7 @@ module BMA {
                             };
 
                             if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                that.controlPanels[that.stagingOperation.originIndex].hide();
+                                that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
                             }
 
                             //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
@@ -475,6 +475,13 @@ module BMA {
                 }
             }
 
+            private SubscribeToDriver(driver, op, cp) {
+                var that = this;
+                driver.SetLTLRequestedCallback(() => {
+                    that.PerformLTL(op, driver, cp);
+                });
+            }
+
             private UpdateControlPanels() {
                 var that = this;
 
@@ -497,9 +504,7 @@ module BMA {
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus("notstarted");
-                    driver.SetLTLRequestedCallback(() => {
-                        that.PerformLTL(op, driver, cp);
-                    });
+                    that.SubscribeToDriver(driver, op, cp);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);

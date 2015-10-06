@@ -11066,7 +11066,7 @@ var BMA;
                             parentoperationindex: unpinned.parentoperationindex
                         };
                         if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                            that.controlPanels[that.stagingOperation.originIndex].hide();
+                            that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
                         }
                         //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                         staginOp.IsVisible = !unpinned.isRoot;
@@ -11219,6 +11219,12 @@ var BMA;
                     this.operations[i].Fill = "white";
                 }
             };
+            TemporalPropertiesPresenter.prototype.SubscribeToDriver = function (driver, op, cp) {
+                var that = this;
+                driver.SetLTLRequestedCallback(function () {
+                    that.PerformLTL(op, driver, cp);
+                });
+            };
             TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
                 var that = this;
                 var cps = this.controlPanels;
@@ -11237,9 +11243,7 @@ var BMA;
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus("notstarted");
-                    driver.SetLTLRequestedCallback(function () {
-                        that.PerformLTL(op, driver, cp);
-                    });
+                    that.SubscribeToDriver(driver, op, cp);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
                 }
