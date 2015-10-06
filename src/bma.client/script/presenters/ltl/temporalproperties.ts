@@ -470,6 +470,7 @@ module BMA {
                     //that.commands.Execute("LTLRequested", { formula: formula });
                 } else {
                     operation.HighlightEmptySlots("red");
+                    driver.SetStatus("nottested");
                 }
             }
 
@@ -510,10 +511,10 @@ module BMA {
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
-                        status: "notstarted"
+                        status: "nottested"
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
-                    driver.SetStatus("notstarted");
+                    driver.SetStatus("nottested");
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
 

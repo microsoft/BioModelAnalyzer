@@ -3972,7 +3972,8 @@ var BMA;
                     var s = states[i];
                     var ws = {
                         name: s.Name,
-                        formula: []
+                        formula: [],
+                        tooltip: s.GetFormula()
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
@@ -4286,7 +4287,7 @@ var BMA;
                 var that = this;
                 this.compactltlresult = compactltlresult;
                 this.compactltlresult.compactltlresult({
-                    status: "notstarted",
+                    status: "nottested",
                     isexpanded: false,
                     ontestrequested: function () {
                         if (that.ltlrequested !== undefined)
@@ -10326,6 +10327,11 @@ jQuery.fn.extend({
                         if (value[i].formula.length != 0) {
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name).addClass("state-button").appendTo(this._stateButtons);
+                            stateButton.tooltip({
+                                content: value[i].tooltip,
+                                show: null,
+                                items: "div.state-button"
+                            });
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -10369,7 +10375,7 @@ jQuery.fn.extend({
 (function ($) {
     $.widget("BMA.compactltlresult", {
         options: {
-            status: "notstarted",
+            status: "nottested",
             isexpanded: false,
             steps: 10,
             ontestrequested: undefined,
@@ -10386,7 +10392,7 @@ jQuery.fn.extend({
             this.maindiv.empty();
             var opDiv = this.maindiv;
             switch (this.options.status) {
-                case "notstarted":
+                case "nottested":
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button>TEST </button>").appendTo(li);
@@ -11270,6 +11276,7 @@ var BMA;
                 }
                 else {
                     operation.HighlightEmptySlots("red");
+                    driver.SetStatus("nottested");
                 }
             };
             TemporalPropertiesPresenter.prototype.ClearResults = function () {
@@ -11302,10 +11309,10 @@ var BMA;
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
-                        status: "notstarted"
+                        status: "nottested"
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
-                    driver.SetStatus("notstarted");
+                    driver.SetStatus("nottested");
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);

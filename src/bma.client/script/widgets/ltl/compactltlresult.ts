@@ -5,7 +5,7 @@
     $.widget("BMA.compactltlresult", {
 
         options: {
-            status: "notstarted",
+            status: "nottested",
             isexpanded: false,
             steps: 10,
             ontestrequested: undefined,
@@ -25,7 +25,7 @@
             this.maindiv.empty();
             var opDiv = this.maindiv;
             switch (this.options.status) {
-                case "notstarted":
+                case "nottested":
 
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
