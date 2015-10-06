@@ -35,7 +35,7 @@
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(this._simulationTables);
 
             this._simulationSmallTable.coloredtableviewer();
-            this._simulationBigTable.progressiontable();//{ canEditInitialValue: false });
+            this._simulationBigTable.progressiontable({ canEditInitialValue: false });
             this._simulationGraph.simulationplot();
 
             var step = this.options.step;
@@ -93,12 +93,12 @@
                 case "data": {
                     this.options.data = value;
                     if (this.options.interval !== undefined && this.options.interval.length !== 0)
-                        this._simulationBigTable.progressiontable({ interval: that.options.interval, data: value });
+                        this._simulationBigTable.progressiontable({ interval: that.options.interval, data: value, canEditInitialValue: false });
                     break;
                 }
                 case "init": {
                     this.options.init = value;
-                    this._simulationBigTable.progressiontable({ init: value });
+                    this._simulationBigTable.progressiontable({ init: value, canEditInitialValue: false });
                     break;
                 }
                 case "num": {
@@ -118,17 +118,17 @@
                 }
                 case "interval": {
                     this.options.interval = value;
-                    this._simulationBigTable.progressiontable({ interval: value });
+                    this._simulationBigTable.progressiontable({ interval: value, canEditInitialValue: false });
                     break;
                 }
                 case "buttonMode": {
                     this.options.buttonMode = value;
-                    this._simulationBigTable.progressiontable({ buttonMode: value });
+                    this._simulationBigTable.progressiontable({ buttonMode: value, canEditInitialValue: false });
                     break;
                 }
                 case "step": {
                     this.options.step = value;
-                    this._simulationBigTable.progressiontable({ step: value });
+                    this._simulationBigTable.progressiontable({ step: value, canEditInitialValue: false });
                     break;
                 }
 
@@ -148,8 +148,18 @@
         },
 
         refresh: function () {
-            this._simulationSmallTable.coloredtableviewer({});
-            this._simulationBigTable.progressiontable({});
+            var that = this;
+            this._simulationSmallTable.coloredtableviewer({
+                header: ["Graph", "Name", "Range"],
+                type: "graph-max",
+                numericData: that.options.variables
+            });
+            this._simulationBigTable.progressiontable({
+                init: that.options.init,
+                interval: that.options.interval,
+                data: that.options.data,
+                canEditInitialValue: false
+            });
             //if (this.options.numericData !== undefined && this.options.header.length != 0 && this.options.colorData)
             //    this._simulationTable.coloredtableviewer({ header: this.options.header, numericData: this.options.numericData, colorData: this.options.colorData });
             this._simulationGraph.simulationplot({ colors: this.options.colors });

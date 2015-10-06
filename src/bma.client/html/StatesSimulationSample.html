@@ -50,8 +50,10 @@
             var header = [];
             var l = 15;
             header[0] = "Name";
+            var init = []
             for (var i = 0; i < l; i++) {
                 header[i + 1] = "T = " + i;
+                init[i] = i;
             }
             for (var j = 0; j < l; j++) {
                 table[j] = [];
@@ -74,7 +76,8 @@
             $("#LTL_states").ltlresultsviewer();
             $("#LTL_states").ltlresultsviewer({
                 //header: header,
-                //numericData: table,
+                init: init,
+                variables: table,
                 //colorData: colortable,
                 colors: color
             });
