@@ -44,7 +44,6 @@ module BMA {
             private ltlcompactviewfactory: BMA.UIDrivers.ILTLResultsViewerFactory;
             private isUpdateControlRequested = false;
 
-
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -251,6 +250,10 @@ module BMA {
                     if (that.isUpdateControlRequested) {
                         that.UpdateControlPanels();
                         that.isUpdateControlRequested = false;
+                    }
+
+                    for (var i = 0; i < that.operations.length; i++) {
+                        that.operations[i].Refresh();
                     }
                 });
 

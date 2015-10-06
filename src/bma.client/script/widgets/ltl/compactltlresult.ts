@@ -32,6 +32,8 @@
                     var btn = $("<button>TEST </button>").appendTo(li);
                     btn.click(function () {
                         if (that.options.ontestrequested !== undefined) {
+                            btn.empty();
+                            that.createWaitAnim().appendTo(btn);
                             that.options.ontestrequested();
                         }
                     });
@@ -150,6 +152,22 @@
                 default:
                     break;
             }
+        },
+
+        createWaitAnim: function () {
+            /*
+             <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div> 
+             */
+
+            var anim = $("<div></div>").addClass("spinner");
+            $("<div></div>").addClass("bounce1").appendTo(anim);
+            $("<div></div>").addClass("bounce2").appendTo(anim);
+            $("<div></div>").addClass("bounce3").appendTo(anim);
+            return anim;
         },
 
         _setOption: function (key, value) {
