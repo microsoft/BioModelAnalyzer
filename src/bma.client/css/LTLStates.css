@@ -1,4 +1,9 @@
 ﻿/* General Functions */
+/* Remove button padding in FF */
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
 .page-loading > .spinner {
   display: inline-block;
 }

@@ -5,7 +5,7 @@
 
         options: {
             operations: [],
-            padding: { x: 5, y: 5 }
+            padding: { x: 3, y: 5 }
         },
 
         _create: function () {
@@ -51,7 +51,7 @@
                     var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
                     opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
-                    opLayout.Position = { x: opbbox.width / 2, y: height + opbbox.height / 2 };
+                    opLayout.Position = { x: opbbox.width / 2 + this.options.padding.x, y: height + opbbox.height / 2 };
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
                 }
