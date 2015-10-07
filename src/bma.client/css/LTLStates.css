@@ -3360,11 +3360,16 @@ textarea:focus {
 .ltlresultsviewer {
   width: 1200px;
 }
+.ltlresultsviewer .ltl-simplot-container {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 20px;
+}
 .ltlresultsviewer .ltl-results {
   display: block;
   float: left;
   width: 45%;
-  height: 500px;
+  height: 300px;
   overflow: auto;
 }
 .ltlresultsviewer .ltl-results .ltl-results-tables {
@@ -3391,11 +3396,11 @@ textarea:focus {
   margin-left: 20px;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box .idd-plot-master {
-  width: 85%!important;
+  width: 80%!important;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box .simulationplot-legend-legendcontainer {
   height: 100%;
-  width: 15%;
+  width: 20%;
 }
 .LTL-states {
   max-height: 270px;

@@ -8122,6 +8122,9 @@ var BMA;
                                 $(this).parent().removeClass('red');
                         });
                     }
+                    else {
+                        input.attr("disabled", "disabled");
+                    }
                 }
             }
         },

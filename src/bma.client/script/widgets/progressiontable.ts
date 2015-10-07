@@ -57,6 +57,7 @@
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
                     var input = $('<input type="text">').width("100%").appendTo(td);
+                    
                     var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
                     if (Array.isArray(init)) 
                         input.val(init[0]);
@@ -79,6 +80,8 @@
                             else
                                 $(this).parent().removeClass('red');
                         });
+                    } else {
+                        input.attr("disabled", "disabled");
                     }
                 }
             }

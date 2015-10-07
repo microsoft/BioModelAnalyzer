@@ -34,7 +34,7 @@
 
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(this._simulationTables);
 
-            this._simulationSmallTable.coloredtableviewer();
+            //this._simulationSmallTable.coloredtableviewer();
             this._simulationBigTable.progressiontable({ canEditInitialValue: false });
             this._simulationGraph.simulationplot();
 
@@ -109,11 +109,11 @@
                 }
                 case "variables": {
                     this.options.variables = value;
-                    this._simulationSmallTable.coloredtableviewer({
-                        header: ["Graph", "Name", "Range"],
-                        type: "graph-max",
-                        numericData: that.options.variables
-                    });
+                    //this._simulationSmallTable.coloredtableviewer({
+                    //    header: ["Graph", "Name", "Range"],
+                    //    type: "graph-max",
+                    //    numericData: that.options.variables
+                    //});
                     break;
                 }
                 case "interval": {
@@ -149,11 +149,11 @@
 
         refresh: function () {
             var that = this;
-            this._simulationSmallTable.coloredtableviewer({
-                header: ["Graph", "Name", "Range"],
-                type: "graph-max",
-                numericData: that.options.variables
-            });
+            //this._simulationSmallTable.coloredtableviewer({
+            //    header: ["Graph", "Name", "Range"],
+            //    type: "graph-max",
+            //    numericData: that.options.variables
+            //});
             this._simulationBigTable.progressiontable({
                 init: that.options.init,
                 interval: that.options.interval,
