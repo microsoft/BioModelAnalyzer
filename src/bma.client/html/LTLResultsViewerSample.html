@@ -22,6 +22,8 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+            window.Commands = new BMA.CommandRegistry();
+
             var GetRandomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
             };
@@ -43,7 +45,7 @@
                 data.push([]);
             }
 
-            for (var i = 0; i < 10; i++) {
+            for (var i = 0; i < 20; i++) {
 
                 init.push(i);
                 interval.push([0, 1]);
@@ -54,48 +56,59 @@
                     plotData.push(d);
                     data[j].push(d);
                 }
-
+                var color = getRandomColor();
                 pData.push({
                     Id: i,
-                    Color: getRandomColor(),
+                    Color: color,
                     Seen: true,
                     Plot: plotData,
                     Init: i,
                     Name: "var" + i,
                 });
 
-                vars.push(["red", true, "var" + i, 0, 1]);
+                vars.push([color, true, "var" + i, 0, 1]);
             }
 
+            pData[5].Seen = false;
+            vars[5][1] = false;
 
-            $("#coloredTable").coloredtableviewer({
-                header: ["Graph", "Name", "Range"],
-                type: "graph-max",
-                numericData: vars
-            });
+            //$("#ltlresultsviewer").ltlresultsviewer();
 
-            $("#progressionTable").progressiontable({
+            $("#ltlresultsviewer").ltlresultsviewer({
+                interval: interval,
                 data: data,
                 init: init,
-                interval: interval,
-                canEditInitialValue: false
+                variables: vars,
+                //colors: pData,
             });
 
-            $("#simulationPlot").simulationplot({
-                colors: pData
-            });
+            //$("#coloredTable").coloredtableviewer({
+            //    header: ["Graph", "Name", "Range"],
+            //    type: "graph-max",
+            //    numericData: vars
+            //});
+            //$("#progressionTable").progressiontable({
+            //    data: data,
+            //    init: init,
+            //    interval: interval,
+            //    canEditInitialValue: false
+            //});
+
+            //$("#simulationPlot").simulationplot({
+            //    colors: pData
+            //});
         });
 
     </script>
 </head>
 <body style="background-color: white;">
 
-    <div class="ltlresultsviewer">
-        <div id="coloredTable" class="small-simulation-popout-table"></div>
+    <div id="ltlresultsviewer" class="ltlresultsviewer">
+        <!--<div id="coloredTable" class="small-simulation-popout-table"></div>
         <div id="progressionTable" class="big-simulation-popout-table simulation-progression-table-container"></div>
         <div class="ltl-simplot-container">
             <div id="simulationPlot" class="ltl-results"></div>
-        </div>
+        </div>-->
     </div>
 </body>
 </html>

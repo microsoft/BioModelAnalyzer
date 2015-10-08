@@ -211,7 +211,10 @@
 
     .small-simulation-popout-table {
         display: inline-block;
+        float:left;
         max-width: 250px;
+        margin-top:5px;
+        margin-right:15px;
 
         .variables-table {
             td:nth-child(1) {
@@ -231,10 +234,12 @@
     }
 
     .big-simulation-popout-table {
+        float:left;
         display: inline-block;
         vertical-align: top;
         position: relative;
         max-width: 300px;
+        margin-top:5px;
 
         .bma-simulation-data-table {
             max-width: calc(~"100% - 90px");

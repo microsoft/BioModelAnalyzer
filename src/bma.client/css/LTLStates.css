@@ -3482,7 +3482,10 @@ textarea:focus {
 }
 .ltlresultsviewer .small-simulation-popout-table {
   display: inline-block;
+  float: left;
   max-width: 250px;
+  margin-top: 5px;
+  margin-right: 15px;
 }
 .ltlresultsviewer .small-simulation-popout-table .variables-table td:nth-child(1) {
   width: 40px;
@@ -3496,10 +3499,12 @@ textarea:focus {
   width: 50px;
 }
 .ltlresultsviewer .big-simulation-popout-table {
+  float: left;
   display: inline-block;
   vertical-align: top;
   position: relative;
   max-width: 300px;
+  margin-top: 5px;
 }
 .ltlresultsviewer .big-simulation-popout-table .bma-simulation-data-table {
   max-width: calc(100% - 90px);

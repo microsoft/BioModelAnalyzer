@@ -4319,6 +4319,14 @@ var BMA;
         })();
         UIDrivers.LTLResultsCompactViewer = LTLResultsCompactViewer;
         var LTLResultsViewer = (function () {
+            //private colors:{
+            //    Id: number;
+            //    Color: string;
+            //    Seen: boolean;
+            //    Plot: number[];
+            //    Init: number;
+            //    Name: string;
+            //}[];
             function LTLResultsViewer(commands, popupWindow) {
                 this.popupWindow = popupWindow;
                 this.commands = commands;
@@ -4339,53 +4347,109 @@ var BMA;
             };
             LTLResultsViewer.prototype.SetData = function (model, layout, ticks) {
                 var that = this;
-                //for simulation plot
                 var vars = model.Variables.sort(function (x, y) {
                     return x.Id < y.Id ? -1 : 1;
                 });
-                that.colors = [];
-                that.initValues = [];
+                var id = [];
+                var init = [];
+                var data = [];
+                var ranges = [];
+                var interval = [];
+                var pData = [];
+                var variables = [];
                 for (var i = 0; i < vars.length; i++) {
-                    this.colors.push({
-                        Id: vars[i].Id,
-                        Color: this.getRandomColor(),
-                        Seen: true,
-                        Plot: [],
-                        Init: vars[i].RangeFrom,
-                        Name: vars[i].Name
+                    id.push(vars[i].Id);
+                    init.push(vars[i].RangeFrom);
+                    ranges.push({
+                        min: vars[i].RangeFrom,
+                        max: vars[i].RangeTo
                     });
-                    this.colors[i].Plot[0] = this.colors[i].Init;
-                    this.initValues[i] = this.colors[i].Init;
+                    var color = this.getRandomColor();
+                    variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
-                //for colored table
-                var coloredTable = this.CreateColoredTable(ticks);
-                this.numericData = [];
-                this.colorData = [];
-                this.header = [];
-                var l = ticks.length;
-                this.header[0] = "Name";
-                for (var i = 0; i < ticks.length; i++) {
-                    this.header[i + 1] = "T = " + ticks[i].Time;
-                }
-                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
-                    this.numericData[j] = [];
-                    this.colorData[j] = [];
-                    this.numericData[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
-                    var v = ticks[0].Variables[j];
-                    this.colorData[j][0] = undefined;
-                    for (var i = 1; i < l + 1; i++) {
-                        var ij = ticks[i - 1].Variables[j];
-                        this.colorData[j][i] = coloredTable[j][i - 1];
-                        if (ij.Lo === ij.Hi) {
-                            this.numericData[j][i] = ij.Lo;
-                        }
-                        else {
-                            this.numericData[j][i] = ij.Lo + ' - ' + ij.Hi;
-                        }
-                    }
-                }
-                if (this.ltlResultsViewer !== undefined)
-                    this.ltlResultsViewer.ltlresultsviewer({ colors: that.colors, header: that.header, numericData: that.numericData, colorData: that.colorData });
+                //***************
+                //var init = [];
+                //var data = [];
+                //var interval = [];
+                //var vars = [];
+                //var pData = [];
+                //for (var j = 0; j < 30; j++) {
+                //    data.push([]);
+                //}
+                //for (var i = 0; i < 10; i++) {
+                //    init.push(i);
+                //    interval.push([0, 1]);
+                //    var plotData = [];
+                //    for (var j = 0; j < 30; j++) {
+                //        var d = Math.floor(Math.random() * 5);
+                //        plotData.push(d);
+                //        data[j].push(d);
+                //    }
+                //    var color = getRandomColor();
+                //    pData.push({
+                //        Id: i,
+                //        Color: color,
+                //        Seen: true,
+                //        Plot: plotData,
+                //        Init: i,
+                //        Name: "var" + i,
+                //    });
+                //    vars.push([color, true, "var" + i, 0, 1]);
+                //}
+                //pData[5].Seen = false;
+                //vars[5][1] = false;
+                ////$("#ltlresultsviewer").ltlresultsviewer();
+                //$("#ltlresultsviewer").ltlresultsviewer({
+                //    interval: interval,
+                //    data: data,
+                //    init: init,
+                //    variables: vars,
+                //    //colors: pData,
+                //});
+                //**********************
+                //that.colors = [];
+                //that.initValues = [];
+                //for (var i = 0; i < vars.length; i++) {
+                //    this.colors.push({
+                //        Id: vars[i].Id,
+                //        Color: this.getRandomColor(),
+                //        Seen: true,
+                //        Plot: [],
+                //        Init: vars[i].RangeFrom,
+                //        Name: vars[i].Name
+                //    });
+                //    this.colors[i].Plot[0] = this.colors[i].Init;
+                //    this.initValues[i] = this.colors[i].Init;
+                //}
+                ////for colored table
+                //var coloredTable = this.CreateColoredTable(ticks);
+                //this.numericData = [];
+                //this.colorData = [];
+                //this.header = [];
+                //var l = ticks.length;
+                //this.header[0] = "Name";
+                //for (var i = 0; i < ticks.length; i++) {
+                //    this.header[i + 1] = "T = " + ticks[i].Time;
+                //}
+                //for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
+                //    this.numericData[j] = [];
+                //    this.colorData[j] = [];
+                //    this.numericData[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
+                //    var v = ticks[0].Variables[j];
+                //    this.colorData[j][0] = undefined;
+                //    for (var i = 1; i < l + 1; i++) {
+                //        var ij = ticks[i - 1].Variables[j];
+                //        this.colorData[j][i] = coloredTable[j][i - 1];
+                //        if (ij.Lo === ij.Hi) {
+                //            this.numericData[j][i] = ij.Lo;
+                //        }
+                //        else {
+                //            this.numericData[j][i] = ij.Lo + ' - ' + ij.Hi;
+                //        }
+                //    }
+                //}
+                //if (this.ltlResultsViewer !== undefined) 
+                //    this.ltlResultsViewer.ltlresultsviewer({colors: that.colors, header: that.header, numericData: that.numericData, colorData: that.colorData});
             };
             LTLResultsViewer.prototype.CreateColoredTable = function (ticks) {
                 var that = this;
