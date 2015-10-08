@@ -3359,6 +3359,184 @@ textarea:focus {
 }
 .ltlresultsviewer {
   width: 1200px;
+  max-height: 470px;
+  overflow-x: auto;
+  overflow-y: auto;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+.ltlresultsviewer::-webkit-scrollbar-track {
+  width: 20px;
+  background-color: white;
+}
+.ltlresultsviewer::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #aaaaaa;
+}
+.ltlresultsviewer::-webkit-scrollbar-thumb {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #aaaaaa;
+}
+.ltlresultsviewer .steps-container {
+  float: right;
+  margin: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.ltlresultsviewer ul.button-list {
+  float: right;
+  margin: 0;
+}
+.ltlresultsviewer ul.button-list li {
+  background-color: #606060;
+  display: inline-block;
+  vertical-align: middle;
+}
+.ltlresultsviewer ul.button-list li:hover {
+  background-color: #ededed;
+}
+.ltlresultsviewer ul.button-list li:hover button {
+  color: #606060;
+}
+.ltlresultsviewer ul.button-list button {
+  color: white;
+  font-size: 14px;
+  padding: 3px;
+}
+.ltlresultsviewer ul.button-list button:hover {
+  color: #606060;
+}
+.ltlresultsviewer ul.button-list li.steps {
+  background-color: #ededed;
+  color: #606060;
+}
+.ltlresultsviewer ul.button-list li.steps button {
+  color: #606060;
+}
+.ltlresultsviewer ul.button-list li.run {
+  margin-left: 30px;
+  background-color: #81bb83;
+  border: 1px solid #81bb83;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 30px;
+  color: white;
+}
+.ltlresultsviewer ul.button-list li.run:hover {
+  background-color: white;
+  border: 1px solid #81bb83;
+  color: #81bb83;
+}
+.ltlresultsviewer ul.button-list li.run:hover button {
+  color: #81bb83;
+}
+.ltlresultsviewer ul.button-list li.run:hover button .icon.download {
+  background-image: url("../images/download.svg");
+}
+.ltlresultsviewer ul.button-list li.run button {
+  font-size: 20px;
+  line-height: 100%;
+  color: white;
+  padding: 5px 7px 5px 7px;
+  /*&:hover{
+				color: @c;
+                    .icon{
+						&.download{
+						background-image: url("../images/download.svg")
+					}
+					}
+				}*/
+}
+.ltlresultsviewer ul.button-list li.run button .icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 0px;
+  margin: 0px;
+}
+.ltlresultsviewer ul.button-list li.run button .icon.download {
+  background-image: url("../images/download-white.svg");
+}
+.ltlresultsviewer ul.button-list li.run.waiting:hover {
+  background-color: #81bb83;
+  border: 1px solid #81bb83;
+  color: white;
+}
+.ltlresultsviewer ul.button-list li.run .spinner > div {
+  background-color: white;
+}
+.ltlresultsviewer ul.button-list li.run button {
+  width: 70px;
+  height: 30px;
+  text-transform: uppercase;
+}
+.ltlresultsviewer ul.button-list li.run.waiting > button {
+  background-image: url(../images/20x20.gif);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.ltlresultsviewer .small-simulation-popout-table {
+  display: inline-block;
+  max-width: 250px;
+}
+.ltlresultsviewer .small-simulation-popout-table .variables-table td:nth-child(1) {
+  width: 40px;
+}
+.ltlresultsviewer .small-simulation-popout-table .variables-table tr:last-child td:first-child {
+  background-color: Window;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+}
+.ltlresultsviewer .small-simulation-popout-table .variables-table td:nth-child(3) {
+  width: 50px;
+}
+.ltlresultsviewer .big-simulation-popout-table {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  max-width: 300px;
+}
+.ltlresultsviewer .big-simulation-popout-table .bma-simulation-data-table {
+  max-width: calc(100% - 90px);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table {
+  width: 90px;
+  table-layout: auto;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table td:nth-child(1) {
+  border-right: none;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table td:nth-child(2) {
+  border-left: none;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table tr.red {
+  background-color: #feb6b2;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table input {
+  height: 17px;
+  width: 100%;
+  border: none;
+  text-align: center;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table input:focus {
+  box-shadow: none;
+}
+.ltlresultsviewer .big-simulation-popout-table .variables-table .random-small {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-x: center;
+  width: 20px;
+  height: 20px;
 }
 .ltlresultsviewer .ltl-simplot-container {
   display: inline-block;
@@ -3368,35 +3546,16 @@ textarea:focus {
 .ltlresultsviewer .ltl-results {
   display: block;
   float: left;
-  width: 45%;
-  height: 300px;
+  width: 500px;
   overflow: auto;
-}
-.ltlresultsviewer .ltl-results .ltl-results-tables {
-  min-width: 40%;
-  float: left;
-  height: 87%;
-  margin: 5px;
-}
-.ltlresultsviewer .ltl-results .steps-container {
-  float: right;
-  margin: 5px;
-}
-.ltlresultsviewer .ltl-results .variables-table {
-  height: 100%;
-  width: 80%;
-  overflow-x: auto;
-  overflow-y: auto;
-}
-.ltlresultsviewer .ltl-results .variables-table tbody tr td {
-  width: 50px;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box {
   margin-top: 0;
-  margin-left: 20px;
+  margin-left: 5px;
+  height: 300px;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box .idd-plot-master {
-  width: 80%!important;
+  width: 80% !important;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box .simulationplot-legend-legendcontainer {
   height: 100%;
