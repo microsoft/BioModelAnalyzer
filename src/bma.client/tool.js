@@ -3948,6 +3948,18 @@ var BMA;
             TemporalPropertiesEditorDriver.prototype.GetContextMenuDriver = function () {
                 return this.contextMenuDriver;
             };
+            TemporalPropertiesEditorDriver.prototype.HighlightCopyZone = function (ishighlighted) {
+                this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
+            };
+            TemporalPropertiesEditorDriver.prototype.HighlightDeleteZone = function (ishighlighted) {
+                this.tpeditor.temporalpropertieseditor("highlightdeletezone", ishighlighted);
+            };
+            TemporalPropertiesEditorDriver.prototype.GetCopyZoneBBox = function () {
+                return this.tpeditor.temporalpropertieseditor("getcopyzonebbox");
+            };
+            TemporalPropertiesEditorDriver.prototype.GetDeleteZoneBBox = function () {
+                return this.tpeditor.temporalpropertieseditor("getdeletezonebbox");
+            };
             TemporalPropertiesEditorDriver.prototype.SetStates = function (states) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ states: states });
@@ -7747,9 +7759,11 @@ var BMA;
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
             var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             this.lightSVGDiv = svgPlotDiv2;
-            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
+            //empty div for event handling
+            //$("<div></div>").attr("data-idd-plot", "plot").appendTo(plotDiv);
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
@@ -10721,6 +10735,8 @@ jQuery.fn.extend({
 (function ($) {
     $.widget("BMA.temporalpropertieseditor", {
         _drawingSurface: undefined,
+        copyzone: undefined,
+        deletezone: undefined,
         options: {
             states: [],
             drawingSurfaceHeight: 500
@@ -10794,6 +10810,24 @@ jQuery.fn.extend({
             drawingSurface.drawingsurface({
                 isLightSVGTop: true
             });
+            //Adding drop zones
+            /*
+             <div class="temporal-dropzones">
+                <div class="dropzone copy">
+                    <img src="../images/LTL-copy.svg" alt="">
+                </div>
+                <div class="dropzone delete">
+                        <img src="../images/LTL-delete.svg" alt="">
+                </div>
+    
+            </div>
+            */
+            var dom = drawingSurface.drawingsurface("getCentralPart");
+            var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
+            this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
+            this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
             //Context menu
             var holdCords = {
                 holdX: 0,
@@ -10870,6 +10904,44 @@ jQuery.fn.extend({
         destroy: function () {
             this.element.empty();
         },
+        highlightcopyzone: function (isHighlighted) {
+            if (isHighlighted) {
+                this.copyzone.addClass("hovered");
+            }
+            else {
+                this.copyzone.removeClass("hovered");
+            }
+        },
+        highlightdeletezone: function (isHighlighted) {
+            if (isHighlighted) {
+                this.deletezone.addClass("hovered");
+            }
+            else {
+                this.deletezone.removeClass("hovered");
+            }
+        },
+        getcopyzonebbox: function () {
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15);
+            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var bbox = {
+                x: x,
+                y: y,
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+            };
+            return bbox;
+        },
+        getdeletezonebbox: function () {
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5);
+            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var bbox = {
+                x: x,
+                y: y,
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5 + 385) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+            };
+            return bbox;
+        }
     });
 }(jQuery));
 //# sourceMappingURL=tpeditor.js.map
@@ -11018,7 +11090,7 @@ var BMA;
                             temporlapropertieseditor.Show();
                             commands.Execute("TemporalPropertiesEditorExpanded", {});
                             if (_this.tppresenter === undefined) {
-                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor.GetSVGDriver(), temporlapropertieseditor.GetNavigationDriver(), temporlapropertieseditor.GetDragService(), temporlapropertieseditor.GetContextMenuDriver(), _this.statespresenter);
+                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter);
                             }
                             break;
                         default:
@@ -11101,7 +11173,7 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(commands, appModel, ajax, svgPlotDriver, navigationDriver, dragService, contextMenu, statesPresenter) {
+            function TemporalPropertiesPresenter(commands, appModel, ajax, tpEditorDriver, statesPresenter) {
                 var _this = this;
                 this.controlPanels = [];
                 this.controlPanelPadding = 3;
@@ -11109,13 +11181,15 @@ var BMA;
                 var that = this;
                 this.appModel = appModel;
                 this.ajax = ajax;
-                this.driver = svgPlotDriver;
-                this.navigationDriver = navigationDriver;
-                this.dragService = dragService;
+                this.tpEditorDriver = tpEditorDriver;
+                this.driver = tpEditorDriver.GetSVGDriver();
+                this.navigationDriver = tpEditorDriver.GetNavigationDriver();
+                this.dragService = tpEditorDriver.GetDragService();
                 this.commands = commands;
                 this.ltlcompactviewfactory = new BMA.UIDrivers.LTLResultsViewerFactory();
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
+                var contextMenu = tpEditorDriver.GetContextMenuDriver();
                 commands.On("AddOperatorSelect", function (operatorName) {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });
@@ -11276,7 +11350,7 @@ var BMA;
                         that.operations[i].Refresh();
                     }
                 });
-                dragService.GetMouseMoves().subscribe(function (gesture) {
+                that.dragService.GetMouseMoves().subscribe(function (gesture) {
                     if (that.previousHighlightedOperation !== undefined) {
                         that.previousHighlightedOperation.Refresh();
                         that.previousHighlightedOperation = undefined;
@@ -11287,7 +11361,7 @@ var BMA;
                         that.previousHighlightedOperation = staginOp;
                     }
                 });
-                var dragSubject = dragService.GetDragSubject();
+                var dragSubject = that.dragService.GetDragSubject();
                 dragSubject.dragStart.subscribe(function (gesture) {
                     var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                     if (staginOp !== undefined) {
@@ -11313,6 +11387,20 @@ var BMA;
                     if (_this.stagingOperation !== undefined) {
                         var bbox = _this.stagingOperation.operation.BoundingBox;
                         _this.stagingOperation.operation.Position = { x: gesture.x1 + _this.stagingOperation.operation.Scale.x * bbox.width / 2, y: gesture.y1 + _this.stagingOperation.operation.Scale.y * bbox.height / 2 };
+                        var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
+                        var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
+                        if (copyZoneBB.x <= gesture.x1 && copyZoneBB.x + copyZoneBB.width >= gesture.x1 && copyZoneBB.y <= gesture.y1 && copyZoneBB.y + copyZoneBB.height >= gesture.y1) {
+                            tpEditorDriver.HighlightCopyZone(true);
+                            tpEditorDriver.HighlightDeleteZone(false);
+                        }
+                        else if (deleteZoneBB.x <= gesture.x1 && deleteZoneBB.x + deleteZoneBB.width >= gesture.x1 && deleteZoneBB.y <= gesture.y1 && deleteZoneBB.y + deleteZoneBB.height >= gesture.y1) {
+                            tpEditorDriver.HighlightCopyZone(false);
+                            tpEditorDriver.HighlightDeleteZone(true);
+                        }
+                        else {
+                            tpEditorDriver.HighlightCopyZone(false);
+                            tpEditorDriver.HighlightDeleteZone(false);
+                        }
                     }
                 });
                 dragSubject.dragEnd.subscribe(function (gesture) {
@@ -11328,34 +11416,68 @@ var BMA;
                             x: position.x + bbox.width / 2,
                             y: position.y + bbox.height / 2
                         };
-                        if (!_this.HasIntersections(_this.stagingOperation.operation)) {
-                            if (_this.stagingOperation.operation.IsOperation) {
-                                if (_this.stagingOperation.isRoot) {
-                                    _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
-                                    _this.stagingOperation.originRef.IsVisible = true;
-                                }
-                                else {
-                                    _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
-                                }
+                        tpEditorDriver.HighlightCopyZone(false);
+                        tpEditorDriver.HighlightDeleteZone(false);
+                        var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
+                        var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
+                        if (copyZoneBB.x <= position.x && copyZoneBB.x + copyZoneBB.width >= position.x && copyZoneBB.y <= position.y && copyZoneBB.y + copyZoneBB.height >= position.y) {
+                            _this.clipboard = {
+                                operation: _this.stagingOperation.operation.Operation.Clone()
+                            };
+                            //Operation should stay in its origin place
+                            if (_this.stagingOperation.isRoot) {
+                                _this.stagingOperation.originRef.IsVisible = true;
                             }
                             else {
-                                //State should state in its origin place
                                 _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
                                 _this.stagingOperation.originRef.Refresh();
                             }
                         }
+                        else if (deleteZoneBB.x <= position.x && deleteZoneBB.x + deleteZoneBB.width >= position.x && deleteZoneBB.y <= position.y && deleteZoneBB.y + deleteZoneBB.height >= position.y) {
+                            if (_this.stagingOperation.isRoot) {
+                                _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                            }
+                        }
                         else {
-                            var operation = _this.GetOperationAtPoint(position.x, position.y);
-                            if (operation !== undefined) {
-                                var emptyCell = undefined;
-                                emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
-                                if (emptyCell !== undefined) {
-                                    //emptyCell.opLayout = operation;
-                                    emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
-                                    operation.Refresh();
+                            if (!_this.HasIntersections(_this.stagingOperation.operation)) {
+                                if (_this.stagingOperation.operation.IsOperation) {
                                     if (_this.stagingOperation.isRoot) {
-                                        _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
-                                        _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                        _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                                        _this.stagingOperation.originRef.IsVisible = true;
+                                    }
+                                    else {
+                                        _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                    }
+                                }
+                                else {
+                                    //State should state in its origin place
+                                    _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                    _this.stagingOperation.originRef.Refresh();
+                                }
+                            }
+                            else {
+                                var operation = _this.GetOperationAtPoint(position.x, position.y);
+                                if (operation !== undefined) {
+                                    var emptyCell = undefined;
+                                    emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                    if (emptyCell !== undefined) {
+                                        //emptyCell.opLayout = operation;
+                                        emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
+                                        operation.Refresh();
+                                        if (_this.stagingOperation.isRoot) {
+                                            _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
+                                            _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                        }
+                                    }
+                                    else {
+                                        //Operation should stay in its origin place
+                                        if (_this.stagingOperation.isRoot) {
+                                            _this.stagingOperation.originRef.IsVisible = true;
+                                        }
+                                        else {
+                                            _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                            _this.stagingOperation.originRef.Refresh();
+                                        }
                                     }
                                 }
                                 else {
@@ -11367,16 +11489,6 @@ var BMA;
                                         _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
                                         _this.stagingOperation.originRef.Refresh();
                                     }
-                                }
-                            }
-                            else {
-                                //Operation should stay in its origin place
-                                if (_this.stagingOperation.isRoot) {
-                                    _this.stagingOperation.originRef.IsVisible = true;
-                                }
-                                else {
-                                    _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
-                                    _this.stagingOperation.originRef.Refresh();
                                 }
                             }
                         }
@@ -11407,12 +11519,15 @@ var BMA;
                     if (!operations[i].IsVisible)
                         continue;
                     var bbox = operations[i].BoundingBox;
-                    var isXIntersects = opBbox.x <= bbox.x + bbox.width && opBbox.x + opBbox.width >= bbox.x;
-                    var isYIntersects = opBbox.y <= bbox.y + bbox.height && opBbox.y + opBbox.height >= bbox.y;
-                    if (isXIntersects && isYIntersects)
+                    if (this.HasIntersection(opBbox, bbox))
                         return true;
                 }
                 return false;
+            };
+            TemporalPropertiesPresenter.prototype.HasIntersection = function (bbox, bbox2) {
+                var isXIntersects = bbox2.x <= bbox.x + bbox.width && bbox2.x + bbox2.width >= bbox.x;
+                var isYIntersects = bbox2.y <= bbox.y + bbox.height && bbox2.y + bbox2.height >= bbox.y;
+                return isXIntersects && isYIntersects;
             };
             TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, domplot, driver) {
                 var that = this;

@@ -130,6 +130,22 @@ module BMA {
                 return this.contextMenuDriver;
             }
 
+            HighlightCopyZone(ishighlighted: boolean) {
+                this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
+            }
+
+            HighlightDeleteZone(ishighlighted: boolean) {
+                this.tpeditor.temporalpropertieseditor("highlightdeletezone", ishighlighted);
+            }
+
+            GetCopyZoneBBox() {
+                return this.tpeditor.temporalpropertieseditor("getcopyzonebbox");
+            }
+
+            GetDeleteZoneBBox() {
+                return this.tpeditor.temporalpropertieseditor("getdeletezonebbox");
+            }
+
             SetStates(states: BMA.LTLOperations.Keyframe[]) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ states: states });

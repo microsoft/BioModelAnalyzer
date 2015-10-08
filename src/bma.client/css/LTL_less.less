@@ -222,14 +222,15 @@
 .temporal-dropzones {
     position: absolute;
     bottom: 0px;
-    width: 630px;
+    width: 800px;
     height: 60px;
     padding: 15px 10px;
+    background-color: white;
 
     .dropzone {
         display: inline-block;
         height: 100%;
-        width: 308px;
+        width: 385px;
         text-align: center;
 
         img {
@@ -246,6 +247,10 @@
         }
 
         &:hover {
+            background-color: @lightgrey;
+        }
+
+        &.hovered{
             background-color: @lightgrey;
         }
     }

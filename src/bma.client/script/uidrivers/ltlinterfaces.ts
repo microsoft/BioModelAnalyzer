@@ -43,6 +43,14 @@ module BMA {
             GetNavigationDriver(): INavigationPanel;
             GetDragService(): IElementsPanel;
             GetContextMenuDriver(): IContextMenu;
+            HighlightCopyZone(isHighlighted: boolean);
+            HighlightDeleteZone(isHighlighted: boolean);
+            GetCopyZoneBBox(): {
+                x: number; y: number; width: number; height: number
+            };
+            GetDeleteZoneBBox(): {
+                x: number; y: number; width: number; height: number
+            };
         }
 
         export interface ITemporalPropertiesViewer {
