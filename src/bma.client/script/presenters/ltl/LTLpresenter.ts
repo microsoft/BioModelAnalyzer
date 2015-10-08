@@ -90,10 +90,7 @@
                                     commands,
                                     appModel,
                                     ajax,
-                                    temporlapropertieseditor.GetSVGDriver(),
-                                    temporlapropertieseditor.GetNavigationDriver(),
-                                    temporlapropertieseditor.GetDragService(),
-                                    temporlapropertieseditor.GetContextMenuDriver(),
+                                    temporlapropertieseditor,
                                     this.statespresenter);
                             }
 

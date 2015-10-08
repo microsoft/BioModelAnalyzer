@@ -4,6 +4,8 @@
 (function ($) {
     $.widget("BMA.temporalpropertieseditor", {
         _drawingSurface: undefined,
+        copyzone: undefined,
+        deletezone: undefined,
 
         options: {
             states: [],
@@ -105,8 +107,29 @@
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } }); 
             drawingSurface.drawingsurface({
                 isLightSVGTop: true
-            });         
+            }); 
+            
+            //Adding drop zones
+            /*
+             <div class="temporal-dropzones">
+	            <div class="dropzone copy">
+	            	<img src="../images/LTL-copy.svg" alt="">
+	            </div>
+	            <div class="dropzone delete">
+	            		<img src="../images/LTL-delete.svg" alt="">
+	            </div>
+	
+            </div>
+            */
 
+            var dom = drawingSurface.drawingsurface("getCentralPart");
+            
+            var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
+            this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
+            this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
+                  
             //Context menu
             var holdCords = {
                 holdX: 0,
@@ -190,6 +213,53 @@
         destroy: function () {
             this.element.empty();
         },
+
+        highlightcopyzone: function (isHighlighted) {
+            if (isHighlighted) {
+                this.copyzone.addClass("hovered");
+            } else {
+                this.copyzone.removeClass("hovered");
+            }
+        },
+
+        highlightdeletezone: function (isHighlighted) {
+            if (isHighlighted) {
+                this.deletezone.addClass("hovered");
+            } else {
+                this.deletezone.removeClass("hovered");
+            }
+        },
+
+        getcopyzonebbox: function () {
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15);
+            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var bbox = {
+                x: x,
+                y: y,
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+            };
+
+
+            return bbox;
+        },
+
+        getdeletezonebbox: function () {
+
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5);
+            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var bbox = {
+                x: x,
+                y: y,
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5 + 385) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+            };
+
+
+            return bbox;
+
+        }
+
     });
 } (jQuery));
 

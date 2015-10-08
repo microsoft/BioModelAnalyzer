@@ -3079,14 +3079,15 @@ textarea:focus {
 .temporal-dropzones {
   position: absolute;
   bottom: 0px;
-  width: 630px;
+  width: 800px;
   height: 60px;
   padding: 15px 10px;
+  background-color: white;
 }
 .temporal-dropzones .dropzone {
   display: inline-block;
   height: 100%;
-  width: 308px;
+  width: 385px;
   text-align: center;
 }
 .temporal-dropzones .dropzone img {
@@ -3100,6 +3101,9 @@ textarea:focus {
   margin-right: 5px;
 }
 .temporal-dropzones .dropzone:hover {
+  background-color: #ededed;
+}
+.temporal-dropzones .dropzone.hovered {
   background-color: #ededed;
 }
 .temporal-toolbar {
