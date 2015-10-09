@@ -529,6 +529,7 @@ module BMA {
             private steps: number = 10;
             private ltlrequested;
             private expandedcallback;
+            private showresultcallback;
 
             constructor(compactltlresult: JQuery) {
                 var that = this;
@@ -548,6 +549,11 @@ module BMA {
                         if (that.expandedcallback !== undefined) {
                             that.expandedcallback();
                         }
+                    },
+                    onshowresultsrequested: function () {
+                        if (that.showresultcallback !== undefined) {
+                            that.showresultcallback();
+                        }
                     }
                 });
             }
@@ -566,6 +572,10 @@ module BMA {
 
             public SetOnExpandedCallback(callback) {
                 this.expandedcallback = callback;
+            }
+
+            public SetShowResultsCallback(callback) {
+                this.showresultcallback = callback;
             }
         }
 

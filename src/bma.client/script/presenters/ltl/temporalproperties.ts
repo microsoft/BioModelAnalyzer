@@ -539,6 +539,13 @@ module BMA {
                         }
                         else {
                             if (res.Status === "True") {
+
+                                driver.SetShowResultsCallback(function () {
+                                    that.commands.Execute("ShowLTLResults", {
+                                        ticks: res.Ticks
+                                    });
+                                });
+
                                 driver.SetStatus("success");
                                 operation.AnalysisStatus = "success";
                             } else {
@@ -621,6 +628,7 @@ module BMA {
                     driver.SetStatus("nottested");
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
+
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);

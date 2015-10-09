@@ -4312,6 +4312,11 @@ var BMA;
                         if (that.expandedcallback !== undefined) {
                             that.expandedcallback();
                         }
+                    },
+                    onshowresultsrequested: function () {
+                        if (that.showresultcallback !== undefined) {
+                            that.showresultcallback();
+                        }
                     }
                 });
             }
@@ -4326,6 +4331,9 @@ var BMA;
             };
             LTLResultsCompactViewer.prototype.SetOnExpandedCallback = function (callback) {
                 this.expandedcallback = callback;
+            };
+            LTLResultsCompactViewer.prototype.SetShowResultsCallback = function (callback) {
+                this.showresultcallback = callback;
             };
             return LTLResultsCompactViewer;
         })();
@@ -10502,7 +10510,8 @@ jQuery.fn.extend({
             steps: 10,
             ontestrequested: undefined,
             onstepschanged: undefined,
-            onexpanded: undefined
+            onexpanded: undefined,
+            onshowresultsrequested: undefined
         },
         _create: function () {
             this.element.empty();
@@ -10542,7 +10551,9 @@ jQuery.fn.extend({
                         var li = $("<li></li>").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
                         btn.click(function () {
-                            alert("Coming soon!");
+                            if (that.options.onshowresultsrequested !== undefined) {
+                                that.options.onshowresultsrequested();
+                            }
                         });
                     }
                     else {
@@ -11526,6 +11537,11 @@ var BMA;
                         }
                         else {
                             if (res.Status === "True") {
+                                driver.SetShowResultsCallback(function () {
+                                    that.commands.Execute("ShowLTLResults", {
+                                        ticks: res.Ticks
+                                    });
+                                });
                                 driver.SetStatus("success");
                                 operation.AnalysisStatus = "success";
                             }
