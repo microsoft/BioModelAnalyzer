@@ -7,7 +7,8 @@
             header: [],
             numericData: undefined,
             colorData: undefined,
-            type: "standart" // "color","graph-min","graph-max", "simulation-min", "simulation-max"
+            type: "standart", // "color","graph-min","graph-max", "simulation-min", "simulation-max"
+            onChangePlotVariables: undefined,
         },
 
         _create: function () {
@@ -111,6 +112,7 @@
                     return;
                 }
             }
+            if (key === "onChangePlotVariables") this.options.onChangePlotVariables = value;
 
             this._super(key, value);
             if (value !== null && value !== undefined)
@@ -164,7 +166,9 @@
                         that.alldiv.attr("checked", false);
                         $(this).prev().css("background-color", "transparent");
                     }
-                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index()-1, check: check });
+                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
+                    if (that.options.onChangePlotVariables !== undefined)
+                        that.options.onChangePlotVariables({ind: $(this).parent().index() - 1, check: check });
                 })
 
                 for (var j = 2; j < array[i].length; j++) {

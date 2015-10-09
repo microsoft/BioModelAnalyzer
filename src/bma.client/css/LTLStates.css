@@ -3368,6 +3368,11 @@ textarea:focus {
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
+  /*.ltl-simplot-container {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 20px;
+    }*/
 }
 .ltlresultsviewer::-webkit-scrollbar-track {
   width: 20px;
@@ -3484,51 +3489,55 @@ textarea:focus {
   background-position: center;
   background-size: contain;
 }
-.ltlresultsviewer .small-simulation-popout-table {
+.ltlresultsviewer .ltl-simplot-container {
+  display: inline-block;
+  float: left;
+  max-height: 300px;
+  max-width: 600px;
+  overflow: auto;
+}
+.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table {
   display: inline-block;
   float: left;
   max-width: 250px;
-  margin-top: 5px;
-  margin-right: 15px;
 }
-.ltlresultsviewer .small-simulation-popout-table .variables-table td:nth-child(1) {
+.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(1) {
   width: 40px;
 }
-.ltlresultsviewer .small-simulation-popout-table .variables-table tr:last-child td:first-child {
+.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table tr:last-child td:first-child {
   background-color: Window;
   border-left-color: transparent;
   border-bottom-color: transparent;
 }
-.ltlresultsviewer .small-simulation-popout-table .variables-table td:nth-child(3) {
+.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(3) {
   width: 50px;
 }
-.ltlresultsviewer .big-simulation-popout-table {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table {
   float: left;
   display: inline-block;
   vertical-align: top;
   position: relative;
   max-width: 300px;
-  margin-top: 5px;
 }
-.ltlresultsviewer .big-simulation-popout-table .bma-simulation-data-table {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table {
   max-width: calc(100% - 90px);
   overflow-x: auto;
   overflow-y: hidden;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table {
   width: 90px;
   table-layout: auto;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table td:nth-child(1) {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table td:nth-child(1) {
   border-right: none;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table td:nth-child(2) {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table td:nth-child(2) {
   border-left: none;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table tr.red {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table tr.red {
   background-color: #feb6b2;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table input {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table input {
   height: 17px;
   width: 100%;
   border: none;
@@ -3537,20 +3546,15 @@ textarea:focus {
   padding: 0;
   margin: 0;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table input:focus {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table input:focus {
   box-shadow: none;
 }
-.ltlresultsviewer .big-simulation-popout-table .variables-table .random-small {
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table .random-small {
   background-repeat: no-repeat;
   background-size: contain;
   background-position-x: center;
   width: 20px;
   height: 20px;
-}
-.ltlresultsviewer .ltl-simplot-container {
-  display: inline-block;
-  vertical-align: top;
-  margin-top: 20px;
 }
 .ltlresultsviewer .ltl-results {
   display: block;
@@ -3567,7 +3571,7 @@ textarea:focus {
   width: 80% !important;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box .simulationplot-legend-legendcontainer {
-  height: 100%;
+  height: 273px;
   width: 20%;
 }
 .LTL-states {

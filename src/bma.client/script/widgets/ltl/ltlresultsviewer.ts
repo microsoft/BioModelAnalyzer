@@ -23,28 +23,24 @@
             this.element.addClass("ltlresultsviewer");
 
             var root = this.element;
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(root);
+            var tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(tablesContainer);//root);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(tablesContainer);//root);
 
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
 
-            if (this._variables !== undefined && this._variables.length !== 0) {
-                this._variables.coloredtableviewer({
-                    header: ["Graph", "Name", "Range"],
-                    type: "graph-max",
-                    numericData: that.options.variables
-                });
-                if (this.options.interval !== undefined && this.options.interval.length !== 0
-                    && this.options.data !== undefined && this.options.data.length !== 0) {
-                    this._table.progressiontable({
-                        interval: that.options.interval,
-                        data: that.options.data,
-                        canEditInitialValue: false
-                    });
-                    this.createPlotData();
-                }
-            }
+            var changeVisibility = function (params) {
+                var visibility = that.options.visibleItems.slice(0);
+                visibility[params.ind] = params.check;
+                that._setOption("visibleItems", visibility);
+            };
+
+            this._variables.coloredtableviewer({
+                onChangePlotVariables: changeVisibility
+            });
+
+            this.refresh();
         },
 
         _setOption: function (key, value) {
@@ -53,44 +49,49 @@
 
                 case "data": {
                     this.options.data = value;
-                    if (this.options.interval !== undefined && this.options.interval.length !== 0
-                        && this.options.data !== undefined && this.options.data.length !== 0) {
-                        this._table.progressiontable({
-                            interval: that.options.interval,
-                            data: value,
-                            canEditInitialValue: false
-                        });
-                        this.createPlotData();
-                    }
+                    this.createPlotData();
+                    
                     break;
                 }
                 case "init": {
                     this.options.init = value;
-                    if (this.options.interval !== undefined && this.options.interval.length !== 0
-                        && this.options.data !== undefined && this.options.data.length !== 0)
-                        this._table.progressiontable({
-                            interval: that.options.interval,
-                            data: that.options.data,
-                            canEditInitialValue: false,
-                            init: value
-                        });
+                    this.createPlotData();
+                    break;
+                }
+                case "interval": {
+                    this.optiopns.interval = value;
                     break;
                 }
                 case "variables": {
                     this.options.variables = value;
-                    if (this._variables !== undefined && this._variables.length !== 0) {
-                        this._variables.coloredtableviewer({
-                            header: ["Graph", "Name", "Range"],
-                            type: "graph-max",
-                            numericData: value
-                        });
-                        
-                        this.createPlotData();
-                    }
+                    this.createPlotData();
                     break;
                 }
                 case "id": {
                     this.options.id = value;
+                    this.createPlotData();
+                    break;
+                }
+                case "ranges": {
+                    this.options.ranges = value;
+                    var variables = [];
+                    if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
+                        for (var i = 0; i < this.options.variables.length; i++) {
+                            that.options.variables[i][3] = that.options.ranges[i].min;
+                            that.options.variables[i][4] = that.options.ranges[i].max;
+                        }
+                        this.createPlotData();
+                    }
+                    break;
+                }
+                case "visibleItems": {
+                    this.options.visibleItems = value;
+                    var variables = [];
+                    if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
+                        for (var i = 0; i < this.options.variables.length; i++)
+                            this.options.variables[i][1] = this.options.visibleItems[i];  
+                        this.createPlotData();    
+                    }
                     break;
                 }
                 case "colors": {
@@ -104,7 +105,6 @@
                 default: break;
             }
             this._super(key, value);
-            this.refresh();
         },
 
         _setOptions: function (options) {
@@ -114,21 +114,48 @@
         refresh: function () {
             var that = this;
 
+            if (this.options.variables !== undefined && this.options.variables.length !== 0) {
+
+                this._variables.coloredtableviewer({
+                    header: ["Graph", "Name", "Range"],
+                    type: "graph-max",
+                    numericData: that.options.variables,
+                });
+
+                if (this.options.interval !== undefined && this.options.interval.length !== 0
+                    && this.options.data !== undefined && this.options.data.length !== 0) {
+                    this._table.progressiontable({
+                        interval: that.options.interval,
+                        data: that.options.data,
+                        canEditInitialValue: false,
+                        init: that.options.init
+                    });
+                    if (this.options.colors === undefined || this.options.colors.length == 0)
+                        this.createPlotData();
+                }
+            }
         },
 
         createPlotData: function () {
             var that = this;
             var plotData = [];
+            if (this.options.id === undefined && this.options.id.length == 0)
+                this.options.id = [];
+            if (this.options.ranges == undefined && this.options.ranges.length == 0)
+                this.options.ranges = [];
+            if (this.options.visibleItems == undefined && this.options.visibleItems.length == 0)
+                this.options.visibleItems = [];
+
             for (var i = 0; i < this.options.variables.length; i++) {
                 var pData = [];
-                this.options.ranges = [];
-                this.options.visibleItems = [];
+                if (this.options.id.length < i + 1)
+                    this.options.id.push(i);
 
                 for (var j = 0; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
 
                 plotData.push({
-                    Id: i,
+                    Id: that.options.id[i],
                     Color: that.options.variables[i][0],
                     Seen: that.options.variables[i][1],
                     Plot: pData,
@@ -136,26 +163,16 @@
                     Name: that.options.variables[i][2],
                 });
 
-                this.options.ranges.push({
-                    min: that.options.variables[i][3],
-                    max: that.options.variables[i][4]
-                });
-
-                this.options.visibleItems.push(that.options.variables[i][1]);
+                if (this.options.ranges.length < i + 1)
+                    this.options.ranges.push({
+                        min: that.options.variables[i][3],
+                        max: that.options.variables[i][4]
+                    });
+                if (this.options.visibleItems.length < i + 1)
+                    this.options.visibleItems.push(that.options.variables[i][1]);
             }
             this._setOption("colors", plotData);
         },
-
-        //GetRandomInt: function (min, max) {
-        //    return Math.floor(Math.random() * (max - min + 1) + min);
-        //},
-
-        //getRandomColor: function () {
-        //    var r = this.GetRandomInt(0, 255);
-        //    var g = this.GetRandomInt(0, 255);
-        //    var b = this.GetRandomInt(0, 255);
-        //    return "rgb(" + r + ", " + g + ", " + b + ")";
-        //},
 
     });
 } (jQuery));
