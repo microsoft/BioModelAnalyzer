@@ -11296,27 +11296,52 @@ var BMA;
                         staginOp.HighlightAtPosition(gesture.x, gesture.y);
                         that.previousHighlightedOperation = staginOp;
                     }
+                    if (_this.clipboard !== undefined) {
+                        var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
+                        if (that.Intersects(gesture, copyZoneBB)) {
+                            tpEditorDriver.HighlightCopyZone(true);
+                        }
+                        else {
+                            tpEditorDriver.HighlightCopyZone(false);
+                        }
+                    }
                 });
                 var dragSubject = that.dragService.GetDragSubject();
                 dragSubject.dragStart.subscribe(function (gesture) {
-                    var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
-                    if (staginOp !== undefined) {
-                        staginOp.AnalysisStatus = "nottested";
+                    var copyZoneBbox = that.tpEditorDriver.GetCopyZoneBBox();
+                    if (that.clipboard !== undefined && that.Intersects(gesture, copyZoneBbox)) {
                         that.navigationDriver.TurnNavigation(false);
-                        var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                         _this.stagingOperation = {
-                            operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
-                            originRef: staginOp,
-                            originIndex: _this.operations.indexOf(staginOp),
-                            isRoot: unpinned.isRoot,
-                            parentoperation: unpinned.parentoperation,
-                            parentoperationindex: unpinned.parentoperationindex
+                            operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), _this.clipboard.operation, gesture),
+                            originRef: undefined,
+                            originIndex: undefined,
+                            isRoot: undefined,
+                            parentoperation: undefined,
+                            parentoperationindex: undefined,
+                            fromclipboard: true
                         };
-                        if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                            that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                    }
+                    else {
+                        var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
+                        if (staginOp !== undefined) {
+                            staginOp.AnalysisStatus = "nottested";
+                            that.navigationDriver.TurnNavigation(false);
+                            var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
+                            _this.stagingOperation = {
+                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
+                                originRef: staginOp,
+                                originIndex: _this.operations.indexOf(staginOp),
+                                isRoot: unpinned.isRoot,
+                                parentoperation: unpinned.parentoperation,
+                                parentoperationindex: unpinned.parentoperationindex,
+                                fromclipboard: false
+                            };
+                            if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                                that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                            }
+                            //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                            staginOp.IsVisible = !unpinned.isRoot;
                         }
-                        //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                        staginOp.IsVisible = !unpinned.isRoot;
                     }
                 });
                 dragSubject.drag.subscribe(function (gesture) {
@@ -11325,11 +11350,15 @@ var BMA;
                         _this.stagingOperation.operation.Position = { x: gesture.x1 + _this.stagingOperation.operation.Scale.x * bbox.width / 2, y: gesture.y1 + _this.stagingOperation.operation.Scale.y * bbox.height / 2 };
                         var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
                         var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
-                        if (copyZoneBB.x <= gesture.x1 && copyZoneBB.x + copyZoneBB.width >= gesture.x1 && copyZoneBB.y <= gesture.y1 && copyZoneBB.y + copyZoneBB.height >= gesture.y1) {
+                        var position = {
+                            x: gesture.x1,
+                            y: gesture.y1
+                        };
+                        if (_this.Intersects(position, copyZoneBB)) {
                             tpEditorDriver.HighlightCopyZone(true);
                             tpEditorDriver.HighlightDeleteZone(false);
                         }
-                        else if (deleteZoneBB.x <= gesture.x1 && deleteZoneBB.x + deleteZoneBB.width >= gesture.x1 && deleteZoneBB.y <= gesture.y1 && deleteZoneBB.y + deleteZoneBB.height >= gesture.y1) {
+                        else if (_this.Intersects(position, deleteZoneBB)) {
                             tpEditorDriver.HighlightCopyZone(false);
                             tpEditorDriver.HighlightDeleteZone(true);
                         }
@@ -11356,7 +11385,7 @@ var BMA;
                         tpEditorDriver.HighlightDeleteZone(false);
                         var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
                         var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
-                        if (copyZoneBB.x <= position.x && copyZoneBB.x + copyZoneBB.width >= position.x && copyZoneBB.y <= position.y && copyZoneBB.y + copyZoneBB.height >= position.y) {
+                        if (that.Intersects(position, copyZoneBB) && !_this.stagingOperation.fromclipboard) {
                             _this.clipboard = {
                                 operation: _this.stagingOperation.operation.Operation.Clone()
                             };
@@ -11369,26 +11398,33 @@ var BMA;
                                 _this.stagingOperation.originRef.Refresh();
                             }
                         }
-                        else if (deleteZoneBB.x <= position.x && deleteZoneBB.x + deleteZoneBB.width >= position.x && deleteZoneBB.y <= position.y && deleteZoneBB.y + deleteZoneBB.height >= position.y) {
+                        else if (that.Intersects(position, deleteZoneBB) && !_this.stagingOperation.fromclipboard) {
                             if (_this.stagingOperation.isRoot) {
                                 _this.operations.splice(_this.stagingOperation.originIndex, 1);
                             }
                         }
                         else {
                             if (!_this.HasIntersections(_this.stagingOperation.operation)) {
-                                if (_this.stagingOperation.operation.IsOperation) {
-                                    if (_this.stagingOperation.isRoot) {
-                                        _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
-                                        _this.stagingOperation.originRef.IsVisible = true;
-                                    }
-                                    else {
-                                        _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                if (_this.stagingOperation.fromclipboard) {
+                                    if (_this.stagingOperation.operation.IsOperation) {
+                                        _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation.Clone(), _this.stagingOperation.operation.Position));
                                     }
                                 }
                                 else {
-                                    //State should state in its origin place
-                                    _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
-                                    _this.stagingOperation.originRef.Refresh();
+                                    if (_this.stagingOperation.operation.IsOperation) {
+                                        if (_this.stagingOperation.isRoot) {
+                                            _this.stagingOperation.originRef.Position = _this.stagingOperation.operation.Position;
+                                            _this.stagingOperation.originRef.IsVisible = true;
+                                        }
+                                        else {
+                                            _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                        }
+                                    }
+                                    else {
+                                        //State should state in its origin place
+                                        _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                        _this.stagingOperation.originRef.Refresh();
+                                    }
                                 }
                             }
                             else {
@@ -11398,7 +11434,7 @@ var BMA;
                                     emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                     if (emptyCell !== undefined) {
                                         //emptyCell.opLayout = operation;
-                                        emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation;
+                                        emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                         operation.Refresh();
                                         if (_this.stagingOperation.isRoot) {
                                             _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
@@ -11406,6 +11442,20 @@ var BMA;
                                         }
                                     }
                                     else {
+                                        if (!_this.stagingOperation.fromclipboard) {
+                                            //Operation should stay in its origin place
+                                            if (_this.stagingOperation.isRoot) {
+                                                _this.stagingOperation.originRef.IsVisible = true;
+                                            }
+                                            else {
+                                                _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                                _this.stagingOperation.originRef.Refresh();
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    if (!_this.stagingOperation.fromclipboard) {
                                         //Operation should stay in its origin place
                                         if (_this.stagingOperation.isRoot) {
                                             _this.stagingOperation.originRef.IsVisible = true;
@@ -11414,16 +11464,6 @@ var BMA;
                                             _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
                                             _this.stagingOperation.originRef.Refresh();
                                         }
-                                    }
-                                }
-                                else {
-                                    //Operation should stay in its origin place
-                                    if (_this.stagingOperation.isRoot) {
-                                        _this.stagingOperation.originRef.IsVisible = true;
-                                    }
-                                    else {
-                                        _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
-                                        _this.stagingOperation.originRef.Refresh();
                                     }
                                 }
                             }
@@ -11441,7 +11481,7 @@ var BMA;
                     if (!operations[i].IsVisible)
                         continue;
                     var bbox = operations[i].BoundingBox;
-                    if (bbox.x <= x && (bbox.x + bbox.width) >= x && bbox.y <= y && (bbox.y + bbox.height) >= y) {
+                    if (this.Intersects({ x: x, y: y }, bbox)) {
                         return operations[i];
                     }
                 }
@@ -11464,6 +11504,9 @@ var BMA;
                 var isXIntersects = bbox2.x <= bbox.x + bbox.width && bbox2.x + bbox2.width >= bbox.x;
                 var isYIntersects = bbox2.y <= bbox.y + bbox.height && bbox2.y + bbox2.height >= bbox.y;
                 return isXIntersects && isYIntersects;
+            };
+            TemporalPropertiesPresenter.prototype.Intersects = function (point, bbox) {
+                return bbox.x <= point.x && (bbox.x + bbox.width) >= point.x && bbox.y <= point.y && (bbox.y + bbox.height) >= point.y;
             };
             TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, domplot, driver) {
                 var that = this;
@@ -11520,6 +11563,8 @@ var BMA;
             };
             TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
                 var that = this;
+                var copyzonebbox = this.tpEditorDriver.GetCopyZoneBBox();
+                var deletezonebbox = this.tpEditorDriver.GetDeleteZoneBBox();
                 var cps = this.controlPanels;
                 var dom = this.navigationDriver.GetNavigationSurface();
                 for (var i = 0; i < cps.length; i++) {
@@ -11529,6 +11574,8 @@ var BMA;
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
                     var bbox = op.BoundingBox;
+                    if (that.HasIntersection(bbox, copyzonebbox) || that.HasIntersection(bbox, deletezonebbox))
+                        continue;
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
