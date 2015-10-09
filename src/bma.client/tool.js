@@ -11053,6 +11053,8 @@ var BMA;
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
+                commands.On("ShowLTLResults", function (args) {
+                });
             }
             return LTLPresenter;
         })();
