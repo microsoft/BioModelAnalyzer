@@ -4366,7 +4366,6 @@ var BMA;
                 var init = [];
                 var data = [];
                 var ranges = [];
-                var interval = [];
                 var variables = [];
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
@@ -4378,6 +4377,22 @@ var BMA;
                     var color = this.getRandomColor();
                     variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
+                var l = ticks.length;
+                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
+                    data[j] = [];
+                    data[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    var v = ticks[0].Variables[j];
+                    for (var i = 1; i < l + 1; i++) {
+                        var ij = ticks[i - 1].Variables[j];
+                        if (ij.Lo === ij.Hi) {
+                            data[j][i] = ij.Lo;
+                        }
+                        else {
+                            data[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+                var interval = this.CreateInterval(vars);
                 if (this.ltlResultsViewer !== undefined)
                     this.ltlResultsViewer.ltlresultsviewer({
                         id: id,
@@ -4387,22 +4402,15 @@ var BMA;
                         variables: variables,
                     });
             };
-            //public CreateColoredTable(ticks): any {
-            //    var that = this;
-            //    if (ticks === null) return undefined;
-            //    var color = [];
-            //    var t = ticks.length;
-            //    var v = ticks[0].Variables.length;
-            //    for (var i = 0; i < v; i++) {
-            //        color[i] = [];
-            //        for (var j = 1; j < t; j++) {
-            //            var ij = ticks[j].Variables[i];
-            //            var pr = ticks[j - 1].Variables[i];
-            //            color[i][j] = pr.Hi === ij.Hi;
-            //        }
-            //    }
-            //    return color;
-            //}
+            LTLResultsViewer.prototype.CreateInterval = function (variables) {
+                var table = [];
+                for (var i = 0; i < variables.length; i++) {
+                    table[i] = [];
+                    table[i][0] = variables[i].RangeFrom;
+                    table[i][1] = variables[i].RangeTo;
+                }
+                return table;
+            };
             LTLResultsViewer.prototype.getRandomColor = function () {
                 var r = this.GetRandomInt(0, 255);
                 var g = this.GetRandomInt(0, 255);
