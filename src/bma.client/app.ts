@@ -39,6 +39,7 @@
 /// <reference path="script\widgets\ltl\keyframetable.ts"/>
 /// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
 /// <reference path="script\widgets\ltl\ltlviewer.ts"/>
+/// <reference path="script\widgets\ltl\ltlresultsviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -556,6 +557,7 @@ function loadScript(version) {
     //LTL Drivers
     var tpeditordriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(ltlCommands, popup);
     var stateseditordriver = new BMA.UIDrivers.StatesEditorDriver(ltlCommands, popup);
+    var ltlresultsdriver = new BMA.UIDrivers.LTLResultsViewer(ltlCommands, popup);
 
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
@@ -577,7 +579,7 @@ function loadScript(version) {
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
 
     //LTL Presenters
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlService, popupDriver);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver);
     
     //Loading model from URL
     var reserved_key = "InitialModel";

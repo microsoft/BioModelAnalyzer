@@ -10,7 +10,8 @@
             steps: 10,
             ontestrequested: undefined,
             onstepschanged: undefined,
-            onexpanded: undefined
+            onexpanded: undefined,
+            onshowresultsrequested: undefined
         },
 
         _create: function () {
@@ -59,7 +60,9 @@
                         var li = $("<li></li>").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
                         btn.click(function () {
-                            alert("Coming soon!");
+                            if (that.options.onshowresultsrequested !== undefined) {
+                                that.options.onshowresultsrequested();
+                            }
                         });
 
                     } else {

@@ -4312,6 +4312,11 @@ var BMA;
                         if (that.expandedcallback !== undefined) {
                             that.expandedcallback();
                         }
+                    },
+                    onshowresultsrequested: function () {
+                        if (that.showresultcallback !== undefined) {
+                            that.showresultcallback();
+                        }
                     }
                 });
             }
@@ -4326,6 +4331,9 @@ var BMA;
             };
             LTLResultsCompactViewer.prototype.SetOnExpandedCallback = function (callback) {
                 this.expandedcallback = callback;
+            };
+            LTLResultsCompactViewer.prototype.SetShowResultsCallback = function (callback) {
+                this.showresultcallback = callback;
             };
             return LTLResultsCompactViewer;
         })();
@@ -4351,8 +4359,8 @@ var BMA;
                 this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min" });
                 popup_position();
                 this.popupWindow.show();
-                if (shouldInit) {
-                }
+                //if (shouldInit) {
+                //}
             };
             LTLResultsViewer.prototype.Hide = function () {
                 this.popupWindow.hide();
@@ -10502,7 +10510,8 @@ jQuery.fn.extend({
             steps: 10,
             ontestrequested: undefined,
             onstepschanged: undefined,
-            onexpanded: undefined
+            onexpanded: undefined,
+            onshowresultsrequested: undefined
         },
         _create: function () {
             this.element.empty();
@@ -10542,7 +10551,9 @@ jQuery.fn.extend({
                         var li = $("<li></li>").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
                         btn.click(function () {
-                            alert("Coming soon!");
+                            if (that.options.onshowresultsrequested !== undefined) {
+                                that.options.onshowresultsrequested();
+                            }
                         });
                     }
                     else {
@@ -10972,7 +10983,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ajax, popupViewer) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -11037,10 +11048,15 @@ var BMA;
                 window.Commands.On("Collapse", function (param) {
                     temporlapropertieseditor.Hide();
                     statesEditorDriver.Hide();
+                    ltlresultsviewer.Hide();
                     popupViewer.Hide();
                 });
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
+                });
+                commands.On("ShowLTLResults", function (args) {
+                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
+                    ltlresultsviewer.Show();
                 });
             }
             return LTLPresenter;
@@ -11526,6 +11542,11 @@ var BMA;
                         }
                         else {
                             if (res.Status === "True") {
+                                driver.SetShowResultsCallback(function () {
+                                    that.commands.Execute("ShowLTLResults", {
+                                        ticks: res.Ticks
+                                    });
+                                });
                                 driver.SetStatus("success");
                                 operation.AnalysisStatus = "success";
                             }

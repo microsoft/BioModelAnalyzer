@@ -16,6 +16,7 @@
                 statesEditorDriver: BMA.UIDrivers.IStatesEditor,
                 temporlapropertieseditor: BMA.UIDrivers.ITemporalPropertiesEditor,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
+                ltlresultsviewer: BMA.UIDrivers.ILTLResultsViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup
                 ) {
@@ -104,11 +105,17 @@
                 window.Commands.On("Collapse",(param) => {
                     temporlapropertieseditor.Hide();
                     statesEditorDriver.Hide();
+                    ltlresultsviewer.Hide();
                     popupViewer.Hide();
                 });
 
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
+                });
+
+                commands.On("ShowLTLResults", function (args) {
+                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
+                    ltlresultsviewer.Show();
                 });
             }
 
