@@ -166,7 +166,7 @@
                         that.alldiv.attr("checked", false);
                         $(this).prev().css("background-color", "transparent");
                     }
-                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
+                    //window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
                     if (that.options.onChangePlotVariables !== undefined)
                         that.options.onChangePlotVariables({ind: $(this).parent().index() - 1, check: check });
                 })

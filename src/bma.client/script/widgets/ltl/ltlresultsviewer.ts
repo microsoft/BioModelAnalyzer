@@ -82,9 +82,9 @@
                     break;
                 }
                 case "ranges": {
-                    //this.options.ranges = value;
+                    this.options.ranges = value;
                     var variables = [];
-                    if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
+                    if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
                             that.options.variables[i][3] = that.options.ranges[i].min;
                             that.options.variables[i][4] = that.options.ranges[i].max;
@@ -95,7 +95,7 @@
                     break;
                 }
                 case "visibleItems": {
-                    //this.options.visibleItems = value;
+                    this.options.visibleItems = value;
                     var variables = [];
                     if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++)
@@ -117,7 +117,7 @@
             }
             this._super(key, value);
             if (needUpdate) {
-                this.refresh();
+                //this.refresh();
                 this.createPlotData();
             }
         },
@@ -166,8 +166,8 @@
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
 
-                for (var j = 0; j < this.options.pData.length; j++)
-                    pData.push(this.options.pData[j][i]);
+                for (var j = 0; j < this.options.data.length; j++)
+                    pData.push(this.options.data[j][i]);
 
                 plotData.push({
                     Id: that.options.id[i],

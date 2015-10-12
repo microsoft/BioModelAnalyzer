@@ -4360,7 +4360,7 @@ var BMA;
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
-                    this.ltlResultsViewer.ltlresultsviewer();
+                    //this.ltlResultsViewer.ltlresultsviewer();
                     if (this.dataToSet !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer(this.dataToSet);
                         this.dataToSet = undefined;
@@ -7535,7 +7535,7 @@ var BMA;
                         that.alldiv.attr("checked", false);
                         $(this).prev().css("background-color", "transparent");
                     }
-                    window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
+                    //window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
                     if (that.options.onChangePlotVariables !== undefined)
                         that.options.onChangePlotVariables({ ind: $(this).parent().index() - 1, check: check });
                 });
@@ -9994,9 +9994,9 @@ jQuery.fn.extend({
                     break;
                 }
                 case "ranges": {
-                    //this.options.ranges = value;
+                    this.options.ranges = value;
                     var variables = [];
-                    if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
+                    if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
                             that.options.variables[i][3] = that.options.ranges[i].min;
                             that.options.variables[i][4] = that.options.ranges[i].max;
@@ -10007,7 +10007,7 @@ jQuery.fn.extend({
                     break;
                 }
                 case "visibleItems": {
-                    //this.options.visibleItems = value;
+                    this.options.visibleItems = value;
                     var variables = [];
                     if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++)
@@ -10029,7 +10029,7 @@ jQuery.fn.extend({
             }
             this._super(key, value);
             if (needUpdate) {
-                this.refresh();
+                //this.refresh();
                 this.createPlotData();
             }
         },
@@ -10069,8 +10069,8 @@ jQuery.fn.extend({
                 var pData = [];
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
-                for (var j = 0; j < this.options.pData.length; j++)
-                    pData.push(this.options.pData[j][i]);
+                for (var j = 0; j < this.options.data.length; j++)
+                    pData.push(this.options.data[j][i]);
                 plotData.push({
                     Id: that.options.id[i],
                     Color: that.options.variables[i][0],
