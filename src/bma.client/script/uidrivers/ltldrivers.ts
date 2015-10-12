@@ -583,24 +583,8 @@ module BMA {
             private popupWindow: JQuery;
             private commands: ICommandRegistry;
             private ltlResultsViewer: JQuery;
-            //private initValues;
-            //private header;
-            //private numericData;
-            //private colorData;
-            private init;// initial value in progression table
-            private intervals; //for progression table
-            private data;// for progression table
-            private variables;// for simulation plot and colored table
-            private visibleItems;// for simulation plot and colored table
-
-            //private colors:{
-            //    Id: number;
-            //    Color: string;
-            //    Seen: boolean;
-            //    Plot: number[];
-            //    Init: number;
-            //    Name: string;
-            //}[];
+            
+            private dataToSet = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -617,8 +601,13 @@ module BMA {
                 popup_position();
                 this.popupWindow.show();
 
-                //if (shouldInit) {
-                //}
+                if (shouldInit) {
+                    this.ltlResultsViewer.ltlresultsviewer();
+                    if (this.dataToSet !== undefined) {
+                        this.ltlResultsViewer.ltlresultsviewer(this.dataToSet);
+                        this.dataToSet = undefined;
+                    }
+                }
             }
 
             public Hide() {
@@ -635,6 +624,7 @@ module BMA {
                 var id = [];
                 var init = [];
                 var data = [];
+                var pData = [];
                 var ranges = [];
                 var variables = [];
 
@@ -652,30 +642,50 @@ module BMA {
 
                 var l = ticks.length;
                 for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
-                    data[j] = [];
-                    data[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
+                    pData[j] = [];
+                    pData[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
                     var v = ticks[0].Variables[j];
                     for (var i = 1; i < l + 1; i++) {
                         var ij = ticks[i - 1].Variables[j];
                         if (ij.Lo === ij.Hi) {
-                            data[j][i] = ij.Lo;
+                            pData[j][i] = ij.Lo;
                         }
                         else {
-                            data[j][i] = ij.Lo + ' - ' + ij.Hi;
+                            pData[j][i] = ij.Lo + ' - ' + ij.Hi;
+                        }
+                    }
+                }
+
+                for (var i = 0; i < ticks.length; i++) {
+                    var tick = ticks[i].Variables;
+                    data.push([]);
+                    for (var j = 0; j < tick.length; j++) {
+                        var ij = tick[j];
+                        if (ij.Lo === ij.Hi) {
+                            data[i].push(ij.Lo);
+                        }
+                        else {
+                           data[i].push(ij.Lo + ' - ' + ij.Hi);
                         }
                     }
                 }
 
                 var interval = this.CreateInterval(vars);
 
-                if (this.ltlResultsViewer !== undefined) 
-                    this.ltlResultsViewer.ltlresultsviewer({
-                        id: id,
-                        interval: interval,
-                        data: data,
-                        init: init,
-                        variables: variables,
-                    });
+                var options = {
+                    id: id,
+                    interval: interval,
+                    data: data,
+                    pData: pData,
+                    init: init,
+                    variables: variables,
+                };
+
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer(options);
+                } else {
+                    that.dataToSet = options;
+                }
             }
 
             public CreateInterval(variables) {

@@ -201,6 +201,10 @@
                 return this.operandsNumber;
             }
 
+            get Function() {
+                return this.fun;
+            }
+
             public GetFormula(op: IOperand[]) {
                 if (op !== undefined && op.length !== this.operandsNumber) {
                     throw "Operator " + name + ": invalid operands count";
@@ -241,7 +245,7 @@
                     operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
-                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.GetFormula);
+                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function);
                 result.Operands = operands;
 
                 return result;

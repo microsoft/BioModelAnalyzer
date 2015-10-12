@@ -63,6 +63,7 @@
   <file>/script/widgets/ltl/keyframecompact.js</file>
   <file>/script/widgets/ltl/ltlstatesviewer.js</file>
 	<file>/script/widgets/ltl/ltlviewer.js</file>
+  <file>/script/widgets/ltl/ltlresultsviewer.js</file>
   <file>/script/widgets/ltl/stateseditor.js</file>
   <file>/script/widgets/ltl/statescompact.js</file>
   <file>/script/widgets/ltl/compactltlresult.js</file>
