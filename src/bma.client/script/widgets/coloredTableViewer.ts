@@ -166,10 +166,11 @@
                         that.alldiv.attr("checked", false);
                         $(this).prev().css("background-color", "transparent");
                     }
+
                     //window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
                     if (that.options.onChangePlotVariables !== undefined)
-                        that.options.onChangePlotVariables({ind: $(this).parent().index() - 1, check: check });
-                })
+                        that.options.onChangePlotVariables({ ind: $(this).parent().index() - 1, check: check });
+                });
 
                 for (var j = 2; j < array[i].length; j++) {
                     $('<td></td>').text(array[i][j]).appendTo(tr);
@@ -183,11 +184,11 @@
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
 
             tdall1.css("border-left", "none");
-            
 
-            this.allcheck.bind("click", () => {
+
+            this.allcheck.bind("click",() => {
                 that.alldiv.attr("checked", !that.alldiv.attr("checked"));
-                
+
                 if (that.alldiv.attr("checked")) {
                     for (var i = 0; i < that.buttons.length; i++) {
                         if (!$(that.buttons[i]).hasClass("plot-check"))
@@ -214,7 +215,7 @@
                 })
             }
         },
-        
+
         checkAllButtons: function (): boolean {
             var that = this;
             var l = that.buttons.length;

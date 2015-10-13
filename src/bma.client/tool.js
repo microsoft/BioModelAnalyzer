@@ -3586,6 +3586,10 @@ var BMA;
             function SimulationExpandedDriver(view) {
                 this.viewer = view;
             }
+            SimulationExpandedDriver.prototype.SetOnPlotVariablesSelectionChanged = function (callback) {
+                this.onplotvariablesselectionchanged = callback;
+                this.viewer.simulationexpanded({ onChangePlotVariables: callback });
+            };
             SimulationExpandedDriver.prototype.Set = function (data) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
@@ -4414,13 +4418,17 @@ var BMA;
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     data.push([]);
-                    for (var j = 0; j < tick.length; j++) {
-                        var ij = tick[j];
-                        if (ij.Lo === ij.Hi) {
-                            data[i].push(ij.Lo);
-                        }
-                        else {
-                            data[i].push(ij.Lo + ' - ' + ij.Hi);
+                    for (var k = 0; k < vars.length; k++) {
+                        for (var j = 0; j < tick.length; j++) {
+                            if (tick[j].Id == vars[k].Id) {
+                                var ij = tick[j];
+                                if (ij.Lo === ij.Hi) {
+                                    data[i].push(ij.Lo);
+                                }
+                                else {
+                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
+                                }
+                            }
                         }
                     }
                 }
@@ -5951,10 +5959,14 @@ var BMA;
                 this.messagebox = messagebox;
                 var that = this;
                 this.initValues = [];
-                window.Commands.On("ChangePlotVariables", function (param) {
+                simulationExpanded.SetOnPlotVariablesSelectionChanged(function (param) {
                     that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
                 });
+                //window.Commands.On("ChangePlotVariables", function (param) {
+                //    that.variables[param.ind].Seen = param.check;
+                //    that.compactViewer.ChangeVisibility(param);
+                //});
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
                     that.ClearPlot(param.data);
@@ -8892,7 +8904,8 @@ var BMA;
             variables: undefined,
             num: 10,
             buttonMode: "ActiveMode",
-            step: 10
+            step: 10,
+            onChangePlotVariables: undefined
         },
         _create: function () {
             var that = this;
@@ -8921,6 +8934,11 @@ var BMA;
                         data: options.data
                     });
                 }
+            }
+            if (options.onChangePlotVariables !== undefined) {
+                this.small_table.coloredtableviewer({
+                    onChangePlotVariables: options.onChangePlotVariables
+                });
             }
             var step = this.options.step;
             var stepsul = $('<ul></ul>').addClass('button-list').appendTo(stepsdiv);
@@ -9035,6 +9053,13 @@ var BMA;
                 case "buttonMode":
                     this.options.buttonMode = value;
                     this.ChangeMode();
+                    break;
+                case "onChangePlotVariables":
+                    this.small_table.coloredtableviewer({
+                        onChangePlotVariables: value
+                    });
+                    break;
+                default:
                     break;
             }
             this._super(key, value);

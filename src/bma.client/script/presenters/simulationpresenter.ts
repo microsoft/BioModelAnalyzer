@@ -44,11 +44,15 @@
                 var that = this;
                 this.initValues = [];
 
-
-                window.Commands.On("ChangePlotVariables", function (param) {
+                simulationExpanded.SetOnPlotVariablesSelectionChanged((param) => {
                     that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
                 });
+
+                //window.Commands.On("ChangePlotVariables", function (param) {
+                //    that.variables[param.ind].Seen = param.check;
+                //    that.compactViewer.ChangeVisibility(param);
+                //});
 
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();

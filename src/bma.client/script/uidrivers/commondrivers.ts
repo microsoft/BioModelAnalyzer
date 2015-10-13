@@ -327,9 +327,15 @@ module BMA {
 
         export class SimulationExpandedDriver implements ISimulationExpanded {
             private viewer;
+            private onplotvariablesselectionchanged;
 
             constructor(view: JQuery) {
                 this.viewer = view;
+            }
+
+            public SetOnPlotVariablesSelectionChanged(callback) {
+                this.onplotvariablesselectionchanged = callback;
+                this.viewer.simulationexpanded({ onChangePlotVariables: callback });
             }
 
             public Set(data: { variables; colors; init }) {
