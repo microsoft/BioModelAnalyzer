@@ -583,7 +583,7 @@ module BMA {
             private popupWindow: JQuery;
             private commands: ICommandRegistry;
             private ltlResultsViewer: JQuery;
-
+            
             private exportCSVcallback = undefined;
 
             private dataToSet = undefined;
@@ -666,17 +666,25 @@ module BMA {
                     }
                 }
 
+                ticks = ticks.sort((x, y) => {
+                    return x.Time < y.Time ? -1 : 1;
+                });
+
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     data.push([]);
+                    for (var k = 0; k < vars.length; k++) {
                     for (var j = 0; j < tick.length; j++) {
+                            if (tick[j].Id == vars[k].Id) {
                         var ij = tick[j];
                         if (ij.Lo === ij.Hi) {
                             data[i].push(ij.Lo);
                         }
                         else {
-                            data[i].push(ij.Lo + ' - ' + ij.Hi);
+                           data[i].push(ij.Lo + ' - ' + ij.Hi);
                         }
+                    }
+                }
                     }
                 }
 
