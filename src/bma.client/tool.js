@@ -11310,7 +11310,7 @@ var BMA;
                 });
                 var ltlDataToExport = undefined;
                 commands.On("ShowLTLResults", function (args) {
-                    var ltlDataToExport = {
+                    ltlDataToExport = {
                         ticks: args.ticks,
                         model: appModel.BioModel.Clone(),
                         layout: appModel.Layout.Clone()
@@ -11319,12 +11319,47 @@ var BMA;
                     ltlresultsviewer.Show();
                 });
                 ltlresultsviewer.SetOnExportCSV(function () {
-                    alert("Coming Soon!");
-                    //if (ltlDataToExport !== undefined) {
-                    //    exportService.Export("", "ltl", "csv");
-                    //}
+                    if (ltlDataToExport !== undefined) {
+                        exportService.Export(that.CreateCSV(ltlDataToExport, ","), "ltl", "csv");
+                    }
                 });
             }
+            LTLPresenter.prototype.CreateCSV = function (ltlDataToExport, sep) {
+                var csv = '';
+                var that = this;
+                var variables = ltlDataToExport.model.Variables;
+                var ticks = ltlDataToExport.ticks.sort(function (x, y) {
+                    return x.Time < y.Time ? -1 : 1;
+                });
+                for (var i = 0; i < variables.length; i++) {
+                    var variable = variables[i];
+                    var cont = that.appModel.Layout.GetContainerById(variable.ContainerId);
+                    if (cont !== undefined) {
+                        csv += cont.Name + sep;
+                    }
+                    else {
+                        csv += '' + sep;
+                    }
+                    csv += variable.Name + sep;
+                    for (var j = 0; j < ticks.length; j++) {
+                        var tick = ticks[i].Variables;
+                        for (var k = 0; k < tick.length; k++) {
+                            var ij = tick[k];
+                            if (ij.Id === variable.Id) {
+                                if (ij.Lo === ij.Hi) {
+                                    csv += ij.Lo + sep;
+                                }
+                                else {
+                                    csv += ij.Lo + ' - ' + ij.Hi + sep;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    csv += "\n";
+                }
+                return csv;
+            };
             return LTLPresenter;
         })();
         Presenters.LTLPresenter = LTLPresenter;

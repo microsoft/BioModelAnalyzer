@@ -583,7 +583,7 @@ module BMA {
             private popupWindow: JQuery;
             private commands: ICommandRegistry;
             private ltlResultsViewer: JQuery;
-            
+
             private exportCSVcallback = undefined;
 
             private dataToSet = undefined;
@@ -674,17 +674,17 @@ module BMA {
                     var tick = ticks[i].Variables;
                     data.push([]);
                     for (var k = 0; k < vars.length; k++) {
-                    for (var j = 0; j < tick.length; j++) {
+                        for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
-                        var ij = tick[j];
-                        if (ij.Lo === ij.Hi) {
-                            data[i].push(ij.Lo);
+                                var ij = tick[j];
+                                if (ij.Lo === ij.Hi) {
+                                    data[i].push(ij.Lo);
+                                }
+                                else {
+                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
+                                }
+                            }
                         }
-                        else {
-                           data[i].push(ij.Lo + ' - ' + ij.Hi);
-                        }
-                    }
-                }
                     }
                 }
 
