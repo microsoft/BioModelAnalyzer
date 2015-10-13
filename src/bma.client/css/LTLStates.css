@@ -3492,7 +3492,7 @@ textarea:focus {
 .ltlresultsviewer .ltl-simplot-container {
   display: inline-block;
   float: left;
-  max-height: 300px;
+  max-height: 322px;
   max-width: 600px;
   overflow: auto;
 }
@@ -3563,7 +3563,7 @@ textarea:focus {
   overflow: auto;
 }
 .ltlresultsviewer .ltl-results.simulation-plot-box {
-  margin-top: 0;
+  margin-top: 23px;
   margin-left: 5px;
   height: 300px;
 }
