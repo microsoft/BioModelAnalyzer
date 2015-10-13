@@ -46,6 +46,7 @@
         _setOption: function (key, value) {
             var that = this;
             var needUpdate = false;
+            this._super(key, value);
             switch (key) {
 
                 case "data": {
@@ -82,7 +83,7 @@
                     break;
                 }
                 case "ranges": {
-                    this.options.ranges = value;
+                    //this.options.ranges = value;
                     var variables = [];
                     if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
@@ -95,7 +96,7 @@
                     break;
                 }
                 case "visibleItems": {
-                    this.options.visibleItems = value;
+                    //this.options.visibleItems = value;
                     var variables = [];
                     if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++)
@@ -115,7 +116,6 @@
                 }
                 default: break;
             }
-            this._super(key, value);
             if (needUpdate) {
                 //this.refresh();
                 this.createPlotData();

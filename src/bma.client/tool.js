@@ -4360,10 +4360,12 @@ var BMA;
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
-                    //this.ltlResultsViewer.ltlresultsviewer();
                     if (this.dataToSet !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer(this.dataToSet);
                         this.dataToSet = undefined;
+                    }
+                    else {
+                        this.ltlResultsViewer.ltlresultsviewer();
                     }
                 }
             };
@@ -9959,6 +9961,7 @@ jQuery.fn.extend({
         _setOption: function (key, value) {
             var that = this;
             var needUpdate = false;
+            this._super(key, value);
             switch (key) {
                 case "data": {
                     //this.options.data = value;
@@ -9994,7 +9997,7 @@ jQuery.fn.extend({
                     break;
                 }
                 case "ranges": {
-                    this.options.ranges = value;
+                    //this.options.ranges = value;
                     var variables = [];
                     if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
@@ -10007,7 +10010,7 @@ jQuery.fn.extend({
                     break;
                 }
                 case "visibleItems": {
-                    this.options.visibleItems = value;
+                    //this.options.visibleItems = value;
                     var variables = [];
                     if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++)
@@ -10027,7 +10030,6 @@ jQuery.fn.extend({
                 }
                 default: break;
             }
-            this._super(key, value);
             if (needUpdate) {
                 //this.refresh();
                 this.createPlotData();

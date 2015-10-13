@@ -602,10 +602,11 @@ module BMA {
                 this.popupWindow.show();
 
                 if (shouldInit) {
-                    //this.ltlResultsViewer.ltlresultsviewer();
                     if (this.dataToSet !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer(this.dataToSet);
                         this.dataToSet = undefined;
+                    } else {
+                        this.ltlResultsViewer.ltlresultsviewer();
                     }
                 }
             }
