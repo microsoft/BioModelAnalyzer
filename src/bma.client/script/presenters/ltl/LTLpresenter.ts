@@ -18,13 +18,14 @@
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ltlresultsviewer: BMA.UIDrivers.ILTLResultsViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
-                popupViewer: BMA.UIDrivers.IPopup
+                popupViewer: BMA.UIDrivers.IPopup,
+                exportService: BMA.UIDrivers.IExportService
                 ) {
 
                 var that = this;
                 this.appModel = appModel;
 
-                this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer()); 
+                this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
 
                 temporlapropertieseditor.SetStates(appModel.States);
                 commands.On("KeyframesChanged",(args) => {
@@ -75,7 +76,7 @@
                 //});
                 
 
-                window.Commands.On("Expand", (param) => {
+                window.Commands.On("Expand",(param) => {
                     switch (param) {
                         case "LTLStates":
                             statesEditorDriver.Show();
@@ -113,11 +114,71 @@
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
 
+                var ltlDataToExport = undefined;
                 commands.On("ShowLTLResults", function (args) {
+                    ltlDataToExport = {
+                        ticks: args.ticks,
+                        model: appModel.BioModel.Clone(),
+                        layout: appModel.Layout.Clone()
+                    };
                     ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
                     ltlresultsviewer.Show();
                 });
+
+                ltlresultsviewer.SetOnExportCSV(function () {
+                    if (ltlDataToExport !== undefined) {
+                        exportService.Export(that.CreateCSV(ltlDataToExport, ","), "ltl", "csv");
+                    }
+                });
             }
+
+
+            public CreateCSV(ltlDataToExport, sep): string {
+                var csv = '';
+                var that = this;
+
+                var variables = (<BMA.Model.BioModel>ltlDataToExport.model).Variables;
+                var ticks = ltlDataToExport.ticks.sort((x, y) => {
+                    return x.Time < y.Time ? -1 : 1;
+                });
+
+
+                for (var i = 0; i < variables.length; i++) {
+
+                    var variable = variables[i];
+                    var cont = that.appModel.Layout.GetContainerById(variable.ContainerId);
+
+                    if (cont !== undefined) {
+                        csv += cont.Name + sep;
+                    } else {
+                        csv += '' + sep;
+                    }
+
+                    csv += variable.Name + sep;
+
+                    for (var j = 0; j < ticks.length; j++) {
+                        var tick = ticks[i].Variables;
+                        for (var k = 0; k < tick.length; k++) {
+                            var ij = tick[k];
+                            if (ij.Id === variable.Id) {
+                                if (ij.Lo === ij.Hi) {
+                                    csv += ij.Lo + sep;
+                                }
+                                else {
+                                    csv += ij.Lo + ' - ' + ij.Hi + sep;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+
+                    csv += "\n";
+                }
+
+                return csv;
+            }
+            
 
             /*
             public CreateColoredTable(ticks): any {

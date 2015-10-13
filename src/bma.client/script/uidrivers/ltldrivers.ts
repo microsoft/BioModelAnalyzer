@@ -583,7 +583,9 @@ module BMA {
             private popupWindow: JQuery;
             private commands: ICommandRegistry;
             private ltlResultsViewer: JQuery;
-            
+
+            private exportCSVcallback = undefined;
+
             private dataToSet = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
@@ -592,6 +594,8 @@ module BMA {
             }
 
             public Show() {
+                var that = this;
+
                 var shouldInit = this.ltlResultsViewer === undefined;
                 if (shouldInit) {
                     this.ltlResultsViewer = $("<div></div>");
@@ -607,6 +611,11 @@ module BMA {
                         this.dataToSet = undefined;
                     } else {
                         this.ltlResultsViewer.ltlresultsviewer();
+                    }
+
+                    if (this.exportCSVcallback !== undefined) {
+                        this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
+                        this.exportCSVcallback = undefined;
                     }
                 }
             }
@@ -631,7 +640,7 @@ module BMA {
 
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
-                    init.push(vars[i].RangeFrom);
+                    //init.push(vars[i].RangeFrom);
                     ranges.push({
                         min: vars[i].RangeFrom,
                         max: vars[i].RangeTo
@@ -662,6 +671,9 @@ module BMA {
                         }
                     }
                 }
+
+                for (var i = 0; i < data[0].length; i++)
+                    init.push(data[0][i]);
 
                 var interval = this.CreateInterval(vars);
 
@@ -699,6 +711,14 @@ module BMA {
 
             public GetRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+
+            public SetOnExportCSV(callback) {
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: callback });
+                } else {
+                    this.exportCSVcallback = callback;
+                }
             }
 
         }

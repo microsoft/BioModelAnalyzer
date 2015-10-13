@@ -73,6 +73,7 @@ module BMA {
             Show();
             Hide();
             SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any);//to do: Set proper type for ticks
+            SetOnExportCSV(callback);
         }
     }
 } 
