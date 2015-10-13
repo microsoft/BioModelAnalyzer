@@ -108,6 +108,7 @@ module BMA {
             SetData(data);
             StandbyMode();
             ActiveMode();
+            SetOnPlotVariablesSelectionChanged(callback);
         }
 
         export interface ILocalStorageDriver {

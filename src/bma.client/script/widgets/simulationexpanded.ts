@@ -10,7 +10,8 @@
             variables: undefined,
             num: 10,
             buttonMode: "ActiveMode",
-            step: 10
+            step: 10,
+            onChangePlotVariables: undefined
         },
 
         _create: function () {
@@ -53,6 +54,12 @@
                         data: options.data
                     });
                 }
+            }
+
+            if (options.onChangePlotVariables !== undefined) {
+                this.small_table.coloredtableviewer({
+                    onChangePlotVariables: options.onChangePlotVariables
+                });
             }
 
             var step = this.options.step;
@@ -182,6 +189,13 @@
                 case "buttonMode":
                     this.options.buttonMode = value;
                     this.ChangeMode();
+                    break;
+                case "onChangePlotVariables":
+                    this.small_table.coloredtableviewer({
+                        onChangePlotVariables: value
+                    });
+                    break;
+                default:
                     break;
         }
             this._super(key, value);
