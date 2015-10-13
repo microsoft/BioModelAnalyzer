@@ -18,7 +18,8 @@
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ltlresultsviewer: BMA.UIDrivers.ILTLResultsViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
-                popupViewer: BMA.UIDrivers.IPopup
+                popupViewer: BMA.UIDrivers.IPopup,
+                exportService: BMA.UIDrivers.IExportService
                 ) {
 
                 var that = this;
@@ -113,11 +114,49 @@
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
 
-                commands.On("ShowLTLResults", function (args) {
+                var ltlDataToExport = undefined;
+                commands.On("ShowLTLResults", function(args) {
+                    var ltlDataToExport = {
+                        ticks: args.ticks,
+                        model: appModel.BioModel.Clone(),
+                        layout: appModel.Layout.Clone()
+                    };
                     ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
                     ltlresultsviewer.Show();
                 });
+
+                ltlresultsviewer.SetOnExportCSV(function () {
+                    alert("Coming Soon!");
+                    
+                    //if (ltlDataToExport !== undefined) {
+                    //    exportService.Export("", "ltl", "csv");
+                    //}
+                });
             }
+
+            /*
+            public CreateCSV(sep): string {
+                var csv = '';
+                var that = this;
+                var data = this.variables;
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var ivar = that.appModel.BioModel.GetVariableById(data[i].Id);
+                    var contid = ivar.ContainerId;
+                    var cont = that.appModel.Layout.GetContainerById(contid);
+                    if (cont !== undefined) {
+                        csv += cont.Name + sep;
+                    }
+                    else csv += '' + sep;
+                    csv += ivar.Name + sep;
+                    var plot = data[i].Plot;
+                    for (var j = 0, plotl = plot.length; j < plotl; j++) {
+                        csv += plot[j] + sep;
+                    }
+                    csv += "\n";
+                }
+                return csv;
+            }
+            */
 
             /*
             public CreateColoredTable(ticks): any {

@@ -14,7 +14,8 @@
             id: [],
             ranges: [],
             visibleItems: [],
-            colors: []
+            colors: [],
+            onExportCSV: undefined
         },
 
         _create: function () {
@@ -29,6 +30,18 @@
 
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
+
+            var stepsul = $('<ul></ul>').addClass('button-list').css("float", "left").appendTo(root);
+            var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
+
+            var exportCSV = $('<button></button>')
+                .text('EXPORT CSV')
+                .appendTo(li);
+            exportCSV.bind('click', function () {
+                if (that.options.onExportCSV !== undefined) {
+                    that.options.onExportCSV();
+                }
+            })
 
             var changeVisibility = function (params) {
                 var visibility = that.options.visibleItems.slice(0);

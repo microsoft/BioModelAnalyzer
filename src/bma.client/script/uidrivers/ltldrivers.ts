@@ -583,7 +583,9 @@ module BMA {
             private popupWindow: JQuery;
             private commands: ICommandRegistry;
             private ltlResultsViewer: JQuery;
-            
+
+            private exportCSVcallback = undefined;
+
             private dataToSet = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
@@ -592,6 +594,8 @@ module BMA {
             }
 
             public Show() {
+                var that = this;
+
                 var shouldInit = this.ltlResultsViewer === undefined;
                 if (shouldInit) {
                     this.ltlResultsViewer = $("<div></div>");
@@ -607,6 +611,11 @@ module BMA {
                         this.dataToSet = undefined;
                     } else {
                         this.ltlResultsViewer.ltlresultsviewer();
+                    }
+
+                    if (this.exportCSVcallback !== undefined) {
+                        this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
+                        this.exportCSVcallback = undefined;
                     }
                 }
             }
@@ -666,7 +675,7 @@ module BMA {
                             data[i].push(ij.Lo);
                         }
                         else {
-                           data[i].push(ij.Lo + ' - ' + ij.Hi);
+                            data[i].push(ij.Lo + ' - ' + ij.Hi);
                         }
                     }
                 }
@@ -708,6 +717,14 @@ module BMA {
 
             public GetRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+
+            public SetOnExportCSV(callback) {
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: callback });
+                } else {
+                    this.exportCSVcallback = callback;
+                }
             }
 
         }

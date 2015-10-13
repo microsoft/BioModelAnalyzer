@@ -4351,11 +4351,13 @@ var BMA;
         UIDrivers.LTLResultsCompactViewer = LTLResultsCompactViewer;
         var LTLResultsViewer = (function () {
             function LTLResultsViewer(commands, popupWindow) {
+                this.exportCSVcallback = undefined;
                 this.dataToSet = undefined;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
             LTLResultsViewer.prototype.Show = function () {
+                var that = this;
                 var shouldInit = this.ltlResultsViewer === undefined;
                 if (shouldInit) {
                     this.ltlResultsViewer = $("<div></div>");
@@ -4370,6 +4372,10 @@ var BMA;
                     }
                     else {
                         this.ltlResultsViewer.ltlresultsviewer();
+                    }
+                    if (this.exportCSVcallback !== undefined) {
+                        this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
+                        this.exportCSVcallback = undefined;
                     }
                 }
             };
@@ -4458,6 +4464,14 @@ var BMA;
             };
             LTLResultsViewer.prototype.GetRandomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+            LTLResultsViewer.prototype.SetOnExportCSV = function (callback) {
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: callback });
+                }
+                else {
+                    this.exportCSVcallback = callback;
+                }
             };
             return LTLResultsViewer;
         })();
@@ -9957,7 +9971,8 @@ jQuery.fn.extend({
             id: [],
             ranges: [],
             visibleItems: [],
-            colors: []
+            colors: [],
+            onExportCSV: undefined
         },
         _create: function () {
             var that = this;
@@ -9969,6 +9984,14 @@ jQuery.fn.extend({
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(tablesContainer); //root);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
+            var stepsul = $('<ul></ul>').addClass('button-list').css("float", "left").appendTo(root);
+            var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
+            var exportCSV = $('<button></button>').text('EXPORT CSV').appendTo(li);
+            exportCSV.bind('click', function () {
+                if (that.options.onExportCSV !== undefined) {
+                    that.options.onExportCSV();
+                }
+            });
             var changeVisibility = function (params) {
                 var visibility = that.options.visibleItems.slice(0);
                 visibility[params.ind] = params.check;
@@ -11207,7 +11230,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -11278,9 +11301,21 @@ var BMA;
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
+                var ltlDataToExport = undefined;
                 commands.On("ShowLTLResults", function (args) {
+                    var ltlDataToExport = {
+                        ticks: args.ticks,
+                        model: appModel.BioModel.Clone(),
+                        layout: appModel.Layout.Clone()
+                    };
                     ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
                     ltlresultsviewer.Show();
+                });
+                ltlresultsviewer.SetOnExportCSV(function () {
+                    alert("Coming Soon!");
+                    //if (ltlDataToExport !== undefined) {
+                    //    exportService.Export("", "ltl", "csv");
+                    //}
                 });
             }
             return LTLPresenter;
