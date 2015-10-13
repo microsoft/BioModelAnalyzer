@@ -190,6 +190,46 @@
 			}
 		}
 		
+		// State Tooltip
+
+		.state-tooltip {
+			position: relative;
+			background: @lightgrey;
+			.border-radius(5px);
+			padding: 5px;
+			width:120px;
+			img{
+				max-width: 20px;
+			}
+			table{
+				font-size: 30px;
+				font-family: 'Segoe-UI-Light';
+				vertical-align: middle;
+				td{
+					padding-right: 5px;
+				}
+				td.variable-name{
+					.default-text;
+				}
+			}
+		}
+
+		.state-tooltip:after {
+			bottom: 100%;
+			left: 50%;
+			border: solid transparent;
+			content: " ";
+			height: 0;
+			width: 0;
+			position: absolute;
+			pointer-events: none;
+			border-color: rgba(255, 255, 255, 0);
+			border-bottom-color: @lightgrey;
+			border-width: 15px;
+			margin-left: -15px;
+		}
+
+
 
 // Temporal Properties
 
