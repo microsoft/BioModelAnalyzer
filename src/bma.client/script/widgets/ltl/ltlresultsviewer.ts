@@ -63,60 +63,46 @@
             switch (key) {
 
                 case "data": {
-                    //this.options.data = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "init": {
-                    //this.options.init = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "interval": {
-                    //this.optiopns.interval = value;
                     needUpdate = true;
                     break;
                 }
                 case "variables": {
-                    //this.options.variables = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "id": {
-                    //this.options.id = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "ranges": {
-                    //this.options.ranges = value;
                     var variables = [];
                     if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
                             that.options.variables[i][3] = that.options.ranges[i].min;
                             that.options.variables[i][4] = that.options.ranges[i].max;
                         }
-                        //this.createPlotData();
                         needUpdate = true;
                     }
                     break;
                 }
                 case "visibleItems": {
-                    //this.options.visibleItems = value;
                     var variables = [];
                     if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++)
                             this.options.variables[i][1] = this.options.visibleItems[i];  
-                        //this.createPlotData();
                         needUpdate = true;    
                     }
                     break;
                 }
                 case "colors": {
-                    //this.options.colors = value;
                     if (value !== undefined && value.length !== 0)
                         this._plot.simulationplot({
                             colors: value,
@@ -175,9 +161,7 @@
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
 
-                //for (var j = 0; j < this.options.init.length; j++)
-                //    pData.push(this.options.init[j]);
-
+                pData.push(this.options.init[i]);
                 for (var j = 0; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
 

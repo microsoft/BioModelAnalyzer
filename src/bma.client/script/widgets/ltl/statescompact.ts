@@ -28,11 +28,8 @@
             });
 
             for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons).hover(function () {
-                    //that._stateOptionsWindow = $("<div></div>").addClass("state-options-window").appendTo(that.element);
-                    //var windowPointer = $("<div></div>").addClass("pointer").appendTo(that._stateOptionsWindow);
-                    //var stateOptions = $("<div></div>").addClass("state-options").appendTo(that._stateOptionsWindow);
-                });
+                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
+                that.createToolTip(this.options.states[i], stateButton);
             }
 
             if (this.options.states.length == 0) {
@@ -44,6 +41,7 @@
         },
 
         _setOption: function (key, value) {
+            var that = this;
             switch (key) {
                 case "states": {
                     this.options.states = [];
@@ -53,11 +51,7 @@
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                                 .addClass("state-button").appendTo(this._stateButtons);
-                            stateButton.tooltip({
-                                content: value[i].tooltip,
-                                show: null,
-                                items: "div.state-button"
-                            });
+                            that.createToolTip(value[i], stateButton);
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -96,6 +90,51 @@
 
         addState: function (state) {
 
+        },
+
+        createToolTip: function (value, button) {
+            var that = this;
+            button.tooltip({
+                content: function () {
+                    var description = (value.description === undefined) ? "" : value.description;
+                    var stateTooltip = $("<div>" + description + "<br>" + "</div>").addClass("state-tooltip");
+                    var table = $("<table></table>").appendTo(stateTooltip);
+                    var tbody = $("<tbody></tbody>").appendTo(table);
+                    for (var j = 0; j < value.formula.length; j++) {
+                        var tr = that.getFormula(value.formula[j]);
+                        tr.appendTo(tbody);
+                    }
+                    return stateTooltip;
+                },
+                show: null,
+                items: "div.state-button"
+            });
+        },
+
+        getFormula: function (formula) {
+            var tr = $("<tr></tr>");
+            for (var i = 0; i < 5; i++) {
+                if (formula[i] !== undefined) {
+                    switch (formula[i].type) {
+                        case "variable": {
+                            var td = $("<td>" + formula[i].value + "</td>").addClass("variable-name").appendTo(tr);
+                            var img = $("<img>").attr("src", "../../images/LTL-state-tool-var.svg").appendTo(td);
+                            var br = $("<br>").appendTo(td);
+                            break;
+                        }
+                        case "const": {
+                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            break;
+                        }
+                        case "operator": {
+                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            break;
+                        }
+                        default: break;
+                    }
+                }
+            }
+            return tr;
         }
     });
 } (jQuery));

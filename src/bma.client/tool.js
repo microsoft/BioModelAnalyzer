@@ -2563,13 +2563,21 @@ var BMA;
         })();
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var Keyframe = (function () {
-            function Keyframe(name, operands) {
+            function Keyframe(name, description, operands) {
                 this.name = name;
+                this.description = description;
                 this.operands = operands;
             }
             Object.defineProperty(Keyframe.prototype, "Name", {
                 get: function () {
                     return this.name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Keyframe.prototype, "Description", {
+                get: function () {
+                    return this.description;
                 },
                 enumerable: true,
                 configurable: true
@@ -2596,7 +2604,7 @@ var BMA;
                 }
             };
             Keyframe.prototype.Clone = function () {
-                return new BMA.LTLOperations.Keyframe(this.name, this.operands.slice(0));
+                return new BMA.LTLOperations.Keyframe(this.name, this.description, this.operands.slice(0));
             };
             return Keyframe;
         })();
@@ -3995,42 +4003,45 @@ var BMA;
                     var s = states[i];
                     var ws = {
                         name: s.Name,
+                        description: s.Description,
                         formula: [],
                         tooltip: s.GetFormula()
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
-                        ws.formula.push({
+                        var formula = [];
+                        formula.push({
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
                             value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : opnd.LeftOperand.Name
                         });
                         if (opnd.MiddleOperand !== undefined) {
                             var leftop = opnd.LeftOperator;
-                            ws.formula.push({
+                            formula.push({
                                 type: "operator",
                                 value: leftop
                             });
                             var middle = opnd.MiddleOperand;
-                            ws.formula.push({
+                            formula.push({
                                 type: middle.Name === undefined ? "const" : "variable",
                                 value: middle.Name === undefined ? middle.Value : middle.Name
                             });
                             var rightop = opnd.RightOperator;
-                            ws.formula.push({
+                            formula.push({
                                 type: "operator",
                                 value: rightop
                             });
                         }
                         else {
-                            ws.formula.push({
+                            formula.push({
                                 type: "operator",
                                 value: opnd.Operator
                             });
                         }
-                        ws.formula.push({
+                        formula.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
                             value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : opnd.RightOperand.Name
                         });
+                        ws.formula.push(formula);
                     }
                     wstates.push(ws);
                 }
@@ -4164,7 +4175,7 @@ var BMA;
                             isEmpty = true;
                     }
                     if (formulas.length != 0 && ops.length != 0 && !isEmpty) {
-                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, states[i].description, ops);
                         wstates.push(ws);
                     }
                 }
@@ -4236,6 +4247,7 @@ var BMA;
                     var s = states[i];
                     var ws = {
                         name: s.Name,
+                        description: s.Description,
                         formula: []
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
@@ -4395,7 +4407,6 @@ var BMA;
                 var variables = [];
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
-                    //init.push(vars[i].RangeFrom);
                     ranges.push({
                         min: vars[i].RangeFrom,
                         max: vars[i].RangeTo
@@ -4408,23 +4419,22 @@ var BMA;
                 });
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
-                    data.push([]);
+                    if (i != 0)
+                        data.push([]);
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    data[i].push(ij.Lo);
+                                    (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
                                 }
                                 else {
-                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
+                                    (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
                     }
                 }
-                for (var i = 0; i < data[0].length; i++)
-                    init.push(data[0][i]);
                 var interval = this.CreateInterval(vars);
                 var options = {
                     id: id,
@@ -10001,60 +10011,46 @@ jQuery.fn.extend({
             this._super(key, value);
             switch (key) {
                 case "data": {
-                    //this.options.data = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "init": {
-                    //this.options.init = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "interval": {
-                    //this.optiopns.interval = value;
                     needUpdate = true;
                     break;
                 }
                 case "variables": {
-                    //this.options.variables = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "id": {
-                    //this.options.id = value;
-                    //this.createPlotData();
                     needUpdate = true;
                     break;
                 }
                 case "ranges": {
-                    //this.options.ranges = value;
                     var variables = [];
                     if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
                             that.options.variables[i][3] = that.options.ranges[i].min;
                             that.options.variables[i][4] = that.options.ranges[i].max;
                         }
-                        //this.createPlotData();
                         needUpdate = true;
                     }
                     break;
                 }
                 case "visibleItems": {
-                    //this.options.visibleItems = value;
                     var variables = [];
                     if (this.options.visibleItems !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++)
                             this.options.variables[i][1] = this.options.visibleItems[i];
-                        //this.createPlotData();
                         needUpdate = true;
                     }
                     break;
                 }
                 case "colors": {
-                    //this.options.colors = value;
                     if (value !== undefined && value.length !== 0)
                         this._plot.simulationplot({
                             colors: value,
@@ -10104,6 +10100,7 @@ jQuery.fn.extend({
                 var pData = [];
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
+                pData.push(this.options.init[i]);
                 for (var j = 0; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
                 plotData.push({
@@ -10670,11 +10667,8 @@ jQuery.fn.extend({
                 that.executeCommand("AddFirstStateRequested", {});
             });
             for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons).hover(function () {
-                    //that._stateOptionsWindow = $("<div></div>").addClass("state-options-window").appendTo(that.element);
-                    //var windowPointer = $("<div></div>").addClass("pointer").appendTo(that._stateOptionsWindow);
-                    //var stateOptions = $("<div></div>").addClass("state-options").appendTo(that._stateOptionsWindow);
-                });
+                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
+                that.createToolTip(this.options.states[i], stateButton);
             }
             if (this.options.states.length == 0) {
                 this._stateButtons.hide();
@@ -10685,6 +10679,7 @@ jQuery.fn.extend({
             }
         },
         _setOption: function (key, value) {
+            var that = this;
             switch (key) {
                 case "states": {
                     this.options.states = [];
@@ -10693,11 +10688,7 @@ jQuery.fn.extend({
                         if (value[i].formula.length != 0) {
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name).addClass("state-button").appendTo(this._stateButtons);
-                            stateButton.tooltip({
-                                content: value[i].tooltip,
-                                show: null,
-                                items: "div.state-button"
-                            });
+                            that.createToolTip(value[i], stateButton);
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -10731,6 +10722,49 @@ jQuery.fn.extend({
         refresh: function () {
         },
         addState: function (state) {
+        },
+        createToolTip: function (value, button) {
+            var that = this;
+            button.tooltip({
+                content: function () {
+                    var description = (value.description === undefined) ? "" : value.description;
+                    var stateTooltip = $("<div>" + description + "<br>" + "</div>").addClass("state-tooltip");
+                    var table = $("<table></table>").appendTo(stateTooltip);
+                    var tbody = $("<tbody></tbody>").appendTo(table);
+                    for (var j = 0; j < value.formula.length; j++) {
+                        var tr = that.getFormula(value.formula[j]);
+                        tr.appendTo(tbody);
+                    }
+                    return stateTooltip;
+                },
+                show: null,
+                items: "div.state-button"
+            });
+        },
+        getFormula: function (formula) {
+            var tr = $("<tr></tr>");
+            for (var i = 0; i < 5; i++) {
+                if (formula[i] !== undefined) {
+                    switch (formula[i].type) {
+                        case "variable": {
+                            var td = $("<td>" + formula[i].value + "</td>").addClass("variable-name").appendTo(tr);
+                            var img = $("<img>").attr("src", "../../images/LTL-state-tool-var.svg").appendTo(td);
+                            var br = $("<br>").appendTo(td);
+                            break;
+                        }
+                        case "const": {
+                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            break;
+                        }
+                        case "operator": {
+                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            break;
+                        }
+                        default: break;
+                    }
+                }
+            }
+            return tr;
         }
     });
 }(jQuery));
@@ -11365,7 +11399,7 @@ var BMA;
                 this.statesViewer.SetCommands(commands);
                 commands.On("AddFirstStateRequested", function (args) {
                     if (appModel.States.length === 0) {
-                        var newState = new BMA.LTLOperations.Keyframe("A", []);
+                        var newState = new BMA.LTLOperations.Keyframe("A", "", []);
                         appModel.States.push(newState);
                         _this.statesEditor.SetStates(appModel.States);
                         _this.statesViewer.SetStates(appModel.States);
