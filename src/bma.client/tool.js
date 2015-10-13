@@ -4408,6 +4408,9 @@ var BMA;
                         }
                     }
                 }
+                ticks = ticks.sort(function (x, y) {
+                    return x.Time < y.Time ? -1 : 1;
+                });
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     data.push([]);
