@@ -11342,7 +11342,7 @@ var BMA;
                     }
                     csv += variable.Name + sep;
                     for (var j = 0; j < ticks.length; j++) {
-                        var tick = ticks[i].Variables;
+                        var tick = ticks[j].Variables;
                         for (var k = 0; k < tick.length; k++) {
                             var ij = tick[k];
                             if (ij.Id === variable.Id) {

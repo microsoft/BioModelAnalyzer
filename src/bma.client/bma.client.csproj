@@ -238,6 +238,8 @@
     <Content Include="images\local.png" />
     <Content Include="images\local.svg" />
     <Content Include="images\logo-crop.png" />
+    <Content Include="images\LTL-copy.svg" />
+    <Content Include="images\LTL-delete.svg" />
     <Content Include="images\ltl-icon.png" />
     <Content Include="images\LTL-state-tool-equ.svg" />
     <Content Include="images\LTL-state-tool-gre.svg" />
