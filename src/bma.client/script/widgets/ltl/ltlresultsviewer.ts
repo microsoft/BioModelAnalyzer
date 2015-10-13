@@ -55,10 +55,6 @@
                     needUpdate = true;
                     break;
                 }
-                case "pData": {
-                    needUpdate = true;
-                    break;
-                }
                 case "init": {
                     //this.options.init = value;
                     //this.createPlotData();
@@ -165,6 +161,9 @@
                 var pData = [];
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
+
+                //for (var j = 0; j < this.options.init.length; j++)
+                //    pData.push(this.options.init[j]);
 
                 for (var j = 0; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);

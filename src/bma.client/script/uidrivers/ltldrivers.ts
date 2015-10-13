@@ -641,22 +641,6 @@ module BMA {
                     variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
 
-                var l = ticks.length;
-                for (var j = 0, len = ticks[0].Variables.length; j < len; j++) {
-                    pData[j] = [];
-                    pData[j][0] = model.GetVariableById(ticks[0].Variables[j].Id).Name;
-                    var v = ticks[0].Variables[j];
-                    for (var i = 1; i < l + 1; i++) {
-                        var ij = ticks[i - 1].Variables[j];
-                        if (ij.Lo === ij.Hi) {
-                            pData[j][i] = ij.Lo;
-                        }
-                        else {
-                            pData[j][i] = ij.Lo + ' - ' + ij.Hi;
-                        }
-                    }
-                }
-
                 ticks = ticks.sort((x, y) => {
                     return x.Time < y.Time ? -1 : 1;
                 });
@@ -685,7 +669,6 @@ module BMA {
                     id: id,
                     interval: interval,
                     data: data,
-                    pData: pData,
                     init: init,
                     variables: variables,
                 };
