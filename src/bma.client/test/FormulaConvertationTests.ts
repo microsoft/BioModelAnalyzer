@@ -32,7 +32,7 @@
             ],
         });
         equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state1", equation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state1", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -122,7 +122,7 @@
             });
         doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(55), ">",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state5", doubleEquation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state5", "", doubleEquation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -144,7 +144,7 @@
         doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(3), "<",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(5)),
             new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), ">", new BMA.LTLOperations.ConstOperand(55))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state6", doubleEquation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state6", "", doubleEquation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -165,7 +165,7 @@
             });
         doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(55), "<",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state7", doubleEquation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state7", "", doubleEquation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -186,7 +186,7 @@
             });
         equation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(4), "<",
             new BMA.LTLOperations.NameOperand("var1"), ">", new BMA.LTLOperations.ConstOperand(55))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state8", equation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state8", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -215,7 +215,7 @@
         equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), ">", new BMA.LTLOperations.ConstOperand(55)),
             new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(4), "<",
                 new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state9", equation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state9", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -275,7 +275,7 @@
             });
         equation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(4), "<",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state112", equation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state112", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -343,7 +343,7 @@
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57)),
             new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(55), "<",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state14", doubleEquation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state14", "", doubleEquation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
@@ -365,7 +365,7 @@
         doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(3), "<",
             new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(5)),
             new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(55))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state6", doubleEquation));
+        keyframes.push(new BMA.LTLOperations.Keyframe("state6", "", doubleEquation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 }); 

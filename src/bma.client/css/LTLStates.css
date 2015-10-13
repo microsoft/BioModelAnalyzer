@@ -3658,4 +3658,46 @@ textarea:focus {
   margin: 0;
   margin-top: 10px;
 }
+.state-tooltip {
+  position: relative;
+  background: #ededed;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  padding: 5px;
+  width: 120px;
+}
+.state-tooltip img {
+  max-width: 20px;
+}
+.state-tooltip table {
+  font-size: 30px;
+  font-family: 'Segoe-UI-Light';
+  vertical-align: middle;
+}
+.state-tooltip table td {
+  padding-right: 5px;
+}
+.state-tooltip table td.variable-name {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+}
+.state-tooltip:after {
+  bottom: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: #ededed;
+  border-width: 15px;
+  margin-left: -15px;
+}
 /*# sourceMappingURL=LTLStates.css.map */

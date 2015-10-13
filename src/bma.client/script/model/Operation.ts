@@ -145,15 +145,21 @@
 
         export class Keyframe implements IOperand {
             private name: string;
+            private description: string;
             private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
 
-            constructor(name: string, operands: (KeyframeEquation | DoubleKeyframeEquation)[]) {
+            constructor(name: string, description: string, operands: (KeyframeEquation | DoubleKeyframeEquation)[]) {
                 this.name = name;
+                this.description = description;
                 this.operands = operands;
             }
 
             public get Name(): string {
                 return this.name;
+            }
+
+            public get Description(): string {
+                return this.description;
             }
 
             public get Operands(): (KeyframeEquation | DoubleKeyframeEquation)[] {
@@ -178,7 +184,7 @@
             }
 
             public Clone() {
-                return new BMA.LTLOperations.Keyframe(this.name, this.operands.slice(0));
+                return new BMA.LTLOperations.Keyframe(this.name, this.description, this.operands.slice(0));
             }
         }
 

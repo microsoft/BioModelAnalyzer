@@ -172,48 +172,51 @@ module BMA {
                     var s = states[i];
                     var ws = {
                         name: s.Name,
+                        description: s.Description,
                         formula: [],
                         tooltip: s.GetFormula()
                     };
 
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
+                        var formula = [];
 
-                        ws.formula.push({
+                        formula.push({
                             type: (<any>opnd).LeftOperand.Name === undefined ? "const" : "variable",
                             value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : (<any>opnd).LeftOperand.Name
                         });
 
                         if ((<any>opnd).MiddleOperand !== undefined) {
                             var leftop = (<any>opnd).LeftOperator;
-                            ws.formula.push({
+                            formula.push({
                                 type: "operator",
                                 value: leftop
                             });
 
                             var middle = (<any>opnd).MiddleOperand;
-                            ws.formula.push({
+                            formula.push({
                                 type: middle.Name === undefined ? "const" : "variable",
                                 value: middle.Name === undefined ? middle.Value : middle.Name
                             });
 
                             var rightop = (<any>opnd).RightOperator;
-                            ws.formula.push({
+                            formula.push({
                                 type: "operator",
                                 value: rightop
                             });
 
                         } else {
-                            ws.formula.push({
+                            formula.push({
                                 type: "operator",
                                 value: (<any>opnd).Operator
                             });
                         }
 
-                        ws.formula.push({
+                        formula.push({
                             type: (<any>opnd).RightOperand.Name === undefined ? "const" : "variable",
                             value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : (<any>opnd).RightOperand.Name
                         });
+                        ws.formula.push(formula);
                     }
 
                     wstates.push(ws);
@@ -365,7 +368,7 @@ module BMA {
                             isEmpty = true;
                     }
                     if (formulas.length != 0 && ops.length != 0 && !isEmpty) {
-                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, ops);
+                        var ws = new BMA.LTLOperations.Keyframe(states[i].name, states[i].description, ops);
                         wstates.push(ws);
                     }
                 }
@@ -451,6 +454,7 @@ module BMA {
                     var s = states[i];
                     var ws = {
                         name: s.Name,
+                        description: s.Description,
                         formula: []
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
@@ -640,7 +644,6 @@ module BMA {
 
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
-                    //init.push(vars[i].RangeFrom);
                     ranges.push({
                         min: vars[i].RangeFrom,
                         max: vars[i].RangeTo
@@ -656,24 +659,22 @@ module BMA {
 
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
-                    data.push([]);
+                    if (i != 0)
+                        data.push([]);
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    data[i].push(ij.Lo);
+                                    (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
                                 }
                                 else {
-                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
+                                    (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
                     }
                 }
-
-                for (var i = 0; i < data[0].length; i++)
-                    init.push(data[0][i]);
 
                 var interval = this.CreateInterval(vars);
 

@@ -19,7 +19,7 @@
 
                 commands.On("AddFirstStateRequested",(args) => {
                     if (appModel.States.length === 0) {
-                        var newState = new BMA.LTLOperations.Keyframe("A", [])
+                        var newState = new BMA.LTLOperations.Keyframe("A", "", [])
                         appModel.States.push(newState);
                         this.statesEditor.SetStates(appModel.States);
                         this.statesViewer.SetStates(appModel.States);
