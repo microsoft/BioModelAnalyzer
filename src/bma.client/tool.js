@@ -1481,12 +1481,12 @@ var BMA;
                 this.keyframes = [];
                 this.imagePath = imagePath;
                 this.keyframes.push(new BMAKeyframe("var", this.imagePath + "/LTL-state-tool-var.svg", "variable"));
-                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/LTL-state-tool-num.svg", "const"));
                 this.keyframes.push(new BMAKeyframe("equal", this.imagePath + "/LTL-state-tool-equ.svg", "operator"));
                 this.keyframes.push(new BMAKeyframe("more", this.imagePath + "/LTL-state-tool-gre.svg", "operator"));
                 this.keyframes.push(new BMAKeyframe("less", this.imagePath + "/LTL-state-tool-les.svg", "operator"));
                 this.keyframes.push(new BMAKeyframe("moeq", this.imagePath + "/LTL-state-tool-greq.svg", "operator"));
                 this.keyframes.push(new BMAKeyframe("leeq", this.imagePath + "/LTL-state-tool-lesq.svg", "operator"));
+                this.keyframes.push(new BMAKeyframe("num", this.imagePath + "/LTL-state-tool-num.svg", "const"));
             }
             Object.defineProperty(KeyframesRegistry.prototype, "Keyframes", {
                 get: function () {
@@ -10132,8 +10132,6 @@ jQuery.fn.extend({
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.stateseditor", {
-        _emptyStateAddButton: null,
-        _emptyStatePlaceholder: null,
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
@@ -10147,22 +10145,12 @@ jQuery.fn.extend({
             states: [],
             minConst: -99,
             maxConst: 100,
+            commands: undefined,
             onStatesUpdated: undefined,
             onComboBoxOpen: undefined,
         },
         _create: function () {
             var that = this;
-            this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).hide().click(function () {
-                that._emptyStateAddButton.hide();
-                that._emptyStatePlaceholder.hide();
-                that._stateButtons.show();
-                that._toolbar.show();
-                that._description.show();
-                that._ltlStates.show();
-                that.addState();
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
-            });
-            this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element).hide();
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").addClass("state").appendTo(this._stateButtons).click(function () {
@@ -10199,21 +10187,10 @@ jQuery.fn.extend({
                 that.addCondition();
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
-            if (this.options.states.length == 0) {
-                this._emptyStateAddButton.show();
-                this._emptyStatePlaceholder.show();
-                this._stateButtons.hide();
-                this._toolbar.hide();
-                this._description.hide();
-                this._ltlStates.hide();
-            }
-            else {
-                this._activeState = this.options.states[0];
-                this.refresh();
-            }
         },
         _setOption: function (key, value) {
             var that = this;
+            this._super(key, value);
             switch (key) {
                 case "variables": {
                     this.options.variables = [];
@@ -10230,13 +10207,9 @@ jQuery.fn.extend({
                             value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
                         this.addState(value[i]);
                     }
-                    if (this.options.states.length != 0) {
-                        that._emptyStateAddButton.hide();
-                        that._emptyStatePlaceholder.hide();
-                        that._stateButtons.show();
-                        that._toolbar.show();
-                        that._description.show();
-                        that._ltlStates.show();
+                    if (this.options.states.length == 0) {
+                        that.addState();
+                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
                     }
                     break;
                 }
@@ -10258,7 +10231,6 @@ jQuery.fn.extend({
                 }
                 default: break;
             }
-            this._super(key, value);
         },
         _setOptions: function (options) {
             this._super(options);
@@ -10726,9 +10698,11 @@ jQuery.fn.extend({
         createToolTip: function (value, button) {
             var that = this;
             button.tooltip({
+                tooltipClass: "state-tooltip",
                 content: function () {
-                    var description = (value.description === undefined) ? "" : value.description;
-                    var stateTooltip = $("<div>" + description + "<br>" + "</div>").addClass("state-tooltip");
+                    var descriptionText = (value.description === undefined || value.description == "") ? "Description text" : value.description;
+                    var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
+                    var description = $("<div>" + descriptionText + "</div>").appendTo(stateTooltip);
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
@@ -10736,6 +10710,9 @@ jQuery.fn.extend({
                         tr.appendTo(tbody);
                     }
                     return stateTooltip;
+                },
+                position: {
+                    at: "left-48px bottom",
                 },
                 show: null,
                 items: "div.state-button"
@@ -10747,17 +10724,20 @@ jQuery.fn.extend({
                 if (formula[i] !== undefined) {
                     switch (formula[i].type) {
                         case "variable": {
-                            var td = $("<td>" + formula[i].value + "</td>").addClass("variable-name").appendTo(tr);
-                            var img = $("<img>").attr("src", "../../images/LTL-state-tool-var.svg").appendTo(td);
+                            var td = $("<td></td>").addClass("variable-name").appendTo(tr);
+                            var img = $("<img>").attr("src", "../../images/state-variable.svg").appendTo(td);
                             var br = $("<br>").appendTo(td);
+                            var variableName = $("<div>" + formula[i].value + "</div>").appendTo(td);
                             break;
                         }
                         case "const": {
-                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            var td = $("<td></td>").appendTo(tr);
+                            var cons = $("<div>" + formula[i].value + "</div>").appendTo(td);
                             break;
                         }
                         case "operator": {
-                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            var td = $("<td></td>").appendTo(tr);
+                            var op = $("<div>" + formula[i].value + "</div>").appendTo(td);
                             break;
                         }
                         default: break;

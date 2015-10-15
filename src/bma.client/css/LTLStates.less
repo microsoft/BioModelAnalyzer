@@ -432,21 +432,39 @@
 .state-tooltip {
 	position: relative;
 	background: @lightgrey;
+    border:none;
 	.border-radius(5px);
 	padding: 5px;
 	width:120px;
+    .default-text;
 	img{
 		max-width: 20px;
+        max-height:20px;
 	}
 	table{
+        margin: 5px;
 		font-size: 30px;
 		font-family: 'Segoe-UI-Light';
 		vertical-align: middle;
-		td{
-			padding-right: 5px;
-		}
+        text-align:left;
+        
+        tr {
+            margin-bottom:5px;
+
+            td {
+                //padding-right: 5px;        
+		    }
+        }
+		
 		td.variable-name{
 			.default-text;
+
+            div {
+                max-width:30px;
+                text-overflow:ellipsis;
+                overflow:hidden;
+            }
+            
 		}
 	}
 }

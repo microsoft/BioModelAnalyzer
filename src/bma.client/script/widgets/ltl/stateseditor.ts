@@ -3,8 +3,6 @@
 
 (function ($) {
     $.widget("BMA.stateseditor", {
-        _emptyStateAddButton: null,
-        _emptyStatePlaceholder: null,
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
@@ -19,27 +17,13 @@
             states: [],
             minConst: -99,
             maxConst: 100,
+            commands: undefined,
             onStatesUpdated: undefined,
             onComboBoxOpen: undefined,
         },
 
         _create: function () {
             var that = this;
-
-            this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).hide().click(function () {
-                that._emptyStateAddButton.hide();
-                that._emptyStatePlaceholder.hide();
-                that._stateButtons.show();
-                that._toolbar.show();
-                that._description.show();
-                that._ltlStates.show();
-
-                that.addState();
-
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
-            });
-
-            this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element).hide();
 
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
 
@@ -59,7 +43,6 @@
 
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
-
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
             });
 
@@ -89,22 +72,11 @@
 
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
-
-            if (this.options.states.length == 0) {
-                this._emptyStateAddButton.show();
-                this._emptyStatePlaceholder.show();
-                this._stateButtons.hide();
-                this._toolbar.hide();
-                this._description.hide();
-                this._ltlStates.hide();
-            } else {
-                this._activeState = this.options.states[0];
-                this.refresh();
-            }
         },
 
         _setOption: function (key, value) {
             var that = this;
+            this._super(key, value);
             switch (key) {
                 case "variables": {
                     this.options.variables = [];
@@ -121,13 +93,9 @@
                             value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
                         this.addState(value[i]);
                     }
-                    if (this.options.states.length != 0) {
-                        that._emptyStateAddButton.hide();
-                        that._emptyStatePlaceholder.hide();
-                        that._stateButtons.show();
-                        that._toolbar.show();
-                        that._description.show();
-                        that._ltlStates.show();
+                    if (this.options.states.length == 0) {
+                        that.addState();
+                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
                     }
                     break;
                 }
@@ -149,7 +117,6 @@
                 }
                 default: break;
             }
-            this._super(key, value);
         },
 
         _setOptions: function (options) {

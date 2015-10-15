@@ -95,9 +95,11 @@
         createToolTip: function (value, button) {
             var that = this;
             button.tooltip({
+                tooltipClass: "state-tooltip",
                 content: function () {
-                    var description = (value.description === undefined) ? "" : value.description;
-                    var stateTooltip = $("<div>" + description + "<br>" + "</div>").addClass("state-tooltip");
+                    var descriptionText = (value.description === undefined || value.description == "") ? "Description text" : value.description;
+                    var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
+                    var description = $("<div>" + descriptionText + "</div>").appendTo(stateTooltip);
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
@@ -105,6 +107,9 @@
                         tr.appendTo(tbody);
                     }
                     return stateTooltip;
+                },
+                position: {
+                    at: "left-48px bottom",
                 },
                 show: null,
                 items: "div.state-button"
@@ -117,17 +122,20 @@
                 if (formula[i] !== undefined) {
                     switch (formula[i].type) {
                         case "variable": {
-                            var td = $("<td>" + formula[i].value + "</td>").addClass("variable-name").appendTo(tr);
-                            var img = $("<img>").attr("src", "../../images/LTL-state-tool-var.svg").appendTo(td);
+                            var td = $("<td></td>").addClass("variable-name").appendTo(tr);
+                            var img = $("<img>").attr("src", "../../images/state-variable.svg").appendTo(td);
                             var br = $("<br>").appendTo(td);
+                            var variableName = $("<div>" + formula[i].value + "</div>").appendTo(td);
                             break;
                         }
                         case "const": {
-                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            var td = $("<td></td>").appendTo(tr);
+                            var cons = $("<div>" + formula[i].value + "</div>").appendTo(td);
                             break;
                         }
                         case "operator": {
-                            var td = $("<td>" + formula[i].value + "</td>").appendTo(tr);
+                            var td = $("<td></td>").appendTo(tr);
+                            var op = $("<div>" + formula[i].value + "</div>").appendTo(td);
                             break;
                         }
                         default: break;
