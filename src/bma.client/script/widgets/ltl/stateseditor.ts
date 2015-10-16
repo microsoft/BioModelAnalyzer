@@ -184,12 +184,15 @@
 
         createNewSelect: function (td, currSymbol) {
             var that = this;
+            var firstLeft = $(td).offset().left;
+            var firstTop = $(td).offset().top;
 
             var selectVariable = $("<div></div>").addClass("variable-select").appendTo(td);
             var variableSelected = $("<p></p>").appendTo(selectVariable);
             var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(selectVariable);
 
-            var variablePicker = $("<div></div>").addClass("variable-picker").appendTo(td).hide();
+            var variablePicker = $("<div></div>").addClass("variable-picker").appendTo('body').hide();
+            variablePicker.offset({ top: firstTop + 57, left: firstLeft });
             var table = $("<table></table>").appendTo(variablePicker);
             var tbody = $("<tbody></tbody>").appendTo(table);
 
@@ -205,6 +208,12 @@
             
             selectVariable.bind("click", function () {
                 if (variablePicker.is(":hidden")) {
+                    var offLeft = $(td).offset().left - firstLeft;
+                    var offTop = $(td).offset().top - firstTop;
+                    variablePicker.offset({ top: offTop, left: offLeft });
+                    firstLeft = $(td).offset().left;
+                    firstTop = $(td).offset().top;
+
                     that.executeonComboBoxOpen();
                     that.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
                     variablePicker.show();

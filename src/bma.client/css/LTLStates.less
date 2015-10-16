@@ -103,6 +103,14 @@
     text-align: center;
 }
 
+.number-input:focus {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -o-box-shadow: none;
+    box-shadow: none;
+}
+
+//text and arrow in cell with variable
 .variable-select {
     display: block;
     width: 55px;
@@ -113,6 +121,7 @@
         margin: 0;
         display: inline-block;
         width: 30px;
+        max-height:17px;
         overflow: hidden;
         text-align: left;
         text-overflow: ellipsis;
@@ -292,12 +301,6 @@
         }
     }
 
-    /*.ltl-simplot-container {
-        display: inline-block;
-        vertical-align: top;
-        margin-top: 20px;
-    }*/
-
     .ltl-results {
         display: inline-block;
         float: left;
@@ -342,79 +345,81 @@
             }
         }
     }
-    // Variable Picker
-    .variable-picker {
-        position: absolute;
-        top: 60px;
-        left: -1px;
-        z-index: 3;
-        width: 115px;
-        border: 1px solid @midgrey;
+}
 
-        table {
-            width: 100%;
-            margin: 0;
-            font-size: 11px;
-            background-color: white;
-            border-collapse: collapse;
+// Variable Picker
+.variable-picker {
+    position: absolute;
+    z-index: 10;
+    width: 111px;
+    border: 1px solid @midgrey;
 
-            img {
-                width: 20px;
-                height: 20px;
-            }
+    table {
+        width: 100%;
+        margin: 0;
+        font-size: 11px;
+        background-color: white;
+        border-collapse: collapse;
 
-            tr {
-                vertical-align: top;
+        img {
+            width: 20px;
+            height: 20px;
+        }
 
-                td {
-                    min-width: 50px;
-                    border: none;
-                    text-align: left;
-                    padding: 2px 0 0 2px;
+        tr {
+            vertical-align: top;
 
-                    &.list {
-                        max-height: 85px;
+            td {
+                min-width: 50px;
+                border: none;
+                text-align: left;
+                padding: 2px 0 0 2px;
+
+                &.list {
+                    max-height: 85px;
+                }
+
+                .scrollable {
+                    width: 50px;
+                    height: 85px;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    padding: 0 2px 0 0;
+
+                    a {
+                        display: block;
+                        text-decoration: none;
+                        max-height:17px;
+                        overflow:hidden;
+                        text-overflow:ellipsis;
+
+                        &:hover {
+                            background-color: @lightgrey;
+                            cursor: pointer;
+                        }
+
+                        &.active {
+                            border: 0;
+                            background-color: @midgrey;
+                            color: white;
+                        }
                     }
 
-                    .scrollable {
-                        width: 50px;
-                        height: 85px;
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        padding: 0 2px 0 0;
+                    &::-webkit-scrollbar-track {
+                        width: 10px;
+                        background-color: white;
+                    }
 
-                        a {
-                            display: block;
-                            text-decoration: none;
+                    &::-webkit-scrollbar {
+                        width: 5px;
+                        height: 5px;
+                        background-color: @midgrey;
+                    }
 
-                            &:hover {
-                                background-color: @lightgrey;
-                                cursor: pointer;
-                            }
-
-                            &.active {
-                                border: 0;
-                                background-color: @midgrey;
-                                color: white;
-                            }
-                        }
-
-                        &::-webkit-scrollbar-track {
-                            width: 10px;
-                            background-color: white;
-                        }
-
-                        &::-webkit-scrollbar {
-                            width: 5px;
-                            height: 5px;
-                            background-color: @midgrey;
-                        }
-
-                        &::-webkit-scrollbar-thumb {
-                            padding: 5px;
-                            border-radius: 5px;
-                            background-color: @midgrey;
-                        }
+                    &::-webkit-scrollbar-thumb {
+                        padding: 5px;
+                        border-radius: 5px;
+                        background-color: @midgrey;
                     }
                 }
             }
