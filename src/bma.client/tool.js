@@ -10170,10 +10170,16 @@ jQuery.fn.extend({
             });
             this._toolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this.createToolbar();
-            this._description = $("<input></input>").attr("type", "text").addClass("state-description").attr("size", "15").attr("data-row-type", "description").attr("placeholder", "Description").appendTo(this.element).change(function () {
+            this._description = $("<input></input>").attr("type", "text").addClass("state-description").attr("size", "15").attr("data-row-type", "description").attr("placeholder", "Description").appendTo(this.element);
+            this._description.bind("input change", function () {
                 var idx = that.options.states.indexOf(that._activeState);
                 that.options.states[idx].description = this.value;
                 that._activeState.description = this.value;
+                $(document).mousedown(function (e) {
+                    if (!that._description.is(e.target) && that._description.has(e.target).length === 0) {
+                        that._description.trigger("blur");
+                    }
+                });
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
@@ -10306,6 +10312,14 @@ jQuery.fn.extend({
             var imgVariable = $("<img></img>").attr("src", "../images/variable.svg").appendTo(tdVariable);
             var trList = $("<tr></tr>").appendTo(tbody);
             this.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
+            $(document).mousedown(function (e) {
+                if (!selectVariable.is(e.target) && selectVariable.has(e.target).length === 0 && !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
+                    variablePicker.hide();
+                    expandButton.removeClass('inputs-list-header-expanded');
+                    selectVariable.removeClass("expanded");
+                    variablePicker.removeClass("expanded");
+                }
+            });
             selectVariable.bind("click", function () {
                 if (variablePicker.is(":hidden")) {
                     var offLeft = $(td).offset().left - firstLeft;
@@ -10640,7 +10654,14 @@ jQuery.fn.extend({
             var that = this;
             this.element.addClass("state-compact");
             this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).click(function () {
-                that.executeCommand("AddFirstStateRequested", {});
+                if (that.options.states != null && that.options.states !== undefined && that.options.states.length !== 0) {
+                    this._stateButtons.show();
+                    this._emptyStateAddButton.hide();
+                    this._emptyStatePlaceholder.hide();
+                }
+                else {
+                    that.executeCommand("AddFirstStateRequested", {});
+                }
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
@@ -10708,9 +10729,12 @@ jQuery.fn.extend({
             button.tooltip({
                 tooltipClass: "state-tooltip",
                 content: function () {
-                    var descriptionText = (value.description === undefined || value.description == "") ? "Description text" : value.description;
                     var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
-                    var description = $("<div>" + descriptionText + "</div>").appendTo(stateTooltip);
+                    var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
+                    if (value.decription !== undefined && value.description != null && value.description != "")
+                        description.hide();
+                    else
+                        description.show();
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {

@@ -18,7 +18,13 @@
 
             this.element.addClass("state-compact");
             this._emptyStateAddButton = $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.element).click(function () {
-                that.executeCommand("AddFirstStateRequested", {});
+                if (that.options.states != null && that.options.states !== undefined && that.options.states.length !== 0) {
+                    this._stateButtons.show();
+                    this._emptyStateAddButton.hide();
+                    this._emptyStatePlaceholder.hide();
+                } else {
+                    that.executeCommand("AddFirstStateRequested", {});
+                }
             });
 
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
@@ -97,9 +103,12 @@
             button.tooltip({
                 tooltipClass: "state-tooltip",
                 content: function () {
-                    var descriptionText = (value.description === undefined || value.description == "") ? "Description text" : value.description;
                     var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
-                    var description = $("<div>" + descriptionText + "</div>").appendTo(stateTooltip);
+                    var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
+                    if (value.decription !== undefined && value.description != null && value.description != "")
+                        description.hide();
+                    else
+                        description.show();
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
