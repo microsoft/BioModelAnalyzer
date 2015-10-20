@@ -10175,11 +10175,6 @@ jQuery.fn.extend({
                 var idx = that.options.states.indexOf(that._activeState);
                 that.options.states[idx].description = this.value;
                 that._activeState.description = this.value;
-                $(document).mousedown(function (e) {
-                    if (!that._description.is(e.target) && that._description.has(e.target).length === 0) {
-                        that._description.trigger("blur");
-                    }
-                });
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
@@ -10313,11 +10308,13 @@ jQuery.fn.extend({
             var trList = $("<tr></tr>").appendTo(tbody);
             this.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
             $(document).mousedown(function (e) {
-                if (!selectVariable.is(e.target) && selectVariable.has(e.target).length === 0 && !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
-                    variablePicker.hide();
-                    expandButton.removeClass('inputs-list-header-expanded');
-                    selectVariable.removeClass("expanded");
-                    variablePicker.removeClass("expanded");
+                if (!variablePicker.is(":hidden")) {
+                    if (!selectVariable.is(e.target) && selectVariable.has(e.target).length === 0 && !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
+                        variablePicker.hide();
+                        expandButton.removeClass('inputs-list-header-expanded');
+                        selectVariable.removeClass("expanded");
+                        variablePicker.removeClass("expanded");
+                    }
                 }
             });
             selectVariable.bind("click", function () {
