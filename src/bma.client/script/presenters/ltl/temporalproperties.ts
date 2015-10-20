@@ -69,6 +69,9 @@ module BMA {
 
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
 
+                tpEditorDriver.SetCopyZoneVisibility(false);
+                tpEditorDriver.SetDeleteZoneVisibility(false);
+
                 commands.On("AddOperatorSelect",(operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });
@@ -189,6 +192,7 @@ module BMA {
                             this.contextElement.operationlayoutref.IsVisible = false;
                         }
 
+                        tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
                         this.OnOperationsChanged();
                     }
                 });
@@ -200,6 +204,7 @@ module BMA {
                         this.clipboard = {
                             operation: clonned
                         };
+                        tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
                     }
                 });
 
@@ -301,6 +306,10 @@ module BMA {
                         } else {
                             var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                             if (staginOp !== undefined) {
+                                tpEditorDriver.SetCopyZoneVisibility(true);
+                                tpEditorDriver.SetDeleteZoneVisibility(true);
+
+
                                 staginOp.AnalysisStatus = "nottested";
 
                                 that.navigationDriver.TurnNavigation(false);
@@ -466,6 +475,10 @@ module BMA {
 
                             this.stagingOperation.operation.IsVisible = false;
                             this.stagingOperation = undefined;
+
+                            tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
+                            tpEditorDriver.SetDeleteZoneVisibility(false);
+
                             this.OnOperationsChanged();
 
                         }

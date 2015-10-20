@@ -2420,6 +2420,18 @@ var BMA;
 (function (BMA) {
     var LTLOperations;
     (function (LTLOperations) {
+        var OperationSerializaer = (function () {
+            function OperationSerializaer() {
+            }
+            OperationSerializaer.prototype.Serialize = function (operation) {
+                return null;
+            };
+            OperationSerializaer.prototype.Deserialize = function (container) {
+                return null;
+            };
+            return OperationSerializaer;
+        })();
+        LTLOperations.OperationSerializaer = OperationSerializaer;
         var NameOperand = (function () {
             function NameOperand(name) {
                 this.name = name;
@@ -3978,6 +3990,12 @@ var BMA;
             };
             TemporalPropertiesEditorDriver.prototype.GetDeleteZoneBBox = function () {
                 return this.tpeditor.temporalpropertieseditor("getdeletezonebbox");
+            };
+            TemporalPropertiesEditorDriver.prototype.SetCopyZoneVisibility = function (isVisible) {
+                this.tpeditor.temporalpropertieseditor("setcopyzonevisibility", isVisible);
+            };
+            TemporalPropertiesEditorDriver.prototype.SetDeleteZoneVisibility = function (isVisible) {
+                this.tpeditor.temporalpropertieseditor("setdeletezonevisibility", isVisible);
             };
             TemporalPropertiesEditorDriver.prototype.SetStates = function (states) {
                 if (this.tpeditor !== undefined) {
@@ -11133,6 +11151,22 @@ jQuery.fn.extend({
         destroy: function () {
             this.element.empty();
         },
+        setcopyzonevisibility: function (isVisible) {
+            if (isVisible) {
+                this.copyzone.show();
+            }
+            else {
+                this.copyzone.hide();
+            }
+        },
+        setdeletezonevisibility: function (isVisible) {
+            if (isVisible) {
+                this.deletezone.show();
+            }
+            else {
+                this.deletezone.hide();
+            }
+        },
         highlightcopyzone: function (isHighlighted) {
             if (isHighlighted) {
                 this.copyzone.addClass("hovered");
@@ -11471,6 +11505,8 @@ var BMA;
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
+                tpEditorDriver.SetCopyZoneVisibility(false);
+                tpEditorDriver.SetDeleteZoneVisibility(false);
                 commands.On("AddOperatorSelect", function (operatorName) {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });
@@ -11572,6 +11608,7 @@ var BMA;
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
                             _this.contextElement.operationlayoutref.IsVisible = false;
                         }
+                        tpEditorDriver.SetCopyZoneVisibility(_this.clipboard !== undefined);
                         _this.OnOperationsChanged();
                     }
                 });
@@ -11582,6 +11619,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned
                         };
+                        tpEditorDriver.SetCopyZoneVisibility(_this.clipboard !== undefined);
                     }
                 });
                 commands.On("TemporalPropertiesEditorPaste", function (args) {
@@ -11669,6 +11707,8 @@ var BMA;
                     else {
                         var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                         if (staginOp !== undefined) {
+                            tpEditorDriver.SetCopyZoneVisibility(true);
+                            tpEditorDriver.SetDeleteZoneVisibility(true);
                             staginOp.AnalysisStatus = "nottested";
                             that.navigationDriver.TurnNavigation(false);
                             var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
@@ -11815,6 +11855,8 @@ var BMA;
                         }
                         _this.stagingOperation.operation.IsVisible = false;
                         _this.stagingOperation = undefined;
+                        tpEditorDriver.SetCopyZoneVisibility(_this.clipboard !== undefined);
+                        tpEditorDriver.SetDeleteZoneVisibility(false);
                         _this.OnOperationsChanged();
                     }
                 });

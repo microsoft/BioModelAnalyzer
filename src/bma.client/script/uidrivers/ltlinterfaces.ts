@@ -51,6 +51,8 @@ module BMA {
             GetDeleteZoneBBox(): {
                 x: number; y: number; width: number; height: number
             };
+            SetCopyZoneVisibility(isVisible: boolean);
+            SetDeleteZoneVisibility(isVisible: boolean);
         }
 
         export interface ITemporalPropertiesViewer {
