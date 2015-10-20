@@ -2420,20 +2420,9 @@ var BMA;
 (function (BMA) {
     var LTLOperations;
     (function (LTLOperations) {
-        var OperationSerializaer = (function () {
-            function OperationSerializaer() {
-            }
-            OperationSerializaer.prototype.Serialize = function (operation) {
-                return null;
-            };
-            OperationSerializaer.prototype.Deserialize = function (container) {
-                return null;
-            };
-            return OperationSerializaer;
-        })();
-        LTLOperations.OperationSerializaer = OperationSerializaer;
         var NameOperand = (function () {
             function NameOperand(name) {
+                this._type = "NameOperand";
                 this.name = name;
             }
             Object.defineProperty(NameOperand.prototype, "Name", {
@@ -2454,6 +2443,7 @@ var BMA;
         LTLOperations.NameOperand = NameOperand;
         var ConstOperand = (function () {
             function ConstOperand(value) {
+                this._type = "ConstOperand";
                 this.const = value;
             }
             Object.defineProperty(ConstOperand.prototype, "Value", {
@@ -2474,6 +2464,7 @@ var BMA;
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
             function KeyframeEquation(leftOperand, operator, rightOperand) {
+                this._type = "KeyframeEquation";
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.operator = operator;
@@ -2510,6 +2501,7 @@ var BMA;
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
             function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
+                this._type = "DoubleKeyframeEquation";
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.middleOperand = middleOperand;
@@ -2576,6 +2568,7 @@ var BMA;
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var Keyframe = (function () {
             function Keyframe(name, description, operands) {
+                this._type = "Keyframe";
                 this.name = name;
                 this.description = description;
                 this.operands = operands;
@@ -2659,6 +2652,7 @@ var BMA;
         LTLOperations.Operator = Operator;
         var Operation = (function () {
             function Operation() {
+                this._type = "Operation";
             }
             Object.defineProperty(Operation.prototype, "Operator", {
                 get: function () {
@@ -2692,6 +2686,12 @@ var BMA;
                 result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function);
                 result.Operands = operands;
                 return result;
+            };
+            Operation.prototype.GetJSON = function () {
+                return {};
+            };
+            Operation.prototype.GetTypeID = function () {
+                return "Operation";
             };
             return Operation;
         })();
@@ -11094,7 +11094,9 @@ jQuery.fn.extend({
                     { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+                    { title: "Export", cmd: "Export" },
+                    { title: "Import", cmd: "Import" }
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
@@ -11299,7 +11301,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService, fileLoaderDriver) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -11385,7 +11387,72 @@ var BMA;
                         exportService.Export(that.CreateCSV(ltlDataToExport, ","), "ltl", "csv");
                     }
                 });
+                commands.On("ExportLTLFormula", function (args) {
+                    if (args.operation !== undefined) {
+                        exportService.Export(JSON.stringify(args.operation), "operation", "txt");
+                    }
+                });
+                commands.On("ImportLTLFormula", function (args) {
+                    fileLoaderDriver.OpenFileDialog().done(function (fileName) {
+                        var fileReader = new FileReader();
+                        fileReader.onload = function () {
+                            var fileContent = fileReader.result;
+                            var obj = JSON.parse(fileContent);
+                            var operation = that.DeserializeOperation(obj);
+                            if (operation instanceof BMA.LTLOperations.Operation)
+                                that.tppresenter.AddOperation(operation, args.position);
+                        };
+                        fileReader.readAsText(fileName);
+                    });
+                });
             }
+            LTLPresenter.prototype.DeserializeOperation = function (obj) {
+                var that = this;
+                if (obj === undefined)
+                    throw "Invalid LTL Formula";
+                switch (obj._type) {
+                    case "NameOperand":
+                        return new BMA.LTLOperations.NameOperand(obj.name);
+                        break;
+                    case "ConstOperand":
+                        return new BMA.LTLOperations.ConstOperand(obj.const);
+                        break;
+                    case "KeyframeEquation":
+                        var leftOperand = that.DeserializeOperation(obj.leftOperand);
+                        var rightOperand = that.DeserializeOperation(obj.rightOperand);
+                        var operator = obj.operator;
+                        return new BMA.LTLOperations.KeyframeEquation(leftOperand, operator, rightOperand);
+                        break;
+                    case "DoubleKeyframeEquation":
+                        var leftOperand = that.DeserializeOperation(obj.leftOperand);
+                        var middleOperand = that.DeserializeOperation(obj.middleOperand);
+                        var rightOperand = that.DeserializeOperation(obj.rightOperand);
+                        var leftOperator = obj.leftOperator;
+                        var rightOperator = obj.rightOperator;
+                        return new BMA.LTLOperations.DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand);
+                        break;
+                    case "Keyframe":
+                        var operands = [];
+                        for (var i = 0; i < obj.operands.length; i++) {
+                            operands.push(that.DeserializeOperation(obj.operands[i]));
+                        }
+                        return new BMA.LTLOperations.Keyframe(obj.name, obj.description, operands);
+                        break;
+                    case "Operation":
+                        var operands = [];
+                        for (var i = 0; i < obj.operands.length; i++) {
+                            operands.push(that.DeserializeOperation(obj.operands[i]));
+                        }
+                        var op = new BMA.LTLOperations.Operation();
+                        op.Operands = operands;
+                        op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
+                        return op;
+                        break;
+                    default:
+                        break;
+                }
+                return undefined;
+            };
             LTLPresenter.prototype.CreateCSV = function (ltlDataToExport, sep) {
                 var csv = '';
                 var that = this;
@@ -11501,6 +11568,7 @@ var BMA;
                 this.navigationDriver = tpEditorDriver.GetNavigationDriver();
                 this.dragService = tpEditorDriver.GetDragService();
                 this.commands = commands;
+                this.statesPresenter = statesPresenter;
                 this.ltlcompactviewfactory = new BMA.UIDrivers.LTLResultsViewerFactory();
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
@@ -11571,12 +11639,15 @@ var BMA;
                             { name: "Copy", isVisible: true },
                             { name: "Paste", isVisible: emptyCell !== undefined },
                             { name: "Delete", isVisible: true },
+                            { name: "Export", isVisible: true },
+                            { name: "Import", isVisible: false },
                         ]);
                         contextMenu.EnableMenuItems([
                             { name: "Cut", isEnabled: emptyCell === undefined },
                             { name: "Copy", isEnabled: emptyCell === undefined },
                             { name: "Delete", isEnabled: emptyCell === undefined },
-                            { name: "Paste", isEnabled: canPaste }
+                            { name: "Paste", isEnabled: canPaste },
+                            { name: "Export", isEnabled: true },
                         ]);
                     }
                     else {
@@ -11590,10 +11661,26 @@ var BMA;
                             { name: "Copy", isVisible: false },
                             { name: "Paste", isVisible: true },
                             { name: "Delete", isVisible: false },
+                            { name: "Export", isVisible: false },
+                            { name: "Import", isVisible: true },
                         ]);
                         contextMenu.EnableMenuItems([
                             { name: "Paste", isEnabled: canPaste }
                         ]);
+                    }
+                });
+                commands.On("TemporalPropertiesEditorExport", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        var operation = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operation !== undefined ? operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormula", { operation: clonned });
+                    }
+                });
+                commands.On("TemporalPropertiesEditorImport", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        commands.Execute("ImportLTLFormula", {
+                            position: { x: _this.contextElement.x, y: _this.contextElement.y }
+                        });
                     }
                 });
                 commands.On("TemporalPropertiesEditorCut", function (args) {
@@ -11992,6 +12079,13 @@ var BMA;
                     this.UpdateControlPanels();
                 }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
+            };
+            TemporalPropertiesPresenter.prototype.AddOperation = function (operation, position) {
+                var that = this;
+                var newOp = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation, position);
+                newOp.RefreshStates(this.appModel.States);
+                this.operations.push(newOp);
+                this.OnOperationsChanged(true);
             };
             return TemporalPropertiesPresenter;
         })();
