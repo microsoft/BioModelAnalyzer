@@ -2577,6 +2577,9 @@ var BMA;
                 get: function () {
                     return this.name;
                 },
+                set: function (name) {
+                    this.name = name;
+                },
                 enumerable: true,
                 configurable: true
             });
@@ -11399,13 +11402,70 @@ var BMA;
                             var fileContent = fileReader.result;
                             var obj = JSON.parse(fileContent);
                             var operation = that.DeserializeOperation(obj);
-                            if (operation instanceof BMA.LTLOperations.Operation)
-                                that.tppresenter.AddOperation(operation, args.position);
+                            if (operation instanceof BMA.LTLOperations.Operation) {
+                                var op = operation;
+                                var merged = that.MergeStates(that.appModel.States, that.GetStates(op));
+                                that.appModel.States = merged.states;
+                                that.UpdateOperationStates(op, merged.map);
+                                that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.AddOperation(op, args.position);
+                            }
                         };
                         fileReader.readAsText(fileName);
                     });
                 });
             }
+            LTLPresenter.prototype.UpdateOperationStates = function (operation, map) {
+                var that = this;
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op instanceof BMA.LTLOperations.Keyframe) {
+                        op.Name = map[op.Name];
+                    }
+                    else if (op instanceof BMA.LTLOperations.Operation) {
+                        that.UpdateOperationStates(op, map);
+                    }
+                }
+            };
+            LTLPresenter.prototype.GetStates = function (operation) {
+                var that = this;
+                var result = [];
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op instanceof BMA.LTLOperations.Keyframe) {
+                        result.push(op);
+                    }
+                    else if (op instanceof BMA.LTLOperations.Operation) {
+                        result.push(that.GetStates(op));
+                    }
+                }
+                return result;
+            };
+            LTLPresenter.prototype.MergeStates = function (currentStates, newStates) {
+                var result = {
+                    states: [],
+                    map: {}
+                };
+                result.states = currentStates;
+                for (var i = 0; i < newStates.length; i++) {
+                    var newState = newStates[i];
+                    var exist = false;
+                    for (var j = 0; j < currentStates.length; j++) {
+                        var curState = currentStates[j];
+                        if (curState.GetFormula() === newState.GetFormula()) {
+                            exist = true;
+                            result.map[newState.Name] = curState.Name;
+                        }
+                    }
+                    if (!exist) {
+                        var addedState = newState.Clone();
+                        addedState.Name = String.fromCharCode(65 + result.states.length);
+                        result.states.push(addedState);
+                        result.map[newState.Name] = addedState.Name;
+                    }
+                }
+                return result;
+            };
             LTLPresenter.prototype.DeserializeOperation = function (obj) {
                 var that = this;
                 if (obj === undefined)
@@ -11534,6 +11594,10 @@ var BMA;
                         return keyframes[i]; //TODO: Check whether clone is needed here
                 }
                 return undefined;
+            };
+            StatesPresenter.prototype.UpdateStatesFromModel = function () {
+                this.statesEditor.SetStates(this.appModel.States);
+                this.statesViewer.SetStates(this.appModel.States);
             };
             return StatesPresenter;
         })();

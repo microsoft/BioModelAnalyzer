@@ -145,14 +145,78 @@
                             var fileContent = fileReader.result;
                             var obj = JSON.parse(fileContent);
                             var operation = that.DeserializeOperation(obj);
-                            if (operation instanceof BMA.LTLOperations.Operation)
-                                that.tppresenter.AddOperation(<BMA.LTLOperations.Operation>operation, args.position);
+
+                            if (operation instanceof BMA.LTLOperations.Operation) {
+                                var op = <BMA.LTLOperations.Operation>operation;
+                                var merged = that.MergeStates(that.appModel.States, that.GetStates(op));
+                                that.appModel.States = merged.states;
+                                that.UpdateOperationStates(op, merged.map);
+                                that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.AddOperation(op, args.position);
+                            }
 
                         };
                         fileReader.readAsText(fileName);
 
                     });
                 });
+            }
+
+            private UpdateOperationStates(operation: BMA.LTLOperations.Operation, map: any) {
+                var that = this;
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op instanceof BMA.LTLOperations.Keyframe) {
+                        (<BMA.LTLOperations.Keyframe>op).Name = map[(<BMA.LTLOperations.Keyframe>op).Name];
+                    } else if (op instanceof BMA.LTLOperations.Operation) {
+                        that.UpdateOperationStates(<BMA.LTLOperations.Operation>op, map);
+                    }
+                }
+            }
+
+            private GetStates(operation: BMA.LTLOperations.Operation): BMA.LTLOperations.Keyframe[]{
+                var that = this;
+                var result = [];
+
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op instanceof BMA.LTLOperations.Keyframe) {
+                        result.push(<BMA.LTLOperations.Keyframe>op);
+                    } else if (op instanceof BMA.LTLOperations.Operation) {
+                        result.push(that.GetStates(<BMA.LTLOperations.Operation>op));
+                    }
+                }
+
+                return result;
+            }
+
+            private MergeStates(currentStates: BMA.LTLOperations.Keyframe[], newStates: BMA.LTLOperations.Keyframe[]): { states: BMA.LTLOperations.Keyframe[]; map: any } {
+                var result = {
+                    states: [],
+                    map: {}
+                };
+
+                result.states = currentStates;
+
+                for (var i = 0; i < newStates.length; i++) {
+                    var newState = newStates[i];
+                    var exist = false;
+                    for (var j = 0; j < currentStates.length; j++) {
+                        var curState = currentStates[j];
+                        if (curState.GetFormula() === newState.GetFormula()) {
+                            exist = true;
+                            result.map[newState.Name] = curState.Name;
+                        }
+                    }
+                    if (!exist) {
+                        var addedState = newState.Clone();
+                        addedState.Name = String.fromCharCode(65 + result.states.length);
+                        result.states.push(addedState); 
+                        result.map[newState.Name] = addedState.Name;
+                    }
+                }
+
+                return result;
             }
 
             private DeserializeOperation(obj): BMA.LTLOperations.IOperand {

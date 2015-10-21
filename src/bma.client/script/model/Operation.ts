@@ -158,6 +158,10 @@
                 this.operands = operands;
             }
 
+            public set Name(name: string) {
+                this.name = name;
+            }
+
             public get Name(): string {
                 return this.name;
             }
