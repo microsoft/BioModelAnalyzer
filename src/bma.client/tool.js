@@ -4220,13 +4220,13 @@ var BMA;
                         that.commands.Execute("UpdateStatesEditorOptions", {});
                     };
                     this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated, onComboBoxOpen: onComboBoxOpen });
-                    if (this.statesToSet !== undefined) {
-                        this.statesEditor.stateseditor({ states: this.statesToSet });
-                        this.statesToSet = undefined;
-                    }
                     if (this.variablesToSet !== undefined) {
                         this.statesEditor.stateseditor({ variables: this.variablesToSet });
                         this.variablesToSet = undefined;
+                    }
+                    if (this.statesToSet !== undefined) {
+                        this.statesEditor.stateseditor({ states: this.statesToSet });
+                        this.statesToSet = undefined;
                     }
                 }
             };
@@ -4273,37 +4273,40 @@ var BMA;
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
-                        ws.formula.push({
+                        var formulaPart = [];
+                        var op = {
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : opnd.LeftOperand.Name
-                        });
+                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : { variable: opnd.LeftOperand.Name }
+                        };
+                        formulaPart.push(op);
                         if (opnd.MiddleOperand !== undefined) {
                             var leftop = opnd.LeftOperator;
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: "operator",
                                 value: leftop
                             });
                             var middle = opnd.MiddleOperand;
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : middle.Name
+                                value: middle.Name === undefined ? middle.Value : { variable: middle.Name }
                             });
                             var rightop = opnd.RightOperator;
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: "operator",
                                 value: rightop
                             });
                         }
                         else {
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: "operator",
                                 value: opnd.Operator
                             });
                         }
-                        ws.formula.push({
+                        formulaPart.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : opnd.RightOperand.Name
+                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : { variable: opnd.RightOperand.Name }
                         });
+                        ws.formula.push(formulaPart);
                     }
                     wstates.push(ws);
                 }
@@ -10425,7 +10428,8 @@ jQuery.fn.extend({
                             var divContainers = tdContainers.children().eq(0);
                             var tdVariables = trList.children().eq(1);
                             var divVariables = tdVariables.children().eq(0);
-                            divContainers.find("[data-container-id='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
+                            var cntName = this._activeState.formula[i][j].value.container === undefined ? 0 : this._activeState.formula[i][j].value.container;
+                            divContainers.find("[data-container-id='" + cntName + "']").trigger("click");
                             divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
                         }
                         else if (this._activeState.formula[i][j].type == "const") {

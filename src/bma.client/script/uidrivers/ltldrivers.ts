@@ -405,14 +405,17 @@ module BMA {
                     };
 
                     this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated, onComboBoxOpen: onComboBoxOpen });
-                    if (this.statesToSet !== undefined) {
-                        this.statesEditor.stateseditor({ states: this.statesToSet });
-                        this.statesToSet = undefined;
-                    }
+
                     if (this.variablesToSet !== undefined) {
                         this.statesEditor.stateseditor({ variables: this.variablesToSet });
                         this.variablesToSet = undefined;
                     }
+
+                    if (this.statesToSet !== undefined) {
+                        this.statesEditor.stateseditor({ states: this.statesToSet });
+                        this.statesToSet = undefined;
+                    }
+
 
                 }
             }
@@ -467,42 +470,47 @@ module BMA {
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
+                        var formulaPart = [];
 
-                        ws.formula.push({
+                        var op = {
                             type: (<any>opnd).LeftOperand.Name === undefined ? "const" : "variable",
-                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : (<any>opnd).LeftOperand.Name
-                        });
+                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : { variable: (<any>opnd).LeftOperand.Name }
+                        }
+
+                        formulaPart.push(op);
 
                         if ((<any>opnd).MiddleOperand !== undefined) {
                             var leftop = (<any>opnd).LeftOperator;
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: "operator",
                                 value: leftop
                             });
 
                             var middle = (<any>opnd).MiddleOperand;
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : middle.Name
+                                value: middle.Name === undefined ? middle.Value : { variable: middle.Name }
                             });
 
                             var rightop = (<any>opnd).RightOperator;
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: "operator",
                                 value: rightop
                             });
 
                         } else {
-                            ws.formula.push({
+                            formulaPart.push({
                                 type: "operator",
                                 value: (<any>opnd).Operator
                             });
                         }
 
-                        ws.formula.push({
+                        formulaPart.push({
                             type: (<any>opnd).RightOperand.Name === undefined ? "const" : "variable",
-                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : (<any>opnd).RightOperand.Name
+                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : { variable: (<any>opnd).RightOperand.Name }
                         });
+
+                        ws.formula.push(formulaPart);
                     }
 
                     wstates.push(ws);
