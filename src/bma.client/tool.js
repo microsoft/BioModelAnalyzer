@@ -11408,7 +11408,8 @@ var BMA;
                             var operation = that.DeserializeOperation(obj);
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = operation;
-                                var merged = that.MergeStates(that.appModel.States, that.GetStates(op));
+                                var states = that.GetStates(op);
+                                var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
                                 that.statespresenter.UpdateStatesFromModel();
@@ -11436,11 +11437,16 @@ var BMA;
                 var result = [];
                 for (var i = 0; i < operation.Operands.length; i++) {
                     var op = operation.Operands[i];
-                    if (op instanceof BMA.LTLOperations.Keyframe) {
-                        result.push(op);
-                    }
-                    else if (op instanceof BMA.LTLOperations.Operation) {
-                        result.push(that.GetStates(op));
+                    if (op !== undefined && op !== null) {
+                        if (op instanceof BMA.LTLOperations.Keyframe) {
+                            result.push(op.Clone());
+                        }
+                        else if (op instanceof BMA.LTLOperations.Operation) {
+                            var states = that.GetStates(op);
+                            for (var j = 0; j < states.length; j++) {
+                                result.push(states[j]);
+                            }
+                        }
                     }
                 }
                 return result;
@@ -11505,7 +11511,13 @@ var BMA;
                     case "Operation":
                         var operands = [];
                         for (var i = 0; i < obj.operands.length; i++) {
-                            operands.push(that.DeserializeOperation(obj.operands[i]));
+                            var operand = obj.operands[i];
+                            if (operand === undefined || operand === null) {
+                                operands.push(undefined);
+                            }
+                            else {
+                                operands.push(that.DeserializeOperation(operand));
+                            }
                         }
                         var op = new BMA.LTLOperations.Operation();
                         op.Operands = operands;
