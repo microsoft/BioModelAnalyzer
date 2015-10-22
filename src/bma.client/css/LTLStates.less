@@ -98,7 +98,8 @@
 
 .number-input {
     width: 30px;
-    font-size: 18px;
+    height: 53px;
+    font-size: 38px;
     border: none;
     text-align: center;
 }
@@ -153,7 +154,7 @@
 }
 
 .ltlresultsviewer {
-    width: 1040px;
+    width: 1050px;
     .scrollbox(470px);
 
     .steps-container {
@@ -222,6 +223,7 @@
         display:inline-block;
         float:left;
         max-height: 322px;
+        min-width: 510px;
         max-width: 600px;
         overflow: auto;
 
@@ -248,10 +250,9 @@
         }
 
         .big-simulation-popout-table {
-            float:left;
             display: inline-block;
+            float:left;
             vertical-align: top;
-            position: relative;
             max-width: 300px;
 
             .bma-simulation-data-table {
@@ -342,6 +343,11 @@
                 &.LTL-line-new {
                     height: 47px;
                 }
+
+                img {
+                    height:38px;
+                    width:38px;
+                }
             }
         }
     }
@@ -360,7 +366,7 @@
         font-size: 11px;
         background-color: white;
         border-collapse: collapse;
-
+        
         img {
             width: 20px;
             height: 20px;
@@ -368,10 +374,12 @@
 
         tr {
             vertical-align: top;
+            max-height:85px;
 
             td {
                 min-width: 50px;
                 border: none;
+                max-height: 85px;
                 text-align: left;
                 padding: 2px 0 0 2px;
 
@@ -381,7 +389,7 @@
 
                 .scrollable {
                     width: 50px;
-                    height: 85px;
+                    max-height: 85px;
                     overflow-y: auto;
                     overflow-x: hidden;
                     padding: 0 2px 0 0;
@@ -424,6 +432,12 @@
                 }
             }
         }
+
+        
+        td.list {
+            max-height:85px;
+        }
+
     }
 }
 

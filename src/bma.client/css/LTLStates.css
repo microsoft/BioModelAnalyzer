@@ -3328,7 +3328,8 @@ ui-icon-arrowthickstop-1-n {
 }
 .number-input {
   width: 30px;
-  font-size: 18px;
+  height: 53px;
+  font-size: 38px;
   border: none;
   text-align: center;
 }
@@ -3375,7 +3376,7 @@ ui-icon-arrowthickstop-1-n {
   border-top-right-radius: 5px;
 }
 .ltlresultsviewer {
-  width: 1040px;
+  width: 1050px;
   max-height: 470px;
   overflow-x: auto;
   overflow-y: auto;
@@ -3501,6 +3502,7 @@ ui-icon-arrowthickstop-1-n {
   display: inline-block;
   float: left;
   max-height: 322px;
+  min-width: 510px;
   max-width: 600px;
   overflow: auto;
 }
@@ -3521,10 +3523,9 @@ ui-icon-arrowthickstop-1-n {
   width: 50px;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table {
-  float: left;
   display: inline-block;
+  float: left;
   vertical-align: top;
-  position: relative;
   max-width: 300px;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table {
@@ -3597,6 +3598,10 @@ ui-icon-arrowthickstop-1-n {
 .LTL-states table tr td.LTL-line-new {
   height: 47px;
 }
+.LTL-states table tr td img {
+  height: 38px;
+  width: 38px;
+}
 .variable-picker {
   position: absolute;
   z-index: 10;
@@ -3616,10 +3621,12 @@ ui-icon-arrowthickstop-1-n {
 }
 .variable-picker table tr {
   vertical-align: top;
+  max-height: 85px;
 }
 .variable-picker table tr td {
   min-width: 50px;
   border: none;
+  max-height: 85px;
   text-align: left;
   padding: 2px 0 0 2px;
 }
@@ -3628,7 +3635,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .variable-picker table tr td .scrollable {
   width: 50px;
-  height: 85px;
+  max-height: 85px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 2px 0 0;
@@ -3662,6 +3669,9 @@ ui-icon-arrowthickstop-1-n {
   padding: 5px;
   border-radius: 5px;
   background-color: #aaaaaa;
+}
+.variable-picker table td.list {
+  max-height: 85px;
 }
 .state-description {
   margin: 0;

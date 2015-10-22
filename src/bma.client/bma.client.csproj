@@ -141,6 +141,9 @@
     <Content Include="css\idd.css" />
     <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
+    <Content Include="css\LTLStates.min.css">
+      <DependentUpon>LTLStates.css</DependentUpon>
+    </Content>
     <Content Include="css\LTL_less.css">
       <DependentUpon>LTL_less.less</DependentUpon>
     </Content>
@@ -149,9 +152,6 @@
     </Content>
     <Content Include="css\LTLStates.css">
       <DependentUpon>LTLStates.less</DependentUpon>
-    </Content>
-    <Content Include="css\LTLStates.min.css">
-      <DependentUpon>LTLStates.css</DependentUpon>
     </Content>
     <Content Include="css\StyleSheet.css">
       <DependentUpon>StyleSheet.less</DependentUpon>

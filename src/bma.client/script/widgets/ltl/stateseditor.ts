@@ -206,7 +206,7 @@
 
             var trList = $("<tr></tr>").appendTo(tbody);
 
-            this.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
+            var trDivs = this.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
 
             $(document).mousedown(function (e) {
                 if (!variablePicker.is(":hidden")) {
@@ -229,7 +229,7 @@
                     firstTop = $(td).offset().top;
 
                     that.executeonComboBoxOpen();
-                    that.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
+                    trDivs = that.updateVariablePicker(trList, variablePicker, variableSelected, selectVariable, currSymbol);
                     variablePicker.show();
                     expandButton.addClass('inputs-list-header-expanded');
                     selectVariable.addClass("expanded");
@@ -242,7 +242,7 @@
                 }
             });
 
-            return trList;
+            return trDivs;
         },
 
         updateVariablePicker: function (trList, variablePicker, variableSelected, selectVariable, currSymbol) {
@@ -293,6 +293,8 @@
             }
             if (currSymbol.value == 0)
                 divContainers.children().eq(0).trigger("click");
+
+            return { containers: divContainers, variables: divVariables };
         },
 
         refresh: function () {
@@ -314,15 +316,15 @@
                         if (this._activeState.formula[i][j].type == "variable") {
 
                             var currSymbol = this._activeState.formula[i][j];
-                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name)
-                                .attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
+                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).attr("width", "30px")
+                                .attr("height", "30px").attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
 
                             var trList = this.createNewSelect(condition.children().eq(j), currSymbol);
-                            var td = condition.children().eq(j);
-                            var tdContainers = trList.children().eq(0);
-                            var divContainers = tdContainers.children().eq(0);
-                            var tdVariables = trList.children().eq(1);
-                            var divVariables = tdVariables.children().eq(0);
+                            //var td = condition.children().eq(j);
+                            //var tdContainers = trList.children().eq(0);
+                            var divContainers = trList.containers;//tdContainers.children().eq(0);
+                            //var tdVariables = trList.children().eq(1);
+                            var divVariables = trList.variables;//tdVariables.children().eq(0);
 
                             var cntName = this._activeState.formula[i][j].value.container === undefined ? 0 : this._activeState.formula[i][j].value.container;
                             divContainers.find("[data-container-id='" + cntName + "']").trigger("click");
@@ -465,7 +467,8 @@
 
                             switch (ui.draggable[0].name) {
                                 case "var": {
-                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type"))
+                                        .attr("width", "30px").attr("height", "30px").appendTo(this);
 
                                     that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "variable",
