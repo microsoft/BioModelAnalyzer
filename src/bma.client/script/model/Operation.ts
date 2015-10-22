@@ -1,21 +1,6 @@
 ﻿module BMA {
     export module LTLOperations {
 
-        export class OperationSerializaer {
-            constructor() {
-            }
-
-            public Serialize(operation: Operation):string {
-                return null;
-            }
-
-            public Deserialize(container: string): Operation {
-                return null;
-
-            }
-        }
-
-
         export interface IGetFormula {
             (op: IOperand[]): string;
         }
@@ -26,6 +11,7 @@
         }
 
         export class NameOperand implements IOperand {
+            private _type = "NameOperand";
             private name: string;
 
             constructor(name: string) {
@@ -46,6 +32,7 @@
         }
 
         export class ConstOperand implements IOperand {
+            private _type = "ConstOperand";
             private const: number;
 
             constructor(value: number) {
@@ -66,6 +53,7 @@
         }
 
         export class KeyframeEquation implements IOperand {
+            private _type = "KeyframeEquation";
             private leftOperand: NameOperand | ConstOperand;
             private rightOperand: NameOperand | ConstOperand;
             private operator: string;
@@ -98,6 +86,7 @@
         }
 
         export class DoubleKeyframeEquation implements IOperand {
+            private _type = "DoubleKeyframeEquation";
             private leftOperand: NameOperand | ConstOperand
             private middleOperand: NameOperand | ConstOperand
             private rightOperand: NameOperand | ConstOperand
@@ -158,6 +147,7 @@
         }
 
         export class Keyframe implements IOperand {
+            private _type = "Keyframe";
             private name: string;
             private description: string;
             private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
@@ -166,6 +156,10 @@
                 this.name = name;
                 this.description = description;
                 this.operands = operands;
+            }
+
+            public set Name(name: string) {
+                this.name = name;
             }
 
             public get Name(): string {
@@ -235,6 +229,7 @@
 
 
         export class Operation implements IOperand {
+            private _type = "Operation";
             private operator: Operator;
             private operands: IOperand[];
 
@@ -271,7 +266,13 @@
                 return result;
             }
 
+            public GetJSON() {
+                return {};
+            }
 
+            public GetTypeID() {
+                return "Operation";
+            }
         }
     }
 }  

@@ -3158,6 +3158,12 @@ textarea:focus {
   width: 15px;
   height: 15px;
 }
+ui-icon-arrowthickstop-1-s {
+  background-image: url('../images/open.svg') !important;
+}
+ui-icon-arrowthickstop-1-n {
+  background-image: url('../images/save.svg') !important;
+}
 .pill {
   font-family: 'Segoe-UI';
   font-size: 13px;

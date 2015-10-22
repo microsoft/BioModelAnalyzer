@@ -46,6 +46,8 @@ module BMA {
             private ltlcompactviewfactory: BMA.UIDrivers.ILTLResultsViewerFactory;
             private isUpdateControlRequested = false;
 
+            private statesPresenter: BMA.LTL.StatesPresenter;
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -61,7 +63,7 @@ module BMA {
                 this.navigationDriver = tpEditorDriver.GetNavigationDriver();
                 this.dragService = tpEditorDriver.GetDragService();
                 this.commands = commands;
-
+                this.statesPresenter = statesPresenter;
                 this.ltlcompactviewfactory = new BMA.UIDrivers.LTLResultsViewerFactory();
 
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
@@ -147,13 +149,17 @@ module BMA {
                             { name: "Copy", isVisible: true },
                             { name: "Paste", isVisible: emptyCell !== undefined },
                             { name: "Delete", isVisible: true },
+                            { name: "Export", isVisible: true },
+                            { name: "Import", isVisible: false },
                         ]);
 
                         contextMenu.EnableMenuItems([
                             { name: "Cut", isEnabled: emptyCell === undefined },
                             { name: "Copy", isEnabled: emptyCell === undefined },
                             { name: "Delete", isEnabled: emptyCell === undefined },
-                            { name: "Paste", isEnabled: canPaste }
+                            { name: "Paste", isEnabled: canPaste },
+                            { name: "Export", isEnabled: true },
+                            
                         ]);
 
                     } else {
@@ -169,11 +175,29 @@ module BMA {
                             { name: "Copy", isVisible: false },
                             { name: "Paste", isVisible: true },
                             { name: "Delete", isVisible: false },
+                            { name: "Export", isVisible: false },
+                            { name: "Import", isVisible: true },
                         ]);
 
                         contextMenu.EnableMenuItems([
                             { name: "Paste", isEnabled: canPaste }
                         ]);
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorExport",(args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        var operation = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operation !== undefined ? operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormula", { operation: clonned });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorImport",(args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        commands.Execute("ImportLTLFormula", {
+                            position: { x: this.contextElement.x, y: this.contextElement.y }
+                        });
                     }
                 });
 
@@ -661,6 +685,14 @@ module BMA {
                 }
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
+            }
+
+            public AddOperation(operation: BMA.LTLOperations.Operation, position: { x: number; y: number }) {
+                var that = this;
+                var newOp = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation, position);
+                newOp.RefreshStates(this.appModel.States);
+                this.operations.push(newOp);
+                this.OnOperationsChanged(true);
             }
         }
     }

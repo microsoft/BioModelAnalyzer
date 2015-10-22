@@ -19,7 +19,8 @@
                 ltlresultsviewer: BMA.UIDrivers.ILTLResultsViewer,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup,
-                exportService: BMA.UIDrivers.IExportService
+                exportService: BMA.UIDrivers.IExportService,
+                fileLoaderDriver: BMA.UIDrivers.IFileLoader
                 ) {
 
                 var that = this;
@@ -110,12 +111,12 @@
                     popupViewer.Hide();
                 });
 
-                commands.On("TemporalPropertiesOperationsChanged", function (args) {
+                commands.On("TemporalPropertiesOperationsChanged",(args) => {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
 
                 var ltlDataToExport = undefined;
-                commands.On("ShowLTLResults", function (args) {
+                commands.On("ShowLTLResults",(args) => {
                     ltlDataToExport = {
                         ticks: args.ticks,
                         model: appModel.BioModel.Clone(),
@@ -130,8 +131,154 @@
                         exportService.Export(that.CreateCSV(ltlDataToExport, ","), "ltl", "csv");
                     }
                 });
+
+                commands.On("ExportLTLFormula",(args) => {
+                    if (args.operation !== undefined) {
+                        exportService.Export(JSON.stringify(args.operation), "operation", "txt");
+                    }
+                });
+
+                commands.On("ImportLTLFormula",(args) => {
+                    fileLoaderDriver.OpenFileDialog().done(function (fileName) {
+                        var fileReader: any = new FileReader();
+                        fileReader.onload = function () {
+                            var fileContent = fileReader.result;
+                            var obj = JSON.parse(fileContent);
+                            var operation = that.DeserializeOperation(obj);
+
+                            if (operation instanceof BMA.LTLOperations.Operation) {
+                                var op = <BMA.LTLOperations.Operation>operation;
+                                var states = that.GetStates(op);
+                                var merged = that.MergeStates(that.appModel.States, states);
+                                that.appModel.States = merged.states;
+                                that.UpdateOperationStates(op, merged.map);
+                                that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.AddOperation(op, args.position);
+                            }
+
+                        };
+                        fileReader.readAsText(fileName);
+
+                    });
+                });
             }
 
+            private UpdateOperationStates(operation: BMA.LTLOperations.Operation, map: any) {
+                var that = this;
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op instanceof BMA.LTLOperations.Keyframe) {
+                        (<BMA.LTLOperations.Keyframe>op).Name = map[(<BMA.LTLOperations.Keyframe>op).Name];
+                    } else if (op instanceof BMA.LTLOperations.Operation) {
+                        that.UpdateOperationStates(<BMA.LTLOperations.Operation>op, map);
+                    }
+                }
+            }
+
+            private GetStates(operation: BMA.LTLOperations.Operation): BMA.LTLOperations.Keyframe[]{
+                var that = this;
+                var result = [];
+
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op !== undefined && op !== null) {
+                        if (op instanceof BMA.LTLOperations.Keyframe) {
+                            result.push(<BMA.LTLOperations.Keyframe>op.Clone());
+                        } else if (op instanceof BMA.LTLOperations.Operation) {
+                            var states = that.GetStates(<BMA.LTLOperations.Operation>op);
+                            for (var j = 0; j < states.length; j++) {
+                                result.push(states[j]);
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+            private MergeStates(currentStates: BMA.LTLOperations.Keyframe[], newStates: BMA.LTLOperations.Keyframe[]): { states: BMA.LTLOperations.Keyframe[]; map: any } {
+                var result = {
+                    states: [],
+                    map: {}
+                };
+
+                result.states = currentStates;
+
+                for (var i = 0; i < newStates.length; i++) {
+                    var newState = newStates[i];
+                    var exist = false;
+                    for (var j = 0; j < currentStates.length; j++) {
+                        var curState = currentStates[j];
+                        if (curState.GetFormula() === newState.GetFormula()) {
+                            exist = true;
+                            result.map[newState.Name] = curState.Name;
+                        }
+                    }
+                    if (!exist) {
+                        var addedState = newState.Clone();
+                        addedState.Name = String.fromCharCode(65 + result.states.length);
+                        result.states.push(addedState); 
+                        result.map[newState.Name] = addedState.Name;
+                    }
+                }
+
+                return result;
+            }
+
+            private DeserializeOperation(obj): BMA.LTLOperations.IOperand {
+                var that = this;
+                if (obj === undefined)
+                    throw "Invalid LTL Formula";
+
+                switch (obj._type) {
+                    case "NameOperand":
+                        return new BMA.LTLOperations.NameOperand(obj.name);
+                        break;
+                    case "ConstOperand":
+                        return new BMA.LTLOperations.ConstOperand(obj.const);
+                        break;
+                    case "KeyframeEquation":
+                        var leftOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>that.DeserializeOperation(obj.leftOperand);
+                        var rightOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>that.DeserializeOperation(obj.rightOperand);
+                        var operator = <string>obj.operator;
+                        return new BMA.LTLOperations.KeyframeEquation(leftOperand, operator, rightOperand);
+                        break;
+                    case "DoubleKeyframeEquation":
+                        var leftOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>that.DeserializeOperation(obj.leftOperand);
+                        var middleOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>that.DeserializeOperation(obj.middleOperand);
+                        var rightOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>that.DeserializeOperation(obj.rightOperand);
+                        var leftOperator = <string>obj.leftOperator;
+                        var rightOperator = <string>obj.rightOperator;
+                        return new BMA.LTLOperations.DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand);
+                        break;
+                    case "Keyframe":
+                        var operands = [];
+                        for (var i = 0; i < obj.operands.length; i++) {
+                            operands.push(that.DeserializeOperation(obj.operands[i]));
+                        }
+                        return new BMA.LTLOperations.Keyframe(obj.name, obj.description, operands);
+                        break;
+                    case "Operation":
+                        var operands = [];
+                        for (var i = 0; i < obj.operands.length; i++) {
+                            var operand = obj.operands[i];
+                            if (operand === undefined || operand === null) {
+                                operands.push(undefined);
+                            } else {
+                                operands.push(that.DeserializeOperation(operand));
+                            }
+                        }
+                        var op = new BMA.LTLOperations.Operation();
+                        op.Operands = operands;
+                        op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
+                        return op;
+                        break;
+                    default:
+                        break;
+                }
+
+                return undefined;
+            }
 
             public CreateCSV(ltlDataToExport, sep): string {
                 var csv = '';

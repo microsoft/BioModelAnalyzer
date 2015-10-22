@@ -151,7 +151,10 @@
                     { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" }
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+                    { title: "Export", cmd: "Export" },
+                    { title: "Import", cmd: "Import" }
+
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);

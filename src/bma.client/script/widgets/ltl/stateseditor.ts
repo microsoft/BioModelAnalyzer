@@ -324,7 +324,8 @@
                             var tdVariables = trList.children().eq(1);
                             var divVariables = tdVariables.children().eq(0);
 
-                            divContainers.find("[data-container-id='" + this._activeState.formula[i][j].value.container + "']").trigger("click");
+                            var cntName = this._activeState.formula[i][j].value.container === undefined ? 0 : this._activeState.formula[i][j].value.container;
+                            divContainers.find("[data-container-id='" + cntName + "']").trigger("click");
                             divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
 
                         } else if (this._activeState.formula[i][j].type == "const") {

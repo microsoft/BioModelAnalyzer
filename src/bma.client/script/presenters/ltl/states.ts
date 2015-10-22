@@ -47,6 +47,12 @@
 
                 return undefined;
             }
+
+            public UpdateStatesFromModel() {
+                this.statesEditor.SetStates(this.appModel.States);
+                this.statesViewer.SetStates(this.appModel.States);
+            }
+
         }
     }
 } 
