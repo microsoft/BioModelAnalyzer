@@ -1,6 +1,20 @@
 ﻿module BMA {
     export module LTLOperations {
 
+        export class OperationSerializaer {
+            constructor() {
+            }
+
+            public Serialize(operation: Operation):string {
+                return null;
+            }
+
+            public Deserialize(container: string): Operation {
+                return null;
+
+            }
+        }
+
 
         export interface IGetFormula {
             (op: IOperand[]): string;
@@ -256,6 +270,8 @@
 
                 return result;
             }
+
+
         }
     }
 }  

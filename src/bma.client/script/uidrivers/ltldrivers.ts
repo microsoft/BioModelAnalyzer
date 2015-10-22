@@ -146,6 +146,14 @@ module BMA {
                 return this.tpeditor.temporalpropertieseditor("getdeletezonebbox");
             }
 
+            SetCopyZoneVisibility(isVisible: boolean) {
+                this.tpeditor.temporalpropertieseditor("setcopyzonevisibility", isVisible);
+            }
+
+            SetDeleteZoneVisibility(isVisible: boolean) {
+                this.tpeditor.temporalpropertieseditor("setdeletezonevisibility", isVisible);
+            }
+
             SetStates(states: BMA.LTLOperations.Keyframe[]) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ states: states });

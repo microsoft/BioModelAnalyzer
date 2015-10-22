@@ -214,6 +214,23 @@
             this.element.empty();
         },
 
+        setcopyzonevisibility: function (isVisible) {
+            if (isVisible) {
+                this.copyzone.show();
+            } else {
+                this.copyzone.hide();
+            }
+        },
+
+        setdeletezonevisibility: function (isVisible) {
+            if (isVisible) {
+                this.deletezone.show();
+            } else {
+                this.deletezone.hide();
+            }
+        },
+
+
         highlightcopyzone: function (isHighlighted) {
             if (isHighlighted) {
                 this.copyzone.addClass("hovered");
