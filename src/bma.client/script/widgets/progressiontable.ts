@@ -7,6 +7,7 @@
             interval: undefined, // table with interval of values
             data: undefined, // table with data
             header: "Initial Value",
+            tags: undefined,
             init: undefined,
             canEditInitialValue: true,
         },
@@ -139,6 +140,13 @@
                     var table = $('<table></table>')
                         .addClass("progression-table")
                         .appendTo(that.data);
+
+                    if (that.options.tags !== undefined) {
+                        var tr0 = $('<tr></tr>').addClass("table-tags").appendTo(table);
+                        for (var i = 0; i < that.options.tags.length; i++) 
+                            var td0 = $('<td></td>').text(that.options.tags[i]).appendTo(tr0);
+                    }
+
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
                         var td = $('<td></td>').text(data[i]).appendTo(tr);
@@ -146,6 +154,8 @@
                     }
                 }
                 else {
+                    if (that.options.tags !== undefined)
+                        trs = trs.slice(1);
                     trs.each(function (ind) {
                         var td = $('<td></td>').text(data[ind]).appendTo($(this));
                         //$('<span></span>').text(data[ind]).appendTo(td);

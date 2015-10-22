@@ -3528,6 +3528,9 @@ ui-icon-arrowthickstop-1-n {
   vertical-align: top;
   max-width: 300px;
 }
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .progression-table {
+  margin-top: 0;
+}
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table {
   max-width: calc(100% - 90px);
   overflow-x: auto;

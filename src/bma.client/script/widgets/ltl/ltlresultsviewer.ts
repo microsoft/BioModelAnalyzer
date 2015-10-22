@@ -134,9 +134,13 @@
 
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
                     && this.options.data !== undefined && this.options.data.length !== 0) {
+                    var tags = [];
+                    for (var i = 0; i < that.options.data.length; i++)
+                        tags.push("" + i + "");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
+                        tags: tags,
                         canEditInitialValue: false,
                         init: that.options.init
                     });

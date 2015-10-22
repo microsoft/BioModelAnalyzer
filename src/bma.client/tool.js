@@ -8161,6 +8161,7 @@ var BMA;
             interval: undefined,
             data: undefined,
             header: "Initial Value",
+            tags: undefined,
             init: undefined,
             canEditInitialValue: true,
         },
@@ -8271,12 +8272,19 @@ var BMA;
                 if (trs.length === 0) {
                     that.repeat = undefined;
                     var table = $('<table></table>').addClass("progression-table").appendTo(that.data);
+                    if (that.options.tags !== undefined) {
+                        var tr0 = $('<tr></tr>').addClass("table-tags").appendTo(table);
+                        for (var i = 0; i < that.options.tags.length; i++)
+                            var td0 = $('<td></td>').text(that.options.tags[i]).appendTo(tr0);
+                    }
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
                         var td = $('<td></td>').text(data[i]).appendTo(tr);
                     }
                 }
                 else {
+                    if (that.options.tags !== undefined)
+                        trs = trs.slice(1);
                     trs.each(function (ind) {
                         var td = $('<td></td>').text(data[ind]).appendTo($(this));
                         //$('<span></span>').text(data[ind]).appendTo(td);
@@ -10100,9 +10108,13 @@ jQuery.fn.extend({
                     numericData: that.options.variables,
                 });
                 if (this.options.interval !== undefined && this.options.interval.length !== 0 && this.options.data !== undefined && this.options.data.length !== 0) {
+                    var tags = [];
+                    for (var i = 0; i < that.options.data.length; i++)
+                        tags.push("" + i + "");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
+                        tags: tags,
                         canEditInitialValue: false,
                         init: that.options.init
                     });
