@@ -133,22 +133,23 @@
                 });
 
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
-                    && this.options.data !== undefined && this.options.data.length !== 0) {
-                    var tags = [];
-                    tags.push([]);
-                    tags[0].push("A");
-                    tags[0].push("B");
-                    for (var i = 1; i < that.options.data.length / 3; i++) {
-                        tags.push("A");
-                    }
-                    for (var i = that.options.data.length / 3; i < that.options.data.length *2/3; i++)
-                        tags.push("B");
-                    for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
-                        tags.push("A");
+                    && this.options.data !== undefined && this.options.data.length !== 0
+                    && this.options.tags !== undefined && this.options.tags.length !== 0) {
+                    //var tags = [];
+                    //tags.push([]);
+                    //tags[0].push("A");
+                    //tags[0].push("B");
+                    //for (var i = 1; i < that.options.data.length / 3; i++) {
+                    //    tags.push("A");
+                    //}
+                    //for (var i = that.options.data.length / 3; i < that.options.data.length *2/3; i++)
+                    //    tags.push("B");
+                    //for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
+                    //    tags.push("A");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
-                        tags: tags,
+                        tags: that.options.tags,
                         canEditInitialValue: false,
                         init: that.options.init
                     });

@@ -4422,6 +4422,14 @@ var BMA;
                 switch (operator) {
                     case "<":
                         return value1 < value2;
+                    case "<=":
+                        return value1 <= value2;
+                    case ">":
+                        return value1 > value2;
+                    case ">=":
+                        return value1 >= value2;
+                    case "=":
+                        return value1 == value2;
                     default:
                         throw "Unknown operator";
                 }
@@ -4437,6 +4445,7 @@ var BMA;
                 var pData = [];
                 var ranges = [];
                 var variables = [];
+                var tags = [];
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
                     ranges.push({
@@ -4451,8 +4460,10 @@ var BMA;
                 });
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
-                    if (i != 0)
+                    if (i != 0) {
                         data.push([]);
+                        tags.push([]);
+                    }
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
@@ -4467,10 +4478,62 @@ var BMA;
                         }
                     }
                 }
+                for (var i = 0; i < states.length; i++) {
+                    var state = states[i];
+                    for (var k = 0; k < data.length; k++) {
+                        //var curValue = data[k][i];
+                        var result = true;
+                        for (var j = 0; j < state.Operands.length; j++) {
+                            var op = state.Operands[i];
+                            if (op instanceof BMA.LTLOperations.KeyframeEquation) {
+                                if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
+                                    var varName = op.LeftOperand.Name;
+                                    var ind;
+                                    for (var n = 0; n < vars.length; n++)
+                                        if (vars[i].Name == varName) {
+                                            ind = n;
+                                            break;
+                                        }
+                                    var curValue = data[k][ind];
+                                    var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? op.RightOperand.Value : undefined;
+                                    result = result && this.Compare(curValue, rightOp, op.Operator);
+                                }
+                                else {
+                                    var varName = op.RightOperand.Name;
+                                    var ind;
+                                    for (var n = 0; n < vars.length; n++)
+                                        if (vars[i].Name == varName) {
+                                            ind = n;
+                                            break;
+                                        }
+                                    var curValue = data[k][ind];
+                                    var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? op.LeftOperand.Value : undefined;
+                                    result = result && this.Compare(leftOp, curValue, op.Operator);
+                                }
+                            }
+                            else if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                                var varName = op.MiddleOperand.Name;
+                                var ind;
+                                for (var n = 0; n < vars.length; n++)
+                                    if (vars[i].Name == varName) {
+                                        ind = n;
+                                        break;
+                                    }
+                                var curValue = data[k][ind];
+                                var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? op.RightOperand.Value : undefined;
+                                var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? op.LeftOperand.Value : undefined;
+                                result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
+                            }
+                        }
+                        if (state.Operands.length !== 0 && result)
+                            tags[k].push(state.Name);
+                    }
+                }
                 var interval = this.CreateInterval(vars);
                 var options = {
                     id: id,
                     interval: interval,
+                    tags: tags,
                     data: data,
                     init: init,
                     variables: variables,
@@ -10130,22 +10193,22 @@ jQuery.fn.extend({
                     type: "graph-max",
                     numericData: that.options.variables,
                 });
-                if (this.options.interval !== undefined && this.options.interval.length !== 0 && this.options.data !== undefined && this.options.data.length !== 0) {
-                    var tags = [];
-                    tags.push([]);
-                    tags[0].push("A");
-                    tags[0].push("B");
-                    for (var i = 1; i < that.options.data.length / 3; i++) {
-                        tags.push("A");
-                    }
-                    for (var i = that.options.data.length / 3; i < that.options.data.length * 2 / 3; i++)
-                        tags.push("B");
-                    for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
-                        tags.push("A");
+                if (this.options.interval !== undefined && this.options.interval.length !== 0 && this.options.data !== undefined && this.options.data.length !== 0 && this.options.tags !== undefined && this.options.tags.length !== 0) {
+                    //var tags = [];
+                    //tags.push([]);
+                    //tags[0].push("A");
+                    //tags[0].push("B");
+                    //for (var i = 1; i < that.options.data.length / 3; i++) {
+                    //    tags.push("A");
+                    //}
+                    //for (var i = that.options.data.length / 3; i < that.options.data.length *2/3; i++)
+                    //    tags.push("B");
+                    //for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
+                    //    tags.push("A");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
-                        tags: tags,
+                        tags: that.options.tags,
                         canEditInitialValue: false,
                         init: that.options.init
                     });

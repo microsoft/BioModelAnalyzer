@@ -648,6 +648,14 @@ module BMA {
                 switch (operator) {
                     case "<":
                         return value1 < value2;
+                    case "<=":
+                        return value1 <= value2;
+                    case ">":
+                        return value1 > value2;
+                    case ">=":
+                        return value1 >= value2;
+                    case "=":
+                        return value1 == value2;
                     default:
                         throw "Unknown operator";
                 }
@@ -666,6 +674,7 @@ module BMA {
                 var pData = [];
                 var ranges = [];
                 var variables = [];
+                var tags = [];
 
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
@@ -684,8 +693,10 @@ module BMA {
 
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
-                    if (i != 0)
+                    if (i != 0) {
                         data.push([]);
+                        tags.push([]);
+                    }
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
@@ -701,11 +712,67 @@ module BMA {
                     }
                 }
 
+                for (var i = 0; i < states.length; i++) {
+                    var state = states[i];
+                    for (var k = 0; k < data.length; k++) {
+                        //var curValue = data[k][i];
+                        var result = true;
+                        for (var j = 0; j < state.Operands.length; j++) {
+                            var op = state.Operands[i];
+                            if (op instanceof BMA.LTLOperations.KeyframeEquation) {
+                                
+                                if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
+                                    var varName = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Name;
+                                    var ind;
+                                    for (var n = 0; n < vars.length; n++)
+                                        if (vars[i].Name == varName) {
+                                            ind = n;
+                                            break;
+                                        }
+                                    var curValue = data[k][ind];
+                                    var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
+                                        undefined;
+                                    result = result && this.Compare(curValue, rightOp, op.Operator);
+                                } else {
+                                    var varName = (<BMA.LTLOperations.NameOperand>op.RightOperand).Name;
+                                    var ind;
+                                    for (var n = 0; n < vars.length; n++)
+                                        if (vars[i].Name == varName) {
+                                            ind = n;
+                                            break;
+                                        }
+                                    var curValue = data[k][ind];
+                                    var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.LeftOperand).Value :
+                                        undefined;
+                                    result = result && this.Compare(leftOp, curValue, op.Operator);
+                                }
+                            } else if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                                var varName = (<BMA.LTLOperations.NameOperand>op.MiddleOperand).Name;
+                                var ind;
+                                for (var n = 0; n < vars.length; n++)
+                                    if (vars[i].Name == varName) {
+                                        ind = n;
+                                        break;
+                                    }
+                                var curValue = data[k][ind];
+                                var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
+                                    undefined;
+                                var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.LeftOperand).Value :
+                                    undefined;
+                                result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
+                            }
+                        }
+                        if (state.Operands.length !== 0 && result)
+                            tags[k].push(state.Name);
+                    }
+                }
+
                 var interval = this.CreateInterval(vars);
 
                 var options = {
                     id: id,
                     interval: interval,
+                    tags: tags,
                     data: data,
                     init: init,
                     variables: variables,
