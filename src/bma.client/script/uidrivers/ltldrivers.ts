@@ -644,7 +644,16 @@ module BMA {
                 this.popupWindow.hide();
             }
 
-            public SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any) {
+            private Compare(value1: number, value2: number, operator: string): boolean {
+                switch (operator) {
+                    case "<":
+                        return value1 < value2;
+                    default:
+                        throw "Unknown operator";
+                }
+            }
+
+            public SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any, states: BMA.LTLOperations.Keyframe[]) {
                 var that = this;
 
                 var vars = model.Variables.sort((x, y) => {

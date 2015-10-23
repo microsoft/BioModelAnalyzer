@@ -122,7 +122,7 @@
                         model: appModel.BioModel.Clone(),
                         layout: appModel.Layout.Clone()
                     };
-                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
+                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks, appModel.States);
                     ltlresultsviewer.Show();
                 });
 

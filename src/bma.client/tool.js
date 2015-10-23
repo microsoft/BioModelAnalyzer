@@ -4418,7 +4418,15 @@ var BMA;
             LTLResultsViewer.prototype.Hide = function () {
                 this.popupWindow.hide();
             };
-            LTLResultsViewer.prototype.SetData = function (model, layout, ticks) {
+            LTLResultsViewer.prototype.Compare = function (value1, value2, operator) {
+                switch (operator) {
+                    case "<":
+                        return value1 < value2;
+                    default:
+                        throw "Unknown operator";
+                }
+            };
+            LTLResultsViewer.prototype.SetData = function (model, layout, ticks, states) {
                 var that = this;
                 var vars = model.Variables.sort(function (x, y) {
                     return x.Id < y.Id ? -1 : 1;
@@ -11419,7 +11427,7 @@ var BMA;
                         model: appModel.BioModel.Clone(),
                         layout: appModel.Layout.Clone()
                     };
-                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks);
+                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks, appModel.States);
                     ltlresultsviewer.Show();
                 });
                 ltlresultsviewer.SetOnExportCSV(function () {
