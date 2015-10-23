@@ -143,8 +143,22 @@
 
                     if (that.options.tags !== undefined) {
                         var tr0 = $('<tr></tr>').addClass("table-tags").appendTo(table);
-                        for (var i = 0; i < that.options.tags.length; i++) 
-                            var td0 = $('<td></td>').text(that.options.tags[i]).appendTo(tr0);
+                        var count = (that.options.tags.length > 0) ? 1 : 0;
+                        var prevState = undefined;//that.options.tags[0];
+                        var prevTd;// = $('<td></td>').text(prevState).appendTo(tr0);
+                        for (var i = 0; i < that.options.tags.length; i++) {
+                            if (prevState !== that.options.tags[i]) {
+                                if (count > 1)
+                                    $(prevTd).attr("colspan", count);
+                                prevState = that.options.tags[i];
+                                prevTd = $('<td></td>').text(prevState).appendTo(tr0);
+                                count = 1;
+                            } else {
+                                count++;
+                            }
+                        }
+                        if (count > 1)
+                            $(prevTd).attr("colspan", count);
                     }
 
                     for (var i = 0; i < data.length; i++) {

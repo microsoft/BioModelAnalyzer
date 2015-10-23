@@ -135,8 +135,16 @@
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
                     && this.options.data !== undefined && this.options.data.length !== 0) {
                     var tags = [];
-                    for (var i = 0; i < that.options.data.length; i++)
-                        tags.push("" + i + "");
+                    tags.push([]);
+                    tags[0].push("A");
+                    tags[0].push("B");
+                    for (var i = 1; i < that.options.data.length / 3; i++) {
+                        tags.push("A");
+                    }
+                    for (var i = that.options.data.length / 3; i < that.options.data.length *2/3; i++)
+                        tags.push("B");
+                    for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
+                        tags.push("A");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
