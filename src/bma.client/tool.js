@@ -4484,13 +4484,13 @@ var BMA;
                         //var curValue = data[k][i];
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
-                            var op = state.Operands[i];
+                            var op = state.Operands[j];
                             if (op instanceof BMA.LTLOperations.KeyframeEquation) {
                                 if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
                                     var varName = op.LeftOperand.Name;
                                     var ind;
                                     for (var n = 0; n < vars.length; n++)
-                                        if (vars[i].Name == varName) {
+                                        if (vars[n].Name == varName) {
                                             ind = n;
                                             break;
                                         }
@@ -4502,7 +4502,7 @@ var BMA;
                                     var varName = op.RightOperand.Name;
                                     var ind;
                                     for (var n = 0; n < vars.length; n++)
-                                        if (vars[i].Name == varName) {
+                                        if (vars[n].Name == varName) {
                                             ind = n;
                                             break;
                                         }
@@ -4515,7 +4515,7 @@ var BMA;
                                 var varName = op.MiddleOperand.Name;
                                 var ind;
                                 for (var n = 0; n < vars.length; n++)
-                                    if (vars[i].Name == varName) {
+                                    if (vars[n].Name == varName) {
                                         ind = n;
                                         break;
                                     }
@@ -8346,10 +8346,22 @@ var BMA;
                     if (that.options.tags !== undefined) {
                         var tr0 = $('<tr></tr>').addClass("table-tags").appendTo(table);
                         var count = (that.options.tags.length > 0) ? 1 : 0;
-                        var prevState = undefined; //that.options.tags[0];
-                        var prevTd; // = $('<td></td>').text(prevState).appendTo(tr0);
+                        var prevState = undefined;
+                        var prevTd;
+                        var compareTags = function (prev, curr) {
+                            if (prev === undefined)
+                                return false;
+                            if (prev.length === curr.length) {
+                                for (var j = 0; j < prev.length; j++) {
+                                    if (prev[j] !== curr[j])
+                                        return false;
+                                }
+                                return true;
+                            }
+                            return false;
+                        };
                         for (var i = 0; i < that.options.tags.length; i++) {
-                            if (prevState !== that.options.tags[i]) {
+                            if (!compareTags(prevState, that.options.tags[i])) {
                                 if (count > 1)
                                     $(prevTd).attr("colspan", count);
                                 prevState = that.options.tags[i];
@@ -8425,6 +8437,10 @@ var BMA;
                     break;
                 case "data":
                     this.options.data = value;
+                    this.InitData();
+                    break;
+                case "tags":
+                    this.options.tags = value;
                     this.InitData();
                     break;
                 case "canEditInitialValue":
@@ -10128,6 +10144,10 @@ jQuery.fn.extend({
             var needUpdate = false;
             this._super(key, value);
             switch (key) {
+                case "tags": {
+                    needUpdate = true;
+                    break;
+                }
                 case "data": {
                     needUpdate = true;
                     break;
@@ -10178,7 +10198,7 @@ jQuery.fn.extend({
                 default: break;
             }
             if (needUpdate) {
-                //this.refresh();
+                this.refresh();
                 this.createPlotData();
             }
         },

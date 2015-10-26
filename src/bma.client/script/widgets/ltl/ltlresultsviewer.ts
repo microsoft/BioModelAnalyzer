@@ -62,6 +62,10 @@
             this._super(key, value);
             switch (key) {
 
+                case "tags": {
+                    needUpdate = true;
+                    break;
+                }
                 case "data": {
                     needUpdate = true;
                     break;
@@ -112,7 +116,7 @@
                 default: break;
             }
             if (needUpdate) {
-                //this.refresh();
+                this.refresh();
                 this.createPlotData();
             }
         },

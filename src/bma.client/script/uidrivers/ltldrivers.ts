@@ -718,14 +718,14 @@ module BMA {
                         //var curValue = data[k][i];
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
-                            var op = state.Operands[i];
+                            var op = state.Operands[j];
                             if (op instanceof BMA.LTLOperations.KeyframeEquation) {
                                 
                                 if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
                                     var varName = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Name;
                                     var ind;
                                     for (var n = 0; n < vars.length; n++)
-                                        if (vars[i].Name == varName) {
+                                        if (vars[n].Name == varName) {
                                             ind = n;
                                             break;
                                         }
@@ -737,7 +737,7 @@ module BMA {
                                     var varName = (<BMA.LTLOperations.NameOperand>op.RightOperand).Name;
                                     var ind;
                                     for (var n = 0; n < vars.length; n++)
-                                        if (vars[i].Name == varName) {
+                                        if (vars[n].Name == varName) {
                                             ind = n;
                                             break;
                                         }
@@ -750,7 +750,7 @@ module BMA {
                                 var varName = (<BMA.LTLOperations.NameOperand>op.MiddleOperand).Name;
                                 var ind;
                                 for (var n = 0; n < vars.length; n++)
-                                    if (vars[i].Name == varName) {
+                                    if (vars[n].Name == varName) {
                                         ind = n;
                                         break;
                                     }
