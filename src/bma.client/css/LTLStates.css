@@ -3032,9 +3032,6 @@ textarea:focus {
 .variable-picker table td {
   min-width: 50px;
 }
-.variable-picker table td.list {
-  height: 85px;
-}
 .variable-picker table td .scrollable {
   width: 100%;
   height: 100%;
@@ -3624,12 +3621,10 @@ ui-icon-arrowthickstop-1-n {
 }
 .variable-picker table tr {
   vertical-align: top;
-  max-height: 85px;
 }
 .variable-picker table tr td {
   min-width: 50px;
   border: none;
-  max-height: 85px;
   text-align: left;
   padding: 2px 0 0 2px;
 }
@@ -3638,7 +3633,6 @@ ui-icon-arrowthickstop-1-n {
 }
 .variable-picker table tr td .scrollable {
   width: 50px;
-  max-height: 85px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 2px 0 0;

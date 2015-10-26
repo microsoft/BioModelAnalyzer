@@ -3032,9 +3032,6 @@ textarea:focus {
 .variable-picker table td {
   min-width: 50px;
 }
-.variable-picker table td.list {
-  height: 85px;
-}
 .variable-picker table td .scrollable {
   width: 100%;
   height: 100%;
