@@ -2146,6 +2146,8 @@ var BMA;
                 else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
+                    this.states = [];
+                    this.operations = [];
                 }
                 this.proofResult = undefined;
                 window.Commands.Execute("ModelReset", undefined);
@@ -2437,7 +2439,7 @@ var BMA;
                 var constOp = state;
                 var result = {
                     _type: "ConstOperand",
-                    value: constOp.Value
+                    "const": constOp.Value
                 };
                 return result;
             }
@@ -2490,7 +2492,7 @@ var BMA;
             for (var i = 0; i < operation.Operands.length; i++) {
                 var op = operation.Operands[i];
                 if (op === undefined || op === null) {
-                    result.push(undefined);
+                    result.operands.push(undefined);
                 }
                 else if (op instanceof BMA.LTLOperations.Operation) {
                     result.operands.push(ExportOperation(operation, withStates));
@@ -11719,6 +11721,10 @@ var BMA;
                 commands.On("UpdateStatesEditorOptions", function (args) {
                     that.statesEditor.SetModel(that.appModel.BioModel, that.appModel.Layout);
                 });
+                window.Commands.On("ModelReset", function (args) {
+                    _this.statesEditor.SetStates(appModel.States);
+                    _this.statesViewer.SetStates(appModel.States);
+                });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
                 var keyframes = this.appModel.States;
@@ -12159,13 +12165,14 @@ var BMA;
                 var padding = 5;
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
-                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVG(), appModel.Operations[i], { x: 0, y: 0 });
-                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], { x: 0, y: 0 });
+                        height += newOp.BoundingBox.height / 2 + padding;
                         newOp.Position = { x: 0, y: height };
-                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        height += newOp.BoundingBox.height / 2 + padding;
                         this.operations.push(newOp);
                     }
                 }
+                this.OnOperationsChanged(true);
             };
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
                 var that = this;

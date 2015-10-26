@@ -525,13 +525,15 @@ module BMA {
                 var padding = 5;
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
-                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVG(), appModel.Operations[i], { x: 0, y: 0 });
-                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], { x: 0, y: 0 });
+                        height += newOp.BoundingBox.height / 2 + padding;
                         newOp.Position = { x: 0, y: height };
-                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        height += newOp.BoundingBox.height / 2 + padding;
                         this.operations.push(newOp);
                     }
                 }
+
+                this.OnOperationsChanged(true);
             }
 
             private GetOperationAtPoint(x: number, y: number) {
