@@ -507,6 +507,31 @@ module BMA {
 
                         }
                     });
+
+                window.Commands.On("ModelReset",(args) => {
+                    for (var i = 0; i < this.operations.length; i++) {
+                        this.operations[i].IsVisible = false;
+                    }
+                    this.operations = [];
+                    this.LoadOperationsFromAppModel();
+                });
+
+                this.LoadOperationsFromAppModel();
+            }
+
+            private LoadOperationsFromAppModel() {
+                var appModel = this.appModel;
+                var height = 0;
+                var padding = 5;
+                if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
+                    for (var i = 0; i < appModel.Operations.length; i++) {
+                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVG(), appModel.Operations[i], { x: 0, y: 0 });
+                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        newOp.Position = { x: 0, y: height };
+                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        this.operations.push(newOp);
+                    }
+                }
             }
 
             private GetOperationAtPoint(x: number, y: number) {
@@ -676,7 +701,9 @@ module BMA {
                 var that = this;
 
                 var ops = [];
+                var operations = [];
                 for (var i = 0; i < this.operations.length; i++) {
+                    operations.push(this.operations[i].Operation.Clone());
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
                 }
 
@@ -684,6 +711,7 @@ module BMA {
                     this.UpdateControlPanels();
                 }
 
+                this.appModel.Operations = operations;
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }
 
