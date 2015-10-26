@@ -129,9 +129,21 @@ module BMA {
             public Deserialize(serializedModel: string) {
 
                 if (serializedModel !== undefined && serializedModel !== null) {
-                    var imported = BMA.Model.ImportModelAndLayout(JSON.parse(serializedModel));
+                    var parsed = JSON.parse(serializedModel);
+
+                    var imported = BMA.Model.ImportModelAndLayout(parsed);
                     this.model = imported.Model;
                     this.layout = imported.Layout;
+
+                    var ltl = BMA.Model.ImportLTLContents(parsed);
+                    if (ltl.states !== undefined) {
+                        this.states = ltl.states;
+                    }
+
+                    if (ltl.operations !== undefined) {
+                        this.operations = ltl.operations;
+                    }
+
                 } else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
@@ -148,7 +160,11 @@ module BMA {
             }
 
             public Serialize(): string {
-                return JSON.stringify(BMA.Model.ExportModelAndLayout(this.model, this.layout));
+                var exported = BMA.Model.ExportModelAndLayout(this.model, this.layout);
+                var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
+                (<any>exported).states = ltl.states;
+                (<any>exported).operations = ltl.operations;
+                return JSON.stringify(exported);
             }
 
             constructor() {

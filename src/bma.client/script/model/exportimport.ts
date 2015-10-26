@@ -135,5 +135,203 @@
                     json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle)))
             }
         }
+
+
+        export function ExportState(state: BMA.LTLOperations.Keyframe | BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation | BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand) {
+            if (state instanceof BMA.LTLOperations.NameOperand) {
+                var nameOp = <BMA.LTLOperations.NameOperand>state;
+                var result: any = {
+                    _type: "NameOperand",
+                    name: nameOp.Name
+                };
+                return result;
+            } else if (state instanceof BMA.LTLOperations.ConstOperand) {
+                var constOp = <BMA.LTLOperations.ConstOperand>state;
+                var result: any = {
+                    _type: "ConstOperand",
+                    value: constOp.Value
+                };
+                return result;
+            } else if (state instanceof BMA.LTLOperations.KeyframeEquation) {
+                var ke = <BMA.LTLOperations.KeyframeEquation>state;
+                var result: any = {
+                    _type: "KeyframeEquation",
+                    leftOperand: ExportState(ke.LeftOperand),
+                    operator: ke.Operator,
+                    rightOperand: ExportState(ke.RightOperand)
+                };
+                return result;
+            } else if (state instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                var dke = <BMA.LTLOperations.DoubleKeyframeEquation>state;
+                var result: any = {
+                    _type: "DoubleKeyframeEquation",
+                    leftOperand: ExportState(dke.LeftOperand),
+                    leftOperator: dke.LeftOperator,
+                    middleOperand: ExportState(dke.MiddleOperand),
+                    rightOperator: dke.RightOperator,
+                    rightOperand: ExportState(dke.RightOperand)
+                }
+                return result;
+            } else if (state instanceof BMA.LTLOperations.Keyframe) {
+                var kf = <BMA.LTLOperations.Keyframe>state;
+                var result: any = {
+                    _type: "Keyframe",
+                    description: kf.Description,
+                    name: kf.Name,
+                    operands: []
+                };
+
+                for (var i = 0; i < kf.Operands.length; i++) {
+                    result.operands.push(ExportState(kf.Operands[i]));
+                }
+
+                return result;
+            }
+
+            throw "Unsupported State Type";
+        }
+        
+        export function ExportOperation(operation: BMA.LTLOperations.Operation, withStates: boolean) {
+            var result: any = {};
+            result["_type"] = "Operation";
+            result.operator = {
+                name: operation.Operator.Name,
+                operandsCount: operation.Operator.OperandsCount
+            };
+            result.operands = [];
+
+            for (var i = 0; i < operation.Operands.length; i++) {
+                var op = operation.Operands[i];
+                if (op === undefined || op === null) {
+                    result.push(undefined);
+                } else if (op instanceof BMA.LTLOperations.Operation) {
+                    result.operands.push(ExportOperation(operation, withStates));
+                } else if (op instanceof BMA.LTLOperations.Keyframe) {
+                    if (withStates) {
+                        result.operands.push(ExportState(<BMA.LTLOperations.Keyframe>op));
+                    } else {
+                        result.operands.push({
+                            _type: "Keyframe",
+                            name: (<BMA.LTLOperations.Keyframe>op).Name
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        export function ExportLTLContents(states: BMA.LTLOperations.Keyframe[], operations: BMA.LTLOperations.Operation[]): { states: any[]; operations: any[] } {
+            var result = {
+                states: [],
+                operations: []
+            };
+
+            for (var i = 0; i < states.length; i++) {
+                result.states.push(ExportState(states[i]));
+            }
+
+            for (var i = 0; i < operations.length; i++) {
+                result.operations.push(ExportOperation(operations[i], false));
+            }
+
+            return result;
+        }
+
+        export function ImportLTLContents(infoset: {
+            states: any[];
+            operations: any[]
+        }): {
+                states: BMA.LTLOperations.Keyframe[];
+                operations: BMA.LTLOperations.Operation[]
+            } {
+
+            var result = {
+                states: undefined,
+                operations: undefined
+            }
+
+            if (infoset.states !== undefined && infoset.states.length > 0) {
+                result.states = [];
+                for (var i = 0; i < infoset.states.length; i++) {
+                    result.states.push(<BMA.LTLOperations.Keyframe>ImportOperand(infoset.states[i], undefined));
+                }
+            }
+
+            if (infoset.operations !== undefined && infoset.operations.length > 0) {
+                result.operations = [];
+                for (var i = 0; i < infoset.operations.length; i++) {
+                    result.operations.push(<BMA.LTLOperations.Operation>ImportOperand(infoset.operations[i], result.states));
+                }
+            }
+
+            return result;
+        }
+
+        export function ImportOperand(obj, states: BMA.LTLOperations.Keyframe[]): BMA.LTLOperations.IOperand {
+            if (obj === undefined)
+                throw "Invalid LTL Operand";
+
+            switch (obj._type) {
+                case "NameOperand":
+                    return new BMA.LTLOperations.NameOperand(obj.name);
+                    break;
+                case "ConstOperand":
+                    return new BMA.LTLOperations.ConstOperand(obj.const);
+                    break;
+                case "KeyframeEquation":
+                    var leftOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.leftOperand, states);
+                    var rightOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.rightOperand, states);
+                    var operator = <string>obj.operator;
+                    return new BMA.LTLOperations.KeyframeEquation(leftOperand, operator, rightOperand);
+                    break;
+                case "DoubleKeyframeEquation":
+                    var leftOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.leftOperand, states);
+                    var middleOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.middleOperand, states);
+                    var rightOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.rightOperand, states);
+                    var leftOperator = <string>obj.leftOperator;
+                    var rightOperator = <string>obj.rightOperator;
+                    return new BMA.LTLOperations.DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand);
+                    break;
+                case "Keyframe":
+                    if (states !== undefined) {
+                        for (var i = 0; i < states.length; i++) {
+                            var state = states[i];
+                            if (state.Name === obj.name)
+                                return state.Clone();
+                        }
+
+                        throw "No suitable states found";
+                    } else {
+
+                        var operands = [];
+                        for (var i = 0; i < obj.operands.length; i++) {
+                            operands.push(ImportOperand(obj.operands[i], states));
+                        }
+                        return new BMA.LTLOperations.Keyframe(obj.name, obj.description, operands);
+                    }
+                    break;
+                case "Operation":
+                    var operands = [];
+                    for (var i = 0; i < obj.operands.length; i++) {
+                        var operand = obj.operands[i];
+                        if (operand === undefined || operand === null) {
+                            operands.push(undefined);
+                        } else {
+                            operands.push(ImportOperand(operand, states));
+                        }
+                    }
+                    var op = new BMA.LTLOperations.Operation();
+                    op.Operands = operands;
+                    //TODO: improve operator restoring
+                    op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
+                    return op;
+                    break;
+                default:
+                    break;
+            }
+
+            return undefined;
+        }
     }
 } 
