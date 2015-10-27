@@ -169,11 +169,11 @@
                                 count = 1;
                             } else {
                                 count++;
+                                if (i == that.options.tags.length - 1)
+                                    $(prevTd).attr("colspan", count);
                             }
                         }
-
-                        if (count > 1)
-                            $(prevTd).attr("colspan", count);
+                            
                     }
 
                     for (var i = 0; i < data.length; i++) {

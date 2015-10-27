@@ -772,9 +772,48 @@ module BMA {
                     }
                 }
 
+                var labels_height = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
+                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
                 var labels = [];
+                var count = (tags.length > 0) ? 1 : 0;
+                var prevState = undefined;
+
+                var compareTags = function (prev, curr) {
+                    if (prev === undefined)
+                        return false;
+                    if (prev.length === curr.length) {
+                        for (var j = 0; j < prev.length; j++) {
+                            if (prev[j] !== curr[j])
+                                return false;
+                        }
+                        return true;
+                    }
+                    return false;
+                }
 
                 for (var i = 0; i < tags.length; i++) {
+                    if (!compareTags(prevState, tags[i])) {
+                        if (prevState !== undefined && prevState.length !== 0)
+                            labels.push({
+                                text: prevState,
+                                width: count,
+                                height: labels_height,
+                                x: i,
+                                y: 0,
+                            });
+                        prevState = tags[i];
+                        count = 1;
+                    } else {
+                        count++;
+                        if (i == tags.length - 1 && prevState.length !== 0) 
+                            labels.push({
+                                text: prevState,
+                                width: count,
+                                height: labels_height,
+                                x: i,
+                                y: 0,
+                            });
+                    }
                 }
 
                 var interval = this.CreateInterval(vars);
@@ -786,6 +825,7 @@ module BMA {
                     data: data,
                     init: init,
                     variables: variables,
+                    labels: labels
                 };
 
                 if (this.ltlResultsViewer !== undefined) {

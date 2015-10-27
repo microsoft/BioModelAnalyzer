@@ -4719,8 +4719,50 @@ var BMA;
                             tags[k].push(state.Name);
                     }
                 }
+                var labels_height = Math.max.apply(Math, ranges.map(function (s) {
+                    return s.max;
+                })) - Math.min.apply(Math, ranges.map(function (s) {
+                    return s.min;
+                }));
                 var labels = [];
+                var count = (tags.length > 0) ? 1 : 0;
+                var prevState = undefined;
+                var compareTags = function (prev, curr) {
+                    if (prev === undefined)
+                        return false;
+                    if (prev.length === curr.length) {
+                        for (var j = 0; j < prev.length; j++) {
+                            if (prev[j] !== curr[j])
+                                return false;
+                        }
+                        return true;
+                    }
+                    return false;
+                };
                 for (var i = 0; i < tags.length; i++) {
+                    if (!compareTags(prevState, tags[i])) {
+                        if (prevState !== undefined && prevState.length !== 0)
+                            labels.push({
+                                text: prevState,
+                                width: count,
+                                height: labels_height,
+                                x: i,
+                                y: 0,
+                            });
+                        prevState = tags[i];
+                        count = 1;
+                    }
+                    else {
+                        count++;
+                        if (i == tags.length - 1 && prevState.length !== 0)
+                            labels.push({
+                                text: prevState,
+                                width: count,
+                                height: labels_height,
+                                x: i,
+                                y: 0,
+                            });
+                    }
                 }
                 var interval = this.CreateInterval(vars);
                 var options = {
@@ -4730,6 +4772,7 @@ var BMA;
                     data: data,
                     init: init,
                     variables: variables,
+                    labels: labels
                 };
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer(options);
@@ -8563,10 +8606,10 @@ var BMA;
                             }
                             else {
                                 count++;
+                                if (i == that.options.tags.length - 1)
+                                    $(prevTd).attr("colspan", count);
                             }
                         }
-                        if (count > 1)
-                            $(prevTd).attr("colspan", count);
                     }
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
@@ -9095,22 +9138,21 @@ var BMA;
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
             ///states markers on plot
-            //var domPlot = undefined;
-            //if (that.options.labels !== undefined && that.options.labels !== null) {
-            //    domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
-            //}
+            var domPlot = undefined;
+            if (that.options.labels !== undefined && that.options.labels !== null) {
+                domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+            }
             ///
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
-            //if (domPlot !== undefined) {
-            //    var domPlot2 = that._chart.get(domPlot[0]);
-            //    for (var i = 0; i < that.options.labels.length; i++) {
-            //        var label = $("<div></div>").addClass("simulationplot-label").text(that.options.labels[i].text);
-            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
-            //            0.5, 0.5);
-            //    }
-            //    //that._chart.addDOM(domPlot);
-            //}
+            if (domPlot !== undefined) {
+                var domPlot2 = that._chart.get(domPlot[0]);
+                for (var i = 0; i < that.options.labels.length; i++) {
+                    var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass("simulationplot-label").text(that.options.labels[i].text);
+                    domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height, (that.options.labels[i].width > 1) ? 1 : 0.5, 1);
+                    (i % 2 == 0) ? label.addClass("repeat") : 0;
+                }
+            }
             //
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {
@@ -10480,7 +10522,6 @@ jQuery.fn.extend({
                 if (this.options.visibleItems.length < i + 1)
                     this.options.visibleItems.push(that.options.variables[i][1]);
             }
-            //var labels = [];
             //if (this.options.tags !== undefined && this.options.tags.length !== 0) {
             //    labels.push({ text: "A", x: 2, y: 2, width: 1, height: 0.5 });
             //    //var compareTags = function (prev, curr) {
@@ -10513,6 +10554,7 @@ jQuery.fn.extend({
             if (plotData !== undefined && plotData.length !== 0)
                 this._plot.simulationplot({
                     colors: plotData,
+                    labels: that.options.labels
                 });
         },
     });

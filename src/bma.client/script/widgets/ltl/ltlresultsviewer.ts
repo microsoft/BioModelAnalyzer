@@ -199,7 +199,6 @@
                 if (this.options.visibleItems.length < i + 1)
                     this.options.visibleItems.push(that.options.variables[i][1]);
             }
-            //var labels = [];
             //if (this.options.tags !== undefined && this.options.tags.length !== 0) {
             //    labels.push({ text: "A", x: 2, y: 2, width: 1, height: 0.5 });
             //    //var compareTags = function (prev, curr) {
@@ -234,7 +233,7 @@
             if (plotData !== undefined && plotData.length !== 0)
                 this._plot.simulationplot({
                     colors: plotData,
-                    //labels: labels
+                    labels: that.options.labels
                 });
         },
 

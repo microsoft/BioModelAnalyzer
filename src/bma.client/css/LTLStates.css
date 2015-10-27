@@ -3395,7 +3395,10 @@ ui-icon-arrowthickstop-1-n {
   background-color: #aaaaaa;
 }
 .ltlresultsviewer .simulationplot-label {
-  background-color: #81bb83;
+  background-color: white;
+}
+.ltlresultsviewer .simulationplot-label.repeat {
+  background-color: #ededed;
 }
 .ltlresultsviewer .steps-container {
   float: right;
