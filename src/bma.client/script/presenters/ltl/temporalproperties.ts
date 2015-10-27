@@ -680,8 +680,8 @@ module BMA {
                     var op = this.operations[i];
                     var bbox = op.BoundingBox;
 
-                    if (that.HasIntersection(bbox, copyzonebbox) || that.HasIntersection(bbox, deletezonebbox))
-                        continue;
+                    //if (that.HasIntersection(bbox, copyzonebbox) || that.HasIntersection(bbox, deletezonebbox))
+                    //    continue; 
 
                     var opDiv = $("<div></div>");
                     var cp = {
