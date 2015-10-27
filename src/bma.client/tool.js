@@ -2146,6 +2146,8 @@ var BMA;
                 else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
+                    this.states = [];
+                    this.operations = [];
                 }
                 this.proofResult = undefined;
                 window.Commands.Execute("ModelReset", undefined);
@@ -2437,7 +2439,7 @@ var BMA;
                 var constOp = state;
                 var result = {
                     _type: "ConstOperand",
-                    value: constOp.Value
+                    "const": constOp.Value
                 };
                 return result;
             }
@@ -2490,7 +2492,7 @@ var BMA;
             for (var i = 0; i < operation.Operands.length; i++) {
                 var op = operation.Operands[i];
                 if (op === undefined || op === null) {
-                    result.push(undefined);
+                    result.operands.push(undefined);
                 }
                 else if (op instanceof BMA.LTLOperations.Operation) {
                     result.operands.push(ExportOperation(operation, withStates));
@@ -4677,7 +4679,6 @@ var BMA;
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
                     for (var k = 0; k < data.length; k++) {
-                        //var curValue = data[k][i];
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
                             var op = state.Operands[j];
@@ -4724,6 +4725,9 @@ var BMA;
                         if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
                     }
+                }
+                var labels = [];
+                for (var i = 0; i < tags.length; i++) {
                 }
                 var interval = this.CreateInterval(vars);
                 var options = {
@@ -9075,6 +9079,7 @@ var BMA;
         options: {
             //data: undefined,
             colors: undefined,
+            labels: undefined,
         },
         _create: function () {
             var that = this;
@@ -9096,7 +9101,24 @@ var BMA;
             this.chartdiv = $('<div id="chart"></div>').attr("data-idd-plot", "figure").width("70%").height('100%').css("float", "left").appendTo(that.element);
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
+            ///states markers on plot
+            //var domPlot = undefined;
+            //if (that.options.labels !== undefined && that.options.labels !== null) {
+            //    domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+            //}
+            ///
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
+            //
+            //if (domPlot !== undefined) {
+            //    var domPlot2 = that._chart.get(domPlot[0]);
+            //    for (var i = 0; i < that.options.labels.length; i++) {
+            //        var label = $("<div></div>").addClass("simulationplot-label").text(that.options.labels[i].text);
+            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
+            //            0.5, 0.5);
+            //    }
+            //    //that._chart.addDOM(domPlot);
+            //}
+            //
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {
                     var plotName = "plot" + i;
@@ -10465,6 +10487,36 @@ jQuery.fn.extend({
                 if (this.options.visibleItems.length < i + 1)
                     this.options.visibleItems.push(that.options.variables[i][1]);
             }
+            //var labels = [];
+            //if (this.options.tags !== undefined && this.options.tags.length !== 0) {
+            //    labels.push({ text: "A", x: 2, y: 2, width: 1, height: 0.5 });
+            //    //var compareTags = function (prev, curr) {
+            //    //    if (prev === undefined)
+            //    //        return false;
+            //    //    if (prev.length === curr.length) {
+            //    //        for (var j = 0; j < prev.length; j++) {
+            //    //            if (prev[j] !== curr[j])
+            //    //                return false;
+            //    //        }
+            //    //        return true;
+            //    //    }
+            //    //    return false;
+            //    //}
+            //    //var labels = 
+            //    //var prevState = undefined;
+            //    //var count = (that.options.tags.length > 0) ? 1 : 0;
+            //    //for (var i = 0; i < that.options.tags.length; i++) {
+            //    //    if (!compareTags(prevState, that.options.tags[i])) {
+            //    //        if (count > 1)
+            //    //            $(prevTd).attr("colspan", count);
+            //    //        prevState = that.options.tags[i];
+            //    //        prevTd = $('<td></td>').text(prevState).appendTo(tr0);
+            //    //        count = 1;
+            //    //    } else {
+            //    //        count++;
+            //    //    }
+            //    //}
+            //}
             if (plotData !== undefined && plotData.length !== 0)
                 this._plot.simulationplot({
                     colors: plotData,
@@ -10741,7 +10793,7 @@ jQuery.fn.extend({
                     if (this._activeState.formula[i][j] !== undefined) {
                         if (this._activeState.formula[i][j].type == "variable") {
                             var currSymbol = this._activeState.formula[i][j];
-                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).attr("width", "30px").attr("height", "30px").attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
+                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).css("width", "30px").css("height", "30px").attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
                             var trList = this.createNewSelect(condition.children().eq(j), currSymbol);
                             //var td = condition.children().eq(j);
                             //var tdContainers = trList.children().eq(0);
@@ -10867,7 +10919,7 @@ jQuery.fn.extend({
                             $(this.children).remove();
                             switch (ui.draggable[0].name) {
                                 case "var": {
-                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).attr("width", "30px").attr("height", "30px").appendTo(this);
+                                    var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type")).css("width", "30px").css("height", "30px").appendTo(this);
                                     that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "variable",
                                         value: 0
@@ -11837,6 +11889,10 @@ var BMA;
                 commands.On("UpdateStatesEditorOptions", function (args) {
                     that.statesEditor.SetModel(that.appModel.BioModel, that.appModel.Layout);
                 });
+                window.Commands.On("ModelReset", function (args) {
+                    _this.statesEditor.SetStates(appModel.States);
+                    _this.statesViewer.SetStates(appModel.States);
+                });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
                 var keyframes = this.appModel.States;
@@ -12277,13 +12333,14 @@ var BMA;
                 var padding = 5;
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
-                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVG(), appModel.Operations[i], { x: 0, y: 0 });
-                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], { x: 0, y: 0 });
+                        height += newOp.BoundingBox.height / 2 + padding;
                         newOp.Position = { x: 0, y: height };
-                        height += this.operations[i].BoundingBox.height / 2 + padding;
+                        height += newOp.BoundingBox.height / 2 + padding;
                         this.operations.push(newOp);
                     }
                 }
+                this.OnOperationsChanged(true);
             };
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
                 var that = this;

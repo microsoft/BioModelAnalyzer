@@ -715,7 +715,6 @@ module BMA {
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
                     for (var k = 0; k < data.length; k++) {
-                        //var curValue = data[k][i];
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
                             var op = state.Operands[j];
@@ -765,6 +764,11 @@ module BMA {
                         if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
                     }
+                }
+
+                var labels = [];
+
+                for (var i = 0; i < tags.length; i++) {
                 }
 
                 var interval = this.CreateInterval(vars);

@@ -316,8 +316,8 @@
                         if (this._activeState.formula[i][j].type == "variable") {
 
                             var currSymbol = this._activeState.formula[i][j];
-                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).attr("width", "30px")
-                                .attr("height", "30px").attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
+                            var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).css("width", "30px")
+                                .css("height", "30px").attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
 
                             var trList = this.createNewSelect(condition.children().eq(j), currSymbol);
                             //var td = condition.children().eq(j);
@@ -468,7 +468,7 @@
                             switch (ui.draggable[0].name) {
                                 case "var": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type"))
-                                        .attr("width", "30px").attr("height", "30px").appendTo(this);
+                                        .css("width", "30px").css("height", "30px").appendTo(this);
 
                                     that.options.states[stateIndex].formula[tableIndex][this.cellIndex] = {
                                         type: "variable",

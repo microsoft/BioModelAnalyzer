@@ -6,6 +6,7 @@
         options: {
             //data: undefined,
             colors: undefined,
+            labels: undefined,
         },
 
         _create: function () {
@@ -42,9 +43,26 @@
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
 
+
+            ///states markers on plot
+            //var domPlot = undefined;
+            //if (that.options.labels !== undefined && that.options.labels !== null) {
+            //    domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+            //}
+            ///
+
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
-
-
+            //
+            //if (domPlot !== undefined) {
+            //    var domPlot2 = that._chart.get(domPlot[0]);
+            //    for (var i = 0; i < that.options.labels.length; i++) {
+            //        var label = $("<div></div>").addClass("simulationplot-label").text(that.options.labels[i].text);
+            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
+            //            0.5, 0.5);
+            //    }
+            //    //that._chart.addDOM(domPlot);
+            //}
+            //
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {

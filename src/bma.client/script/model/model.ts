@@ -147,6 +147,8 @@ module BMA {
                 } else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
+                    this.states = [];
+                    this.operations = [];
                 }
 
                 this.proofResult = undefined;

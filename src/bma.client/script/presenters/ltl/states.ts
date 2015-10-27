@@ -35,7 +35,12 @@
 
                 commands.On("UpdateStatesEditorOptions",(args) => {
                     that.statesEditor.SetModel(that.appModel.BioModel, that.appModel.Layout);
-                })
+                });
+
+                window.Commands.On("ModelReset",(args) => {
+                    this.statesEditor.SetStates(appModel.States);
+                    this.statesViewer.SetStates(appModel.States);
+                });
             }
 
             public GetStateByName(name: string): BMA.LTLOperations.Keyframe {

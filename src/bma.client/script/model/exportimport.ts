@@ -149,7 +149,7 @@
                 var constOp = <BMA.LTLOperations.ConstOperand>state;
                 var result: any = {
                     _type: "ConstOperand",
-                    value: constOp.Value
+                    "const": constOp.Value
                 };
                 return result;
             } else if (state instanceof BMA.LTLOperations.KeyframeEquation) {
@@ -203,7 +203,7 @@
             for (var i = 0; i < operation.Operands.length; i++) {
                 var op = operation.Operands[i];
                 if (op === undefined || op === null) {
-                    result.push(undefined);
+                    result.operands.push(undefined);
                 } else if (op instanceof BMA.LTLOperations.Operation) {
                     result.operands.push(ExportOperation(operation, withStates));
                 } else if (op instanceof BMA.LTLOperations.Keyframe) {
