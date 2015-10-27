@@ -45,25 +45,25 @@
 
 
             ///states markers on plot
-            var domPlot = undefined;
-            if (that.options.labels !== undefined && that.options.labels !== null) {
-                domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
-            }
+            //var domPlot = undefined;
+            //if (that.options.labels !== undefined && that.options.labels !== null) {
+            //    domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+            //}
             ///
 
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
-            if (domPlot !== undefined) {
-                var domPlot2 = that._chart.get(domPlot[0]);
-                for (var i = 0; i < that.options.labels.length; i++) {
-                    var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass("simulationplot-label").text(that.options.labels[i].text);
-                    domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
-                        (that.options.labels[i].width > 1) ? 1 : 0.5, 1);
-                    (i % 2 == 0) ? label.addClass("repeat") : 0;
-                }
-                //that._chart.addDOM(domPlot);
-                //domPlot2.find("simulationplot-label").
-            }
+            //if (domPlot !== undefined) {
+            //    var domPlot2 = that._chart.get(domPlot[0]);
+            //    for (var i = 0; i < that.options.labels.length; i++) {
+            //        var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass("simulationplot-label").text(that.options.labels[i].text);
+            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
+            //            (that.options.labels[i].width > 1) ? 1 : 0.5, 1);
+            //        (i % 2 == 0) ? label.addClass("repeat") : 0;
+            //    }
+            //    //that._chart.addDOM(domPlot);
+            //    //domPlot2.find("simulationplot-label").
+            //}
             //
 
             if (that.options.colors !== undefined && that.options.colors !== null) {
