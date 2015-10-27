@@ -1994,9 +1994,20 @@ hr {
 .window.temporal-properties .window-title {
   padding: 10px 0px 0px 10px;
 }
+.window.temporal-properties .fit-screen {
+  width: 25px;
+  padding: 10px;
+  position: absolute;
+  right: 0px;
+}
+.window.temporal-properties .resize-grabber {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+}
 .temporal-dropzones {
   position: absolute;
-  bottom: 0px;
+  bottom: 15px;
   width: 630px;
   height: 60px;
   padding: 15px 10px;

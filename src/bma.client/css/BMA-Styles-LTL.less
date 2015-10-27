@@ -1,7 +1,8 @@
 @import "BMA-Styles.less";
 
-	// LTL windows
-		// LTL States Editor
+// LTL windows
+
+	// LTL States Editor
 		.window.LTL-states{
 			width:340px;
 			padding:0px 0px 10px 0px;
@@ -127,7 +128,7 @@
 			}
 		}
 
-		// Variable Picker
+	// Variable Picker
 		.variable-picker{
 			width: 115px;
 			border: 1px solid @midgrey;
@@ -189,8 +190,8 @@
 				}
 			}
 		}
-		
-		// State Tooltip
+	
+	// State Tooltip
 
 		.state-tooltip {
 			position: relative;
@@ -229,104 +230,115 @@
 			margin-left: -15px;
 		}
 
+	// Temporal Properties
 
-
-// Temporal Properties
-
-.window.temporal-properties{
-	width: 650px;
-	height: 500px;
-	padding:0px 0px 10px 0px;
-	.window-title{
-		padding: 10px 0px 0px 10px;
-	}
-}
-
-.temporal-dropzones{
-	position: absolute;
-	bottom:0px;
-	width:630px;
-	height: 60px;
-	padding:15px 10px;
-	.dropzone{
-		display: inline-block;
-		height:100%;
-		width:308px;
-		text-align: center;
-		img{
-			margin-top: 10px;
-		}
-		&.delete{
-			border: 1px solid @darkred;
-		}
-		&.copy{
-			border: 1px solid @darkgrey;
-			margin-right: 5px;
-		}
-		&:hover{
-				background-color: @lightgrey;
+		.window.temporal-properties{
+			width: 650px;
+			height: 500px;
+			padding:0px 0px 10px 0px;
+			.window-title{
+				padding: 10px 0px 0px 10px;
 			}
-	}
-}
 
-.temporal-toolbar{
-	padding:10px;
-	margin-top: 5px;
-	display: table;
-	background-color: @midgrey;
-	.default-text();
-	color: white;
+			.fit-screen{
+				width:25px;
+				padding:10px;
+				position: absolute;
+				right:0px;
+			}
 
-	
-	.state-buttons{
-		display: table-cell;
-		width: 120px;
-		.state-button{
-			&.new{
-				color: white;
-				background-color: @midgrey;
-				border: 1px solid white;
+			.resize-grabber{
+				position: absolute;
+				bottom:1px;
+				right: 3px;
+			}
+		}
+
+		.temporal-dropzones{
+			position: absolute;
+			bottom:15px;
+			width:630px;
+			height: 60px;
+			padding:15px 10px;
+			.dropzone{
+				display: inline-block;
+				height:100%;
+				width:308px;
+				text-align: center;
+				img{
+					margin-top: 10px;
+				}
+				&.delete{
+					border: 1px solid @darkred;
+				}
+				&.copy{
+					border: 1px solid @darkgrey;
+					margin-right: 5px;
+				}
 				&:hover{
-					color: @lightgrey;
-					border: 1px solid @lightgrey;
-					cursor: pointer;
+						background-color: @lightgrey;
+					}
+			}
+		}
+
+		.temporal-toolbar{
+			padding:10px;
+			margin-top: 5px;
+			display: table;
+			background-color: @midgrey;
+			.default-text();
+			color: white;
+
+			
+			.state-buttons{
+				display: table-cell;
+				width: 120px;
+				.state-button{
+					&.new{
+						color: white;
+						background-color: @midgrey;
+						border: 1px solid white;
+						&:hover{
+							color: @lightgrey;
+							border: 1px solid @lightgrey;
+							cursor: pointer;
+						}
+					}
+				}
+			}
+			
+
+			.temporal-operators{
+				display:table-cell;
+				vertical-align: top;
+				width:390px;
+				
+				.operator{
+					display:inline-block;
+					color:@darkgrey;
+					background-color: white;
+					border: 1px solid @darkgrey;
+					border-radius: 25px;
+					height:21px;
+					padding: 2px;
+					margin-top: 5px;
+					.label{
+						display: inline-block;
+						vertical-align: top;
+						margin-top: 2px;
+						//padding:0px 2px 0px 2px;
+					}
+					.hole{
+						display: inline-block;
+						margin: 3px 2px 0px 2px;
+						background-color: @darkgrey;
+						border-radius: 25px;
+						width:15px;
+						height: 15px;
+					}
 				}
 			}
 		}
-	}
-	
-
-	.temporal-operators{
-		display:table-cell;
-		vertical-align: top;
-		width:390px;
-		
-		.operator{
-			display:inline-block;
-			color:@darkgrey;
-			background-color: white;
-			border: 1px solid @darkgrey;
-			border-radius: 25px;
-			height:21px;
-			padding: 2px;
-			margin-top: 5px;
-			.label{
-				display: inline-block;
-				vertical-align: top;
-				margin-top: 2px;
-				//padding:0px 2px 0px 2px;
-			}
-			.hole{
-				display: inline-block;
-				margin: 3px 2px 0px 2px;
-				background-color: @darkgrey;
-				border-radius: 25px;
-				width:15px;
-				height: 15px;
-			}
-		}
-	}
-}
 
 
 // Bubbles
