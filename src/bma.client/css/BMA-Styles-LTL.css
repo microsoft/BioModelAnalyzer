@@ -1790,7 +1790,7 @@ hr {
 }
 .state-buttons .state-button {
   display: inline-block;
-  margin: 5px 0px 10px 5px;
+  margin: 5px 0px 10px 0px;
   font-family: 'Segoe-UI-Light';
   font-size: 20px;
   line-height: 25px;
@@ -2023,6 +2023,7 @@ hr {
 .temporal-toolbar {
   padding: 10px;
   margin-top: 5px;
+  display: table;
   background-color: #aaaaaa;
   font-family: 'Segoe-UI';
   font-size: 13px;
@@ -2032,7 +2033,7 @@ hr {
 }
 .temporal-toolbar .state-buttons {
   display: table-cell;
-  width: 250px;
+  width: 120px;
 }
 .temporal-toolbar .state-buttons .state-button.new {
   color: white;
@@ -2047,7 +2048,7 @@ hr {
 .temporal-toolbar .temporal-operators {
   display: table-cell;
   vertical-align: top;
-  width: 450px;
+  width: 390px;
 }
 .temporal-toolbar .temporal-operators .operator {
   display: inline-block;
