@@ -32,6 +32,7 @@
                         preserveAspectRatio: "none meet"
                     }, true);
 
+                    //TODO: search for more generic solution
                     svg._svg.onresize = function () {
                         that.refresh();
                     }

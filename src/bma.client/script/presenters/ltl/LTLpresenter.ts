@@ -111,7 +111,7 @@
 
                 commands.On("ExportLTLFormula",(args) => {
                     if (args.operation !== undefined) {
-                        exportService.Export(JSON.stringify(args.operation), "operation", "txt");
+                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
                     }
                 });
 

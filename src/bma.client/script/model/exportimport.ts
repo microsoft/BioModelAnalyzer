@@ -205,7 +205,7 @@
                 if (op === undefined || op === null) {
                     result.operands.push(undefined);
                 } else if (op instanceof BMA.LTLOperations.Operation) {
-                    result.operands.push(ExportOperation(operation, withStates));
+                    result.operands.push(ExportOperation(<BMA.LTLOperations.Operation>op, withStates));
                 } else if (op instanceof BMA.LTLOperations.Keyframe) {
                     if (withStates) {
                         result.operands.push(ExportState(<BMA.LTLOperations.Keyframe>op));
