@@ -135,15 +135,16 @@ module BMA {
                     this.model = imported.Model;
                     this.layout = imported.Layout;
 
-                    var ltl = BMA.Model.ImportLTLContents(parsed);
-                    if (ltl.states !== undefined) {
-                        this.states = ltl.states;
-                    }
+                    if (parsed.ltl !== undefined) {
+                        var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
+                        if (ltl.states !== undefined) {
+                            this.states = ltl.states;
+                        }
 
-                    if (ltl.operations !== undefined) {
-                        this.operations = ltl.operations;
+                        if (ltl.operations !== undefined) {
+                            this.operations = ltl.operations;
+                        }
                     }
-
                 } else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
@@ -164,8 +165,7 @@ module BMA {
             public Serialize(): string {
                 var exported = BMA.Model.ExportModelAndLayout(this.model, this.layout);
                 var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
-                (<any>exported).states = ltl.states;
-                (<any>exported).operations = ltl.operations;
+                (<any>exported).ltl = ltl;
                 return JSON.stringify(exported);
             }
 

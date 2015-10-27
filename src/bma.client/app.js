@@ -461,7 +461,7 @@ function loadScript(version) {
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     //var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
-    var ltlDriver = new BMA.UIDrivers.LTLViewer($('#tabs-3'));
+    var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);

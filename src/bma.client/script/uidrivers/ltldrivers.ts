@@ -28,9 +28,11 @@ module BMA {
         export class LTLViewer implements ILTLViewer, IKeyframesList {
 
             private ltlviewer: JQuery;
+            private accordion: JQuery;
 
-            constructor(ltlviewer: JQuery) {
+            constructor(accordion: JQuery, ltlviewer: JQuery) {
                 this.ltlviewer = ltlviewer;
+                this.accordion = accordion;
             }
 
             public AddState(items) {
@@ -530,8 +532,12 @@ module BMA {
                 this.tpviewer = tpviewer;
             }
 
-            public SetOperations(operations: { operation: BMA.LTLOperations.IOperand[]; status: string }) {
+            public SetOperations(operations: { operation: BMA.LTLOperations.IOperand; status: string }[]) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
+            }
+
+            public Refresh() {
+                this.tpviewer.temporalpropertiesviewer("refresh");
             }
         }
 

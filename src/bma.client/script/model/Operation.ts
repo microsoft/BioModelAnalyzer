@@ -11,7 +11,6 @@
         }
 
         export class NameOperand implements IOperand {
-            private _type = "NameOperand";
             private name: string;
 
             constructor(name: string) {
@@ -32,7 +31,6 @@
         }
 
         export class ConstOperand implements IOperand {
-            private _type = "ConstOperand";
             private const: number;
 
             constructor(value: number) {
@@ -53,7 +51,6 @@
         }
 
         export class KeyframeEquation implements IOperand {
-            private _type = "KeyframeEquation";
             private leftOperand: NameOperand | ConstOperand;
             private rightOperand: NameOperand | ConstOperand;
             private operator: string;
@@ -86,7 +83,6 @@
         }
 
         export class DoubleKeyframeEquation implements IOperand {
-            private _type = "DoubleKeyframeEquation";
             private leftOperand: NameOperand | ConstOperand
             private middleOperand: NameOperand | ConstOperand
             private rightOperand: NameOperand | ConstOperand
@@ -147,7 +143,6 @@
         }
 
         export class Keyframe implements IOperand {
-            private _type = "Keyframe";
             private name: string;
             private description: string;
             private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
@@ -229,7 +224,6 @@
 
 
         export class Operation implements IOperand {
-            private _type = "Operation";
             private operator: Operator;
             private operands: IOperand[];
 
@@ -264,14 +258,6 @@
                 result.Operands = operands;
 
                 return result;
-            }
-
-            public GetJSON() {
-                return {};
-            }
-
-            public GetTypeID() {
-                return "Operation";
             }
         }
     }

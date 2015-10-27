@@ -2135,12 +2135,14 @@ var BMA;
                     var imported = BMA.Model.ImportModelAndLayout(parsed);
                     this.model = imported.Model;
                     this.layout = imported.Layout;
-                    var ltl = BMA.Model.ImportLTLContents(parsed);
-                    if (ltl.states !== undefined) {
-                        this.states = ltl.states;
-                    }
-                    if (ltl.operations !== undefined) {
-                        this.operations = ltl.operations;
+                    if (parsed.ltl !== undefined) {
+                        var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
+                        if (ltl.states !== undefined) {
+                            this.states = ltl.states;
+                        }
+                        if (ltl.operations !== undefined) {
+                            this.operations = ltl.operations;
+                        }
                     }
                 }
                 else {
@@ -2160,8 +2162,7 @@ var BMA;
             AppModel.prototype.Serialize = function () {
                 var exported = BMA.Model.ExportModelAndLayout(this.model, this.layout);
                 var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
-                exported.states = ltl.states;
-                exported.operations = ltl.operations;
+                exported.ltl = ltl;
                 return JSON.stringify(exported);
             };
             return AppModel;
@@ -2495,7 +2496,7 @@ var BMA;
                     result.operands.push(undefined);
                 }
                 else if (op instanceof BMA.LTLOperations.Operation) {
-                    result.operands.push(ExportOperation(operation, withStates));
+                    result.operands.push(ExportOperation(op, withStates));
                 }
                 else if (op instanceof BMA.LTLOperations.Keyframe) {
                     if (withStates) {
@@ -2620,7 +2621,6 @@ var BMA;
     (function (LTLOperations) {
         var NameOperand = (function () {
             function NameOperand(name) {
-                this._type = "NameOperand";
                 this.name = name;
             }
             Object.defineProperty(NameOperand.prototype, "Name", {
@@ -2641,7 +2641,6 @@ var BMA;
         LTLOperations.NameOperand = NameOperand;
         var ConstOperand = (function () {
             function ConstOperand(value) {
-                this._type = "ConstOperand";
                 this.const = value;
             }
             Object.defineProperty(ConstOperand.prototype, "Value", {
@@ -2662,7 +2661,6 @@ var BMA;
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
             function KeyframeEquation(leftOperand, operator, rightOperand) {
-                this._type = "KeyframeEquation";
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.operator = operator;
@@ -2699,7 +2697,6 @@ var BMA;
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
             function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
-                this._type = "DoubleKeyframeEquation";
                 this.leftOperand = leftOperand;
                 this.rightOperand = rightOperand;
                 this.middleOperand = middleOperand;
@@ -2766,7 +2763,6 @@ var BMA;
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var Keyframe = (function () {
             function Keyframe(name, description, operands) {
-                this._type = "Keyframe";
                 this.name = name;
                 this.description = description;
                 this.operands = operands;
@@ -2853,7 +2849,6 @@ var BMA;
         LTLOperations.Operator = Operator;
         var Operation = (function () {
             function Operation() {
-                this._type = "Operation";
             }
             Object.defineProperty(Operation.prototype, "Operator", {
                 get: function () {
@@ -2887,12 +2882,6 @@ var BMA;
                 result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function);
                 result.Operands = operands;
                 return result;
-            };
-            Operation.prototype.GetJSON = function () {
-                return {};
-            };
-            Operation.prototype.GetTypeID = function () {
-                return "Operation";
             };
             return Operation;
         })();
@@ -4101,8 +4090,9 @@ var BMA;
         })();
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
-            function LTLViewer(ltlviewer) {
+            function LTLViewer(accordion, ltlviewer) {
                 this.ltlviewer = ltlviewer;
+                this.accordion = accordion;
             }
             LTLViewer.prototype.AddState = function (items) {
                 var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
@@ -4524,6 +4514,9 @@ var BMA;
             }
             TemporalPropertiesViewer.prototype.SetOperations = function (operations) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
+            };
+            TemporalPropertiesViewer.prototype.Refresh = function () {
+                this.tpviewer.temporalpropertiesviewer("refresh");
             };
             return TemporalPropertiesViewer;
         })();
@@ -11615,6 +11608,10 @@ jQuery.fn.extend({
                         viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
+                    //TODO: search for more generic solution
+                    svg._svg.onresize = function () {
+                        that.refresh();
+                    };
                     that.refresh();
                 }
             });
@@ -11716,6 +11713,19 @@ var BMA;
                     ltlresultsviewer.Hide();
                     popupViewer.Hide();
                 });
+                window.Commands.On("ModelReset", function (args) {
+                    var ops = [];
+                    for (var i = 0; i < appModel.Operations.length; i++) {
+                        ops.push({
+                            operation: appModel.Operations[i].Clone(),
+                            status: "nottested"
+                        });
+                    }
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
+                });
+                //window.Commands.On("LTLRequested",(args) => {
+                //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                //});
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
@@ -11736,7 +11746,7 @@ var BMA;
                 });
                 commands.On("ExportLTLFormula", function (args) {
                     if (args.operation !== undefined) {
-                        exportService.Export(JSON.stringify(args.operation), "operation", "txt");
+                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
                     }
                 });
                 commands.On("ImportLTLFormula", function (args) {
