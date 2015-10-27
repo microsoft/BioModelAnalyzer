@@ -72,6 +72,22 @@
                     popupViewer.Hide();
                 });
 
+                window.Commands.On("ModelReset",(args) => {
+                    var ops = [];
+                    for (var i = 0; i < appModel.Operations.length; i++) {
+                        ops.push({
+                            operation: appModel.Operations[i].Clone(),
+                            status: "nottested"
+                        });
+                    }
+
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
+                });
+
+                //window.Commands.On("LTLRequested",(args) => {
+                //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                //});
+
                 commands.On("TemporalPropertiesOperationsChanged",(args) => {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });

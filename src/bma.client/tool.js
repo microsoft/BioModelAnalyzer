@@ -4101,8 +4101,9 @@ var BMA;
         })();
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
-            function LTLViewer(ltlviewer) {
+            function LTLViewer(accordion, ltlviewer) {
                 this.ltlviewer = ltlviewer;
+                this.accordion = accordion;
             }
             LTLViewer.prototype.AddState = function (items) {
                 var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
@@ -4524,6 +4525,9 @@ var BMA;
             }
             TemporalPropertiesViewer.prototype.SetOperations = function (operations) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
+            };
+            TemporalPropertiesViewer.prototype.Refresh = function () {
+                this.tpviewer.temporalpropertiesviewer("refresh");
             };
             return TemporalPropertiesViewer;
         })();
@@ -11447,6 +11451,9 @@ jQuery.fn.extend({
                         viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
+                    svg._svg.onresize = function () {
+                        that.refresh();
+                    };
                     that.refresh();
                 }
             });
@@ -11548,6 +11555,19 @@ var BMA;
                     ltlresultsviewer.Hide();
                     popupViewer.Hide();
                 });
+                window.Commands.On("ModelReset", function (args) {
+                    var ops = [];
+                    for (var i = 0; i < appModel.Operations.length; i++) {
+                        ops.push({
+                            operation: appModel.Operations[i].Clone(),
+                            status: "nottested"
+                        });
+                    }
+                    ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
+                });
+                //window.Commands.On("LTLRequested",(args) => {
+                //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                //});
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });

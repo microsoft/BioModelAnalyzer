@@ -32,6 +32,10 @@
                         preserveAspectRatio: "none meet"
                     }, true);
 
+                    svg._svg.onresize = function () {
+                        that.refresh();
+                    }
+
                     that.refresh();
                 }
             });
