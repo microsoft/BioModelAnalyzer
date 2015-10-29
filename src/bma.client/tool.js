@@ -4726,6 +4726,7 @@ var BMA;
                 }));
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
+                var firstTime = 0;
                 var prevState = undefined;
                 var compareTags = function (prev, curr) {
                     if (prev === undefined)
@@ -4746,10 +4747,11 @@ var BMA;
                                 text: prevState,
                                 width: count,
                                 height: labels_height,
-                                x: i,
+                                x: firstTime,
                                 y: 0,
                             });
                         prevState = tags[i];
+                        firstTime = i + 1;
                         count = 1;
                     }
                     else {
@@ -4757,13 +4759,16 @@ var BMA;
                         if (i == tags.length - 1 && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
-                                width: count,
+                                width: count - 1,
                                 height: labels_height,
-                                x: i,
+                                x: firstTime,
                                 y: 0,
                             });
                     }
                 }
+                labels = labels.sort(function (x, y) {
+                    return x.text.length > y.text.length ? -1 : 1;
+                });
                 var interval = this.CreateInterval(vars);
                 var options = {
                     id: id,
@@ -9138,24 +9143,22 @@ var BMA;
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
             ///states markers on plot
-            //var domPlot = undefined;
-            //if (that.options.labels !== undefined && that.options.labels !== null) {
-            //    domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
-            //}
+            var domPlot = undefined;
+            if (that.options.labels !== undefined && that.options.labels !== null) {
+                domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+            }
             ///
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
-            //if (domPlot !== undefined) {
-            //    var domPlot2 = that._chart.get(domPlot[0]);
-            //    for (var i = 0; i < that.options.labels.length; i++) {
-            //        var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass("simulationplot-label").text(that.options.labels[i].text);
-            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
-            //            (that.options.labels[i].width > 1) ? 1 : 0.5, 1);
-            //        (i % 2 == 0) ? label.addClass("repeat") : 0;
-            //    }
-            //    //that._chart.addDOM(domPlot);
-            //    //domPlot2.find("simulationplot-label").
-            //}
+            if (domPlot !== undefined) {
+                var domPlot2 = that._chart.get(domPlot[0]);
+                for (var i = 0; i < that.options.labels.length; i++) {
+                    var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass((that.options.labels[i].text.length > 1) ? "stripes" : "").addClass("simulationplot-label");
+                    for (var j = 0; j < that.options.labels[i].text.length; j++)
+                        var marker = $("<div></div>").text(that.options.labels[i].text[j]).attr("data-idd-scale", "element").addClass("state-button").appendTo(label);
+                    domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height, 0, 1);
+                }
+            }
             //
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {

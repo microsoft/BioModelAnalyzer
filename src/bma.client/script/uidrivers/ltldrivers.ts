@@ -776,6 +776,7 @@ module BMA {
                     - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
+                var firstTime = 0;
                 var prevState = undefined;
 
                 var compareTags = function (prev, curr) {
@@ -798,23 +799,28 @@ module BMA {
                                 text: prevState,
                                 width: count,
                                 height: labels_height,
-                                x: i,
+                                x: firstTime,
                                 y: 0,
                             });
                         prevState = tags[i];
+                        firstTime = i + 1;
                         count = 1;
                     } else {
                         count++;
                         if (i == tags.length - 1 && prevState.length !== 0) 
                             labels.push({
                                 text: prevState,
-                                width: count,
+                                width: count - 1,
                                 height: labels_height,
-                                x: i,
+                                x: firstTime,
                                 y: 0,
                             });
                     }
                 }
+
+                labels = labels.sort((x, y) => {
+                    return x.text.length > y.text.length ? -1 : 1;
+                });
 
                 var interval = this.CreateInterval(vars);
 

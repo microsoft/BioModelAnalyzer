@@ -158,9 +158,34 @@
     .scrollbox(470px);
 
     .simulationplot-label{
-        background-color:white;
+        background-color:rgba(255, 255, 255, 0.5);
+        //border:1px solid @darkgrey;
         &.repeat {
-            background-color:@lightgrey;
+            background-color:rgba(60, 60, 60, 0.5);
+        }
+        &.stripes{
+            background:repeating-linear-gradient(
+                    45deg,
+                transparent,
+                transparent 10px,
+                rgba(60,60,60, 0.5) 10px,
+                rgba(60,60,60, 0.5) 20px
+          ),
+        }
+
+        .state-button {
+            display: inline-block;
+            margin: 5px 0px 10px 5px;
+            font-family: 'Segoe-UI-Light';
+            font-size: 20px;
+            line-height: 25px;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            border-radius: 100px;
+            background-color: white;
+            color: @darkgrey;
+            border: 1px solid @darkgrey;
         }
     }
 
