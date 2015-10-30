@@ -531,11 +531,13 @@ module BMA {
                     var bbox = this.operations[0].BoundingBox;
                     for (var i = 1; i < this.operations.length; i++) {
                         var unitBbbox = this.operations[i].BoundingBox;
+                        var x = Math.min(bbox.x, unitBbbox.x);
+                        var y = Math.min(bbox.y, unitBbbox.y);
                         bbox = {
-                            x: Math.min(bbox.x, unitBbbox.x),
-                            y: Math.min(bbox.y, unitBbbox.y),
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                            x: x,
+                            y: y,
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
                     }
                     this.driver.SetVisibleRect(bbox);

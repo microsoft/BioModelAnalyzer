@@ -4144,9 +4144,9 @@ var BMA;
             TemporalPropertiesEditorDriver.prototype.Show = function () {
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
-                    this.tpeditor = $("<div></div>").width(800);
+                    this.tpeditor = $("<div></div>").width("100%").height(600).css("min-height", 300);
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -11419,7 +11419,7 @@ jQuery.fn.extend({
         deletezone: undefined,
         options: {
             states: [],
-            drawingSurfaceHeight: 500,
+            drawingSurfaceHeight: "100%",
             onfittoview: undefined
         },
         _refreshStates: function () {
@@ -11444,12 +11444,24 @@ jQuery.fn.extend({
             var that = this;
             var root = this.element;
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("100%").appendTo(root);
             //Adding states
-            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
+            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
             //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
+            //Adding pre-defined states
+            var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+            //Oscilation state
+            var oscilationState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "oscialtion").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", "../images/oscillation-state.svg").appendTo(oscilationState);
+            //Selfloop state
+            var selfloopState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "selfloop").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", "../images/selfloop-state.svg").appendTo(selfloopState);
+            //True-state state
+            var trueState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "truestate").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", "../images/true-state.svg").appendTo(trueState);
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
@@ -12414,11 +12426,13 @@ var BMA;
                     var bbox = this.operations[0].BoundingBox;
                     for (var i = 1; i < this.operations.length; i++) {
                         var unitBbbox = this.operations[i].BoundingBox;
+                        var x = Math.min(bbox.x, unitBbbox.x);
+                        var y = Math.min(bbox.y, unitBbbox.y);
                         bbox = {
-                            x: Math.min(bbox.x, unitBbbox.x),
-                            y: Math.min(bbox.y, unitBbbox.y),
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                            x: x,
+                            y: y,
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
                     }
                     this.driver.SetVisibleRect(bbox);

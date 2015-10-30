@@ -3117,6 +3117,7 @@ textarea:focus {
 .temporal-toolbar {
   padding: 10px;
   margin-top: 5px;
+  display: table;
   background-color: #aaaaaa;
   font-family: 'Segoe-UI';
   font-size: 13px;
@@ -3126,7 +3127,7 @@ textarea:focus {
 }
 .temporal-toolbar .state-buttons {
   display: table-cell;
-  width: 250px;
+  width: 120px;
 }
 .temporal-toolbar .state-buttons .state-button.new {
   color: white;
