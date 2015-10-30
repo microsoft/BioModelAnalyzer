@@ -87,6 +87,7 @@ module BMA {
             private svgDriver: SVGPlotDriver;
             private contextMenuDriver: IContextMenu;
             private statesToSet = [];
+            private ftvcallback: Function = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -99,7 +100,7 @@ module BMA {
                     this.tpeditor = $("<div></div>").width(800);
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", /*isResizable: true*/ });
                 popup_position();
                 this.popupWindow.show();
 
@@ -161,6 +162,13 @@ module BMA {
                     this.tpeditor.temporalpropertieseditor({ states: states });
                 } else {
                     this.statesToSet = states;
+                }
+            }
+
+            SetFitToViewCallback(callback: Function) {
+                this.ftvcallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             }
         }
@@ -725,7 +733,7 @@ module BMA {
                         for (var j = 0; j < state.Operands.length; j++) {
                             var op = state.Operands[j];
                             if (op instanceof BMA.LTLOperations.KeyframeEquation) {
-                                
+
                                 if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
                                     var varName = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Name;
                                     var ind;
@@ -767,7 +775,7 @@ module BMA {
                                 result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
                             }
                         }
-                        if (state.Operands.length !== 0 && result)
+                        if (state.Operands.length !== 0 && result) 
                             tags[k].push(state.Name);
                     }
                 }
@@ -794,7 +802,7 @@ module BMA {
 
                 for (var i = 0; i < tags.length; i++) {
                     if (!compareTags(prevState, tags[i])) {
-                        if (prevState !== undefined && prevState.length !== 0)
+                        if (prevState !== undefined && prevState.length !== 0 && count > 1)
                             labels.push({
                                 text: prevState,
                                 width: count,
@@ -807,7 +815,7 @@ module BMA {
                         count = 1;
                     } else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0) 
+                        if (i == tags.length - 1 && prevState.length !== 0 && count > 2) 
                             labels.push({
                                 text: prevState,
                                 width: count - 1,
@@ -817,10 +825,6 @@ module BMA {
                             });
                     }
                 }
-
-                labels = labels.sort((x, y) => {
-                    return x.text.length > y.text.length ? -1 : 1;
-                });
 
                 var interval = this.CreateInterval(vars);
 

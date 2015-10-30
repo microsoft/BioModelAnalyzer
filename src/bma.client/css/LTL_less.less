@@ -219,6 +219,19 @@
     }
 }
 
+.fit-screen {
+    width: 25px;
+    padding: 10px;
+    position: absolute;
+    right: 0;
+}
+
+.resize-grabber {
+    position: absolute;
+    bottom: 1px;
+    right: 3px;
+}
+
 .temporal-dropzones {
     position: absolute;
     bottom: 0px;
@@ -250,7 +263,7 @@
             background-color: @lightgrey;
         }
 
-        &.hovered{
+        &.hovered {
             background-color: @lightgrey;
         }
     }
@@ -318,8 +331,13 @@
     }
 }
 
-ui-icon-arrowthickstop-1-s { background-image: url('../images/open.svg') !important; }
-ui-icon-arrowthickstop-1-n { background-image: url('../images/save.svg') !important; }
+ui-icon-arrowthickstop-1-s {
+    background-image: url('../images/open.svg') !important;
+}
+
+ui-icon-arrowthickstop-1-n {
+    background-image: url('../images/save.svg') !important;
+}
 
 
 // Bubbles

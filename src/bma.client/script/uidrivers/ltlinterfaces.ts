@@ -53,6 +53,7 @@ module BMA {
             };
             SetCopyZoneVisibility(isVisible: boolean);
             SetDeleteZoneVisibility(isVisible: boolean);
+            SetFitToViewCallback(callback: Function);
         }
 
         export interface ITemporalPropertiesViewer {

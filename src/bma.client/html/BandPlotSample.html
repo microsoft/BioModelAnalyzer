@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../js/rx.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../js/BandPlot.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var plot = InteractiveDataDisplay.asPlot("plot");
+
+            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(plot.host);
+            plot.navigation.gestureSource = gestureSource;
+    });
+    </script>
+
+</head>
+<body>
+    <div id="plot" data-idd-plot="plot" style="width: 800px; height: 600px; border: 1px solid black;"></div>
+</body>
+</html>

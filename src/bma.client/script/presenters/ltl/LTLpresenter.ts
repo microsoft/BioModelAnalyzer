@@ -29,9 +29,6 @@
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
 
                 temporlapropertieseditor.SetStates(appModel.States);
-                commands.On("KeyframesChanged",(args) => {
-                    temporlapropertieseditor.SetStates(args.states);
-                });
 
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged",(args) => {

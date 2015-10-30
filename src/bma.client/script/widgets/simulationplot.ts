@@ -45,16 +45,16 @@
 
 
             ///states markers on plot
-            var domPlot = undefined;
+            that.domPlot = undefined;
             if (that.options.labels !== undefined && that.options.labels !== null) {
-                domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+                that.domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
             }
             ///
 
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
-            if (domPlot !== undefined) {
-                var domPlot2 = that._chart.get(domPlot[0]);
+            if (that.domPlot !== undefined) {
+                var domPlot2 = that._chart.get(that.domPlot[0]);
                 for (var i = 0; i < that.options.labels.length; i++) {
                     var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass((that.options.labels[i].text.length > 1) ? "stripes" : "")
                         .addClass("simulationplot-label");
@@ -62,8 +62,8 @@
                         var marker = $("<div></div>").text(that.options.labels[i].text[j]).attr("data-idd-scale", "element")
                             .addClass("state-button").appendTo(label);
                     domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
-                         0 , 1);
-                    //(i % 2 == 0) ? label.addClass("repeat") : 0;
+                        (that.options.labels[i].width > 1) ? 0: 0.5 , 1);
+                    (i % 2 == 0) ? label.addClass("repeat") : 0;
                 }
                 //that._chart.addDOM(domPlot);
                 //domPlot2.find("simulationplot-label").
@@ -211,6 +211,9 @@
             switch (key) {
                 case "colors":
                     this.options.colors = value;
+                    break;
+                case "labels":
+                    this.options.labels = value;
                     break;
             }
             if (value !== null && value !== undefined)

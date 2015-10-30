@@ -66,6 +66,10 @@
                     needUpdate = true;
                     break;
                 }
+                case "labels": {
+                    needUpdate = true;
+                    break;
+                }
                 case "data": {
                     needUpdate = true;
                     break;
@@ -139,17 +143,6 @@
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
                     && this.options.data !== undefined && this.options.data.length !== 0
                     && this.options.tags !== undefined && this.options.tags.length !== 0) {
-                    //var tags = [];
-                    //tags.push([]);
-                    //tags[0].push("A");
-                    //tags[0].push("B");
-                    //for (var i = 1; i < that.options.data.length / 3; i++) {
-                    //    tags.push("A");
-                    //}
-                    //for (var i = that.options.data.length / 3; i < that.options.data.length *2/3; i++)
-                    //    tags.push("B");
-                    //for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
-                    //    tags.push("A");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
@@ -199,37 +192,6 @@
                 if (this.options.visibleItems.length < i + 1)
                     this.options.visibleItems.push(that.options.variables[i][1]);
             }
-            //if (this.options.tags !== undefined && this.options.tags.length !== 0) {
-            //    labels.push({ text: "A", x: 2, y: 2, width: 1, height: 0.5 });
-            //    //var compareTags = function (prev, curr) {
-            //    //    if (prev === undefined)
-            //    //        return false;
-            //    //    if (prev.length === curr.length) {
-            //    //        for (var j = 0; j < prev.length; j++) {
-            //    //            if (prev[j] !== curr[j])
-            //    //                return false;
-            //    //        }
-            //    //        return true;
-            //    //    }
-            //    //    return false;
-            //    //}
-
-            //    //var labels = 
-            //    //var prevState = undefined;
-            //    //var count = (that.options.tags.length > 0) ? 1 : 0;
-
-            //    //for (var i = 0; i < that.options.tags.length; i++) {
-            //    //    if (!compareTags(prevState, that.options.tags[i])) {
-            //    //        if (count > 1)
-            //    //            $(prevTd).attr("colspan", count);
-            //    //        prevState = that.options.tags[i];
-            //    //        prevTd = $('<td></td>').text(prevState).appendTo(tr0);
-            //    //        count = 1;
-            //    //    } else {
-            //    //        count++;
-            //    //    }
-            //    //}
-            //}
             if (plotData !== undefined && plotData.length !== 0)
                 this._plot.simulationplot({
                     colors: plotData,

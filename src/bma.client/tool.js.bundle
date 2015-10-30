@@ -14,6 +14,7 @@
   <files>
     
 	<file>/js/svgplot.js</file>
+  <file>/js/BandPlot.js</file>
 	<file>/js/scalablegridlinesplot.js</file>
 	<file>/script/XmlModelParser.js</file> 
 	<file>/script/SVGHelper.js</file>

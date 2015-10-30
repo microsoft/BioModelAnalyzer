@@ -291,6 +291,7 @@
     <Content Include="images\saveicon.png" />
     <Content Include="images\savelocally.png" />
     <Content Include="images\savelocally.svg" />
+    <Content Include="images\screen-fit.svg" />
     <Content Include="images\state-line-del.svg" />
     <Content Include="images\state-variable.svg" />
     <Content Include="images\succeeded.png" />
@@ -318,6 +319,7 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
+    <Content Include="js\BandPlot.js" />
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.cookie.js" />

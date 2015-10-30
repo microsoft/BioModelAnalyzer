@@ -171,6 +171,305 @@
 
 
 })(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
+///#source 1 1 /js/BandPlot.js
+(function (BMAExt, InteractiveDataDisplay, $, undefined) {
+
+    BMAExt.BandPlot = function (div, master) {
+        var that = this;
+
+        // Initialization (#1)
+        var initializer = InteractiveDataDisplay.Utils.getDataSourceFunction(div, InteractiveDataDisplay.readCsv);
+        var initialData = initializer(div);
+
+        this.base = InteractiveDataDisplay.CanvasPlot;
+        this.base(div, master);
+
+        var _x, _y_mean, _y_u68, _y_l68, _y_u95, _y_l95;
+        var _fill_68 = 'blue';
+        var _fill_95 = 'pink';
+        var _stroke = "black";
+        var _thickness = 1; 
+
+        // default styles:
+        if (initialData) {
+            _fill_68 = typeof initialData.fill_68 != "undefined" ? initialData.fill_68 : _fill_68;
+            _fill_95 = typeof initialData.fill_95 != "undefined" ? initialData.fill_95 : _fill_95;
+            _stroke = typeof initialData.stroke != "undefined" ? initialData.stroke : _stroke;
+            _thickness = typeof initialData.thickness != "undefined" ? initialData.thickness : _thickness;
+
+        }
+
+        this.draw = function (data) {
+            var y_mean = data.y_mean;
+            if (!y_mean) throw "Data series y_mean is undefined";
+            var n = y_mean.length;
+
+            var y_u68 = data.y_u68;
+            if (y_u68 && y_u68.length !== n)
+                throw "Data series y_u68 and y_mean have different lengths";
+
+            var y_l68 = data.y_l68;
+            if (y_l68 && y_l68.length !== n)
+                throw "Data series y_l68 and y_mean have different lengths";
+
+            var y_u95 = data.y_u95;
+            if (y_u95 && y_u95.length !== n)
+                throw "Data series y_u95 and y_mean have different lengths";
+
+            var y_l95 = data.y_l95;
+            if (y_l95 && y_l95.length !== n)
+                throw "Data series y_l95 and y_mean have different lengths";
+
+            if (!data.x) {
+                data.x = InteractiveDataDisplay.Utils.range(0, n - 1);
+            }
+
+            if (n != data.x.length) throw "Data series x and y1,y2 have different lengths";
+            _y_mean = y_mean;
+            _y_u68 = y_u68;
+            _y_l68 = y_l68;
+            _y_u95 = y_u95;
+            _y_l95 = y_l95;
+            _x = data.x;
+
+            // styles:
+            _fill_68 = typeof data.fill_68 != "undefined" ? data.fill_68 : _fill_68;
+            _fill_95 = typeof data.fill_95 != "undefined" ? data.fill_95 : _fill_95;
+            _stroke = typeof data.stroke != "undefined" ? data.stroke : _stroke;
+            _thickness = typeof data.thickness != "undefined" ? data.thickness : _thickness;
+
+            this.invalidateLocalBounds();
+
+            this.requestNextFrameOrUpdate();
+            this.fireAppearanceChanged();
+        };
+
+        // Returns a rectangle in the plot plane.
+        this.computeLocalBounds = function () {
+            var dataToPlotX = this.xDataTransform && this.xDataTransform.dataToPlot;
+            var dataToPlotY = this.yDataTransform && this.yDataTransform.dataToPlot;
+
+            var mean = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_mean, dataToPlotX, dataToPlotY);
+            var u68 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_u68, dataToPlotX, dataToPlotY);
+            var l68 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_l68, dataToPlotX, dataToPlotY);
+            var u95 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_u95, dataToPlotX, dataToPlotY);
+            var l95 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_l95, dataToPlotX, dataToPlotY);
+
+            return InteractiveDataDisplay.Utils.unionRects(mean, InteractiveDataDisplay.Utils.unionRects(u68, InteractiveDataDisplay.Utils.unionRects(l68, InteractiveDataDisplay.Utils.unionRects(u95, l95))));
+        };
+
+        // Returns 4 margins in the screen coordinate system
+        this.getLocalPadding = function () {
+            return { left: 0, right: 0, top: 0, bottom: 0 };
+        };
+
+        var renderArea = function (_x, _y1, _y2, _fill, plotRect, screenSize, context) {
+            if (_x === undefined || _y1 == undefined || _y2 == undefined)
+                return;
+            var n = _y1.length;
+            if (n == 0) return;
+
+            var t = that.getTransform();
+            var dataToScreenX = t.dataToScreenX;
+            var dataToScreenY = t.dataToScreenY;
+
+            // size of the canvas
+            var w_s = screenSize.width;
+            var h_s = screenSize.height;
+            var xmin = 0, xmax = w_s;
+            var ymin = 0, ymax = h_s;
+
+            context.globalAlpha = 0.5;
+            context.fillStyle = _fill;
+
+            //Drawing polygons
+            var polygons = [];
+            var curInd = undefined;
+            for (var i = 0; i < n; i++) {
+                if (isNaN(_x[i]) || isNaN(_y1[i]) || isNaN(_y2[i])) {
+                    if (curInd === undefined) {
+                        curInd = i;
+                    }
+                    else {
+                        polygons.push([curInd, i]);
+                        curInd = undefined;
+                    }
+                } else {
+                    if (curInd === undefined) {
+                        curInd = i;
+                    }
+                    else {
+                        if (i === n - 1) {
+                            polygons.push([curInd, i]);
+                            curInd = undefined;
+                        }
+                    }
+                }
+            }
+
+            var nPoly = polygons.length;
+            for (var i = 0; i < nPoly; i++) {
+                context.beginPath();
+                var curPoly = polygons[i];
+                context.moveTo(dataToScreenX(_x[curPoly[0]]), dataToScreenY(_y1[curPoly[0]]));
+                for (var j = curPoly[0] + 1; j <= curPoly[1]; j++) {
+                    context.lineTo(dataToScreenX(_x[j]), dataToScreenY(_y1[j]));
+                }
+                for (var j = curPoly[1]; j >= curPoly[0]; j--) {
+                    context.lineTo(dataToScreenX(_x[j]), dataToScreenY(_y2[j]));
+                }
+                context.fill();
+            }
+        }
+
+        var renderLine = function (_x, _y, _stroke, _thickness, plotRect, screenSize, context) {
+            if (_x === undefined || _y == undefined)
+                return;
+            var n = _y.length;
+            if (n == 0) return;
+
+            var t = that.getTransform();
+            var dataToScreenX = t.dataToScreenX;
+            var dataToScreenY = t.dataToScreenY;
+
+            // size of the canvas
+            var w_s = screenSize.width;
+            var h_s = screenSize.height;
+            var xmin = 0, xmax = w_s;
+            var ymin = 0, ymax = h_s;
+
+            context.globalAlpha = 1.0;
+            context.strokeStyle = _stroke;
+            context.fillStyle = _stroke; // for single points surrounded with missing values
+            context.lineWidth = _thickness;
+            //context.lineCap = _lineCap;
+            //context.lineJoin = _lineJoin;
+
+            context.beginPath();
+            var x1, x2, y1, y2;
+            var i = 0;
+
+            // Looking for non-missing value
+            var nextValuePoint = function () {
+                for (; i < n; i++) {
+                    if (isNaN(_x[i]) || isNaN(_y[i])) continue; // missing value
+                    x1 = dataToScreenX(_x[i]);
+                    y1 = dataToScreenY(_y[i]);
+                    c1 = code(x1, y1, xmin, xmax, ymin, ymax);
+                    break;
+                }
+                if (c1 == 0) // point is inside visible rect 
+                    context.moveTo(x1, y1);
+            };
+            nextValuePoint();
+
+            var c1, c2, c1_, c2_;
+            var dx, dy;
+            var x2_, y2_;
+            var m = 1; // number of points for the current batch
+            for (i++; i < n; i++) {
+                if (isNaN(_x[i]) || isNaN(_y[i])) // missing value
+                {
+                    if (m == 1) { // single point surrounded by missing values
+                        context.stroke(); // finishing previous segment (it is broken by missing value)
+                        var c = code(x1, y1, xmin, xmax, ymin, ymax);
+                        if (c == 0) {
+                            context.beginPath();
+                            context.arc(x1, y1, _thickness / 2, 0, 2 * Math.PI);
+                            context.fill();
+                        }
+                    } else {
+                        context.stroke(); // finishing previous segment (it is broken by missing value)
+                    }
+                    context.beginPath();
+                    i++;
+                    nextValuePoint();
+                    m = 1;
+                    continue;
+                }
+
+                x2_ = x2 = dataToScreenX(_x[i]);
+                y2_ = y2 = dataToScreenY(_y[i]);
+                if (Math.abs(x1 - x2) < 1 && Math.abs(y1 - y2) < 1) continue;
+
+                // Clipping and drawing segment p1 - p2:
+                c1_ = c1;
+                c2_ = c2 = code(x2, y2, xmin, xmax, ymin, ymax);
+
+                while (c1 | c2) {
+                    if (c1 & c2) break; // segment is invisible
+                    dx = x2 - x1;
+                    dy = y2 - y1;
+                    if (c1) {
+                        if (x1 < xmin) { y1 += dy * (xmin - x1) / dx; x1 = xmin; }
+                        else if (x1 > xmax) { y1 += dy * (xmax - x1) / dx; x1 = xmax; }
+                        else if (y1 < ymin) { x1 += dx * (ymin - y1) / dy; y1 = ymin; }
+                        else if (y1 > ymax) { x1 += dx * (ymax - y1) / dy; y1 = ymax; }
+                        c1 = code(x1, y1, xmin, xmax, ymin, ymax);
+                    } else {
+                        if (x2 < xmin) { y2 += dy * (xmin - x2) / dx; x2 = xmin; }
+                        else if (x2 > xmax) { y2 += dy * (xmax - x2) / dx; x2 = xmax; }
+                        else if (y2 < ymin) { x2 += dx * (ymin - y2) / dy; y2 = ymin; }
+                        else if (y2 > ymax) { x2 += dx * (ymax - y2) / dy; y2 = ymax; }
+                        c2 = code(x2, y2, xmin, xmax, ymin, ymax);
+                    }
+                }
+                if (!(c1 & c2)) {
+                    if (c1_ != 0) // point wasn't visible
+                        context.moveTo(x1, y1);
+                    context.lineTo(x2, y2);
+                    m++;
+                }
+
+                x1 = x2_;
+                y1 = y2_;
+                c1 = c2_;
+            }
+
+            // Final stroke
+            if (m == 1) { // single point surrounded by missing values
+                context.stroke(); // finishing previous segment (it is broken by missing value)
+                var c = code(x1, y1, xmin, xmax, ymin, ymax);
+                if (c == 0) {
+                    context.beginPath();
+                    context.arc(x1, y1, _thickness / 2, 0, 2 * Math.PI);
+                    context.fill();
+                }
+            } else {
+                context.stroke(); // finishing previous segment (it is broken by missing value)
+            }
+        }
+
+        this.renderCore = function (plotRect, screenSize) {
+            BMAExt.BandPlot.prototype.renderCore.call(this, plotRect, screenSize);
+
+            var context = that.getContext(true);
+
+            renderArea(_x, _y_l95, _y_u95, _fill_95, plotRect, screenSize, context);
+            renderArea(_x, _y_l68, _y_u68, _fill_68, plotRect, screenSize, context);
+            renderLine(_x, _y_mean, _stroke, _thickness, plotRect, screenSize, context);
+        };
+
+        // Clipping algorithms
+        var code = function (x, y, xmin, xmax, ymin, ymax) {
+            return (x < xmin) << 3 | (x > xmax) << 2 | (y < ymin) << 1 | (y > ymax);
+        };
+
+
+        // Others
+        this.onDataTransformChanged = function (arg) {
+            this.invalidateLocalBounds();
+            BMAExt.BandPlot.prototype.onDataTransformChanged.call(this, arg);
+        };
+
+        // Initialization 
+        //if (initialData && typeof initialData.y != 'undefined')
+        //    this.draw(initialData);
+    }
+
+    BMAExt.BandPlot.prototype = new InteractiveDataDisplay.CanvasPlot;
+
+})(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
 ///#source 1 1 /js/scalablegridlinesplot.js
 (function (BMAExt, InteractiveDataDisplay, $, undefined) {
 
@@ -4137,6 +4436,7 @@ var BMA;
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
                 this.statesToSet = [];
+                this.ftvcallback = undefined;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
@@ -4145,7 +4445,7 @@ var BMA;
                 if (shouldInit) {
                     this.tpeditor = $("<div></div>").width(800);
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -4194,6 +4494,12 @@ var BMA;
                 }
                 else {
                     this.statesToSet = states;
+                }
+            };
+            TemporalPropertiesEditorDriver.prototype.SetFitToViewCallback = function (callback) {
+                this.ftvcallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             };
             return TemporalPropertiesEditorDriver;
@@ -4742,7 +5048,7 @@ var BMA;
                 };
                 for (var i = 0; i < tags.length; i++) {
                     if (!compareTags(prevState, tags[i])) {
-                        if (prevState !== undefined && prevState.length !== 0)
+                        if (prevState !== undefined && prevState.length !== 0 && count > 1)
                             labels.push({
                                 text: prevState,
                                 width: count,
@@ -4756,7 +5062,7 @@ var BMA;
                     }
                     else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0)
+                        if (i == tags.length - 1 && prevState.length !== 0 && count > 2)
                             labels.push({
                                 text: prevState,
                                 width: count - 1,
@@ -4766,9 +5072,6 @@ var BMA;
                             });
                     }
                 }
-                labels = labels.sort(function (x, y) {
-                    return x.text.length > y.text.length ? -1 : 1;
-                });
                 var interval = this.CreateInterval(vars);
                 var options = {
                     id: id,
@@ -9035,6 +9338,7 @@ var BMA;
 (function ($) {
     $.widget("BMA.resultswindowviewer", {
         options: {
+            isResizable: false,
             content: $(),
             header: "",
             icon: "",
@@ -9073,6 +9377,9 @@ var BMA;
         _create: function () {
             var that = this;
             var options = this.options;
+            if (options.isResizable) {
+                this.element.resizable();
+            }
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
             this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
@@ -9105,6 +9412,11 @@ var BMA;
                 case "icon":
                     this.options.icon = value;
                     this.reseticon();
+                    break;
+                case "isResizable":
+                    if (this.options.isResizable !== value) {
+                        this.element.resizable({ disabled: !value });
+                    }
                     break;
             }
             this._super(key, value);
@@ -9143,20 +9455,21 @@ var BMA;
             var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("id", "glPlot").attr("data-idd-plot", "scalableGridLines").appendTo(this.chartdiv);
             ///states markers on plot
-            var domPlot = undefined;
+            that.domPlot = undefined;
             if (that.options.labels !== undefined && that.options.labels !== null) {
-                domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
+                that.domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
             }
             ///
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
-            if (domPlot !== undefined) {
-                var domPlot2 = that._chart.get(domPlot[0]);
+            if (that.domPlot !== undefined) {
+                var domPlot2 = that._chart.get(that.domPlot[0]);
                 for (var i = 0; i < that.options.labels.length; i++) {
                     var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass((that.options.labels[i].text.length > 1) ? "stripes" : "").addClass("simulationplot-label");
                     for (var j = 0; j < that.options.labels[i].text.length; j++)
                         var marker = $("<div></div>").text(that.options.labels[i].text[j]).attr("data-idd-scale", "element").addClass("state-button").appendTo(label);
-                    domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height, 0, 1);
+                    domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height, (that.options.labels[i].width > 1) ? 0 : 0.5, 1);
+                    (i % 2 == 0) ? label.addClass("repeat") : 0;
                 }
             }
             //
@@ -9286,6 +9599,9 @@ var BMA;
             switch (key) {
                 case "colors":
                     this.options.colors = value;
+                    break;
+                case "labels":
+                    this.options.labels = value;
                     break;
             }
             if (value !== null && value !== undefined)
@@ -10407,6 +10723,10 @@ jQuery.fn.extend({
                     needUpdate = true;
                     break;
                 }
+                case "labels": {
+                    needUpdate = true;
+                    break;
+                }
                 case "data": {
                     needUpdate = true;
                     break;
@@ -10473,17 +10793,6 @@ jQuery.fn.extend({
                     numericData: that.options.variables,
                 });
                 if (this.options.interval !== undefined && this.options.interval.length !== 0 && this.options.data !== undefined && this.options.data.length !== 0 && this.options.tags !== undefined && this.options.tags.length !== 0) {
-                    //var tags = [];
-                    //tags.push([]);
-                    //tags[0].push("A");
-                    //tags[0].push("B");
-                    //for (var i = 1; i < that.options.data.length / 3; i++) {
-                    //    tags.push("A");
-                    //}
-                    //for (var i = that.options.data.length / 3; i < that.options.data.length *2/3; i++)
-                    //    tags.push("B");
-                    //for (var i = that.options.data.length * 2 / 3; i < that.options.data.length; i++)
-                    //    tags.push("A");
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
@@ -10528,35 +10837,6 @@ jQuery.fn.extend({
                 if (this.options.visibleItems.length < i + 1)
                     this.options.visibleItems.push(that.options.variables[i][1]);
             }
-            //if (this.options.tags !== undefined && this.options.tags.length !== 0) {
-            //    labels.push({ text: "A", x: 2, y: 2, width: 1, height: 0.5 });
-            //    //var compareTags = function (prev, curr) {
-            //    //    if (prev === undefined)
-            //    //        return false;
-            //    //    if (prev.length === curr.length) {
-            //    //        for (var j = 0; j < prev.length; j++) {
-            //    //            if (prev[j] !== curr[j])
-            //    //                return false;
-            //    //        }
-            //    //        return true;
-            //    //    }
-            //    //    return false;
-            //    //}
-            //    //var labels = 
-            //    //var prevState = undefined;
-            //    //var count = (that.options.tags.length > 0) ? 1 : 0;
-            //    //for (var i = 0; i < that.options.tags.length; i++) {
-            //    //    if (!compareTags(prevState, that.options.tags[i])) {
-            //    //        if (count > 1)
-            //    //            $(prevTd).attr("colspan", count);
-            //    //        prevState = that.options.tags[i];
-            //    //        prevTd = $('<td></td>').text(prevState).appendTo(tr0);
-            //    //        count = 1;
-            //    //    } else {
-            //    //        count++;
-            //    //    }
-            //    //}
-            //}
             if (plotData !== undefined && plotData.length !== 0)
                 this._plot.simulationplot({
                     colors: plotData,
@@ -11406,7 +11686,8 @@ jQuery.fn.extend({
         deletezone: undefined,
         options: {
             states: [],
-            drawingSurfaceHeight: 500
+            drawingSurfaceHeight: 500,
+            onfittoview: undefined
         },
         _refreshStates: function () {
             var that = this;
@@ -11495,6 +11776,13 @@ jQuery.fn.extend({
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", 1000).appendTo(dom.host);
+            $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
+            fitDiv.click(function () {
+                if (that.options.onfittoview !== undefined) {
+                    that.options.onfittoview();
+                }
+            });
             //Context menu
             var holdCords = {
                 holdX: 0,
@@ -11731,9 +12019,6 @@ var BMA;
                 this.appModel = appModel;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 temporlapropertieseditor.SetStates(appModel.States);
-                commands.On("KeyframesChanged", function (args) {
-                    temporlapropertieseditor.SetStates(args.states);
-                });
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
@@ -12169,6 +12454,7 @@ var BMA;
                 });
                 commands.On("KeyframesChanged", function (args) {
                     _this.ClearResults();
+                    tpEditorDriver.SetStates(args.states);
                     for (var i = 0; i < _this.operations.length; i++) {
                         var op = _this.operations[i];
                         op.RefreshStates(args.states);
@@ -12381,11 +12667,31 @@ var BMA;
                         _this.operations[i].IsVisible = false;
                     }
                     _this.operations = [];
-                    _this.LoadOperationsFromAppModel();
+                    _this.LoadFromAppModel();
                 });
-                this.LoadOperationsFromAppModel();
+                tpEditorDriver.SetFitToViewCallback(function () {
+                    that.FitToView();
+                });
+                this.LoadFromAppModel();
             }
-            TemporalPropertiesPresenter.prototype.LoadOperationsFromAppModel = function () {
+            TemporalPropertiesPresenter.prototype.FitToView = function () {
+                if (this.operations.length < 1)
+                    this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
+                else {
+                    var bbox = this.operations[0].BoundingBox;
+                    for (var i = 1; i < this.operations.length; i++) {
+                        var unitBbbox = this.operations[i].BoundingBox;
+                        bbox = {
+                            x: Math.min(bbox.x, unitBbbox.x),
+                            y: Math.min(bbox.y, unitBbbox.y),
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                        };
+                    }
+                    this.driver.SetVisibleRect(bbox);
+                }
+            };
+            TemporalPropertiesPresenter.prototype.LoadFromAppModel = function () {
                 var appModel = this.appModel;
                 var height = 0;
                 var padding = 5;
@@ -12397,6 +12703,11 @@ var BMA;
                         height += newOp.BoundingBox.height / 2 + padding;
                         this.operations.push(newOp);
                     }
+                }
+                this.tpEditorDriver.SetStates(appModel.States);
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    op.RefreshStates(appModel.States);
                 }
                 this.OnOperationsChanged(true);
             };
