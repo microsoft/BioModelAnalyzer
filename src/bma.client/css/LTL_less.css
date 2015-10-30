@@ -3073,6 +3073,17 @@ textarea:focus {
 .window.temporal-properties .window-title {
   padding: 10px 0px 0px 10px;
 }
+.fit-screen {
+  width: 25px;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+}
+.resize-grabber {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+}
 .temporal-dropzones {
   position: absolute;
   bottom: 0px;

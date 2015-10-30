@@ -4137,6 +4137,7 @@ var BMA;
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
                 this.statesToSet = [];
+                this.ftvcallback = undefined;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
@@ -4145,7 +4146,7 @@ var BMA;
                 if (shouldInit) {
                     this.tpeditor = $("<div></div>").width(800);
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -4194,6 +4195,12 @@ var BMA;
                 }
                 else {
                     this.statesToSet = states;
+                }
+            };
+            TemporalPropertiesEditorDriver.prototype.SetFitToViewCallback = function (callback) {
+                this.ftvcallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             };
             return TemporalPropertiesEditorDriver;
@@ -9030,6 +9037,7 @@ var BMA;
 (function ($) {
     $.widget("BMA.resultswindowviewer", {
         options: {
+            isResizable: false,
             content: $(),
             header: "",
             icon: "",
@@ -9068,6 +9076,9 @@ var BMA;
         _create: function () {
             var that = this;
             var options = this.options;
+            if (options.isResizable) {
+                this.element.resizable();
+            }
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
             this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
@@ -9100,6 +9111,11 @@ var BMA;
                 case "icon":
                     this.options.icon = value;
                     this.reseticon();
+                    break;
+                case "isResizable":
+                    if (this.options.isResizable !== value) {
+                        this.element.resizable({ disabled: !value });
+                    }
                     break;
             }
             this._super(key, value);
@@ -11403,7 +11419,8 @@ jQuery.fn.extend({
         deletezone: undefined,
         options: {
             states: [],
-            drawingSurfaceHeight: 500
+            drawingSurfaceHeight: 500,
+            onfittoview: undefined
         },
         _refreshStates: function () {
             var that = this;
@@ -11492,6 +11509,13 @@ jQuery.fn.extend({
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", 1000).appendTo(dom.host);
+            $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
+            fitDiv.click(function () {
+                if (that.options.onfittoview !== undefined) {
+                    that.options.onfittoview();
+                }
+            });
             //Context menu
             var holdCords = {
                 holdX: 0,
@@ -11728,9 +11752,6 @@ var BMA;
                 this.appModel = appModel;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 temporlapropertieseditor.SetStates(appModel.States);
-                commands.On("KeyframesChanged", function (args) {
-                    temporlapropertieseditor.SetStates(args.states);
-                });
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
@@ -12166,6 +12187,7 @@ var BMA;
                 });
                 commands.On("KeyframesChanged", function (args) {
                     _this.ClearResults();
+                    tpEditorDriver.SetStates(args.states);
                     for (var i = 0; i < _this.operations.length; i++) {
                         var op = _this.operations[i];
                         op.RefreshStates(args.states);
@@ -12378,11 +12400,31 @@ var BMA;
                         _this.operations[i].IsVisible = false;
                     }
                     _this.operations = [];
-                    _this.LoadOperationsFromAppModel();
+                    _this.LoadFromAppModel();
                 });
-                this.LoadOperationsFromAppModel();
+                tpEditorDriver.SetFitToViewCallback(function () {
+                    that.FitToView();
+                });
+                this.LoadFromAppModel();
             }
-            TemporalPropertiesPresenter.prototype.LoadOperationsFromAppModel = function () {
+            TemporalPropertiesPresenter.prototype.FitToView = function () {
+                if (this.operations.length < 1)
+                    this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
+                else {
+                    var bbox = this.operations[0].BoundingBox;
+                    for (var i = 1; i < this.operations.length; i++) {
+                        var unitBbbox = this.operations[i].BoundingBox;
+                        bbox = {
+                            x: Math.min(bbox.x, unitBbbox.x),
+                            y: Math.min(bbox.y, unitBbbox.y),
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                        };
+                    }
+                    this.driver.SetVisibleRect(bbox);
+                }
+            };
+            TemporalPropertiesPresenter.prototype.LoadFromAppModel = function () {
                 var appModel = this.appModel;
                 var height = 0;
                 var padding = 5;
@@ -12394,6 +12436,11 @@ var BMA;
                         height += newOp.BoundingBox.height / 2 + padding;
                         this.operations.push(newOp);
                     }
+                }
+                this.tpEditorDriver.SetStates(appModel.States);
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    op.RefreshStates(appModel.States);
                 }
                 this.OnOperationsChanged(true);
             };

@@ -87,6 +87,7 @@ module BMA {
             private svgDriver: SVGPlotDriver;
             private contextMenuDriver: IContextMenu;
             private statesToSet = [];
+            private ftvcallback: Function = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -99,7 +100,7 @@ module BMA {
                     this.tpeditor = $("<div></div>").width(800);
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", /*isResizable: true*/ });
                 popup_position();
                 this.popupWindow.show();
 
@@ -161,6 +162,13 @@ module BMA {
                     this.tpeditor.temporalpropertieseditor({ states: states });
                 } else {
                     this.statesToSet = states;
+                }
+            }
+
+            SetFitToViewCallback(callback: Function) {
+                this.ftvcallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             }
         }

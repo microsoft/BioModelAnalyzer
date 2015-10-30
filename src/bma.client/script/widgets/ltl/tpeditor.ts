@@ -9,7 +9,8 @@
 
         options: {
             states: [],
-            drawingSurfaceHeight: 500
+            drawingSurfaceHeight: 500,
+            onfittoview: undefined
         },
 
         _refreshStates: function () {
@@ -129,7 +130,15 @@
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
-                  
+
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", 1000).appendTo(dom.host);
+            $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
+            fitDiv.click(function () {
+                if (that.options.onfittoview !== undefined) {
+                    that.options.onfittoview();
+                }
+            });
+                
             //Context menu
             var holdCords = {
                 holdX: 0,

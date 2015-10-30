@@ -268,6 +268,7 @@ module BMA {
 
                 commands.On("KeyframesChanged",(args: { states: BMA.LTLOperations.Keyframe[] }) => {
                     this.ClearResults();
+                    tpEditorDriver.SetStates(args.states);
                     for (var i = 0; i < this.operations.length; i++) {
                         var op = this.operations[i];
                         op.RefreshStates(args.states);
@@ -513,13 +514,35 @@ module BMA {
                         this.operations[i].IsVisible = false;
                     }
                     this.operations = [];
-                    this.LoadOperationsFromAppModel();
+                    this.LoadFromAppModel();
                 });
 
-                this.LoadOperationsFromAppModel();
+                tpEditorDriver.SetFitToViewCallback(() => {
+                    that.FitToView();
+                });
+
+                this.LoadFromAppModel();
             }
 
-            private LoadOperationsFromAppModel() {
+            private FitToView() {
+                if (this.operations.length < 1)
+                    this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
+                else {
+                    var bbox = this.operations[0].BoundingBox;
+                    for (var i = 1; i < this.operations.length; i++) {
+                        var unitBbbox = this.operations[i].BoundingBox;
+                        bbox = {
+                            x: Math.min(bbox.x, unitBbbox.x),
+                            y: Math.min(bbox.y, unitBbbox.y),
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                        };
+                    }
+                    this.driver.SetVisibleRect(bbox);
+                }
+            }
+
+            private LoadFromAppModel() {
                 var appModel = this.appModel;
                 var height = 0;
                 var padding = 5;
@@ -531,6 +554,12 @@ module BMA {
                         height += newOp.BoundingBox.height / 2 + padding;
                         this.operations.push(newOp);
                     }
+                }
+
+                this.tpEditorDriver.SetStates(appModel.States);
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    op.RefreshStates(appModel.States);
                 }
 
                 this.OnOperationsChanged(true);

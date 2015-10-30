@@ -4,6 +4,7 @@
 (function ($) {
     $.widget("BMA.resultswindowviewer", {
         options: {
+            isResizable: false,
             content: $(),
             header: "",
             icon: "",
@@ -47,6 +48,11 @@
         _create: function () {
             var that = this;
             var options = this.options;
+
+            if (options.isResizable) {
+                this.element.resizable();
+            }
+
             this.header = $('<div></div>')
                 .addClass('analysis-title')
                 .appendTo(this.element);
@@ -87,6 +93,11 @@
                 case "icon": 
                     this.options.icon = value;
                     this.reseticon();
+                    break;
+                case "isResizable":
+                    if (this.options.isResizable !== value) {
+                        this.element.resizable({ disabled: !value });
+                    }
                     break;
             }
             this._super(key, value);
