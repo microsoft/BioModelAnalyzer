@@ -9,7 +9,7 @@
 
         options: {
             states: [],
-            drawingSurfaceHeight: "100%",
+            drawingSurfaceHeight: 500,
             onfittoview: undefined
         },
 

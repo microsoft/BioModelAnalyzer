@@ -97,10 +97,10 @@ module BMA {
             public Show() {
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
-                    this.tpeditor = $("<div></div>").width("100%").height(600).css("min-height", 300);
+                    this.tpeditor = $("<div></div>").width(800);
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
 

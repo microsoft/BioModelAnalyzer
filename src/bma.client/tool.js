@@ -2126,6 +2126,8 @@ var BMA;
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
                 }
+                this.states = [];
+                this.operations = [];
                 this.proofResult = undefined;
                 window.Commands.Execute("ModelReset", undefined);
             };
@@ -2140,8 +2142,14 @@ var BMA;
                         if (ltl.states !== undefined) {
                             this.states = ltl.states;
                         }
+                        else {
+                            this.states = [];
+                        }
                         if (ltl.operations !== undefined) {
                             this.operations = ltl.operations;
+                        }
+                        else {
+                            this.operations = [];
                         }
                     }
                 }
@@ -4144,9 +4152,9 @@ var BMA;
             TemporalPropertiesEditorDriver.prototype.Show = function () {
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
-                    this.tpeditor = $("<div></div>").width("100%").height(600).css("min-height", 300);
+                    this.tpeditor = $("<div></div>").width(800);
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -11419,7 +11427,7 @@ jQuery.fn.extend({
         deletezone: undefined,
         options: {
             states: [],
-            drawingSurfaceHeight: "100%",
+            drawingSurfaceHeight: 500,
             onfittoview: undefined
         },
         _refreshStates: function () {
