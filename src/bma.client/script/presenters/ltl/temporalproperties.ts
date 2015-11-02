@@ -48,6 +48,11 @@ module BMA {
 
             private statesPresenter: BMA.LTL.StatesPresenter;
 
+            private zoomConstraints = {
+                minWidth: 100,
+                maxWidth: 1000
+            };
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -288,6 +293,20 @@ module BMA {
                     }
                 });
 
+                commands.On("VisibleRectChanged",(param) => {
+                    if (param < this.zoomConstraints.minWidth) {
+                        param = this.zoomConstraints.minWidth;
+                        this.navigationDriver.SetZoom(param);
+                    }
+                    if (param > this.zoomConstraints.maxWidth) {
+                        param = this.zoomConstraints.maxWidth;
+                        this.navigationDriver.SetZoom(param);
+                    }
+
+                    //var zoom = (param - window.PlotSettings.MinWidth) / 24;
+                    //commands.Execute("ZoomSliderBind", zoom);
+                });
+
                 that.dragService.GetMouseMoves().subscribe(
                     (gesture) => {
                         if (that.previousHighlightedOperation !== undefined) {
@@ -516,6 +535,7 @@ module BMA {
                     this.operations = [];
                     this.LoadFromAppModel();
                 });
+
 
                 tpEditorDriver.SetFitToViewCallback(() => {
                     that.FitToView();

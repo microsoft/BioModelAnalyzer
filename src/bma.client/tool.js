@@ -8406,6 +8406,9 @@ var BMA;
                     else {
                     }
                     break;
+                case "plotConstraint":
+                    this._plotSettings = value;
+                    break;
             }
             this._super(key, value);
         },
@@ -11502,7 +11505,11 @@ jQuery.fn.extend({
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
                 gridVisibility: false,
-                dropFilter: ["ltl-tp-droppable"]
+                dropFilter: ["ltl-tp-droppable"],
+                plotConstraint: {
+                    MinWidth: 100,
+                    MaxWidth: 1000
+                }
             });
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
@@ -11529,7 +11536,7 @@ jQuery.fn.extend({
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
-            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", 1000).appendTo(dom.host);
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dom.host);
             $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
             fitDiv.click(function () {
                 if (that.options.onfittoview !== undefined) {
@@ -12027,6 +12034,10 @@ var BMA;
                 this.controlPanels = [];
                 this.controlPanelPadding = 3;
                 this.isUpdateControlRequested = false;
+                this.zoomConstraints = {
+                    minWidth: 100,
+                    maxWidth: 1000
+                };
                 var that = this;
                 this.appModel = appModel;
                 this.ajax = ajax;
@@ -12223,6 +12234,18 @@ var BMA;
                     for (var i = 0; i < that.operations.length; i++) {
                         that.operations[i].Refresh();
                     }
+                });
+                commands.On("VisibleRectChanged", function (param) {
+                    if (param < _this.zoomConstraints.minWidth) {
+                        param = _this.zoomConstraints.minWidth;
+                        _this.navigationDriver.SetZoom(param);
+                    }
+                    if (param > _this.zoomConstraints.maxWidth) {
+                        param = _this.zoomConstraints.maxWidth;
+                        _this.navigationDriver.SetZoom(param);
+                    }
+                    //var zoom = (param - window.PlotSettings.MinWidth) / 24;
+                    //commands.Execute("ZoomSliderBind", zoom);
                 });
                 that.dragService.GetMouseMoves().subscribe(function (gesture) {
                     if (that.previousHighlightedOperation !== undefined) {

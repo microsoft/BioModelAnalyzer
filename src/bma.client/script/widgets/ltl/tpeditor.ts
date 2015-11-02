@@ -132,7 +132,11 @@
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
                 gridVisibility: false,
-                dropFilter: ["ltl-tp-droppable"]
+                dropFilter: ["ltl-tp-droppable"],
+                plotConstraint: {
+                    MinWidth: 100,
+                    MaxWidth: 1000
+                }
             });
 
             if (that.options.commands !== undefined) {
@@ -165,7 +169,7 @@
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
 
-            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", 1000).appendTo(dom.host);
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dom.host);
             $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
             fitDiv.click(function () {
                 if (that.options.onfittoview !== undefined) {
