@@ -95,12 +95,15 @@ module BMA {
             }
 
             public Show() {
+                var that = this;
+
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
-                    this.tpeditor = $("<div></div>").width(800);
+                    this.tpeditor = $("<div></div>").css("height", "100%");
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: false });
+
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: () => { that.OnResize(); } });
                 popup_position();
                 this.popupWindow.show();
 
@@ -111,6 +114,12 @@ module BMA {
 
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
                 }
+
+                this.popupWindow.trigger("resize");
+            }
+
+            OnResize() {
+                this.tpeditor.temporalpropertieseditor("updateLayout");
             }
 
             Hide() {
@@ -399,7 +408,7 @@ module BMA {
                     this.statesEditor = $("<div></div>");
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
 

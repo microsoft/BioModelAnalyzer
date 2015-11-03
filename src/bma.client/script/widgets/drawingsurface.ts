@@ -528,6 +528,10 @@ declare var Rx: any;
 
         getCentralPart: function () {
             return this._domPlot;
+        },
+
+        updateLayout: function () {
+            this._plot.updateLayout();
         }
 
     });

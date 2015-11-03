@@ -4150,11 +4150,14 @@ var BMA;
                 this.commands = commands;
             }
             TemporalPropertiesEditorDriver.prototype.Show = function () {
+                var that = this;
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
-                    this.tpeditor = $("<div></div>").width(800);
+                    this.tpeditor = $("<div></div>").css("height", "100%");
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: false });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: function () {
+                    that.OnResize();
+                } });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -4163,6 +4166,10 @@ var BMA;
                     this.svgDriver.SetGridVisibility(false);
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
                 }
+                this.popupWindow.trigger("resize");
+            };
+            TemporalPropertiesEditorDriver.prototype.OnResize = function () {
+                this.tpeditor.temporalpropertieseditor("updateLayout");
             };
             TemporalPropertiesEditorDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
@@ -4410,7 +4417,7 @@ var BMA;
                 if (shouldInit) {
                     this.statesEditor = $("<div></div>");
                 }
-                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -8473,6 +8480,9 @@ var BMA;
         },
         getCentralPart: function () {
             return this._domPlot;
+        },
+        updateLayout: function () {
+            this._plot.updateLayout();
         }
     });
 }(jQuery));
@@ -9054,7 +9064,8 @@ var BMA;
             icon: "",
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {
             } },
-            tabid: ""
+            tabid: "",
+            onresize: undefined
         },
         reseticon: function () {
             var that = this;
@@ -9088,7 +9099,15 @@ var BMA;
             var that = this;
             var options = this.options;
             if (options.isResizable) {
-                this.element.resizable();
+                this.element.resizable({
+                    minWidth: 500,
+                    minHeight: 400,
+                    resize: function (event, ui) {
+                        if (that.options.onresize !== undefined) {
+                            that.options.onresize !== undefined;
+                        }
+                    }
+                });
             }
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
@@ -9125,7 +9144,23 @@ var BMA;
                     break;
                 case "isResizable":
                     if (this.options.isResizable !== value) {
-                        this.element.resizable({ disabled: !value });
+                        if (value) {
+                            this.element.resizable({
+                                minWidth: 500,
+                                minHeight: 400,
+                                resize: function (event, ui) {
+                                    if (that.options.onresize !== undefined) {
+                                        that.options.onresize !== undefined;
+                                    }
+                                }
+                            });
+                            this.element.trigger("resize");
+                        }
+                        else {
+                            this.element.resizable("destroy");
+                            this.element.css("width", '');
+                            this.element.css("height", '');
+                        }
                     }
                     break;
             }
@@ -11430,7 +11465,7 @@ jQuery.fn.extend({
         deletezone: undefined,
         options: {
             states: [],
-            drawingSurfaceHeight: 500,
+            drawingSurfaceHeight: "calc(100% - 113px - 30px)",
             onfittoview: undefined
         },
         _refreshStates: function () {
@@ -11455,7 +11490,7 @@ jQuery.fn.extend({
             var that = this;
             var root = this.element;
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("100%").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
@@ -11499,7 +11534,7 @@ jQuery.fn.extend({
                 });
             }
             //Adding drawing surface
-            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").height(this.options.drawingSurfaceHeight).appendTo(root);
+            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
@@ -11532,9 +11567,12 @@ jQuery.fn.extend({
             */
             var dom = drawingSurface.drawingsurface("getCentralPart");
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
+            dropzones.width("100%");
             this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            this.copyzone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
             var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dom.host);
             $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
@@ -11655,25 +11693,28 @@ jQuery.fn.extend({
         },
         getcopyzonebbox: function () {
             var x = this._drawingSurface.drawingsurface("getPlotX", 15);
-            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.copyzone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385) - x,
-                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width()) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
             return bbox;
         },
         getdeletezonebbox: function () {
-            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5);
-            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6);
+            var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.deletezone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5 + 385) - x,
-                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6 + this.copyzone.width()) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
             return bbox;
+        },
+        updateLayout: function () {
+            this._drawingSurface.drawingsurface("updateLayout");
         }
     });
 }(jQuery));
@@ -12466,6 +12507,12 @@ var BMA;
                             height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
                     }
+                    bbox = {
+                        x: bbox.x - bbox.width / 5,
+                        y: bbox.y - bbox.height / 5,
+                        width: bbox.width * 1.4,
+                        height: bbox.height * 1.4
+                    };
                     this.driver.SetVisibleRect(bbox);
                 }
             };
@@ -12487,6 +12534,7 @@ var BMA;
                     var op = this.operations[i];
                     op.RefreshStates(appModel.States);
                 }
+                this.FitToView();
                 this.OnOperationsChanged(true);
             };
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {

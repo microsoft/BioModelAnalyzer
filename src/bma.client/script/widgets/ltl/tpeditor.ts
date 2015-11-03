@@ -4,12 +4,13 @@
 (function ($) {
     $.widget("BMA.temporalpropertieseditor", {
         _drawingSurface: undefined,
+
         copyzone: undefined,
         deletezone: undefined,
 
         options: {
             states: [],
-            drawingSurfaceHeight: 500,
+            drawingSurfaceHeight: "calc(100% - 113px - 30px)",
             onfittoview: undefined
         },
 
@@ -47,7 +48,7 @@
             var root = this.element;
 
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("100%").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
             
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
@@ -126,7 +127,7 @@
             }
 
             //Adding drawing surface
-            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").height(this.options.drawingSurfaceHeight).appendTo(root);
+            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
@@ -164,9 +165,14 @@
             var dom = drawingSurface.drawingsurface("getCentralPart");
             
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
+            dropzones.width("100%");
+
             this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            this.copyzone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
+
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
 
             var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dom.host);
@@ -299,12 +305,12 @@
 
         getcopyzonebbox: function () {
             var x = this._drawingSurface.drawingsurface("getPlotX", 15);
-            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.copyzone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385) - x,
-                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width()) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
 
 
@@ -313,18 +319,22 @@
 
         getdeletezonebbox: function () {
 
-            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5);
-            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6);
+            var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.deletezone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5 + 385) - x,
-                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6 + this.copyzone.width()) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
 
 
             return bbox;
 
+        },
+
+        updateLayout: function () {
+            this._drawingSurface.drawingsurface("updateLayout");
         }
 
     });

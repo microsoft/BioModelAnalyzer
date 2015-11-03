@@ -3144,6 +3144,10 @@ textarea:focus {
   vertical-align: top;
   width: 450px;
 }
+.temporal-toolbar .temporal-operators .operators {
+  height: 64px;
+  overflow-y: auto;
+}
 .temporal-toolbar .temporal-operators .operator {
   display: inline-block;
   color: #606060;

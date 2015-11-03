@@ -560,6 +560,13 @@ module BMA {
                             height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
                     }
+
+                    bbox = {
+                        x: bbox.x - bbox.width / 5,
+                        y: bbox.y - bbox.height / 5,
+                        width: bbox.width * 1.4,
+                        height: bbox.height * 1.4
+                    }
                     this.driver.SetVisibleRect(bbox);
                 }
             }
@@ -584,6 +591,7 @@ module BMA {
                     op.RefreshStates(appModel.States);
                 }
 
+                this.FitToView();
                 this.OnOperationsChanged(true);
             }
 
