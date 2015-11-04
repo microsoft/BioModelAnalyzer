@@ -302,6 +302,7 @@
     <Content Include="images\svgtest.txt" />
     <Content Include="images\tick-128.png" />
     <Content Include="images\title-TOU.png" />
+    <Content Include="images\true-state.svg" />
     <Content Include="images\undo.png" />
     <Content Include="images\undo.svg" />
     <Content Include="images\validation-failed.svg" />
