@@ -294,5 +294,6 @@
     }
 
     BMAExt.BandPlot.prototype = new InteractiveDataDisplay.CanvasPlot;
+    InteractiveDataDisplay.register('bandPlot', function (div, master) { return new BMAExt.BandPlot(div, master); });
 
 })(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
