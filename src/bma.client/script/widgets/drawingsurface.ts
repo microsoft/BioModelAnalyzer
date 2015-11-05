@@ -441,6 +441,9 @@ declare var Rx: any;
                         //this.lightSVGDiv.css("z-index", undefined);
                     }
                     break;
+                case "plotConstraint":
+                    this._plotSettings = value;
+                    break;
             }
             this._super(key, value);
         },
@@ -525,6 +528,10 @@ declare var Rx: any;
 
         getCentralPart: function () {
             return this._domPlot;
+        },
+
+        updateLayout: function () {
+            this._plot.updateLayout();
         }
 
     });

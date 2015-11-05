@@ -48,6 +48,11 @@ module BMA {
 
             private statesPresenter: BMA.LTL.StatesPresenter;
 
+            private zoomConstraints = {
+                minWidth: 100,
+                maxWidth: 1000
+            };
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -288,6 +293,20 @@ module BMA {
                     }
                 });
 
+                commands.On("VisibleRectChanged",(param) => {
+                    if (param < this.zoomConstraints.minWidth) {
+                        param = this.zoomConstraints.minWidth;
+                        this.navigationDriver.SetZoom(param);
+                    }
+                    if (param > this.zoomConstraints.maxWidth) {
+                        param = this.zoomConstraints.maxWidth;
+                        this.navigationDriver.SetZoom(param);
+                    }
+
+                    //var zoom = (param - window.PlotSettings.MinWidth) / 24;
+                    //commands.Execute("ZoomSliderBind", zoom);
+                });
+
                 that.dragService.GetMouseMoves().subscribe(
                     (gesture) => {
                         if (that.previousHighlightedOperation !== undefined) {
@@ -517,6 +536,7 @@ module BMA {
                     this.LoadFromAppModel();
                 });
 
+
                 tpEditorDriver.SetFitToViewCallback(() => {
                     that.FitToView();
                 });
@@ -531,12 +551,21 @@ module BMA {
                     var bbox = this.operations[0].BoundingBox;
                     for (var i = 1; i < this.operations.length; i++) {
                         var unitBbbox = this.operations[i].BoundingBox;
+                        var x = Math.min(bbox.x, unitBbbox.x);
+                        var y = Math.min(bbox.y, unitBbbox.y);
                         bbox = {
-                            x: Math.min(bbox.x, unitBbbox.x),
-                            y: Math.min(bbox.y, unitBbbox.y),
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                            x: x,
+                            y: y,
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
+                    }
+
+                    bbox = {
+                        x: bbox.x - bbox.width / 5,
+                        y: bbox.y - bbox.height / 5,
+                        width: bbox.width * 1.4,
+                        height: bbox.height * 1.4
                     }
                     this.driver.SetVisibleRect(bbox);
                 }
@@ -562,6 +591,7 @@ module BMA {
                     op.RefreshStates(appModel.States);
                 }
 
+                this.FitToView();
                 this.OnOperationsChanged(true);
             }
 

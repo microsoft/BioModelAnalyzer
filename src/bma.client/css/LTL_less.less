@@ -272,14 +272,15 @@
 .temporal-toolbar {
     padding: 10px;
     margin-top: 5px;
-    //display: table;
+    display: table;
     background-color: @midgrey;
     .default-text();
     color: white;
 
+
     .state-buttons {
         display: table-cell;
-        width: 250px;
+        width: 120px;
 
         .state-button {
             &.new {
@@ -301,6 +302,11 @@
         display: table-cell;
         vertical-align: top;
         width: 450px;
+
+        .operators {
+            height: 64px;
+            overflow-y: auto;
+        }
 
         .operator {
             display: inline-block;
@@ -330,6 +336,7 @@
         }
     }
 }
+
 
 ui-icon-arrowthickstop-1-s {
     background-image: url('../images/open.svg') !important;

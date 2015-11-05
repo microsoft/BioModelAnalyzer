@@ -9,7 +9,8 @@
             header: "",
             icon: "",
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () { } },
-            tabid: ""
+            tabid: "",
+            onresize: undefined
         },
 
         reseticon: function () {
@@ -50,7 +51,15 @@
             var options = this.options;
 
             if (options.isResizable) {
-                this.element.resizable();
+                this.element.resizable({
+                    minWidth: 500,
+                    minHeight: 400,
+                    resize: function (event, ui) {
+                        if (that.options.onresize !== undefined) {
+                            that.options.onresize !== undefined;
+                        }
+                    }
+                });
             }
 
             this.header = $('<div></div>')
@@ -96,7 +105,22 @@
                     break;
                 case "isResizable":
                     if (this.options.isResizable !== value) {
-                        this.element.resizable({ disabled: !value });
+                        if (value) {
+                            this.element.resizable({
+                                minWidth: 500,
+                                minHeight: 400,
+                                resize: function (event, ui) {
+                                    if (that.options.onresize !== undefined) {
+                                        that.options.onresize !== undefined;
+                                    }
+                                }
+                            });
+                            this.element.trigger("resize");
+                        } else {
+                            this.element.resizable("destroy");
+                            this.element.css("width", '');
+                            this.element.css("height", '');
+                        }
                     }
                     break;
             }

@@ -122,6 +122,9 @@ module BMA {
                     this.layout = new BMA.Model.Layout([], []);
                 }
 
+                this.states = [];
+                this.operations = [];
+
                 this.proofResult = undefined;
                 window.Commands.Execute("ModelReset", undefined);
             }
@@ -139,10 +142,14 @@ module BMA {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
                             this.states = ltl.states;
+                        } else {
+                            this.states = [];
                         }
 
                         if (ltl.operations !== undefined) {
                             this.operations = ltl.operations;
+                        } else {
+                            this.operations = [];
                         }
                     }
                 } else {

@@ -2426,6 +2426,8 @@ var BMA;
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
                 }
+                this.states = [];
+                this.operations = [];
                 this.proofResult = undefined;
                 window.Commands.Execute("ModelReset", undefined);
             };
@@ -2440,8 +2442,14 @@ var BMA;
                         if (ltl.states !== undefined) {
                             this.states = ltl.states;
                         }
+                        else {
+                            this.states = [];
+                        }
                         if (ltl.operations !== undefined) {
                             this.operations = ltl.operations;
+                        }
+                        else {
+                            this.operations = [];
                         }
                     }
                 }
@@ -4442,11 +4450,14 @@ var BMA;
                 this.commands = commands;
             }
             TemporalPropertiesEditorDriver.prototype.Show = function () {
+                var that = this;
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
-                    this.tpeditor = $("<div></div>").width(800);
+                    this.tpeditor = $("<div></div>").css("height", "100%");
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", });
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: function () {
+                    that.OnResize();
+                } });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -4455,6 +4466,10 @@ var BMA;
                     this.svgDriver.SetGridVisibility(false);
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
                 }
+                this.popupWindow.trigger("resize");
+            };
+            TemporalPropertiesEditorDriver.prototype.OnResize = function () {
+                this.tpeditor.temporalpropertieseditor("updateLayout");
             };
             TemporalPropertiesEditorDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
@@ -4702,7 +4717,7 @@ var BMA;
                 if (shouldInit) {
                     this.statesEditor = $("<div></div>");
                 }
-                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -8700,6 +8715,9 @@ var BMA;
                     else {
                     }
                     break;
+                case "plotConstraint":
+                    this._plotSettings = value;
+                    break;
             }
             this._super(key, value);
         },
@@ -8764,6 +8782,9 @@ var BMA;
         },
         getCentralPart: function () {
             return this._domPlot;
+        },
+        updateLayout: function () {
+            this._plot.updateLayout();
         }
     });
 }(jQuery));
@@ -9345,7 +9366,8 @@ var BMA;
             icon: "",
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () {
             } },
-            tabid: ""
+            tabid: "",
+            onresize: undefined
         },
         reseticon: function () {
             var that = this;
@@ -9379,7 +9401,15 @@ var BMA;
             var that = this;
             var options = this.options;
             if (options.isResizable) {
-                this.element.resizable();
+                this.element.resizable({
+                    minWidth: 500,
+                    minHeight: 400,
+                    resize: function (event, ui) {
+                        if (that.options.onresize !== undefined) {
+                            that.options.onresize !== undefined;
+                        }
+                    }
+                });
             }
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
@@ -9416,7 +9446,23 @@ var BMA;
                     break;
                 case "isResizable":
                     if (this.options.isResizable !== value) {
-                        this.element.resizable({ disabled: !value });
+                        if (value) {
+                            this.element.resizable({
+                                minWidth: 500,
+                                minHeight: 400,
+                                resize: function (event, ui) {
+                                    if (that.options.onresize !== undefined) {
+                                        that.options.onresize !== undefined;
+                                    }
+                                }
+                            });
+                            this.element.trigger("resize");
+                        }
+                        else {
+                            this.element.resizable("destroy");
+                            this.element.css("width", '');
+                            this.element.css("height", '');
+                        }
                     }
                     break;
             }
@@ -11687,7 +11733,7 @@ jQuery.fn.extend({
         deletezone: undefined,
         options: {
             states: [],
-            drawingSurfaceHeight: 500,
+            drawingSurfaceHeight: "calc(100% - 113px - 30px)",
             onfittoview: undefined
         },
         _refreshStates: function () {
@@ -11712,12 +11758,24 @@ jQuery.fn.extend({
             var that = this;
             var root = this.element;
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
             //Adding states
-            var states = $("<div></div>").addClass("state-buttons").html("States<br>").appendTo(toolbar);
+            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
             //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
+            //Adding pre-defined states
+            var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+            //Oscilation state
+            var oscilationState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "oscialtion").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", "../images/oscillation-state.svg").appendTo(oscilationState);
+            //Selfloop state
+            var selfloopState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "selfloop").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", "../images/selfloop-state.svg").appendTo(selfloopState);
+            //True-state state
+            var trueState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "truestate").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", "../images/true-state.svg").appendTo(trueState);
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
@@ -11744,13 +11802,17 @@ jQuery.fn.extend({
                 });
             }
             //Adding drawing surface
-            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").height(this.options.drawingSurfaceHeight).appendTo(root);
+            var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface();
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
                 gridVisibility: false,
-                dropFilter: ["ltl-tp-droppable"]
+                dropFilter: ["ltl-tp-droppable"],
+                plotConstraint: {
+                    MinWidth: 100,
+                    MaxWidth: 1000
+                }
             });
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
@@ -11773,11 +11835,14 @@ jQuery.fn.extend({
             */
             var dom = drawingSurface.drawingsurface("getCentralPart");
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
+            dropzones.width("100%");
             this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            this.copyzone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
-            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", 1000).appendTo(dom.host);
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dom.host);
             $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
             fitDiv.click(function () {
                 if (that.options.onfittoview !== undefined) {
@@ -11896,25 +11961,28 @@ jQuery.fn.extend({
         },
         getcopyzonebbox: function () {
             var x = this._drawingSurface.drawingsurface("getPlotX", 15);
-            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.copyzone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385) - x,
-                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width()) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
             return bbox;
         },
         getdeletezonebbox: function () {
-            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5);
-            var y = this._drawingSurface.drawingsurface("getPlotY", 500 - 10 - 60);
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6);
+            var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.deletezone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + 385 + 5 + 385) - x,
-                height: this._drawingSurface.drawingsurface("getPlotY", 500 - 10) - y
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6 + this.copyzone.width()) - x,
+                height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
             return bbox;
+        },
+        updateLayout: function () {
+            this._drawingSurface.drawingsurface("updateLayout");
         }
     });
 }(jQuery));
@@ -12275,6 +12343,10 @@ var BMA;
                 this.controlPanels = [];
                 this.controlPanelPadding = 3;
                 this.isUpdateControlRequested = false;
+                this.zoomConstraints = {
+                    minWidth: 100,
+                    maxWidth: 1000
+                };
                 var that = this;
                 this.appModel = appModel;
                 this.ajax = ajax;
@@ -12471,6 +12543,18 @@ var BMA;
                     for (var i = 0; i < that.operations.length; i++) {
                         that.operations[i].Refresh();
                     }
+                });
+                commands.On("VisibleRectChanged", function (param) {
+                    if (param < _this.zoomConstraints.minWidth) {
+                        param = _this.zoomConstraints.minWidth;
+                        _this.navigationDriver.SetZoom(param);
+                    }
+                    if (param > _this.zoomConstraints.maxWidth) {
+                        param = _this.zoomConstraints.maxWidth;
+                        _this.navigationDriver.SetZoom(param);
+                    }
+                    //var zoom = (param - window.PlotSettings.MinWidth) / 24;
+                    //commands.Execute("ZoomSliderBind", zoom);
                 });
                 that.dragService.GetMouseMoves().subscribe(function (gesture) {
                     if (that.previousHighlightedOperation !== undefined) {
@@ -12682,13 +12766,21 @@ var BMA;
                     var bbox = this.operations[0].BoundingBox;
                     for (var i = 1; i < this.operations.length; i++) {
                         var unitBbbox = this.operations[i].BoundingBox;
+                        var x = Math.min(bbox.x, unitBbbox.x);
+                        var y = Math.min(bbox.y, unitBbbox.y);
                         bbox = {
-                            x: Math.min(bbox.x, unitBbbox.x),
-                            y: Math.min(bbox.y, unitBbbox.y),
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - Math.min(bbox.x, unitBbbox.x),
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - Math.min(bbox.y, unitBbbox.y)
+                            x: x,
+                            y: y,
+                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
                     }
+                    bbox = {
+                        x: bbox.x - bbox.width / 5,
+                        y: bbox.y - bbox.height / 5,
+                        width: bbox.width * 1.4,
+                        height: bbox.height * 1.4
+                    };
                     this.driver.SetVisibleRect(bbox);
                 }
             };
@@ -12710,6 +12802,7 @@ var BMA;
                     var op = this.operations[i];
                     op.RefreshStates(appModel.States);
                 }
+                this.FitToView();
                 this.OnOperationsChanged(true);
             };
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
