@@ -1,14 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F7B5A3D7-B82D-4906-940C-DED019A886BC}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "..\..\src\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
 EndProject
@@ -19,8 +21,6 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj", "{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "UIExpr", "..\..\src\UIExpr\UIExpr.fsproj", "{C6745675-EA9F-41F3-BFFC-2C3810585B36}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BackEndTests", "..\..\src\BackEndTests\BackEndTests.fsproj", "{5BB237C7-EDA2-4558-883E-A50CE6C096E6}"
 EndProject
