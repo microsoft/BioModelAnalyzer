@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CsvReader.Azure</name>
+    </assembly>
+    <members>
+        <member name="M:DataAccess.DataTableBuilderAzureExtensions.ReadAzureBlob(DataAccess.DataTableBuilder,Microsoft.WindowsAzure.CloudStorageAccount,System.String,System.String)">
+            <summary>
+            Read a data table from azure blob. This will read the entire blob into memory and return a mutable data table.
+            </summary>
+            <param name="builder">builder</param>
+            <param name="account">azure acount</param>
+            <param name="containerName">conatiner name</param>
+            <param name="blobName">blob name</param>
+            <returns>in-memory mutable datatable from blob</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderAzureExtensions.ReadAzureBlob(DataAccess.DataTableBuilder,Microsoft.WindowsAzure.StorageClient.CloudBlobContainer,System.String)">
+            <summary>
+            Read a data table from azure blob. This will read the entire blob into memory and return a mutable data table.
+            </summary>
+            <param name="builder">builder</param>
+            <param name="container">conatiner</param>
+            <param name="blobName">blob name</param>
+            <returns>in-memory mutable datatable from blob</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderAzureExtensions.ReadAzureBlobLazy(DataAccess.DataTableBuilder,Microsoft.WindowsAzure.CloudStorageAccount,System.String,System.String)">
+            <summary>
+            Read a data table from azure blob. This reads streaming. 
+            </summary>
+            <param name="builder">builder</param>
+            <param name="account">azure acount</param>
+            <param name="containerName">conatiner name</param>
+            <param name="blobName">blob name</param>
+            <returns>in-memory mutable datatable from blob</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderAzureExtensions.ReadAzureBlobLazy(DataAccess.DataTableBuilder,Microsoft.WindowsAzure.StorageClient.CloudBlobContainer,System.String)">
+            <summary>
+            Read a data table from azure blob. This reads streaming. 
+            </summary>
+            <param name="builder">builder</param>
+            <param name="container">conatiner</param>
+            <param name="blobName">blob name</param>
+            <returns>in-memory mutable datatable from blob</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderAzureExtensions.ReadAzureTableLazy(DataAccess.DataTableBuilder,Microsoft.WindowsAzure.CloudStorageAccount,System.String)">
+            <summary>
+            Read an Azure Table as a CSV. Returned CSV includes columns for the ParitionKey and RowKey.
+            The row order is the same as Azure's natural row ordering (sorted by partition key, rowkey)
+            This is a lazy function, so it reads the table rows at a time and does not read the entire table into memory. 
+            </summary>
+            <param name="builder">builder</param>
+            <param name="account">azure storage account</param>
+            <param name="tableName">name of table within account</param>
+            <returns></returns>
+        </member>
+        <member name="T:DataAccess.DataTableAzureExtensions">
+            <summary>
+            Azure Extensions for DataTable instance.
+            These generally support saving a datatable up to Azure as a blob or Azure Table.
+            </summary>
+        </member>
+        <member name="M:DataAccess.DataTableAzureExtensions.SaveToAzureBlob(DataAccess.DataTable,Microsoft.WindowsAzure.CloudStorageAccount,System.String,System.String)">
+            <summary>
+            Save the data table to the given azure blob. This will overwrite an existing blob.
+            </summary>
+            <param name="table">instance of table to save</param>
+            <param name="account">azure acount</param>
+            <param name="containerName">conatiner name</param>
+            <param name="blobName">blob name</param>
+        </member>
+        <member name="M:DataAccess.DataTableAzureExtensions.SaveToAzureBlob(DataAccess.DataTable,Microsoft.WindowsAzure.StorageClient.CloudBlobContainer,System.String)">
+            <summary>
+            Save the data table to the given azure blob. This will overwrite an existing blob.
+            </summary>
+            <param name="table">instance of table to save</param>
+            <param name="container">conatiner</param>
+            <param name="blobName">blob name</param>
+        </member>
+        <member name="M:DataAccess.DataTableAzureExtensions.SaveToAzureTable(DataAccess.DataTable,Microsoft.WindowsAzure.CloudStorageAccount,System.String)">
+            <summary>
+            Save to azure table, typing all columns as strings. 
+            Overwrite if the table already exists
+            Fabricate a partition and row key is they're not provided in the table.
+            </summary>
+            <param name="table">datatable to save</param>
+            <param name="account">cloud account to write to</param>
+            <param name="tableName">azure table name to save as. </param>
+        </member>
+        <member name="M:DataAccess.DataTableAzureExtensions.SaveToAzureTable(DataAccess.DataTable,Microsoft.WindowsAzure.CloudStorageAccount,System.String,System.Type[],System.Func{System.Int32,DataAccess.Row,DataAccess.PartitionRowKey})">
+            <summary>
+            Save the datatable up to an AzureTable. Overwrite if the azure table already exists.
+            </summary>
+            <param name="table">source table to save</param>
+            <param name="account">azure storage account</param>
+            <param name="tableName">name of azure table to write to. </param>
+            <param name="columnTypes">parallel array to table.ColumnNames. 
+            Strong typing for the columns in the azure table. Column i is skipped if columnTypes[i] is null.
+            ColumnTypes should be types that can be normalized to OData (string,byte,sbyte,i16,i32,i64,double,single,boolean,decimal, datetime, guid).
+            </param>
+            <param name="funcComputeKeys">function to compute the partion and row keys for each row. </param>
+        </member>
+        <member name="T:DataAccess.PartitionRowKey">
+            <summary>
+            Class to encapsulate a partition and row key. This is similar to Tuple[string,string], but less ambiguous. 
+            Partition plus Row key must be unique. 
+            </summary>
+        </member>
+        <member name="M:DataAccess.PartitionRowKey.#ctor">
+            <summary>
+            Empty constructor. Set the partition and row key via the properties.
+            </summary>
+        </member>
+        <member name="M:DataAccess.PartitionRowKey.#ctor(System.String,System.String)">
+            <summary>
+            initialize a container for an parition key and row key pair.
+            </summary>
+            <param name="partitionKey">partition key for azure table row</param>
+            <param name="rowKey">Row key for azure table row.</param>
+        </member>
+        <member name="M:DataAccess.PartitionRowKey.#ctor(System.String,System.Int32)">
+            <summary>
+            initialize a container for an parition key and row key pair.
+            Overload to pad rowkey with 0s so that rows sort nicely as strings.
+            </summary>
+            <param name="partitionKey">partition key for azure table row</param>
+            <param name="rowKey">Row key for azure table row. pad rowkey with 0s so that it sorts nicely. </param>
+        </member>
+        <member name="P:DataAccess.PartitionRowKey.PartitionKey">
+            <summary>
+            Partition key to use for Azure Table. 
+            </summary>
+        </member>
+        <member name="P:DataAccess.PartitionRowKey.RowKey">
+            <summary>
+            Row key to use for azure table.
+            </summary>
+        </member>
+    </members>
+</doc>

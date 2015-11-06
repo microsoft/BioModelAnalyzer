@@ -7,13 +7,9 @@
 /// <reference path="script\commands.ts"/>
 /// <reference path="script\elementsregistry.ts"/>
 /// <reference path="script\functionsregistry.ts"/>
-/// <reference path="script\keyframesregistry.ts"/>
-/// <reference path="script\operatorsregistry.ts"/>
 /// <reference path="script\localRepository.ts"/>
-/// <reference path="script\uidrivers\commoninterfaces.ts"/>
-/// <reference path="script\uidrivers\commondrivers.ts"/>
-/// <reference path="script\uidrivers\commoninterfaces.ts"/>
-/// <reference path="script\uidrivers\commondrivers.ts"/>
+/// <reference path="script\uidrivers.interfaces.ts"/>
+/// <reference path="script\uidrivers.ts"/>
 /// <reference path="script\presenters\undoredopresenter.ts"/>
 /// <reference path="script\presenters\presenters.ts"/>
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
@@ -35,11 +31,6 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\localstoragewidget.ts"/>
-/// <reference path="script\widgets\ltl\keyframecompact.ts"/>
-/// <reference path="script\widgets\ltl\keyframetable.ts"/>
-/// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
-/// <reference path="script\widgets\ltl\ltlviewer.ts"/>
-/// <reference path="script\widgets\ltl\ltlresultsviewer.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -112,7 +103,6 @@ function popup_position() {
     });
 }
 $(document).ready(function () {
-    //InteractiveDataDisplay.ZIndexDOMMarkers = undefined;
     var snipper = $('<div></div>').addClass('spinner').appendTo($('.loading-text'));
     for (var i = 1; i < 4; i++) {
         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
@@ -120,11 +110,16 @@ $(document).ready(function () {
     var deferredLoad = function () {
         var dfd = $.Deferred();
         loadVersion().done(function (version) {
-            loadScript(version);
-            window.setInterval(function () {
-                versionCheck(version);
-            }, 3600000);
-            dfd.resolve();
+            try {
+                loadScript(version);
+                window.setInterval(function () { versionCheck(version); }, 3600000 /* 1 hour */);
+                dfd.resolve();
+            }
+            catch (ex) {
+                dfd.reject(ex.message);
+            }
+        }).fail(function (error) {
+            dfd.reject(error);
         });
         return dfd.promise();
     };
@@ -150,9 +145,7 @@ function versionCheck(version) {
                 actions: [
                     {
                         button: 'Ok',
-                        callback: function () {
-                            userDialog.detach();
-                        }
+                        callback: function () { userDialog.detach(); }
                     }
                 ]
             });
@@ -184,14 +177,10 @@ function loadScript(version) {
     $('.version-number').text('v. ' + version.major + '.' + version.minor + '.' + version.build);
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
-    var ltlCommands = new BMA.CommandRegistry();
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
-    //Creating KeyframesRegistry
-    window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry();
-    window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
     //Creating model and layout
     var appModel = new BMA.Model.AppModel();
     window.PlotSettings = {
@@ -213,6 +202,7 @@ function loadScript(version) {
     $("#modelToolbarSlider").bmaaccordion({ position: "left", z_index: 1 });
     $("#visibilityOptionsContent").visibilitysettings();
     $("#visibilityOptionsSlider").bmaaccordion();
+    $("#visibilityOptionsContent");
     $("#modelNameEditor").val(appModel.BioModel.Name);
     $("#modelNameEditor").click(function (e) {
         e.stopPropagation();
@@ -243,9 +233,7 @@ function loadScript(version) {
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
             { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
             {
-                title: "Size",
-                cmd: "Size",
-                children: [
+                title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
                     { title: "2x2", cmd: "ResizeCellTo2x2" },
                     { title: "3x3", cmd: "ResizeCellTo3x3" },
@@ -333,8 +321,13 @@ function loadScript(version) {
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
         var elem = elements[i];
-        $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
-        var label = $("<label></label>").addClass("drawingsurface-droppable").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
+        $("<input></input>")
+            .attr("type", "radio")
+            .attr("id", "btn-" + elem.Type)
+            .attr("name", "drawing-button")
+            .attr("data-type", elem.Type)
+            .appendTo(elementPanel);
+        var label = $("<label></label>").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
     elementPanel.children("input").not('[data-type="Activator"]').not('[data-type="Inhibitor"]').next().draggable({
@@ -360,12 +353,8 @@ function loadScript(version) {
         window.Commands.Execute("AddElementSelect", undefined);
     });
     $("#undoredotoolbar").buttonset();
-    $("#button-undo").click(function () {
-        window.Commands.Execute("Undo", undefined);
-    });
-    $("#button-redo").click(function () {
-        window.Commands.Execute("Redo", undefined);
-    });
+    $("#button-undo").click(function () { window.Commands.Execute("Undo", undefined); });
+    $("#button-redo").click(function () { window.Commands.Execute("Redo", undefined); });
     $("#btn-local-save").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
@@ -381,13 +370,19 @@ function loadScript(version) {
     $("#btn-export-model").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
-    var localStorageWidget = $('<div></div>').addClass('window').appendTo('#drawingSurceContainer').localstoragewidget();
+    var localStorageWidget = $('<div></div>')
+        .addClass('window')
+        .appendTo('#drawingSurceContainer')
+        .localstoragewidget();
     $("#editor").bmaeditor();
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
-    $('#tabs-3').ltlviewer();
-    var popup = $('<div></div>').addClass('popup-window window').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div></div>')
+        .addClass('popup-window window')
+        .appendTo('body')
+        .hide()
+        .resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
     var expandedSimulation = $('<div></div>').simulationexpanded();
     //Visual Settings Presenter
@@ -460,15 +455,9 @@ function loadScript(version) {
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
-    //var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
-    var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
-    //LTL Drivers
-    var tpeditordriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(ltlCommands, popup);
-    var stateseditordriver = new BMA.UIDrivers.StatesEditorDriver(ltlCommands, popup);
-    var ltlresultsdriver = new BMA.UIDrivers.LTLResultsViewer(ltlCommands, popup);
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
@@ -476,7 +465,6 @@ function loadScript(version) {
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
-    var ltlService = new BMA.UIDrivers.LTLAnalyzeService();
     //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService);
@@ -486,8 +474,6 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
-    //LTL Presenters
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService, fileLoaderDriver);
     //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();
@@ -518,6 +504,12 @@ function loadScript(version) {
     else {
         window.Commands.Execute("LocalStorageInitModel", reserved_key);
     }
+    var toolsdivs = $('#tools').children('div');
+    function resize_header_tools() {
+        toolsdivs.each(function () {
+            $(this).toggleClass('box-sizing'); //.css('box-sizing', 'border-box');
+        });
+    }
     var lastversion = window.localStorage.getItem(version_key);
     if (lastversion !== JSON.stringify(version)) {
         var userDialog = $('<div></div>').appendTo('body').userdialog({
@@ -525,9 +517,7 @@ function loadScript(version) {
             actions: [
                 {
                     button: 'Ok',
-                    callback: function () {
-                        userDialog.detach();
-                    }
+                    callback: function () { userDialog.detach(); }
                 }
             ]
         });

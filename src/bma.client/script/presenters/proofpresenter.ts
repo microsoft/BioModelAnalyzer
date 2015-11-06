@@ -36,7 +36,7 @@
                             var id = that.stability.variablesStability[i].id;
                         })
                     }
-                    catch (ex) { throw new EventException; };
+                    catch (ex) { throw "Event Exception"; };
 
                     param.fixPoint.forEach((val, ind) => {
                         var i = that.getIndById(that.stability.variablesStability, val.Id);
