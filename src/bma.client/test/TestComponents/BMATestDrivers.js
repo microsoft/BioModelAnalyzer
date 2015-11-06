@@ -1,6 +1,6 @@
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\..\script\uidrivers.interfaces.ts"/>
+/// <reference path="..\..\script\uidrivers\commoninterfaces.ts"/>
 var BMA;
 (function (BMA) {
     var Test;
@@ -138,6 +138,9 @@ var BMA;
             NavigationTestDriver.prototype.TurnNavigation = function (isOn) { this.ison = isOn; };
             NavigationTestDriver.prototype.SetZoom = function (zoom) { this.zoom = zoom; };
             NavigationTestDriver.prototype.SetCenter = function (x, y) { this.center = { x: x, y: y }; };
+            NavigationTestDriver.prototype.GetNavigationSurface = function () {
+                return undefined;
+            };
             return NavigationTestDriver;
         })();
         Test.NavigationTestDriver = NavigationTestDriver;
