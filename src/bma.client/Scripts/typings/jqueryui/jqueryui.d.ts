@@ -427,6 +427,7 @@ declare module JQueryUI {
         snapTolerance?: number;
         stack?: string;
         zIndex?: number;
+        start?: any;
     }
 
     interface DraggableEvents {

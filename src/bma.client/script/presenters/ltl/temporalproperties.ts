@@ -293,6 +293,7 @@ module BMA {
                     }
                 });
 
+                /*
                 commands.On("VisibleRectChanged",(param) => {
                     if (param < this.zoomConstraints.minWidth) {
                         param = this.zoomConstraints.minWidth;
@@ -306,6 +307,7 @@ module BMA {
                     //var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     //commands.Execute("ZoomSliderBind", zoom);
                 });
+                */
 
                 that.dragService.GetMouseMoves().subscribe(
                     (gesture) => {
@@ -558,14 +560,15 @@ module BMA {
                             y: y,
                             width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
                             height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
-                        };
+                        }; 
                     }
 
+                    var size = Math.max(bbox.width, bbox.height);
                     bbox = {
-                        x: bbox.x - bbox.width / 5,
-                        y: bbox.y - bbox.height / 5,
-                        width: bbox.width * 1.4,
-                        height: bbox.height * 1.4
+                        x: bbox.x,
+                        y: bbox.y,
+                        width: size,
+                        height: size
                     }
                     this.driver.SetVisibleRect(bbox);
                 }

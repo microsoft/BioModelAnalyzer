@@ -72,9 +72,9 @@
             obj.focus();
 
             if (obj.selectionStart) return obj.selectionStart; //Gecko
-            else if (document.selection)  //IE
+            else if ((<any>document).selection)  //IE
             {
-                var sel = document.selection.createRange();
+                var sel = (<any>document).selection.createRange();
                 var clone = sel.duplicate();
                 sel.collapse(true);
                 clone.moveToElementText(obj);
@@ -390,10 +390,10 @@ interface JQuery {
 jQuery.fn.extend({
     insertAtCaret: function (myValue) {
         return this.each(function (i) {
-            if (document.selection) {
+            if ((<any>document).selection) {
                 // Для браузеров типа Internet Explorer
                 this.focus();
-                var sel = document.selection.createRange();
+                var sel = (<any>document).selection.createRange();
                 sel.text = myValue;
                 this.focus();
             }
