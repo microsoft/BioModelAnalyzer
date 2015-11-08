@@ -22,14 +22,11 @@
             onComboBoxOpen: undefined,
         },
 
-        _create: function () {
+        _initStates: function () {
             var that = this;
-
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
-
-            for (var i = 0; i < this.options.states.length; i++) {
+            for (var i = this.options.states.length - 1; i >= 0; i--) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name)
-                    .addClass("state-button").addClass("state").appendTo(this._stateButtons).click(function () {
+                    .addClass("state-button").addClass("state").prependTo(this._stateButtons).click(function () {
                     that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                     for (var j = 0; j < that.options.states.length; j++) {
                         if (that.options.states[j].name == $(this).attr("data-state-name")) {
@@ -40,6 +37,14 @@
                     that.refresh();
                 });
             }
+        },
+
+        _create: function () {
+            var that = this;
+
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+
+            that._initStates();
 
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
@@ -89,15 +94,25 @@
                 case "states": {
                     this.options.states = [];
                     this._stateButtons.children(".state").remove();
+                    
                     for (var i = 0; i < value.length; i++) {
                         this.options.states.push(value[i]);
                         if (value[i].formula.length == 0)
                             value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
-                        this.addState(value[i]);
+                        //this.addState(value[i]);
                     }
+                    
+
+                    //this.options.states = value;
                     if (this.options.states.length == 0) {
                         that.addState();
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
+                    } else {
+                        this._initStates();
+                        if (this._activeState != null)
+                            that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
+                        this._activeState = this.options.states[0]; 
+                        this.refresh();
                     }
                     break;
                 }

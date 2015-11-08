@@ -137,6 +137,8 @@
                 });
             }
 
+
+
             private UpdateOperationStates(operation: BMA.LTLOperations.Operation, map: any) {
                 var that = this;
                 for (var i = 0; i < operation.Operands.length; i++) {

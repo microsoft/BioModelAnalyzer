@@ -29,8 +29,10 @@
                 });
 
                 commands.On("KeyframesChanged",(args) => {
-                    appModel.States = args.states;
-                    that.statesViewer.SetStates(args.states);
+                    if (this.CompareStatesToAppModel(args.states)) {
+                        appModel.States = args.states;
+                        that.statesViewer.SetStates(args.states);
+                    }
                 });
 
                 commands.On("UpdateStatesEditorOptions",(args) => {
@@ -56,6 +58,21 @@
             public UpdateStatesFromModel() {
                 this.statesEditor.SetStates(this.appModel.States);
                 this.statesViewer.SetStates(this.appModel.States);
+            }
+
+            private CompareStatesToAppModel(states: BMA.LTLOperations.Keyframe[]) {
+                if (states.length !== this.appModel.States.length)
+                    return true;
+                else {
+                    for (var i = 0; i < states.length; i++) {
+                        var st = states[i];
+                        var appst = this.appModel.States[i];
+                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                            return true;
+                    }
+
+                    return false;
+                }
             }
 
         }

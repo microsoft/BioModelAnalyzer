@@ -167,7 +167,6 @@
     <Content Include="css\website.min.css">
       <DependentUpon>website.css</DependentUpon>
     </Content>
-    <Content Include="forms\ltl\tpeditor.html" />
     <Content Include="Global.asax" />
     <Content Include="help.html" />
     <Content Include="html\BandPlotSample.html" />
@@ -695,7 +694,9 @@
       <Name>UIExpr</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="forms\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -164,7 +164,7 @@ module BMA {
                             { name: "Delete", isEnabled: emptyCell === undefined },
                             { name: "Paste", isEnabled: canPaste },
                             { name: "Export", isEnabled: true },
-                            
+
                         ]);
 
                     } else {
@@ -272,14 +272,17 @@ module BMA {
                 });
 
                 commands.On("KeyframesChanged",(args: { states: BMA.LTLOperations.Keyframe[] }) => {
-                    this.ClearResults();
-                    tpEditorDriver.SetStates(args.states);
-                    for (var i = 0; i < this.operations.length; i++) {
-                        var op = this.operations[i];
-                        op.RefreshStates(args.states);
+                    if (this.CompareStatesToAppModel(args.states)) {
+                        this.ClearResults();
+                        tpEditorDriver.SetStates(args.states);
+
+                        for (var i = 0; i < this.operations.length; i++) {
+                            this.operations[i].IsVisible = false;
+                        }
+                        this.operations = [];
+                        this.LoadFromAppModel();
+                        that.isUpdateControlRequested = true;
                     }
-                    that.OnOperationsChanged(false);
-                    that.isUpdateControlRequested = true;
                 });
 
                 commands.On("TemporalPropertiesEditorExpanded",(args) => {
@@ -293,21 +296,20 @@ module BMA {
                     }
                 });
 
-                /*
                 commands.On("VisibleRectChanged",(param) => {
-                    if (param < this.zoomConstraints.minWidth) {
-                        param = this.zoomConstraints.minWidth;
-                        this.navigationDriver.SetZoom(param);
-                    }
-                    if (param > this.zoomConstraints.maxWidth) {
-                        param = this.zoomConstraints.maxWidth;
-                        this.navigationDriver.SetZoom(param);
-                    }
+                    //if (param < this.zoomConstraints.minWidth) {
+                    //    param = this.zoomConstraints.minWidth;
+                    //    this.navigationDriver.SetZoom(param);
+                    //}
+                    //if (param > this.zoomConstraints.maxWidth) {
+                    //    param = this.zoomConstraints.maxWidth;
+                    //    this.navigationDriver.SetZoom(param);
+                    //}
 
                     //var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     //commands.Execute("ZoomSliderBind", zoom);
                 });
-                */
+                
 
                 that.dragService.GetMouseMoves().subscribe(
                     (gesture) => {
@@ -546,6 +548,21 @@ module BMA {
                 this.LoadFromAppModel();
             }
 
+            private CompareStatesToAppModel(states: BMA.LTLOperations.Keyframe[]) {
+                if (states.length !== this.appModel.States.length)
+                    return true;
+                else {
+                    for (var i = 0; i < states.length; i++) {
+                        var st = states[i];
+                        var appst = this.appModel.States[i];
+                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                            return true;
+                    }
+
+                    return false;
+                }
+            }
+
             private FitToView() {
                 if (this.operations.length < 1)
                     this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
@@ -560,10 +577,16 @@ module BMA {
                             y: y,
                             width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
                             height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
-                        }; 
+                        };
                     }
 
                     var size = Math.max(bbox.width, bbox.height);
+
+                    if (size < this.zoomConstraints.minWidth)
+                        this.zoomConstraints.minWidth = size;
+                    else if (size > this.zoomConstraints.maxWidth)
+                        this.zoomConstraints.maxWidth = size;
+
                     bbox = {
                         x: bbox.x,
                         y: bbox.y,
@@ -575,6 +598,7 @@ module BMA {
             }
 
             private LoadFromAppModel() {
+
                 var appModel = this.appModel;
                 var height = 0;
                 var padding = 5;
@@ -595,7 +619,7 @@ module BMA {
                 }
 
                 this.FitToView();
-                this.OnOperationsChanged(true);
+                this.OnOperationsChanged(true, false);
             }
 
             private GetOperationAtPoint(x: number, y: number) {
@@ -761,7 +785,7 @@ module BMA {
                 }
             }
 
-            private OnOperationsChanged(updateControls: boolean = true) {
+            private OnOperationsChanged(updateControls: boolean = true, updateAppModel: boolean = true) {
                 var that = this;
 
                 var ops = [];
@@ -775,7 +799,9 @@ module BMA {
                     this.UpdateControlPanels();
                 }
 
-                this.appModel.Operations = operations;
+                if (updateAppModel)
+                    this.appModel.Operations = operations;
+
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }
 
