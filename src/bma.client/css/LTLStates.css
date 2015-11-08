@@ -3564,13 +3564,19 @@ ui-icon-arrowthickstop-1-n {
   vertical-align: top;
   max-width: 300px;
 }
-.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .progression-table {
-  margin-top: 0;
-}
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table {
   max-width: calc(100% - 90px);
   overflow-x: auto;
   overflow-y: hidden;
+}
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table .progression-table {
+  margin-top: 0;
+}
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table .progression-table tr:nth-child(even) {
+  background-color: white;
+}
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table .progression-table tr:nth-child(odd) {
+  background-color: #ededed;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table {
   width: 90px;
@@ -3672,6 +3678,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .variable-picker table tr td .scrollable {
   width: 50px;
+  max-height: 85px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 2px 0 0;

@@ -288,14 +288,24 @@
             vertical-align: top;
             max-width: 300px;
 
-            .progression-table {
-                    margin-top: 0;
-                    }
+            
 
             .bma-simulation-data-table {
                 max-width: calc(~"100% - 90px");
                 overflow-x: auto;
                 overflow-y: hidden;
+
+                .progression-table {
+                margin-top: 0;
+
+                tr:nth-child(even){
+                    background-color:white;
+                }
+
+                tr:nth-child(odd) {
+                    background-color:@lightgrey;
+                }
+            }
             }
 
             .variables-table {
@@ -424,6 +434,7 @@
 
                 .scrollable {
                     width: 50px;
+                    max-height:85px;
                     overflow-y: auto;
                     overflow-x: hidden;
                     padding: 0 2px 0 0;
