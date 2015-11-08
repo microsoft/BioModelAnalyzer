@@ -60,40 +60,40 @@
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             
-             //Oscilation state
-             var oscilationState = $("<div></div>")
-                 .addClass("state-button")
-                 .addClass("ltl-tp-droppable")
-                 .attr("data-state", "oscialtion")
-                 .css("z-index", 6)
-                 .css("cursor", "pointer")
-                 .appendTo(statesbtns);
-             $("<img>").attr("src", "../images/oscillation-state.svg").appendTo(oscilationState);
+            //Oscilation state
+            var oscilationState = $("<div></div>")
+                .addClass("state-button")
+                .addClass("ltl-tp-droppable")
+                .attr("data-state", "oscialtion")
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .appendTo(statesbtns);
+            $("<img>").attr("src", "../images/oscillation-state.svg").appendTo(oscilationState);
 
-             //Selfloop state
-             var selfloopState = $("<div></div>")
-                 .addClass("state-button")
-                 .addClass("ltl-tp-droppable")
-                 .attr("data-state", "selfloop")
-                 .css("z-index", 6)
-                 .css("cursor", "pointer")
-                 .appendTo(statesbtns);
-             $("<img>").attr("src", "../images/selfloop-state.svg").appendTo(selfloopState);
+            //Selfloop state
+            var selfloopState = $("<div></div>")
+                .addClass("state-button")
+                .addClass("ltl-tp-droppable")
+                .attr("data-state", "selfloop")
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .appendTo(statesbtns);
+            $("<img>").attr("src", "../images/selfloop-state.svg").appendTo(selfloopState);
 
-             //True-state state
-             var trueState = $("<div></div>")
-                 .addClass("state-button")
-                 .addClass("ltl-tp-droppable")
-                 .attr("data-state", "truestate")
-                 .css("z-index", 6)
-                 .css("cursor", "pointer")
-                 .appendTo(statesbtns);
-             $("<img>").attr("src", "../images/true-state.svg").appendTo(trueState);
+            //True-state state
+            var trueState = $("<div></div>")
+                .addClass("state-button")
+                .addClass("ltl-tp-droppable")
+                .attr("data-state", "truestate")
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .appendTo(statesbtns);
+            $("<img>").attr("src", "../images/true-state.svg").appendTo(trueState);
 
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
-            
+
             var registry = new BMA.LTLOperations.OperatorsRegistry();
             for (var i = 0; i < registry.Operators.length; i++) {
                 var operator = registry.Operators[i];
@@ -129,7 +129,7 @@
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
-            this._drawingSurface.drawingsurface();
+            this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
                 gridVisibility: false,
@@ -142,9 +142,9 @@
 
             if (that.options.commands !== undefined) {
                 drawingSurface.drawingsurface({ commands: that.options.commands });
-            }  
-            
-            drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } }); 
+            }
+
+            drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
             drawingSurface.drawingsurface({
                 isLightSVGTop: true
             }); 
@@ -163,7 +163,7 @@
             */
 
             var dom = drawingSurface.drawingsurface("getCentralPart");
-            
+
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
             dropzones.width("100%");
 

@@ -2152,6 +2152,10 @@ var BMA;
                             this.operations = [];
                         }
                     }
+                    else {
+                        this.states = [];
+                        this.operations = [];
+                    }
                 }
                 else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
@@ -6013,7 +6017,7 @@ var BMA;
                         });
                     }
                     catch (ex) {
-                        throw new EventException;
+                        throw "Event Exception";
                     }
                     ;
                     param.fixPoint.forEach(function (val, ind) {
@@ -8066,7 +8070,8 @@ var BMA;
             isNavigationEnabled: true,
             svg: undefined,
             zoom: 50,
-            dropFilter: ["drawingsurface-droppable"]
+            dropFilter: ["drawingsurface-droppable"],
+            useContraints: true
         },
         _plotSettings: {
             MinWidth: 0.01,
@@ -8291,10 +8296,7 @@ var BMA;
             var width = 1600;
             that.options.zoom = width;
             if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).where(function (g) {
-                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
-                });
-                that._plot.navigation.gestureSource = gestureSource;
+                this._setGestureSource(this._onlyZoomEnabled);
             }
             else {
                 that._plot.navigation.gestureSource = undefined;
@@ -8416,13 +8418,16 @@ var BMA;
                 case "plotConstraint":
                     this._plotSettings = value;
                     break;
+                case "useContraints":
+                    this._setGestureSource(this._onlyZoomEnabled);
+                    break;
             }
             this._super(key, value);
         },
         _setGestureSource: function (onlyZoom) {
             var that = this;
             var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
-                var constraint = onlyZoom ? g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) : g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                var constraint = onlyZoom ? g.Type === "Zoom" && (!that.options.useContraints || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) : g.Type !== "Zoom" || (!that.options.useContraints || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
                 return constraint;
             });
             this._plot.navigation.gestureSource = gestureSource;
@@ -9100,14 +9105,17 @@ var BMA;
             var options = this.options;
             if (options.isResizable) {
                 this.element.resizable({
-                    minWidth: 500,
-                    minHeight: 400,
+                    minWidth: 800,
+                    minHeight: 600,
                     resize: function (event, ui) {
                         if (that.options.onresize !== undefined) {
                             that.options.onresize !== undefined;
                         }
                     }
                 });
+                this.element.width(800);
+                this.element.height(600);
+                this.element.trigger("resize");
             }
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
@@ -9146,14 +9154,16 @@ var BMA;
                     if (this.options.isResizable !== value) {
                         if (value) {
                             this.element.resizable({
-                                minWidth: 500,
-                                minHeight: 400,
+                                minWidth: 800,
+                                minHeight: 600,
                                 resize: function (event, ui) {
                                     if (that.options.onresize !== undefined) {
                                         that.options.onresize !== undefined;
                                     }
                                 }
                             });
+                            this.element.width(800);
+                            this.element.height(600);
                             this.element.trigger("resize");
                         }
                         else {
@@ -10647,11 +10657,10 @@ jQuery.fn.extend({
             onStatesUpdated: undefined,
             onComboBoxOpen: undefined,
         },
-        _create: function () {
+        _initStates: function () {
             var that = this;
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
-            for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").addClass("state").appendTo(this._stateButtons).click(function () {
+            for (var i = this.options.states.length - 1; i >= 0; i--) {
+                var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name).addClass("state-button").addClass("state").prependTo(this._stateButtons).click(function () {
                     that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                     for (var j = 0; j < that.options.states.length; j++) {
                         if (that.options.states[j].name == $(this).attr("data-state-name")) {
@@ -10662,6 +10671,11 @@ jQuery.fn.extend({
                     that.refresh();
                 });
             }
+        },
+        _create: function () {
+            var that = this;
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+            that._initStates();
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
@@ -10704,11 +10718,18 @@ jQuery.fn.extend({
                         this.options.states.push(value[i]);
                         if (value[i].formula.length == 0)
                             value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
-                        this.addState(value[i]);
                     }
+                    //this.options.states = value;
                     if (this.options.states.length == 0) {
                         that.addState();
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
+                    }
+                    else {
+                        this._initStates();
+                        if (this._activeState != null)
+                            that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
+                        this._activeState = this.options.states[0];
+                        this.refresh();
                     }
                     break;
                 }
@@ -11536,7 +11557,7 @@ jQuery.fn.extend({
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
-            this._drawingSurface.drawingsurface();
+            this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;
             drawingSurface.drawingsurface({
                 gridVisibility: false,
@@ -11574,7 +11595,7 @@ jQuery.fn.extend({
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
-            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dom.host);
+            var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("cursor", "pointer").appendTo(dom.host);
             $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
             fitDiv.click(function () {
                 if (that.options.onfittoview !== undefined) {
@@ -12027,8 +12048,10 @@ var BMA;
                     stateseditordriver.Show();
                 });
                 commands.On("KeyframesChanged", function (args) {
-                    appModel.States = args.states;
-                    that.statesViewer.SetStates(args.states);
+                    if (_this.CompareStatesToAppModel(args.states)) {
+                        appModel.States = args.states;
+                        that.statesViewer.SetStates(args.states);
+                    }
                 });
                 commands.On("UpdateStatesEditorOptions", function (args) {
                     that.statesEditor.SetModel(that.appModel.BioModel, that.appModel.Layout);
@@ -12049,6 +12072,19 @@ var BMA;
             StatesPresenter.prototype.UpdateStatesFromModel = function () {
                 this.statesEditor.SetStates(this.appModel.States);
                 this.statesViewer.SetStates(this.appModel.States);
+            };
+            StatesPresenter.prototype.CompareStatesToAppModel = function (states) {
+                if (states.length !== this.appModel.States.length)
+                    return true;
+                else {
+                    for (var i = 0; i < states.length; i++) {
+                        var st = states[i];
+                        var appst = this.appModel.States[i];
+                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                            return true;
+                    }
+                    return false;
+                }
             };
             return StatesPresenter;
         })();
@@ -12258,14 +12294,16 @@ var BMA;
                     }
                 });
                 commands.On("KeyframesChanged", function (args) {
-                    _this.ClearResults();
-                    tpEditorDriver.SetStates(args.states);
-                    for (var i = 0; i < _this.operations.length; i++) {
-                        var op = _this.operations[i];
-                        op.RefreshStates(args.states);
+                    if (_this.CompareStatesToAppModel(args.states)) {
+                        _this.ClearResults();
+                        tpEditorDriver.SetStates(args.states);
+                        for (var i = 0; i < _this.operations.length; i++) {
+                            _this.operations[i].IsVisible = false;
+                        }
+                        _this.operations = [];
+                        _this.LoadFromAppModel();
+                        that.isUpdateControlRequested = true;
                     }
-                    that.OnOperationsChanged(false);
-                    that.isUpdateControlRequested = true;
                 });
                 commands.On("TemporalPropertiesEditorExpanded", function (args) {
                     if (that.isUpdateControlRequested) {
@@ -12277,14 +12315,14 @@ var BMA;
                     }
                 });
                 commands.On("VisibleRectChanged", function (param) {
-                    if (param < _this.zoomConstraints.minWidth) {
-                        param = _this.zoomConstraints.minWidth;
-                        _this.navigationDriver.SetZoom(param);
-                    }
-                    if (param > _this.zoomConstraints.maxWidth) {
-                        param = _this.zoomConstraints.maxWidth;
-                        _this.navigationDriver.SetZoom(param);
-                    }
+                    //if (param < this.zoomConstraints.minWidth) {
+                    //    param = this.zoomConstraints.minWidth;
+                    //    this.navigationDriver.SetZoom(param);
+                    //}
+                    //if (param > this.zoomConstraints.maxWidth) {
+                    //    param = this.zoomConstraints.maxWidth;
+                    //    this.navigationDriver.SetZoom(param);
+                    //}
                     //var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     //commands.Execute("ZoomSliderBind", zoom);
                 });
@@ -12491,6 +12529,19 @@ var BMA;
                 });
                 this.LoadFromAppModel();
             }
+            TemporalPropertiesPresenter.prototype.CompareStatesToAppModel = function (states) {
+                if (states.length !== this.appModel.States.length)
+                    return true;
+                else {
+                    for (var i = 0; i < states.length; i++) {
+                        var st = states[i];
+                        var appst = this.appModel.States[i];
+                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                            return true;
+                    }
+                    return false;
+                }
+            };
             TemporalPropertiesPresenter.prototype.FitToView = function () {
                 if (this.operations.length < 1)
                     this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
@@ -12507,11 +12558,16 @@ var BMA;
                             height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
                         };
                     }
+                    var size = Math.max(bbox.width, bbox.height);
+                    if (size < this.zoomConstraints.minWidth)
+                        this.zoomConstraints.minWidth = size;
+                    else if (size > this.zoomConstraints.maxWidth)
+                        this.zoomConstraints.maxWidth = size;
                     bbox = {
-                        x: bbox.x - bbox.width / 5,
-                        y: bbox.y - bbox.height / 5,
-                        width: bbox.width * 1.4,
-                        height: bbox.height * 1.4
+                        x: bbox.x,
+                        y: bbox.y,
+                        width: size,
+                        height: size
                     };
                     this.driver.SetVisibleRect(bbox);
                 }
@@ -12535,7 +12591,7 @@ var BMA;
                     op.RefreshStates(appModel.States);
                 }
                 this.FitToView();
-                this.OnOperationsChanged(true);
+                this.OnOperationsChanged(true, false);
             };
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
                 var that = this;
@@ -12657,8 +12713,9 @@ var BMA;
                     this.controlPanels.push(cp);
                 }
             };
-            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (updateControls) {
+            TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (updateControls, updateAppModel) {
                 if (updateControls === void 0) { updateControls = true; }
+                if (updateAppModel === void 0) { updateAppModel = true; }
                 var that = this;
                 var ops = [];
                 var operations = [];
@@ -12669,7 +12726,8 @@ var BMA;
                 if (updateControls) {
                     this.UpdateControlPanels();
                 }
-                this.appModel.Operations = operations;
+                if (updateAppModel)
+                    this.appModel.Operations = operations;
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };
             TemporalPropertiesPresenter.prototype.AddOperation = function (operation, position) {

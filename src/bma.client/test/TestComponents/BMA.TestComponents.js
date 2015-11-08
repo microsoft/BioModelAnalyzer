@@ -83,9 +83,12 @@ var BMA;
             }
             TestElementsPanel.prototype.GetDragSubject = function () {
                 return {
-                    dragStart: { subscribe: function () { } },
-                    drag: { subscribe: function () { } },
-                    dragEnd: { subscribe: function () { } }
+                    dragStart: { subscribe: function () {
+                    } },
+                    drag: { subscribe: function () {
+                    } },
+                    dragEnd: { subscribe: function () {
+                    } }
                 };
             };
             TestElementsPanel.prototype.GetMouseMoves = function () {
@@ -103,9 +106,12 @@ var BMA;
             TestVariableEditor.prototype.SetValidation = function (v) {
                 return v;
             };
-            TestVariableEditor.prototype.Initialize = function (variable, model) { };
-            TestVariableEditor.prototype.Show = function (x, y) { };
-            TestVariableEditor.prototype.Hide = function () { };
+            TestVariableEditor.prototype.Initialize = function (variable, model) {
+            };
+            TestVariableEditor.prototype.Show = function (x, y) {
+            };
+            TestVariableEditor.prototype.Hide = function () {
+            };
             return TestVariableEditor;
         })();
         Test.TestVariableEditor = TestVariableEditor;

@@ -52,14 +52,17 @@
 
             if (options.isResizable) {
                 this.element.resizable({
-                    minWidth: 500,
-                    minHeight: 400,
+                    minWidth: 800,
+                    minHeight: 600,
                     resize: function (event, ui) {
                         if (that.options.onresize !== undefined) {
                             that.options.onresize !== undefined;
                         }
                     }
                 });
+                this.element.width(800);
+                this.element.height(600);
+                this.element.trigger("resize");
             }
 
             this.header = $('<div></div>')
@@ -107,14 +110,16 @@
                     if (this.options.isResizable !== value) {
                         if (value) {
                             this.element.resizable({
-                                minWidth: 500,
-                                minHeight: 400,
+                                minWidth: 800,
+                                minHeight: 600,
                                 resize: function (event, ui) {
                                     if (that.options.onresize !== undefined) {
                                         that.options.onresize !== undefined;
                                     }
                                 }
                             });
+                            this.element.width(800);
+                            this.element.height(600);
                             this.element.trigger("resize");
                         } else {
                             this.element.resizable("destroy");

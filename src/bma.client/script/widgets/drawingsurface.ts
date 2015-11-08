@@ -22,7 +22,8 @@ declare var Rx: any;
             isNavigationEnabled: true,
             svg: undefined,
             zoom: 50,
-            dropFilter: ["drawingsurface-droppable"]
+            dropFilter: ["drawingsurface-droppable"],
+            useContraints: true
         },
 
         _plotSettings: {
@@ -317,10 +318,11 @@ declare var Rx: any;
             that.options.zoom = width;
 
             if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).where(function (g) {
-                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
-                });
-                that._plot.navigation.gestureSource = gestureSource;
+                this._setGestureSource(this._onlyZoomEnabled);
+                //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).where(function (g) {
+                //    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                //});
+                //that._plot.navigation.gestureSource = gestureSource;
             } else {
                 that._plot.navigation.gestureSource = undefined;
             }
@@ -444,6 +446,10 @@ declare var Rx: any;
                 case "plotConstraint":
                     this._plotSettings = value;
                     break;
+                case "useContraints":
+                    this._setGestureSource(this._onlyZoomEnabled);
+                    break;
+
             }
             this._super(key, value);
         },
@@ -452,8 +458,8 @@ declare var Rx: any;
             var that = this;
             var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
                 var constraint = onlyZoom ?
-                    g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) :
-                    g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                    g.Type === "Zoom" && (!that.options.useContraints || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) :
+                    g.Type !== "Zoom" || (!that.options.useContraints || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
                 return constraint;
             });
             this._plot.navigation.gestureSource = gestureSource;

@@ -151,6 +151,9 @@ module BMA {
                         } else {
                             this.operations = [];
                         }
+                    } else {
+                        this.states = [];
+                        this.operations = [];
                     }
                 } else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
