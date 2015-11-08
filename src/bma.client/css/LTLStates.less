@@ -154,7 +154,8 @@
 }
 
 .ltlresultsviewer {
-    width: 1050px;
+    min-width: 1050px;
+    max-width: 1200px;
     .scrollbox(470px);
 
     .simulationplot-label{
@@ -258,7 +259,7 @@
         max-height: 322px;
         min-width: 510px;
         max-width: 600px;
-        overflow: auto;
+        overflow-y: auto;
 
         .small-simulation-popout-table {
             display: inline-block;
@@ -286,7 +287,8 @@
             display: inline-block;
             float:left;
             vertical-align: top;
-            max-width: 300px;
+            //min-width:250px;
+            max-width:250px;
 
             
 
@@ -296,16 +298,17 @@
                 overflow-y: hidden;
 
                 .progression-table {
-                margin-top: 0;
+                    width:auto;
+                    margin-top: 0;
 
-                tr:nth-child(even){
-                    background-color:white;
-                }
+                    tr:nth-child(even){
+                        background-color:white;
+                    }
 
-                tr:nth-child(odd) {
-                    background-color:@lightgrey;
+                    tr:nth-child(odd) {
+                        background-color:@lightgrey;
+                    }
                 }
-            }
             }
 
             .variables-table {
