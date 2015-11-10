@@ -3389,8 +3389,7 @@ ui-icon-arrowthickstop-1-n {
   border-top-right-radius: 5px;
 }
 .ltlresultsviewer {
-  min-width: 1050px;
-  max-width: 1060px;
+  width: 1060px;
   max-height: 470px;
   overflow-x: auto;
   overflow-y: auto;
@@ -3539,8 +3538,7 @@ ui-icon-arrowthickstop-1-n {
   display: inline-block;
   float: left;
   max-height: 322px;
-  min-width: 520px;
-  max-width: 600px;
+  width: 520px;
   overflow-y: auto;
 }
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table {
