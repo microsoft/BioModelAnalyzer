@@ -311,7 +311,7 @@ module BMA {
                         //this.popupWindow.addClass('analysis-popout');
                         break;
                 }
-                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
             }

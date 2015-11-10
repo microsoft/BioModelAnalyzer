@@ -3791,7 +3791,7 @@ var BMA;
                         header = "Simulation Graph";
                         break;
                 }
-                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
             };
@@ -4615,7 +4615,7 @@ var BMA;
                 if (shouldInit) {
                     this.ltlResultsViewer = $("<div></div>");
                 }
-                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min" });
+                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
