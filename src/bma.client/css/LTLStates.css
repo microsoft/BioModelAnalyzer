@@ -3390,7 +3390,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .ltlresultsviewer {
   min-width: 1050px;
-  max-width: 1200px;
+  max-width: 1060px;
   max-height: 470px;
   overflow-x: auto;
   overflow-y: auto;
@@ -3539,7 +3539,7 @@ ui-icon-arrowthickstop-1-n {
   display: inline-block;
   float: left;
   max-height: 322px;
-  min-width: 510px;
+  min-width: 520px;
   max-width: 600px;
   overflow-y: auto;
 }

@@ -410,8 +410,29 @@
             var idx;
             if (state == null) {
                 var k = this.options.states.length;
-                stateName = String.fromCharCode(65 + k);
 
+                var lastStateName = "";
+                for (var i = 0; i < k; i++) {
+                    var lastStateIdx = (lastStateName && lastStateName.length > 1)  ? parseFloat(lastStateName.slice(1)) : 0;
+                    var stateIdx = this.options.states[i].name.length > 1 ? parseFloat(this.options.states[i].name.slice(1)) : 0;
+
+                    if (stateIdx >= lastStateIdx) {
+                        lastStateName = (lastStateName && stateIdx == lastStateIdx
+                                        && lastStateName.charAt(0) > this.options.states[i].name.charAt(0)) ?
+                                        lastStateName : this.options.states[i].name;
+                    }
+                }
+
+                var charCode =  lastStateName ? lastStateName.charCodeAt(0) : 65;                
+                var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+
+                if (charCode >= 90) {
+                    n++;
+                    charCode = 65;
+                } else charCode++;
+
+                stateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);                
+                
                 var newState = {
                     name: stateName,
                     description: "",
