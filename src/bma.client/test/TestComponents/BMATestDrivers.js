@@ -46,8 +46,7 @@ var BMA;
         var LocalStorageTestDriver = (function () {
             function LocalStorageTestDriver() {
             }
-            LocalStorageTestDriver.prototype.Message = function (msg) {
-            };
+            LocalStorageTestDriver.prototype.Message = function (msg) { };
             LocalStorageTestDriver.prototype.AddItem = function (key, item) {
             };
             LocalStorageTestDriver.prototype.Show = function () {
@@ -88,12 +87,9 @@ var BMA;
                 this.variable = variable;
                 this.model = model;
             };
-            VariableEditorTestDriver.prototype.Show = function (x, y) {
-            };
-            VariableEditorTestDriver.prototype.Hide = function () {
-            };
-            VariableEditorTestDriver.prototype.SetValidation = function (val, message) {
-            };
+            VariableEditorTestDriver.prototype.Show = function (x, y) { };
+            VariableEditorTestDriver.prototype.Hide = function () { };
+            VariableEditorTestDriver.prototype.SetValidation = function (val, message) { };
             return VariableEditorTestDriver;
         })();
         Test.VariableEditorTestDriver = VariableEditorTestDriver;
@@ -125,35 +121,23 @@ var BMA;
                 this.center = { x: 0, y: 0 };
             }
             Object.defineProperty(NavigationTestDriver.prototype, "IsOn", {
-                get: function () {
-                    return this.ison;
-                },
+                get: function () { return this.ison; },
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(NavigationTestDriver.prototype, "Zoom", {
-                get: function () {
-                    return this.zoom;
-                },
+                get: function () { return this.zoom; },
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(NavigationTestDriver.prototype, "Center", {
-                get: function () {
-                    return this.center;
-                },
+                get: function () { return this.center; },
                 enumerable: true,
                 configurable: true
             });
-            NavigationTestDriver.prototype.TurnNavigation = function (isOn) {
-                this.ison = isOn;
-            };
-            NavigationTestDriver.prototype.SetZoom = function (zoom) {
-                this.zoom = zoom;
-            };
-            NavigationTestDriver.prototype.SetCenter = function (x, y) {
-                this.center = { x: x, y: y };
-            };
+            NavigationTestDriver.prototype.TurnNavigation = function (isOn) { this.ison = isOn; };
+            NavigationTestDriver.prototype.SetZoom = function (zoom) { this.zoom = zoom; };
+            NavigationTestDriver.prototype.SetCenter = function (x, y) { this.center = { x: x, y: y }; };
             return NavigationTestDriver;
         })();
         Test.NavigationTestDriver = NavigationTestDriver;
