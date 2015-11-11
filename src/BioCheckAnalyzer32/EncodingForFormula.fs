@@ -35,7 +35,7 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         //
         // For GT type propositions
         // ========================
-        // If all values are do not satisfy the proposition then false
+        // If all values do not satisfy the proposition then false
         // If all values satisfy the proposition then true
         // Otherwise, find the maximal value that does not satisfy the proposition
         // and require that it be false (so one of the other values larger than it
@@ -48,6 +48,66 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         // Otherwise, find the maximal value that does satisfy the proposition
         // and requre that it be true (so either it or one of the values smaller than
         // it must be the encoded value)
+        //
+        // For = type propositions
+        // =======================
+        // If all the values do not satisfy the proposition then false
+        // If all the values satisfy the proposition then true
+        // Otherise, require that the value before be false and the value be true
+        //
+        // For != type propositions
+        // ========================
+        // If all the values satisfy the proposition then true
+        // If all the values do not satisfy the proposition then false
+        // Otherwise, require that either the value before be true or the value be false
+        let compute_constraint_for_prop_eq var comparison_function range time = 
+            if not (List.exists comparison_function range) then
+                z.MkFalse()
+            elif range.Length = 1 then
+                z.MkTrue()
+            else
+                let index_of_value_satisfying_proposition = List.findIndex comparison_function range
+                let z3_var = 
+                    if (index_of_value_satisfying_proposition = (range.Length-1)) then
+                        z.MkTrue()
+                    else
+                        let value_satisfying_prop = List.nth range index_of_value_satisfying_proposition
+                        let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time value_satisfying_prop
+                        BioCheckPlusZ3.make_z3_bool_var z3_var_name z
+                let neg_z3_var_before = 
+                    if (index_of_value_satisfying_proposition = 0) then 
+                        z.MkTrue()
+                    else
+                        let value_before = List.nth range (index_of_value_satisfying_proposition-1)
+                        let z3_var_before = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time value_before
+                        z.MkNot(BioCheckPlusZ3.make_z3_bool_var z3_var_before z)
+                z.MkAnd(z3_var,neg_z3_var_before)
+
+(*        let compute_constraint_for_prop_neq var comparison_function range time = 
+            let negation_of_comparison_function number = not (comparison_function number)
+            if not (List.exists comparison_function range) then
+                z.MkTrue()
+            elif range.Length = 1 then
+                z.MkFalse() 
+            else
+                let index_of_value_not_satisfying_proposition = List.findIndex negation_of_comparison_function range
+                let not_z3_var = 
+                    if (index_of_value_not_satisfying_proposition = (range.Length-1)) then
+                        z.MkFalse()
+                    else
+                        let value_not_satisfying_prop = List.nth range index_of_value_not_satisfying_proposition
+                        let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time value_not_satisfying_prop
+                        z.MkNot(BioCheckPlusZ3.make_z3_bool_var z3_var_name z)
+                let z3_var_before = 
+                    if (index_of_value_not_satisfying_proposition = 0) then
+                        z.MkFalse()
+                    else
+                        let value_before= List.nth range (index_of_value_not_satisfying_proposition-1)
+                        let z3_var_before = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time value_before
+                        BioCheckPlusZ3.make_z3_bool_var z3_var_before z
+                z.MkOr(not_z3_var, z3_var_before)
+                *)
+
         let compute_constraint_for_prop_gt var comparison_function range time =
             if not (List.exists comparison_function range) then
                 // There does not exist a value in the range that satisfies the proposition
@@ -90,7 +150,9 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         let l_op_encode =
             match ltl_formula with 
             | Until (_, op, _)
+            | Wuntil (_, op, _)
             | Release (_, op, _)
+            | Upto (_, op, _)
             | And (_, op, _) 
             | Or (_, op, _) 
             | Implies (_, op, _) 
@@ -105,7 +167,9 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         let r_op_encode =
             match ltl_formula with 
             | Until (_, _, op)
+            | Wuntil (_, _, op)
             | Release (_, _, op)
+            | Upto (_, _, op)
             | And (_, _, op) 
             | Or (_, _, op) 
             | Implies (_, _, op) ->
@@ -117,16 +181,20 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         let variable_range = 
             match ltl_formula with
             // Propositions
+            | PropEq (_, var, _)
+            | PropNeq (_, var, _)
             | PropGt (_, var , _)
             | PropGtEq (_, var, _)
             | PropLt (_, var, _)
             | PropLtEq (_, var, _) ->
                 Map.find var.var range
             | _ ->
-                []
+                 []
 
         let comparison_function =
             match ltl_formula with
+            | PropNeq (_, _, value) (* -> (fun number -> number <> value) *)
+            | PropEq (_, _, value) -> (fun number -> number = value) 
             | PropGt (_, _ , value) -> (fun number -> number > value)
             | PropGtEq (_, _,  value) -> (fun number -> number >= value)
             | PropLt (_, _, value) -> (fun number -> number < value)
@@ -137,7 +205,9 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         let z3_constraint = 
             match ltl_formula with 
             | Until (location, _, _)
+            | Wuntil (location, _, _)
             | Release (location, _, _) 
+            | Upto (location, _, _)
             | Next (location, _) 
             | Always (location, _) 
             | Eventually (location, _) ->
@@ -150,6 +220,10 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
                 z.MkImplies(l_op_encode,r_op_encode)
             | Not (_, _) ->
                 z.MkNot(l_op_encode)
+            | PropEq (_, var, _) ->
+                compute_constraint_for_prop_eq var comparison_function variable_range step
+            | PropNeq (_, var, _) ->
+                z.MkNot( compute_constraint_for_prop_eq var comparison_function variable_range step)
             | PropGt (_ , var , _) 
             | PropGtEq (_ , var , _) ->
                 compute_constraint_for_prop_gt var comparison_function variable_range step
@@ -161,8 +235,19 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
             | _ ->
                 z.MkTrue()
 
+        let z3_hidden_subformula_constraint =
+            match ltl_formula with
+            | Upto (location, _, _) ->
+                create_z3_bool_var (2::location) step z
+            | _ ->
+                z.MkTrue()
+
         match ltl_formula with
+        | Upto (location, _, _) ->
+            return_map := Map.add (2::location) z3_hidden_subformula_constraint !return_map
+            ignore(return_map := Map.add location z3_constraint !return_map)
         | Until (location, _, _)
+        | Wuntil (location, _, _)
         | Release (location, _, _)
         | Next (location, _) 
         | Always (location, _) 
@@ -171,6 +256,8 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         | Or (location, _, _) 
         | Implies (location, _, _) 
         | Not (location, _) 
+        | PropEq (location, _, _)
+        | PropNeq (location, _, _)
         | PropGt (location, _, _) 
         | PropGtEq (location, _, _) 
         | PropLt (location , _, _) 
@@ -202,7 +289,9 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         // Call recursively
         match ltl_formula with 
         | Until (_, l, r)
+        | Wuntil (_, l, r)
         | Release (_, l, r)
+        | Upto (_, l, r)
         | And (_, l, r) 
         | Or (_, l, r) 
         | Implies (_, l, r) -> 
@@ -226,7 +315,9 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         let constraint_for_formula_and_neg_prev_curr operand =
             match operand with 
             | Until (location, _, _)
+            | Wuntil (location, _, _)
             | Release (location, _, _)
+            | Upto (location, _, _)
             | And (location, _, _) 
             | Or (location, _, _) 
             | Implies (location, _, _) 
@@ -234,6 +325,8 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
             | Next (location, _)
             | Always (location, _)
             | Eventually (location, _) 
+            | PropEq (location, _, _)
+            | PropNeq (location, _, _)
             | PropGt (location, _ , _)
             | PropGtEq (location, _, _)
             | PropLt (location, _, _)
@@ -257,7 +350,9 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         let (l_at_prev,not_l_at_prev,l_at_current, not_l_at_current) =
             match ltl_formula with 
             | Until (_, op, _)
+            | Wuntil (_, op, _)
             | Release (_, op, _)
+            | Upto (_, op, _)
             | And (_, op, _) 
             | Or (_, op, _) 
             | Implies (_, op, _) 
@@ -273,7 +368,9 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         let (r_at_prev,not_r_at_prev,r_at_current,not_r_at_current) =
             match ltl_formula with 
             | Until (_, _, op)
+            | Wuntil (_, _, op)
             | Release (_, _, op)
+            | Upto (_, _, op)
             | And (_, _, op) 
             | Or (_, _, op) 
             | Implies (_, _, op) ->
@@ -282,11 +379,53 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
             | _ ->
                 (truez3, truez3, truez3, truez3)
 
+        let constraint_for_hidden_subformula_and_neg_prev_curr operand =
+            match operand with 
+            | Until (location, _, _)
+            | Wuntil (location, _, _)
+            | Release (location, _, _)
+            | Upto (location, _, _)
+            | And (location, _, _) 
+            | Or (location, _, _) 
+            | Implies (location, _, _) 
+            | Not (location, _)
+            | Next (location, _)
+            | Always (location, _)
+            | Eventually (location, _) 
+            | PropEq (location, _, _)
+            | PropNeq (location, _, _)
+            | PropGt (location, _ , _)
+            | PropGtEq (location, _, _)
+            | PropLt (location, _, _)
+            | PropLtEq (location, _, _) ->
+                let op_at_prev = Map.find location previous_map
+                let op_at_curr = Map.find location current_map
+                let not_op_at_prev = z.MkNot(op_at_prev) // This does not work for propositions!
+                let not_op_at_curr = z.MkNot(op_at_curr) // This does not work for propositions!
+                (op_at_prev,not_op_at_prev,op_at_curr,not_op_at_curr)
+            | False ->
+                (falsez3, truez3, falsez3, truez3)
+            | _ ->
+                (truez3, falsez3, truez3, falsez3)
+
+        let (hidden_sub_at_prev, not_hidden_sub_at_prev, hidden_sub_at_current, not_hidden_sub_at_current) =
+            match ltl_formula with
+            | Upto (location, _, _) ->
+                let op_at_prev = Map.find (2::location) previous_map
+                let op_at_curr = Map.find (2::location) current_map
+                let not_op_at_prev = z.MkNot(op_at_prev)
+                let not_op_at_curr = z.MkNot(op_at_curr)
+                (op_at_prev,  not_op_at_prev, op_at_curr, not_op_at_curr)
+            | _ ->
+                (truez3, truez3, truez3, truez3)
+
         let (temporal_var_at_prev, not_temporal_var_at_prev, temporal_var_at_current, not_temporal_var_at_current) =
             match ltl_formula with            
             // Temporal operators
             | Until (location, _, _)
+            | Wuntil (location, _, _)
             | Release (location, _, _)
+            | Upto (location, _, _)
             | Next (location, _)
             | Always (location, _)
             | Eventually (location, _) ->
@@ -299,7 +438,8 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         // Build the actual constraint corresponding to the formula at previous and current
         let constraint_for_formula = 
             match ltl_formula with 
-            | Until (location, left_op, right_op) ->
+            | Until (location, left_op, right_op) 
+            | Wuntil (location, left_op, right_op) ->
                 let true_of_until = 
                     z.MkImplies(temporal_var_at_prev, 
                                  z.MkOr(r_at_prev,
@@ -320,6 +460,22 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
                                 z.MkAnd(z.MkOr(not_l_at_prev, not_r_at_prev),
                                         z.MkOr(not_r_at_prev, not_temporal_var_at_current)))
                 z.MkAnd(true_of_release,false_of_release)
+            | Upto (location, left_op, right_op) ->
+                let true_of_hidden = 
+                    z.MkImplies(hidden_sub_at_prev,
+                                z.MkOr(r_at_prev,
+                                       z.MkAnd(l_at_prev,hidden_sub_at_current)))
+                let false_of_hidden = 
+                    z.MkImplies(not_hidden_sub_at_prev,
+                                z.MkAnd(not_r_at_prev,
+                                        z.MkOr(not_l_at_prev, not_hidden_sub_at_current)))
+                let true_of_upto =
+                    z.MkImplies(temporal_var_at_prev, 
+                                z.MkAnd(l_at_prev, hidden_sub_at_current))
+                let false_of_upto = 
+                    z.MkImplies(not_temporal_var_at_prev,
+                                z.MkOr(not_l_at_prev, not_hidden_sub_at_current))
+                z.MkAnd(z.MkAnd(true_of_hidden,false_of_hidden),z.MkAnd(true_of_upto,false_of_upto))
             | Next (location, op) ->
                 let true_of_next = 
                     z.MkImplies(temporal_var_at_prev, l_at_current)
@@ -348,7 +504,9 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
                 z.MkTrue ()
         match ltl_formula with 
         | Until (location, _, _)
+        | Wuntil (location, _, _)
         | Release (location, _, _)
+        | Upto (location, _, _)
         | Next (location, _)
         | Always (location, _)
         | Eventually (location, _) ->
@@ -408,16 +566,27 @@ let encode_formula_transitions_in_loop_closure (ltl_formula : LTLFormulaType) (n
         incr time
     ()
 
+let constraint_of_hidden_subformula (ltl_formula : LTLFormulaType) (map : FormulaConstraint) (z : Context) =
+    match ltl_formula with
+    | Upto (location, _, _) ->
+        Map.find (2::location) map
+    | _ ->
+        z.MkFalse()
+
 let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstraint) (z : Context)=
     match ltl_formula with
     | Until (location, _, _)
+    | Wuntil (location, _, _)
     | Release (location, _, _)
+    | Upto (location, _, _)
     | And (location, _, _) 
     | Or (location, _, _) 
     | Not (location, _)
     | Next (location, _)
     | Always (location, _)
-    | Eventually (location, _) 
+    | Eventually (location, _)
+    | PropEq (location, _, _)
+    | PropNeq (location, _, _) 
     | PropGt (location, _ , _)
     | PropGtEq (location, _, _)
     | PropLt (location, _, _)
@@ -461,6 +630,13 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
             
             let constraint_for_formula = constraint_of_formula ltl_formula formula_constraint z
 
+            let constraint_for_hidden_subformula = 
+                match ltl_formula with
+                | Upto (loc, _, _) ->
+                    constraint_of_hidden_subformula ltl_formula formula_constraint z
+                | _ ->
+                    z.MkFalse()
+
             let constraint_for_formula_fairness = 
                 match ltl_formula with
                 | Until (_, _, op) 
@@ -468,11 +644,21 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
                     let constraint_for_op = constraint_of_formula op formula_constraint z
                     let not_constraint_for_formula = z.MkNot (constraint_for_formula)
                     z.MkOr(not_constraint_for_formula, constraint_for_op)
-                | Release (location, _, op) 
-                | Always (location, op) ->
+                | Release (_, _, op) 
+                | Always (_, op) ->
                     let constraint_for_op = constraint_of_formula op formula_constraint z
                     let not_constraint_for_op = z.MkNot(constraint_for_op)
                     z.MkOr(constraint_for_formula,not_constraint_for_op)
+                | Wuntil (_, op1, op2) ->
+                    let constraint_for_op1 = constraint_of_formula op1 formula_constraint z
+                    let not_constraint_for_op1 = z.MkNot(constraint_for_op1)
+                    let constraint_for_op2 = constraint_of_formula op2 formula_constraint z
+                    let not_constraint_for_op2 = z.MkNot(constraint_for_op2)
+                    z.MkOr(constraint_for_formula,z.MkAnd(not_constraint_for_op1,not_constraint_for_op2))
+                | Upto (_, _, op) ->
+                    let constraint_for_op = constraint_of_formula op formula_constraint z
+                    let not_constraint_for_hidden_sub = z.MkNot(constraint_for_hidden_subformula)
+                    z.MkOr(not_constraint_for_hidden_sub,constraint_for_op)
                 | _ ->
                     z.MkTrue()
 
@@ -489,6 +675,7 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
 
         match ltl_formula with 
         | Until (location, _, _) 
+        | Upto (location, _, _)
         | Release (location,_ ,_)
         | Always (location, _)
         | Eventually (location, _) ->
@@ -498,6 +685,7 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
 
         match ltl_formula with 
         | Until (_ , l_op, r_op)
+        | Upto (_, l_op, r_op)
         | Release (_, l_op, r_op)
         | And (_, l_op, r_op)
         | Or (_, l_op, r_op) ->
