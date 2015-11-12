@@ -11305,7 +11305,6 @@ jQuery.fn.extend({
                         variablePicker.hide();
                         expandButton.removeClass('inputs-list-header-expanded');
                         selectVariable.removeClass("expanded");
-                        variablePicker.removeClass("expanded");
                     }
                 }
             });
@@ -11321,13 +11320,11 @@ jQuery.fn.extend({
                     variablePicker.show();
                     expandButton.addClass('inputs-list-header-expanded');
                     selectVariable.addClass("expanded");
-                    variablePicker.addClass("expanded");
                 }
                 else {
                     variablePicker.hide();
                     expandButton.removeClass('inputs-list-header-expanded');
                     selectVariable.removeClass("expanded");
-                    variablePicker.removeClass("expanded");
                 }
             });
             return trDivs;
@@ -11339,42 +11336,47 @@ jQuery.fn.extend({
             var divContainers = $("<div></div>").addClass("scrollable").appendTo(tdContainersList);
             var tdVariablesList = $("<td></td>").addClass("list").appendTo(trList);
             var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
+            var setSelectedValue = function (value) {
+                variableSelected.text(value);
+                if (!variablePicker.is(":hidden"))
+                    selectVariable.trigger("click");
+            };
+            if (currSymbol.value.container === undefined)
+                currSymbol.value.container = 0;
             for (var i = 0; i < this.options.variables.length; i++) {
-                var containers = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
+                var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
                     .appendTo(divContainers).click(function () {
-                    var currConteiner = this;
-                    divContainers.find(".active").removeClass("active");
-                    divVariables.children().remove();
-                    var idx = $(this).index();
-                    $(this).addClass("active");
-                    for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
-                        var variableName = that.options.variables[idx].vars[j];
-                        if (that.options.variables[idx].vars[j] == "")
-                            variableName = "Unnamed";
-                        var variables = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
-                            .appendTo(divVariables).click(function () {
-                            divVariables.find(".active").removeClass("active");
-                            $(this).addClass("active");
-                            if ($(this).attr("data-variable-name") == "")
-                                variableSelected.text("Unnamed");
-                            else
-                                variableSelected.text($(this).attr("data-variable-name"));
-                            currSymbol.value = { container: $(currConteiner).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
-                            if (!variablePicker.is(":hidden"))
-                                selectVariable.trigger("click");
-                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-                        });
-                        if (currSymbol.value != 0 && currSymbol.value.container == $(currConteiner).attr("data-container-id")
-                            && currSymbol.value.variable == that.options.variables[idx].vars[j])
-                            variables.addClass("active");
-                    }
+                    that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
                 });
                 if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
-                    containers.trigger("click");
+                    that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
             }
             if (currSymbol.value == 0)
-                divContainers.children().eq(0).trigger("click");
-            return { containers: divContainers, variables: divVariables };
+                that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);
+            return { containers: divContainers, variables: divVariables, setSelectedValue: setSelectedValue };
+        },
+        setActiveContainer: function (divContainers, divVariables, container, setSelectedValue, currSymbol) {
+            var that = this;
+            divContainers.find(".active").removeClass("active");
+            divVariables.children().remove();
+            var idx = $(container).index();
+            $(container).addClass("active");
+            for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
+                var variableName = that.options.variables[idx].vars[j];
+                if (that.options.variables[idx].vars[j] == "")
+                    variableName = "Unnamed";
+                var variables = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                    .appendTo(divVariables).click(function () {
+                    divVariables.find(".active").removeClass("active");
+                    $(this).addClass("active");
+                    setSelectedValue(($(this).attr("data-variable-name") == "") ? "Unnamed" : $(this).attr("data-variable-name"));
+                    currSymbol.value = { container: $(container).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                    that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                });
+                if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
+                    && currSymbol.value.variable == that.options.variables[idx].vars[j])
+                    variables.addClass("active");
+            }
         },
         refresh: function () {
             var that = this;
@@ -11393,14 +11395,12 @@ jQuery.fn.extend({
                             var img = $("<img>").attr("src", this._keyframes[0].Icon).attr("name", this._keyframes[0].Name).css("width", "30px")
                                 .css("height", "30px").attr("data-tool-type", this._keyframes[0].ToolType).appendTo(condition.children().eq(j));
                             var trList = this.createNewSelect(condition.children().eq(j), currSymbol);
-                            //var td = condition.children().eq(j);
-                            //var tdContainers = trList.children().eq(0);
-                            var divContainers = trList.containers; //tdContainers.children().eq(0);
-                            //var tdVariables = trList.children().eq(1);
-                            var divVariables = trList.variables; //tdVariables.children().eq(0);
+                            var divContainers = trList.containers;
+                            var divVariables = trList.variables;
                             var cntName = this._activeState.formula[i][j].value.container === undefined ? 0 : this._activeState.formula[i][j].value.container;
-                            divContainers.find("[data-container-id='" + cntName + "']").trigger("click");
-                            divVariables.find("[data-variable-name='" + this._activeState.formula[i][j].value.variable + "']").trigger("click");
+                            var container = divContainers.find("[data-container-id='" + cntName + "']");
+                            that.setActiveContainer(divContainers, divVariables, container, trList.setSelectedValue, currSymbol);
+                            trList.setSelectedValue(currSymbol.value.variable);
                         }
                         else if (this._activeState.formula[i][j].type == "const") {
                             var currNumber = this._activeState.formula[i][j];
@@ -11418,40 +11418,33 @@ jQuery.fn.extend({
                             num.trigger("focus");
                         }
                         else if (this._activeState.formula[i][j].type == "operator") {
-                            var img;
+                            var keyframe;
                             switch (this._activeState.formula[i][j].value) {
                                 case "=": {
-                                    var keyframe = window.KeyframesRegistry.GetFunctionByName("equal");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
-                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
+                                    keyframe = window.KeyframesRegistry.GetFunctionByName("equal");
+                                    ;
                                     break;
                                 }
                                 case "<": {
-                                    var keyframe = window.KeyframesRegistry.GetFunctionByName("less");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
-                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
+                                    keyframe = window.KeyframesRegistry.GetFunctionByName("less");
                                     break;
                                 }
                                 case "<=": {
-                                    var keyframe = window.KeyframesRegistry.GetFunctionByName("leeq");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
-                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
+                                    keyframe = window.KeyframesRegistry.GetFunctionByName("leeq");
                                     break;
                                 }
                                 case ">": {
-                                    var keyframe = window.KeyframesRegistry.GetFunctionByName("more");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
-                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
+                                    keyframe = window.KeyframesRegistry.GetFunctionByName("more");
                                     break;
                                 }
                                 case ">=": {
-                                    var keyframe = window.KeyframesRegistry.GetFunctionByName("moeq");
-                                    img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
-                                        .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
+                                    keyframe = window.KeyframesRegistry.GetFunctionByName("moeq");
                                     break;
                                 }
                                 default: break;
                             }
+                            var img = $("<img>").attr("src", keyframe.Icon).attr("name", keyframe.Name)
+                                .attr("data-tool-type", keyframe.ToolType).appendTo(condition.children().eq(j));
                         }
                     }
                 }
@@ -11480,7 +11473,7 @@ jQuery.fn.extend({
                     n++;
                     charCode = 65;
                 }
-                else
+                else if (lastStateName)
                     charCode++;
                 stateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);
                 var newState = {

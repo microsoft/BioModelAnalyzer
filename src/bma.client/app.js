@@ -121,9 +121,7 @@ $(document).ready(function () {
         var dfd = $.Deferred();
         loadVersion().done(function (version) {
             loadScript(version);
-            window.setInterval(function () {
-                versionCheck(version);
-            }, 3600000);
+            window.setInterval(function () { versionCheck(version); }, 3600000 /* 1 hour */);
             dfd.resolve();
         });
         return dfd.promise();
@@ -150,9 +148,7 @@ function versionCheck(version) {
                 actions: [
                     {
                         button: 'Ok',
-                        callback: function () {
-                            userDialog.detach();
-                        }
+                        callback: function () { userDialog.detach(); }
                     }
                 ]
             });
@@ -243,9 +239,7 @@ function loadScript(version) {
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
             { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
             {
-                title: "Size",
-                cmd: "Size",
-                children: [
+                title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
                     { title: "2x2", cmd: "ResizeCellTo2x2" },
                     { title: "3x3", cmd: "ResizeCellTo3x3" },
@@ -333,7 +327,12 @@ function loadScript(version) {
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
         var elem = elements[i];
-        $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
+        $("<input></input>")
+            .attr("type", "radio")
+            .attr("id", "btn-" + elem.Type)
+            .attr("name", "drawing-button")
+            .attr("data-type", elem.Type)
+            .appendTo(elementPanel);
         var label = $("<label></label>").addClass("drawingsurface-droppable").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
@@ -360,12 +359,8 @@ function loadScript(version) {
         window.Commands.Execute("AddElementSelect", undefined);
     });
     $("#undoredotoolbar").buttonset();
-    $("#button-undo").click(function () {
-        window.Commands.Execute("Undo", undefined);
-    });
-    $("#button-redo").click(function () {
-        window.Commands.Execute("Redo", undefined);
-    });
+    $("#button-undo").click(function () { window.Commands.Execute("Undo", undefined); });
+    $("#button-redo").click(function () { window.Commands.Execute("Redo", undefined); });
     $("#btn-local-save").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
@@ -381,13 +376,20 @@ function loadScript(version) {
     $("#btn-export-model").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
-    var localStorageWidget = $('<div></div>').addClass('window').appendTo('#drawingSurceContainer').localstoragewidget();
+    var localStorageWidget = $('<div></div>')
+        .addClass('window')
+        .appendTo('#drawingSurceContainer')
+        .localstoragewidget();
     $("#editor").bmaeditor();
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     $('#tabs-3').ltlviewer();
-    var popup = $('<div></div>').addClass('popup-window window').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div></div>')
+        .addClass('popup-window window')
+        .appendTo('body')
+        .hide()
+        .resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
     var expandedSimulation = $('<div></div>').simulationexpanded();
     //Visual Settings Presenter
@@ -525,9 +527,7 @@ function loadScript(version) {
             actions: [
                 {
                     button: 'Ok',
-                    callback: function () {
-                        userDialog.detach();
-                    }
+                    callback: function () { userDialog.detach(); }
                 }
             ]
         });
