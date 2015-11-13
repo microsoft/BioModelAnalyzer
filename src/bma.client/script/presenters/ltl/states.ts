@@ -45,7 +45,14 @@
                 });
             }
 
-            public GetStateByName(name: string): BMA.LTLOperations.Keyframe {
+            public GetStateByName(name: string): BMA.LTLOperations.Keyframe | BMA.LTLOperations.TrueKeyframe | BMA.LTLOperations.OscillationKeyframe | BMA.LTLOperations.SelfLoopKeyframe {
+                if (name === "truestate")
+                    return new BMA.LTLOperations.TrueKeyframe();
+                else if (name === "oscillationstate")
+                    return new BMA.LTLOperations.OscillationKeyframe();
+                else if (name === "selfloopstate")
+                    return new BMA.LTLOperations.SelfLoopKeyframe();
+
                 var keyframes = this.appModel.States;
                 for (var i = 0; i < keyframes.length; i++) {
                     if (keyframes[i].Name === name)

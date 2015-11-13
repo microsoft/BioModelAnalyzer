@@ -723,7 +723,7 @@ module BMA {
                         }
                     })
                         .fail(function () {
-                        alert("LTL failed");
+                        //alert("LTL failed");
                     })
 
 

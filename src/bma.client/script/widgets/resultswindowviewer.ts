@@ -63,6 +63,12 @@
                 this.element.width(800);
                 this.element.height(600);
                 this.element.trigger("resize");
+            } else {
+                if (this.element.hasClass("ui-resizable")) {
+                    this.element.resizable("destroy");
+                    this.element.css("width", '');
+                    this.element.css("height", '');
+                }
             }
 
             this.header = $('<div></div>')
