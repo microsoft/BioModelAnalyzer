@@ -4387,7 +4387,6 @@ var BMA;
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
 (function (BMA) {
-    var UIDrivers;
     (function (UIDrivers) {
         var KeyframesExpandedViewer = (function () {
             function KeyframesExpandedViewer(keyframe) {
@@ -4396,15 +4395,18 @@ var BMA;
             KeyframesExpandedViewer.prototype.AddState = function (items) {
                 //this.keyframe.ltlstatesviewer('addState', items);
             };
+
             KeyframesExpandedViewer.prototype.GetContent = function () {
                 return this.keyframe;
             };
+
             KeyframesExpandedViewer.prototype.RemovePart = function (p1, p2) {
                 //this.keyframe.ltlstatesviewer('removePart', items);
             };
             return KeyframesExpandedViewer;
         })();
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
+
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
                 this.ltlviewer = ltlviewer;
@@ -4415,21 +4417,23 @@ var BMA;
                 var content = resdiv.resultswindowviewer('option', 'content');
                 content.keyframecompact('add', items);
             };
+
             LTLViewer.prototype.Show = function (tab) {
                 if (tab !== undefined) {
                     var content = this.ltlviewer.ltlviewer('Get', tab);
                     content.show();
-                }
-                else {
+                } else {
                     this.ltlviewer.ltlviewer('Show', undefined);
                 }
             };
+
             LTLViewer.prototype.Hide = function (tab) {
                 if (tab !== undefined) {
                     var content = this.ltlviewer.ltlviewer('Get', tab);
                     content.hide();
                 }
             };
+
             LTLViewer.prototype.SetResult = function (res) {
                 var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLResults');
                 var content = resdiv.resultswindowviewer('option', 'content');
@@ -4438,18 +4442,22 @@ var BMA;
                 content.find('td.propagation-cell-green').removeClass("propagation-cell-green");
                 content.find('td.propagation-cell-red').removeClass("propagation-cell-red").addClass("change");
             };
+
             LTLViewer.prototype.GetContent = function () {
                 return this.ltlviewer;
             };
+
             LTLViewer.prototype.GetTemporalPropertiesViewer = function () {
                 return new BMA.UIDrivers.TemporalPropertiesViewer(this.ltlviewer.ltlviewer("GetTPViewer"));
             };
+
             LTLViewer.prototype.GetStatesViewer = function () {
                 return new BMA.UIDrivers.StatesViewerDriver(this.ltlviewer.ltlviewer("GetStatesViewer"));
             };
             return LTLViewer;
         })();
         UIDrivers.LTLViewer = LTLViewer;
+
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
                 this.statesToSet = [];
@@ -4459,65 +4467,85 @@ var BMA;
             }
             TemporalPropertiesEditorDriver.prototype.Show = function () {
                 var that = this;
+
                 var shouldInit = this.tpeditor === undefined;
                 if (shouldInit) {
                     this.tpeditor = $("<div></div>").css("height", "100%");
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: function () { that.OnResize(); } });
+
+                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: function () {
+                        that.OnResize();
+                    } });
                 popup_position();
                 this.popupWindow.show();
+
                 if (shouldInit) {
                     this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet });
                     this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
                     this.svgDriver.SetGridVisibility(false);
+
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
                 }
+
                 this.popupWindow.trigger("resize");
             };
+
             TemporalPropertiesEditorDriver.prototype.OnResize = function () {
                 this.tpeditor.temporalpropertieseditor("updateLayout");
             };
+
             TemporalPropertiesEditorDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
             };
+
             TemporalPropertiesEditorDriver.prototype.GetSVGDriver = function () {
                 return this.svgDriver;
             };
+
             TemporalPropertiesEditorDriver.prototype.GetNavigationDriver = function () {
                 return this.svgDriver;
             };
+
             TemporalPropertiesEditorDriver.prototype.GetDragService = function () {
                 return this.svgDriver;
             };
+
             TemporalPropertiesEditorDriver.prototype.GetContextMenuDriver = function () {
                 return this.contextMenuDriver;
             };
+
             TemporalPropertiesEditorDriver.prototype.HighlightCopyZone = function (ishighlighted) {
                 this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
             };
+
             TemporalPropertiesEditorDriver.prototype.HighlightDeleteZone = function (ishighlighted) {
                 this.tpeditor.temporalpropertieseditor("highlightdeletezone", ishighlighted);
             };
+
             TemporalPropertiesEditorDriver.prototype.GetCopyZoneBBox = function () {
                 return this.tpeditor.temporalpropertieseditor("getcopyzonebbox");
             };
+
             TemporalPropertiesEditorDriver.prototype.GetDeleteZoneBBox = function () {
                 return this.tpeditor.temporalpropertieseditor("getdeletezonebbox");
             };
+
             TemporalPropertiesEditorDriver.prototype.SetCopyZoneVisibility = function (isVisible) {
                 this.tpeditor.temporalpropertieseditor("setcopyzonevisibility", isVisible);
             };
+
             TemporalPropertiesEditorDriver.prototype.SetDeleteZoneVisibility = function (isVisible) {
                 this.tpeditor.temporalpropertieseditor("setdeletezonevisibility", isVisible);
             };
+
             TemporalPropertiesEditorDriver.prototype.SetStates = function (states) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ states: states });
-                }
-                else {
+                } else {
                     this.statesToSet = states;
                 }
             };
+
             TemporalPropertiesEditorDriver.prototype.SetFitToViewCallback = function (callback) {
                 this.ftvcallback = callback;
                 if (this.tpeditor !== undefined) {
@@ -4527,14 +4555,18 @@ var BMA;
             return TemporalPropertiesEditorDriver;
         })();
         UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
+
         var StatesViewerDriver = (function () {
             function StatesViewerDriver(statesViewer) {
                 this.statesViewer = statesViewer;
             }
             StatesViewerDriver.prototype.SetCommands = function (commands) {
+                this.commands = commands;
                 this.statesViewer.statescompact({ commands: commands });
             };
+
             StatesViewerDriver.prototype.SetStates = function (states) {
+                var that = this;
                 var wstates = [];
                 for (var i = 0; i < states.length; i++) {
                     var s = states[i];
@@ -4544,51 +4576,63 @@ var BMA;
                         formula: [],
                         tooltip: s.GetFormula()
                     };
+
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
                         var formula = [];
+
                         formula.push({
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
                             value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : opnd.LeftOperand.Name
                         });
+
                         if (opnd.MiddleOperand !== undefined) {
                             var leftop = opnd.LeftOperator;
                             formula.push({
                                 type: "operator",
                                 value: leftop
                             });
+
                             var middle = opnd.MiddleOperand;
                             formula.push({
                                 type: middle.Name === undefined ? "const" : "variable",
                                 value: middle.Name === undefined ? middle.Value : middle.Name
                             });
+
                             var rightop = opnd.RightOperator;
                             formula.push({
                                 type: "operator",
                                 value: rightop
                             });
-                        }
-                        else {
+                        } else {
                             formula.push({
                                 type: "operator",
                                 value: opnd.Operator
                             });
                         }
+
                         formula.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
                             value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : opnd.RightOperand.Name
                         });
                         ws.formula.push(formula);
                     }
+
                     wstates.push(ws);
                 }
+
+                var statesEditorExpand = function () {
+                    window.Commands.Execute("Expand", "LTLStates");
+                };
+
                 if (this.statesViewer !== undefined) {
-                    this.statesViewer.statescompact({ states: wstates });
+                    this.statesViewer.statescompact({ states: wstates, statesEditorExpand: statesEditorExpand });
                 }
             };
             return StatesViewerDriver;
         })();
         UIDrivers.StatesViewerDriver = StatesViewerDriver;
+
         var StatesEditorDriver = (function () {
             function StatesEditorDriver(commands, popupWindow) {
                 this.popupWindow = popupWindow;
@@ -4616,8 +4660,7 @@ var BMA;
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), f[1].value, new BMA.LTLOperations.ConstOperand(f[2].value));
                                 ops.push(op);
                             }
-                        }
-                        else if (f[2] !== undefined && f[2].type == "variable" && f[2].value != 0) {
+                        } else if (f[2] !== undefined && f[2].type == "variable" && f[2].value != 0) {
                             if (f[0] !== undefined && f[1] !== undefined && f[3] !== undefined && f[4] !== undefined) {
                                 var leftConst = parseFloat(f[0].value);
                                 var leftOperand = f[1].value;
@@ -4628,12 +4671,10 @@ var BMA;
                                 if (leftOperand == "<=") {
                                     leftConst--;
                                     leftOperand = "<";
-                                }
-                                else if (leftOperand == ">=") {
+                                } else if (leftOperand == ">=") {
                                     leftConst++;
                                     leftOperand = ">";
-                                }
-                                else if (leftOperand == "=") {
+                                } else if (leftOperand == "=") {
                                     leftEqual = true;
                                     op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(leftConst - 1), "<", new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(leftConst + 1));
                                     ops.push(op);
@@ -4641,12 +4682,10 @@ var BMA;
                                 if (rightOperand == "<=") {
                                     rightConst++;
                                     rightOperand = "<";
-                                }
-                                else if (rightOperand == ">=") {
+                                } else if (rightOperand == ">=") {
                                     rightConst--;
                                     rightOperand = ">";
-                                }
-                                else if (rightOperand == "=") {
+                                } else if (rightOperand == "=") {
                                     rightEqual = true;
                                     op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(rightConst - 1), "<", new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(rightConst + 1));
                                     ops.push(op);
@@ -4654,12 +4693,10 @@ var BMA;
                                 if (!leftEqual && !rightEqual) {
                                     op = new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(leftConst), leftOperand, new BMA.LTLOperations.NameOperand(f[2].value.variable), rightOperand, new BMA.LTLOperations.ConstOperand(rightConst));
                                     ops.push(op);
-                                }
-                                else if (leftEqual && !rightEqual) {
+                                } else if (leftEqual && !rightEqual) {
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), rightOperand, new BMA.LTLOperations.ConstOperand(rightConst));
                                     ops.push(op);
-                                }
-                                else if (rightEqual && !leftEqual) {
+                                } else if (rightEqual && !leftEqual) {
                                     if (leftOperand == ">")
                                         leftOperand = "<";
                                     else
@@ -4667,8 +4704,7 @@ var BMA;
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), leftOperand, new BMA.LTLOperations.ConstOperand(leftConst));
                                     ops.push(op);
                                 }
-                            }
-                            else if (f[0] !== undefined && f[1] !== undefined && f[3] === undefined && f[4] === undefined) {
+                            } else if (f[0] !== undefined && f[1] !== undefined && f[3] === undefined && f[4] === undefined) {
                                 if (f[1].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[0].value) + 1));
                                 else if (f[1].value == "<=")
@@ -4680,8 +4716,7 @@ var BMA;
                                 else if (f[1].value == ">")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), "<", new BMA.LTLOperations.ConstOperand(f[0].value));
                                 ops.push(op);
-                            }
-                            else if (f[0] === undefined && f[1] === undefined && f[3] !== undefined && f[4] !== undefined) {
+                            } else if (f[0] === undefined && f[1] === undefined && f[3] !== undefined && f[4] !== undefined) {
                                 if (f[3].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[4].value) - 1));
                                 else if (f[3].value == "<=")
@@ -4692,8 +4727,7 @@ var BMA;
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[2].value.variable), f[3].value, new BMA.LTLOperations.ConstOperand(f[4].value));
                                 ops.push(op);
                             }
-                        }
-                        else if (f[4] !== undefined && f[4].type == "variable" && f[4].value != 0) {
+                        } else if (f[4] !== undefined && f[4].type == "variable" && f[4].value != 0) {
                             if (f[2] !== undefined && f[3] !== undefined) {
                                 if (f[3].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[4].value.variable), "<", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) + 1));
@@ -4718,66 +4752,81 @@ var BMA;
                 }
                 return wstates;
             };
+
             StatesEditorDriver.prototype.Show = function () {
                 var shouldInit = this.statesEditor === undefined;
                 if (shouldInit) {
                     this.statesEditor = $("<div></div>");
                 }
+
                 this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
+
                 if (shouldInit) {
                     var that = this;
                     var onStatesUpdated = function (args) {
                         var wstates = that.Convert(args.states);
                         that.commands.Execute("KeyframesChanged", { states: wstates });
                     };
+
                     var onComboBoxOpen = function () {
                         that.commands.Execute("UpdateStatesEditorOptions", {});
                     };
+
                     this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated, onComboBoxOpen: onComboBoxOpen });
+
                     if (this.variablesToSet !== undefined) {
                         this.statesEditor.stateseditor({ variables: this.variablesToSet });
                         this.variablesToSet = undefined;
                     }
+
                     if (this.statesToSet !== undefined) {
                         this.statesEditor.stateseditor({ states: this.statesToSet });
                         this.statesToSet = undefined;
                     }
                 }
             };
+
             StatesEditorDriver.prototype.Hide = function () {
                 this.popupWindow.hide();
             };
+
             StatesEditorDriver.prototype.SetModel = function (model, layout) {
                 var allGroup = {
                     name: "ALL",
                     id: 0,
                     vars: []
                 };
+
                 for (var i = 0; i < model.Variables.length; i++) {
                     allGroup.vars.push(model.Variables[i].Name);
                 }
+
                 var variables = [allGroup];
+
                 for (var i = 0; i < layout.Containers.length; i++) {
                     var vars = [];
+
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
                             vars.push(model.Variables[j].Name);
                     }
+
                     variables.push({
                         name: layout.Containers[i].Name,
                         id: layout.Containers[i].Id,
                         vars: vars
                     });
                 }
+
                 if (this.statesEditor !== undefined) {
                     this.statesEditor.stateseditor({ variables: variables });
-                }
-                else {
+                } else {
                     this.variablesToSet = variables;
                 }
             };
+
             StatesEditorDriver.prototype.SetStates = function (states) {
                 var wstates = [];
                 for (var i = 0; i < states.length; i++) {
@@ -4790,52 +4839,60 @@ var BMA;
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
                         var formulaPart = [];
+
                         var op = {
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
                             value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : { variable: opnd.LeftOperand.Name }
                         };
+
                         formulaPart.push(op);
+
                         if (opnd.MiddleOperand !== undefined) {
                             var leftop = opnd.LeftOperator;
                             formulaPart.push({
                                 type: "operator",
                                 value: leftop
                             });
+
                             var middle = opnd.MiddleOperand;
                             formulaPart.push({
                                 type: middle.Name === undefined ? "const" : "variable",
                                 value: middle.Name === undefined ? middle.Value : { variable: middle.Name }
                             });
+
                             var rightop = opnd.RightOperator;
                             formulaPart.push({
                                 type: "operator",
                                 value: rightop
                             });
-                        }
-                        else {
+                        } else {
                             formulaPart.push({
                                 type: "operator",
                                 value: opnd.Operator
                             });
                         }
+
                         formulaPart.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
                             value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : { variable: opnd.RightOperand.Name }
                         });
+
                         ws.formula.push(formulaPart);
                     }
+
                     wstates.push(ws);
                 }
+
                 if (this.statesEditor !== undefined) {
                     this.statesEditor.stateseditor({ states: wstates });
-                }
-                else {
+                } else {
                     this.statesToSet = wstates;
                 }
             };
             return StatesEditorDriver;
         })();
         UIDrivers.StatesEditorDriver = StatesEditorDriver;
+
         var TemporalPropertiesViewer = (function () {
             function TemporalPropertiesViewer(tpviewer) {
                 this.tpviewer = tpviewer;
@@ -4843,12 +4900,14 @@ var BMA;
             TemporalPropertiesViewer.prototype.SetOperations = function (operations) {
                 this.tpviewer.temporalpropertiesviewer({ operations: operations });
             };
+
             TemporalPropertiesViewer.prototype.Refresh = function () {
                 this.tpviewer.temporalpropertiesviewer("refresh");
             };
             return TemporalPropertiesViewer;
         })();
         UIDrivers.TemporalPropertiesViewer = TemporalPropertiesViewer;
+
         var LTLResultsViewerFactory = (function () {
             function LTLResultsViewerFactory() {
             }
@@ -4858,11 +4917,13 @@ var BMA;
             return LTLResultsViewerFactory;
         })();
         UIDrivers.LTLResultsViewerFactory = LTLResultsViewerFactory;
+
         var LTLResultsCompactViewer = (function () {
             function LTLResultsCompactViewer(compactltlresult) {
                 this.compactltlresult = undefined;
                 this.steps = 10;
                 var that = this;
+
                 this.compactltlresult = compactltlresult;
                 this.compactltlresult.compactltlresult({
                     status: "nottested",
@@ -4889,21 +4950,26 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetStatus = function (status) {
                 this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
             };
+
             LTLResultsCompactViewer.prototype.GetSteps = function () {
                 return this.steps;
             };
+
             LTLResultsCompactViewer.prototype.SetLTLRequestedCallback = function (callback) {
                 this.ltlrequested = callback;
             };
+
             LTLResultsCompactViewer.prototype.SetOnExpandedCallback = function (callback) {
                 this.expandedcallback = callback;
             };
+
             LTLResultsCompactViewer.prototype.SetShowResultsCallback = function (callback) {
                 this.showresultcallback = callback;
             };
             return LTLResultsCompactViewer;
         })();
         UIDrivers.LTLResultsCompactViewer = LTLResultsCompactViewer;
+
         var LTLResultsViewer = (function () {
             function LTLResultsViewer(commands, popupWindow) {
                 this.exportCSVcallback = undefined;
@@ -4913,30 +4979,35 @@ var BMA;
             }
             LTLResultsViewer.prototype.Show = function () {
                 var that = this;
+
                 var shouldInit = this.ltlResultsViewer === undefined;
                 if (shouldInit) {
                     this.ltlResultsViewer = $("<div></div>");
                 }
+
                 this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false });
                 popup_position();
                 this.popupWindow.show();
+
                 if (shouldInit) {
                     if (this.dataToSet !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer(this.dataToSet);
                         this.dataToSet = undefined;
-                    }
-                    else {
+                    } else {
                         this.ltlResultsViewer.ltlresultsviewer();
                     }
+
                     if (this.exportCSVcallback !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
                         this.exportCSVcallback = undefined;
                     }
                 }
             };
+
             LTLResultsViewer.prototype.Hide = function () {
                 this.popupWindow.hide();
             };
+
             LTLResultsViewer.prototype.Compare = function (value1, value2, operator) {
                 switch (operator) {
                     case "<":
@@ -4953,11 +5024,14 @@ var BMA;
                         throw "Unknown operator";
                 }
             };
+
             LTLResultsViewer.prototype.SetData = function (model, layout, ticks, states) {
                 var that = this;
+
                 var vars = model.Variables.sort(function (x, y) {
                     return x.Id < y.Id ? -1 : 1;
                 });
+
                 var id = [];
                 var init = [];
                 var data = [];
@@ -4965,18 +5039,22 @@ var BMA;
                 var ranges = [];
                 var variables = [];
                 var tags = [];
+
                 for (var i = 0; i < vars.length; i++) {
                     id.push(vars[i].Id);
                     ranges.push({
                         min: vars[i].RangeFrom,
                         max: vars[i].RangeTo
                     });
+
                     var color = this.getRandomColor();
                     variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
+
                 ticks = ticks.sort(function (x, y) {
                     return x.Time < y.Time ? -1 : 1;
                 });
+
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     if (i != 0) {
@@ -4989,14 +5067,14 @@ var BMA;
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
                                     (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
-                                }
-                                else {
+                                } else {
                                     (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
                     }
                 }
+
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
                     for (var k = 0; k < data.length; k++) {
@@ -5013,11 +5091,9 @@ var BMA;
                                             break;
                                         }
                                     var curValue = data[k][ind];
-                                    var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? op.RightOperand.Value :
-                                        undefined;
+                                    var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? op.RightOperand.Value : undefined;
                                     result = result && this.Compare(curValue, rightOp, op.Operator);
-                                }
-                                else {
+                                } else {
                                     var varName = op.RightOperand.Name;
                                     var ind;
                                     for (var n = 0; n < vars.length; n++)
@@ -5026,12 +5102,10 @@ var BMA;
                                             break;
                                         }
                                     var curValue = data[k][ind];
-                                    var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? op.LeftOperand.Value :
-                                        undefined;
+                                    var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? op.LeftOperand.Value : undefined;
                                     result = result && this.Compare(leftOp, curValue, op.Operator);
                                 }
-                            }
-                            else if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                            } else if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
                                 var varName = op.MiddleOperand.Name;
                                 var ind;
                                 for (var n = 0; n < vars.length; n++)
@@ -5040,10 +5114,8 @@ var BMA;
                                         break;
                                     }
                                 var curValue = data[k][ind];
-                                var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? op.RightOperand.Value :
-                                    undefined;
-                                var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? op.LeftOperand.Value :
-                                    undefined;
+                                var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? op.RightOperand.Value : undefined;
+                                var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? op.LeftOperand.Value : undefined;
                                 result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
                             }
                         }
@@ -5051,12 +5123,17 @@ var BMA;
                             tags[k].push(state.Name);
                     }
                 }
-                var labels_height = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
-                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+
+                var labels_height = Math.max.apply(Math, ranges.map(function (s) {
+                    return s.max;
+                })) - Math.min.apply(Math, ranges.map(function (s) {
+                    return s.min;
+                }));
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
                 var prevState = undefined;
+
                 var compareTags = function (prev, curr) {
                     if (prev === undefined)
                         return false;
@@ -5069,6 +5146,7 @@ var BMA;
                     }
                     return false;
                 };
+
                 for (var i = 0; i < tags.length; i++) {
                     if (!compareTags(prevState, tags[i])) {
                         if (prevState !== undefined && prevState.length !== 0 && count > 1)
@@ -5077,13 +5155,12 @@ var BMA;
                                 width: count,
                                 height: labels_height,
                                 x: firstTime,
-                                y: 0,
+                                y: 0
                             });
                         prevState = tags[i];
                         firstTime = i + 1;
                         count = 1;
-                    }
-                    else {
+                    } else {
                         count++;
                         if (i == tags.length - 1 && prevState.length !== 0 && count > 2)
                             labels.push({
@@ -5091,11 +5168,13 @@ var BMA;
                                 width: count - 1,
                                 height: labels_height,
                                 x: firstTime,
-                                y: 0,
+                                y: 0
                             });
                     }
                 }
+
                 var interval = this.CreateInterval(vars);
+
                 var options = {
                     id: id,
                     interval: interval,
@@ -5105,13 +5184,14 @@ var BMA;
                     variables: variables,
                     labels: labels
                 };
+
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer(options);
-                }
-                else {
+                } else {
                     that.dataToSet = options;
                 }
             };
+
             LTLResultsViewer.prototype.CreateInterval = function (variables) {
                 var table = [];
                 for (var i = 0; i < variables.length; i++) {
@@ -5121,29 +5201,33 @@ var BMA;
                 }
                 return table;
             };
+
             LTLResultsViewer.prototype.getRandomColor = function () {
                 var r = this.GetRandomInt(0, 255);
                 var g = this.GetRandomInt(0, 255);
                 var b = this.GetRandomInt(0, 255);
                 return "rgb(" + r + ", " + g + ", " + b + ")";
             };
+
             LTLResultsViewer.prototype.GetRandomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
             };
+
             LTLResultsViewer.prototype.SetOnExportCSV = function (callback) {
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: callback });
-                }
-                else {
+                } else {
                     this.exportCSVcallback = callback;
                 }
             };
             return LTLResultsViewer;
         })();
         UIDrivers.LTLResultsViewer = LTLResultsViewer;
-    })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
+    })(BMA.UIDrivers || (BMA.UIDrivers = {}));
+    var UIDrivers = BMA.UIDrivers;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ltldrivers.js.map
+
 ///#source 1 1 /script/presenters/undoredopresenter.js
 var BMA;
 (function (BMA) {
@@ -11665,6 +11749,7 @@ jQuery.fn.extend({
         options: {
             states: [],
             commands: undefined,
+            statesEditorExpand: undefined,
         },
         _create: function () {
             var that = this;
@@ -11681,7 +11766,7 @@ jQuery.fn.extend({
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
-                that.executeCommand("AddFirstStateRequested", {});
+                that.executeStatesEditorExpand(); //executeCommand("AddFirstStateRequested", {});
             });
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
@@ -11726,6 +11811,10 @@ jQuery.fn.extend({
                     this.options.commands = value;
                     break;
                 }
+                case "statesEditorExpand": {
+                    this.options.statesEditorExpand = value;
+                    break;
+                }
                 default: break;
             }
         },
@@ -11733,8 +11822,13 @@ jQuery.fn.extend({
             this._super(options);
         },
         executeCommand: function (commandName, args) {
-            if (this.options.commands !== undefined) {
+            if (this.options.commands) {
                 this.options.commands.Execute(commandName, args);
+            }
+        },
+        executeStatesEditorExpand: function () {
+            if (this.options.statesEditorExpand) {
+                this.options.statesEditorExpand();
             }
         },
         refresh: function () {

@@ -184,16 +184,19 @@ module BMA {
 
         export class StatesViewerDriver implements IStatesViewer {
             private statesViewer: JQuery;
+            private commands: ICommandRegistry;
 
             constructor(statesViewer: JQuery) {
                 this.statesViewer = statesViewer;
             }
 
             public SetCommands(commands: BMA.CommandRegistry) {
+                this.commands = commands;
                 this.statesViewer.statescompact({ commands: commands });
             }
 
             public SetStates(states: BMA.LTLOperations.Keyframe[]) {
+                var that = this;
                 var wstates = [];
                 for (var i = 0; i < states.length; i++) {
                     var s = states[i];
@@ -249,8 +252,12 @@ module BMA {
                     wstates.push(ws);
                 }
 
+                var statesEditorExpand = function () {
+                    window.Commands.Execute("Expand", "LTLStates");
+                }
+
                 if (this.statesViewer !== undefined) {
-                    this.statesViewer.statescompact({ states: wstates });
+                    this.statesViewer.statescompact({ states: wstates, statesEditorExpand: statesEditorExpand });
                 }
             }
         }

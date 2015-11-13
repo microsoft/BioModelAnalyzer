@@ -11,6 +11,7 @@
         options: {
             states: [],
             commands: undefined,
+            statesEditorExpand: undefined,
         },
 
         _create: function () {
@@ -30,7 +31,7 @@
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
 
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
-                that.executeCommand("AddFirstStateRequested", {});
+                that.executeStatesEditorExpand();//executeCommand("AddFirstStateRequested", {});
             });
 
             for (var i = 0; i < this.options.states.length; i++) {
@@ -77,6 +78,10 @@
                     this.options.commands = value;
                     break;
                 }
+                case "statesEditorExpand": {
+                    this.options.statesEditorExpand = value;
+                    break;
+                }
                 default: break;
             }
         },
@@ -86,8 +91,14 @@
         }, 
 
         executeCommand: function (commandName, args) {
-            if (this.options.commands !== undefined) {
+            if (this.options.commands) {
                 this.options.commands.Execute(commandName, args);
+            }
+        },
+
+        executeStatesEditorExpand: function () {
+            if (this.options.statesEditorExpand) {
+                this.options.statesEditorExpand();
             }
         },
 
