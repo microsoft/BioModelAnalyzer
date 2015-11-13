@@ -53,6 +53,8 @@ module BMA {
                 maxWidth: 1000
             };
 
+            private states = [];
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -272,15 +274,17 @@ module BMA {
                 });
 
                 commands.On("KeyframesChanged",(args: { states: BMA.LTLOperations.Keyframe[] }) => {
-                    if (this.CompareStatesToAppModel(args.states)) {
+                    if (this.CompareStatesToLocal(args.states)) {
                         this.ClearResults();
+                        this.states = args.states;
                         tpEditorDriver.SetStates(args.states);
-
                         for (var i = 0; i < this.operations.length; i++) {
-                            this.operations[i].IsVisible = false;
+                            var op = this.operations[i];
+                            op.RefreshStates(args.states);
                         }
-                        this.operations = [];
-                        this.LoadFromAppModel();
+
+                        this.FitToView();
+                        this.OnOperationsChanged(true, false);
                         that.isUpdateControlRequested = true;
                     }
                 });
@@ -548,13 +552,13 @@ module BMA {
                 this.LoadFromAppModel();
             }
 
-            private CompareStatesToAppModel(states: BMA.LTLOperations.Keyframe[]) {
-                if (states.length !== this.appModel.States.length)
+            private CompareStatesToLocal(states: BMA.LTLOperations.Keyframe[]) {
+                if (states.length !== this.states.length)
                     return true;
                 else {
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
-                        var appst = this.appModel.States[i];
+                        var appst = this.states[i];
                         if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
                             return true;
                     }
@@ -612,6 +616,7 @@ module BMA {
                     }
                 }
 
+                this.states = appModel.States;
                 this.tpEditorDriver.SetStates(appModel.States);
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
