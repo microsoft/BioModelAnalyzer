@@ -11,7 +11,9 @@ open FParsec
 // Flattened to confuse expr/terms. 
 type Prop = 
     | PUntil of Prop * Prop 
+    | PWuntil of Prop * Prop
     | PRelease of Prop * Prop
+    | PUpto of Prop * Prop
     | PAnd of Prop * Prop 
     | POr of Prop * Prop 
     | PImplies of Prop * Prop 
@@ -23,6 +25,11 @@ type Prop =
     | PGtEq of Prop * Prop //
     | PLt of Prop * Prop   //
     | PLtEq of Prop * Prop //
+    | PEq of Prop * Prop
+    | PNeq of Prop * Prop
+//    | PLoop
+//    | PSelfLoop
+//    | POscillation
     | PFalse
     | PTrue
     | PNum of int
@@ -56,6 +63,9 @@ let numberLit = numberLiteral numberFormat "number" .>> ws
 // "Grammar productions". 
 let number = numberLit .>> ws |>> (fun x -> PNum((int32)x.String))
 let ident  = str "var" >>. str "(" >>. pythonIdentifier .>> str ")" |>> (fun x -> PId(x))
+//let ll = str "Loop" .>> ws |>> (fun _x -> PLoop)
+//let sl = str "SelfLoop" .>> ws |>> (fun _x -> PSelfLoop)
+//let os = str "Oscillation" .>> ws |>> (fun _x -> POscillation)
 let tt = str "True" .>> ws |>> (fun _x -> PTrue)
 let ff = str "False" .>> ws |>> (fun _x -> PFalse)
 let paren = between (str "(") (str ")") expr 
@@ -64,7 +74,9 @@ opp.TermParser <- choice [tt; ff; number; ident; paren]
 // Operators. 
 type Assoc = Associativity
 opp.AddOperator(InfixOperator("until",   ws, 1, Assoc.Left, fun x y -> PUntil(x,y)))
+opp.AddOperator(InfixOperator("weakuntil",   ws, 1, Assoc.Left, fun x y -> PWuntil(x,y)))
 opp.AddOperator(InfixOperator("release", ws, 1, Assoc.Left, fun x y -> PRelease(x,y)))
+opp.AddOperator(InfixOperator("upto", ws, 1, Assoc.Left, fun x y -> PUpto(x,y)))
 opp.AddOperator(PrefixOperator("next",   ws, 1, true, fun x -> PNext(x)))
 opp.AddOperator(PrefixOperator("always", ws, 1, true, fun x -> PAlways(x)))
 opp.AddOperator(PrefixOperator("eventually", ws, 1, true, fun x -> PEventually(x)))
@@ -72,6 +84,8 @@ opp.AddOperator(InfixOperator("&&", ws, 2, Assoc.Left, fun x y -> PAnd(x,y)))
 opp.AddOperator(InfixOperator("||", ws, 2, Assoc.Left, fun x y -> POr(x,y)))
 opp.AddOperator(InfixOperator("=>", ws, 2, Assoc.Left, fun x y -> PImplies(x,y)))
 opp.AddOperator(PrefixOperator("!", ws, 4, true, fun x -> PNot(x)))
+opp.AddOperator(InfixOperator("=",ws,8,Assoc.Left, fun x y -> PEq(x,y)))
+opp.AddOperator(InfixOperator("!=", ws, 8, Assoc.Left, fun x y -> PNeq(x,y)))
 opp.AddOperator(InfixOperator(">", ws, 8, Assoc.Left, fun x y -> PGt(x,y)))
 opp.AddOperator(InfixOperator(">=", ws, 8, Assoc.Left, fun x y -> PGtEq(x,y)))
 opp.AddOperator(InfixOperator("<", ws, 8, Assoc.Left, fun x y -> PLt(x,y)))
@@ -89,7 +103,9 @@ let find_node_by_name qn name = failwith "Unimplemented"
 let rec ltl_of_p qn p loc = 
     match p with 
     | PUntil(p0,p1) -> LTL.Until(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
+    | PWuntil(p0,p1) -> LTL.Wuntil(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
     | PRelease(p0,p1) -> LTL.Release(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
+    | PUpto(p0,p1) -> LTL.Upto(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
     | PAnd(p0,p1) -> LTL.And(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
     | POr(p0,p1) -> LTL.Or(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
     | PImplies(p0,p1) -> LTL.Implies(loc, ltl_of_p qn p0 (0::loc), ltl_of_p qn p1 (1::loc))
@@ -97,6 +113,10 @@ let rec ltl_of_p qn p loc =
     | PNext(p0) -> LTL.Next(loc, ltl_of_p qn p0 (0::loc))
     | PAlways(p0) -> LTL.Always(loc, ltl_of_p qn p0 (0::loc))
     | PEventually(p0) -> LTL.Eventually(loc, ltl_of_p qn p0 (0::loc))
+    | PEq (PId(x), PNum(n)) -> LTL.PropEq (loc, find_node_by_name qn x, n)
+    | PEq (_,_) -> LTL.Error
+    | PNeq (PId(x), PNum(n)) -> LTL.PropNeq (loc, find_node_by_name qn x, n)
+    | PNeq (_,_) -> LTL.Error
     | PGt(PId(x),PNum(n)) -> LTL.PropGt(loc, find_node_by_name qn x, n)
     | PGt(_,_) -> LTL.Error
     | PGtEq(PId(x),PNum(n)) -> LTL.PropGtEq(loc, find_node_by_name qn x, n)
@@ -105,6 +125,9 @@ let rec ltl_of_p qn p loc =
     | PLt(_,_) -> LTL.Error
     | PLtEq(PId(x),PNum(n)) -> LTL.PropLtEq(loc, find_node_by_name qn x, n)
     | PLtEq(_,_) -> LTL.Error
+//    | PLoop -> LTL.Loop
+//    | PSelfLoop -> LTL.SelfLoop
+//    | POscillation -> LTL.Oscillation
     | PFalse -> LTL.False
     | PTrue -> LTL.True
     | PNum(_) 
@@ -143,6 +166,18 @@ let unit_tests _ =
 
     check   "((!(var(v1) > 5)) release (next (var(v2) >= 17))) until ((var(v2) > 6) && (var(v2) <= 564))" 
             (ParseOK(PUntil (PRelease (PNot (PGt (PId "v1",PNum 5)),PNext (PGtEq (PId "v2",PNum 17))),PAnd (PGt (PId "v2",PNum 6),PLtEq (PId "v2",PNum 564)))))
+
+    check   "((!(var(v1) = 5)) release (next (var(v2) >= 17))) until ((var(v2) != 6) && (var(v2) <= 564))" 
+            (ParseOK(PUntil (PRelease (PNot (PEq (PId "v1",PNum 5)),PNext (PGtEq (PId "v2",PNum 17))),PAnd (PNeq (PId "v2",PNum 6),PLtEq (PId "v2",PNum 564)))))
+
+    check   "((!(var(v1) > 5)) release (next (var(v2) >= 17))) weakuntil ((var(v2) > 6) && (var(v2) <= 564))" 
+            (ParseOK(PWuntil (PRelease (PNot (PGt (PId "v1",PNum 5)),PNext (PGtEq (PId "v2",PNum 17))),PAnd (PGt (PId "v2",PNum 6),PLtEq (PId "v2",PNum 564)))))
+
+    check   "((!(var(v1) > 5)) upto (next (var(v2) >= 17))) weakuntil ((var(v2) > 6) && (var(v2) <= 564))" 
+            (ParseOK(PWuntil (PUpto (PNot (PGt (PId "v1",PNum 5)),PNext (PGtEq (PId "v2",PNum 17))),PAnd (PGt (PId "v2",PNum 6),PLtEq (PId "v2",PNum 564)))))
+
+//    check   "((!(var(v1) > 5)) upto (next Oscillation)) weakuntil (Loop && SelfLoop)" 
+//            (ParseOK(PWuntil (PUpto (PNot (PGt (PId "v1",PNum 5)),PNext (POscillation),PAnd (PLoop,PSelfLoop))))
 
 //    let formula_three_string = "(Always (Or (Not (Next (>= v2 6344))) (Eventually (Next (<= v3 343245)))))"
 //    let formula_three = string_to_LTL_formula formula_three_string network
