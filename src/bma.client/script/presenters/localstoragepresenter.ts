@@ -18,7 +18,7 @@
                 var that = this;
                 this.appModel = appModel;
                 this.driver = editor;
-                this.tool = tool;
+                this.tool = tool; 
                 this.messagebox = messagebox;
                 this.checker = checker;
 
