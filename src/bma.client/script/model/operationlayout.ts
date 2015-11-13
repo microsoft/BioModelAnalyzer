@@ -260,7 +260,19 @@
                     var w = this.keyFrameSize;
                     layout.layer = 0;
                     layout.width = w;
-                    layout.name = operation.name;
+
+                    if (operation instanceof TrueKeyframe) {
+                        layout.type = "truekeyframe";
+                    } else if (operation instanceof OscillationKeyframe) {
+                        layout.type = "oscillationkeyframe";
+                    } else if (operation instanceof SelfLoopKeyframe) {
+                        layout.type = "selfloopkeyframe";
+                    } else if (operation instanceof Keyframe) {
+                        layout.type = "keyframe";
+                        layout.name = operation.name;
+                    } else
+                        throw "Unknown Keyframe type";
+
                     return layout;
                 }
             }
@@ -285,7 +297,8 @@
                             this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
                             break;
                         default:
-                            throw "Unsupported number of operands";
+                            break;
+                            //throw "Unsupported number of operands";
                     }
                 }
             }
@@ -397,7 +410,8 @@
 
                                 break;
                             default:
-                                throw "Rendering of operators with " + operands.length + " operands is not supported";
+                                break;
+                                //throw "Rendering of operators with " + operands.length + " operands is not supported";
 
 
                         }
@@ -408,23 +422,40 @@
 
                         svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
 
-                        var textGroup = svg.group(stateGroup, {
-                        });
+                        if (layoutPart.type === "keyframe") {
+                            var textGroup = svg.group(stateGroup, {
+                            });
 
-                        var label = svg.text(textGroup, 0, 0, layoutPart.name, {
-                            "font-size": 16,
-                            "fill": "rgb(96,96,96)",
-                            //"text-anchor": "middle", 
-                            //"alignment-baseline": "middle",
-                            //"dominant-baseline": "central"
-                        });
-                        var bbox = label.getBBox();
-                        this.svg.change(textGroup, {
-                            transform: "translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
-                        });
+                            var label = svg.text(textGroup, 0, 0, layoutPart.name, {
+                                "font-size": 16,
+                                "fill": "rgb(96,96,96)",
+                                //"text-anchor": "middle", 
+                                //"alignment-baseline": "middle",
+                                //"dominant-baseline": "central"
+                            });
+                            var bbox = label.getBBox();
+                            this.svg.change(textGroup, {
+                                transform: "translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
+                            });
+                        } else {
+                            var img = svg.image(stateGroup, - this.keyFrameSize / 2, - this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, this.GetKeyframeImagePath(layoutPart.type));
+                        }
 
                         layoutPart.svgref = stateGroup;
                     }
+                }
+            }
+
+            private GetKeyframeImagePath(keyframetype: string) {
+                switch (keyframetype) {
+                    case "oscillationkeyframe":
+                        return "../images/oscillation-state.svg";
+                    case "truekeyframe":
+                        return "../images/true-state.svg";
+                    case "selfloopkeyframe":
+                        return "../images/selfloop-state.svg";
+                    default:
+                        throw "Unknown keyframe type";
                 }
             }
 
@@ -688,7 +719,7 @@
                             }
                         }
                     }
-                } 
+                }
             }
 
             public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {

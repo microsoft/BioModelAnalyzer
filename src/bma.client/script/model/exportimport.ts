@@ -190,7 +190,7 @@
 
             throw "Unsupported State Type";
         }
-        
+
         export function ExportOperation(operation: BMA.LTLOperations.Operation, withStates: boolean) {
             var result: any = {};
             result["_type"] = "Operation";
@@ -215,6 +215,21 @@
                             name: (<BMA.LTLOperations.Keyframe>op).Name
                         });
                     }
+                } else if (op instanceof BMA.LTLOperations.TrueKeyframe) {
+                    result.operands.push({
+                        _type: "TrueKeyframe",
+                    });
+                } else if (op instanceof BMA.LTLOperations.OscillationKeyframe) {
+                    result.operands.push({
+                        _type: "OscillationKeyframe",
+                    });
+                } else if (op instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                    result.operands.push({
+                        _type: "SelfLoopKeyframe",
+                    });
+                } else {
+                    //Unknown operand type
+                    result.operands.push(undefined);
                 }
             }
 
@@ -327,8 +342,15 @@
                     op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
                     return op;
                     break;
+                case "TrueKeyframe":
+                    return new BMA.LTLOperations.TrueKeyframe();
+                case "OscillationKeyframe":
+                    return new BMA.LTLOperations.OscillationKeyframe();
+                case "SelfLoopKeyframe":
+                    return new BMA.LTLOperations.SelfLoopKeyframe();
                 default:
                     break;
+                
             }
 
             return undefined;

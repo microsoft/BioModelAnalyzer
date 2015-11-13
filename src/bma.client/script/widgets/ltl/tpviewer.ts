@@ -64,8 +64,6 @@
                 width += 2 * this.options.padding.x;
                 height += this.options.padding.y;
 
-                console.log("width: " + width + " height: " + height);
-
                 this.svgdiv.width(width);
                 this.svgdiv.height(height);
                 this._svg.configure({

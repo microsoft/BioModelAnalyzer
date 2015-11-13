@@ -42,6 +42,32 @@
             }
         },
 
+        _addCustomState: function (statesbtns: JQuery, name, imagePath: string) {
+            var that = this;
+
+            var state = $("<div></div>")
+                .addClass("state-button")
+                .addClass("ltl-tp-droppable")
+                .attr("data-state", name)
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .appendTo(statesbtns);
+            $("<img>").attr("src", imagePath).appendTo(state);
+
+            state.draggable({
+                helper: "clone",
+                start: function (event, ui) {
+                    $(this).draggable("option", "cursorAt", {
+                        left: 0,   //Math.floor(ui.helper.width() / 2),
+                        top: 0     //Math.floor(ui.helper.height() / 2)
+                    });
+                    that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+                }
+            });
+
+            return state;
+        },
+
         _create: function () {
             var that = this;
 
@@ -61,34 +87,13 @@
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             
             //Oscilation state
-            var oscilationState = $("<div></div>")
-                .addClass("state-button")
-                .addClass("ltl-tp-droppable")
-                .attr("data-state", "oscialtion")
-                .css("z-index", 6)
-                .css("cursor", "pointer")
-                .appendTo(statesbtns);
-            $("<img>").attr("src", "../images/oscillation-state.svg").appendTo(oscilationState);
+            this._addCustomState(statesbtns, "oscillationstate", "../images/oscillation-state.svg");
 
             //Selfloop state
-            var selfloopState = $("<div></div>")
-                .addClass("state-button")
-                .addClass("ltl-tp-droppable")
-                .attr("data-state", "selfloop")
-                .css("z-index", 6)
-                .css("cursor", "pointer")
-                .appendTo(statesbtns);
-            $("<img>").attr("src", "../images/selfloop-state.svg").appendTo(selfloopState);
+            this._addCustomState(statesbtns, "selfloopstate", "../images/selfloop-state.svg");
 
             //True-state state
-            var trueState = $("<div></div>")
-                .addClass("state-button")
-                .addClass("ltl-tp-droppable")
-                .attr("data-state", "truestate")
-                .css("z-index", 6)
-                .css("cursor", "pointer")
-                .appendTo(statesbtns);
-            $("<img>").attr("src", "../images/true-state.svg").appendTo(trueState);
+            this._addCustomState(statesbtns, "truestate", "../images/true-state.svg");
 
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);

@@ -2821,6 +2821,25 @@ var BMA;
                         });
                     }
                 }
+                else if (op instanceof BMA.LTLOperations.TrueKeyframe) {
+                    result.operands.push({
+                        _type: "TrueKeyframe",
+                    });
+                }
+                else if (op instanceof BMA.LTLOperations.OscillationKeyframe) {
+                    result.operands.push({
+                        _type: "OscillationKeyframe",
+                    });
+                }
+                else if (op instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                    result.operands.push({
+                        _type: "SelfLoopKeyframe",
+                    });
+                }
+                else {
+                    //Unknown operand type
+                    result.operands.push(undefined);
+                }
             }
             return result;
         }
@@ -2917,6 +2936,12 @@ var BMA;
                     op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
                     return op;
                     break;
+                case "TrueKeyframe":
+                    return new BMA.LTLOperations.TrueKeyframe();
+                case "OscillationKeyframe":
+                    return new BMA.LTLOperations.OscillationKeyframe();
+                case "SelfLoopKeyframe":
+                    return new BMA.LTLOperations.SelfLoopKeyframe();
                 default:
                     break;
             }
@@ -3073,6 +3098,42 @@ var BMA;
             return DoubleKeyframeEquation;
         })();
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
+        var TrueKeyframe = (function () {
+            function TrueKeyframe() {
+            }
+            TrueKeyframe.prototype.GetFormula = function () {
+                return "True";
+            };
+            TrueKeyframe.prototype.Clone = function () {
+                return new TrueKeyframe();
+            };
+            return TrueKeyframe;
+        })();
+        LTLOperations.TrueKeyframe = TrueKeyframe;
+        var SelfLoopKeyframe = (function () {
+            function SelfLoopKeyframe() {
+            }
+            SelfLoopKeyframe.prototype.GetFormula = function () {
+                return "SelfLoop";
+            };
+            SelfLoopKeyframe.prototype.Clone = function () {
+                return new SelfLoopKeyframe();
+            };
+            return SelfLoopKeyframe;
+        })();
+        LTLOperations.SelfLoopKeyframe = SelfLoopKeyframe;
+        var OscillationKeyframe = (function () {
+            function OscillationKeyframe() {
+            }
+            OscillationKeyframe.prototype.GetFormula = function () {
+                return "Oscillation";
+            };
+            OscillationKeyframe.prototype.Clone = function () {
+                return new OscillationKeyframe();
+            };
+            return OscillationKeyframe;
+        })();
+        LTLOperations.OscillationKeyframe = OscillationKeyframe;
         var Keyframe = (function () {
             function Keyframe(name, description, operands) {
                 this.name = name;
@@ -3477,7 +3538,21 @@ var BMA;
                     var w = this.keyFrameSize;
                     layout.layer = 0;
                     layout.width = w;
-                    layout.name = operation.name;
+                    if (operation instanceof LTLOperations.TrueKeyframe) {
+                        layout.type = "truekeyframe";
+                    }
+                    else if (operation instanceof LTLOperations.OscillationKeyframe) {
+                        layout.type = "oscillationkeyframe";
+                    }
+                    else if (operation instanceof LTLOperations.SelfLoopKeyframe) {
+                        layout.type = "selfloopkeyframe";
+                    }
+                    else if (operation instanceof LTLOperations.Keyframe) {
+                        layout.type = "keyframe";
+                        layout.name = operation.name;
+                    }
+                    else
+                        throw "Unknown Keyframe type";
                     return layout;
                 }
             };
@@ -3498,7 +3573,7 @@ var BMA;
                             this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
                             break;
                         default:
-                            throw "Unsupported number of operands";
+                            break;
                     }
                 }
             };
@@ -3591,7 +3666,7 @@ var BMA;
                                 });
                                 break;
                             default:
-                                throw "Rendering of operators with " + operands.length + " operands is not supported";
+                                break;
                         }
                     }
                     else {
@@ -3599,17 +3674,34 @@ var BMA;
                             transform: "translate(" + position.x + ", " + position.y + ")"
                         });
                         svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
-                        var textGroup = svg.group(stateGroup, {});
-                        var label = svg.text(textGroup, 0, 0, layoutPart.name, {
-                            "font-size": 16,
-                            "fill": "rgb(96,96,96)",
-                        });
-                        var bbox = label.getBBox();
-                        this.svg.change(textGroup, {
-                            transform: "translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
-                        });
+                        if (layoutPart.type === "keyframe") {
+                            var textGroup = svg.group(stateGroup, {});
+                            var label = svg.text(textGroup, 0, 0, layoutPart.name, {
+                                "font-size": 16,
+                                "fill": "rgb(96,96,96)",
+                            });
+                            var bbox = label.getBBox();
+                            this.svg.change(textGroup, {
+                                transform: "translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
+                            });
+                        }
+                        else {
+                            var img = svg.image(stateGroup, -this.keyFrameSize / 2, -this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, this.GetKeyframeImagePath(layoutPart.type));
+                        }
                         layoutPart.svgref = stateGroup;
                     }
+                }
+            };
+            OperationLayout.prototype.GetKeyframeImagePath = function (keyframetype) {
+                switch (keyframetype) {
+                    case "oscillationkeyframe":
+                        return "../images/oscillation-state.svg";
+                    case "truekeyframe":
+                        return "../images/true-state.svg";
+                    case "selfloopkeyframe":
+                        return "../images/selfloop-state.svg";
+                    default:
+                        throw "Unknown keyframe type";
                 }
             };
             OperationLayout.prototype.Render = function () {
@@ -9419,6 +9511,13 @@ var BMA;
                 this.element.height(600);
                 this.element.trigger("resize");
             }
+            else {
+                if (this.element.hasClass("ui-resizable")) {
+                    this.element.resizable("destroy");
+                    this.element.css("width", '');
+                    this.element.css("height", '');
+                }
+            }
             this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
             $('<span></span>').text(options.header).appendTo(this.header);
             this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
@@ -11791,6 +11890,22 @@ jQuery.fn.extend({
                 });
             }
         },
+        _addCustomState: function (statesbtns, name, imagePath) {
+            var that = this;
+            var state = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", name).css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
+            $("<img>").attr("src", imagePath).appendTo(state);
+            state.draggable({
+                helper: "clone",
+                start: function (event, ui) {
+                    $(this).draggable("option", "cursorAt", {
+                        left: 0,
+                        top: 0 //Math.floor(ui.helper.height() / 2)
+                    });
+                    that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+                }
+            });
+            return state;
+        },
         _create: function () {
             var that = this;
             var root = this.element;
@@ -11805,14 +11920,11 @@ jQuery.fn.extend({
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             //Oscilation state
-            var oscilationState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "oscialtion").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
-            $("<img>").attr("src", "../images/oscillation-state.svg").appendTo(oscilationState);
+            this._addCustomState(statesbtns, "oscillationstate", "../images/oscillation-state.svg");
             //Selfloop state
-            var selfloopState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "selfloop").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
-            $("<img>").attr("src", "../images/selfloop-state.svg").appendTo(selfloopState);
+            this._addCustomState(statesbtns, "selfloopstate", "../images/selfloop-state.svg");
             //True-state state
-            var trueState = $("<div></div>").addClass("state-button").addClass("ltl-tp-droppable").attr("data-state", "truestate").css("z-index", 6).css("cursor", "pointer").appendTo(statesbtns);
-            $("<img>").attr("src", "../images/true-state.svg").appendTo(trueState);
+            this._addCustomState(statesbtns, "truestate", "../images/true-state.svg");
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
@@ -12076,7 +12188,6 @@ jQuery.fn.extend({
                 }
                 width += 2 * this.options.padding.x;
                 height += this.options.padding.y;
-                console.log("width: " + width + " height: " + height);
                 this.svgdiv.width(width);
                 this.svgdiv.height(height);
                 this._svg.configure({
@@ -12346,6 +12457,12 @@ var BMA;
                 });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
+                if (name === "truestate")
+                    return new BMA.LTLOperations.TrueKeyframe();
+                else if (name === "oscillationstate")
+                    return new BMA.LTLOperations.OscillationKeyframe();
+                else if (name === "selfloopstate")
+                    return new BMA.LTLOperations.SelfLoopKeyframe();
                 var keyframes = this.appModel.States;
                 for (var i = 0; i < keyframes.length; i++) {
                     if (keyframes[i].Name === name)
@@ -12949,7 +13066,7 @@ var BMA;
                             that.OnOperationsChanged(false);
                         }
                     }).fail(function () {
-                        alert("LTL failed");
+                        //alert("LTL failed");
                     });
                 }
                 else {

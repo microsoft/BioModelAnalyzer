@@ -142,6 +142,36 @@
             }
         }
 
+        export class TrueKeyframe implements IOperand {
+            public GetFormula() {
+                return "True";
+            }
+
+            public Clone() {
+                return new TrueKeyframe();
+            }
+        }
+
+        export class SelfLoopKeyframe implements IOperand {
+            public GetFormula() {
+                return "SelfLoop";
+            }
+
+            public Clone() {
+                return new SelfLoopKeyframe();
+            }
+        }
+
+        export class OscillationKeyframe implements IOperand {
+            public GetFormula() {
+                return "Oscillation";
+            }
+
+            public Clone() {
+                return new OscillationKeyframe();
+            }
+        }
+
         export class Keyframe implements IOperand {
             private name: string;
             private description: string;
