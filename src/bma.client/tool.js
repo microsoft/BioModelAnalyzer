@@ -4495,8 +4495,14 @@ var BMA;
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
+                var _this = this;
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
+                accordion.bmaaccordion({
+                    onactivetabchanged: function () {
+                        _this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                    }
+                });
             }
             LTLViewer.prototype.AddState = function (items) {
                 var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
@@ -8011,6 +8017,9 @@ var BMA;
                 tabIndex: 0,
                 "aria-expanded": "true"
             });
+            if (that.options.onactivetabchanged) {
+                that.options.onactivetabchanged();
+            }
         },
         _showLoading: function (clicked) {
             clicked.animate({ width: "+=60px" });
@@ -12162,10 +12171,6 @@ jQuery.fn.extend({
                         viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
-                    //TODO: search for more generic solution
-                    svg._svg.onresize = function () {
-                        that.refresh();
-                    };
                     that.refresh();
                 }
             });

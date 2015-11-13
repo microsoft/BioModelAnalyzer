@@ -33,6 +33,12 @@ module BMA {
             constructor(accordion: JQuery, ltlviewer: JQuery) {
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
+
+                accordion.bmaaccordion({
+                    onactivetabchanged: () => {
+                        this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                    }
+                });
             }
 
             public AddState(items) {

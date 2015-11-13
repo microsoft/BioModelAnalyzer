@@ -504,6 +504,10 @@
                     tabIndex: 0,
                     "aria-expanded": "true"
                 });
+
+            if (that.options.onactivetabchanged) {
+                that.options.onactivetabchanged();
+            }
         },
 
 
