@@ -3640,6 +3640,7 @@ ui-icon-arrowthickstop-1-n {
 .state-buttons .state-button {
   margin: 5px;
   margin-left: 0;
+  overflow: hidden;
 }
 .state-buttons .state-button.active {
   border: 3px solid #606060;

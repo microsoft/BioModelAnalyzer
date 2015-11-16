@@ -255,7 +255,9 @@
     <TypeScriptCompile Include="script\widgets\ltl\ltlresultsviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\LTLStatesViewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\selector.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditor2.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
