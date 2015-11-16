@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>LTL</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Analysis-Tabs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="LTL" sketch:type="MSArtboardGroup">
+            <g id="LTL-tab" sketch:type="MSLayerGroup" transform="translate(3.000000, 4.000000)">
+                <rect id="Rectangle-10-Copy" stroke="#81BB83" stroke-width="2" fill="#D9FFB6" sketch:type="MSShapeGroup" x="0" y="18.6582835" width="42" height="21.8417165" rx="15"></rect>
+                <rect id="Rectangle-10" stroke="#81BB83" stroke-width="2" sketch:type="MSShapeGroup" x="17" y="22.1582835" width="21.696931" height="14.8417165" rx="8"></rect>
+                <rect id="Rectangle-10-Copy-2" stroke="#CF451B" stroke-width="2" fill="#FEB6B2" sketch:type="MSShapeGroup" x="11.5791418" y="0.158283536" width="29.1177893" height="14.8417165" rx="8"></rect>
+                <path d="M6.94110537,34.2171782 C9.50262214,34.2171782 11.5791418,32.1406585 11.5791418,29.5791418 C11.5791418,27.017625 9.50262214,24.9411054 6.94110537,24.9411054 C4.3795886,24.9411054 2.30306898,27.017625 2.30306898,29.5791418 C2.30306898,32.1406585 4.3795886,34.2171782 6.94110537,34.2171782 Z" id="Oval-7-Copy-2" fill="#606060" sketch:type="MSShapeGroup"></path>
+                <path d="M31.2760728,34.2171782 C33.8375896,34.2171782 35.9141092,32.1406585 35.9141092,29.5791418 C35.9141092,27.017625 33.8375896,24.9411054 31.2760728,24.9411054 C28.714556,24.9411054 26.6380364,27.017625 26.6380364,29.5791418 C26.6380364,32.1406585 28.714556,34.2171782 31.2760728,34.2171782 Z" id="Oval-7-Copy" fill="#606060" sketch:type="MSShapeGroup"></path>
+                <path d="M18.3619636,12.2171782 C20.9234804,12.2171782 23,10.1406585 23,7.57914177 C23,5.017625 20.9234804,2.94110537 18.3619636,2.94110537 C15.8004468,2.94110537 13.7239272,5.017625 13.7239272,7.57914177 C13.7239272,10.1406585 15.8004468,12.2171782 18.3619636,12.2171782 Z" id="Oval-7-Copy-3" fill="#606060" sketch:type="MSShapeGroup"></path>
+                <path d="M34.0588946,12.2171782 C36.6204114,12.2171782 38.696931,10.1406585 38.696931,7.57914177 C38.696931,5.017625 36.6204114,2.94110537 34.0588946,2.94110537 C31.4973779,2.94110537 29.4208582,5.017625 29.4208582,7.57914177 C29.4208582,10.1406585 31.4973779,12.2171782 34.0588946,12.2171782 Z" id="Oval-7-Copy-4" fill="#606060" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>
