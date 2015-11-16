@@ -32,11 +32,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMAWebApi", "..\..\src\BMAW
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer32", "..\..\src\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj", "{27FCEE47-CED8-4629-9989-7E9A490B090E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CED04AA0-B3AB-43E6-9746-30437D437F08}"
-	ProjectSection(SolutionItems) = preProject
-		WebEssentials-Settings.json = WebEssentials-Settings.json
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.package", "..\..\src\bma.package\bma.package.csproj", "{68A7F32F-0860-4688-8C82-C55196461E48}"
 EndProject
 Global

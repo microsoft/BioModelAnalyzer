@@ -298,7 +298,7 @@
                             break;
                         default:
                             break;
-                            //throw "Unsupported number of operands";
+                        //throw "Unsupported number of operands";
                     }
                 }
             }
@@ -411,7 +411,7 @@
                                 break;
                             default:
                                 break;
-                                //throw "Rendering of operators with " + operands.length + " operands is not supported";
+                            //throw "Rendering of operators with " + operands.length + " operands is not supported";
 
 
                         }
@@ -420,11 +420,13 @@
                             transform: "translate(" + position.x + ", " + position.y + ")"
                         });
 
-                        svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        var uniquename = this.GenerateUUID();
+                        var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
 
                         if (layoutPart.type === "keyframe") {
                             var textGroup = svg.group(stateGroup, {
                             });
+
 
                             var label = svg.text(textGroup, 0, 0, layoutPart.name, {
                                 "font-size": 16,
@@ -433,9 +435,16 @@
                                 //"alignment-baseline": "middle",
                                 //"dominant-baseline": "central"
                             });
+
                             var bbox = label.getBBox();
+
+                            var scale = 1;
+                            if (bbox.width > this.keyFrameSize / 2) {
+                                scale = this.keyFrameSize / (2 * bbox.width);
+                            }
+
                             this.svg.change(textGroup, {
-                                transform: "translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
+                                transform: "scale(" + scale + ", " + scale + ") translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
                             });
                         } else {
                             var img = svg.image(stateGroup, - this.keyFrameSize / 2, - this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, this.GetKeyframeImagePath(layoutPart.type));
@@ -725,6 +734,19 @@
             public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {
                 this.RefreshStatesInOperation(this.operation, states);
                 //this.Refresh();
+            }
+
+            private GenerateUUID() {
+                var d = new Date().getTime();
+                if (window.performance && typeof window.performance.now === "function") {
+                    d += performance.now();; //use high-precision timer if available
+                }
+                var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = (d + Math.random() * 16) % 16 | 0;
+                    d = Math.floor(d / 16);
+                    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                });
+                return uuid;
             }
         }
     }

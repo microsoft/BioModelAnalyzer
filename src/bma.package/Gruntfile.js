@@ -96,6 +96,13 @@ module.exports = function (grunt) {
                 ]
             },
         },
+        less: {
+            development: {
+                files: {
+                    "css/bma.css": "css/bma.less"
+                }
+            }
+        }
         
         //jasmine: {
         //    options: {
@@ -119,6 +126,7 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-base64');
     grunt.loadNpmTasks('grunt-contrib-copy');
     //grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks("grunt-contrib-less");
 
-    grunt.registerTask('default', ['concat:tool', 'copy:main']);
+    grunt.registerTask('default', ['concat:tool', 'less:development', 'copy:main']);
 };
