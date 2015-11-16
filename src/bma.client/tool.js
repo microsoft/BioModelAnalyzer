@@ -1,4 +1,3 @@
-﻿///#source 1 1 /js/svgplot.js
 (function (BMAExt, InteractiveDataDisplay, $, undefined) {
 
     BMAExt.SVGPlot = function (jqDiv, master) {
@@ -171,307 +170,6 @@
 
 
 })(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
-///#source 1 1 /js/BandPlot.js
-(function (BMAExt, InteractiveDataDisplay, $, undefined) {
-
-    BMAExt.BandPlot = function (div, master) {
-        var that = this;
-
-        // Initialization (#1)
-        var initializer = InteractiveDataDisplay.Utils.getDataSourceFunction(div, InteractiveDataDisplay.readCsv);
-        var initialData = initializer(div);
-
-        this.base = InteractiveDataDisplay.CanvasPlot;
-        this.base(div, master);
-
-        var _x, _y_mean, _y_u68, _y_l68, _y_u95, _y_l95;
-        var _fill_68 = 'blue';
-        var _fill_95 = 'pink';
-        var _stroke = "black";
-        var _thickness = 1; 
-
-        // default styles:
-        if (initialData) {
-            _fill_68 = typeof initialData.fill_68 != "undefined" ? initialData.fill_68 : _fill_68;
-            _fill_95 = typeof initialData.fill_95 != "undefined" ? initialData.fill_95 : _fill_95;
-            _stroke = typeof initialData.stroke != "undefined" ? initialData.stroke : _stroke;
-            _thickness = typeof initialData.thickness != "undefined" ? initialData.thickness : _thickness;
-
-        }
-
-        this.draw = function (data) {
-            var y_mean = data.y_mean;
-            if (!y_mean) throw "Data series y_mean is undefined";
-            var n = y_mean.length;
-
-            var y_u68 = data.y_u68;
-            if (y_u68 && y_u68.length !== n)
-                throw "Data series y_u68 and y_mean have different lengths";
-
-            var y_l68 = data.y_l68;
-            if (y_l68 && y_l68.length !== n)
-                throw "Data series y_l68 and y_mean have different lengths";
-
-            var y_u95 = data.y_u95;
-            if (y_u95 && y_u95.length !== n)
-                throw "Data series y_u95 and y_mean have different lengths";
-
-            var y_l95 = data.y_l95;
-            if (y_l95 && y_l95.length !== n)
-                throw "Data series y_l95 and y_mean have different lengths";
-
-            if (!data.x) {
-                data.x = InteractiveDataDisplay.Utils.range(0, n - 1);
-            }
-
-            if (n != data.x.length) throw "Data series x and y1,y2 have different lengths";
-            _y_mean = y_mean;
-            _y_u68 = y_u68;
-            _y_l68 = y_l68;
-            _y_u95 = y_u95;
-            _y_l95 = y_l95;
-            _x = data.x;
-
-            // styles:
-            _fill_68 = typeof data.fill_68 != "undefined" ? data.fill_68 : _fill_68;
-            _fill_95 = typeof data.fill_95 != "undefined" ? data.fill_95 : _fill_95;
-            _stroke = typeof data.stroke != "undefined" ? data.stroke : _stroke;
-            _thickness = typeof data.thickness != "undefined" ? data.thickness : _thickness;
-
-            this.invalidateLocalBounds();
-
-            this.requestNextFrameOrUpdate();
-            this.fireAppearanceChanged();
-        };
-
-        // Returns a rectangle in the plot plane.
-        this.computeLocalBounds = function () {
-            var dataToPlotX = this.xDataTransform && this.xDataTransform.dataToPlot;
-            var dataToPlotY = this.yDataTransform && this.yDataTransform.dataToPlot;
-
-            var mean = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_mean, dataToPlotX, dataToPlotY);
-            var u68 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_u68, dataToPlotX, dataToPlotY);
-            var l68 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_l68, dataToPlotX, dataToPlotY);
-            var u95 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_u95, dataToPlotX, dataToPlotY);
-            var l95 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y_l95, dataToPlotX, dataToPlotY);
-
-            return InteractiveDataDisplay.Utils.unionRects(mean, InteractiveDataDisplay.Utils.unionRects(u68, InteractiveDataDisplay.Utils.unionRects(l68, InteractiveDataDisplay.Utils.unionRects(u95, l95))));
-        };
-
-        // Returns 4 margins in the screen coordinate system
-        this.getLocalPadding = function () {
-            return { left: 0, right: 0, top: 0, bottom: 0 };
-        };
-
-        var renderArea = function (_x, _y1, _y2, _fill, plotRect, screenSize, context) {
-            if (_x === undefined || _y1 == undefined || _y2 == undefined)
-                return;
-            var n = _y1.length;
-            if (n == 0) return;
-
-            var t = that.getTransform();
-            var dataToScreenX = t.dataToScreenX;
-            var dataToScreenY = t.dataToScreenY;
-
-            // size of the canvas
-            var w_s = screenSize.width;
-            var h_s = screenSize.height;
-            var xmin = 0, xmax = w_s;
-            var ymin = 0, ymax = h_s;
-
-            context.globalAlpha = 0.5;
-            context.fillStyle = _fill;
-
-            //Drawing polygons
-            var polygons = [];
-            var curInd = undefined;
-            for (var i = 0; i < n; i++) {
-                if (isNaN(_x[i]) || isNaN(_y1[i]) || isNaN(_y2[i])) {
-                    if (curInd === undefined) {
-                        curInd = i;
-                    }
-                    else {
-                        polygons.push([curInd, i]);
-                        curInd = undefined;
-                    }
-                } else {
-                    if (curInd === undefined) {
-                        curInd = i;
-                    }
-                    else {
-                        if (i === n - 1) {
-                            polygons.push([curInd, i]);
-                            curInd = undefined;
-                        }
-                    }
-                }
-            }
-
-            var nPoly = polygons.length;
-            for (var i = 0; i < nPoly; i++) {
-                context.beginPath();
-                var curPoly = polygons[i];
-                context.moveTo(dataToScreenX(_x[curPoly[0]]), dataToScreenY(_y1[curPoly[0]]));
-                for (var j = curPoly[0] + 1; j <= curPoly[1]; j++) {
-                    context.lineTo(dataToScreenX(_x[j]), dataToScreenY(_y1[j]));
-                }
-                for (var j = curPoly[1]; j >= curPoly[0]; j--) {
-                    context.lineTo(dataToScreenX(_x[j]), dataToScreenY(_y2[j]));
-                }
-                context.fill();
-            }
-        }
-
-        var renderLine = function (_x, _y, _stroke, _thickness, plotRect, screenSize, context) {
-            if (_x === undefined || _y == undefined)
-                return;
-            var n = _y.length;
-            if (n == 0) return;
-
-            var t = that.getTransform();
-            var dataToScreenX = t.dataToScreenX;
-            var dataToScreenY = t.dataToScreenY;
-
-            // size of the canvas
-            var w_s = screenSize.width;
-            var h_s = screenSize.height;
-            var xmin = 0, xmax = w_s;
-            var ymin = 0, ymax = h_s;
-
-            context.globalAlpha = 1.0;
-            context.strokeStyle = _stroke;
-            context.fillStyle = _stroke; // for single points surrounded with missing values
-            context.lineWidth = _thickness;
-            //context.lineCap = _lineCap;
-            //context.lineJoin = _lineJoin;
-
-            context.beginPath();
-            var x1, x2, y1, y2;
-            var i = 0;
-
-            // Looking for non-missing value
-            var nextValuePoint = function () {
-                for (; i < n; i++) {
-                    if (isNaN(_x[i]) || isNaN(_y[i])) continue; // missing value
-                    x1 = dataToScreenX(_x[i]);
-                    y1 = dataToScreenY(_y[i]);
-                    c1 = code(x1, y1, xmin, xmax, ymin, ymax);
-                    break;
-                }
-                if (c1 == 0) // point is inside visible rect 
-                    context.moveTo(x1, y1);
-            };
-            nextValuePoint();
-
-            var c1, c2, c1_, c2_;
-            var dx, dy;
-            var x2_, y2_;
-            var m = 1; // number of points for the current batch
-            for (i++; i < n; i++) {
-                if (isNaN(_x[i]) || isNaN(_y[i])) // missing value
-                {
-                    if (m == 1) { // single point surrounded by missing values
-                        context.stroke(); // finishing previous segment (it is broken by missing value)
-                        var c = code(x1, y1, xmin, xmax, ymin, ymax);
-                        if (c == 0) {
-                            context.beginPath();
-                            context.arc(x1, y1, _thickness / 2, 0, 2 * Math.PI);
-                            context.fill();
-                        }
-                    } else {
-                        context.stroke(); // finishing previous segment (it is broken by missing value)
-                    }
-                    context.beginPath();
-                    i++;
-                    nextValuePoint();
-                    m = 1;
-                    continue;
-                }
-
-                x2_ = x2 = dataToScreenX(_x[i]);
-                y2_ = y2 = dataToScreenY(_y[i]);
-                if (Math.abs(x1 - x2) < 1 && Math.abs(y1 - y2) < 1) continue;
-
-                // Clipping and drawing segment p1 - p2:
-                c1_ = c1;
-                c2_ = c2 = code(x2, y2, xmin, xmax, ymin, ymax);
-
-                while (c1 | c2) {
-                    if (c1 & c2) break; // segment is invisible
-                    dx = x2 - x1;
-                    dy = y2 - y1;
-                    if (c1) {
-                        if (x1 < xmin) { y1 += dy * (xmin - x1) / dx; x1 = xmin; }
-                        else if (x1 > xmax) { y1 += dy * (xmax - x1) / dx; x1 = xmax; }
-                        else if (y1 < ymin) { x1 += dx * (ymin - y1) / dy; y1 = ymin; }
-                        else if (y1 > ymax) { x1 += dx * (ymax - y1) / dy; y1 = ymax; }
-                        c1 = code(x1, y1, xmin, xmax, ymin, ymax);
-                    } else {
-                        if (x2 < xmin) { y2 += dy * (xmin - x2) / dx; x2 = xmin; }
-                        else if (x2 > xmax) { y2 += dy * (xmax - x2) / dx; x2 = xmax; }
-                        else if (y2 < ymin) { x2 += dx * (ymin - y2) / dy; y2 = ymin; }
-                        else if (y2 > ymax) { x2 += dx * (ymax - y2) / dy; y2 = ymax; }
-                        c2 = code(x2, y2, xmin, xmax, ymin, ymax);
-                    }
-                }
-                if (!(c1 & c2)) {
-                    if (c1_ != 0) // point wasn't visible
-                        context.moveTo(x1, y1);
-                    context.lineTo(x2, y2);
-                    m++;
-                }
-
-                x1 = x2_;
-                y1 = y2_;
-                c1 = c2_;
-            }
-
-            // Final stroke
-            if (m == 1) { // single point surrounded by missing values
-                context.stroke(); // finishing previous segment (it is broken by missing value)
-                var c = code(x1, y1, xmin, xmax, ymin, ymax);
-                if (c == 0) {
-                    context.beginPath();
-                    context.arc(x1, y1, _thickness / 2, 0, 2 * Math.PI);
-                    context.fill();
-                }
-            } else {
-                context.stroke(); // finishing previous segment (it is broken by missing value)
-            }
-        }
-
-        this.renderCore = function (plotRect, screenSize) {
-            BMAExt.BandPlot.prototype.renderCore.call(this, plotRect, screenSize);
-
-            var context = that.getContext(true);
-
-            renderArea(_x, _y_l95, _y_u95, _fill_95, plotRect, screenSize, context);
-            renderArea(_x, _y_l68, _y_u68, _fill_68, plotRect, screenSize, context);
-            renderLine(_x, _y_mean, _stroke, _thickness, plotRect, screenSize, context);
-        };
-
-        // Clipping algorithms
-        var code = function (x, y, xmin, xmax, ymin, ymax) {
-            return (x < xmin) << 3 | (x > xmax) << 2 | (y < ymin) << 1 | (y > ymax);
-        };
-
-
-        // Others
-        this.onDataTransformChanged = function (arg) {
-            this.invalidateLocalBounds();
-            BMAExt.BandPlot.prototype.onDataTransformChanged.call(this, arg);
-        };
-
-        // Initialization 
-        //if (initialData && typeof initialData.y != 'undefined')
-        //    this.draw(initialData);
-    }
-
-    BMAExt.BandPlot.prototype = new InteractiveDataDisplay.CanvasPlot;
-    InteractiveDataDisplay.register('bandPlot', function (div, master) { return new BMAExt.BandPlot(div, master); });
-
-})(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
-///#source 1 1 /js/scalablegridlinesplot.js
 (function (BMAExt, InteractiveDataDisplay, $, undefined) {
 
     BMAExt.GridLinesPlot = function (jqDiv, master) {
@@ -618,7 +316,6 @@
     InteractiveDataDisplay.register('scalableGridLines', function (jqDiv, master) { return new BMAExt.GridLinesPlot(jqDiv, master); });
 
 })(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
-///#source 1 1 /script/XmlModelParser.js
 var BMA;
 (function (BMA) {
     function ParseXmlModel(xml, grid) {
@@ -695,7 +392,6 @@ var BMA;
     BMA.ParseXmlModel = ParseXmlModel;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=XmlModelParser.js.map
-///#source 1 1 /script/SVGHelper.js
 var BMA;
 (function (BMA) {
     var SVGHelper;
@@ -810,7 +506,6 @@ var BMA;
     })(SVGHelper = BMA.SVGHelper || (BMA.SVGHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=SVGHelper.js.map
-///#source 1 1 /script/ModelHelper.js
 var BMA;
 (function (BMA) {
     var ModelHelper;
@@ -981,7 +676,6 @@ var BMA;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ModelHelper.js.map
-///#source 1 1 /script/commands.js
 var BMA;
 (function (BMA) {
     var CommandRegistry = (function () {
@@ -1049,7 +743,6 @@ var BMA;
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=commands.js.map
-///#source 1 1 /script/elementsregistry.js
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1655,7 +1348,6 @@ var BMA;
     })(Elements = BMA.Elements || (BMA.Elements = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=elementsregistry.js.map
-///#source 1 1 /script/functionsregistry.js
 var BMA;
 (function (BMA) {
     var Functions;
@@ -1744,7 +1436,6 @@ var BMA;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=functionsregistry.js.map
-///#source 1 1 /script/keyframesregistry.js
 var BMA;
 (function (BMA) {
     var Keyframes;
@@ -1824,7 +1515,6 @@ var BMA;
     })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=keyframesregistry.js.map
-///#source 1 1 /script/localRepository.js
 var BMA;
 (function (BMA) {
     var LocalRepositoryTool = (function () {
@@ -1914,7 +1604,6 @@ var BMA;
     BMA.LocalRepositoryTool = LocalRepositoryTool;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=localRepository.js.map
-///#source 1 1 /script/changeschecker.js
 var BMA;
 (function (BMA) {
     var ChangesChecker = (function () {
@@ -1932,7 +1621,6 @@ var BMA;
     BMA.ChangesChecker = ChangesChecker;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=changeschecker.js.map
-///#source 1 1 /script/model/biomodel.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -2319,7 +2007,6 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=biomodel.js.map
-///#source 1 1 /script/model/model.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -2483,7 +2170,6 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=model.js.map
-///#source 1 1 /script/model/analytics.js
 var BMA;
 (function (BMA) {
     var Model;
@@ -2521,7 +2207,6 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=analytics.js.map
-///#source 1 1 /script/model/visualsettings.js
 var BMA;
 (function (BMA) {
     var Model;
@@ -2607,7 +2292,6 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=visualsettings.js.map
-///#source 1 1 /script/model/exportimport.js
 var BMA;
 (function (BMA) {
     var Model;
@@ -2952,7 +2636,6 @@ var BMA;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=exportimport.js.map
-///#source 1 1 /script/model/operation.js
 var BMA;
 (function (BMA) {
     var LTLOperations;
@@ -3262,8 +2945,7 @@ var BMA;
         LTLOperations.Operation = Operation;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
-//# sourceMappingURL=operation.js.map
-///#source 1 1 /script/model/operationlayout.js
+//# sourceMappingURL=Operation.js.map
 var BMA;
 (function (BMA) {
     var LTLOperations;
@@ -3934,7 +3616,6 @@ var BMA;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=operationlayout.js.map
-///#source 1 1 /script/uidrivers/commondrivers.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\widgets\drawingsurface.ts"/>
@@ -4474,7 +4155,6 @@ var BMA;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=commondrivers.js.map
-///#source 1 1 /script/uidrivers/ltldrivers.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -5247,7 +4927,6 @@ var BMA;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ltldrivers.js.map
-///#source 1 1 /script/presenters/undoredopresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -5333,7 +5012,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=undoredopresenter.js.map
-///#source 1 1 /script/presenters/presenters.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\model\biomodel.ts"/>
@@ -6414,7 +6092,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=presenters.js.map
-///#source 1 1 /script/presenters/proofpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -6730,7 +6407,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=proofpresenter.js.map
-///#source 1 1 /script/presenters/simulationpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7051,7 +6727,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=simulationpresenter.js.map
-///#source 1 1 /script/presenters/modelstoragepresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7177,7 +6852,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=modelstoragepresenter.js.map
-///#source 1 1 /script/presenters/formulavalidationpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7217,7 +6891,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=formulavalidationpresenter.js.map
-///#source 1 1 /script/presenters/furthertestingpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7471,7 +7144,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=furthertestingpresenter.js.map
-///#source 1 1 /script/presenters/localstoragepresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7573,7 +7245,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=localstoragepresenter.js.map
-///#source 1 1 /script/UserLog.js
 /// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -7655,7 +7326,6 @@ var BMA;
     BMA.SessionLog = SessionLog;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=UserLog.js.map
-///#source 1 1 /script/widgets/accordeon.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8167,7 +7837,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=accordeon.js.map
-///#source 1 1 /script/widgets/bmaslider.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8256,7 +7925,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=bmaslider.js.map
-///#source 1 1 /script/widgets/coloredtableviewer.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8500,7 +8168,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=coloredtableviewer.js.map
-///#source 1 1 /script/widgets/containernameeditor.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\functionsregistry.ts"/>
@@ -8545,7 +8212,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=containernameeditor.js.map
-///#source 1 1 /script/widgets/drawingsurface.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8983,7 +8649,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=drawingsurface.js.map
-///#source 1 1 /script/widgets/progressiontable.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9222,7 +8887,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=progressiontable.js.map
-///#source 1 1 /script/widgets/proofresultviewer.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9367,7 +9031,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=proofresultviewer.js.map
-///#source 1 1 /script/widgets/furthertestingviewer.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9493,7 +9156,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=furthertestingviewer.js.map
-///#source 1 1 /script/widgets/localstoragewidget.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9588,7 +9250,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=localstoragewidget.js.map
-///#source 1 1 /script/widgets/resultswindowviewer.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9720,7 +9381,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=resultswindowviewer.js.map
-///#source 1 1 /script/widgets/simulationplot.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9917,7 +9577,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=simulationplot.js.map
-///#source 1 1 /script/widgets/simulationexpanded.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10102,7 +9761,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=simulationexpanded.js.map
-///#source 1 1 /script/widgets/simulationviewer.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10231,7 +9889,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=simulationviewer.js.map
-///#source 1 1 /script/widgets/userdialog.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10325,7 +9982,6 @@ var BMA;
     });
 }(jQuery));
 //# sourceMappingURL=userdialog.js.map
-///#source 1 1 /script/widgets/variablesOptionsEditor.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\functionsregistry.ts"/>
@@ -10680,7 +10336,6 @@ jQuery.fn.extend({
     }
 });
 //# sourceMappingURL=variablesOptionsEditor.js.map
-///#source 1 1 /script/widgets/visibilitysettings.js
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10806,7 +10461,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=visibilitysettings.js.map
-///#source 1 1 /script/widgets/ltl/keyframetable.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10837,7 +10491,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=keyframetable.js.map
-///#source 1 1 /script/widgets/ltl/keyframecompact.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10914,7 +10567,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=keyframecompact.js.map
-///#source 1 1 /script/widgets/ltl/ltlstatesviewer.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10978,7 +10630,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlstatesviewer.js.map
-///#source 1 1 /script/widgets/ltl/ltlviewer.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11034,7 +10685,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlviewer.js.map
-///#source 1 1 /script/widgets/ltl/ltlresultsviewer.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11216,7 +10866,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=ltlresultsviewer.js.map
-///#source 1 1 /script/widgets/ltl/stateseditor.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11766,7 +11415,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=stateseditor.js.map
-///#source 1 1 /script/widgets/ltl/statescompact.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11921,7 +11569,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=statescompact.js.map
-///#source 1 1 /script/widgets/ltl/compactltlresult.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -12100,7 +11747,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=compactltlresult.js.map
-///#source 1 1 /script/widgets/ltl/tpeditor.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -12396,7 +12042,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=tpeditor.js.map
-///#source 1 1 /script/widgets/ltl/tpviewer.js
 (function ($) {
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
@@ -12481,7 +12126,6 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=tpviewer.js.map
-///#source 1 1 /script/presenters/ltl/LTLpresenter.js
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -12675,7 +12319,6 @@ var BMA;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=LTLpresenter.js.map
-///#source 1 1 /script/presenters/ltl/states.js
 var BMA;
 (function (BMA) {
     var LTL;
@@ -12750,7 +12393,6 @@ var BMA;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=states.js.map
-///#source 1 1 /script/presenters/ltl/temporalproperties.js
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\..\model\biomodel.ts"/>
@@ -13407,7 +13049,6 @@ var BMA;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=temporalproperties.js.map
-///#source 1 1 /script/operatorsregistry.js
 var BMA;
 (function (BMA) {
     var LTLOperations;

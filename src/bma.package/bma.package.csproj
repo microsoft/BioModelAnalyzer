@@ -1,0 +1,345 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{68A7F32F-0860-4688-8C82-C55196461E48}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.6</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\BMA_less.css">
+      <DependentUpon>BMA_less.less</DependentUpon>
+    </Content>
+    <Content Include="css\BMA_less.min.css">
+      <DependentUpon>BMA_less.css</DependentUpon>
+    </Content>
+    <Content Include="css\fonts.css">
+      <DependentUpon>fonts.less</DependentUpon>
+    </Content>
+    <Content Include="css\fonts.min.css">
+      <DependentUpon>fonts.css</DependentUpon>
+    </Content>
+    <Content Include="css\LTLStates.css">
+      <DependentUpon>LTLStates.less</DependentUpon>
+    </Content>
+    <Content Include="css\LTLStates.min.css">
+      <DependentUpon>LTLStates.css</DependentUpon>
+    </Content>
+    <Content Include="css\LTL_less.css">
+      <DependentUpon>LTL_less.less</DependentUpon>
+    </Content>
+    <Content Include="css\LTL_less.min.css">
+      <DependentUpon>LTL_less.css</DependentUpon>
+    </Content>
+    <Content Include="css\StyleSheet.css">
+      <DependentUpon>StyleSheet.less</DependentUpon>
+    </Content>
+    <Content Include="css\StyleSheet.min.css">
+      <DependentUpon>StyleSheet.css</DependentUpon>
+    </Content>
+    <Content Include="package.json" />
+    <Content Include="Chutzpah.json" />
+    <Content Include="css\BMA_less.less" />
+    <Content Include="css\BMA_less.css.map">
+      <DependentUpon>BMA_less.css</DependentUpon>
+    </Content>
+    <Content Include="css\LTL_less.less" />
+    <Content Include="css\LTL_less.css.map">
+      <DependentUpon>LTL_less.css</DependentUpon>
+    </Content>
+    <Content Include="css\LTLStates.less" />
+    <Content Include="css\LTLStates.css.map">
+      <DependentUpon>LTLStates.css</DependentUpon>
+    </Content>
+    <Content Include="css\StyleSheet.less" />
+    <Content Include="css\StyleSheet.css.map">
+      <DependentUpon>StyleSheet.css</DependentUpon>
+    </Content>
+    <Content Include="css\bma.less" />
+    <Content Include="css\bma.css">
+      <DependentUpon>bma.less</DependentUpon>
+    </Content>
+    <Content Include="css\bma.min.css">
+      <DependentUpon>bma.css</DependentUpon>
+    </Content>
+    <None Include="compilerconfig.json" />
+    <Content Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </Content>
+    <Content Include="css\fonts.less" />
+    <Content Include="css\fonts.css.map">
+      <DependentUpon>fonts.css</DependentUpon>
+    </Content>
+    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Content\themes\base\images\animated-overlay.gif" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="Content\themes\base\jquery.ui.all.css" />
+    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="Content\themes\base\jquery.ui.base.css" />
+    <Content Include="Content\themes\base\jquery.ui.button.css" />
+    <Content Include="Content\themes\base\jquery.ui.core.css" />
+    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="Content\themes\base\jquery.ui.menu.css" />
+    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="Content\themes\base\jquery.ui.slider.css" />
+    <Content Include="Content\themes\base\jquery.ui.spinner.css" />
+    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\jquery.ui.tooltip.css" />
+    <Content Include="Content\themes\base\minified\images\animated-overlay.gif" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\minified\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.accordion.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.button.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.core.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.datepicker.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.dialog.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.menu.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.progressbar.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.resizable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.selectable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.spinner.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="css\jasmine.css" />
+    <Content Include="Gruntfile.js" />
+    <Content Include="js\BandPlot.js" />
+    <Content Include="js\scalablegridlinesplot.js" />
+    <Content Include="js\svgplot.js" />
+    <Content Include="Scripts\jasmine-html.js" />
+    <Content Include="Scripts\jasmine.js" />
+    <Content Include="Scripts\jquery-2.1.1.js" />
+    <Content Include="Scripts\jquery-2.1.1.min.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <Content Include="Scripts\rx.aggregates.js" />
+    <Content Include="Scripts\rx.aggregates.min.js" />
+    <Content Include="Scripts\rx.binding.js" />
+    <Content Include="Scripts\rx.binding.min.js" />
+    <Content Include="Scripts\rx.coincidence.js" />
+    <Content Include="Scripts\rx.coincidence.min.js" />
+    <Content Include="Scripts\rx.compat.js" />
+    <Content Include="Scripts\rx.experimental.js" />
+    <Content Include="Scripts\rx.experimental.min.js" />
+    <Content Include="Scripts\rx.joinpatterns.js" />
+    <Content Include="Scripts\rx.joinpatterns.min.js" />
+    <Content Include="Scripts\rx.js" />
+    <Content Include="Scripts\rx.lite.compat.js" />
+    <Content Include="Scripts\rx.lite.compat.min.js" />
+    <Content Include="Scripts\rx.lite.js" />
+    <Content Include="Scripts\rx.lite.min.js" />
+    <Content Include="Scripts\rx.testing.js" />
+    <Content Include="Scripts\rx.testing.min.js" />
+    <Content Include="Scripts\rx.time.js" />
+    <Content Include="Scripts\rx.time.min.js" />
+    <Content Include="Scripts\rx.virtualtime.js" />
+    <Content Include="Scripts\rx.virtualtime.min.js" />
+    <Content Include="Scripts\x.compat.min.js" />
+    <Content Include="Scripts\x.min.js" />
+    <Content Include="test\data\2var_unstable.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="script\changeschecker.ts" />
+    <TypeScriptCompile Include="script\Commands.ts" />
+    <TypeScriptCompile Include="script\elementsregistry.ts" />
+    <TypeScriptCompile Include="script\functionsregistry.ts" />
+    <TypeScriptCompile Include="script\jqextensions.ts" />
+    <TypeScriptCompile Include="script\keyframesregistry.ts" />
+    <TypeScriptCompile Include="script\localRepository.ts" />
+    <TypeScriptCompile Include="script\ModelHelper.ts" />
+    <TypeScriptCompile Include="script\model\analytics.ts" />
+    <TypeScriptCompile Include="script\model\biomodel.ts" />
+    <TypeScriptCompile Include="script\model\exportimport.ts" />
+    <TypeScriptCompile Include="script\model\model.ts" />
+    <TypeScriptCompile Include="script\model\Operation.ts" />
+    <TypeScriptCompile Include="script\model\operationlayout.ts" />
+    <TypeScriptCompile Include="script\model\visualsettings.ts" />
+    <TypeScriptCompile Include="script\operatorsregistry.ts" />
+    <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\LTLpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\states.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\temporalproperties.ts" />
+    <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\presenters.ts" />
+    <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />
+    <TypeScriptCompile Include="script\SVGHelper.ts" />
+    <TypeScriptCompile Include="script\uidrivers\commondrivers.ts" />
+    <TypeScriptCompile Include="script\uidrivers\commoninterfaces.ts" />
+    <TypeScriptCompile Include="script\uidrivers\ltldrivers.ts" />
+    <TypeScriptCompile Include="script\uidrivers\ltlinterfaces.ts" />
+    <TypeScriptCompile Include="script\UserLog.ts" />
+    <TypeScriptCompile Include="script\widgets\accordeon.ts" />
+    <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
+    <TypeScriptCompile Include="script\widgets\coloredTableViewer.ts" />
+    <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
+    <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
+    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\compactltlresult.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\keyframecompact.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\keyframetable.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlresultsviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\LTLStatesViewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
+    <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\userdialog.ts" />
+    <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
+    <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
+    <TypeScriptCompile Include="script\XmlModelParser.ts" />
+    <TypeScriptCompile Include="test\AccordionTest.ts" />
+    <TypeScriptCompile Include="test\AnalyticsTest.ts" />
+    <TypeScriptCompile Include="test\BiomodelTest.ts" />
+    <TypeScriptCompile Include="test\BMASliderTest.ts" />
+    <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
+    <TypeScriptCompile Include="test\CommandTests.ts" />
+    <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
+    <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
+    <TypeScriptCompile Include="test\ExportImportTest.ts" />
+    <TypeScriptCompile Include="test\FormulaConvertationTests.ts" />
+    <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
+    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
+    <TypeScriptCompile Include="test\KeyframesTest.ts" />
+    <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
+    <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
+    <TypeScriptCompile Include="test\ModelHelperTests.ts" />
+    <TypeScriptCompile Include="test\ModelTest.ts" />
+    <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
+    <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
+    <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
+    <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
+    <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
+    <TypeScriptCompile Include="test\UserDialogTest.ts" />
+    <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
+    <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
+    <TypeScriptCompile Include="test\XmlParserTests.ts" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>bma.package</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>8881</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:8881/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets" Condition="Exists('..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets'))" />
+  </Target>
+</Project>

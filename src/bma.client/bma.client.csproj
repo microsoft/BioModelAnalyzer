@@ -23,6 +23,8 @@
     <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
     <SilverlightApplicationList>{68041FBC-F127-4770-93D3-DCA3AE200A64}|..\LegacyModelsImporter\LegacyModelsImporter.csproj|ClientBin|False</SilverlightApplicationList>
     <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,6 +57,7 @@
   <ItemGroup>
     <Content Include="about.html" />
     <Content Include="app.css" />
+    <Content Include="app.js" />
     <Content Include="ClientBin\BioCheck.xap" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -124,12 +127,7 @@
     <Content Include="css\BMA-Styles.min.css">
       <DependentUpon>BMA-Styles.css</DependentUpon>
     </Content>
-    <Content Include="css\BMA_less.css">
-      <DependentUpon>BMA_less.less</DependentUpon>
-    </Content>
-    <Content Include="css\BMA_less.min.css">
-      <DependentUpon>BMA_less.css</DependentUpon>
-    </Content>
+    <Content Include="css\bma.css" />
     <Content Include="css\fonts.css">
       <DependentUpon>fonts.less</DependentUpon>
     </Content>
@@ -140,26 +138,7 @@
     <Content Include="css\fonts\segoeuib-webfont.svg" />
     <Content Include="css\fonts\segoeuii-webfont.svg" />
     <Content Include="css\idd.css" />
-    <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="css\LTLStates.min.css">
-      <DependentUpon>LTLStates.css</DependentUpon>
-    </Content>
-    <Content Include="css\LTL_less.css">
-      <DependentUpon>LTL_less.less</DependentUpon>
-    </Content>
-    <Content Include="css\LTL_less.min.css">
-      <DependentUpon>LTL_less.css</DependentUpon>
-    </Content>
-    <Content Include="css\LTLStates.css">
-      <DependentUpon>LTLStates.less</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.css">
-      <DependentUpon>StyleSheet.less</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.min.css">
-      <DependentUpon>StyleSheet.css</DependentUpon>
-    </Content>
     <Content Include="css\fonts\segoeuil.svg" />
     <Content Include="css\website.css">
       <DependentUpon>website.less</DependentUpon>
@@ -324,7 +303,31 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
-    <Content Include="js\BandPlot.js" />
+    <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
+    <Content Include="Scripts\rx.aggregates.js" />
+    <Content Include="Scripts\rx.aggregates.min.js" />
+    <Content Include="Scripts\rx.binding.js" />
+    <Content Include="Scripts\rx.binding.min.js" />
+    <Content Include="Scripts\rx.coincidence.js" />
+    <Content Include="Scripts\rx.coincidence.min.js" />
+    <Content Include="Scripts\rx.compat.js" />
+    <Content Include="Scripts\rx.experimental.js" />
+    <Content Include="Scripts\rx.experimental.min.js" />
+    <Content Include="Scripts\rx.joinpatterns.js" />
+    <Content Include="Scripts\rx.joinpatterns.min.js" />
+    <Content Include="Scripts\rx.js" />
+    <Content Include="Scripts\rx.lite.compat.js" />
+    <Content Include="Scripts\rx.lite.compat.min.js" />
+    <Content Include="Scripts\rx.lite.js" />
+    <Content Include="Scripts\rx.lite.min.js" />
+    <Content Include="Scripts\rx.testing.js" />
+    <Content Include="Scripts\rx.testing.min.js" />
+    <Content Include="Scripts\rx.time.js" />
+    <Content Include="Scripts\rx.time.min.js" />
+    <Content Include="Scripts\rx.virtualtime.js" />
+    <Content Include="Scripts\rx.virtualtime.min.js" />
+    <Content Include="Scripts\x.compat.min.js" />
+    <Content Include="Scripts\x.min.js" />
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.cookie.js" />
@@ -337,18 +340,10 @@
     <Content Include="preloaded\ToyModelStable.json" />
     <Content Include="preloaded\ToyModelUnstable.json" />
     <Content Include="preloaded\SkinModel.json" />
-    <Content Include="css\BMA_less.less" />
-    <Content Include="css\BMA_less.css.map">
-      <DependentUpon>BMA_less.css</DependentUpon>
-    </Content>
     <Content Include="css\fonts.less" />
     <Content Include="css\BMA-Styles.less" />
     <Content Include="css\BMA-Styles.css.map">
       <DependentUpon>BMA-Styles.css</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.less" />
-    <Content Include="css\StyleSheet.css.map">
-      <DependentUpon>StyleSheet.css</DependentUpon>
     </Content>
     <Content Include="css\fonts.css.map">
       <DependentUpon>fonts.css</DependentUpon>
@@ -367,19 +362,15 @@
     <Content Include="css\fonts\segoeuil.otf" />
     <Content Include="css\fonts\segoeuil.ttf" />
     <Content Include="css\fonts\segoeuil.woff" />
+    <Content Include="css\BMA-Styles-LTL.less" />
     <Content Include="css\website.less" />
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
-    <Content Include="css\LTL_less.less" />
-    <Content Include="css\LTL_less.css.map">
-      <DependentUpon>LTL_less.css</DependentUpon>
+    <None Include="compilerconfig.json" />
+    <Content Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
     </Content>
-    <Content Include="css\LTLStates.less" />
-    <Content Include="css\LTLStates.css.map">
-      <DependentUpon>LTLStates.css</DependentUpon>
-    </Content>
-    <Content Include="css\BMA-Styles-LTL.less" />
     <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
@@ -388,151 +379,19 @@
     <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2.pubxml" />
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
-    <Content Include="Scripts\jasmine-html.js" />
-    <Content Include="Scripts\jasmine.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
-    <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
-    <TypeScriptCompile Include="script\changeschecker.ts" />
-    <TypeScriptCompile Include="script\keyframesregistry.ts" />
-    <TypeScriptCompile Include="script\localRepository.ts" />
-    <TypeScriptCompile Include="script\model\operation.ts" />
-    <TypeScriptCompile Include="script\model\operationlayout.ts" />
-    <TypeScriptCompile Include="script\presenters\ltl\states.ts" />
-    <TypeScriptCompile Include="script\presenters\ltl\temporalproperties.ts" />
-    <TypeScriptCompile Include="script\uidrivers\ltldrivers.ts" />
-    <TypeScriptCompile Include="script\uidrivers\ltlinterfaces.ts" />
-    <TypeScriptCompile Include="script\ModelHelper.ts" />
-    <TypeScriptCompile Include="script\model\exportimport.ts" />
-    <TypeScriptCompile Include="script\model\visualsettings.ts" />
-    <TypeScriptCompile Include="script\operatorsregistry.ts" />
-    <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\ltl\LTLpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
-    <TypeScriptCompile Include="script\commands.ts" />
-    <TypeScriptCompile Include="script\model\analytics.ts" />
-    <TypeScriptCompile Include="script\model\model.ts" />
-    <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />
-    <TypeScriptCompile Include="script\SVGHelper.ts" />
-    <TypeScriptCompile Include="script\UserLog.ts" />
-    <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
-    <TypeScriptCompile Include="script\widgets\coloredtableviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
-    <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
-    <TypeScriptCompile Include="script\widgets\accordeon.ts" />
-    <Content Include="Scripts\rx.aggregates.js" />
-    <Content Include="Scripts\rx.aggregates.min.js" />
-    <Content Include="Scripts\rx.binding.js" />
-    <Content Include="Scripts\rx.binding.min.js" />
-    <Content Include="Scripts\rx.coincidence.js" />
-    <Content Include="Scripts\rx.coincidence.min.js" />
-    <Content Include="Scripts\rx.compat.js" />
-    <Content Include="Scripts\rx.experimental.js" />
-    <Content Include="Scripts\rx.experimental.min.js" />
-    <Content Include="Scripts\rx.joinpatterns.js" />
-    <Content Include="Scripts\rx.joinpatterns.min.js" />
-    <Content Include="Scripts\rx.jquery.js" />
-    <Content Include="Scripts\rx.jquery.min.js" />
-    <Content Include="Scripts\rx.js" />
-    <Content Include="Scripts\rx.lite.compat.js" />
-    <Content Include="Scripts\rx.lite.compat.min.js" />
-    <Content Include="Scripts\rx.lite.js" />
-    <Content Include="Scripts\rx.lite.min.js" />
-    <Content Include="Scripts\rx.testing.js" />
-    <Content Include="Scripts\rx.testing.min.js" />
-    <Content Include="Scripts\rx.time.js" />
-    <Content Include="Scripts\rx.time.min.js" />
-    <Content Include="Scripts\rx.virtualtime.js" />
-    <Content Include="Scripts\rx.virtualtime.min.js" />
-    <Content Include="Scripts\x.compat.min.js" />
-    <Content Include="Scripts\x.min.js" />
     <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="js\jquery.browser.min.js" />
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
-    <TypeScriptCompile Include="script\functionsregistry.ts" />
-    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\compactltlresult.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\keyframecompact.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\keyframetable.ts" />
-    <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\ltlstatesviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\ltlresultsviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
-    <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\userdialog.ts" />
-    <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
-    <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
     <Content Include="js\rx.jQuery.js" />
     <Content Include="js\rx.js" />
-    <Content Include="js\scalablegridlinesplot.js" />
-    <Content Include="js\svgplot.js" />
-    <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
-    <TypeScriptCompile Include="script\elementsregistry.ts" />
-    <TypeScriptCompile Include="script\presenters\presenters.ts" />
-    <TypeScriptCompile Include="script\uidrivers\commoninterfaces.ts" />
-    <TypeScriptCompile Include="script\uidrivers\commondrivers.ts" />
-    <TypeScriptCompile Include="script\XmlModelParser.ts" />
-    <TypeScriptCompile Include="test\AccordionTest.ts" />
-    <TypeScriptCompile Include="test\AnalyticsTest.ts" />
-    <TypeScriptCompile Include="test\ExportImportTest.ts" />
-    <TypeScriptCompile Include="test\BiomodelTest.ts" />
-    <TypeScriptCompile Include="test\FormulaConvertationTests.ts" />
-    <TypeScriptCompile Include="test\KeyframesTest.ts" />
-    <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
-    <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
-    <TypeScriptCompile Include="test\ModelHelperTests.ts" />
-    <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
-    <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
-    <TypeScriptCompile Include="test\BMASliderTest.ts" />
-    <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
-    <TypeScriptCompile Include="test\CommandTests.ts" />
-    <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
-    <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
-    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
-    <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
-    <TypeScriptCompile Include="test\ModelTest.ts" />
-    <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
-    <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
-    <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
-    <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
-    <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
-    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
-    <TypeScriptCompile Include="test\UserDialogTest.ts" />
-    <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
-    <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
-    <TypeScriptCompile Include="test\XmlParserTests.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="script\model\biomodel.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Scripts\jquery-2.1.1.min.map" />
-    <Content Include="Chutzpah.json" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -620,21 +479,12 @@
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Silverlight.js" />
-    <Content Include="tool.js">
-      <DependentUpon>tool.js.bundle</DependentUpon>
-    </Content>
-    <Content Include="tool.min.js">
-      <DependentUpon>tool.js</DependentUpon>
-    </Content>
+    <Content Include="tool.js" />
     <Content Include="version.txt" />
     <Content Include="videos\BMA-trailer.mp4" />
     <Content Include="videos\BMA.mp4" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
-    <Content Include="test\data\2var_unstable.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -648,12 +498,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="tool.js.bundle">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="tool.min.js.map">
-      <DependentUpon>tool.min.js</DependentUpon>
-    </Content>
     <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -685,6 +529,10 @@
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Name>BioCheckAnalyzerCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\bma.package\bma.package.csproj">
+      <Project>{68a7f32f-0860-4688-8c82-c55196461e48}</Project>
+      <Name>bma.package</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BMAWebApi\BMAWebApi.csproj">
       <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
       <Name>BMAWebApi</Name>
@@ -694,9 +542,7 @@
       <Name>UIExpr</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="forms\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -723,6 +569,13 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets" Condition="Exists('..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
