@@ -1,4 +1,4 @@
-﻿/* General Functions */
+/* General Functions */
 ul,
 menu,
 dir {
@@ -3496,6 +3496,12 @@ textarea:focus {
   display: table-cell;
   width: 120px;
 }
+.temporal-toolbar .state-buttons .state-button {
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 .temporal-toolbar .state-buttons .state-button.new {
   color: white;
   background-color: #AAA;
@@ -3732,6 +3738,8 @@ ui-icon-arrowthickstop-1-n {
   max-height: 17px;
   overflow: hidden;
   text-align: left;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
 .variable-select .inputs-expandbttn {

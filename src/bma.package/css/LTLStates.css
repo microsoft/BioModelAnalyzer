@@ -111,7 +111,7 @@ a:hover {
   text-decoration: none;
 }
 a.website-link {
-  color: #81bb83;
+  color: #81BB83;
   text-decoration: none;
   cursor: pointer;
 }
@@ -127,7 +127,7 @@ a.website-link:hover {
 }
 .version-number {
   font-size: 10px;
-  color: #aaaaaa;
+  color: #AAA;
 }
 button {
   margin: 0;
@@ -138,8 +138,8 @@ button {
   border: 1px solid #606060;
 }
 .default-button {
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  background-color: #EDEDED;
+  border: 1px solid #EDEDED;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -174,8 +174,8 @@ ul.button-list {
   padding: 0;
 }
 ul.button-list li {
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  background-color: #EDEDED;
+  border: 1px solid #EDEDED;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -241,8 +241,8 @@ ul.button-list li:last-child {
 	}*/
 .action-button.grey,
 .button-list .action-button.grey {
-  background-color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  background-color: #AAA;
+  border: 1px solid #AAA;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -251,12 +251,12 @@ ul.button-list li:last-child {
 .action-button.grey:hover,
 .button-list .action-button.grey:hover {
   background-color: white;
-  border: 1px solid #aaaaaa;
-  color: #aaaaaa;
+  border: 1px solid #AAA;
+  color: #AAA;
 }
 .action-button.grey:hover button,
 .button-list .action-button.grey:hover button {
-  color: #aaaaaa;
+  color: #AAA;
 }
 .action-button.grey:hover button .icon.download,
 .button-list .action-button.grey:hover button .icon.download {
@@ -293,8 +293,8 @@ ul.button-list li:last-child {
 }
 .action-button.grey.waiting:hover,
 .button-list .action-button.grey.waiting:hover {
-  background-color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  background-color: #AAA;
+  border: 1px solid #AAA;
   color: white;
 }
 .action-button.grey .spinner > div,
@@ -303,8 +303,8 @@ ul.button-list li:last-child {
 }
 .action-button.green,
 .button-list .action-button.green {
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -313,12 +313,12 @@ ul.button-list li:last-child {
 .action-button.green:hover,
 .button-list .action-button.green:hover {
   background-color: white;
-  border: 1px solid #81bb83;
-  color: #81bb83;
+  border: 1px solid #81BB83;
+  color: #81BB83;
 }
 .action-button.green:hover button,
 .button-list .action-button.green:hover button {
-  color: #81bb83;
+  color: #81BB83;
 }
 .action-button.green:hover button .icon.download,
 .button-list .action-button.green:hover button .icon.download {
@@ -355,8 +355,8 @@ ul.button-list li:last-child {
 }
 .action-button.green.waiting:hover,
 .button-list .action-button.green.waiting:hover {
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   color: white;
 }
 .action-button.green .spinner > div,
@@ -365,8 +365,8 @@ ul.button-list li:last-child {
 }
 .action-button.red,
 .button-list .action-button.red {
-  background-color: #cf451b;
-  border: 1px solid #cf451b;
+  background-color: #CF451B;
+  border: 1px solid #CF451B;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -375,12 +375,12 @@ ul.button-list li:last-child {
 .action-button.red:hover,
 .button-list .action-button.red:hover {
   background-color: white;
-  border: 1px solid #cf451b;
-  color: #cf451b;
+  border: 1px solid #CF451B;
+  color: #CF451B;
 }
 .action-button.red:hover button,
 .button-list .action-button.red:hover button {
-  color: #cf451b;
+  color: #CF451B;
 }
 .action-button.red:hover button .icon.download,
 .button-list .action-button.red:hover button .icon.download {
@@ -417,8 +417,8 @@ ul.button-list li:last-child {
 }
 .action-button.red.waiting:hover,
 .button-list .action-button.red.waiting:hover {
-  background-color: #cf451b;
-  border: 1px solid #cf451b;
+  background-color: #CF451B;
+  border: 1px solid #CF451B;
   color: white;
 }
 .action-button.red .spinner > div,
@@ -434,8 +434,8 @@ li.action-button {
 }
 .action-button-small.grey,
 .button-list .action-button-small.grey {
-  background-color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  background-color: #AAA;
+  border: 1px solid #AAA;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -444,12 +444,12 @@ li.action-button {
 .action-button-small.grey:hover,
 .button-list .action-button-small.grey:hover {
   background-color: white;
-  border: 1px solid #aaaaaa;
-  color: #aaaaaa;
+  border: 1px solid #AAA;
+  color: #AAA;
 }
 .action-button-small.grey:hover button,
 .button-list .action-button-small.grey:hover button {
-  color: #aaaaaa;
+  color: #AAA;
 }
 .action-button-small.grey:hover button .icon.download,
 .button-list .action-button-small.grey:hover button .icon.download {
@@ -486,8 +486,8 @@ li.action-button {
 }
 .action-button-small.grey.waiting:hover,
 .button-list .action-button-small.grey.waiting:hover {
-  background-color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  background-color: #AAA;
+  border: 1px solid #AAA;
   color: white;
 }
 .action-button-small.grey .spinner > div,
@@ -496,8 +496,8 @@ li.action-button {
 }
 .action-button-small.green,
 .button-list .action-button-small.green {
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -506,12 +506,12 @@ li.action-button {
 .action-button-small.green:hover,
 .button-list .action-button-small.green:hover {
   background-color: white;
-  border: 1px solid #81bb83;
-  color: #81bb83;
+  border: 1px solid #81BB83;
+  color: #81BB83;
 }
 .action-button-small.green:hover button,
 .button-list .action-button-small.green:hover button {
-  color: #81bb83;
+  color: #81BB83;
 }
 .action-button-small.green:hover button .icon.download,
 .button-list .action-button-small.green:hover button .icon.download {
@@ -548,8 +548,8 @@ li.action-button {
 }
 .action-button-small.green.waiting:hover,
 .button-list .action-button-small.green.waiting:hover {
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   color: white;
 }
 .action-button-small.green .spinner > div,
@@ -558,8 +558,8 @@ li.action-button {
 }
 .action-button-small.red,
 .button-list .action-button-small.red {
-  background-color: #cf451b;
-  border: 1px solid #cf451b;
+  background-color: #CF451B;
+  border: 1px solid #CF451B;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -568,12 +568,12 @@ li.action-button {
 .action-button-small.red:hover,
 .button-list .action-button-small.red:hover {
   background-color: white;
-  border: 1px solid #cf451b;
-  color: #cf451b;
+  border: 1px solid #CF451B;
+  color: #CF451B;
 }
 .action-button-small.red:hover button,
 .button-list .action-button-small.red:hover button {
-  color: #cf451b;
+  color: #CF451B;
 }
 .action-button-small.red:hover button .icon.download,
 .button-list .action-button-small.red:hover button .icon.download {
@@ -610,8 +610,8 @@ li.action-button {
 }
 .action-button-small.red.waiting:hover,
 .button-list .action-button-small.red.waiting:hover {
-  background-color: #cf451b;
-  border: 1px solid #cf451b;
+  background-color: #CF451B;
+  border: 1px solid #CF451B;
   color: white;
 }
 .action-button-small.red .spinner > div,
@@ -622,8 +622,8 @@ li.action-button {
   display: inline-block;
 }
 .pill-button-box .pill-button {
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  background-color: #EDEDED;
+  border: 1px solid #EDEDED;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -670,19 +670,19 @@ li.action-button {
   text-align: center;
 }
 .onoff.green {
-  background-color: #81bb83;
+  background-color: #81BB83;
 }
 .onoff.green:hover {
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .onoff.green button {
   color: white;
 }
 .onoff.grey {
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .onoff.grey:hover {
-  background-color: #81bb83;
+  background-color: #81BB83;
 }
 .onoff.grey button {
   color: white;
@@ -702,7 +702,7 @@ li.action-button {
   vertical-align: middle;
 }
 .simulation-popout ul.button-list li:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .simulation-popout ul.button-list li:hover button {
   color: #606060;
@@ -716,7 +716,7 @@ li.action-button {
   color: #606060;
 }
 .simulation-popout ul.button-list li.steps {
-  background-color: #ededed;
+  background-color: #EDEDED;
   color: #606060;
 }
 .simulation-popout ul.button-list li.steps button {
@@ -724,8 +724,8 @@ li.action-button {
 }
 .simulation-popout ul.button-list li.run {
   margin-left: 30px;
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -733,11 +733,11 @@ li.action-button {
 }
 .simulation-popout ul.button-list li.run:hover {
   background-color: white;
-  border: 1px solid #81bb83;
-  color: #81bb83;
+  border: 1px solid #81BB83;
+  color: #81BB83;
 }
 .simulation-popout ul.button-list li.run:hover button {
-  color: #81bb83;
+  color: #81BB83;
 }
 .simulation-popout ul.button-list li.run:hover button .icon.download {
   background-image: url("../images/download.svg");
@@ -769,8 +769,8 @@ li.action-button {
   background-image: url("../images/download-white.svg");
 }
 .simulation-popout ul.button-list li.run.waiting:hover {
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   color: white;
 }
 .simulation-popout ul.button-list li.run .spinner > div {
@@ -819,7 +819,7 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
   background-image: none;
 }
 ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a img {
   padding: 0px;
@@ -868,7 +868,7 @@ ul.command-list li a {
   vertical-align: middle;
 }
 ul.command-list li a:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 ul.command-list li a img {
   padding: 0px;
@@ -977,7 +977,7 @@ ul.command-list li a span {
   border-radius: 10px 10px 0 0;
 }
 .bma-pagefooter-linkcontainer a {
-  color: #81bb83;
+  color: #81BB83;
 }
 /*  Main Toolbar  */
 .bma-toolbarpanel {
@@ -995,7 +995,7 @@ ul.command-list li a span {
   width: 50px;
   height: 50px;
   margin: 0 0.2em;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
   -ms-border-radius: 7px;
@@ -1023,7 +1023,7 @@ ul.command-list li a span {
   margin: auto;
 }
 .bma-toolbarpanel .ui-button:not(.ui-state-active):hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
   cursor: pointer;
 }
 .bma-toolbarpanel .ui-button .ui-state-active {
@@ -1153,7 +1153,7 @@ ul.command-list li a span {
   width: 50px;
   height: 50px;
   margin: 0 0.2em;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
   -ms-border-radius: 7px;
@@ -1181,7 +1181,7 @@ ul.command-list li a span {
   margin: auto;
 }
 .tool-icon:not(.ui-state-active):hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
   cursor: pointer;
 }
 .tool-icon .ui-state-active {
@@ -1353,10 +1353,10 @@ ul.command-list li a span {
 .modelstorage-toolbar-modelname {
   width: 150px;
   height: 50px;
-  background-image: -moz-linear-gradient(left, #ededed 0, white 50%);
-  background-image: -webkit-linear-gradient(left, #ededed 0, white 50%);
-  background-image: -ms-linear-gradient(left, #ededed 0, white 50%);
-  background-image: -webkit-gradient(linear, left, #ededed 0, white 50%);
+  background-image: -moz-linear-gradient(left, #EDEDED 0, white 50%);
+  background-image: -webkit-linear-gradient(left, #EDEDED 0, white 50%);
+  background-image: -ms-linear-gradient(left, #EDEDED 0, white 50%);
+  background-image: -webkit-gradient(linear, left, #EDEDED 0, white 50%);
 }
 .modelstorage-toolbar-modelname input {
   border: none;
@@ -1386,7 +1386,7 @@ ul.command-list li a span {
   display: inline-block;
   margin: 0;
   padding: 0;
-  background-color: #ededed;
+  background-color: #EDEDED;
   border-bottom-right-radius: 10px;
   -webkit-box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.5);
@@ -1431,7 +1431,7 @@ input {
 }
 input {
   padding-left: 5px;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   box-shadow: none;
   height: 25px;
   font-family: 'Segoe-UI';
@@ -1447,21 +1447,21 @@ input:focus {
 }
 input::-webkit-input-placeholder {
   /* WebKit browsers */
-  color: #ededed;
+  color: #EDEDED;
 }
 input:-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
-  color: #ededed;
+  color: #EDEDED;
   opacity: 1;
 }
 input::-moz-placeholder {
   /* Mozilla Firefox 19+ */
-  color: #ededed;
+  color: #EDEDED;
   opacity: 1;
 }
 input:-ms-input-placeholder {
   /* Internet Explorer 10+ */
-  color: #ededed;
+  color: #EDEDED;
 }
 .item-name-input {
   height: 30px;
@@ -1483,7 +1483,7 @@ input:-ms-input-placeholder {
 textarea {
   margin-top: 5px;
   padding: 5px;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   box-shadow: none;
 }
 textarea:focus {
@@ -1599,19 +1599,19 @@ textarea:focus {
   cursor: pointer;
 }
 .variable-editor .triangle-up {
-  border-bottom: 7px solid #aaaaaa;
+  border-bottom: 7px solid #AAA;
   border-top: none;
 }
 .variable-editor .triangle-up:hover {
-  border-bottom: 7px solid #ededed;
+  border-bottom: 7px solid #EDEDED;
   border-top: none;
 }
 .variable-editor .triangle-down {
-  border-top: 7px solid #aaaaaa;
+  border-top: 7px solid #AAA;
   border-bottom: none;
 }
 .variable-editor .triangle-down:hover {
-  border-top: 7px solid #ededed;
+  border-top: 7px solid #EDEDED;
   border-bottom: none;
 }
 .variable-editor .target-function {
@@ -1632,10 +1632,10 @@ textarea:focus {
   resize: none;
 }
 .variable-editor .target-function .formula-text-area.formula-failed-textarea {
-  border: 1px solid #feb6b2;
+  border: 1px solid #FEB6B2;
 }
 .variable-editor .target-function .formula-text-area.formula-validated-textarea {
-  border: 1px solid #81bb83;
+  border: 1px solid #81BB83;
 }
 .variable-editor .target-function .formula-text-area,
 .variable-editor .target-function .validation-icon {
@@ -1643,7 +1643,7 @@ textarea:focus {
   vertical-align: middle;
 }
 .variable-editor .target-function .formula-validation-message {
-  color: #feb6b2;
+  color: #FEB6B2;
   max-height: 40px;
   width: 80%;
 }
@@ -1657,8 +1657,8 @@ textarea:focus {
   width: 30%;
 }
 .variable-editor .functions li {
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  background-color: #EDEDED;
+  border: 1px solid #EDEDED;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -1695,10 +1695,10 @@ textarea:focus {
   color: white;
 }
 .variable-editor .functions li:hover .inputs-list-header .inputs-expandbttn {
-  border-top-color: #ededed;
+  border-top-color: #EDEDED;
 }
 .variable-editor .functions li:hover .inputs-list-header-expanded .inputs-expandbttn {
-  border-bottom-color: #ededed;
+  border-bottom-color: #EDEDED;
 }
 .variable-editor .functions li > div {
   left: 0;
@@ -1738,8 +1738,8 @@ textarea:focus {
   margin: 0 0 5px 0;
 }
 .variable-editor .operators li {
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  background-color: #EDEDED;
+  border: 1px solid #EDEDED;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -1787,13 +1787,13 @@ textarea:focus {
   margin: 1px;
   margin-bottom: 5px;
   cursor: pointer;
-  border-top: 7px solid #aaaaaa;
+  border-top: 7px solid #AAA;
   border-bottom: none;
   float: right;
   margin: 5px 0 0 5px;
 }
 .variable-editor .inputs-list-header .inputs-expandbttn:hover {
-  border-top: 7px solid #ededed;
+  border-top: 7px solid #EDEDED;
   border-bottom: none;
 }
 .variable-editor .inputs-list-header-expanded {
@@ -1808,13 +1808,13 @@ textarea:focus {
   margin: 1px;
   margin-bottom: 5px;
   cursor: pointer;
-  border-bottom: 7px solid #aaaaaa;
+  border-bottom: 7px solid #AAA;
   border-top: none;
   float: right;
   margin: 5px 0 0 5px;
 }
 .variable-editor .inputs-list-header-expanded .inputs-expandbttn:hover {
-  border-bottom: 7px solid #ededed;
+  border-bottom: 7px solid #EDEDED;
   border-top: none;
 }
 .window.container-name {
@@ -1902,10 +1902,10 @@ textarea:focus {
   vertical-align: middle;
 }
 .proof-state div.stabilize-failed {
-  color: #cf451b;
+  color: #CF451B;
 }
 .proof-state div.stabilize-prooved {
-  color: #81bb83;
+  color: #81BB83;
 }
 .proof-state img {
   margin: 0;
@@ -1947,7 +1947,7 @@ textarea:focus {
 }
 .variables-table td {
   vertical-align: middle;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   text-align: center;
   padding: 1px 3px 1px 3px;
   color: #606060;
@@ -1963,7 +1963,7 @@ textarea:focus {
   color: white;
 }
 .variables-table tr:nth-child(odd) {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .furhter-testing {
   margin: 0px 0px 0px 0px;
@@ -1984,7 +1984,7 @@ textarea:focus {
 }
 .furhter-testing td {
   vertical-align: middle;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   text-align: center;
   padding: 1px 3px 1px 3px;
   color: #606060;
@@ -2000,7 +2000,7 @@ textarea:focus {
   color: white;
 }
 .furhter-testing tr:nth-child(odd) {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .proof-variables .scrollable-results .variables-table td:nth-child(1) {
   width: 20%;
@@ -2035,16 +2035,16 @@ textarea:focus {
   height: 5px;
 }
 .proof-propagation-overview .propagation-cell-red {
-  background-color: #feb6b2;
+  background-color: #FEB6B2;
 }
 .proof-propagation-overview .propagation-cell-green {
-  background-color: #d9ffb6;
+  background-color: #D9FFB6;
 }
 .proof-propagation-overview .change {
-  background-color: #fffcb5;
+  background-color: #FFFCB5;
 }
 .proof-propagation-overview tr:nth-child(even) {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .progression-table {
   width: 100%;
@@ -2061,7 +2061,7 @@ textarea:focus {
 }
 .progression-table td {
   vertical-align: middle;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   text-align: center;
   padding: 1px 3px;
   color: #606060;
@@ -2081,7 +2081,7 @@ textarea:focus {
   background-color: rgba(223, 223, 245, 0.5);
 }
 .progression-table td.change {
-  background-color: #fffcb5;
+  background-color: #FFFCB5;
 }
 .progression-table td.repeat.change {
   background-color: #efeed5;
@@ -2090,7 +2090,7 @@ textarea:focus {
   border-left: none;
 }
 .progression-table tr:nth-child(even) {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 /*.simulation-variables{
 				.scrollable-results{
@@ -2161,10 +2161,10 @@ textarea:focus {
   border: 1px solid white;
 }
 .propagation-cell-red {
-  background-color: #feb6b2;
+  background-color: #FEB6B2;
 }
 .propagation-cell-green {
-  background-color: #d9ffb6;
+  background-color: #D9FFB6;
 }
 .simulation-popout .scrollable-results .small-simulation-popout-table {
   display: inline-block;
@@ -2208,7 +2208,7 @@ textarea:focus {
   border-left: none;
 }
 .simulation-popout .scrollable-results .big-simulation-popout-table .variables-table tr.red {
-  background-color: #feb6b2;
+  background-color: #FEB6B2;
 }
 .simulation-popout .scrollable-results .big-simulation-popout-table .variables-table input {
   height: 17px;
@@ -2269,12 +2269,12 @@ textarea:focus {
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 ::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .proof-variables .scrollable-results {
   max-height: 121px;
@@ -2290,12 +2290,12 @@ textarea:focus {
 .proof-variables .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .proof-variables .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .proof-propagation .scrollable-results {
   max-height: 150px;
@@ -2311,12 +2311,12 @@ textarea:focus {
 .proof-propagation .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .proof-propagation .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .further-testing-box .scrollable-results {
   max-height: 150px;
@@ -2332,12 +2332,12 @@ textarea:focus {
 .further-testing-box .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .further-testing-box .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .further-testing-box .ui-tabs .ui-tabs-nav li {
   border: none;
@@ -2359,12 +2359,12 @@ textarea:focus {
 .simulation-variables .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .simulation-variables .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .simulation-plot-box {
   height: 200px;
@@ -2389,12 +2389,12 @@ textarea:focus {
 .ltl-results-tab .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .ltl-results-tab .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .popup-window {
   position: absolute;
@@ -2417,12 +2417,12 @@ textarea:focus {
 .window.proof-variables-popout .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.proof-variables-popout .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.further-testing-popout {
   width: 850px;
@@ -2441,12 +2441,12 @@ textarea:focus {
 .window.further-testing-popout .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.further-testing-popout .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.further-testing-popout .ui-tabs .ui-tabs-nav li {
   border: none;
@@ -2469,16 +2469,16 @@ textarea:focus {
 .window.proof-propagation-popout .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.proof-propagation-popout .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.proof-propagation-popout .scrollable-results::-webkit-scrollbar-thumb:horizontal {
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.proof-propagation-popout .scrollable-results::-webkit-scrollbar-track:horizontal {
   height: 20px;
@@ -2503,12 +2503,12 @@ textarea:focus {
 .window.simulation-popout .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.simulation-popout .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.simulation-popout .scrollable-results .small-simulation-popout-table {
   display: inline-block;
@@ -2532,12 +2532,12 @@ textarea:focus {
 .popup-window .scrollable-results::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .popup-window .scrollable-results::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .plot-check {
   background-image: url("../images/check.svg");
@@ -2557,8 +2557,8 @@ textarea:focus {
   font-size: 15px;
 }
 .dialog .button-list button {
-  background-color: #ededed;
-  border: 1px solid #ededed;
+  background-color: #EDEDED;
+  border: 1px solid #EDEDED;
   border-radius: 15px;
   cursor: pointer;
   display: inline-block;
@@ -2593,7 +2593,7 @@ textarea:focus {
 /* Model Toolbar */
 .model-toolbar .model-icons {
   padding: 5px;
-  background-color: #ededed;
+  background-color: #EDEDED;
   -webkit-box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.5);
   -o-box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.5);
@@ -2606,7 +2606,7 @@ textarea:focus {
   height: 110px;
   display: inline-block;
   margin-right: -4px;
-  border: 1px solid #ededed;
+  border: 1px solid #EDEDED;
 }
 .model-toolbar .model-icons ul li {
   display: inline-block;
@@ -2652,10 +2652,10 @@ textarea:focus {
   -moz-box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.5);
   -o-box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.5);
   box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.5);
-  background-image: -moz-linear-gradient(left, #ededed, white);
-  background-image: -webkit-linear-gradient(left, #ededed, white);
-  background-image: -ms-linear-gradient(left, #ededed, white);
-  background-image: -webkit-gradient(linear, left, #ededed, white);
+  background-image: -moz-linear-gradient(left, #EDEDED, white);
+  background-image: -webkit-linear-gradient(left, #EDEDED, white);
+  background-image: -ms-linear-gradient(left, #EDEDED, white);
+  background-image: -webkit-gradient(linear, left, #EDEDED, white);
   vertical-align: top;
   left: -5px;
   display: inline-block;
@@ -2719,10 +2719,10 @@ textarea:focus {
   cursor: pointer;
 }
 .model-repository ol li:nth-child(odd) {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .model-repository ol li.ui-selected {
-  background-color: #aaaaaa;
+  background-color: #AAA;
   color: white;
 }
 .model-repository ol li button.delete {
@@ -2735,7 +2735,7 @@ textarea:focus {
   cursor: pointer;
 }
 .model-repository ol li button.delete:hover {
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .model-repository ol li .icon-delete {
   background-image: url('../images/icon-delete.svg');
@@ -2750,7 +2750,7 @@ textarea:focus {
 .spinner > div {
   width: 10px;
   height: 10px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
   border-radius: 100%;
   display: inline-block;
   -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
@@ -2812,7 +2812,7 @@ textarea:focus {
   border: 2px solid;
 }
 .keyframe-btn.mutable:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
   cursor: pointer;
 }
 .keyframe-btn div,
@@ -2834,13 +2834,13 @@ textarea:focus {
 }
 .ltl-result-table td {
   border: 1px solid white;
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .ltl-result-table td.change {
-  background-color: #fffcb5;
+  background-color: #FFFCB5;
 }
 .keyframe-panel {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .keyframe-element {
   width: 30px;
@@ -2927,16 +2927,16 @@ textarea:focus {
   border: 1px solid #606060;
 }
 .state-buttons .state-button.new {
-  color: #ededed;
-  border: 1px solid #ededed;
+  color: #EDEDED;
+  border: 1px solid #EDEDED;
 }
 .state-buttons .state-button.new:hover {
-  color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  color: #AAA;
+  border: 1px solid #AAA;
   cursor: pointer;
 }
 .state-toolbar {
-  background-color: #aaaaaa;
+  background-color: #AAA;
   padding: 5px 5px 0px 10px;
 }
 .state-toolbar .state-tool {
@@ -2965,7 +2965,7 @@ textarea:focus {
   margin: 0px;
 }
 .LTL-states table tr td {
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
   text-align: center;
   margin: 0px;
   padding: 0px 5px;
@@ -3008,17 +3008,17 @@ textarea:focus {
   padding: 0px;
   line-height: 47px;
   padding-bottom: 8px;
-  border: 1px solid #ededed;
-  color: #ededed;
+  border: 1px solid #EDEDED;
+  color: #EDEDED;
 }
 .LTL-states table tr td.LTL-line-new:hover {
-  color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  color: #AAA;
+  border: 1px solid #AAA;
   cursor: pointer;
 }
 .variable-picker {
   width: 115px;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
 }
 .variable-picker table {
   font-size: 11px;
@@ -3044,11 +3044,11 @@ textarea:focus {
   text-decoration: none;
 }
 .variable-picker table td .scrollable a:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .variable-picker table td .scrollable a.active {
   border: 0px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
   color: white;
 }
 .variable-picker table td .scrollable::-webkit-scrollbar-track {
@@ -3058,12 +3058,12 @@ textarea:focus {
 .variable-picker table td .scrollable::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .variable-picker table td .scrollable::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .window.temporal-properties {
   width: 650px;
@@ -3102,23 +3102,23 @@ textarea:focus {
   margin-top: 10px;
 }
 .temporal-dropzones .dropzone.delete {
-  border: 1px solid #cf451b;
+  border: 1px solid #CF451B;
 }
 .temporal-dropzones .dropzone.copy {
   border: 1px solid #606060;
   margin-right: 5px;
 }
 .temporal-dropzones .dropzone:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .temporal-dropzones .dropzone.hovered {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .temporal-toolbar {
   padding: 10px;
   margin-top: 5px;
   display: table;
-  background-color: #aaaaaa;
+  background-color: #AAA;
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
@@ -3129,14 +3129,20 @@ textarea:focus {
   display: table-cell;
   width: 120px;
 }
+.temporal-toolbar .state-buttons .state-button {
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 .temporal-toolbar .state-buttons .state-button.new {
   color: white;
-  background-color: #aaaaaa;
+  background-color: #AAA;
   border: 1px solid white;
 }
 .temporal-toolbar .state-buttons .state-button.new:hover {
-  color: #ededed;
-  border: 1px solid #ededed;
+  color: #EDEDED;
+  border: 1px solid #EDEDED;
   cursor: pointer;
 }
 .temporal-toolbar .temporal-operators {
@@ -3195,18 +3201,18 @@ ui-icon-arrowthickstop-1-n {
   border: 3px solid #606060;
 }
 .pill.true {
-  background-color: #d9ffb6;
-  border: 2px solid #81bb83;
+  background-color: #D9FFB6;
+  border: 2px solid #81BB83;
 }
 .pill.true div {
-  background-color: #d9ffb6;
+  background-color: #D9FFB6;
 }
 .pill.false {
-  border: 2px solid #cf451b;
-  background-color: #feb6b2;
+  border: 2px solid #CF451B;
+  background-color: #FEB6B2;
 }
 .pill.false div {
-  background-color: #feb6b2;
+  background-color: #FEB6B2;
 }
 .state {
   font-family: 'Segoe-UI';
@@ -3221,7 +3227,7 @@ ui-icon-arrowthickstop-1-n {
   line-height: 20px;
   width: 20px;
   height: 20px;
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .state:empty {
   background-color: #606060;
@@ -3245,12 +3251,12 @@ ui-icon-arrowthickstop-1-n {
   border-radius: 5px;
 }
 .LTL-test-results.true {
-  border: 1px solid #81bb83;
-  color: #81bb83;
+  border: 1px solid #81BB83;
+  color: #81BB83;
 }
 .LTL-test-results.false {
-  border: 1px solid #cf451b;
-  color: #cf451b;
+  border: 1px solid #CF451B;
+  color: #CF451B;
 }
 .LTL-test-results.false .pill-button-box .pill-button {
   margin-top: 5px;
@@ -3295,8 +3301,8 @@ ui-icon-arrowthickstop-1-n {
   border: 2px solid #606060;
 }
 .state-button-empty:hover {
-  color: #aaaaaa;
-  border: 2px solid #aaaaaa;
+  color: #AAA;
+  border: 2px solid #AAA;
   cursor: pointer;
 }
 .state-compact {
@@ -3318,8 +3324,8 @@ ui-icon-arrowthickstop-1-n {
   border: 2px solid #606060;
 }
 .state-compact .state-button-empty:hover {
-  color: #aaaaaa;
-  border: 2px solid #aaaaaa;
+  color: #AAA;
+  border: 2px solid #AAA;
   cursor: pointer;
 }
 .state-compact .state-placeholder {
@@ -3365,6 +3371,8 @@ ui-icon-arrowthickstop-1-n {
   max-height: 17px;
   overflow: hidden;
   text-align: left;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
 .variable-select .inputs-expandbttn {
@@ -3403,12 +3411,12 @@ ui-icon-arrowthickstop-1-n {
 .ltlresultsviewer::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .ltlresultsviewer::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .ltlresultsviewer .simulationplot-label {
   background-color: rgba(100, 100, 100, 0.5);
@@ -3449,7 +3457,7 @@ ui-icon-arrowthickstop-1-n {
   vertical-align: middle;
 }
 .ltlresultsviewer ul.button-list li:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .ltlresultsviewer ul.button-list li:hover button {
   color: #606060;
@@ -3463,7 +3471,7 @@ ui-icon-arrowthickstop-1-n {
   color: #606060;
 }
 .ltlresultsviewer ul.button-list li.steps {
-  background-color: #ededed;
+  background-color: #EDEDED;
   color: #606060;
 }
 .ltlresultsviewer ul.button-list li.steps button {
@@ -3471,8 +3479,8 @@ ui-icon-arrowthickstop-1-n {
 }
 .ltlresultsviewer ul.button-list li.run {
   margin-left: 30px;
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   border-radius: 6px;
   cursor: pointer;
   height: 30px;
@@ -3480,11 +3488,11 @@ ui-icon-arrowthickstop-1-n {
 }
 .ltlresultsviewer ul.button-list li.run:hover {
   background-color: white;
-  border: 1px solid #81bb83;
-  color: #81bb83;
+  border: 1px solid #81BB83;
+  color: #81BB83;
 }
 .ltlresultsviewer ul.button-list li.run:hover button {
-  color: #81bb83;
+  color: #81BB83;
 }
 .ltlresultsviewer ul.button-list li.run:hover button .icon.download {
   background-image: url("../images/download.svg");
@@ -3516,8 +3524,8 @@ ui-icon-arrowthickstop-1-n {
   background-image: url("../images/download-white.svg");
 }
 .ltlresultsviewer ul.button-list li.run.waiting:hover {
-  background-color: #81bb83;
-  border: 1px solid #81bb83;
+  background-color: #81BB83;
+  border: 1px solid #81BB83;
   color: white;
 }
 .ltlresultsviewer ul.button-list li.run .spinner > div {
@@ -3576,7 +3584,7 @@ ui-icon-arrowthickstop-1-n {
   background-color: white;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table .progression-table tr:nth-child(odd) {
-  background-color: #ededed;
+  background-color: #EDEDED;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table {
   width: 90px;
@@ -3589,7 +3597,7 @@ ui-icon-arrowthickstop-1-n {
   border-left: none;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table tr.red {
-  background-color: #feb6b2;
+  background-color: #FEB6B2;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table input {
   height: 17px;
@@ -3651,7 +3659,7 @@ ui-icon-arrowthickstop-1-n {
   position: absolute;
   z-index: 10;
   width: 111px;
-  border: 1px solid #aaaaaa;
+  border: 1px solid #AAA;
 }
 .variable-picker table {
   width: 100%;
@@ -3691,12 +3699,12 @@ ui-icon-arrowthickstop-1-n {
   text-overflow: ellipsis;
 }
 .variable-picker table tr td .scrollable a:hover {
-  background-color: #ededed;
+  background-color: #EDEDED;
   cursor: pointer;
 }
 .variable-picker table tr td .scrollable a.active {
   border: 0;
-  background-color: #aaaaaa;
+  background-color: #AAA;
   color: white;
 }
 .variable-picker table tr td .scrollable::-webkit-scrollbar-track {
@@ -3706,12 +3714,12 @@ ui-icon-arrowthickstop-1-n {
 .variable-picker table tr td .scrollable::-webkit-scrollbar {
   width: 5px;
   height: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .variable-picker table tr td .scrollable::-webkit-scrollbar-thumb {
   padding: 5px;
   border-radius: 5px;
-  background-color: #aaaaaa;
+  background-color: #AAA;
 }
 .variable-picker table td.list {
   max-height: 85px;
@@ -3722,7 +3730,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .state-tooltip {
   position: relative;
-  background: #ededed;
+  background: #EDEDED;
   border: none;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -3771,8 +3779,7 @@ ui-icon-arrowthickstop-1-n {
   position: absolute;
   pointer-events: none;
   border-color: rgba(255, 255, 255, 0);
-  border-bottom-color: #ededed;
+  border-bottom-color: #EDEDED;
   border-width: 15px;
   margin-left: -15px;
 }
-/*# sourceMappingURL=LTLStates.css.map */

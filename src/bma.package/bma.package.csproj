@@ -24,69 +24,18 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="css\BMA_less.css">
-      <DependentUpon>BMA_less.less</DependentUpon>
-    </Content>
-    <Content Include="css\BMA_less.min.css">
-      <DependentUpon>BMA_less.css</DependentUpon>
-    </Content>
-    <Content Include="css\fonts.css">
-      <DependentUpon>fonts.less</DependentUpon>
-    </Content>
-    <Content Include="css\fonts.min.css">
-      <DependentUpon>fonts.css</DependentUpon>
-    </Content>
-    <Content Include="css\LTLStates.css">
-      <DependentUpon>LTLStates.less</DependentUpon>
-    </Content>
-    <Content Include="css\LTLStates.min.css">
-      <DependentUpon>LTLStates.css</DependentUpon>
-    </Content>
-    <Content Include="css\LTL_less.css">
-      <DependentUpon>LTL_less.less</DependentUpon>
-    </Content>
-    <Content Include="css\LTL_less.min.css">
-      <DependentUpon>LTL_less.css</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.css">
-      <DependentUpon>StyleSheet.less</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.min.css">
-      <DependentUpon>StyleSheet.css</DependentUpon>
-    </Content>
     <Content Include="package.json" />
     <Content Include="Chutzpah.json" />
     <Content Include="css\BMA_less.less" />
-    <Content Include="css\BMA_less.css.map">
-      <DependentUpon>BMA_less.css</DependentUpon>
-    </Content>
     <Content Include="css\LTL_less.less" />
-    <Content Include="css\LTL_less.css.map">
-      <DependentUpon>LTL_less.css</DependentUpon>
-    </Content>
     <Content Include="css\LTLStates.less" />
-    <Content Include="css\LTLStates.css.map">
-      <DependentUpon>LTLStates.css</DependentUpon>
-    </Content>
     <Content Include="css\StyleSheet.less" />
-    <Content Include="css\StyleSheet.css.map">
-      <DependentUpon>StyleSheet.css</DependentUpon>
-    </Content>
     <Content Include="css\bma.less" />
-    <Content Include="css\bma.css">
-      <DependentUpon>bma.less</DependentUpon>
-    </Content>
-    <Content Include="css\bma.min.css">
-      <DependentUpon>bma.css</DependentUpon>
-    </Content>
     <None Include="compilerconfig.json" />
     <Content Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </Content>
     <Content Include="css\fonts.less" />
-    <Content Include="css\fonts.css.map">
-      <DependentUpon>fonts.css</DependentUpon>
-    </Content>
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />

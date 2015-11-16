@@ -2,5 +2,13 @@
   {
     "outputFile": "css/bma.css",
     "inputFile": "css/bma.less"
+  },
+  {
+    "outputFile": "css/LTL_less.css",
+    "inputFile": "css/LTL_less.less"
+  },
+  {
+    "outputFile": "css/LTLStates.css",
+    "inputFile": "css/LTLStates.less"
   }
 ]

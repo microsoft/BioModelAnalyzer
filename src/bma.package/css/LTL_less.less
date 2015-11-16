@@ -283,6 +283,11 @@
         width: 120px;
 
         .state-button {
+            -ms-text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
             &.new {
                 color: white;
                 background-color: @midgrey;
