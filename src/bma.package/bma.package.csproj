@@ -64,12 +64,7 @@
     <Content Include="css\LTLStates.less" />
     <Content Include="css\StyleSheet.less" />
     <Content Include="css\bma.less" />
-    <None Include="compilerconfig.json" />
-    <Content Include="compilerconfig.json.defaults">
-      <DependentUpon>compilerconfig.json</DependentUpon>
-    </Content>
     <Content Include="css\fonts.less" />
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="css\jasmine.css" />
     <Content Include="Gruntfile.js" />
     <Content Include="js\BandPlot.js" />
@@ -77,8 +72,9 @@
     <Content Include="js\svgplot.js" />
     <Content Include="Scripts\jasmine-html.js" />
     <Content Include="Scripts\jasmine.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\rx.aggregates.js" />
@@ -113,7 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
