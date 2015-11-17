@@ -114,10 +114,14 @@
 
 //text and arrow in cell with variable
 .variable-select {
-    display: block;
-    width: 55px;
+    /*display: block;
+    width: 55px;*/
     font-size: 14px;
     color: ButtonText;
+    img {
+        height:30px;
+        width: 30px;
+    }
 
     p {
         margin: 0;
@@ -153,6 +157,27 @@
     &.expanded {
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
+    }
+}
+
+.operator {
+    .inputs-expandbttn {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        cursor: pointer;
+        border-top: 7px solid #aaa;
+        border-bottom: none;
+        float: right;
+        margin-top: 7px;
+        margin-right: 5px;
+
+        &.inputs-list-header-expanded {
+            border-top: none;
+            border-bottom: 7px solid #aaa;
+        }
     }
 }
 

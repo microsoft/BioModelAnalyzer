@@ -3646,6 +3646,7 @@ ui-icon-arrowthickstop-1-n {
 .state-buttons .state-button {
   margin: 5px;
   margin-left: 0;
+  overflow: hidden;
 }
 .state-buttons .state-button.active {
   border: 3px solid #606060;
@@ -3726,10 +3727,14 @@ ui-icon-arrowthickstop-1-n {
   box-shadow: none;
 }
 .variable-select {
-  display: block;
-  width: 55px;
+  /*display: block;
+    width: 55px;*/
   font-size: 14px;
   color: ButtonText;
+}
+.variable-select img {
+  height: 30px;
+  width: 30px;
 }
 .variable-select p {
   margin: 0;
@@ -3762,6 +3767,23 @@ ui-icon-arrowthickstop-1-n {
 .variable-select.expanded {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+}
+.operator .inputs-expandbttn {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  cursor: pointer;
+  border-top: 7px solid #aaa;
+  border-bottom: none;
+  float: right;
+  margin-top: 7px;
+  margin-right: 5px;
+}
+.operator .inputs-expandbttn.inputs-list-header-expanded {
+  border-top: none;
+  border-bottom: 7px solid #aaa;
 }
 .ltlresultsviewer {
   width: 1060px;
