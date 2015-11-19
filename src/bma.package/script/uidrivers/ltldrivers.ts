@@ -290,7 +290,40 @@ module BMA {
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
                         var f = formulas[j];
-                        if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0) {
+                        ///
+                        //if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
+                        //    var operator = f[1].value;
+                        //    var constant = parseFloat(f[2].value);
+                        //    var operator2;
+                        //    var constant2;
+                        //    switch (f[1].value) {
+                        //        case ">=":
+                        //            operator = ">";
+                        //            constant--;
+                        //            break;
+                        //        case "<=":
+                        //            operator = "<";
+                        //            constant++;
+                        //            break;
+                        //        case "=":
+                        //            operator = "<";
+                        //            constant++;
+                        //            operator2 = ">"
+                        //            constant2 = constant - 2;
+                        //            break;
+                        //        default: break;
+                        //    }
+                        //    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                        //        operator, new BMA.LTLOperations.ConstOperand(constant));
+                        //    ops.push(op);
+                        //    if (operator2 && constant2 !== undefined) {
+                        //        op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                        //            operator2, new BMA.LTLOperations.ConstOperand(constant2));
+                        //        ops.push(op);
+                        //    }
+                        //}
+                        ///
+                        if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0 && f[0].value.variable) {
                             if (f[1] !== undefined && f[2] !== undefined) {
                                 if (f[1].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),

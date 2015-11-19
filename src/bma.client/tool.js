@@ -2960,6 +2960,7 @@ var BMA;
                 this.borderThickness = 1;
                 this.fill = undefined;
                 this.status = "nottested";
+                this.tag = undefined;
                 this.renderGroup = undefined;
                 this.svg = svg;
                 this.operation = operation;
@@ -3007,6 +3008,16 @@ var BMA;
                         default:
                             throw "Invalid status!";
                     }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "Tag", {
+                get: function () {
+                    return this.tag;
+                },
+                set: function (value) {
+                    this.tag = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -4405,7 +4416,40 @@ var BMA;
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
                         var f = formulas[j];
-                        if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0) {
+                        ///
+                        //if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
+                        //    var operator = f[1].value;
+                        //    var constant = parseFloat(f[2].value);
+                        //    var operator2;
+                        //    var constant2;
+                        //    switch (f[1].value) {
+                        //        case ">=":
+                        //            operator = ">";
+                        //            constant--;
+                        //            break;
+                        //        case "<=":
+                        //            operator = "<";
+                        //            constant++;
+                        //            break;
+                        //        case "=":
+                        //            operator = "<";
+                        //            constant++;
+                        //            operator2 = ">"
+                        //            constant2 = constant - 2;
+                        //            break;
+                        //        default: break;
+                        //    }
+                        //    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                        //        operator, new BMA.LTLOperations.ConstOperand(constant));
+                        //    ops.push(op);
+                        //    if (operator2 && constant2 !== undefined) {
+                        //        op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                        //            operator2, new BMA.LTLOperations.ConstOperand(constant2));
+                        //        ops.push(op);
+                        //    }
+                        //}
+                        ///
+                        if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0 && f[0].value.variable) {
                             if (f[1] !== undefined && f[2] !== undefined) {
                                 if (f[1].value == ">=")
                                     op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), ">", new BMA.LTLOperations.ConstOperand(parseFloat(f[2].value) - 1));
@@ -10907,7 +10951,7 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+            this._stateButtons = $("<div></div>").addClass("state-buttons").addClass("states-editor").appendTo(this.element);
             that._initStates();
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
@@ -10926,9 +10970,6 @@ jQuery.fn.extend({
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
             this._ltlAddFormulaButton = $("<td>+</td>").addClass("LTL-line-new").appendTo(tr).click(function () {
-                var idx = that.options.states.indexOf(that._activeState);
-                var emptyFormula = [undefined, undefined, undefined];
-                that.options.states[idx].formula.push(emptyFormula);
                 that.addFormula();
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
@@ -11012,18 +11053,23 @@ jQuery.fn.extend({
         addFormula: function (formula) {
             if (formula === void 0) { formula = null; }
             var that = this;
-            if (!formula) {
-                formula = [
-                    {
-                        type: "variable", value: {
-                            container: undefined,
-                            variable: undefined
-                        }
-                    },
-                    { type: "operator", value: "=" },
-                    { type: "const", value: 0 }
-                ];
+            var stateIdx = that.options.states.indexOf(that._activeState);
+            var formulaIdx = that.options.states[stateIdx].formula.indexOf(formula);
+            if (formula == null) {
+                that.options.states[stateIdx].formula.push(formula);
+                formulaIdx = that.options.states[stateIdx].formula.length - 1;
             }
+            formula = formula && formula[0] && formula[1] && formula[2] ? formula : [
+                {
+                    type: "variable", value: formula && formula[0] && formula[0].value ? formula[0].value : {
+                        container: undefined,
+                        variable: undefined
+                    },
+                },
+                { type: "operator", value: formula && formula[1] && formula[1].value ? formula[1].value : "=" },
+                { type: "const", value: formula && formula[2] && formula[2].value ? formula[2].value : 0 },
+            ];
+            that.options.states[stateIdx].formula[formulaIdx] = formula;
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "formula");
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
@@ -11051,9 +11097,37 @@ jQuery.fn.extend({
                         break;
                     default: break;
                 }
+                formula[1].value = value;
             };
+            that.createOperatorPicker(operatorTd, setOperatorValue);
+            setOperatorValue(formula[1].value);
+            var constTd = $("<td></td>").addClass("const").appendTo(tr);
+            var constInput = $("<input></input>").addClass("number-input").attr("type", "text").attr("value", formula[2] ? formula[2].value : 0).appendTo(constTd);
+            constInput.bind("input change", function () {
+                if (parseFloat(this.value) > that.options.maxConst)
+                    this.value = that.options.maxConst;
+                if (parseFloat(this.value) < that.options.minConst)
+                    this.value = that.options.minConst;
+                formula[2].value = this.value;
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+            });
+            var removeTd = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
+                var stateIndex = that.options.states.indexOf(that._activeState);
+                var tableIndex = table.index();
+                that.options.states[stateIndex].formula.splice(tableIndex, 1);
+                $(table).remove();
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+            });
+            var removeIcon = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(removeTd);
+            table.insertBefore(this._ltlStates.children().last());
+        },
+        createOperatorPicker: function (operatorTd, setOperatorValue) {
+            var that = this;
+            var firstLeft = $(operatorTd).offset().left;
+            var firstTop = $(operatorTd).offset().top;
             var operatorExpandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(operatorTd);
-            var operatorSelector = $("<div></div>").addClass("operator-picker").appendTo(operatorTd).hide();
+            var operatorSelector = $("<div></div>").addClass("operator-picker").appendTo('body').hide();
+            operatorSelector.offset({ top: firstTop + 57, left: firstLeft });
             var greDiv = $("<div></div>").attr("data-operator-type", ">").appendTo(operatorSelector);
             var gre = $("<img>").attr("src", "images/LTL-state-tool-gre.svg").appendTo(greDiv);
             var greqDiv = $("<div></div>").attr("data-operator-type", ">=").appendTo(operatorSelector);
@@ -11066,6 +11140,11 @@ jQuery.fn.extend({
             var equ = $("<img>").attr("src", "images/LTL-state-tool-equ.svg").appendTo(equDiv);
             operatorExpandButton.bind("click", function () {
                 if (operatorSelector.is(":hidden")) {
+                    var offLeft = $(operatorTd).offset().left - firstLeft;
+                    var offTop = $(operatorTd).offset().top - firstTop;
+                    operatorSelector.offset({ top: offTop, left: offLeft });
+                    firstLeft = $(operatorTd).offset().left;
+                    firstTop = $(operatorTd).offset().top;
                     operatorSelector.show();
                     operatorExpandButton.addClass('inputs-list-header-expanded');
                 }
@@ -11077,33 +11156,10 @@ jQuery.fn.extend({
             operatorSelector.children().bind("click", function () {
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
-                formula[1].value = newOperator;
                 operatorSelector.hide();
                 operatorExpandButton.removeClass('inputs-list-header-expanded');
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
-            setOperatorValue(formula[1].value);
-            //selector for operator
-            var constTd = $("<td></td>").addClass("const").appendTo(tr);
-            var constInput = $("<input></input>").addClass("number-input").attr("type", "text").attr("value", formula[2] ? formula[2].value : 0).appendTo(constTd);
-            constInput.bind("input change", function () {
-                if (parseFloat(this.value) > that.options.maxConst)
-                    this.value = that.options.maxConst;
-                if (parseFloat(this.value) < that.options.minConst)
-                    this.value = that.options.minConst;
-                formula[2].value = this.value;
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-            });
-            //input for const
-            var removeTd = $("<td></td>").addClass("LTL-line-del").appendTo(tr).click(function () {
-                var stateIndex = that.options.states.indexOf(that._activeState);
-                var tableIndex = table.index();
-                that.options.states[stateIndex].formula.splice(tableIndex, 1);
-                $(table).remove();
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-            });
-            var removeIcon = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(removeTd);
-            table.insertBefore(this._ltlStates.children().last());
         },
         createVariablePicker: function (variableTd, variable) {
             var that = this;
@@ -11144,7 +11200,7 @@ jQuery.fn.extend({
                     firstLeft = $(variableTd).offset().left;
                     firstTop = $(variableTd).offset().top;
                     that.executeonComboBoxOpen();
-                    trDivs = that.updateVariablePicker(trList, selectedVariable, variable);
+                    trDivs = that.updateVariablePicker(trList, setSelectedValue, variable);
                     variablePicker.show();
                     expandButton.addClass('inputs-list-header-expanded');
                 }
@@ -12846,8 +12902,6 @@ var BMA;
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
                     var bbox = op.BoundingBox;
-                    //if (that.HasIntersection(bbox, copyzonebbox) || that.HasIntersection(bbox, deletezonebbox))
-                    //    continue; 
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
