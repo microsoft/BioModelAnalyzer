@@ -13,6 +13,7 @@
             private borderThickness: number = 1;
             private fill: string = undefined;
             private status: string = "nottested";
+            private tag: any = undefined;
 
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -63,6 +64,14 @@
                     default:
                         throw "Invalid status!";
                 }
+            }
+
+            public get Tag(): any {
+                return this.tag;
+            }
+
+            public set Tag(value: any) {
+                this.tag = value;
             }
 
             public get IsOperation(): boolean {
