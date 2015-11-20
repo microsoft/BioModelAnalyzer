@@ -11059,16 +11059,48 @@ jQuery.fn.extend({
                 that.options.states[stateIdx].formula.push(formula);
                 formulaIdx = that.options.states[stateIdx].formula.length - 1;
             }
-            formula = formula && formula[0] && formula[1] && formula[2] ? formula : [
-                {
-                    type: "variable", value: formula && formula[0] && formula[0].value ? formula[0].value : {
-                        container: undefined,
-                        variable: undefined
+            if (formula.length == 5) {
+                var secondEq = [
+                    {
+                        type: "variable", value: formula[2] && formula[2].value ? formula[2].value : {
+                            container: undefined,
+                            variable: undefined
+                        },
                     },
-                },
-                { type: "operator", value: formula && formula[1] && formula[1].value ? formula[1].value : "=" },
-                { type: "const", value: formula && formula[2] && formula[2].value ? formula[2].value : 0 },
-            ];
+                    { type: "operator", value: formula[3] && formula[3].value ? formula[3].value : "<" },
+                    { type: "const", value: formula[4] && formula[4].value ? formula[4].value : 0 },
+                ];
+                that.options.states[stateIdx].formula.splice(formulaIdx + 1, 0, secondEq);
+                switch (formula[1].value) {
+                    case ">":
+                        formula[1].value = "<";
+                    case "<":
+                        formula[1].value = ">";
+                    default: break;
+                }
+                formula = [
+                    {
+                        type: "variable", value: formula[2] && formula[2].value ? formula[2].value : {
+                            container: undefined,
+                            variable: undefined
+                        },
+                    },
+                    { type: "operator", value: formula[1] && formula[1].value ? formula[1].value : ">" },
+                    { type: "const", value: formula[0] && formula[0].value ? formula[0].value : 0 },
+                ];
+            }
+            else {
+                formula = formula && formula[0] && formula[1] && formula[2] ? formula : [
+                    {
+                        type: "variable", value: formula && formula[0] && formula[0].value ? formula[0].value : {
+                            container: undefined,
+                            variable: undefined
+                        },
+                    },
+                    { type: "operator", value: formula && formula[1] && formula[1].value ? formula[1].value : "=" },
+                    { type: "const", value: formula && formula[2] && formula[2].value ? formula[2].value : 0 },
+                ];
+            }
             that.options.states[stateIdx].formula[formulaIdx] = formula;
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "formula");
             var tbody = $("<tbody></tbody>").appendTo(table);
@@ -11094,6 +11126,22 @@ jQuery.fn.extend({
                         break;
                     case "=":
                         operatorImg.attr("src", "images/LTL-state-tool-equ.svg");
+                        break;
+                    case "<>":
+                        value = ">";
+                        operatorImg.attr("src", "images/LTL-state-tool-gre.svg");
+                        var secondEq = [
+                            {
+                                type: "variable", value: formula[0] && formula[0].value ? formula[0].value : {
+                                    container: undefined,
+                                    variable: undefined
+                                },
+                            },
+                            { type: "operator", value: "<" },
+                            { type: "const", value: 0 },
+                        ];
+                        that.options.states[stateIdx].formula.splice(formulaIdx + 1, 0, secondEq);
+                        that.refresh();
                         break;
                     default: break;
                 }
@@ -11138,6 +11186,8 @@ jQuery.fn.extend({
             var lesq = $("<img>").attr("src", "images/LTL-state-tool-lesq.svg").appendTo(lesqDiv);
             var equDiv = $("<div></div>").attr("data-operator-type", "=").appendTo(operatorSelector);
             var equ = $("<img>").attr("src", "images/LTL-state-tool-equ.svg").appendTo(equDiv);
+            var rangeDiv = $("<div></div>").attr("data-operator-type", "<>").appendTo(operatorSelector);
+            var range = $("<img>").attr("src", "images/range.png").appendTo(rangeDiv);
             operatorExpandButton.bind("click", function () {
                 if (operatorSelector.is(":hidden")) {
                     var offLeft = $(operatorTd).offset().left - firstLeft;
@@ -11159,6 +11209,15 @@ jQuery.fn.extend({
                 operatorSelector.hide();
                 operatorExpandButton.removeClass('inputs-list-header-expanded');
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+            });
+            $(document).mousedown(function (e) {
+                if (!operatorSelector.is(":hidden")) {
+                    if (!operatorTd.is(e.target) && operatorTd.has(e.target).length === 0
+                        && !operatorSelector.is(e.target) && operatorSelector.has(e.target).length === 0) {
+                        operatorSelector.hide();
+                        operatorExpandButton.removeClass('inputs-list-header-expanded');
+                    }
+                }
             });
         },
         createVariablePicker: function (variableTd, variable) {

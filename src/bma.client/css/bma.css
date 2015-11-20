@@ -3649,13 +3649,27 @@ ui-icon-arrowthickstop-1-n {
 .state-buttons.states-editor {
   background-color: #AAA;
 }
+.state-buttons.states-editor .state-button {
+  margin: 5px;
+  margin-right: 0;
+}
 .state-buttons .state-button {
   margin: 5px;
   margin-left: 0;
   overflow: hidden;
+  vertical-align: middle;
 }
 .state-buttons .state-button.active {
   border: 3px solid #606060;
+}
+.state-buttons .state-button.new {
+  background-color: #AAA;
+  color: white;
+  border-color: white;
+}
+.state-buttons .state-button.new:hover {
+  color: white;
+  border: 2px solid white;
 }
 .state-buttons .state-button:hover {
   cursor: pointer;
@@ -3732,52 +3746,6 @@ ui-icon-arrowthickstop-1-n {
   -o-box-shadow: none;
   box-shadow: none;
 }
-/*.variable-select {
-    //display: block;
-    width: 175px;
-    font-size: 14px;
-    color: ButtonText;
-    img {
-        height:30px;
-        width: 30px;
-    }
-
-    p {
-        margin: 0;
-        display: inline-block;
-        width: 30px;
-        max-height: 17px;
-        overflow: hidden;
-        text-align: left;
-        -ms-text-overflow: ellipsis;
-        -o-text-overflow: ellipsis;
-        text-overflow: ellipsis;
-    }
-
-    .inputs-expandbttn {
-        display: inline-block;
-        width: 0;
-        height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        cursor: pointer;
-        border-top: 7px solid #aaa;
-        border-bottom: none;
-        float: right;
-        margin-top: 7px;
-        margin-right: 5px;
-
-        &.inputs-list-header-expanded {
-            border-top: none;
-            border-bottom: 7px solid #aaa;
-        }
-    }
-
-    &.expanded {
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-    }
-}*/
 .ltlresultsviewer {
   width: 1060px;
   max-height: 470px;
@@ -4023,7 +3991,7 @@ ui-icon-arrowthickstop-1-n {
   overflow-y: auto;
 }
 .LTL-states table {
-  margin-left: 0;
+  margin-left: 5px;
 }
 .LTL-states table tr td {
   position: relative;
@@ -4050,7 +4018,7 @@ ui-icon-arrowthickstop-1-n {
 .LTL-states table tr td.variable-select p {
   margin-left: 2px;
   display: inline-block;
-  width: 30px;
+  width: 60px;
   max-height: 20px;
   overflow: hidden;
   text-align: left;
@@ -4100,7 +4068,7 @@ ui-icon-arrowthickstop-1-n {
 .variable-picker {
   position: absolute;
   z-index: 10;
-  width: 111px;
+  width: 175px;
   border: 1px solid #AAA;
 }
 .variable-picker table {
@@ -4121,13 +4089,13 @@ ui-icon-arrowthickstop-1-n {
   min-width: 50px;
   border: none;
   text-align: left;
-  padding: 2px 0 0 2px;
+  padding: 2px 0 2px 2px;
 }
 .variable-picker table tr td.list {
   max-height: 85px;
 }
 .variable-picker table tr td .scrollable {
-  width: 50px;
+  width: 80px;
   max-height: 85px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -4172,13 +4140,14 @@ ui-icon-arrowthickstop-1-n {
   width: 55px;
   border: 1px solid #AAA;
   background-color: white;
+  text-align: center;
 }
 .state-description {
-  margin: 0;
-  margin-top: 10px;
+  margin: 10px 0 0 5px;
   width: 335px;
 }
 .state-tooltip {
+  z-index: 10;
   position: relative;
   background: #EDEDED;
   border: none;
