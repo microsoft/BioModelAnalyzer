@@ -388,15 +388,31 @@
                     font-size: 20px;
                     color: ButtonText;
                     text-align:left;
-                    img {
-                        height:30px;
+
+                    .container-image {
+                        display:inline-block;
+                        background: url("../images/container.svg") no-repeat;
+                        background-size: 25px 25px;
                         width: 30px;
+                        height: 30px;
+
+                        &.hidden{
+                            display:none;
+                        }
+                    }
+
+                    .variable-image {
+                        display:inline-block;
+                        background: url("../images/variable.svg") no-repeat;
+                        background-size: 25px 25px;
+                        width: 30px;
+                        height: 30px;
                     }
 
                     p {
                         margin-left: 2px;
                         display: inline-block;
-                        width: 60px;
+                        width: 40px;
                         max-height: 20px;
                         overflow: hidden;
                         text-align: left;
@@ -404,6 +420,9 @@
                         -ms-text-overflow: ellipsis;
                         -o-text-overflow: ellipsis;
                         text-overflow: ellipsis;
+                        &.hidden{
+                            display:none;
+                        }
                     }
 
                     .inputs-expandbttn {
@@ -470,6 +489,20 @@
         background-color: white;
         border-collapse: collapse;
         
+        .variable-image {
+            background: url("../images/variable.svg") no-repeat;
+            background-size: 20px 20px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .container-image {
+            background: url("../images/container.svg") no-repeat;
+            background-size: 20px 20px;
+            width: 20px;
+            height: 20px;
+        }
+
         img {
             width: 20px;
             height: 20px;
@@ -561,7 +594,7 @@
 
 .state-tooltip {
     z-index:10;
-	position: relative;
+	//position: relative;
 	background: @lightgrey;
     border:none;
 	.border-radius(5px);

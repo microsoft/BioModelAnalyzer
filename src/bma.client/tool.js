@@ -11059,6 +11059,16 @@ jQuery.fn.extend({
                 that.options.states[stateIdx].formula.push(formula);
                 formulaIdx = that.options.states[stateIdx].formula.length - 1;
             }
+            formula = formula && formula[0] && formula[1] && formula[2] ? formula : [
+                {
+                    type: "variable", value: formula && formula[0] && formula[0].value ? formula[0].value : {
+                        container: undefined,
+                        variable: undefined
+                    },
+                },
+                { type: "operator", value: formula && formula[1] && formula[1].value ? formula[1].value : "=" },
+                { type: "const", value: formula && formula[2] && formula[2].value ? formula[2].value : 0 },
+            ];
             if (formula.length == 5) {
                 var secondEq = [
                     {
@@ -11089,24 +11099,11 @@ jQuery.fn.extend({
                     { type: "const", value: formula[0] && formula[0].value ? formula[0].value : 0 },
                 ];
             }
-            else {
-                formula = formula && formula[0] && formula[1] && formula[2] ? formula : [
-                    {
-                        type: "variable", value: formula && formula[0] && formula[0].value ? formula[0].value : {
-                            container: undefined,
-                            variable: undefined
-                        },
-                    },
-                    { type: "operator", value: formula && formula[1] && formula[1].value ? formula[1].value : "=" },
-                    { type: "const", value: formula && formula[2] && formula[2].value ? formula[2].value : 0 },
-                ];
-            }
             that.options.states[stateIdx].formula[formulaIdx] = formula;
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "formula");
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
             var variableTd = $("<td></td>").addClass("variable-select").appendTo(tr);
-            var variableImg = $("<img>").attr("src", "../images/LTL-state-tool-var.svg").appendTo(variableTd);
             that.createVariablePicker(variableTd, formula[0]);
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
             var operatorImg = $("<img>").appendTo(operatorTd);
@@ -11129,6 +11126,7 @@ jQuery.fn.extend({
                         break;
                     case "<>":
                         value = ">";
+                        formula[1].value = value;
                         operatorImg.attr("src", "images/LTL-state-tool-gre.svg");
                         var secondEq = [
                             {
@@ -11222,6 +11220,9 @@ jQuery.fn.extend({
         },
         createVariablePicker: function (variableTd, variable) {
             var that = this;
+            var containerImg = $("<div></div>").addClass("container-image") /*attr("src", "../images/container.svg")*/.addClass("hidden").appendTo(variableTd);
+            var selectedContainer = $("<p></p>").addClass("hidden").appendTo(variableTd);
+            var variableImg = $("<div></div>").addClass("variable-image") /*attr("src", "../images/LTL-state-tool-var.svg")*/.appendTo(variableTd);
             var selectedVariable = $("<p></p>").appendTo(variableTd);
             var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(variableTd);
             var firstLeft = $(variableTd).offset().left;
@@ -11232,14 +11233,23 @@ jQuery.fn.extend({
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
             var tdContainer = $("<td></td>").appendTo(tr);
-            var imgContainer = $("<img></img>").attr("src", "../images/container.svg").appendTo(tdContainer);
+            var imgContainer = $("<div></div>").addClass("container-image") /*attr("src", "../images/container.svg")*/.appendTo(tdContainer);
             var tdVariable = $("<td></td>").appendTo(tr);
-            var imgVariable = $("<img></img>").attr("src", "../images/variable.svg").appendTo(tdVariable);
+            var imgVariable = $("<div></div>").addClass("variable-image") /*attr("src", "../images/variable.svg")*/.appendTo(tdVariable);
             var trList = $("<tr></tr>").appendTo(tbody);
             var setSelectedValue = function (value) {
-                selectedVariable.text(value);
+                var containerName;
+                for (var i = 0; i < that.options.variables.length; i++)
+                    if (that.options.variables[i].id == value.container) {
+                        containerName = that.options.variables[i].name;
+                        break;
+                    }
+                selectedContainer.text(containerName ? containerName : "ALL");
+                selectedVariable.text(value.variable);
                 variablePicker.hide();
                 expandButton.removeClass('inputs-list-header-expanded');
+                containerImg.removeClass("hidden");
+                selectedContainer.removeClass("hidden");
             };
             var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
             $(document).mousedown(function (e) {
@@ -11304,14 +11314,14 @@ jQuery.fn.extend({
                     .appendTo(divVariables).click(function () {
                     divVariables.find(".active").removeClass("active");
                     $(this).addClass("active");
-                    setSelectedValue(($(this).attr("data-variable-name") == "") ? "Unnamed" : $(this).attr("data-variable-name"));
                     currSymbol.value = { container: $(container).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                    setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
                     that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                 });
                 if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
                     && currSymbol.value.variable == that.options.variables[idx].vars[j]) {
                     variable.addClass("active");
-                    setSelectedValue(variableName);
+                    setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
                 }
             }
         },
@@ -11340,8 +11350,9 @@ jQuery.fn.extend({
             switch (key) {
                 case "variables": {
                     this.options.variables = [];
-                    for (var i = 0; i < value.length; i++)
+                    for (var i = 0; i < value.length; i++) {
                         this.options.variables.push(value[i]);
+                    }
                     break;
                 }
                 case "states": {
@@ -11352,7 +11363,6 @@ jQuery.fn.extend({
                         if (value[i].formula.length == 0)
                             value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
                     }
-                    //this.options.states = value;
                     if (this.options.states.length == 0) {
                         that.addState();
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
