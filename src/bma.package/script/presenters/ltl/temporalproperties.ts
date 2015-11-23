@@ -275,7 +275,7 @@ module BMA {
 
                 commands.On("KeyframesChanged",(args: { states: BMA.LTLOperations.Keyframe[] }) => {
                     if (this.CompareStatesToLocal(args.states)) {
-                        this.ClearResults();
+                        //this.ClearResults();
                         this.states = args.states;
                         tpEditorDriver.SetStates(args.states);
                         for (var i = 0; i < this.operations.length; i++) {
@@ -495,6 +495,7 @@ module BMA {
                                             //emptyCell.opLayout = operation;
                                             emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
                                             operation.Refresh();
+                                            operation.AnalysisStatus = "nottested";
 
                                             if (this.stagingOperation.isRoot) {
                                                 this.operations[this.stagingOperation.originIndex].IsVisible = false;
@@ -734,11 +735,13 @@ module BMA {
                 }
             }
 
+            /*
             private ClearResults() {
                 for (var i = 0; i < this.operations.length; i++) {
                     this.operations[i].AnalysisStatus = "nottested";
                 }
             }
+            */
 
             private SubscribeToLTLRequest(driver, domplot, op) {
                 var that = this;
@@ -771,14 +774,14 @@ module BMA {
                     var op = this.operations[i];
                     var bbox = op.BoundingBox;
 
-
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
-                        status: "nottested"
+                        status: op.AnalysisStatus
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
-                    driver.SetStatus("nottested");
+                    driver.SetStatus(op.AnalysisStatus);
+                    //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
 
