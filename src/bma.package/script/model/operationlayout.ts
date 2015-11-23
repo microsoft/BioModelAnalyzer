@@ -705,11 +705,12 @@
             }
 
 
-            private RefreshStatesInOperation(operation: BMA.LTLOperations.IOperand, states: BMA.LTLOperations.Keyframe[]) {
+            private RefreshStatesInOperation(operation: BMA.LTLOperations.IOperand, states: BMA.LTLOperations.Keyframe[]): boolean {
                 if (operation === undefined)
-                    return;
+                    return false;
 
                 if ((<any>operation).Operator !== undefined) {
+                    var wasUpdated = false;
                     var operands = (<any>operation).Operands;
 
                     for (var i = 0; i < operands.length; i++) {
@@ -719,7 +720,7 @@
                             continue;
 
                         if ((<any>op).Operator !== undefined) {
-                            this.RefreshStatesInOperation(operands[i], states);
+                            wasUpdated = wasUpdated || this.RefreshStatesInOperation(operands[i], states);
                         } else {
                             var name = (<any>op).Name;
                             if (name !== undefined) {
@@ -727,21 +728,30 @@
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
                                         operands[i] = states[j];
+                                        wasUpdated = wasUpdated || operands[i].GetFormula() !== states[j].GetFormula();
                                         updated = true;
                                         break;
                                     }
                                 }
                                 if (!updated) {
                                     operands[i] = undefined;
+                                    wasUpdated = true;
                                 }
                             }
                         }
                     }
+
+                    return wasUpdated;
                 }
+
+                return false;
             }
 
             public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {
-                this.RefreshStatesInOperation(this.operation, states);
+                var wasUpdated = this.RefreshStatesInOperation(this.operation, states);
+                if (wasUpdated)
+                    this.status = "nottested";
+                
                 //this.Refresh();
             }
 

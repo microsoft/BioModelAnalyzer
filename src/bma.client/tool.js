@@ -3593,15 +3593,16 @@ var BMA;
             };
             OperationLayout.prototype.RefreshStatesInOperation = function (operation, states) {
                 if (operation === undefined)
-                    return;
+                    return false;
                 if (operation.Operator !== undefined) {
+                    var wasUpdated = false;
                     var operands = operation.Operands;
                     for (var i = 0; i < operands.length; i++) {
                         var op = operands[i];
                         if (op === undefined)
                             continue;
                         if (op.Operator !== undefined) {
-                            this.RefreshStatesInOperation(operands[i], states);
+                            wasUpdated = wasUpdated || this.RefreshStatesInOperation(operands[i], states);
                         }
                         else {
                             var name = op.Name;
@@ -3610,20 +3611,26 @@ var BMA;
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
                                         operands[i] = states[j];
+                                        wasUpdated = wasUpdated || operands[i].GetFormula() !== states[j].GetFormula();
                                         updated = true;
                                         break;
                                     }
                                 }
                                 if (!updated) {
                                     operands[i] = undefined;
+                                    wasUpdated = true;
                                 }
                             }
                         }
                     }
+                    return wasUpdated;
                 }
+                return false;
             };
             OperationLayout.prototype.RefreshStates = function (states) {
-                this.RefreshStatesInOperation(this.operation, states);
+                var wasUpdated = this.RefreshStatesInOperation(this.operation, states);
+                if (wasUpdated)
+                    this.status = "nottested";
                 //this.Refresh();
             };
             OperationLayout.prototype.GenerateUUID = function () {
@@ -12563,7 +12570,7 @@ var BMA;
                 });
                 commands.On("KeyframesChanged", function (args) {
                     if (_this.CompareStatesToLocal(args.states)) {
-                        _this.ClearResults();
+                        //this.ClearResults();
                         _this.states = args.states;
                         tpEditorDriver.SetStates(args.states);
                         for (var i = 0; i < _this.operations.length; i++) {
@@ -12748,6 +12755,7 @@ var BMA;
                                         //emptyCell.opLayout = operation;
                                         emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                         operation.Refresh();
+                                        operation.AnalysisStatus = "nottested";
                                         if (_this.stagingOperation.isRoot) {
                                             _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
                                             _this.operations.splice(_this.stagingOperation.originIndex, 1);
@@ -12942,11 +12950,13 @@ var BMA;
                     driver.SetStatus("nottested");
                 }
             };
-            TemporalPropertiesPresenter.prototype.ClearResults = function () {
+            /*
+            private ClearResults() {
                 for (var i = 0; i < this.operations.length; i++) {
                     this.operations[i].AnalysisStatus = "nottested";
                 }
-            };
+            }
+            */
             TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, domplot, op) {
                 var that = this;
                 driver.SetLTLRequestedCallback(function () {
@@ -12974,10 +12984,11 @@ var BMA;
                     var opDiv = $("<div></div>");
                     var cp = {
                         dommarker: opDiv,
-                        status: "nottested"
+                        status: op.AnalysisStatus
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
-                    driver.SetStatus("nottested");
+                    driver.SetStatus(op.AnalysisStatus);
+                    //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
