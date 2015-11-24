@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\accordion.css" />
@@ -57,6 +58,20 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="js\FileSaver.js" />
+    <Content Include="js\idd.heatmapworker.js" />
+    <Content Include="js\idd.js" />
+    <Content Include="js\idd.transforms.js" />
+    <Content Include="js\jquery.browser.min.js" />
+    <Content Include="js\jquery.cookie.js" />
+    <Content Include="js\jquery.svg.js" />
+    <Content Include="js\jquery.svg.min.js" />
+    <Content Include="js\jquery.svgdom.min.js" />
+    <Content Include="js\jquery.ui-contextmenu.js" />
+    <Content Include="js\jquery.ui-contextmenu.min.js" />
+    <Content Include="js\rx.jQuery.js" />
+    <Content Include="js\rx.js" />
+    <Content Include="js\wl.js" />
     <Content Include="package.json" />
     <Content Include="Chutzpah.json" />
     <Content Include="css\BMA_less.less" />
