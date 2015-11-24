@@ -4233,3 +4233,36 @@ ui-icon-arrowthickstop-1-n {
   border-width: 15px;
   margin-left: -15px;
 }
+.LTL-test-options {
+  display: inline-block;
+  vertical-align: middle;
+  width: 130px;
+  padding: 5px 5px 0px 5px;
+  /*margin-left: 10px;*/
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px solid #606060;
+  color: #606060;
+}
+.LTL-test-options .pill-button-box .pill-button {
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+.LTL-test-results img {
+  display: inline-block;
+  vertical-align: middle;
+  height: 20px;
+  width: 20px;
+}
+.LTL-test-results.true .red {
+  color: #CF451B;
+}
+.LTL-results-not-expanded.true {
+  color: #81BB83;
+}
+.LTL-results-not-expanded.false {
+  color: #CF451B;
+}
