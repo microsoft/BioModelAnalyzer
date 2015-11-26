@@ -1774,8 +1774,17 @@ hr {
 .sim-blue {
   background-color: rgba(223, 223, 245, 0.5);
 }
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 10px solid #606060;
+  display: inline-block;
+  margin-left: 5px;
+}
 .window.LTL-states {
-  width: 340px;
+  width: 380px;
   padding: 0px 0px 10px 0px;
 }
 .window.LTL-states .window-title {
@@ -1783,7 +1792,7 @@ hr {
 }
 .state-description {
   margin: 10px 0px 0px 10px;
-  width: 80%;
+  width: 90%;
 }
 .state-buttons {
   margin-left: 5px;
@@ -1803,97 +1812,94 @@ hr {
   border: 1px solid #606060;
 }
 .state-buttons .state-button.new {
-  color: #ededed;
-  border: 1px solid #ededed;
+  color: white;
+  border: 1px solid white;
+  background-color: #aaaaaa;
+  margin-left: 5px;
 }
 .state-buttons .state-button.new:hover {
-  color: #aaaaaa;
-  border: 1px solid #aaaaaa;
+  color: #ededed;
+  border: 1px solid #ededed;
   cursor: pointer;
 }
 .state-toolbar {
   background-color: #aaaaaa;
   padding: 5px 5px 0px 10px;
 }
-.state-toolbar .state-tool {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  margin: 0px 5px 0px 0px;
-}
-.state-toolbar .state-tool img {
-  padding: 0px;
-  margin: 0px;
-}
-.LTL-states {
-  padding: 0px;
-  margin: 0px;
-  background-color: white;
-}
-.LTL-states table {
+.LTL-state table {
   border-collapse: collapse;
   font-family: 'Segoe-UI-Light';
-  font-size: 40px;
   margin: 10px;
 }
-.LTL-states table tr {
+.LTL-state table tr {
   margin: 0px;
 }
-.LTL-states table tr td {
+.LTL-state table tr td {
   border: 1px solid #aaaaaa;
   text-align: center;
   margin: 0px;
-  padding: 0px 5px;
+  padding: 0px;
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
 }
-.LTL-states table tr td.variable {
+.LTL-state table tr td.variable {
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
   color: #606060;
-  max-width: 70px;
+  width: 230px;
   padding: 0px 5px;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.LTL-states table tr td.variable img {
-  height: 35px;
+.LTL-state table tr td.variable img {
+  height: 20px;
 }
-.LTL-states table tr td:empty {
-  width: 55px;
-  height: 55px;
+.LTL-state table tr td:empty {
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
   padding: 0px;
 }
-.LTL-states table tr td.LTL-line-del {
-  width: 55px;
-  height: 55px;
-  padding: 0px;
+.LTL-state table tr td.LTL-line-del {
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
   border: none;
 }
-.LTL-states table tr td.LTL-line-del img {
+.LTL-state table tr td.LTL-line-del img {
   max-width: 25px;
 }
-.LTL-states table tr td.LTL-line-del:hover {
+.LTL-state table tr td.LTL-line-del:hover {
   cursor: pointer;
 }
-.LTL-states table tr td.LTL-line-new {
-  width: 55px;
-  height: 55px;
-  padding: 0px;
-  line-height: 47px;
-  padding-bottom: 8px;
+.LTL-state table tr td.LTL-line-new {
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
+  font-size: 40px;
+  line-height: 5px;
   border: 1px solid #ededed;
   color: #ededed;
 }
-.LTL-states table tr td.LTL-line-new:hover {
+.LTL-state table tr td.LTL-line-new:hover {
   color: #aaaaaa;
   border: 1px solid #aaaaaa;
   cursor: pointer;
 }
 .variable-picker {
-  width: 115px;
+  width: 230px;
   border: 1px solid #aaaaaa;
 }
 .variable-picker table {
@@ -1907,6 +1913,12 @@ hr {
 }
 .variable-picker table td {
   min-width: 50px;
+}
+.variable-picker table td.container {
+  width: 80px;
+}
+.variable-picker table td.variable {
+  width: 140px;
 }
 .variable-picker table td.list {
   height: 85px;
@@ -1997,13 +2009,13 @@ hr {
 .window.temporal-properties .fit-screen {
   width: 25px;
   padding: 10px;
-  position: absolute;
+  float: right;
   right: 0px;
 }
 .window.temporal-properties .resize-grabber {
   position: absolute;
   bottom: 1px;
-  right: 3px;
+  left: 627px;
 }
 .temporal-dropzones {
   position: absolute;
@@ -2045,16 +2057,6 @@ hr {
 .temporal-toolbar .state-buttons {
   display: table-cell;
   width: 120px;
-}
-.temporal-toolbar .state-buttons .state-button.new {
-  color: white;
-  background-color: #aaaaaa;
-  border: 1px solid white;
-}
-.temporal-toolbar .state-buttons .state-button.new:hover {
-  color: #ededed;
-  border: 1px solid #ededed;
-  cursor: pointer;
 }
 .temporal-toolbar .temporal-operators {
   display: table-cell;
@@ -2098,22 +2100,23 @@ hr {
   padding: 7px 7px;
   vertical-align: middle;
 }
-.pill.active {
-  border: 3px solid #606060;
-}
 .pill.true {
   background-color: #d9ffb6;
-  border: 2px solid #81bb83;
 }
 .pill.true div {
   background-color: #d9ffb6;
 }
 .pill.false {
-  border: 2px solid #cf451b;
   background-color: #feb6b2;
 }
 .pill.false div {
   background-color: #feb6b2;
+}
+.pill.some {
+  background-image: url("../images/stripe-pattern.png");
+}
+.pill.some > div {
+  background-color: transparent;
 }
 .state {
   font-family: 'Segoe-UI';
@@ -2131,13 +2134,27 @@ hr {
   background-color: #ededed;
 }
 .state:empty {
-  background-color: #606060;
+  background-color: #feb6b2;
+  border-color: #cf451b;
 }
 .state:empty:after {
   content: "\00a0";
 }
 .LTL-test {
   display: inline-block;
+}
+.closed-results {
+  display: inline-block;
+  vertical-align: middle;
+}
+.closed-results .action-button-small {
+  margin: 0px;
+}
+.closed-results.true {
+  color: #81bb83;
+}
+.closed-results.false {
+  color: #cf451b;
 }
 .LTL-test-results {
   display: inline-block;
@@ -2151,6 +2168,10 @@ hr {
   -o-border-radius: 5px;
   border-radius: 5px;
 }
+.LTL-test-results.default {
+  border: 1px solid #606060;
+  color: #606060;
+}
 .LTL-test-results.true {
   border: 1px solid #81bb83;
   color: #81bb83;
@@ -2159,7 +2180,36 @@ hr {
   border: 1px solid #cf451b;
   color: #cf451b;
 }
-.LTL-test-results.false .pill-button-box .pill-button {
+.LTL-test-results.some {
+  border: 1px solid #606060;
+  color: #606060;
+}
+.LTL-test-results .pill-button-box .pill-button {
   margin-top: 5px;
   margin-bottom: 0px;
+}
+.LTL-test-results .button-list {
+  margin-top: 5px;
+}
+.LTL-test-results .button-list button {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  vertical-align: middle;
+  line-height: 15px;
+  margin-top: -2px;
+}
+.LTL-test-results .button-list button img {
+  margin-top: 2px;
+  max-height: 13px;
+}
+.LTL-test-results .button-list .LTL-sim-true {
+  color: #81bb83;
+}
+.LTL-test-results .button-list .LTL-sim-false {
+  color: #cf451b;
+}
+.LTL-test-results .action-button-small {
+  margin: 5px 0px 5px 0px;
 }
