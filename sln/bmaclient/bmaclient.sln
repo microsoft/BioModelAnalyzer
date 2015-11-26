@@ -11,6 +11,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68A7F32F-0860-4688-8C82-C55196461E48} = {68A7F32F-0860-4688-8C82-C55196461E48}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "..\..\src\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
 EndProject
@@ -26,7 +29,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BackEndTests", "..\..\src\B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyModelsImporter", "..\..\src\LegacyModelsImporter\LegacyModelsImporter.csproj", "{68041FBC-F127-4770-93D3-DCA3AE200A64}"
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "BMACloudService", "..\..\src\BMACloudService\BMACloudService.ccproj", "{61C59A01-322F-4B27-8C30-9507181CA2FC}"
+Project("{144C61F1-A867-3419-B8C6-78D127253265}") = "BMACloudService", "..\..\src\BMACloudService\BMACloudService.ccproj", "{61C59A01-322F-4B27-8C30-9507181CA2FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMAWebApi", "..\..\src\BMAWebApi\BMAWebApi.csproj", "{6652FDAB-C878-4661-BAAD-664CF8327467}"
 EndProject
