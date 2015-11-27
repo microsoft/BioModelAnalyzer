@@ -3265,8 +3265,17 @@ textarea:focus {
 .ui-tabs {
   border: none;
 }
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 10px solid #606060;
+  display: inline-block;
+  margin-left: 5px;
+}
 .window.LTL-states {
-  width: 340px;
+  width: 380px;
   padding: 0px 0px 10px 0px;
 }
 .window.LTL-states .window-title {
@@ -3274,10 +3283,10 @@ textarea:focus {
 }
 .state-description {
   margin: 10px 0px 0px 10px;
-  width: 80%;
+  width: 90%;
 }
 .state-buttons {
-  margin-left: 5px;
+  margin-left: 0px;
 }
 .state-buttons .state-button {
   display: inline-block;
@@ -3294,97 +3303,95 @@ textarea:focus {
   border: 1px solid #606060;
 }
 .state-buttons .state-button.new {
-  color: #EDEDED;
-  border: 1px solid #EDEDED;
+  color: white;
+  border: 1px solid white;
+  background-color: #AAA;
+  margin-left: 5px;
 }
 .state-buttons .state-button.new:hover {
-  color: #AAA;
-  border: 1px solid #AAA;
+  color: #EDEDED;
+  border: 1px solid #EDEDED;
   cursor: pointer;
 }
 .state-toolbar {
   background-color: #AAA;
   padding: 5px 5px 0px 10px;
 }
-.state-toolbar .state-tool {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background-color: white;
-  margin: 0px 5px 0px 0px;
+.LTL-state {
+  width: 380px;
 }
-.state-toolbar .state-tool img {
-  padding: 0px;
-  margin: 0px;
-}
-.LTL-states {
-  padding: 0px;
-  margin: 0px;
-  background-color: white;
-}
-.LTL-states table {
+.LTL-state table {
   border-collapse: collapse;
   font-family: 'Segoe-UI-Light';
-  font-size: 40px;
   margin: 10px;
 }
-.LTL-states table tr {
+.LTL-state table tr {
   margin: 0px;
 }
-.LTL-states table tr td {
+.LTL-state table tr td {
   border: 1px solid #AAA;
   text-align: center;
   margin: 0px;
-  padding: 0px 5px;
+  padding: 0px;
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
 }
-.LTL-states table tr td.variable {
+.LTL-state table tr td.variable {
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
   color: #606060;
-  max-width: 70px;
+  width: 230px;
   padding: 0px 5px;
   text-align: left;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.LTL-states table tr td.variable img {
-  height: 35px;
+.LTL-state table tr td.variable img {
+  height: 20px;
 }
-.LTL-states table tr td:empty {
-  width: 55px;
-  height: 55px;
+.LTL-state table tr td:empty {
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
   padding: 0px;
 }
-.LTL-states table tr td.LTL-line-del {
-  width: 55px;
-  height: 55px;
-  padding: 0px;
+.LTL-state table tr td.LTL-line-del {
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
   border: none;
 }
-.LTL-states table tr td.LTL-line-del img {
+.LTL-state table tr td.LTL-line-del img {
   max-width: 25px;
 }
-.LTL-states table tr td.LTL-line-del:hover {
+.LTL-state table tr td.LTL-line-del:hover {
   cursor: pointer;
 }
-.LTL-states table tr td.LTL-line-new {
-  width: 55px;
-  height: 55px;
-  padding: 0px;
-  line-height: 47px;
-  padding-bottom: 8px;
+.LTL-state table tr td.LTL-line-new {
+  width: 45px;
+  height: 45px;
+  vertical-align: middle;
+  line-height: 30px;
+  font-size: 30px;
+  font-size: 40px;
+  line-height: 5px;
   border: 1px solid #EDEDED;
   color: #EDEDED;
 }
-.LTL-states table tr td.LTL-line-new:hover {
+.LTL-state table tr td.LTL-line-new:hover {
   color: #AAA;
   border: 1px solid #AAA;
   cursor: pointer;
 }
 .variable-picker {
-  width: 115px;
+  width: 230px;
   border: 1px solid #AAA;
 }
 .variable-picker table {
@@ -3398,6 +3405,12 @@ textarea:focus {
 }
 .variable-picker table td {
   min-width: 50px;
+}
+.variable-picker table td.container {
+  width: 80px;
+}
+.variable-picker table td.variable {
+  width: 140px;
 }
 .variable-picker table td .scrollable {
   width: 100%;
@@ -3443,13 +3456,13 @@ textarea:focus {
 .fit-screen {
   width: 25px;
   padding: 10px;
-  position: absolute;
+  float: right;
   right: 0;
 }
 .resize-grabber {
   position: absolute;
   bottom: 1px;
-  right: 3px;
+  left: 627px;
 }
 .temporal-dropzones {
   position: absolute;
@@ -3495,22 +3508,6 @@ textarea:focus {
 .temporal-toolbar .state-buttons {
   display: table-cell;
   width: 120px;
-}
-.temporal-toolbar .state-buttons .state-button {
-  -ms-text-overflow: ellipsis;
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.temporal-toolbar .state-buttons .state-button.new {
-  color: white;
-  background-color: #AAA;
-  border: 1px solid white;
-}
-.temporal-toolbar .state-buttons .state-button.new:hover {
-  color: #EDEDED;
-  border: 1px solid #EDEDED;
-  cursor: pointer;
 }
 .temporal-toolbar .temporal-operators {
   display: table-cell;
@@ -3564,22 +3561,23 @@ ui-icon-arrowthickstop-1-n {
   padding: 7px 7px;
   vertical-align: middle;
 }
-.pill.active {
-  border: 3px solid #606060;
-}
 .pill.true {
   background-color: #D9FFB6;
-  border: 2px solid #81BB83;
 }
 .pill.true div {
   background-color: #D9FFB6;
 }
 .pill.false {
-  border: 2px solid #CF451B;
   background-color: #FEB6B2;
 }
 .pill.false div {
   background-color: #FEB6B2;
+}
+.pill.some {
+  background-image: url("../images/stripe-pattern.png");
+}
+.pill.some > div {
+  background-color: transparent;
 }
 .state {
   font-family: 'Segoe-UI';
@@ -3597,7 +3595,8 @@ ui-icon-arrowthickstop-1-n {
   background-color: #EDEDED;
 }
 .state:empty {
-  background-color: #606060;
+  background-color: #FEB6B2;
+  border-color: #CF451B;
 }
 .state:empty:after {
   content: "\00a0";
@@ -3605,17 +3604,33 @@ ui-icon-arrowthickstop-1-n {
 .LTL-test {
   display: inline-block;
 }
+.closed-results {
+  display: inline-block;
+  vertical-align: middle;
+}
+.closed-results .action-button-small {
+  margin: 0px;
+}
+.closed-results.true {
+  color: #81BB83;
+}
+.closed-results.false {
+  color: #CF451B;
+}
 .LTL-test-results {
   display: inline-block;
   vertical-align: middle;
   width: 130px;
-  padding: 5px 5px 0px 5px;
-  /*margin-left: 10px;*/
+  margin-left: 10px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   -ms-border-radius: 5px;
   -o-border-radius: 5px;
   border-radius: 5px;
+}
+.LTL-test-results.default {
+  border: 1px solid #606060;
+  color: #606060;
 }
 .LTL-test-results.true {
   border: 1px solid #81BB83;
@@ -3625,53 +3640,97 @@ ui-icon-arrowthickstop-1-n {
   border: 1px solid #CF451B;
   color: #CF451B;
 }
-.LTL-test-results.false .pill-button-box .pill-button {
+.LTL-test-results.some {
+  border: 1px solid #606060;
+  color: #606060;
+}
+.LTL-test-results .pill-button-box .pill-button {
   margin-top: 5px;
   margin-bottom: 0px;
+}
+.LTL-test-results .button-list {
+  margin-top: 5px;
+}
+.LTL-test-results .button-list button {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
+  vertical-align: middle;
+  line-height: 15px;
+  margin-top: -2px;
+}
+.LTL-test-results .button-list button img {
+  margin-top: 2px;
+  max-height: 13px;
+}
+.LTL-test-results .button-list .LTL-sim-true {
+  color: #81BB83;
+}
+.LTL-test-results .button-list .LTL-sim-false {
+  color: #CF451B;
+}
+.LTL-test-results .action-button-small {
+  margin: 5px 0px 5px 0px;
 }
 .btns {
   overflow-y: auto;
   height: 64px;
 }
-.state-toolbar {
-  margin-top: 5px;
+/*.state-toolbar {
+    margin-top: 5px;
+
+    .state-tool {
+        margin: 0 10px 0 0;
+    }
 }
-.state-toolbar .state-tool {
-  margin: 0 10px 0 0;
-}
-.states-editor .state-buttons {
-  background-color: #AAA;
-}
-.state-buttons {
-  width: 355px;
-  margin-left: 0;
-}
-.state-buttons.states-editor {
-  background-color: #AAA;
-}
-.state-buttons.states-editor .state-button {
-  margin: 5px;
-  margin-right: 0;
-}
-.state-buttons .state-button {
-  margin: 5px;
-  margin-left: 0;
-  overflow: hidden;
-  vertical-align: middle;
-}
-.state-buttons .state-button.active {
+
+.states-editor {
+    .state-buttons{
+        background-color:@midgrey;
+    }
+}*/
+/*.state-buttons {
+    width: 355px;
+    margin-left: 0;
+    &.states-editor{
+        background-color:@midgrey;
+        .state-button {
+            margin: 5px;
+            margin-right: 0;
+        }
+    }
+
+    .state-button {
+        margin: 5px;
+        margin-left: 0;
+        overflow:hidden;
+        vertical-align:middle;
+
+        &.active {
+            border: 3px solid @darkgrey;
+        }
+
+        &.new {
+            background-color:@midgrey;
+            color:white;
+            border-color:white;
+
+            &:hover {
+                color:white;
+                border: 2px solid white;
+            }
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}*/
+.state-button.active {
   border: 3px solid #606060;
 }
-.state-buttons .state-button.new {
-  background-color: #AAA;
-  color: white;
-  border-color: white;
-}
-.state-buttons .state-button.new:hover {
-  color: white;
-  border: 2px solid white;
-}
-.state-buttons .state-button:hover {
+.state-button:hover {
   cursor: pointer;
 }
 .state-button-empty {
@@ -3735,8 +3794,8 @@ ui-icon-arrowthickstop-1-n {
 }
 .number-input {
   width: 30px;
-  height: 53px;
-  font-size: 38px;
+  height: 43px;
+  font-size: 30px;
   border: none;
   text-align: center;
 }
@@ -3986,111 +4045,159 @@ ui-icon-arrowthickstop-1-n {
   height: 273px;
   width: 20%;
 }
-.LTL-states {
-  max-height: 270px;
-  overflow-y: auto;
-}
-.LTL-states table {
-  margin-left: 5px;
-}
-.LTL-states table tr td {
-  position: relative;
-  min-width: 55px;
-  padding: 0;
-}
-.LTL-states table tr td.LTL-line-new {
-  height: 47px;
-}
-.LTL-states table tr td img {
-  height: 38px;
-  width: 38px;
-}
-.LTL-states table tr td.variable-select {
-  width: 175px;
-  font-size: 20px;
-  color: ButtonText;
-  text-align: left;
-}
-.LTL-states table tr td.variable-select .container-image {
+.LTL-state table tr td.variable p {
   display: inline-block;
-  background: url("../images/container.svg") no-repeat;
-  background-size: 25px 25px;
-  width: 30px;
-  height: 30px;
-}
-.LTL-states table tr td.variable-select .container-image.hidden {
-  display: none;
-}
-.LTL-states table tr td.variable-select .variable-image {
-  display: inline-block;
-  background: url("../images/variable.svg") no-repeat;
-  background-size: 25px 25px;
-  width: 30px;
-  height: 30px;
-}
-.LTL-states table tr td.variable-select p {
-  margin-left: 2px;
-  display: inline-block;
-  width: 40px;
-  max-height: 20px;
+  width: 50px;
+  margin-left: 3px;
   overflow: hidden;
-  text-align: left;
-  vertical-align: super;
-  -ms-text-overflow: ellipsis;
-  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
+  vertical-align: middle;
 }
-.LTL-states table tr td.variable-select p.hidden {
+.LTL-state table tr td.variable p.hidden {
   display: none;
 }
-.LTL-states table tr td.variable-select .inputs-expandbttn {
+.LTL-state table tr td.variable img {
   display: inline-block;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  cursor: pointer;
-  border-top: 7px solid #aaa;
-  border-bottom: none;
-  float: right;
-  margin-top: 13px;
-  margin-right: 5px;
 }
-.LTL-states table tr td.variable-select .inputs-expandbttn.inputs-list-header-expanded {
-  border-top: none;
-  border-bottom: 7px solid #aaa;
+.LTL-state table tr td.variable img.hidden {
+  display: none;
 }
-.LTL-states table tr td.variable-select.expanded {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+.LTL-state table tr td.variable.hidden {
+  display: none;
 }
-.LTL-states table tr td.operator .inputs-expandbttn {
+.LTL-state table tr td.operator p {
   display: inline-block;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  cursor: pointer;
-  border-top: 7px solid #aaa;
-  border-bottom: none;
-  float: right;
-  margin-top: 17px;
-  margin-right: 5px;
+  width: 20px;
 }
-.LTL-states table tr td.operator .inputs-expandbttn.inputs-list-header-expanded {
-  border-top: none;
-  border-bottom: 7px solid #aaa;
+.LTL-state table tr td.operator img {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
 }
+/*LTL-states {
+    max-height: 270px;
+    overflow-y: auto;
+
+    table {
+        margin-left: 5px;;
+
+        tr {
+
+            td {
+                position: relative;
+                min-width: 55px;
+                padding: 0;
+
+                &.LTL-line-new {
+                    height: 47px;
+                }
+
+                img {
+                    height:38px;
+                    width:38px;
+                }
+
+                &.variable-select {
+                    //display: block;
+                    width: 175px;
+                    font-size: 20px;
+                    color: ButtonText;
+                    text-align:left;
+
+                    .container-image {
+                        display:inline-block;
+                        background: url("../images/container.svg") no-repeat;
+                        background-size: 25px 25px;
+                        width: 30px;
+                        height: 30px;
+
+                        &.hidden{
+                            display:none;
+                        }
+                    }
+
+                    .variable-image {
+                        display:inline-block;
+                        background: url("../images/variable.svg") no-repeat;
+                        background-size: 25px 25px;
+                        width: 30px;
+                        height: 30px;
+                    }
+
+                    p {
+                        margin-left: 2px;
+                        display: inline-block;
+                        width: 40px;
+                        max-height: 20px;
+                        overflow: hidden;
+                        text-align: left;
+                        vertical-align:super;
+                        -ms-text-overflow: ellipsis;
+                        -o-text-overflow: ellipsis;
+                        text-overflow: ellipsis;
+                        &.hidden{
+                            display:none;
+                        }
+                    }
+
+                    .inputs-expandbttn {
+                        display: inline-block;
+                        width: 0;
+                        height: 0;
+                        border-left: 5px solid transparent;
+                        border-right: 5px solid transparent;
+                        cursor: pointer;
+                        border-top: 7px solid #aaa;
+                        border-bottom: none;
+                        float: right;
+                        margin-top: 13px;
+                        margin-right: 5px;
+
+                        &.inputs-list-header-expanded {
+                            border-top: none;
+                            border-bottom: 7px solid #aaa;
+                        }
+                    }
+
+                    &.expanded {
+                        border-top-left-radius: 5px;
+                        border-top-right-radius: 5px;
+                    }
+                }
+
+                &.operator {
+                    .inputs-expandbttn {
+                        display: inline-block;
+                        width: 0;
+                        height: 0;
+                        border-left: 5px solid transparent;
+                        border-right: 5px solid transparent;
+                        cursor: pointer;
+                        border-top: 7px solid #aaa;
+                        border-bottom: none;
+                        float: right;
+                        margin-top: 17px;
+                        margin-right: 5px;
+
+                        &.inputs-list-header-expanded {
+                            border-top: none;
+                            border-bottom: 7px solid #aaa;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+*/
 .variable-picker {
   position: absolute;
   z-index: 10;
-  width: 175px;
-  border: 1px solid #AAA;
+  width: 228px;
 }
 .variable-picker table {
   width: 100%;
   margin: 0;
-  font-size: 11px;
   background-color: white;
   border-collapse: collapse;
 }
@@ -4110,54 +4217,27 @@ ui-icon-arrowthickstop-1-n {
   width: 20px;
   height: 20px;
 }
-.variable-picker table tr {
-  vertical-align: top;
-}
 .variable-picker table tr td {
-  min-width: 50px;
-  border: none;
-  text-align: left;
-  padding: 2px 0 2px 2px;
+  /*min-width: 50px;
+                border: none;
+                text-align: left;
+                padding: 2px 0 2px 2px;*/
+  /*&.list {
+                    max-height: 85px;
+                }*/
 }
-.variable-picker table tr td.list {
-  max-height: 85px;
+.variable-picker table tr td.container {
+  width: 78px;
 }
 .variable-picker table tr td .scrollable {
-  width: 80px;
   max-height: 85px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 2px 0 0;
 }
 .variable-picker table tr td .scrollable a {
   display: block;
   text-decoration: none;
-  max-height: 17px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .variable-picker table tr td .scrollable a:hover {
-  background-color: #EDEDED;
   cursor: pointer;
-}
-.variable-picker table tr td .scrollable a.active {
-  border: 0;
-  background-color: #AAA;
-  color: white;
-}
-.variable-picker table tr td .scrollable::-webkit-scrollbar-track {
-  width: 10px;
-  background-color: white;
-}
-.variable-picker table tr td .scrollable::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-  background-color: #AAA;
-}
-.variable-picker table tr td .scrollable::-webkit-scrollbar-thumb {
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #AAA;
 }
 .variable-picker table td.list {
   max-height: 85px;
@@ -4165,19 +4245,20 @@ ui-icon-arrowthickstop-1-n {
 .operator-picker {
   position: absolute;
   z-index: 10;
-  width: 55px;
+  width: 42px;
   border: 1px solid #AAA;
   background-color: white;
   text-align: center;
+  font-size: 30px;
 }
 .operator-picker div:hover {
   cursor: pointer;
   background-color: #EDEDED;
 }
-.state-description {
-  margin: 10px 0 0 5px;
-  width: 335px;
-}
+/*.state-description {
+    margin: 10px 0 0 5px;
+    width: 335px;
+}*/
 .state-tooltip {
   z-index: 10;
   background: #EDEDED;

@@ -3,6 +3,7 @@
 
 (function ($) {
     $.widget("BMA.stateseditor", {
+        _stateToolbar: null,
         _stateButtons: null,
         _addStateButton: null,
         _toolbar: null,
@@ -25,7 +26,8 @@
         _create: function () {
             var that = this;
 
-            this._stateButtons = $("<div></div>").addClass("state-buttons").addClass("states-editor").appendTo(this.element);
+            this._stateToolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this._stateToolbar);
 
             that._initStates();
 
@@ -44,7 +46,7 @@
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
 
-            this._ltlStates = $("<div></div>").addClass("LTL-states").appendTo(this.element);
+            this._ltlStates = $("<div></div>").addClass("LTL-state").appendTo(this.element);
 
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "add").appendTo(this._ltlStates);
             var tbody = $("<tbody></tbody>").appendTo(table);
@@ -201,7 +203,7 @@
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
             
-            var variableTd = $("<td></td>").addClass("variable-select").appendTo(tr);
+            var variableTd = $("<td></td>").addClass("variable").appendTo(tr);
             that.createVariablePicker(variableTd, formula[0]);
            
 
@@ -211,24 +213,24 @@
             var setOperatorValue = function (value) {
                 switch (value) {
                     case ">":
-                        operatorImg.attr("src", "images/LTL-state-tool-gre.svg");
+                        operatorImg.attr("src", "images/ltlimgs/mo.png");
                         break;
                     case ">=":
-                        operatorImg.attr("src", "images/LTL-state-tool-greq.svg");
+                        operatorImg.attr("src", "images/ltlimgs/moeq.png");
                         break;
                     case "<":
-                        operatorImg.attr("src", "images/LTL-state-tool-les.svg");
+                        operatorImg.attr("src", "images/ltlimgs/le.png");
                         break;
                     case "<=":
-                        operatorImg.attr("src", "images/LTL-state-tool-lesq.svg");
+                        operatorImg.attr("src", "images/ltlimgs/leeq.png");
                         break;
                     case "=":
-                        operatorImg.attr("src", "images/LTL-state-tool-equ.svg");
+                        operatorImg.attr("src", "images/ltlimgs/eq.png");
                         break;  
                     case "<>":
                         value = ">";
                         formula[1].value = value;
-                        operatorImg.attr("src", "images/LTL-state-tool-gre.svg");
+                        operatorImg.attr("src", "images/ltlimgs/mo.png");
                         var secondEq = [
                             {
                                 type: "variable", value: formula[0] && formula[0].value ? formula[0].value : {
@@ -281,24 +283,24 @@
             var firstLeft = $(operatorTd).offset().left;
             var firstTop = $(operatorTd).offset().top;
 
-            var operatorExpandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(operatorTd);
+            var operatorExpandButton = $("<div></div>").addClass('arrow-down').appendTo(operatorTd);
             var operatorSelector = $("<div></div>").addClass("operator-picker").appendTo('body').hide();
-            operatorSelector.offset({ top: firstTop + 57, left: firstLeft });
+            operatorSelector.offset({ top: firstTop + 47, left: firstLeft });
 
             var greDiv = $("<div></div>").attr("data-operator-type", ">").appendTo(operatorSelector);
-            var gre = $("<img>").attr("src", "images/LTL-state-tool-gre.svg").appendTo(greDiv);
+            var gre = $("<img>").attr("src", "images/ltlimgs/mo.png").appendTo(greDiv);
 
             var greqDiv = $("<div></div>").attr("data-operator-type", ">=").appendTo(operatorSelector);
-            var greq = $("<img>").attr("src", "images/LTL-state-tool-greq.svg").appendTo(greqDiv);
+            var greq = $("<img>").attr("src", "images/ltlimgs/moeq.png").appendTo(greqDiv);
 
             var lesDiv = $("<div></div>").attr("data-operator-type", "<").appendTo(operatorSelector);
-            var les = $("<img>").attr("src", "images/LTL-state-tool-les.svg").appendTo(lesDiv);
+            var les = $("<img>").attr("src", "images/ltlimgs/le.png").appendTo(lesDiv);
 
             var lesqDiv = $("<div></div>").attr("data-operator-type", "<=").appendTo(operatorSelector);
-            var lesq = $("<img>").attr("src", "images/LTL-state-tool-lesq.svg").appendTo(lesqDiv);
+            var lesq = $("<img>").attr("src", "images/ltlimgs/leeq.png").appendTo(lesqDiv);
 
             var equDiv = $("<div></div>").attr("data-operator-type", "=").appendTo(operatorSelector);
-            var equ = $("<img>").attr("src", "images/LTL-state-tool-equ.svg").appendTo(equDiv);
+            var equ = $("<img>").attr("src", "images/ltlimgs/eq.png").appendTo(equDiv);
 
             var rangeDiv = $("<div></div>").attr("data-operator-type", "<>").appendTo(operatorSelector)
             var range = $("<img>").attr("src", "images/range.png").appendTo(rangeDiv);
@@ -312,10 +314,10 @@
                     firstTop = $(operatorTd).offset().top;
 
                     operatorSelector.show();
-                    operatorExpandButton.addClass('inputs-list-header-expanded');
+                    //operatorExpandButton.addClass('inputs-list-header-expanded');
                 } else {
                     operatorSelector.hide();
-                    operatorExpandButton.removeClass('inputs-list-header-expanded');
+                    //operatorExpandButton.removeClass('inputs-list-header-expanded');
                 }
             });
 
@@ -323,7 +325,7 @@
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
                 operatorSelector.hide();
-                operatorExpandButton.removeClass('inputs-list-header-expanded');
+                //operatorExpandButton.removeClass('inputs-list-header-expanded');
 
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
@@ -333,7 +335,7 @@
                     if (!operatorTd.is(e.target) && operatorTd.has(e.target).length === 0
                         && !operatorSelector.is(e.target) && operatorSelector.has(e.target).length === 0) {
                         operatorSelector.hide();
-                        operatorExpandButton.removeClass('inputs-list-header-expanded');
+                        //operatorExpandButton.removeClass('inputs-list-header-expanded');
                     }
                 }
             });
@@ -342,18 +344,18 @@
         createVariablePicker: function (variableTd, variable) {
             var that = this;
 
-            var containerImg = $("<div></div>").addClass("container-image")/*attr("src", "../images/container.svg")*/.addClass("hidden").appendTo(variableTd);
+            var containerImg = $("<img>")./*addClass("container-image")*/attr("src", "../images/state-container.svg").addClass("hidden").appendTo(variableTd);
             var selectedContainer = $("<p></p>").addClass("hidden").appendTo(variableTd);
 
-            var variableImg = $("<div></div>").addClass("variable-image")/*attr("src", "../images/LTL-state-tool-var.svg")*/.appendTo(variableTd);
+            var variableImg = $("<img>")./*addClass("variable-image")*/attr("src", "../images/state-variable.svg").appendTo(variableTd);
             var selectedVariable = $("<p></p>").appendTo(variableTd);
-            var expandButton = $("<div></div>").addClass('inputs-expandbttn').appendTo(variableTd);
+            var expandButton = $("<div></div>").addClass('arrow-down').appendTo(variableTd);
 
             var firstLeft = $(variableTd).offset().left;
             var firstTop = $(variableTd).offset().top;
 
             var variablePicker = $("<div></div>").addClass("variable-picker").appendTo('body').hide();
-            variablePicker.offset({ top: firstTop + 57, left: firstLeft });
+            variablePicker.offset({ top: firstTop + 47, left: firstLeft });
             var table = $("<table></table>").appendTo(variablePicker);
             var tbody = $("<tbody></tbody>").appendTo(table);
 
@@ -373,14 +375,15 @@
                         break;
                     }
 
-                selectedContainer.text(containerName? containerName: "ALL");
-                selectedVariable.text(value.variable);
+                $(selectedContainer).text(containerName? containerName: "ALL");
+                $(selectedVariable).text(value.variable);
 
                 variablePicker.hide();
-                expandButton.removeClass('inputs-list-header-expanded');
-
-                containerImg.removeClass("hidden");
-                selectedContainer.removeClass("hidden");
+                //expandButton.removeClass('inputs-list-header-expanded');
+                if (containerName !== "ALL") {
+                    containerImg.removeClass("hidden");
+                    selectedContainer.removeClass("hidden");
+                }
             }
 
             var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
@@ -390,7 +393,7 @@
                     if (!variableTd.is(e.target) && variableTd.has(e.target).length === 0
                         && !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
                         variablePicker.hide();
-                        expandButton.removeClass('inputs-list-header-expanded');
+                        //expandButton.removeClass('inputs-list-header-expanded');
                     }
                 }
             });
@@ -406,10 +409,10 @@
                     that.executeonComboBoxOpen();
                     trDivs = that.updateVariablePicker(trList, setSelectedValue, variable);
                     variablePicker.show();
-                    expandButton.addClass('inputs-list-header-expanded');
+                    //expandButton.addClass('inputs-list-header-expanded');
                 } else {
                     variablePicker.hide();
-                    expandButton.removeClass('inputs-list-header-expanded');
+                    //expandButton.removeClass('inputs-list-header-expanded');
                 }
             });
         },
@@ -417,9 +420,9 @@
         updateVariablePicker: function (trList, setSelectedValue, currSymbol) {
             var that = this;
             trList.children().remove();
-            var tdContainersList = $("<td></td>").addClass("list").appendTo(trList);
+            var tdContainersList = $("<td></td>").addClass("container list").appendTo(trList);
             var divContainers = $("<div></div>").addClass("scrollable").appendTo(tdContainersList);
-            var tdVariablesList = $("<td></td>").addClass("list").appendTo(trList);
+            var tdVariablesList = $("<td></td>").addClass("variable list").appendTo(trList);
             var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
 
             if (currSymbol.value.container === undefined) currSymbol.value.container = 0;

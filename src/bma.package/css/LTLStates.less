@@ -1,7 +1,7 @@
 ﻿@import "StyleSheet.less";
 @import "LTL_less.less";
 
-.state-toolbar {
+/*.state-toolbar {
     margin-top: 5px;
 
     .state-tool {
@@ -13,9 +13,9 @@
     .state-buttons{
         background-color:@midgrey;
     }
-}
+}*/
 
-.state-buttons {
+/*.state-buttons {
     width: 355px;
     margin-left: 0;
     &.states-editor{
@@ -50,6 +50,15 @@
         &:hover {
             cursor: pointer;
         }
+    }
+}*/
+
+.state-button{
+    &.active {
+        border: 3px solid @darkgrey;
+    }
+    &:hover {
+        cursor: pointer;
     }
 }
 
@@ -124,8 +133,8 @@
 
 .number-input {
     width: 30px;
-    height: 53px;
-    font-size: 38px;
+    height: 43px;
+    font-size: 30px;
     border: none;
     text-align: center;
 
@@ -358,8 +367,53 @@
     }
 }
 
+.LTL-state{
+    table {
+        tr {
+            td {
+                &.variable {
+                    p {
+                        display:inline-block;
+                        width: 50px;
+                        margin-left:3px;
+                        overflow:hidden;
+                        text-overflow: ellipsis;
+                        vertical-align:middle;
 
-.LTL-states {
+                        &.hidden{
+                            display:none;
+                        }
+                    }
+
+                    img{
+                        display:inline-block;
+                        &.hidden{
+                            display:none;
+                        }
+                    }
+
+                    &.hidden{
+                        display:none;
+                    }
+
+                }
+
+                &.operator {
+                    p{
+                        display:inline-block;
+                        width:20px;
+                    }
+                    img{
+                        display:inline-block;
+                        width:20px;
+                        height:20px;
+                    }
+                }
+            }
+        }
+    }
+}
+/*LTL-states {
     max-height: 270px;
     overflow-y: auto;
 
@@ -474,18 +528,19 @@
         }
     }
 }
-
+*/
 // Variable Picker
+
+
 .variable-picker {
     position: absolute;
     z-index: 10;
-    width: 175px;
-    border: 1px solid @midgrey;
+    width:228px;
+    
 
     table {
         width: 100%;
         margin: 0;
-        font-size: 11px;
         background-color: white;
         border-collapse: collapse;
         
@@ -509,59 +564,29 @@
         }
 
         tr {
-            vertical-align: top;
 
             td {
-                min-width: 50px;
+                /*min-width: 50px;
                 border: none;
                 text-align: left;
-                padding: 2px 0 2px 2px;
+                padding: 2px 0 2px 2px;*/
 
-                &.list {
+                /*&.list {
                     max-height: 85px;
-                }
-
+                }*/
+                &.container{
+				    width:78px;
+			    }
                 .scrollable {
-                    width: 80px;
                     max-height:85px;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    padding: 0 2px 0 0;
 
                     a {
                         display: block;
                         text-decoration: none;
-                        max-height:17px;
-                        overflow:hidden;
-                        text-overflow:ellipsis;
 
                         &:hover {
-                            background-color: @lightgrey;
                             cursor: pointer;
                         }
-
-                        &.active {
-                            border: 0;
-                            background-color: @midgrey;
-                            color: white;
-                        }
-                    }
-
-                    &::-webkit-scrollbar-track {
-                        width: 10px;
-                        background-color: white;
-                    }
-
-                    &::-webkit-scrollbar {
-                        width: 5px;
-                        height: 5px;
-                        background-color: @midgrey;
-                    }
-
-                    &::-webkit-scrollbar-thumb {
-                        padding: 5px;
-                        border-radius: 5px;
-                        background-color: @midgrey;
                     }
                 }
             }
@@ -579,10 +604,11 @@
 .operator-picker {
     position:absolute;
     z-index:10;
-    width:55px;
+    width:42px;
     border: 1px solid @midgrey;
     background-color:white;
     text-align: center;
+    font-size:30px;
     div {
         &:hover {
             cursor:pointer;
@@ -591,10 +617,10 @@
     }
 }
 
-.state-description {
+/*.state-description {
     margin: 10px 0 0 5px;
     width: 335px;
-}
+}*/
 
 // State Tooltip
 
