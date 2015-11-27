@@ -211,6 +211,7 @@ module BMA {
                 commands.On("TemporalPropertiesEditorCut", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        this.contextElement.operationlayoutref.Tag = undefined;
 
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
@@ -262,6 +263,7 @@ module BMA {
                 commands.On("TemporalPropertiesEditorDelete", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        this.contextElement.operationlayoutref.Tag = undefined;
 
                         var op = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         if (op.isRoot) {
@@ -363,6 +365,7 @@ module BMA {
 
 
                                 staginOp.AnalysisStatus = "nottested";
+                                staginOp.Tag = undefined;
 
                                 that.navigationDriver.TurnNavigation(false);
                                 var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
@@ -496,6 +499,7 @@ module BMA {
                                             emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
                                             operation.Refresh();
                                             operation.AnalysisStatus = "nottested";
+                                            operation.Tag = undefined;
 
                                             if (this.stagingOperation.isRoot) {
                                                 this.operations[this.stagingOperation.originIndex].IsVisible = false;
@@ -550,7 +554,41 @@ module BMA {
                     that.FitToView();
                 });
 
+                this.CreateSvgHeaders();
                 this.LoadFromAppModel();
+            }
+
+            private CreateSvgHeaders() {
+                /*
+                <pattern id="pattern-stripe" 
+                  width="4" height="4" 
+                  patternUnits="userSpaceOnUse"
+                  patternTransform="rotate(45)">
+                  <rect width="2" height="4" transform="translate(0,0)" fill="white"></rect>
+                </pattern>
+                <mask id="mask-stripe">
+                  <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-stripe)" />
+                </mask> 
+                */
+
+                var svg = this.driver.GetSVGRef();
+                var defs = svg.defs("bmaDefs");
+
+                //svg.pattern(parent, id, x, y, width, height, vx, vy, vwidth, vheight, settings) 
+                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 4, 4, {
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(45)"
+                });
+                svg.rect(pattern, 0, 0, 2, 4, {
+                    transform: "translate(0,0)",
+                    fill: "white"
+                });
+
+                //svg.mask(parent, id, x, y, width, height, settings)
+                var mask = svg.mask(defs, "mask-stripe");
+                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
+                    fill: "url(#pattern-stripe)"
+                });
             }
 
             private CompareStatesToLocal(states: BMA.LTLOperations.Keyframe[]) {
@@ -707,6 +745,21 @@ module BMA {
                                     operation.Tag = {
                                         data: res.Ticks
                                     }
+                                } else if (res.Status === "PartiallyTrue") {
+
+                                    driver.SetShowResultsCallback(function (showpositive) {
+                                        that.commands.Execute("ShowLTLResults", {
+                                            ticks: showpositive ? res.Ticks : res.NegTicks
+                                        });
+                                    });
+
+                                    driver.SetStatus("partialsuccess");
+                                    operation.AnalysisStatus = "partialsuccess";
+                                    operation.Tag = {
+                                        data: res.Ticks,
+                                        negdata: res.NegTicks
+                                    }
+
                                 } else {
                                     driver.SetStatus("fail");
                                     operation.AnalysisStatus = "fail";
@@ -766,9 +819,9 @@ module BMA {
                 var that = this;
 
                 if (op.Tag !== undefined && op.Tag.data !== undefined) {
-                    driver.SetShowResultsCallback(function () {
+                    driver.SetShowResultsCallback(function (showpositive) {
                         that.commands.Execute("ShowLTLResults", {
-                            ticks: op.Tag.data
+                            ticks: showpositive === undefined || showpositive === true ? op.Tag.data : op.Tag.negdata
                         });
                     });
                 }

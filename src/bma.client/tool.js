@@ -2961,7 +2961,9 @@ var BMA;
                 this.fill = undefined;
                 this.status = "nottested";
                 this.tag = undefined;
+                this.useMask = false;
                 this.renderGroup = undefined;
+                this.majorRect = undefined;
                 this.svg = svg;
                 this.operation = operation;
                 this.padding = { x: 5, y: 10 };
@@ -2992,6 +2994,12 @@ var BMA;
                     return this.status;
                 },
                 set: function (value) {
+                    this.useMask = false;
+                    if (this.majorRect !== undefined) {
+                        this.svg.change(this.majorRect, {
+                            mask: undefined
+                        });
+                    }
                     switch (value) {
                         case "nottested":
                             this.status = value;
@@ -3000,6 +3008,17 @@ var BMA;
                         case "success":
                             this.status = value;
                             this.Fill = "rgb(217,255,182)";
+                            break;
+                        case "partialsuccess":
+                            this.status = value;
+                            this.Fill = "rgb(217,255,182)";
+                            this.useMask = true;
+                            if (this.majorRect !== undefined) {
+                                //mask: url(#mask-stripe)
+                                this.svg.change(this.majorRect, {
+                                    mask: "url(#mask-stripe)"
+                                });
+                            }
                             break;
                         case "fail":
                             this.status = value;
@@ -3071,8 +3090,8 @@ var BMA;
                 set: function (value) {
                     if (value !== this.fill) {
                         this.fill = value;
-                        if (this.renderGroup !== undefined) {
-                            this.svg.change(this.renderGroup, {
+                        if (this.majorRect !== undefined) {
+                            this.svg.change(this.majorRect, {
                                 fill: this.fill
                             });
                         }
@@ -3308,7 +3327,9 @@ var BMA;
                 var paddingX = this.padding.x;
                 var paddingY = this.padding.y;
                 if (layoutPart.isEmpty) {
-                    layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
+                    layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, {
+                        stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)"
+                    });
                 }
                 else {
                     var operator = layoutPart.operator;
@@ -3329,8 +3350,8 @@ var BMA;
                         }
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
-                            //fill: fill,
-                            strokeWidth: strokeWidth
+                            strokeWidth: strokeWidth,
+                            fill: "transparent"
                         });
                         layoutPart.svgref = opSVG;
                         var operands = operation.operands;
@@ -3406,6 +3427,9 @@ var BMA;
             OperationLayout.prototype.Render = function () {
                 var position = this.position;
                 var svg = this.svg;
+                if (this.majorRect !== undefined) {
+                    this.majorRect = undefined;
+                }
                 if (this.renderGroup !== undefined) {
                     svg.remove(this.renderGroup);
                 }
@@ -3414,7 +3438,6 @@ var BMA;
                 this.SetPositionOffsets(this.layout, position);
                 this.renderGroup = svg.group({
                     transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")",
-                    fill: this.fill === undefined ? "white" : this.fill,
                 });
                 var halfWidth = this.layout.width / 2;
                 var height = this.keyFrameSize + this.padding.y * this.layout.layer;
@@ -3424,6 +3447,10 @@ var BMA;
                     width: halfWidth * 2,
                     height: height
                 };
+                this.majorRect = svg.rect(this.renderGroup, -halfWidth, -height / 2, halfWidth * 2, height, height / 2, height / 2, {
+                    fill: this.fill === undefined ? "white" : this.fill,
+                    mask: this.useMask ? "url(#mask-stripe)" : undefined,
+                });
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
                     stroke: "rgb(96,96,96)",
                     strokeWidth: 1,
@@ -3434,6 +3461,7 @@ var BMA;
                 if (this.renderGroup !== undefined) {
                     this.svg.remove(this.renderGroup);
                     this.renderGroup = undefined;
+                    this.majorRect = undefined;
                 }
             };
             OperationLayout.prototype.Refresh = function () {
@@ -12516,6 +12544,7 @@ var BMA;
                 commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
                         _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        _this.contextElement.operationlayoutref.Tag = undefined;
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
@@ -12559,6 +12588,7 @@ var BMA;
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
                         _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        _this.contextElement.operationlayoutref.Tag = undefined;
                         var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         if (op.isRoot) {
                             var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
@@ -12644,6 +12674,7 @@ var BMA;
                             tpEditorDriver.SetCopyZoneVisibility(true);
                             tpEditorDriver.SetDeleteZoneVisibility(true);
                             staginOp.AnalysisStatus = "nottested";
+                            staginOp.Tag = undefined;
                             that.navigationDriver.TurnNavigation(false);
                             var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
                             _this.stagingOperation = {
@@ -12756,6 +12787,7 @@ var BMA;
                                         emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                         operation.Refresh();
                                         operation.AnalysisStatus = "nottested";
+                                        operation.Tag = undefined;
                                         if (_this.stagingOperation.isRoot) {
                                             _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
                                             _this.operations.splice(_this.stagingOperation.originIndex, 1);
@@ -12805,8 +12837,38 @@ var BMA;
                 tpEditorDriver.SetFitToViewCallback(function () {
                     that.FitToView();
                 });
+                this.CreateSvgHeaders();
                 this.LoadFromAppModel();
             }
+            TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
+                /*
+                <pattern id="pattern-stripe"
+                  width="4" height="4"
+                  patternUnits="userSpaceOnUse"
+                  patternTransform="rotate(45)">
+                  <rect width="2" height="4" transform="translate(0,0)" fill="white"></rect>
+                </pattern>
+                <mask id="mask-stripe">
+                  <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-stripe)" />
+                </mask>
+                */
+                var svg = this.driver.GetSVGRef();
+                var defs = svg.defs("bmaDefs");
+                //svg.pattern(parent, id, x, y, width, height, vx, vy, vwidth, vheight, settings) 
+                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 4, 4, {
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(45)"
+                });
+                svg.rect(pattern, 0, 0, 2, 4, {
+                    transform: "translate(0,0)",
+                    fill: "white"
+                });
+                //svg.mask(parent, id, x, y, width, height, settings)
+                var mask = svg.mask(defs, "mask-stripe");
+                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
+                    fill: "url(#pattern-stripe)"
+                });
+            };
             TemporalPropertiesPresenter.prototype.CompareStatesToLocal = function (states) {
                 if (states.length !== this.states.length)
                     return true;
@@ -12936,6 +12998,19 @@ var BMA;
                                     data: res.Ticks
                                 };
                             }
+                            else if (res.Status === "PartiallyTrue") {
+                                driver.SetShowResultsCallback(function (showpositive) {
+                                    that.commands.Execute("ShowLTLResults", {
+                                        ticks: showpositive ? res.Ticks : res.NegTicks
+                                    });
+                                });
+                                driver.SetStatus("partialsuccess");
+                                operation.AnalysisStatus = "partialsuccess";
+                                operation.Tag = {
+                                    data: res.Ticks,
+                                    negdata: res.NegTicks
+                                };
+                            }
                             else {
                                 driver.SetStatus("fail");
                                 operation.AnalysisStatus = "fail";
@@ -12977,9 +13052,9 @@ var BMA;
             TemporalPropertiesPresenter.prototype.SubscribeToShowLTLRequest = function (driver, op) {
                 var that = this;
                 if (op.Tag !== undefined && op.Tag.data !== undefined) {
-                    driver.SetShowResultsCallback(function () {
+                    driver.SetShowResultsCallback(function (showpositive) {
                         that.commands.Execute("ShowLTLResults", {
-                            ticks: op.Tag.data
+                            ticks: showpositive === undefined || showpositive === true ? op.Tag.data : op.Tag.negdata
                         });
                     });
                 }
