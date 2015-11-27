@@ -11710,7 +11710,7 @@ jQuery.fn.extend({
                         });
                     }
                     break;
-                case "partial success":
+                case "partialsuccess":
                     if (this.options.isexpanded) {
                         /*
                          <div class="LTL-test-results true">

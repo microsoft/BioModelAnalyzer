@@ -158,7 +158,7 @@
                     }
 
                     break;
-                case "partial success":
+                case "partialsuccess":
                     if (this.options.isexpanded) {
 
                         /*
