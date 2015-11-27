@@ -12932,10 +12932,16 @@ var BMA;
                                 });
                                 driver.SetStatus("success");
                                 operation.AnalysisStatus = "success";
+                                operation.Tag = {
+                                    data: res.Ticks
+                                };
                             }
                             else {
                                 driver.SetStatus("fail");
                                 operation.AnalysisStatus = "fail";
+                                operation.Tag = {
+                                    data: undefined
+                                };
                             }
                             domplot.updateLayout();
                             that.OnOperationsChanged(false);
@@ -12968,6 +12974,16 @@ var BMA;
                     domplot.updateLayout();
                 });
             };
+            TemporalPropertiesPresenter.prototype.SubscribeToShowLTLRequest = function (driver, op) {
+                var that = this;
+                if (op.Tag !== undefined && op.Tag.data !== undefined) {
+                    driver.SetShowResultsCallback(function () {
+                        that.commands.Execute("ShowLTLResults", {
+                            ticks: op.Tag.data
+                        });
+                    });
+                }
+            };
             TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
                 var that = this;
                 var copyzonebbox = this.tpEditorDriver.GetCopyZoneBBox();
@@ -12991,6 +13007,7 @@ var BMA;
                     //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
+                    that.SubscribeToShowLTLRequest(driver, op);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
                 }
