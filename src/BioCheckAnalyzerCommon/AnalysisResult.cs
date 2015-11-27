@@ -63,6 +63,7 @@ namespace BioModelAnalyzer
         Unknown,
         Error,
         True,
-        False
+        False,
+        PartiallyTrue
     }
 }

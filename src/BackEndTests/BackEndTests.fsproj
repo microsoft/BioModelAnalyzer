@@ -25,7 +25,7 @@
     </When>
     <Otherwise>
       <PropertyGroup>
-        <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+        <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
       </PropertyGroup>
     </Otherwise>
   </Choose>
@@ -205,10 +205,9 @@
       <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http.Owin, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Owin.5.2.2\lib\net45\System.Web.Http.Owin.dll</HintPath>
+    <Reference Include="System.Web.Http.Owin">
+      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Owin.5.2.3\lib\net45\System.Web.Http.Owin.dll</HintPath>
       <Private>True</Private>
-      <SpecificVersion>True</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

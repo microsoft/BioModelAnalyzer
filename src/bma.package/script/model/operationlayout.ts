@@ -14,6 +14,7 @@
             private fill: string = undefined;
             private status: string = "nottested";
             private tag: any = undefined;
+            private useMask = false;
 
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -48,6 +49,15 @@
             }
 
             public set AnalysisStatus(value: string) {
+
+                this.useMask = false;
+                if (this.majorRect !== undefined) {
+                    this.svg.change(this.majorRect, {
+                        mask: undefined
+                    });
+                }
+
+
                 switch (value) {
                     case "nottested":
                         this.status = value;
@@ -57,6 +67,20 @@
                         this.status = value;
                         this.Fill = "rgb(217,255,182)";
                         break;
+                    case "partialsuccess":
+                        this.status = value;
+                        this.Fill = "rgb(217,255,182)";
+
+                        this.useMask = true;
+
+                        if (this.majorRect !== undefined) {
+                            //mask: url(#mask-stripe)
+                            this.svg.change(this.majorRect, {
+                                mask: "url(#mask-stripe)"
+                            });
+                        }
+
+                        break;
                     case "fail":
                         this.status = value;
                         this.Fill = "rgb(254, 172, 158)";
@@ -64,6 +88,7 @@
                     default:
                         throw "Invalid status!";
                 }
+
             }
 
             public get Tag(): any {
@@ -117,8 +142,8 @@
                 if (value !== this.fill) {
                     this.fill = value;
 
-                    if (this.renderGroup !== undefined) {
-                        this.svg.change(this.renderGroup, {
+                    if (this.majorRect !== undefined) {
+                        this.svg.change(this.majorRect, {
                             fill: this.fill
                         });
                     }
@@ -352,7 +377,9 @@
                 var paddingY = this.padding.y;
 
                 if (layoutPart.isEmpty) {
-                    layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
+                    layoutPart.svgref = svg.circle(this.renderGroup, position.x, position.y, this.keyFrameSize / 2, {
+                        stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)"
+                    });
                 } else {
                     var operator = layoutPart.operator;
                     if (operator !== undefined) {
@@ -375,9 +402,10 @@
 
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
-                            //fill: fill,
-                            strokeWidth: strokeWidth
+                            strokeWidth: strokeWidth,
+                            fill: "transparent"
                         });
+                        
 
                         layoutPart.svgref = opSVG;
 
@@ -478,9 +506,14 @@
             }
 
             private renderGroup = undefined;
+            private majorRect = undefined;
             private Render() {
                 var position = this.position;
                 var svg = this.svg;
+
+                if (this.majorRect !== undefined) {
+                    this.majorRect = undefined;
+                }
 
                 if (this.renderGroup !== undefined) {
                     svg.remove(this.renderGroup);
@@ -492,7 +525,6 @@
 
                 this.renderGroup = svg.group({
                     transform: "translate(" + this.position.x + ", " + this.position.y + ") scale(" + this.scale.x + ", " + this.scale.y + ")",
-                    fill: this.fill === undefined ? "white" : this.fill,
                 });
 
                 var halfWidth = this.layout.width / 2;
@@ -503,6 +535,11 @@
                     width: halfWidth * 2,
                     height: height
                 }
+
+                this.majorRect = svg.rect(this.renderGroup, - halfWidth, - height / 2, halfWidth * 2, height, height / 2, height / 2, {
+                    fill: this.fill === undefined ? "white" : this.fill,
+                    mask: this.useMask ? "url(#mask-stripe)" : undefined,
+                });
 
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
                     stroke: "rgb(96,96,96)",
@@ -515,6 +552,7 @@
                 if (this.renderGroup !== undefined) {
                     this.svg.remove(this.renderGroup);
                     this.renderGroup = undefined;
+                    this.majorRect = undefined;
                 }
             }
 

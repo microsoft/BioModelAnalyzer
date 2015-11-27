@@ -267,11 +267,4 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
-  <Import Project="..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets" Condition="Exists('..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\ext\nuget\BuildWebCompiler.1.8.270\build\BuildWebCompiler.targets'))" />
-  </Target>
 </Project>
