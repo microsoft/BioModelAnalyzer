@@ -765,8 +765,8 @@
                                 var updated = false;
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
-                                        operands[i] = states[j];
                                         wasUpdated = wasUpdated || operands[i].GetFormula() !== states[j].GetFormula();
+                                        operands[i] = states[j];
                                         updated = true;
                                         break;
                                     }
@@ -788,7 +788,7 @@
             public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {
                 var wasUpdated = this.RefreshStatesInOperation(this.operation, states);
                 if (wasUpdated)
-                    this.status = "nottested";
+                    this.AnalysisStatus = "nottested";
                 
                 //this.Refresh();
             }
