@@ -194,13 +194,6 @@
     <Content Include="images\LTL-copy.svg" />
     <Content Include="images\LTL-delete.svg" />
     <Content Include="images\ltl-icon.png" />
-    <Content Include="images\LTL-state-tool-equ.svg" />
-    <Content Include="images\LTL-state-tool-gre.svg" />
-    <Content Include="images\LTL-state-tool-greq.svg" />
-    <Content Include="images\LTL-state-tool-les.svg" />
-    <Content Include="images\LTL-state-tool-lesq.svg" />
-    <Content Include="images\LTL-state-tool-num.svg" />
-    <Content Include="images\LTL-state-tool-var.svg" />
     <Content Include="images\ltlimgs\123.png" />
     <Content Include="images\ltlimgs\eq.png" />
     <Content Include="images\ltlimgs\mo.png" />
@@ -366,8 +359,7 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\ext\FSharp 4.4.0.0\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
