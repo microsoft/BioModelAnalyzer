@@ -25,7 +25,7 @@
     </When>
     <Otherwise>
       <PropertyGroup>
-        <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
+        <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
       </PropertyGroup>
     </Otherwise>
   </Choose>
@@ -161,16 +161,20 @@
     <Reference Include="Microsoft.Owin.Hosting">
       <HintPath>..\..\ext\nuget\Microsoft.Owin.Hosting.3.0.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\ext\nuget\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>..\..\ext\nuget\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Configuration">
-      <HintPath>..\..\ext\nuget\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention">
-      <HintPath>..\..\ext\nuget\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />

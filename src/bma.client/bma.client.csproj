@@ -403,7 +403,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\ext\nuget\WindowsAzure.Storage.6.1.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
@@ -456,8 +456,6 @@
     <Content Include="Silverlight.js" />
     <Content Include="tool.js" />
     <Content Include="version.txt" />
-    <Content Include="videos\BMA-trailer.mp4" />
-    <Content Include="videos\BMA.mp4" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
     <Content Include="Web.config">
@@ -472,7 +470,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
