@@ -202,6 +202,8 @@
     <Content Include="images\ltlimgs\moeq.png" />
     <Content Include="images\ltlimgs\remove.png" />
     <Content Include="images\ltlimgs\var.png" />
+    <Content Include="images\ltl_fail.png" />
+    <Content Include="images\ltl_success.png" />
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
