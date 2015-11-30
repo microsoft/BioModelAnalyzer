@@ -194,13 +194,6 @@
     <Content Include="images\LTL-copy.svg" />
     <Content Include="images\LTL-delete.svg" />
     <Content Include="images\ltl-icon.png" />
-    <Content Include="images\LTL-state-tool-equ.svg" />
-    <Content Include="images\LTL-state-tool-gre.svg" />
-    <Content Include="images\LTL-state-tool-greq.svg" />
-    <Content Include="images\LTL-state-tool-les.svg" />
-    <Content Include="images\LTL-state-tool-lesq.svg" />
-    <Content Include="images\LTL-state-tool-num.svg" />
-    <Content Include="images\LTL-state-tool-var.svg" />
     <Content Include="images\ltlimgs\123.png" />
     <Content Include="images\ltlimgs\eq.png" />
     <Content Include="images\ltlimgs\mo.png" />
@@ -209,6 +202,8 @@
     <Content Include="images\ltlimgs\moeq.png" />
     <Content Include="images\ltlimgs\remove.png" />
     <Content Include="images\ltlimgs\var.png" />
+    <Content Include="images\ltl_fail.png" />
+    <Content Include="images\ltl_success.png" />
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
@@ -366,8 +361,7 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\ext\FSharp 4.4.0.0\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -411,7 +405,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\ext\nuget\WindowsAzure.Storage.6.1.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
@@ -464,8 +458,6 @@
     <Content Include="Silverlight.js" />
     <Content Include="tool.js" />
     <Content Include="version.txt" />
-    <Content Include="videos\BMA-trailer.mp4" />
-    <Content Include="videos\BMA.mp4" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
     <Content Include="Web.config">
@@ -480,7 +472,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

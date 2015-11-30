@@ -639,9 +639,9 @@ module BMA {
                             that.expandedcallback();
                         }
                     },
-                    onshowresultsrequested: function () {
+                    onshowresultsrequested: function (showpositive) {
                         if (that.showresultcallback !== undefined) {
-                            that.showresultcallback();
+                            that.showresultcallback(showpositive);
                         }
                     }
                 });
