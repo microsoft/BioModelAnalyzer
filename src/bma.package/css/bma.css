@@ -3413,7 +3413,7 @@ textarea:focus {
   width: 140px;
 }
 .variable-picker table td .scrollable {
-  width: 100%;
+  /*width: 100%;*/
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -3621,6 +3621,7 @@ ui-icon-arrowthickstop-1-n {
   display: inline-block;
   vertical-align: middle;
   width: 130px;
+  padding: 5px 5px 0px 5px;
   margin-left: 10px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -3794,6 +3795,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .number-input {
   width: 30px;
+  padding-left: 0px;
   height: 43px;
   font-size: 30px;
   border: none;
@@ -4045,6 +4047,26 @@ ui-icon-arrowthickstop-1-n {
   height: 273px;
   width: 20%;
 }
+.LTL-state table tr td.variable {
+  height: 45px;
+}
+.LTL-state table tr td.variable .state-container-image {
+  display: inline-block;
+  background: url("../images/state-container.svg") no-repeat;
+  background-size: 20px 20px;
+  width: 20px;
+  height: 20px;
+}
+.LTL-state table tr td.variable .state-container-image.hidden {
+  display: none;
+}
+.LTL-state table tr td.variable .state-variable-image {
+  display: inline-block;
+  background: url("../images/state-variable.svg") no-repeat;
+  background-size: 20px 20px;
+  width: 20px;
+  height: 20px;
+}
 .LTL-state table tr td.variable p {
   display: inline-block;
   width: 50px;
@@ -4058,6 +4080,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .LTL-state table tr td.variable img {
   display: inline-block;
+  width: 20px;
 }
 .LTL-state table tr td.variable img.hidden {
   display: none;
@@ -4065,14 +4088,18 @@ ui-icon-arrowthickstop-1-n {
 .LTL-state table tr td.variable.hidden {
   display: none;
 }
+.LTL-state table tr td.operator {
+  text-align: left;
+  width: 50px;
+}
 .LTL-state table tr td.operator p {
   display: inline-block;
   width: 20px;
 }
 .LTL-state table tr td.operator img {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 /*LTL-states {
     max-height: 270px;
@@ -4193,7 +4220,7 @@ ui-icon-arrowthickstop-1-n {
 .variable-picker {
   position: absolute;
   z-index: 10;
-  width: 228px;
+  width: 222px;
 }
 .variable-picker table {
   width: 100%;
@@ -4218,16 +4245,12 @@ ui-icon-arrowthickstop-1-n {
   height: 20px;
 }
 .variable-picker table tr td {
-  /*min-width: 50px;
-                border: none;
-                text-align: left;
-                padding: 2px 0 2px 2px;*/
   /*&.list {
                     max-height: 85px;
                 }*/
 }
 .variable-picker table tr td.container {
-  width: 78px;
+  width: 75px;
 }
 .variable-picker table tr td .scrollable {
   max-height: 85px;
@@ -4245,7 +4268,7 @@ ui-icon-arrowthickstop-1-n {
 .operator-picker {
   position: absolute;
   z-index: 10;
-  width: 42px;
+  width: 48px;
   border: 1px solid #AAA;
   background-color: white;
   text-align: center;

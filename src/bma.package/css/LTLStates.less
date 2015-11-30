@@ -133,6 +133,7 @@
 
 .number-input {
     width: 30px;
+    padding-left:0px;
     height: 43px;
     font-size: 30px;
     border: none;
@@ -372,6 +373,27 @@
         tr {
             td {
                 &.variable {
+                    height:45px;
+                    .state-container-image {
+                        display:inline-block;
+                        background: url("../images/state-container.svg") no-repeat;
+                        background-size: 20px 20px;
+                        width: 20px;
+                        height: 20px;
+
+                        &.hidden{
+                            display:none;
+                        }
+                    }
+
+                    .state-variable-image {
+                        display:inline-block;
+                        background: url("../images/state-variable.svg") no-repeat;
+                        background-size: 20px 20px;
+                        width: 20px;
+                        height: 20px;
+                    }
+
                     p {
                         display:inline-block;
                         width: 50px;
@@ -387,6 +409,7 @@
 
                     img{
                         display:inline-block;
+                        width:20px;
                         &.hidden{
                             display:none;
                         }
@@ -399,14 +422,16 @@
                 }
 
                 &.operator {
+                    text-align:left;
+                    width:50px;
                     p{
                         display:inline-block;
                         width:20px;
                     }
                     img{
                         display:inline-block;
-                        width:20px;
-                        height:20px;
+                        width:30px;
+                        height:30px;
                     }
                 }
             }
@@ -535,7 +560,7 @@
 .variable-picker {
     position: absolute;
     z-index: 10;
-    width:228px;
+    width:222px;
     
 
     table {
@@ -566,17 +591,14 @@
         tr {
 
             td {
-                /*min-width: 50px;
-                border: none;
-                text-align: left;
-                padding: 2px 0 2px 2px;*/
-
+                
+                 &.container{
+				    width:75px;
+			    }
                 /*&.list {
                     max-height: 85px;
                 }*/
-                &.container{
-				    width:78px;
-			    }
+               
                 .scrollable {
                     max-height:85px;
 
@@ -604,7 +626,7 @@
 .operator-picker {
     position:absolute;
     z-index:10;
-    width:42px;
+    width:48px;
     border: 1px solid @midgrey;
     background-color:white;
     text-align: center;

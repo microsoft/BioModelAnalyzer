@@ -30,12 +30,12 @@
 
                     if (this.options.isexpanded) {
 
-                        var ltltestdiv = $("<div></div>").addClass("LTL-test-options").appendTo(opDiv);
-                        var sr = $("<div></div>").appendTo(ltltestdiv);
+                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                        //var sr = $("<div></div>").appendTo(ltltestdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
-                            .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
+                            .appendTo(ltltestdiv);
+                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
                         var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         minusb.click((e) => {
@@ -55,7 +55,7 @@
                             }
                         });
 
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltltestdiv);
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                         var btn = $("<button>TEST </button>").appendTo(li);
                         btn.click(function () {
@@ -94,7 +94,7 @@
                         */
 
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
-                        ltlresdiv.html("true for ALL traces<br>");
+                        ltlresdiv.html("True for all traces<br>");
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
@@ -134,7 +134,7 @@
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin", "5px 0 5px 0").appendTo(ltlresdiv);
                         var li = $("<li></li>").appendTo(ul);
-                        var btn = $("<button><img src='../images/ltl_success.png'> example </button>").appendTo(li);
+                        var btn = $("<button><img src='../images/small-tick.svg'> example </button>").addClass("LTL-sim-true").appendTo(li);
                         btn.click(function () {
                             if (that.options.onshowresultsrequested !== undefined) {
                                 that.options.onshowresultsrequested();
@@ -171,7 +171,7 @@
                         */
 
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
-                        ltlresdiv.html("true for SOME traces<br>");
+                        ltlresdiv.html("True for some traces<br>");
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
@@ -211,15 +211,15 @@
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).appendTo(ltlresdiv);
                         var liOk = $("<li></li>").css("margin-bottom", 5).appendTo(ul);
-                        var btnOk = $("<button><img src='../images/ltl_success.png'>  example </button>").appendTo(liOk);
+                        var btnOk = $("<button><img src='../images/small-tick.svg'>  example </button>").addClass("LTL-sim-true").appendTo(liOk);
                         btnOk.click(function () {
                             if (that.options.onshowresultsrequested !== undefined) {
                                 that.options.onshowresultsrequested(true);
                             }
                         });
 
-                        var liX = $("<li></li>").css("margin-bottom", 5).addClass("red").appendTo(ul);
-                        var btnX = $("<button><img src='../images/ltl_fail.png'> example </button>").appendTo(liX);
+                        var liX = $("<li></li>").css("margin-bottom", 5).appendTo(ul);
+                        var btnX = $("<button><img src='../images/small-cross.svg'> example </button>").addClass("LTL-sim-false").appendTo(liX);
                         btnX.click(function () {
                             if (that.options.onshowresultsrequested !== undefined) {
                                 that.options.onshowresultsrequested(false);
@@ -261,7 +261,7 @@
                          */
 
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
-                        var fr = $("<div>NO trace found</div>").appendTo(ltlresdiv);
+                        var fr = $("<div>No trace found</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
@@ -299,7 +299,7 @@
                         });
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltlresdiv);
                         var li = $("<li></li>").appendTo(ul);
-                        var btn = $("<button><img src='../images/ltl_fail.png'> example</button>").appendTo(li);
+                        var btn = $("<button><img src='../images/small-cross.svg'> example</button>").addClass("LTL-sim-false").appendTo(li);
                         btn.click(function () {
                             if (that.options.onshowresultsrequested !== undefined) {
                                 that.options.onshowresultsrequested();
