@@ -391,7 +391,7 @@ var BMA;
     }
     BMA.ParseXmlModel = ParseXmlModel;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=XmlModelParser.js.map
 var BMA;
 (function (BMA) {
     var SVGHelper;
@@ -406,6 +406,7 @@ var BMA;
         SVGHelper.AddClass = AddClass;
         function RemoveClass(elem, c) {
             var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
+            // TODO - coalesce spaces
             if (s == " ")
                 s = null;
             elem.className.baseVal = s;
@@ -504,7 +505,7 @@ var BMA;
         SVGHelper.bboxText = bboxText;
     })(SVGHelper = BMA.SVGHelper || (BMA.SVGHelper = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=SVGHelper.js.map
 var BMA;
 (function (BMA) {
     var ModelHelper;
@@ -674,7 +675,7 @@ var BMA;
         ModelHelper.GetModelBoundingBox = GetModelBoundingBox;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=ModelHelper.js.map
 var BMA;
 (function (BMA) {
     var CommandRegistry = (function () {
@@ -741,7 +742,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -905,6 +906,25 @@ var BMA;
                     }
                     $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(op).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
+                    /*
+                    //Helper bounding ellipses
+                    jqSvg.ellipse(
+                        (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerOuterCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                        containerOuterEllipseWidth * renderParams.layout.Size, containerOuterEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+                    
+                    jqSvg.ellipse(
+                        (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                        containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+
+                    jqSvg.ellipse(
+                        x + containerOuterCenterOffset * renderParams.layout.Size / 2,
+                        y,
+                        (containerInnerEllipseWidth + containerOuterEllipseWidth) * renderParams.layout.Size / 2,
+                        (containerInnerEllipseHeight + containerOuterEllipseHeight) * renderParams.layout.Size / 2,
+                        { stroke: "red", fill: "none" });
+                    */
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
                 }, function (pointerX, pointerY, elementX, elementY) {
@@ -966,6 +986,17 @@ var BMA;
                             });
                         }
                     }
+                    /*
+                    //Helper bounding box
+                    jqSvg.rect(
+                        renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                        renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                        that.variableWidthConstant,
+                        that.variableHeightConstant,
+                        0,
+                        0,
+                        { stroke: "red", fill: "none" });
+                    */
                     $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -1070,6 +1101,17 @@ var BMA;
                             });
                         }
                     }
+                    /*
+                    //Helper bounding box
+                    jqSvg.rect(
+                        renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                        renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                        that.variableWidthConstant,
+                        that.variableHeightConstant,
+                        0,
+                        0,
+                        { stroke: "red", fill: "none" });
+                    */
                     $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -1153,6 +1195,7 @@ var BMA;
                         var points = BMA.SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
                         var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                         var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+                        //console.log(len1 + ", " + len2);
                         return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                     }
                 }, "Activating Relationship", "activate-icon"));
@@ -1229,6 +1272,7 @@ var BMA;
                         var points = BMA.SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
                         var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                         var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+                        //console.log(len1 + ", " + len2);
                         return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                     }
                 }, "Inhibiting Relationship", "inhibit-icon"));
@@ -1239,6 +1283,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.lineWidth = value;
+                    //console.log(this.lineWidth);
                 },
                 enumerable: true,
                 configurable: true
@@ -1302,7 +1347,7 @@ var BMA;
         Elements.ElementsRegistry = ElementsRegistry;
     })(Elements = BMA.Elements || (BMA.Elements = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=elementsregistry.js.map
 var BMA;
 (function (BMA) {
     var Functions;
@@ -1390,7 +1435,7 @@ var BMA;
         Functions.FunctionsRegistry = FunctionsRegistry;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=functionsregistry.js.map
 var BMA;
 (function (BMA) {
     var Keyframes;
@@ -1469,7 +1514,7 @@ var BMA;
         Keyframes.KeyframesRegistry = KeyframesRegistry;
     })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=keyframesregistry.js.map
 var BMA;
 (function (BMA) {
     var LocalRepositoryTool = (function () {
@@ -1558,7 +1603,7 @@ var BMA;
     })();
     BMA.LocalRepositoryTool = LocalRepositoryTool;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=localRepository.js.map
 var BMA;
 (function (BMA) {
     var ChangesChecker = (function () {
@@ -1575,7 +1620,7 @@ var BMA;
     })();
     BMA.ChangesChecker = ChangesChecker;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=changeschecker.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -1663,12 +1708,14 @@ var BMA;
             function VariableTypes() {
             }
             Object.defineProperty(VariableTypes, "Default", {
-                get: function () { return "Default"; },
+                get: function () { return "Default"; } // Intracellular
+                ,
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(VariableTypes, "Constant", {
-                get: function () { return "Constant"; },
+                get: function () { return "Constant"; } // Extracellular
+                ,
                 enumerable: true,
                 configurable: true
             });
@@ -1959,7 +2006,7 @@ var BMA;
         Model.VariableLayout = VariableLayout;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=biomodel.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -1982,6 +2029,7 @@ var BMA;
                 set: function (value) {
                     this.model = value;
                     window.Commands.Execute("AppModelChanged", {});
+                    //TODO: update inner components (analytics)
                 },
                 enumerable: true,
                 configurable: true
@@ -1992,6 +2040,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.layout = value;
+                    //TODO: update inner components (analytics)
                 },
                 enumerable: true,
                 configurable: true
@@ -2002,6 +2051,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.states = value;
+                    //TODO: update inner components (ltl)
                 },
                 enumerable: true,
                 configurable: true
@@ -2012,6 +2062,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.operations = value;
+                    //TODO: update inner components (ltl)
                 },
                 enumerable: true,
                 configurable: true
@@ -2029,6 +2080,7 @@ var BMA;
             AppModel.prototype.DeserializeLegacyJSON = function (serializedModel) {
                 if (serializedModel !== undefined && serializedModel !== null) {
                     var ml = JSON.parse(serializedModel);
+                    //TODO: verify model
                     if (ml === undefined || ml.model === undefined || ml.layout === undefined ||
                         ml.model.variables === undefined ||
                         ml.layout.variables === undefined ||
@@ -2117,7 +2169,7 @@ var BMA;
         Model.AppModel = AppModel;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=model.js.map
 var BMA;
 (function (BMA) {
     var Model;
@@ -2154,7 +2206,7 @@ var BMA;
         Model.ProofResult = ProofResult;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=analytics.js.map
 var BMA;
 (function (BMA) {
     var Model;
@@ -2239,7 +2291,7 @@ var BMA;
         Model.AppVisualSettings = AppVisualSettings;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=visualsettings.js.map
 var BMA;
 (function (BMA) {
     var Model;
@@ -2248,8 +2300,10 @@ var BMA;
             var namestory = {};
             if (f !== undefined && f != null) {
                 f = f.trim();
+                // Convert default function to null
                 if (f.toLowerCase() == "avg(pos)-avg(neg)")
                     return null;
+                // Replace variable names with IDs
                 var varPrefix = "var(";
                 var startPos = 0;
                 var index;
@@ -2277,12 +2331,16 @@ var BMA;
             return f;
         }
         Model.MapVariableNames = MapVariableNames;
+        // Returns object whose JSON representation matches external format:
+        // 1) Variables in formulas are identified by IDs
+        // 2) Default function avg(pos)-avg(neg) is replaced with null formula
         function ExportBioModel(model) {
             function GetIdByName(id, name) {
                 var results = model.Variables.filter(function (v2) {
                     return v2.Name == name &&
                         model.Relationships.some(function (r) {
                             return r.ToVariableId == id && r.FromVariableId == v2.Id;
+                            // || r.FromVariableId == id && r.ToVariableId == v2.Id
                         });
                 });
                 if (results.length == 0) {
@@ -2464,6 +2522,7 @@ var BMA;
                     });
                 }
                 else {
+                    //Unknown operand type
                     result.operands.push(undefined);
                 }
             }
@@ -2558,6 +2617,7 @@ var BMA;
                     }
                     var op = new BMA.LTLOperations.Operation();
                     op.Operands = operands;
+                    //TODO: improve operator restoring
                     op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
                     return op;
                     break;
@@ -2575,7 +2635,7 @@ var BMA;
         Model.ImportOperand = ImportOperand;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=exportimport.js.map
 var BMA;
 (function (BMA) {
     var LTLOperations;
@@ -2885,7 +2945,7 @@ var BMA;
         LTLOperations.Operation = Operation;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=Operation.js.map
 var BMA;
 (function (BMA) {
     var LTLOperations;
@@ -2954,6 +3014,7 @@ var BMA;
                             this.Fill = "rgb(217,255,182)";
                             this.useMask = true;
                             if (this.majorRect !== undefined) {
+                                //mask: url(#mask-stripe)
                                 this.svg.change(this.majorRect, {
                                     mask: "url(#mask-stripe)"
                                 });
@@ -3229,6 +3290,28 @@ var BMA;
                     }
                 }
             };
+            /*
+            private UpdateFill() {
+                if (this.layout !== undefined) {
+
+                    var updateFillOfPart = function (layoutPart) {
+                        if (layoutPart !== undefined) {
+                            this.svg.change(layoutPart.svgref, {
+                                fill: this.fill
+                            });
+
+                            if (layoutPart.operands !== undefined) {
+                                for (var i = 0; i < layoutPart.operands.length; i++) {
+                                    updateFillOfPart(layoutPart.operands[i]);
+                                }
+                            }
+                        }
+                    }
+
+                    updateFillOfPart(this.layout);
+                }
+            }
+            */
             OperationLayout.prototype.GetOperatorWidth = function (svg, operator, fontSize) {
                 var t = svg.text(0, 0, operator, {
                     "font-size": fontSize,
@@ -3236,6 +3319,7 @@ var BMA;
                 });
                 var bbox = t.getBBox();
                 var result = { width: bbox.width, height: bbox.height };
+                //console.log(operator + ": " + bbox.width);
                 svg.remove(t);
                 return result;
             };
@@ -3575,12 +3659,13 @@ var BMA;
                 var wasUpdated = this.RefreshStatesInOperation(this.operation, states);
                 if (wasUpdated)
                     this.AnalysisStatus = "nottested";
+                //this.Refresh();
             };
             OperationLayout.prototype.GenerateUUID = function () {
                 var d = new Date().getTime();
                 if (window.performance && typeof window.performance.now === "function") {
                     d += performance.now();
-                    ;
+                    ; //use high-precision timer if available
                 }
                 var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                     var r = (d + Math.random() * 16) % 16 | 0;
@@ -3594,7 +3679,7 @@ var BMA;
         LTLOperations.OperationLayout = OperationLayout;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=operationlayout.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\widgets\drawingsurface.ts"/>
@@ -3624,6 +3709,9 @@ var BMA;
             SVGPlotDriver.prototype.GetMouseMoves = function () {
                 return this.svgPlotDiv.drawingsurface("getMouseMoves");
             };
+            //public GetZoomSubject() {
+            //    return this.svgPlotDiv.drawingsurface("getZoomSubject");
+            //}
             SVGPlotDriver.prototype.SetZoom = function (zoom) {
                 this.svgPlotDiv.drawingsurface({ zoom: zoom });
             };
@@ -3813,12 +3901,14 @@ var BMA;
             };
             PopupDriver.prototype.Show = function (params) {
                 var that = this;
+                //this.createResultView(params);
                 var header = "";
                 this.popupWindow
                     .removeClass('further-testing-popout')
                     .removeClass('proof-propagation-popout')
                     .removeClass('proof-variables-popout')
                     .removeClass('simulation-popout');
+                //.removeClass('analysis-popout');
                 switch (params.tab) {
                     case "ProofVariables":
                         header = "Variables";
@@ -3838,6 +3928,7 @@ var BMA;
                         break;
                     case "SimulationPlot":
                         header = "Simulation Graph";
+                        //this.popupWindow.addClass('analysis-popout');
                         break;
                 }
                 this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min", isResizable: false });
@@ -3918,6 +4009,7 @@ var BMA;
             };
             SimulationExpandedDriver.prototype.CreateExpandedTable = function (variables, colors) {
                 var table = [];
+                //var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     table[i] = [];
                     table[i][0] = this.findColorById(colors, variables[i].Id).Color;
@@ -4126,7 +4218,7 @@ var BMA;
         UIDrivers.ExportService = ExportService;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=commondrivers.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -4138,11 +4230,13 @@ var BMA;
                 this.keyframe = keyframe;
             }
             KeyframesExpandedViewer.prototype.AddState = function (items) {
+                //this.keyframe.ltlstatesviewer('addState', items);
             };
             KeyframesExpandedViewer.prototype.GetContent = function () {
                 return this.keyframe;
             };
             KeyframesExpandedViewer.prototype.RemovePart = function (p1, p2) {
+                //this.keyframe.ltlstatesviewer('removePart', items);
             };
             return KeyframesExpandedViewer;
         })();
@@ -4357,6 +4451,39 @@ var BMA;
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
                         var f = formulas[j];
+                        ///
+                        //if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
+                        //    var operator = f[1].value;
+                        //    var constant = parseFloat(f[2].value);
+                        //    var operator2;
+                        //    var constant2;
+                        //    switch (f[1].value) {
+                        //        case ">=":
+                        //            operator = ">";
+                        //            constant--;
+                        //            break;
+                        //        case "<=":
+                        //            operator = "<";
+                        //            constant++;
+                        //            break;
+                        //        case "=":
+                        //            operator = "<";
+                        //            constant++;
+                        //            operator2 = ">"
+                        //            constant2 = constant - 2;
+                        //            break;
+                        //        default: break;
+                        //    }
+                        //    op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                        //        operator, new BMA.LTLOperations.ConstOperand(constant));
+                        //    ops.push(op);
+                        //    if (operator2 && constant2 !== undefined) {
+                        //        op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                        //            operator2, new BMA.LTLOperations.ConstOperand(constant2));
+                        //        ops.push(op);
+                        //    }
+                        //}
+                        ///
                         if (f[0] !== undefined && f[0].type == "variable" && f[0].value != 0 && f[0].value.variable) {
                             if (f[1] !== undefined && f[2] !== undefined) {
                                 if (f[1].value == ">=")
@@ -4896,7 +5023,7 @@ var BMA;
         UIDrivers.LTLResultsViewer = LTLResultsViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=ltldrivers.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -4981,7 +5108,7 @@ var BMA;
         Presenters.UndoRedoPresenter = UndoRedoPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=undoredopresenter.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\model\biomodel.ts"/>
@@ -5022,6 +5149,8 @@ var BMA;
                     that.selectedType = type;
                     that.navigationDriver.TurnNavigation(type === undefined);
                     that.stagingLine = undefined;
+                    //this.selectedType = this.selectedType === type ? undefined : type;
+                    //this.driver.TurnNavigation(this.selectedType === undefined);
                 });
                 window.Commands.On("DrawingSurfaceClick", function (args) {
                     if (that.selectedType !== undefined) {
@@ -5224,6 +5353,7 @@ var BMA;
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
                         }
                     }
+                    //that.clipboard = undefined;
                 });
                 window.Commands.On("DrawingSurfaceResizeCell", function (args) {
                     if (that.contextElement !== undefined && that.contextElement.type === "container") {
@@ -5278,6 +5408,7 @@ var BMA;
                     if (_this.undoRedoPresenter.Current !== undefined) {
                         var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
                         if (bbox.width > window.PlotSettings.MaxWidth) {
+                            //window.PlotSettings.MaxWidth = bbox.width;
                             window.Commands.Execute('SetPlotSettings', { MaxWidth: bbox.width });
                         }
                         _this.driver.SetVisibleRect(bbox);
@@ -5355,6 +5486,7 @@ var BMA;
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
                         _this.stagingLine.x1 = gesture.x1;
                         _this.stagingLine.y1 = gesture.y1;
+                        //Redraw only svg for better performance
                         if (that.svg !== undefined) {
                             that.driver.DrawLayer2(that.CreateStagingSvg());
                         }
@@ -5871,6 +6003,16 @@ var BMA;
                 }
                 return undefined;
             };
+            //private GetContainerGridCells(containerLayout: BMA.Model.ContainerLayout): { x: number; y: number }[] {
+            //    var result = [];
+            //    var size = containerLayout.Size;
+            //    for (var i = 0; i < size; i++) {
+            //        for (var j = 0; j < size; j++) {
+            //            result.push({ x: i + containerLayout.PositionX, y: j + containerLayout.PositionY });
+            //        }
+            //    }
+            //    return result;
+            //}
             DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
                 var result = [];
                 var variables = this.undoRedoPresenter.Current.model.Variables;
@@ -5924,7 +6066,7 @@ var BMA;
             };
             DesignSurfacePresenter.prototype.GetVariableColorByStatus = function (status) {
                 if (status)
-                    return "green";
+                    return "green"; //"#D9FFB3";
                 else
                     return "red";
             };
@@ -5944,6 +6086,7 @@ var BMA;
             DesignSurfacePresenter.prototype.CreateSvg = function (args) {
                 if (this.svg === undefined)
                     return undefined;
+                //Generating svg elements from model and layout
                 var svgElements = [];
                 var containerLayouts = this.undoRedoPresenter.Current.layout.Containers;
                 for (var i = 0; i < containerLayouts.length; i++) {
@@ -5990,6 +6133,7 @@ var BMA;
                         grid: this.Grid
                     }));
                 }
+                //constructing final svg image
                 this.svg.clear();
                 var defs = this.svg.defs("bmaDefs");
                 var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 4, "auto", { viewBox: "0 -2 4 4" });
@@ -6044,7 +6188,7 @@ var BMA;
         Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=presenters.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -6093,6 +6237,7 @@ var BMA;
                         var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
                     }
                     catch (ex) {
+                        //that.messagebox.Show(ex);
                         proofResultViewer.SetData({
                             issucceeded: "Invalid Model",
                             message: ex,
@@ -6104,6 +6249,7 @@ var BMA;
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
+                        //console.log("Proof Result Status: " + res.Status);
                         var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
                         if (res.Ticks !== null) {
                             that.expandedProofPropagation = $('<div></div>');
@@ -6116,7 +6262,7 @@ var BMA;
                             that.colorData = that.CreateColoredTable(res.Ticks);
                             var deferredProofPropagation = function () {
                                 var d = $.Deferred();
-                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);
+                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks); //.addClass("proof-expanded");
                                 d.resolve(full);
                                 return d.promise();
                             };
@@ -6357,7 +6503,7 @@ var BMA;
         Presenters.ProofPresenter = ProofPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=proofpresenter.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -6378,6 +6524,10 @@ var BMA;
                     that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
                 });
+                //window.Commands.On("ChangePlotVariables", function (param) {
+                //    that.variables[param.ind].Seen = param.check;
+                //    that.compactViewer.ChangeVisibility(param);
+                //});
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
                     that.ClearPlot(param.data);
@@ -6673,7 +6823,7 @@ var BMA;
         Presenters.SimulationPresenter = SimulationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=simulationpresenter.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -6785,6 +6935,7 @@ var BMA;
                     try {
                         var data = appModel.Serialize();
                         exportService.Export(data, appModel.BioModel.Name, 'json');
+                        //var ret = saveTextAs(data, appModel.BioModel.Name + ".json");
                         checker.Snapshot(appModel);
                     }
                     catch (ex) {
@@ -6797,7 +6948,7 @@ var BMA;
         Presenters.ModelStoragePresenter = ModelStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=modelstoragepresenter.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -6836,7 +6987,7 @@ var BMA;
         Presenters.FormulaValidationPresenter = FormulaValidationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=formulavalidationpresenter.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7089,7 +7240,7 @@ var BMA;
         Presenters.FurtherTestingPresenter = FurtherTestingPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=furthertestingpresenter.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -7190,7 +7341,7 @@ var BMA;
         Presenters.LocalStoragePresenter = LocalStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=localstoragepresenter.js.map
 /// <reference path="..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 var BMA;
@@ -7210,7 +7361,7 @@ var BMA;
             this.userId = $.cookie("BMAClient.UserID");
             if (this.userId === undefined)
                 this.userId = generateUUID();
-            $.cookie("BMAClient.UserID", this.userId, { expires: 365 * 10 });
+            $.cookie("BMAClient.UserID", this.userId, { expires: 365 * 10 }); // Set cookie with persistent user ID that will last for 10 years from now
             this.sessionId = generateUUID();
             this.logIn = new Date();
             this.logOut = new Date();
@@ -7271,7 +7422,7 @@ var BMA;
     })();
     BMA.SessionLog = SessionLog;
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=UserLog.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -7283,6 +7434,7 @@ var BMA;
             collapsible: true,
             event: "click",
             position: "center",
+            // callbacks
             activate: null,
             beforeActivate: null,
             contentLoaded: { ind: "", val: true },
@@ -7296,10 +7448,12 @@ var BMA;
             this.prevShow = this.prevHide = $();
             this.element.addClass("ui-accordion")
                 .attr("role", "tablist");
+            // don't allow collapsible: false and active: false / null
             if (!options.collapsible && (options.active === false || options.active == null)) {
                 options.active = 0;
             }
             this._processPanels();
+            // handle negative values
             if (options.active < 0) {
                 options.active += this.headers.length;
             }
@@ -7313,9 +7467,11 @@ var BMA;
         },
         _destroy: function () {
             var contents;
+            // clean up main element
             this.element
                 .removeClass("ui-accordion ui-widget ui-helper-reset")
                 .removeAttr("role");
+            // clean up headers
             this.headers
                 .removeClass("ui-accordion-header ui-accordion-header-active ui-state-default " +
                 "ui-corner-all ui-state-active ui-state-disabled ui-corner-top")
@@ -7325,6 +7481,7 @@ var BMA;
                 .removeAttr("aria-controls")
                 .removeAttr("tabIndex")
                 .removeUniqueId();
+            // clean up content panels
             contents = this.headers.next()
                 .removeClass("ui-helper-reset ui-widget-content ui-corner-bottom " +
                 "ui-accordion-content ui-accordion-content-active ui-state-disabled")
@@ -7354,12 +7511,15 @@ var BMA;
             this.showProps = {};
             this.hideProps[that.options.position] = "-=" + distantion;
             this.showProps[that.options.position] = "+=" + distantion;
+            //context.show().css("z-index",1);
             context.css("z-index", that.options.z_index + 1);
+            //this.headers.next().not(context).hide().css("z-index", 0);
             this.headers.next().not(context).css("z-index", that.options.z_index);
         },
         _setOption: function (key, value) {
             var that = this;
             if (key === "active") {
+                // _activate() will handle invalid values and update this.options
                 this._activate(value);
                 return;
             }
@@ -7408,9 +7568,12 @@ var BMA;
                 }
                 return;
             }
+            // setting collapsible: false while collapsed; open first panel
             if (key === "collapsible" && !value && this.options.active === false) {
                 this._activate(0);
             }
+            // #5332 - opacity doesn't cascade to positioned elements in IE
+            // so we need to add the disabled class to the headers and panels
             if (key === "disabled") {
                 this.element
                     .toggleClass("ui-state-disabled", !!value)
@@ -7434,6 +7597,7 @@ var BMA;
                 case keyCode.UP:
                     toFocus = this.headers[(currentIndex - 1 + length) % length];
                     break;
+                //case keyCode.SPACE:
                 case keyCode.ENTER:
                     this._eventHandler(event);
                     break;
@@ -7447,6 +7611,7 @@ var BMA;
             if (toFocus !== undefined) {
                 $(event.target).attr("tabIndex", -1);
                 $(toFocus).attr("tabIndex", 0);
+                //toFocus.focus();
                 event.preventDefault();
             }
         },
@@ -7457,6 +7622,7 @@ var BMA;
         refresh: function () {
             var options = this.options;
             this._processPanels();
+            // was collapsed or no panel
             if ((options.active === false && options.collapsible === true) || !this.headers.length) {
                 options.active = false;
                 this.active = $();
@@ -7465,6 +7631,7 @@ var BMA;
                 this._activate(0);
             }
             else if (this.active.length && !$.contains(this.element[0], this.active[0])) {
+                // all remaining panel are disabled
                 if (this.headers.length === this.headers.find(".ui-state-disabled").length) {
                     options.active = false;
                     this.active = $();
@@ -7474,6 +7641,7 @@ var BMA;
                 }
             }
             else {
+                // make sure active index is correct
                 options.active = this.headers.index(this.active);
             }
             this._refresh();
@@ -7485,6 +7653,7 @@ var BMA;
             this.headers = that.element.children().filter(':even');
             this.headers
                 .addClass("bma-accordion-header");
+            //var loading = that.options.showLoading;
             this.loadingList = [];
             for (var ind = 0; ind < this.headers.length; ind++) {
                 that.loadingList[ind] = true;
@@ -7520,6 +7689,7 @@ var BMA;
             this.active = $();
             this.active.next()
                 .addClass("ui-accordion-content-active");
+            //.show();
             var that = this;
             this.headers
                 .attr("role", "tab")
@@ -7542,6 +7712,7 @@ var BMA;
                 "aria-hidden": "true"
             })
                 .hide();
+            // make sure at least one header is in the tab order
             if (!this.active.length) {
                 this.headers.eq(0).attr("tabIndex", 0);
             }
@@ -7570,27 +7741,40 @@ var BMA;
                     events[eventName] = "eventHandler";
                 });
             }
+            //this._off(this.headers.add(this.options.context));
             this._off(this.headers);
             this._on(this.headers, events);
+            //this._on(this.options.context, { keydown: "_panelKeyDown" });
             this._on(this.headers.next(), { keydown: "_panelKeyDown" });
+            //this._hoverable(this.headers);
+            //this._focusable(this.headers);
         },
         eventHandler: function (event) {
-            var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), eventData = {
+            var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), 
+            //toShow = collapsing ? $() : options.context,
+            eventData = {
                 oldHeader: active,
                 oldPanel: toHide,
                 newHeader: clicked,
                 newPanel: toShow
             };
             event.preventDefault();
-            if ((clickedIsActive && !options.collapsible) ||
+            if (
+            // click on active header, but not collapsible
+            (clickedIsActive && !options.collapsible) ||
+                // allow canceling activation
                 (this._trigger("beforeActivate", event, eventData) === false)) {
                 return;
             }
             if (toShow.is(":hidden")) {
+                //toShow.show();
                 window.Commands.Execute(clicked.attr("data-command"), {});
             }
             eventData.newHeader.css("z-index", this.options.z_index + 2);
-            this.headers.not(eventData.newHeader).css("z-index", this.options.z_index);
+            this.headers.not(eventData.newHeader).css("z-index", this.options.z_index); //0);
+            // when the call to ._toggle() comes after the class changes
+            // it causes a very odd bug in IE 8 (see #6720)
+            //this.active.next().show();
             this.active = clickedIsActive ? $() : clicked;
             if (!this.loadingList[this.headers.index(clicked)]) {
                 eventData.newPanel = $();
@@ -7605,6 +7789,8 @@ var BMA;
                 return;
             }
             this._toggle(eventData);
+            // switch classes
+            // corner classes on the previously active header stay after the animation
             active.removeClass("ui-accordion-header-active ui-state-active");
             if (!clickedIsActive) {
                 clicked
@@ -7617,6 +7803,7 @@ var BMA;
         _toggle: function (data) {
             var toShow = data.newPanel, toHide = this.prevShow.length ? this.prevShow : data.oldPanel;
             var that = this;
+            // handle activating a panel during the animation for another activation
             this.prevShow.add(this.prevHide).stop(true, true);
             this.prevShow = toShow;
             this.prevHide = toHide;
@@ -7626,6 +7813,7 @@ var BMA;
             else {
                 toHide.hide();
                 toShow.show();
+                //if (this.options.context.is(":hidden"))
                 if (data.newHeader.next().is(":hidden")) {
                     data.newHeader
                         .removeClass("accordion-expanded")
@@ -7642,8 +7830,11 @@ var BMA;
             }
             toHide.attr({
                 "aria-hidden": "true"
-            });
+            }); //.hide();
             toHide.prev().attr("aria-selected", "false");
+            // if we're switching panels, remove the old header from the tab order
+            // if we're opening from collapsed state, remove the previous header from the tab order
+            // if we're collapsing, then keep the collapsing header in the tab order
             if (toShow.length && toHide.length) {
                 toHide.prev().attr({
                     "tabIndex": -1,
@@ -7674,6 +7865,7 @@ var BMA;
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
+            //$('<img src="../../images/60x60.gif">').appendTo(clicked).addClass("loading");
         },
         _hideLoading: function (toHide) {
             toHide.each(function () {
@@ -7695,6 +7887,7 @@ var BMA;
             if (typeof options === "string") {
                 easing = options;
             }
+            // fall back from options to animation in case of partial down settings
             easing = easing || options.easing || animate.easing;
             duration = duration || options.duration || animate.duration;
             var that = this;
@@ -7710,13 +7903,19 @@ var BMA;
                 that.element.animate(that.showProps, duration, easing, complete);
                 return;
             }
-            toHide.css("z-index", that.options.z_index);
+            //context.show()
+            //this.headers.next().not(context).hide()
+            //toHide.hide().css("z-index", 0);
+            //toShow.show().css("z-index", 1);
+            toHide.css("z-index", that.options.z_index); //0);
             toShow.css("z-index", that.options.z_index + 1);
             this._toggleComplete(data);
         },
         _toggleComplete: function (data) {
             var toHide = data.oldPanel;
             var toShow = data.newPanel;
+            //toHide.hide();
+            //toShow.show();
             data.newPanel.css("z-index", this.options.z_index + 1);
             toHide
                 .removeClass("ui-accordion-content-active")
@@ -7725,14 +7924,16 @@ var BMA;
                 .addClass("ui-corner-all");
             toHide.hide();
             toShow.show();
+            // Work around for rendering bug in IE (#5421)
             if (toHide.length) {
                 toHide.parent()[0].className = toHide.parent()[0].className;
             }
             this._trigger("activate", null, data);
+            //this.headers.not(this.active).next().hide();
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=accordeon.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -7762,6 +7963,7 @@ var BMA;
             this.zoomslider.slider({
                 min: that.options.min,
                 max: that.options.max,
+                //step: that.options.step,
                 value: that.options.value,
                 change: function (event, ui) {
                     var val = that.zoomslider.slider("option", "value");
@@ -7793,6 +7995,7 @@ var BMA;
         },
         _destroy: function () {
             var contents;
+            // clean up main element
             this.element.removeClass("zoomslider-container");
             this.element.empty();
         },
@@ -7818,7 +8021,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=bmaslider.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -7899,7 +8102,7 @@ var BMA;
                             for (var j = 0; j < color[i].length; j++) {
                                 var td = $('<td></td>').appendTo(tr);
                                 if (color[i][j]) {
-                                    td.addClass('change');
+                                    td.addClass('change'); //.css("background-color", "#FFF729"); //no guide
                                 }
                             }
                         }
@@ -7970,6 +8173,7 @@ var BMA;
                         that.alldiv.attr("checked", false);
                         $(this).prev().css("background-color", "transparent");
                     }
+                    //window.Commands.Execute("ChangePlotVariables", { ind: $(this).parent().index() - 1, check: check });
                     if (that.options.onChangePlotVariables !== undefined)
                         that.options.onChangePlotVariables({ ind: $(this).parent().index() - 1, check: check });
                 });
@@ -8060,7 +8264,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=coloredtableviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\functionsregistry.ts"/>
@@ -8104,7 +8308,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=containernameeditor.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8115,6 +8319,7 @@ var BMA;
         _lightSvgPlot: null,
         _rectsPlot: null,
         _dragService: null,
+        //_zoomObservable: undefined,
         _zoomObs: undefined,
         _onlyZoomEnabled: false,
         _mouseMoves: null,
@@ -8158,6 +8363,10 @@ var BMA;
             if (window.PlotSettings !== undefined) {
                 this._plotSettings = window.PlotSettings;
             }
+            //this._zoomObs = undefined;
+            //this._zoomObservable = Rx.Observable.create(function (rx) {
+            //    that._zoomObs = rx;
+            //});
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
@@ -8165,6 +8374,8 @@ var BMA;
             var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             this.lightSVGDiv = svgPlotDiv2;
+            //empty div for event handling
+            //$("<div></div>").attr("data-idd-plot", "plot").appendTo(plotDiv);
             that._plot = InteractiveDataDisplay.asPlot(plotDiv);
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
@@ -8173,6 +8384,7 @@ var BMA;
             this._lightSvgPlot = lightSvgPlot;
             this._domPlot = that._plot.get(domPlotDiv[0]);
             this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
+            //rectsPlot.draw({ rects: [{ x: 0, y: 0, width: 500, height: 500, fill: "red" }] })
             if (this.options.svg !== undefined) {
                 if (svgPlot.svg === undefined) {
                     svgPlot.host.on("svgLoaded", this._svgLoaded);
@@ -8186,6 +8398,7 @@ var BMA;
                 lightSvgPlot.host.on("svgLoaded", this._lightSvgLoaded);
             }
             else {
+                //lightSvgPlot.svg.configure({ style: "pointer-events:none;" }, false);
                 lightSvgPlot.svg.clear();
                 if (this.options.lightSvg !== undefined)
                     lightSvgPlot.svg.add(this.options.lightSvg);
@@ -8232,6 +8445,7 @@ var BMA;
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
                 });
             });
+            //Subject that converts input mouse events into Pan gestures 
             var createPanSubject = function (vc) {
                 var _doc = $(document);
                 var mouseDown = vc.onAsObservable("mousedown");
@@ -8243,6 +8457,7 @@ var BMA;
                     var x0 = cs.screenToDataX(md.pageX - plotDiv.offset().left);
                     var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
                     return mouseMove.select(function (mm) {
+                        //var cs = svgPlot.getScreenToDataTransform();
                         var x1 = cs.screenToDataX(mm.pageX - plotDiv.offset().left);
                         var y1 = -cs.screenToDataY(mm.pageY - plotDiv.offset().top);
                         return { x0: x0, y0: y0, x1: x1, y1: y1 };
@@ -8298,7 +8513,7 @@ var BMA;
                 var touchEnd = _doc.onAsObservable("touchend");
                 var touchCancel = _doc.onAsObservable("touchcancel");
                 var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
-                var dragEndings = stopPanning;
+                var dragEndings = stopPanning; //.takeWhile(mouseMove);
                 return dragEndings;
             };
             this._dragService = {
@@ -8322,6 +8537,16 @@ var BMA;
                 return -y;
             }, undefined);
             this._plot.yDataTransform = yDT;
+            /*
+            this._domPlot.yDataTransform = new InteractiveDataDisplay.DataTransform(
+                function (x) {
+                    return x;
+                },
+                function (y) {
+                    return y;
+                },
+                undefined);
+            */
             var width = 1600;
             that.options.zoom = width;
             if (this.options.isNavigationEnabled) {
@@ -8378,11 +8603,19 @@ var BMA;
                     if (value === true) {
                         if (this._onlyZoomEnabled === true) {
                             this._setGestureSource(false);
+                            //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                            //    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
+                            //});
+                            //this._plot.navigation.gestureSource = gestureSource;
                             this._onlyZoomEnabled = false;
                         }
                     }
                     else {
                         this._setGestureSource(true);
+                        //var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
+                        //    return g.Type === "Zoom" && (g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth);
+                        //});
+                        //this._plot.navigation.gestureSource = gestureSource;
                         this._onlyZoomEnabled = true;
                     }
                     break;
@@ -8409,6 +8642,7 @@ var BMA;
                                 width: value,
                                 height: newHeight
                             };
+                            //console.log(newrect.y);
                             that._plot.navigation.setVisibleRect(newrect, false);
                             that.options.zoom = value;
                         }
@@ -8511,7 +8745,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=drawingsurface.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8574,11 +8808,13 @@ var BMA;
                         var random = $('<td></td>')
                             .addClass("random-small bma-random-icon2 hoverable")
                             .appendTo(tr);
+                        //random.filter(':nth-child(even)').addClass('bma-random-icon1');
+                        //random.filter(':nth-child(odd)').addClass('bma-random-icon2');
                         random.bind("click", function () {
                             var prev = parseInt($(this).prev().children("input").eq(0).val());
                             var index = $(this).parent().index() - 1;
                             var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
-                            $(this).prev().children("input").eq(0).val(randomValue);
+                            $(this).prev().children("input").eq(0).val(randomValue); //randomValue);
                             if (randomValue !== prev)
                                 $(this).parent().addClass('red');
                             else
@@ -8630,6 +8866,7 @@ var BMA;
         },
         AddData: function (data) {
             var that = this;
+            //var data = this.data;
             if (data !== undefined) {
                 var trs = that.data.find("tr");
                 if (trs.length === 0) {
@@ -8679,6 +8916,7 @@ var BMA;
                         trs = trs.slice(1);
                     trs.each(function (ind) {
                         var td = $('<td></td>').text(data[ind]).appendTo($(this));
+                        //$('<span></span>').text(data[ind]).appendTo(td);
                         if (td.text() !== td.prev().text())
                             td.addClass('change');
                     });
@@ -8704,6 +8942,8 @@ var BMA;
             var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
             tds.each(function (ind) {
                 $(this).addClass('repeat');
+                //var div = $('<div></div>').appendTo($(this));
+                //div.addClass('repeat');
             });
         },
         GetRandomInt: function (min, max) {
@@ -8743,7 +8983,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=progressiontable.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -8844,6 +9084,9 @@ var BMA;
         _create: function () {
             var that = this;
             var options = this.options;
+            //$('<span>Proof Analysis</span>')
+            //    .addClass('window-title')
+            //    .appendTo(that.element);
             this.resultDiv = $('<div></div>')
                 .addClass("proof-state")
                 .appendTo(that.element);
@@ -8884,7 +9127,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=proofresultviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9005,10 +9248,11 @@ var BMA;
                     break;
             }
             this._super(key, value);
+            //this.refresh();
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=furthertestingviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9049,7 +9293,9 @@ var BMA;
                     width: "250", height: "50",
                     background: "white", alt: altHtml,
                     version: "5.0.61118.0"
-                }, { onError: onSilverlightError }, "param1=value1,param2=value2", "row3");
+                }, 
+                // See the event handlers in the full example.
+                { onError: onSilverlightError }, "param1=value1,param2=value2", "row3");
             }
             this.refresh();
         },
@@ -9067,7 +9313,8 @@ var BMA;
             this.ol = $('<ol></ol>').appendTo(this.repo);
             for (var i = 0; i < items.length; i++) {
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
-                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);
+                //var a = $('<a></a>').addClass('delete').appendTo(li);
+                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li); // $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
                     event.stopPropagation();
                     window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
@@ -9099,7 +9346,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=localstoragewidget.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9172,6 +9419,7 @@ var BMA;
                 .text(options.header)
                 .appendTo(this.header);
             this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
+            //this.icon = $('<div></div>').appendTo(this.header);
             this.content = $('<div></div>').appendTo(this.element);
             this.reseticon();
             this.refresh();
@@ -9229,12 +9477,13 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=resultswindowviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.simulationplot", {
         options: {
+            //data: undefined,
             colors: undefined,
             labels: undefined,
         },
@@ -9243,6 +9492,14 @@ var BMA;
             this.refresh();
             this.element.addClass('simulation-plot-box');
         },
+        //changeVisibility: function (param) {
+        //    var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
+        //    polyline.isVisible = param.check;
+        //    var legenditem = this.element.find(".simulationplot-legend-legendcontainer");//[data-index=" + param.ind + "]");//.attr("data-index", i)
+        //    //if (param.check) legenditem.hide();
+        //    //else legenditem.show();
+        //    alert(legenditem.length);
+        //},
         refresh: function () {
             var that = this;
             var options = this.options;
@@ -9258,11 +9515,14 @@ var BMA;
                 .attr("id", "glPlot")
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
+            ///states markers on plot
             that.domPlot = undefined;
             if (that.options.labels !== undefined && that.options.labels !== null) {
                 that.domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
             }
+            ///
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
+            //
             if (that.domPlot !== undefined) {
                 var domPlot2 = that._chart.get(that.domPlot[0]);
                 for (var i = 0; i < that.options.labels.length; i++) {
@@ -9275,6 +9535,7 @@ var BMA;
                     (i % 2 == 0) ? label.addClass("repeat") : 0;
                 }
             }
+            //
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {
                     var plotName = "plot" + i;
@@ -9348,8 +9609,8 @@ var BMA;
                 var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
                 var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
-                bounds.bounds.height += 0.04;
-                bounds.bounds.y -= 0.02;
+                bounds.bounds.height += 0.04; // padding
+                bounds.bounds.y -= 0.02; // padding
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
                 that._chart.centralPart.mousedown(function (e) {
                     e.stopPropagation();
@@ -9386,7 +9647,7 @@ var BMA;
             var polyline = this._chart.get(plotName);
             this.options.colors[ind].Seen = check;
             polyline.isVisible = check;
-            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]");
+            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]"); //.attr("data-index", i)
             if (check)
                 legenditem.show();
             else
@@ -9412,7 +9673,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=simulationplot.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9517,6 +9778,9 @@ var BMA;
                     for (var i = 1; i < 4; i++) {
                         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
                     }
+                    //                < div class="bounce1" > </div>
+                    //< div class="bounce2" > </div>
+                    //< div class="bounce3" > </div>
                     this.RunButton.unbind("click");
                     break;
             }
@@ -9551,6 +9815,7 @@ var BMA;
             switch (key) {
                 case "data":
                     this.options.data = value;
+                    //if (value !== null && value !== undefined)
                     if (options.interval !== undefined && options.interval.length !== 0) {
                         this.big_table.progressiontable({ interval: options.interval, data: options.data });
                     }
@@ -9592,7 +9857,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=simulationexpanded.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9649,7 +9914,7 @@ var BMA;
                 that.variables.resultswindowviewer("destroy");
             }
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
-                that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot });
+                that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot }); //.height(160)
                 that.plotDiv.resultswindowviewer({
                     header: "Simulation Graph",
                     content: that.plot,
@@ -9720,7 +9985,7 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=simulationviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -9752,6 +10017,10 @@ var BMA;
                     bttn.bind('click', actions[i].callback);
                 }
             }
+            //var yesBtn = $('<button></button>').text('Yes').appendTo(this.buttons);
+            //var noBtn = $('<button></button>').text('No').appendTo(this.buttons);
+            //var cancelBtn = $('<button></button>').text('Cancel').appendTo(this.buttons);
+            //this._bind_functions();
             this._popup_position();
         },
         _add_close_button: function () {
@@ -9780,6 +10049,14 @@ var BMA;
                 }
             });
         },
+        //_bind_functions: function () {
+        //    var functions = this.options.functions;
+        //    var btns = this.buttons.children("button");
+        //    if (functions !== undefined) {
+        //        for (var i = 0; i < functions.length; i++)
+        //            btns.eq(i).bind("click", functions[i]);
+        //    }
+        //},
         Show: function () {
             this.element.show();
         },
@@ -9801,13 +10078,14 @@ var BMA;
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=userdialog.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\functionsregistry.ts"/>
 (function ($) {
     $.widget("BMA.bmaeditor", {
         options: {
+            //variable: BMA.Model.Variable
             name: "name",
             rangeFrom: 0,
             rangeTo: 0,
@@ -9863,7 +10141,7 @@ var BMA;
             var obj = jq[0];
             obj.focus();
             if (obj.selectionStart)
-                return obj.selectionStart;
+                return obj.selectionStart; //Gecko
             else if (document.selection) {
                 var sel = document.selection.createRange();
                 var clone = sel.duplicate();
@@ -9959,6 +10237,7 @@ var BMA;
                 .text("Inputs")
                 .appendTo(inputsDiv);
             var inpUl = $('<ul></ul>').appendTo(inputsDiv);
+            //var div = $('<div></div>').appendTo(that.element);
             var operatorsDiv = $('<div></div>').addClass('operators').appendTo(that.element);
             $('<div></div>')
                 .addClass("window-title")
@@ -10117,6 +10396,8 @@ var BMA;
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
+            //window.Commands.Execute("VariableEdited", {})
+            //this.resetElement();
         },
         destroy: function () {
             $.Widget.prototype.destroy.call(this);
@@ -10127,12 +10408,14 @@ jQuery.fn.extend({
     insertAtCaret: function (myValue) {
         return this.each(function (i) {
             if (document.selection) {
+                // Для браузеров типа Internet Explorer
                 this.focus();
                 var sel = document.selection.createRange();
                 sel.text = myValue;
                 this.focus();
             }
             else if (this.selectionStart || this.selectionStart == '0') {
+                // Для браузеров типа Firefox и других Webkit-ов
                 var startPos = this.selectionStart;
                 var endPos = this.selectionEnd;
                 var scrollTop = this.scrollTop;
@@ -10149,7 +10432,7 @@ jQuery.fn.extend({
         });
     }
 });
-
+//# sourceMappingURL=variablesOptionsEditor.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10274,7 +10557,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=visibilitysettings.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10304,7 +10587,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=keyframetable.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10380,7 +10663,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=keyframecompact.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10443,7 +10726,7 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-
+//# sourceMappingURL=ltlstatesviewer.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10498,7 +10781,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=ltlviewer.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10522,8 +10805,9 @@ jQuery.fn.extend({
             this.element.addClass("ltlresultsviewer");
             var root = this.element;
             var tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(tablesContainer);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(tablesContainer);
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(tablesContainer); //root);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(tablesContainer); //root);
+            //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             var stepsul = $('<ul></ul>').addClass('button-list').css("float", "left").appendTo(root);
             var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
@@ -10678,7 +10962,7 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-
+//# sourceMappingURL=ltlresultsviewer.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -10956,6 +11240,7 @@ jQuery.fn.extend({
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
                 operatorSelector.hide();
+                //operatorExpandButton.removeClass('inputs-list-header-expanded');
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             $(document).mousedown(function (e) {
@@ -10969,9 +11254,9 @@ jQuery.fn.extend({
         },
         createVariablePicker: function (variableTd, variable) {
             var that = this;
-            var containerImg = $("<img>").attr("src", "../images/state-container.svg").addClass("hidden").appendTo(variableTd);
+            var containerImg = $("<div></div>").addClass("state-container-image") /*attr("src", "../images/state-container.svg")*/.addClass("hidden").appendTo(variableTd);
             var selectedContainer = $("<p></p>").addClass("hidden").appendTo(variableTd);
-            var variableImg = $("<img>").attr("src", "../images/state-variable.svg").appendTo(variableTd);
+            var variableImg = $("<div></div>").addClass("state-variable-image") /*attr("src", "../images/state-variable.svg")*/.appendTo(variableTd);
             var selectedVariable = $("<p></p>").appendTo(variableTd);
             var expandButton = $("<div></div>").addClass('arrow-down').appendTo(variableTd);
             var firstLeft = $(variableTd).offset().left;
@@ -10982,9 +11267,9 @@ jQuery.fn.extend({
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
             var tdContainer = $("<td></td>").appendTo(tr);
-            var imgContainer = $("<div></div>").addClass("container-image").appendTo(tdContainer);
+            var imgContainer = $("<div></div>").addClass("container-image") /*attr("src", "../images/container.svg")*/.appendTo(tdContainer);
             var tdVariable = $("<td></td>").appendTo(tr);
-            var imgVariable = $("<div></div>").addClass("variable-image").appendTo(tdVariable);
+            var imgVariable = $("<div></div>").addClass("variable-image") /*attr("src", "../images/variable.svg")*/.appendTo(tdVariable);
             var trList = $("<tr></tr>").appendTo(tbody);
             var setSelectedValue = function (value) {
                 var containerName;
@@ -10996,6 +11281,7 @@ jQuery.fn.extend({
                 $(selectedContainer).text(containerName ? containerName : "ALL");
                 $(selectedVariable).text(value.variable);
                 variablePicker.hide();
+                //expandButton.removeClass('inputs-list-header-expanded');
                 if (containerName !== "ALL") {
                     containerImg.removeClass("hidden");
                     selectedContainer.removeClass("hidden");
@@ -11128,7 +11414,7 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-
+//# sourceMappingURL=stateseditor.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11157,7 +11443,7 @@ jQuery.fn.extend({
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
-                that.executeStatesEditorExpand();
+                that.executeStatesEditorExpand(); //executeCommand("AddFirstStateRequested", {});
             });
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
@@ -11231,7 +11517,7 @@ jQuery.fn.extend({
             button.tooltip({
                 tooltipClass: "state-tooltip",
                 content: function () {
-                    var stateTooltip = $("<div></div>");
+                    var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
                     var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
                     if (value.decription !== undefined && value.description != null && value.description != "")
                         description.hide();
@@ -11282,7 +11568,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=statescompact.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11358,6 +11644,14 @@ jQuery.fn.extend({
                     break;
                 case "success":
                     if (this.options.isexpanded) {
+                        /*
+                         <div class="LTL-test-results true">
+                            Simulation Found<br>12 steps<br>
+                            <ul class="button-list">
+                            <li><button>OPEN</button></li>
+                            </ul>
+                            </div>
+                        */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
                         ltlresdiv.html("True for all traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
@@ -11403,7 +11697,7 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv);
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv); //
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -11418,6 +11712,14 @@ jQuery.fn.extend({
                     break;
                 case "partialsuccess":
                     if (this.options.isexpanded) {
+                        /*
+                         <div class="LTL-test-results true">
+                            Simulation Found<br>12 steps<br>
+                            <ul class="button-list">
+                            <li><button>OPEN</button></li>
+                            </ul>
+                            </div>
+                        */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
                         ltlresdiv.html("True for some traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
@@ -11470,7 +11772,7 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv);
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv); //
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -11485,6 +11787,18 @@ jQuery.fn.extend({
                     break;
                 case "fail":
                     if (this.options.isexpanded) {
+                        /*
+                         <div class="LTL-test-results false">
+                            No Simulation Found<br>
+                            12 steps <div class="pill-button-box">
+                            <div class="pill-button"><button>-</button></div>
+                            <div class="pill-button"><button>+</button></div>
+                        </div><br>
+                            <ul class="button-list">
+                                <li><button>TEST AGAIN</button></li>
+                            </ul>
+                        </div>
+                         */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
                         var fr = $("<div>No trace found</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
@@ -11530,7 +11844,7 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("false").appendTo(opDiv);
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("false").appendTo(opDiv); //
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("red").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -11587,7 +11901,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=compactltlresult.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11618,7 +11932,7 @@ jQuery.fn.extend({
                     start: function (event, ui) {
                         $(this).draggable("option", "cursorAt", {
                             left: 0,
-                            top: 0
+                            top: 0 //Math.floor(ui.helper.height() / 2)
                         });
                         that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
@@ -11640,7 +11954,7 @@ jQuery.fn.extend({
                 start: function (event, ui) {
                     $(this).draggable("option", "cursorAt", {
                         left: 0,
-                        top: 0
+                        top: 0 //Math.floor(ui.helper.height() / 2)
                     });
                     that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                 }
@@ -11652,14 +11966,21 @@ jQuery.fn.extend({
             var root = this.element;
             var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
+            //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
+            //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
+            //Adding pre-defined states
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+            //Oscilation state
             this._addCustomState(statesbtns, "oscillationstate", "../images/oscillation-state.svg");
+            //Selfloop state
             this._addCustomState(statesbtns, "selfloopstate", "../images/selfloop-state.svg");
+            //True-state state
             this._addCustomState(statesbtns, "truestate", "../images/true-state.svg");
+            //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
             var registry = new BMA.LTLOperations.OperatorsRegistry();
@@ -11684,12 +12005,13 @@ jQuery.fn.extend({
                     start: function (event, ui) {
                         $(this).draggable("option", "cursorAt", {
                             left: 0,
-                            top: 0
+                            top: 0 //Math.floor(ui.helper.height() / 2)
                         });
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
             }
+            //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });
@@ -11709,6 +12031,18 @@ jQuery.fn.extend({
             drawingSurface.drawingsurface({
                 isLightSVGTop: true
             });
+            //Adding drop zones
+            /*
+             <div class="temporal-dropzones">
+                <div class="dropzone copy">
+                    <img src="../images/LTL-copy.svg" alt="">
+                </div>
+                <div class="dropzone delete">
+                        <img src="../images/LTL-delete.svg" alt="">
+                </div>
+    
+            </div>
+            */
             var dom = drawingSurface.drawingsurface("getCentralPart");
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
             dropzones.width("100%");
@@ -11725,6 +12059,7 @@ jQuery.fn.extend({
                     that.options.onfittoview();
                 }
             });
+            //Context menu
             var holdCords = {
                 holdX: 0,
                 holdY: 0
@@ -11861,7 +12196,7 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-
+//# sourceMappingURL=tpeditor.js.map
 (function ($) {
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
@@ -11932,6 +12267,7 @@ jQuery.fn.extend({
                     }
                     break;
                 case "padding":
+                    //this.refresh();
                     break;
                 default:
                     break;
@@ -11944,7 +12280,7 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-
+//# sourceMappingURL=tpviewer.js.map
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -11993,6 +12329,9 @@ var BMA;
                     }
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
                 });
+                //window.Commands.On("LTLRequested",(args) => {
+                //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                //});
                 commands.On("TemporalPropertiesOperationsChanged", function (args) {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
@@ -12134,7 +12473,7 @@ var BMA;
         Presenters.LTLPresenter = LTLPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=LTLpresenter.js.map
 var BMA;
 (function (BMA) {
     var LTL;
@@ -12182,7 +12521,7 @@ var BMA;
                 var keyframes = this.appModel.States;
                 for (var i = 0; i < keyframes.length; i++) {
                     if (keyframes[i].Name === name)
-                        return keyframes[i];
+                        return keyframes[i]; //TODO: Check whether clone is needed here
                 }
                 return undefined;
             };
@@ -12208,7 +12547,7 @@ var BMA;
         LTL.StatesPresenter = StatesPresenter;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=states.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\..\model\biomodel.ts"/>
@@ -12299,6 +12638,7 @@ var BMA;
                         x: x,
                         y: y
                     };
+                    //that.driver.GetLightSVGRef().rect(x - 5, y - 5, 10, 10, { stroke: "red", fill: "transparent" });
                     var canPaste = _this.clipboard !== undefined;
                     var stagingOp = _this.GetOperationAtPoint(x, y);
                     if (stagingOp !== undefined) {
@@ -12413,6 +12753,7 @@ var BMA;
                 });
                 commands.On("KeyframesChanged", function (args) {
                     if (_this.CompareStatesToLocal(args.states)) {
+                        //this.ClearResults();
                         _this.states = args.states;
                         tpEditorDriver.SetStates(args.states);
                         for (var i = 0; i < _this.operations.length; i++) {
@@ -12442,6 +12783,8 @@ var BMA;
                     //    param = this.zoomConstraints.maxWidth;
                     //    this.navigationDriver.SetZoom(param);
                     //}
+                    //var zoom = (param - window.PlotSettings.MinWidth) / 24;
+                    //commands.Execute("ZoomSliderBind", zoom);
                 });
                 that.dragService.GetMouseMoves().subscribe(function (gesture) {
                     if (that.previousHighlightedOperation !== undefined) {
@@ -12499,6 +12842,7 @@ var BMA;
                             if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
                                 that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
                             }
+                            //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                             staginOp.IsVisible = !unpinned.isRoot;
                         }
                     }
@@ -12548,6 +12892,7 @@ var BMA;
                             _this.clipboard = {
                                 operation: _this.stagingOperation.operation.Operation.Clone()
                             };
+                            //Operation should stay in its origin place
                             if (_this.stagingOperation.isRoot) {
                                 _this.stagingOperation.originRef.IsVisible = true;
                             }
@@ -12579,6 +12924,7 @@ var BMA;
                                         }
                                     }
                                     else {
+                                        //State should state in its origin place
                                         _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
                                         _this.stagingOperation.originRef.Refresh();
                                     }
@@ -12590,6 +12936,7 @@ var BMA;
                                     var emptyCell = undefined;
                                     emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
                                     if (emptyCell !== undefined) {
+                                        //emptyCell.opLayout = operation;
                                         emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                         operation.Refresh();
                                         operation.AnalysisStatus = "nottested";
@@ -12601,6 +12948,7 @@ var BMA;
                                     }
                                     else {
                                         if (!_this.stagingOperation.fromclipboard) {
+                                            //Operation should stay in its origin place
                                             if (_this.stagingOperation.isRoot) {
                                                 _this.stagingOperation.originRef.IsVisible = true;
                                             }
@@ -12613,6 +12961,7 @@ var BMA;
                                 }
                                 else {
                                     if (!_this.stagingOperation.fromclipboard) {
+                                        //Operation should stay in its origin place
                                         if (_this.stagingOperation.isRoot) {
                                             _this.stagingOperation.originRef.IsVisible = true;
                                         }
@@ -12658,6 +13007,7 @@ var BMA;
                 */
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("bmaDefs");
+                //svg.pattern(parent, id, x, y, width, height, vx, vy, vwidth, vheight, settings) 
                 var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 4, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
@@ -12666,6 +13016,7 @@ var BMA;
                     transform: "translate(0,0)",
                     fill: "white"
                 });
+                //svg.mask(parent, id, x, y, width, height, settings)
                 var mask = svg.mask(defs, "mask-stripe");
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
                     fill: "url(#pattern-stripe)"
@@ -12825,6 +13176,7 @@ var BMA;
                         }
                     })
                         .fail(function () {
+                        //alert("LTL failed");
                     });
                 }
                 else {
@@ -12832,6 +13184,13 @@ var BMA;
                     driver.SetStatus("nottested");
                 }
             };
+            /*
+            private ClearResults() {
+                for (var i = 0; i < this.operations.length; i++) {
+                    this.operations[i].AnalysisStatus = "nottested";
+                }
+            }
+            */
             TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, domplot, op) {
                 var that = this;
                 driver.SetLTLRequestedCallback(function () {
@@ -12873,6 +13232,7 @@ var BMA;
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus(op.AnalysisStatus);
+                    //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     that.SubscribeToShowLTLRequest(driver, op);
@@ -12909,7 +13269,7 @@ var BMA;
         LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
-
+//# sourceMappingURL=temporalproperties.js.map
 var BMA;
 (function (BMA) {
     var LTLOperations;
@@ -12956,3 +13316,4 @@ var BMA;
         LTLOperations.OperatorsRegistry = OperatorsRegistry;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
+//# sourceMappingURL=operatorsregistry.js.map

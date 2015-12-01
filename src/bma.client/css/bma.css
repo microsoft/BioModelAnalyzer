@@ -3340,10 +3340,6 @@ textarea:focus {
   font-size: 30px;
 }
 .LTL-state table tr td.variable {
-  font-family: 'Segoe-UI';
-  font-size: 13px;
-  line-height: 17px;
-  color: #606060;
   width: 230px;
   padding: 0px 5px;
   text-align: left;
@@ -3351,6 +3347,12 @@ textarea:focus {
 }
 .LTL-state table tr td.variable img {
   height: 20px;
+}
+.LTL-state table tr td.variable p {
+  font-family: 'Segoe-UI';
+  font-size: 13px;
+  line-height: 17px;
+  color: #606060;
 }
 .LTL-state table tr td:empty {
   width: 45px;
@@ -4062,7 +4064,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .LTL-state table tr td.variable .state-variable-image {
   display: inline-block;
-  background: url("../images/state-variable.svg") no-repeat;
+  background: url("../images/variable.svg") no-repeat;
   background-size: 20px 20px;
   width: 20px;
   height: 20px;
@@ -4299,8 +4301,8 @@ ui-icon-arrowthickstop-1-n {
   color: #606060;
 }
 .state-tooltip img {
-  max-width: 20px;
-  max-height: 20px;
+  width: 20px;
+  height: 20px;
 }
 .state-tooltip table {
   margin: 5px;
