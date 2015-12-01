@@ -1150,7 +1150,7 @@ ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-ic
   background-image: url('../images/icon-paste.svg') !important;
 }
 .ui-icon-trash {
-  background-image: url('../images/icon-paste.svg') !important;
+  background-image: url('../images/icon-delete.svg') !important;
 }
 .ui-icon-pencil {
   background-image: url('../images/icon-edit.svg') !important;
@@ -3730,6 +3730,9 @@ ui-icon-arrowthickstop-1-n {
         }
     }
 }*/
+.state-toolbar {
+  max-width: 360px;
+}
 .state-button.active {
   border: 3px solid #606060;
 }
@@ -4080,6 +4083,12 @@ ui-icon-arrowthickstop-1-n {
 .LTL-state table tr td.variable p.hidden {
   display: none;
 }
+.LTL-state table tr td.variable p.only-variable {
+  width: 100px;
+}
+.LTL-state table tr td.variable p.not-selected {
+  width: 0px;
+}
 .LTL-state table tr td.variable img {
   display: inline-block;
   width: 20px;
@@ -4371,4 +4380,46 @@ ui-icon-arrowthickstop-1-n {
 }
 .LTL-results-not-expanded.false {
   color: #CF451B;
+}
+.ui-icon-scissors {
+  background-size: 16px 16px;
+  background-position: 0px 0px;
+}
+.ui-icon-copy {
+  background-size: 16px 16px;
+  background-position: 0px 0px;
+}
+.ui-icon-pencil {
+  background-size: 16px 16px;
+  background-position: 0px 0px;
+}
+.ui-icon-arrow-4-diag {
+  background-size: 16px 16px;
+  background-position: 0px 0px;
+}
+.ui-icon-trash {
+  background-size: 16px 16px;
+  background-position: 0px 0px;
+}
+.ui-icon-clipboard {
+  background-size: 16px 16px;
+  background-position: 0px 0px;
+}
+ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons {
+  width: 85px;
+  font-size: 12px;
+  padding: 5px 0 3px 0;
+}
+ul.command-list {
+  padding: 5px 0 3px 0;
+  position: absolute;
+  border: none;
+}
+ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a {
+  border-radius: 0;
+  text-decoration: none;
+  line-height: 19px;
+  padding: 2px 5px;
+  display: block;
+  vertical-align: middle;
 }

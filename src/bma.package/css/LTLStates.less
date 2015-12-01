@@ -52,6 +52,9 @@
         }
     }
 }*/
+.state-toolbar {
+    max-width:360px;
+}
 
 .state-button{
     &.active {
@@ -405,6 +408,14 @@
                         &.hidden{
                             display:none;
                         }
+
+                        &.only-variable{
+                            width:100px;
+                        }
+
+                        &.not-selected{
+                            width:0px;
+                        }
                     }
 
                     img{
@@ -745,4 +756,55 @@
     &.false {
         color:@darkred;
     }
+}
+
+.ui-icon-scissors{
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+}
+
+.ui-icon-copy{
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+}
+
+.ui-icon-pencil{
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+}
+
+.ui-icon-arrow-4-diag{
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+}
+
+.ui-icon-trash{
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+}
+
+.ui-icon-clipboard{
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+}
+
+ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons {
+    width: 85px;
+    font-size: 12px;
+    padding: 5px 0 3px 0;
+}
+
+ul.command-list {
+    padding: 5px 0 3px 0;
+    position: absolute;
+    border: none;
+}
+
+ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons li a {
+    border-radius: 0;
+    text-decoration: none;
+    line-height: 19px;
+    padding: 2px 5px;
+    display: block;
+    vertical-align: middle;
 }

@@ -227,6 +227,7 @@
     <Content Include="images\random1.svg" />
     <Content Include="images\random2.png" />
     <Content Include="images\random2.svg" />
+    <Content Include="images\range.png" />
     <Content Include="images\receptor-ON.png" />
     <Content Include="images\receptor-ON.svg" />
     <Content Include="images\receptor.png" />

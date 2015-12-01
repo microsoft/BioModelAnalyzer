@@ -348,7 +348,7 @@
             var selectedContainer = $("<p></p>").addClass("hidden").appendTo(variableTd);
 
             var variableImg = $("<div></div>").addClass("state-variable-image")/*attr("src", "../images/state-variable.svg")*/.appendTo(variableTd);
-            var selectedVariable = $("<p></p>").appendTo(variableTd);
+            var selectedVariable = $("<p></p>").addClass("only-variable").appendTo(variableTd);
             var expandButton = $("<div></div>").addClass('arrow-down').appendTo(variableTd);
 
             var firstLeft = $(variableTd).offset().left;
@@ -377,14 +377,19 @@
 
                 $(selectedContainer).text(containerName? containerName: "ALL");
                 $(selectedVariable).text(value.variable);
+                selectedVariable.removeClass("not-selected");
 
                 variablePicker.hide();
                 //expandButton.removeClass('inputs-list-header-expanded');
                 if (containerName !== "ALL") {
                     containerImg.removeClass("hidden");
                     selectedContainer.removeClass("hidden");
+                    selectedVariable.removeClass("only-variable");
                 }
             }
+
+            if (!$(selectedVariable).text())
+                selectedVariable.addClass("not-selected");
 
             var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
 
