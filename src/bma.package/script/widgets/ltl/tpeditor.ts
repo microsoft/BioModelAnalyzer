@@ -31,13 +31,13 @@
 
                 stateDiv.draggable({
                     helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
                     start: function (event, ui) {
-                        $(this).draggable("option", "cursorAt", {
-                            left: 0,   //Math.floor(ui.helper.width() / 2),
-                            top: 0     //Math.floor(ui.helper.height() / 2)
-                        });
                         that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
+
                 });
             }
         },
@@ -56,13 +56,13 @@
 
             state.draggable({
                 helper: "clone",
+                cursorAt: { left: 0, top: 0 },
+                opacity: 0.4,
+                cursor: "pointer",
                 start: function (event, ui) {
-                    $(this).draggable("option", "cursorAt", {
-                        left: 0,   //Math.floor(ui.helper.width() / 2),
-                        top: 0     //Math.floor(ui.helper.height() / 2)
-                    });
                     that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                 }
+
             });
 
             return state;
@@ -121,11 +121,10 @@
 
                 opDiv.draggable({
                     helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
                     start: function (event, ui) {
-                        $(this).draggable("option", "cursorAt", {
-                            left: 0,   //Math.floor(ui.helper.width() / 2),
-                            top: 0     //Math.floor(ui.helper.height() / 2)
-                        });
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });

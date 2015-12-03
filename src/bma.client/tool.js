@@ -11933,11 +11933,10 @@ jQuery.fn.extend({
                     .appendTo(that.statesbtns);
                 stateDiv.draggable({
                     helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
                     start: function (event, ui) {
-                        $(this).draggable("option", "cursorAt", {
-                            left: 0,
-                            top: 0 //Math.floor(ui.helper.height() / 2)
-                        });
                         that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
                 });
@@ -11955,11 +11954,10 @@ jQuery.fn.extend({
             $("<img>").attr("src", imagePath).appendTo(state);
             state.draggable({
                 helper: "clone",
+                cursorAt: { left: 0, top: 0 },
+                opacity: 0.4,
+                cursor: "pointer",
                 start: function (event, ui) {
-                    $(this).draggable("option", "cursorAt", {
-                        left: 0,
-                        top: 0 //Math.floor(ui.helper.height() / 2)
-                    });
                     that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                 }
             });
@@ -12006,11 +12004,10 @@ jQuery.fn.extend({
                 $("<div></div>").addClass("hole").appendTo(opDiv);
                 opDiv.draggable({
                     helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
                     start: function (event, ui) {
-                        $(this).draggable("option", "cursorAt", {
-                            left: 0,
-                            top: 0 //Math.floor(ui.helper.height() / 2)
-                        });
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
