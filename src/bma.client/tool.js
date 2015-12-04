@@ -20,8 +20,8 @@
             if (_svg === undefined)
                 return undefined;
             else {
-                return _svg._svg.getBBox();
-                //return _bbox;
+                //return _svg._svg.getBBox();
+                return _bbox;
             }
         };
 
@@ -4322,7 +4322,7 @@ var BMA;
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
-                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet });
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet, onaddstaterequested: function () { window.Commands.Execute("Expand", "LTLStates"); } });
                     this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
                     this.svgDriver.SetGridVisibility(false);
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
@@ -11929,7 +11929,8 @@ jQuery.fn.extend({
         options: {
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
-            onfittoview: undefined
+            onfittoview: undefined,
+            onaddstaterequested: undefined
         },
         _refreshStates: function () {
             var that = this;
@@ -11954,6 +11955,12 @@ jQuery.fn.extend({
                     }
                 });
             }
+            var addState = $("<div></div>").addClass("state-button new").text("+").appendTo(that.statesbtns);
+            addState.click(function () {
+                if (that.options.onaddstaterequested !== undefined) {
+                    that.options.onaddstaterequested();
+                }
+            });
         },
         _addCustomState: function (statesbtns, name, imagePath) {
             var that = this;
@@ -11985,7 +11992,6 @@ jQuery.fn.extend({
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
-            //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
             //Adding pre-defined states
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);

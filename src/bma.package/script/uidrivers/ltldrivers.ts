@@ -114,7 +114,7 @@ module BMA {
                 this.popupWindow.show();
 
                 if (shouldInit) {
-                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet });
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet, onaddstaterequested: function () { window.Commands.Execute("Expand", "LTLStates"); } });
                     this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
                     this.svgDriver.SetGridVisibility(false);
 
@@ -830,7 +830,7 @@ module BMA {
                                 result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
                             }
                         }
-                        if (state.Operands.length !== 0 && result) 
+                        if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
                     }
                 }
@@ -870,7 +870,7 @@ module BMA {
                         count = 1;
                     } else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0 && count > 2) 
+                        if (i == tags.length - 1 && prevState.length !== 0 && count > 2)
                             labels.push({
                                 text: prevState,
                                 width: count - 1,
