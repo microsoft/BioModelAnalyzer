@@ -11,7 +11,8 @@
         options: {
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
-            onfittoview: undefined
+            onfittoview: undefined,
+            onaddstaterequested: undefined
         },
 
         _refreshStates: function () {
@@ -40,6 +41,13 @@
 
                 });
             }
+
+            var addState = $("<div></div>").addClass("state-button new").text("+").appendTo(that.statesbtns);
+            addState.click(function () {
+                if (that.options.onaddstaterequested !== undefined) {
+                    that.options.onaddstaterequested();
+                }
+            });
         },
 
         _addCustomState: function (statesbtns: JQuery, name, imagePath: string) {
@@ -80,7 +88,6 @@
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
-            //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
 
             //Adding pre-defined states
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);

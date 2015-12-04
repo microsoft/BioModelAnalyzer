@@ -37,12 +37,30 @@
             });
 
             svgdiv.hide();
-           
+
         },
 
         refresh: function () {
             if (this._svg !== undefined) {
                 this._svg.clear();
+
+                var svg = this._svg;
+                var defs = svg.defs("bmaDefs");
+
+                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(45)"
+                });
+                svg.rect(pattern, 0, 0, 4, 4, {
+                    transform: "translate(0,0)",
+                    fill: "white"
+                });
+
+                var mask = svg.mask(defs, "mask-stripe");
+                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
+                    fill: "url(#pattern-stripe)"
+                });
+
                 var operations = this.options.operations;
                 var currentPos = { x: 0, y: 0 };
                 var height = this.options.padding.y;
@@ -66,7 +84,7 @@
                     height: height, // - this._pixelOffset,
                     viewBox: "0 0 " + width + " " + height
                 }, true);
-                
+
             }
         },
 

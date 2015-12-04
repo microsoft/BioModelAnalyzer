@@ -4322,7 +4322,7 @@ var BMA;
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
-                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet });
+                    this.tpeditor.temporalpropertieseditor({ commands: this.commands, states: this.statesToSet, onaddstaterequested: function () { window.Commands.Execute("Expand", "LTLStates"); } });
                     this.svgDriver = new BMA.UIDrivers.SVGPlotDriver(this.tpeditor.temporalpropertieseditor("getDrawingSurface"));
                     this.svgDriver.SetGridVisibility(false);
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
@@ -11942,7 +11942,8 @@ jQuery.fn.extend({
         options: {
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
-            onfittoview: undefined
+            onfittoview: undefined,
+            onaddstaterequested: undefined
         },
         _refreshStates: function () {
             var that = this;
@@ -11967,6 +11968,12 @@ jQuery.fn.extend({
                     }
                 });
             }
+            var addState = $("<div></div>").addClass("state-button new").text("+").appendTo(that.statesbtns);
+            addState.click(function () {
+                if (that.options.onaddstaterequested !== undefined) {
+                    that.options.onaddstaterequested();
+                }
+            });
         },
         _addCustomState: function (statesbtns, name, imagePath) {
             var that = this;
@@ -11998,7 +12005,6 @@ jQuery.fn.extend({
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
-            //$("<div></div>").addClass("state-button new").text("+").appendTo(statesbtns);
             //Adding pre-defined states
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
@@ -12257,6 +12263,20 @@ jQuery.fn.extend({
         refresh: function () {
             if (this._svg !== undefined) {
                 this._svg.clear();
+                var svg = this._svg;
+                var defs = svg.defs("bmaDefs");
+                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(45)"
+                });
+                svg.rect(pattern, 0, 0, 4, 4, {
+                    transform: "translate(0,0)",
+                    fill: "white"
+                });
+                var mask = svg.mask(defs, "mask-stripe");
+                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
+                    fill: "url(#pattern-stripe)"
+                });
                 var operations = this.options.operations;
                 var currentPos = { x: 0, y: 0 };
                 var height = this.options.padding.y;
@@ -13021,20 +13041,8 @@ var BMA;
                 this.LoadFromAppModel();
             }
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
-                /*
-                <pattern id="pattern-stripe"
-                  width="4" height="4"
-                  patternUnits="userSpaceOnUse"
-                  patternTransform="rotate(45)">
-                  <rect width="2" height="4" transform="translate(0,0)" fill="white"></rect>
-                </pattern>
-                <mask id="mask-stripe">
-                  <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-stripe)" />
-                </mask>
-                */
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("bmaDefs");
-                //svg.pattern(parent, id, x, y, width, height, vx, vy, vwidth, vheight, settings) 
                 var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 4, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
@@ -13043,7 +13051,6 @@ var BMA;
                     transform: "translate(0,0)",
                     fill: "white"
                 });
-                //svg.mask(parent, id, x, y, width, height, settings)
                 var mask = svg.mask(defs, "mask-stripe");
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
                     fill: "url(#pattern-stripe)"
