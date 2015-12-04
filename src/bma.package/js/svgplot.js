@@ -177,9 +177,9 @@
 
                 if (rect.labels !== undefined && rect.labels.length > 0) {
                     var str = "";
-                    for (var i = 0; i < rect.labels.length; i++) {
-                        str = str + rect.labels[i];
-                        if (i < rect.labels.length - 1) {
+                    for (var j = 0; j < rect.labels.length; j++) {
+                        str = str + rect.labels[j];
+                        if (j < rect.labels.length - 1) {
                             str += ", ";
                         }
                     }
