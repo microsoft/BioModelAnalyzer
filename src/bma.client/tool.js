@@ -12250,6 +12250,20 @@ jQuery.fn.extend({
         refresh: function () {
             if (this._svg !== undefined) {
                 this._svg.clear();
+                var svg = this._svg;
+                var defs = svg.defs("bmaDefs");
+                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(45)"
+                });
+                svg.rect(pattern, 0, 0, 4, 4, {
+                    transform: "translate(0,0)",
+                    fill: "white"
+                });
+                var mask = svg.mask(defs, "mask-stripe");
+                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
+                    fill: "url(#pattern-stripe)"
+                });
                 var operations = this.options.operations;
                 var currentPos = { x: 0, y: 0 };
                 var height = this.options.padding.y;
@@ -13014,20 +13028,8 @@ var BMA;
                 this.LoadFromAppModel();
             }
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
-                /*
-                <pattern id="pattern-stripe"
-                  width="4" height="4"
-                  patternUnits="userSpaceOnUse"
-                  patternTransform="rotate(45)">
-                  <rect width="2" height="4" transform="translate(0,0)" fill="white"></rect>
-                </pattern>
-                <mask id="mask-stripe">
-                  <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-stripe)" />
-                </mask>
-                */
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("bmaDefs");
-                //svg.pattern(parent, id, x, y, width, height, vx, vy, vwidth, vheight, settings) 
                 var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 4, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
@@ -13036,7 +13038,6 @@ var BMA;
                     transform: "translate(0,0)",
                     fill: "white"
                 });
-                //svg.mask(parent, id, x, y, width, height, settings)
                 var mask = svg.mask(defs, "mask-stripe");
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
                     fill: "url(#pattern-stripe)"
