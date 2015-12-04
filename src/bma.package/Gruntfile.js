@@ -94,7 +94,8 @@ module.exports = function (grunt) {
                 files: [
                     { src: 'tool.js', dest: '../bma.client/tool.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
-                    { src: 'css/bma.css', dest: '../bma.client/css/bma.css' }
+                    { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
+                    //{ src: 'js/svgplot.js', dest: '../bma.client/js/svgplot.js' }
                 ]
             },
         },

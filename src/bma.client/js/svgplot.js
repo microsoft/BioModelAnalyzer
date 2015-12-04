@@ -20,7 +20,7 @@
             if (_svg === undefined)
                 return undefined;
             else {
-                //return _svg._svg.getBBox();
+
                 return _bbox;
             }
         };
