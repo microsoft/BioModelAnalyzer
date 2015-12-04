@@ -163,7 +163,36 @@
                 var width = dataToScreenX(rect.x + rect.width) - dataToScreenX(rect.x);
                 var height = dataToScreenY(rect.y) - dataToScreenY(rect.y + rect.height);
 
+                //var labels = [];
+                //for (var j = 0; j < _rects.labels.length; j++) {
+                //    context.fill
+                //}
+
+                var alpha = context.globalAlpha;
+                if (rect.opacity !== undefined) {
+                    context.globalAlpha = rect.opacity;
+                }
                 context.fillRect(x, y, width, height);
+                context.globalAlpha = alpha;
+
+                if (rect.labels !== undefined && rect.labels.length > 0) {
+                    var str = "";
+                    for (var i = 0; i < rect.labels.length; i++) {
+                        str = str + rect.labels[i];
+                        if (i < rect.labels.length - 1) {
+                            str += ", ";
+                        }
+                    }
+                    context.fillStyle = "rgb(37,96,159)";
+                    context.textBaseline = "top";
+                    var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
+                    context.font = textheight + "px Segoe";
+                    while (context.measureText(str).width > width * 0.8) {
+                        var textheight = 0.8 * textheight;
+                        context.font = textheight + "px Segoe";
+                    }
+                    context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
+                }
             }
         };
 
@@ -9542,7 +9571,9 @@ var BMA;
                     rects.push({
                         x: that.options.labels[i].x, y: that.options.labels[i].y,
                         width: that.options.labels[i].width, height: that.options.labels[i].height,
-                        fill: i % 2 == 0 ? "grey" : "white"
+                        fill: i % 2 == 0 ? "grey" : "white",
+                        opacity: 0.5,
+                        labels: that.options.labels[i].text
                     });
                 that.rectsPlot.draw({ rects: rects });
             }
@@ -13043,11 +13074,11 @@ var BMA;
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("bmaDefs");
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 4, 4, {
+                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
                 });
-                svg.rect(pattern, 0, 0, 2, 4, {
+                svg.rect(pattern, 0, 0, 4, 4, {
                     transform: "translate(0,0)",
                     fill: "white"
                 });
