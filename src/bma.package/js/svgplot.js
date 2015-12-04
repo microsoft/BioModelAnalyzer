@@ -163,6 +163,11 @@
                 var width = dataToScreenX(rect.x + rect.width) - dataToScreenX(rect.x);
                 var height = dataToScreenY(rect.y) - dataToScreenY(rect.y + rect.height);
 
+                //var labels = [];
+                //for (var j = 0; j < _rects.labels.length; j++) {
+                //    context.fill
+                //}
+
                 context.fillRect(x, y, width, height);
             }
         };

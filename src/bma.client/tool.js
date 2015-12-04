@@ -20,8 +20,8 @@
             if (_svg === undefined)
                 return undefined;
             else {
-                return _svg._svg.getBBox();
-                //return _bbox;
+                //return _svg._svg.getBBox();
+                return _bbox;
             }
         };
 
@@ -9528,26 +9528,39 @@ var BMA;
                 .attr("id", "glPlot")
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
-            ///states markers on plot
-            that.domPlot = undefined;
-            if (that.options.labels !== undefined && that.options.labels !== null) {
-                that.domPlot = $("<div></div>").attr("id", "domPlot").attr("data-idd-plot", "dom").appendTo(that.chartdiv);
-            }
-            ///
+            var rectsPlotDiv = $("<div></div>")
+                .attr("id", "rectsPlot")
+                .attr("data-idd-plot", "rectsPlot")
+                .appendTo(this.chartdiv);
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
-            if (that.domPlot !== undefined) {
-                var domPlot2 = that._chart.get(that.domPlot[0]);
-                for (var i = 0; i < that.options.labels.length; i++) {
-                    var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass((that.options.labels[i].text.length > 1) ? "stripes" : "")
-                        .addClass("simulationplot-label");
-                    for (var j = 0; j < that.options.labels[i].text.length; j++)
-                        var marker = $("<div></div>").text(that.options.labels[i].text[j]).attr("data-idd-scale", "element")
-                            .addClass("state-button").appendTo(label);
-                    domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height, (that.options.labels[i].width > 1) ? 0 : 0.5, 1);
-                    (i % 2 == 0) ? label.addClass("repeat") : 0;
-                }
+            ///states markers on plot
+            if (that.options.labels !== undefined && that.options.labels !== null) {
+                that.rectsPlot = that._chart.get("rectsPlot");
+                var rects = [];
+                for (var i = 0; i < that.options.labels.length; i++)
+                    rects.push({
+                        x: that.options.labels[i].x, y: that.options.labels[i].y,
+                        width: that.options.labels[i].width, height: that.options.labels[i].height,
+                        fill: i % 2 == 0 ? "grey" : "white"
+                    });
+                that.rectsPlot.draw({ rects: rects });
             }
+            //if (that.domPlot !== undefined) {
+            //    var domPlot2 = that._chart.get(that.domPlot[0]);
+            //    for (var i = 0; i < that.options.labels.length; i++) {
+            //        var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass((that.options.labels[i].text.length > 1) ? "stripes" : "")
+            //            .addClass("simulationplot-label");
+            //        for (var j = 0; j < that.options.labels[i].text.length; j++)
+            //            var marker = $("<div></div>").text(that.options.labels[i].text[j]).attr("data-idd-scale", "element")
+            //                .addClass("state-button").appendTo(label);
+            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
+            //            (that.options.labels[i].width > 1) ? 0: 0.5 , 1);
+            //        (i % 2 == 0) ? label.addClass("repeat") : 0;
+            //    }
+            //    //that._chart.addDOM(domPlot);
+            //    //domPlot2.find("simulationplot-label").
+            //}
             //
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 for (var i = 0; i < that.options.colors.length; i++) {
