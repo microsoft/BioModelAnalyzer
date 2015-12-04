@@ -11268,9 +11268,9 @@ jQuery.fn.extend({
         createVariablePicker: function (variableTd, variable) {
             var that = this;
             var containerImg = $("<div></div>").addClass("state-container-image") /*attr("src", "../images/state-container.svg")*/.addClass("hidden").appendTo(variableTd);
-            var selectedContainer = $("<p></p>").addClass("hidden").appendTo(variableTd);
+            var selectedContainer = $("<div></div>").addClass("hidden").addClass("state-container-name").addClass("state-text").appendTo(variableTd);
             var variableImg = $("<div></div>").addClass("state-variable-image") /*attr("src", "../images/state-variable.svg")*/.appendTo(variableTd);
-            var selectedVariable = $("<p></p>").addClass("only-variable").appendTo(variableTd);
+            var selectedVariable = $("<div></div>").addClass("only-variable").addClass("state-text").appendTo(variableTd);
             var expandButton = $("<div></div>").addClass('arrow-down').appendTo(variableTd);
             var firstLeft = $(variableTd).offset().left;
             var firstTop = $(variableTd).offset().top;
