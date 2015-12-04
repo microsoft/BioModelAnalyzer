@@ -454,25 +454,28 @@ module BMA {
                             transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
                         });
 
-                        var containerX = (renderParams.gridCell.x + 0.5) * renderParams.grid.xStep + renderParams.grid.x0 + (renderParams.sizeCoef - 1) * renderParams.grid.xStep / 2;
-                        var containerY = (renderParams.gridCell.y + 0.5) * renderParams.grid.yStep + renderParams.grid.y0 + (renderParams.sizeCoef - 1) * renderParams.grid.yStep / 2;
+                        var angle = 0;
+                        if (renderParams.gridCell !== undefined) {
+                            var containerX = (renderParams.gridCell.x + 0.5) * renderParams.grid.xStep + renderParams.grid.x0 + (renderParams.sizeCoef - 1) * renderParams.grid.xStep / 2;
+                            var containerY = (renderParams.gridCell.y + 0.5) * renderParams.grid.yStep + renderParams.grid.y0 + (renderParams.sizeCoef - 1) * renderParams.grid.yStep / 2;
 
-                        var v = {
-                            x: renderParams.layout.PositionX - containerX,
-                            y: renderParams.layout.PositionY - containerY
-                        };
-                        var len = Math.sqrt(v.x * v.x + v.y * v.y);
+                            var v = {
+                                x: renderParams.layout.PositionX - containerX,
+                                y: renderParams.layout.PositionY - containerY
+                            };
+                            var len = Math.sqrt(v.x * v.x + v.y * v.y);
 
-                        v.x = v.x / len;
-                        v.y = v.y / len;
+                            v.x = v.x / len;
+                            v.y = v.y / len;
 
-                        var acos = Math.acos(-v.y);
+                            var acos = Math.acos(-v.y);
 
-                        var angle = acos * v.x / Math.abs(v.x);
+                            angle = acos * v.x / Math.abs(v.x);
 
-                        angle = angle * 180 / Math.PI;
-                        if (angle < 0)
-                            angle += 360;
+                            angle = angle * 180 / Math.PI;
+                            if (angle < 0)
+                                angle += 360;
+                        }
 
                         var data = "M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z";
                         var path = jqSvg.createPath();

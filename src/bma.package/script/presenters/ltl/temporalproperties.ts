@@ -624,6 +624,10 @@ module BMA {
                     }
 
                     var size = Math.max(bbox.width, bbox.height);
+                    var center = {
+                        x: bbox.x + bbox.width / 2,
+                        y: bbox.y + bbox.height / 2
+                    };
 
                     if (size < this.zoomConstraints.minWidth)
                         this.zoomConstraints.minWidth = size;
@@ -631,8 +635,8 @@ module BMA {
                         this.zoomConstraints.maxWidth = size;
 
                     bbox = {
-                        x: bbox.x,
-                        y: bbox.y,
+                        x: center.x - size / 2,
+                        y: center.y - size / 2,
                         width: size,
                         height: size
                     }

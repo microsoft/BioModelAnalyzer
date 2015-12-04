@@ -459,7 +459,7 @@ module BMA {
                 dragSubject.drag.subscribe(
                     (gesture) => {
 
-
+                        
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
                             this.stagingLine.x1 = gesture.x1;
                             this.stagingLine.y1 = gesture.y1;
@@ -483,6 +483,7 @@ module BMA {
                                 that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
                             }
                         }
+                        
                     });
 
                 dragSubject.dragEnd.subscribe(
