@@ -433,12 +433,14 @@
             if (currSymbol.value.container === undefined) currSymbol.value.container = 0;
 
             for (var i = 0; i < this.options.variables.length; i++) {
-                var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
-                    .appendTo(divContainers).click(function () {
-                        that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
-                    });
-                if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
-                    that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                if (this.options.variables[i].name) {
+                    var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
+                        .appendTo(divContainers).click(function () {
+                            that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                        });
+                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
+                        that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                }
             }
             if (currSymbol.value == 0)
                 that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);
@@ -458,24 +460,24 @@
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
 
                 var variableName = that.options.variables[idx].vars[j];
-                if (that.options.variables[idx].vars[j] == "")
-                    variableName = "Unnamed";
+                if (that.options.variables[idx].vars[j]) {
 
-                var variable = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
-                    .appendTo(divVariables).click(function () {
-                        divVariables.find(".active").removeClass("active");
-                        $(this).addClass("active");
-                        
-                        currSymbol.value = { container: $(container).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
-                        setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
+                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                        .appendTo(divVariables).click(function () {
+                            divVariables.find(".active").removeClass("active");
+                            $(this).addClass("active");
 
-                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-                    });
+                            currSymbol.value = { container: $(container).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                            setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
 
-                if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
-                    && currSymbol.value.variable == that.options.variables[idx].vars[j]) {
-                    variable.addClass("active");
-                    setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
+                            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                        });
+
+                    if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
+                        && currSymbol.value.variable == that.options.variables[idx].vars[j]) {
+                        variable.addClass("active");
+                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
+                    }
                 }
             }
         },

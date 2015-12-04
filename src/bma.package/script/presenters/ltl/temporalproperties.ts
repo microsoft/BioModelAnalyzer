@@ -720,6 +720,9 @@ module BMA {
                         .done(function (res) {
                             if (res.Ticks == null) {
                                 alert(res.Error);
+                                driver.SetStatus("nottested");
+                                operation.AnalysisStatus = "nottested";
+                                domplot.updateLayout();
                             }
                             else {
                                 if (res.Status === "True") {
@@ -751,10 +754,16 @@ module BMA {
                                     }
 
                                 } else {
+                                    driver.SetShowResultsCallback(function (showpositive) {
+                                        that.commands.Execute("ShowLTLResults", {
+                                            ticks: res.NegTicks
+                                        });
+                                    });
+
                                     driver.SetStatus("fail");
                                     operation.AnalysisStatus = "fail";
                                     operation.Tag = {
-                                        data: undefined
+                                        data: res.NegTicks
                                     };
                                 }
 
@@ -773,7 +782,10 @@ module BMA {
                             }
                         })
                         .fail(function () {
-                            //alert("LTL failed");
+                            alert("LTL failed");
+                            driver.SetStatus("nottested");
+                            operation.AnalysisStatus = "nottested";
+                            domplot.updateLayout();
                         })
 
 
