@@ -168,7 +168,31 @@
                 //    context.fill
                 //}
 
+                var alpha = context.globalAlpha;
+                if (rect.opacity !== undefined) {
+                    context.globalAlpha = rect.opacity;
+                }
                 context.fillRect(x, y, width, height);
+                context.globalAlpha = alpha;
+
+                if (rect.labels !== undefined && rect.labels.length > 0) {
+                    var str = "";
+                    for (var i = 0; i < rect.labels.length; i++) {
+                        str = str + rect.labels[i];
+                        if (i < rect.labels.length - 1) {
+                            str += ", ";
+                        }
+                    }
+                    context.fillStyle = "rgb(37,96,159)";
+                    context.textBaseline = "top";
+                    var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
+                    context.font = textheight + "px Segoe";
+                    while (context.measureText(str).width > width * 0.8) {
+                        var textheight = 0.8 * textheight;
+                        context.font = textheight + "px Segoe";
+                    }
+                    context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
+                }
             }
         };
 
