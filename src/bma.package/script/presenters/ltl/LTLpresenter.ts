@@ -135,6 +135,25 @@
 
                     });
                 });
+
+                commands.On("KeyframesChanged", (args: { states: BMA.LTLOperations.Keyframe[] }) => {
+                    //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
+                    if (this.tppresenter === undefined) {
+                        var operations = this.appModel.Operations.slice(0);
+                        var opsWithStatus = [];
+                        if (operations !== undefined && operations.length > 0) {
+                            for (var i = 0; i < operations.length; i++) {
+                                BMA.LTLOperations.RefreshStatesInOperation(operations[i], args.states);
+                                opsWithStatus.push({
+                                    operation: operations[i],
+                                    status: "nottested"
+                                });
+                            }
+                        }
+                        this.appModel.Operations = operations;
+                        ltlviewer.GetTemporalPropertiesViewer().SetOperations(opsWithStatus);
+                    }
+                })
             }
 
 

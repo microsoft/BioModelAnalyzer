@@ -67,6 +67,8 @@ module BMA {
 
         export interface ICompactLTLResultsViewer {
             SetStatus(status: string);
+            Collapse();
+            Expand();
             GetSteps(): number;
             SetLTLRequestedCallback(callback: Function);
             SetOnExpandedCallback(callback: Function);

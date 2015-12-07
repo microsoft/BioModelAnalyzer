@@ -290,5 +290,49 @@
                 return result;
             }
         }
+
+        export function RefreshStatesInOperation(operation: IOperand, states: Keyframe[]): boolean {
+            if (operation === undefined)
+                return false;
+
+            if (operation instanceof Operation) {
+                var wasUpdated = false;
+                var operands = (<Operation>operation).Operands;
+
+                for (var i = 0; i < operands.length; i++) {
+                    var op = operands[i];
+
+                    if (op === undefined)
+                        continue;
+
+                    if (op instanceof Operation) {
+                        wasUpdated = wasUpdated || this.RefreshStatesInOperation(operands[i], states);
+                    } else {
+                        if (op instanceof Keyframe) {
+                            var name = (<Keyframe>op).Name;
+                            if (name !== undefined) {
+                                var updated = false;
+                                for (var j = 0; j < states.length; j++) {
+                                    if (states[j].Name === name) {
+                                        wasUpdated = wasUpdated || operands[i].GetFormula() !== states[j].GetFormula();
+                                        operands[i] = states[j];
+                                        updated = true;
+                                        break;
+                                    }
+                                }
+                                if (!updated) {
+                                    operands[i] = undefined;
+                                    wasUpdated = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return wasUpdated;
+            }
+
+            return false;
+        }
     }
 }  
