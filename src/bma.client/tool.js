@@ -177,9 +177,9 @@
 
                 if (rect.labels !== undefined && rect.labels.length > 0) {
                     var str = "";
-                    for (var i = 0; i < rect.labels.length; i++) {
-                        str = str + rect.labels[i];
-                        if (i < rect.labels.length - 1) {
+                    for (var j = 0; j < rect.labels.length; j++) {
+                        str = str + rect.labels[j];
+                        if (j < rect.labels.length - 1) {
                             str += ", ";
                         }
                     }
@@ -4808,6 +4808,12 @@ var BMA;
                     }
                 });
             }
+            LTLResultsCompactViewer.prototype.Collapse = function () {
+                this.compactltlresult.compactltlresult({ isexpanded: false });
+            };
+            LTLResultsCompactViewer.prototype.Expand = function () {
+                this.compactltlresult.compactltlresult({ isexpanded: true });
+            };
             LTLResultsCompactViewer.prototype.SetStatus = function (status) {
                 this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
             };
@@ -12649,6 +12655,7 @@ var BMA;
                     maxWidth: 1000
                 };
                 this.states = [];
+                this.drivers = [];
                 var that = this;
                 this.appModel = appModel;
                 this.ajax = ajax;
@@ -13291,6 +13298,7 @@ var BMA;
                     dom.remove(cps[i].dommarker);
                 }
                 this.controlPanels = [];
+                this.drivers = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
                     var bbox = op.BoundingBox;
@@ -13307,6 +13315,7 @@ var BMA;
                     that.SubscribeToShowLTLRequest(driver, op);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
+                    this.drivers.push(driver);
                 }
             };
             TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (updateControls, updateAppModel) {

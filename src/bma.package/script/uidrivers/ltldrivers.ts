@@ -647,6 +647,14 @@ module BMA {
                 });
             }
 
+            public Collapse() {
+                this.compactltlresult.compactltlresult({ isexpanded: false });
+            }
+
+            public Expand() {
+                this.compactltlresult.compactltlresult({ isexpanded: true });
+            }
+
             public SetStatus(status: string) {
                 this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
             }
