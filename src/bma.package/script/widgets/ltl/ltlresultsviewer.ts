@@ -148,6 +148,7 @@
                         data: that.options.data,
                         tags: that.options.tags,
                         canEditInitialValue: false,
+                        showInitialValue: false,
                         init: that.options.init
                     });
                     if (this.options.colors === undefined || this.options.colors.length == 0)

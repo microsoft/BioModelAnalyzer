@@ -624,9 +624,10 @@ module BMA {
 
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
+                    tags.push([]);
                     if (i != 0) {
                         data.push([]);
-                        tags.push([]);
+                        //tags.push([]);
                     }
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
@@ -701,7 +702,7 @@ module BMA {
                     }
 
                     if (state.Operands.length !== 0 && result)
-                        initTags.push(state.Name);
+                        tags[0].push(state.Name);
 
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
@@ -710,7 +711,7 @@ module BMA {
                             result = result && checkEquation(op, data[k]);
                         }
                         if (state.Operands.length !== 0 && result)
-                            tags[k].push(state.Name);
+                            tags[k + 1].push(state.Name);
                     }
                 }
 
@@ -719,7 +720,7 @@ module BMA {
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
-                var prevState = initTags;
+                var prevState = undefined;
 
                 var compareTags = function (prev, curr) {
                     if (prev === undefined)
@@ -745,7 +746,7 @@ module BMA {
                                 y: 0,
                             });
                         prevState = tags[i];
-                        firstTime = i + 1;
+                        firstTime = i;
                         count = 1;
                     } else {
                         count++;

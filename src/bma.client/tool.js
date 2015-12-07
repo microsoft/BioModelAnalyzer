@@ -4770,9 +4770,9 @@ var BMA;
                 });
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
+                    tags.push([]);
                     if (i != 0) {
                         data.push([]);
-                        tags.push([]);
                     }
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
@@ -4820,7 +4820,7 @@ var BMA;
                         result = result && checkEquation(op, init);
                     }
                     if (state.Operands.length !== 0 && result)
-                        initTags.push(state.Name);
+                        tags[0].push(state.Name);
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
@@ -4828,7 +4828,7 @@ var BMA;
                             result = result && checkEquation(op, data[k]);
                         }
                         if (state.Operands.length !== 0 && result)
-                            tags[k].push(state.Name);
+                            tags[k + 1].push(state.Name);
                     }
                 }
                 var labels_height = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
@@ -4836,7 +4836,7 @@ var BMA;
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
-                var prevState = initTags;
+                var prevState = undefined;
                 var compareTags = function (prev, curr) {
                     if (prev === undefined)
                         return false;
@@ -4860,7 +4860,7 @@ var BMA;
                                 y: 0,
                             });
                         prevState = tags[i];
-                        firstTime = i + 1;
+                        firstTime = i;
                         count = 1;
                     }
                     else {
@@ -10830,6 +10830,7 @@ jQuery.fn.extend({
                         data: that.options.data,
                         tags: that.options.tags,
                         canEditInitialValue: false,
+                        showInitialValue: false,
                         init: that.options.init
                     });
                     if (this.options.colors === undefined || this.options.colors.length == 0)
