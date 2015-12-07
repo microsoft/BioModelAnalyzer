@@ -55,6 +55,8 @@ module BMA {
 
             private states = [];
 
+            private isInitialized = false;
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -78,8 +80,8 @@ module BMA {
 
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
 
-                tpEditorDriver.SetCopyZoneVisibility(false);
-                tpEditorDriver.SetDeleteZoneVisibility(false);
+                //tpEditorDriver.SetCopyZoneVisibility(false);
+                //tpEditorDriver.SetDeleteZoneVisibility(false);
 
                 commands.On("AddOperatorSelect", (operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };
@@ -316,231 +318,6 @@ module BMA {
                     //commands.Execute("ZoomSliderBind", zoom);
                 });
 
-
-                that.dragService.GetMouseMoves().subscribe(
-                    (gesture) => {
-                        if (that.previousHighlightedOperation !== undefined) {
-                            that.previousHighlightedOperation.Refresh();
-                            that.previousHighlightedOperation = undefined;
-                        }
-
-                        var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
-                        if (staginOp !== undefined) {
-                            staginOp.HighlightAtPosition(gesture.x, gesture.y);
-                            that.previousHighlightedOperation = staginOp;
-                        }
-
-                        if (this.clipboard !== undefined) {
-                            var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
-                            if (that.Intersects(gesture, copyZoneBB)) {
-                                tpEditorDriver.HighlightCopyZone(true);
-                            } else {
-                                tpEditorDriver.HighlightCopyZone(false);
-                            }
-                        }
-                    });
-
-
-                var dragSubject = that.dragService.GetDragSubject();
-                dragSubject.dragStart.subscribe(
-                    (gesture) => {
-                        var copyZoneBbox = that.tpEditorDriver.GetCopyZoneBBox();
-                        if (that.clipboard !== undefined && that.Intersects(gesture, copyZoneBbox)) {
-                            that.navigationDriver.TurnNavigation(false);
-                            this.stagingOperation = {
-                                operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), this.clipboard.operation, gesture),
-                                originRef: undefined,
-                                originIndex: undefined,
-                                isRoot: undefined,
-                                parentoperation: undefined,
-                                parentoperationindex: undefined,
-                                fromclipboard: true
-                            };
-
-                        } else {
-                            var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
-                            if (staginOp !== undefined) {
-                                tpEditorDriver.SetCopyZoneVisibility(true);
-                                tpEditorDriver.SetDeleteZoneVisibility(true);
-
-
-                                staginOp.AnalysisStatus = "nottested";
-                                staginOp.Tag = undefined;
-
-                                that.navigationDriver.TurnNavigation(false);
-                                var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
-                                this.stagingOperation = {
-                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
-                                    originRef: staginOp,
-                                    originIndex: this.operations.indexOf(staginOp),
-                                    isRoot: unpinned.isRoot,
-                                    parentoperation: unpinned.parentoperation,
-                                    parentoperationindex: unpinned.parentoperationindex,
-                                    fromclipboard: false
-                                };
-
-                                if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                    that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
-                                }
-
-                                //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                                staginOp.IsVisible = !unpinned.isRoot;
-                            }
-                        }
-                    });
-
-                dragSubject.drag.subscribe(
-                    (gesture) => {
-                        if (this.stagingOperation !== undefined) {
-                            var bbox = this.stagingOperation.operation.BoundingBox;
-                            this.stagingOperation.operation.Position = { x: <number>gesture.x1 + this.stagingOperation.operation.Scale.x * bbox.width / 2, y: <number>gesture.y1 + this.stagingOperation.operation.Scale.y * bbox.height / 2 };
-
-                            var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
-                            var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
-                            var position = {
-                                x: gesture.x1,
-                                y: gesture.y1
-                            };
-
-                            if (this.Intersects(position, copyZoneBB)) {
-                                tpEditorDriver.HighlightCopyZone(true);
-                                tpEditorDriver.HighlightDeleteZone(false);
-                            } else if (this.Intersects(position, deleteZoneBB)) {
-                                tpEditorDriver.HighlightCopyZone(false);
-                                tpEditorDriver.HighlightDeleteZone(true);
-                            } else {
-                                tpEditorDriver.HighlightCopyZone(false);
-                                tpEditorDriver.HighlightDeleteZone(false);
-                            }
-
-
-                        }
-                    });
-
-                dragSubject.dragEnd.subscribe(
-                    (gesture) => {
-                        if (this.stagingOperation !== undefined) {
-                            that.navigationDriver.TurnNavigation(true);
-                            this.stagingOperation.operation.IsVisible = false;
-
-                            var bbox = this.stagingOperation.operation.BoundingBox;
-                            var position = {
-                                x: this.stagingOperation.operation.Position.x - this.stagingOperation.operation.Scale.x * bbox.width / 2,
-                                y: this.stagingOperation.operation.Position.y - this.stagingOperation.operation.Scale.y * bbox.height / 2,
-                            };
-                            this.stagingOperation.operation.Position = {
-                                x: position.x + bbox.width / 2,
-                                y: position.y + bbox.height / 2
-                            };
-
-                            tpEditorDriver.HighlightCopyZone(false);
-                            tpEditorDriver.HighlightDeleteZone(false);
-                            var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
-                            var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
-                            if (that.Intersects(position, copyZoneBB) && !this.stagingOperation.fromclipboard) {
-
-                                this.clipboard = {
-                                    operation: this.stagingOperation.operation.Operation.Clone()
-                                };
-
-                                //Operation should stay in its origin place
-                                if (this.stagingOperation.isRoot) {
-                                    this.stagingOperation.originRef.IsVisible = true;
-                                } else {
-                                    this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
-                                    this.stagingOperation.originRef.Refresh();
-                                }
-
-
-                            } else if (that.Intersects(position, deleteZoneBB) && !this.stagingOperation.fromclipboard) {
-
-                                if (this.stagingOperation.isRoot) {
-                                    this.operations.splice(this.stagingOperation.originIndex, 1);
-                                }
-
-                            } else {
-
-
-                                if (!this.HasIntersections(this.stagingOperation.operation)) {
-                                    if (this.stagingOperation.fromclipboard) {
-                                        if (this.stagingOperation.operation.IsOperation) {
-                                            this.operations.push(
-                                                new BMA.LTLOperations.OperationLayout(
-                                                    that.driver.GetSVGRef(),
-                                                    this.stagingOperation.operation.Operation.Clone(),
-                                                    this.stagingOperation.operation.Position));
-                                        }
-                                    } else {
-                                        if (this.stagingOperation.operation.IsOperation) {
-                                            if (this.stagingOperation.isRoot) {
-                                                this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
-                                                this.stagingOperation.originRef.IsVisible = true;
-                                            } else {
-                                                this.operations.push(
-                                                    new BMA.LTLOperations.OperationLayout(
-                                                        that.driver.GetSVGRef(),
-                                                        this.stagingOperation.operation.Operation,
-                                                        this.stagingOperation.operation.Position));
-                                            }
-
-                                        } else {
-                                            //State should state in its origin place
-                                            this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
-                                            this.stagingOperation.originRef.Refresh();
-                                        }
-                                    }
-                                } else {
-                                    var operation = this.GetOperationAtPoint(position.x, position.y);
-                                    if (operation !== undefined) {
-                                        var emptyCell = undefined;
-                                        emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
-                                        if (emptyCell !== undefined) {
-                                            //emptyCell.opLayout = operation;
-                                            emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
-                                            operation.Refresh();
-                                            operation.AnalysisStatus = "nottested";
-                                            operation.Tag = undefined;
-
-                                            if (this.stagingOperation.isRoot) {
-                                                this.operations[this.stagingOperation.originIndex].IsVisible = false;
-                                                this.operations.splice(this.stagingOperation.originIndex, 1);
-                                            }
-                                        } else {
-                                            if (!this.stagingOperation.fromclipboard) {
-                                                //Operation should stay in its origin place
-                                                if (this.stagingOperation.isRoot) {
-                                                    this.stagingOperation.originRef.IsVisible = true;
-                                                } else {
-                                                    this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
-                                                    this.stagingOperation.originRef.Refresh();
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        if (!this.stagingOperation.fromclipboard) {
-                                            //Operation should stay in its origin place
-                                            if (this.stagingOperation.isRoot) {
-                                                this.stagingOperation.originRef.IsVisible = true;
-                                            } else {
-                                                this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
-                                                this.stagingOperation.originRef.Refresh();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            this.stagingOperation.operation.IsVisible = false;
-                            this.stagingOperation = undefined;
-
-                            tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
-                            tpEditorDriver.SetDeleteZoneVisibility(false);
-
-                            this.OnOperationsChanged();
-
-                        }
-                    });
-
                 window.Commands.On("ModelReset", (args) => {
                     for (var i = 0; i < this.operations.length; i++) {
                         this.operations[i].IsVisible = false;
@@ -554,8 +331,246 @@ module BMA {
                     that.FitToView();
                 });
 
+                this.InitializeDragndrop();
                 this.CreateSvgHeaders();
                 this.LoadFromAppModel();
+            }
+
+            private InitializeDragndrop() {
+                if (!this.isInitialized) {
+
+                    var that = this;
+                    var tpEditorDriver = that.tpEditorDriver;
+
+                    that.dragService.GetMouseMoves().subscribe(
+                        (gesture) => {
+                            if (that.previousHighlightedOperation !== undefined) {
+                                that.previousHighlightedOperation.Refresh();
+                                that.previousHighlightedOperation = undefined;
+                            }
+
+                            var staginOp = that.GetOperationAtPoint(gesture.x, gesture.y);
+                            if (staginOp !== undefined) {
+                                staginOp.HighlightAtPosition(gesture.x, gesture.y);
+                                that.previousHighlightedOperation = staginOp;
+                            }
+
+                            if (this.clipboard !== undefined) {
+                                var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
+                                if (that.Intersects(gesture, copyZoneBB)) {
+                                    tpEditorDriver.HighlightCopyZone(true);
+                                } else {
+                                    tpEditorDriver.HighlightCopyZone(false);
+                                }
+                            }
+                        });
+
+
+                    var dragSubject = that.dragService.GetDragSubject();
+                    dragSubject.dragStart.subscribe(
+                        (gesture) => {
+                            var copyZoneBbox = that.tpEditorDriver.GetCopyZoneBBox();
+                            if (that.clipboard !== undefined && that.Intersects(gesture, copyZoneBbox)) {
+                                that.navigationDriver.TurnNavigation(false);
+                                this.stagingOperation = {
+                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), this.clipboard.operation, gesture),
+                                    originRef: undefined,
+                                    originIndex: undefined,
+                                    isRoot: undefined,
+                                    parentoperation: undefined,
+                                    parentoperationindex: undefined,
+                                    fromclipboard: true
+                                };
+
+                            } else {
+                                var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
+                                if (staginOp !== undefined) {
+                                    tpEditorDriver.SetCopyZoneVisibility(true);
+                                    tpEditorDriver.SetDeleteZoneVisibility(true);
+
+
+                                    staginOp.AnalysisStatus = "nottested";
+                                    staginOp.Tag = undefined;
+
+                                    that.navigationDriver.TurnNavigation(false);
+                                    var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
+                                    this.stagingOperation = {
+                                        operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
+                                        originRef: staginOp,
+                                        originIndex: this.operations.indexOf(staginOp),
+                                        isRoot: unpinned.isRoot,
+                                        parentoperation: unpinned.parentoperation,
+                                        parentoperationindex: unpinned.parentoperationindex,
+                                        fromclipboard: false
+                                    };
+
+                                    if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                                        that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                    }
+
+                                    //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                                    staginOp.IsVisible = !unpinned.isRoot;
+                                }
+                            }
+                        });
+
+                    dragSubject.drag.subscribe(
+
+
+                        (gesture) => {
+                            if (this.stagingOperation !== undefined) {
+                                var bbox = this.stagingOperation.operation.BoundingBox;
+                                this.stagingOperation.operation.Position = { x: <number>gesture.x1 + this.stagingOperation.operation.Scale.x * bbox.width / 2, y: <number>gesture.y1 + this.stagingOperation.operation.Scale.y * bbox.height / 2 };
+
+                                var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
+                                var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
+                                var position = {
+                                    x: gesture.x1,
+                                    y: gesture.y1
+                                };
+
+                                if (this.Intersects(position, copyZoneBB)) {
+                                    tpEditorDriver.HighlightCopyZone(true);
+                                    tpEditorDriver.HighlightDeleteZone(false);
+                                } else if (this.Intersects(position, deleteZoneBB)) {
+                                    tpEditorDriver.HighlightCopyZone(false);
+                                    tpEditorDriver.HighlightDeleteZone(true);
+                                } else {
+                                    tpEditorDriver.HighlightCopyZone(false);
+                                    tpEditorDriver.HighlightDeleteZone(false);
+                                }
+
+
+                            }
+                        });
+
+                    dragSubject.dragEnd.subscribe(
+                        (gesture) => {
+                            if (this.stagingOperation !== undefined) {
+                                that.navigationDriver.TurnNavigation(true);
+                                this.stagingOperation.operation.IsVisible = false;
+
+                                var bbox = this.stagingOperation.operation.BoundingBox;
+                                var position = {
+                                    x: this.stagingOperation.operation.Position.x - this.stagingOperation.operation.Scale.x * bbox.width / 2,
+                                    y: this.stagingOperation.operation.Position.y - this.stagingOperation.operation.Scale.y * bbox.height / 2,
+                                };
+                                this.stagingOperation.operation.Position = {
+                                    x: position.x + bbox.width / 2,
+                                    y: position.y + bbox.height / 2
+                                };
+
+                                tpEditorDriver.HighlightCopyZone(false);
+                                tpEditorDriver.HighlightDeleteZone(false);
+                                var copyZoneBB = tpEditorDriver.GetCopyZoneBBox();
+                                var deleteZoneBB = tpEditorDriver.GetDeleteZoneBBox();
+                                if (that.Intersects(position, copyZoneBB) && !this.stagingOperation.fromclipboard) {
+
+                                    this.clipboard = {
+                                        operation: this.stagingOperation.operation.Operation.Clone()
+                                    };
+
+                                    //Operation should stay in its origin place
+                                    if (this.stagingOperation.isRoot) {
+                                        this.stagingOperation.originRef.IsVisible = true;
+                                    } else {
+                                        this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                        this.stagingOperation.originRef.Refresh();
+                                    }
+
+
+                                } else if (that.Intersects(position, deleteZoneBB) && !this.stagingOperation.fromclipboard) {
+
+                                    if (this.stagingOperation.isRoot) {
+                                        this.operations.splice(this.stagingOperation.originIndex, 1);
+                                    }
+
+                                } else {
+
+
+                                    if (!this.HasIntersections(this.stagingOperation.operation)) {
+                                        if (this.stagingOperation.fromclipboard) {
+                                            if (this.stagingOperation.operation.IsOperation) {
+                                                this.operations.push(
+                                                    new BMA.LTLOperations.OperationLayout(
+                                                        that.driver.GetSVGRef(),
+                                                        this.stagingOperation.operation.Operation.Clone(),
+                                                        this.stagingOperation.operation.Position));
+                                            }
+                                        } else {
+                                            if (this.stagingOperation.operation.IsOperation) {
+                                                if (this.stagingOperation.isRoot) {
+                                                    this.stagingOperation.originRef.Position = this.stagingOperation.operation.Position;
+                                                    this.stagingOperation.originRef.IsVisible = true;
+                                                } else {
+                                                    this.operations.push(
+                                                        new BMA.LTLOperations.OperationLayout(
+                                                            that.driver.GetSVGRef(),
+                                                            this.stagingOperation.operation.Operation,
+                                                            this.stagingOperation.operation.Position));
+                                                }
+
+                                            } else {
+                                                //State should state in its origin place
+                                                this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                                this.stagingOperation.originRef.Refresh();
+                                            }
+                                        }
+                                    } else {
+                                        var operation = this.GetOperationAtPoint(position.x, position.y);
+                                        if (operation !== undefined) {
+                                            var emptyCell = undefined;
+                                            emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                            if (emptyCell !== undefined) {
+                                                //emptyCell.opLayout = operation;
+                                                emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
+                                                operation.Refresh();
+                                                operation.AnalysisStatus = "nottested";
+                                                operation.Tag = undefined;
+
+                                                if (this.stagingOperation.isRoot) {
+                                                    this.operations[this.stagingOperation.originIndex].IsVisible = false;
+                                                    this.operations.splice(this.stagingOperation.originIndex, 1);
+                                                }
+                                            } else {
+                                                if (!this.stagingOperation.fromclipboard) {
+                                                    //Operation should stay in its origin place
+                                                    if (this.stagingOperation.isRoot) {
+                                                        this.stagingOperation.originRef.IsVisible = true;
+                                                    } else {
+                                                        this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                                        this.stagingOperation.originRef.Refresh();
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            if (!this.stagingOperation.fromclipboard) {
+                                                //Operation should stay in its origin place
+                                                if (this.stagingOperation.isRoot) {
+                                                    this.stagingOperation.originRef.IsVisible = true;
+                                                } else {
+                                                    this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                                    this.stagingOperation.originRef.Refresh();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                this.stagingOperation.operation.IsVisible = false;
+                                this.stagingOperation = undefined;
+
+                                tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
+                                tpEditorDriver.SetDeleteZoneVisibility(false);
+
+                                this.OnOperationsChanged();
+
+                            }
+                        });
+
+
+                    this.isInitialized = true;
+                }
             }
 
             private CreateSvgHeaders() {
@@ -876,7 +891,7 @@ module BMA {
                     that.SubscribeToShowLTLRequest(driver, op);
                     that.SubscribeToExpandLTLResult(driver, dom);
 
-                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
+                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, opDiv.width(), opDiv.height(), 0, 0.5);
                     this.controlPanels.push(cp);
                     this.drivers.push(driver);
                 }
