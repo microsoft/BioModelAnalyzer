@@ -4466,3 +4466,6 @@ ui-icon-arrowthickstop-1-n {
   vertical-align: middle;
   margin-bottom: 3px;
 }
+.action-button-small.grey.spin:hover {
+  background-color: #AAA;
+}

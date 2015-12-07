@@ -10895,7 +10895,7 @@ jQuery.fn.extend({
         options: {
             variables: [],
             states: [],
-            minConst: -99,
+            minConst: 0,
             maxConst: 100,
             commands: undefined,
             onStatesUpdated: undefined,
@@ -11077,6 +11077,9 @@ jQuery.fn.extend({
                     case "=":
                         operatorImg.attr("src", "images/ltlimgs/eq.png");
                         break;
+                    //case "!=":
+                    //    operatorImg.attr("src", "images/ltlimgs/noeq.png");
+                    //    break;
                     case "<>":
                         value = ">";
                         formula[1].value = value;
@@ -11137,6 +11140,8 @@ jQuery.fn.extend({
             var lesq = $("<img>").attr("src", "images/ltlimgs/leeq.png").appendTo(lesqDiv);
             var equDiv = $("<div></div>").attr("data-operator-type", "=").appendTo(operatorSelector);
             var equ = $("<img>").attr("src", "images/ltlimgs/eq.png").appendTo(equDiv);
+            //var noequDiv = $("<div></div>").attr("data-operator-type", "!=").appendTo(operatorSelector);
+            //var noequ = $("<img>").attr("src", "images/ltlimgs/noeq.png").appendTo(noequDiv);
             var rangeDiv = $("<div></div>").attr("data-operator-type", "<>").appendTo(operatorSelector);
             var range = $("<img>").attr("src", "images/range.png").appendTo(rangeDiv);
             operatorExpandButton.bind("click", function () {
@@ -11546,6 +11551,7 @@ jQuery.fn.extend({
                         btn.click(function () {
                             if (that.options.ontestrequested !== undefined) {
                                 btn.empty();
+                                li.addClass("spin");
                                 that.createWaitAnim().appendTo(btn);
                                 that.options.ontestrequested();
                             }

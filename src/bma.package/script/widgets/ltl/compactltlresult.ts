@@ -61,6 +61,7 @@
                         btn.click(function () {
                             if (that.options.ontestrequested !== undefined) {
                                 btn.empty();
+                                li.addClass("spin");
                                 that.createWaitAnim().appendTo(btn);
                                 that.options.ontestrequested();
                             }
