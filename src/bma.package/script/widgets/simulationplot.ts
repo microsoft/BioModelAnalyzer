@@ -59,7 +59,7 @@
                     rects.push({
                         x: that.options.labels[i].x, y: that.options.labels[i].y,
                         width: that.options.labels[i].width, height: that.options.labels[i].height,
-                        fill: i % 2 == 0 ? "grey" : "white",
+                        fill: i % 2 == 0 ? "gray" : "lightgray",
                         opacity: 0.5,
                         labels: that.options.labels[i].text
                     });
