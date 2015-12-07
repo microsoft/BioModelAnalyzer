@@ -807,8 +807,6 @@ module BMA {
             private SubscribeToLTLRequest(driver, domplot, op) {
                 var that = this;
 
-
-
                 driver.SetLTLRequestedCallback(() => {
                     that.PerformLTL(op, domplot, driver);
                 });
@@ -832,7 +830,19 @@ module BMA {
                 }
             }
 
-            private drivers = [];
+            private SubscribeToExpandLTLResult(driver: BMA.UIDrivers.LTLResultsCompactViewer, domplot) {
+                driver.SetOnExpandedCallback(() => {
+                    for (var i = 0; i < this.drivers.length; i++) {
+                        if (this.drivers[i] !== driver) {
+                            this.drivers[i].Collapse();
+                        }
+                    }
+
+                    domplot.updateLayout();
+                });
+            }
+
+            private drivers: BMA.UIDrivers.LTLResultsCompactViewer[] = [];
             private UpdateControlPanels() {
                 var that = this;
                 var copyzonebbox = this.tpEditorDriver.GetCopyZoneBBox();
@@ -864,6 +874,7 @@ module BMA {
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     that.SubscribeToShowLTLRequest(driver, op);
+                    that.SubscribeToExpandLTLResult(driver, dom);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);

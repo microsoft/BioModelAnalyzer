@@ -11,7 +11,7 @@
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
-            onshowresultsrequested: undefined
+            onshowresultsrequested: undefined,
         },
 
         _create: function () {

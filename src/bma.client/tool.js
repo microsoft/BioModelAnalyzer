@@ -11507,7 +11507,7 @@ jQuery.fn.extend({
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
-            onshowresultsrequested: undefined
+            onshowresultsrequested: undefined,
         },
         _create: function () {
             this.element.empty();
@@ -13159,6 +13159,17 @@ var BMA;
                     });
                 }
             };
+            TemporalPropertiesPresenter.prototype.SubscribeToExpandLTLResult = function (driver, domplot) {
+                var _this = this;
+                driver.SetOnExpandedCallback(function () {
+                    for (var i = 0; i < _this.drivers.length; i++) {
+                        if (_this.drivers[i] !== driver) {
+                            _this.drivers[i].Collapse();
+                        }
+                    }
+                    domplot.updateLayout();
+                });
+            };
             TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
                 var that = this;
                 var copyzonebbox = this.tpEditorDriver.GetCopyZoneBBox();
@@ -13184,6 +13195,7 @@ var BMA;
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     that.SubscribeToShowLTLRequest(driver, op);
+                    that.SubscribeToExpandLTLResult(driver, dom);
                     dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5);
                     this.controlPanels.push(cp);
                     this.drivers.push(driver);
