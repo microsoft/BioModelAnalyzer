@@ -595,6 +595,8 @@ module BMA {
                         return value1 >= value2;
                     case "=":
                         return value1 == value2;
+                    case "!=":
+                        return value1 !== value2;
                     default:
                         throw "Unknown operator";
                 }

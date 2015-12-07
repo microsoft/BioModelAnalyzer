@@ -227,9 +227,9 @@
                     case "=":
                         operatorImg.attr("src", "images/ltlimgs/eq.png");
                         break;  
-                    //case "!=":
-                    //    operatorImg.attr("src", "images/ltlimgs/noeq.png");
-                    //    break;
+                    case "!=":
+                        operatorImg.attr("src", "images/ltlimgs/noeq.png");
+                        break;
                     case "<>":
                         value = ">";
                         formula[1].value = value;
@@ -305,8 +305,8 @@
             var equDiv = $("<div></div>").attr("data-operator-type", "=").appendTo(operatorSelector);
             var equ = $("<img>").attr("src", "images/ltlimgs/eq.png").appendTo(equDiv);
 
-            //var noequDiv = $("<div></div>").attr("data-operator-type", "!=").appendTo(operatorSelector);
-            //var noequ = $("<img>").attr("src", "images/ltlimgs/noeq.png").appendTo(noequDiv);
+            var noequDiv = $("<div></div>").attr("data-operator-type", "!=").appendTo(operatorSelector);
+            var noequ = $("<img>").attr("src", "images/ltlimgs/noeq.png").appendTo(noequDiv);
 
             var rangeDiv = $("<div></div>").attr("data-operator-type", "<>").appendTo(operatorSelector)
             var range = $("<img>").attr("src", "images/range.png").appendTo(rangeDiv);

@@ -4749,6 +4749,8 @@ var BMA;
                         return value1 >= value2;
                     case "=":
                         return value1 == value2;
+                    case "!=":
+                        return value1 !== value2;
                     default:
                         throw "Unknown operator";
                 }
@@ -11086,9 +11088,9 @@ jQuery.fn.extend({
                     case "=":
                         operatorImg.attr("src", "images/ltlimgs/eq.png");
                         break;
-                    //case "!=":
-                    //    operatorImg.attr("src", "images/ltlimgs/noeq.png");
-                    //    break;
+                    case "!=":
+                        operatorImg.attr("src", "images/ltlimgs/noeq.png");
+                        break;
                     case "<>":
                         value = ">";
                         formula[1].value = value;
@@ -11149,8 +11151,8 @@ jQuery.fn.extend({
             var lesq = $("<img>").attr("src", "images/ltlimgs/leeq.png").appendTo(lesqDiv);
             var equDiv = $("<div></div>").attr("data-operator-type", "=").appendTo(operatorSelector);
             var equ = $("<img>").attr("src", "images/ltlimgs/eq.png").appendTo(equDiv);
-            //var noequDiv = $("<div></div>").attr("data-operator-type", "!=").appendTo(operatorSelector);
-            //var noequ = $("<img>").attr("src", "images/ltlimgs/noeq.png").appendTo(noequDiv);
+            var noequDiv = $("<div></div>").attr("data-operator-type", "!=").appendTo(operatorSelector);
+            var noequ = $("<img>").attr("src", "images/ltlimgs/noeq.png").appendTo(noequDiv);
             var rangeDiv = $("<div></div>").attr("data-operator-type", "<>").appendTo(operatorSelector);
             var range = $("<img>").attr("src", "images/range.png").appendTo(rangeDiv);
             operatorExpandButton.bind("click", function () {

@@ -200,6 +200,7 @@
     <Content Include="images\ltlimgs\le.png" />
     <Content Include="images\ltlimgs\leeq.png" />
     <Content Include="images\ltlimgs\moeq.png" />
+    <Content Include="images\ltlimgs\noeq.png" />
     <Content Include="images\ltlimgs\remove.png" />
     <Content Include="images\ltlimgs\var.png" />
     <Content Include="images\ltl_fail.png" />
