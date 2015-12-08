@@ -40,6 +40,7 @@
 /// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
 /// <reference path="script\widgets\ltl\ltlviewer.ts"/>
 /// <reference path="script\widgets\ltl\ltlresultsviewer.ts"/>
+/// <reference path="script\widgets\ltl\statetooltip.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>

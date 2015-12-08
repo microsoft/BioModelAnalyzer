@@ -66,6 +66,7 @@ module.exports = function (grunt) {
                     "script/widgets/ltl/ltlresultsviewer.js",
                     "script/widgets/ltl/stateseditor.js",
                     "script/widgets/ltl/statescompact.js",
+                    "script/widgets/ltl/statetooltip.js",
                     "script/widgets/ltl/compactltlresult.js",
                     "script/widgets/ltl/tpeditor.js",
                     "script/widgets/ltl/tpviewer.js",
