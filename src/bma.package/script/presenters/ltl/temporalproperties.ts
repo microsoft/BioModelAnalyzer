@@ -808,6 +808,8 @@ module BMA {
                 } else {
                     operation.HighlightEmptySlots("red");
                     driver.SetStatus("nottested");
+                    operation.AnalysisStatus = "nottested";
+                    domplot.updateLayout();
                 }
             }
 
