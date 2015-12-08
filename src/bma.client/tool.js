@@ -11522,6 +11522,7 @@ jQuery.fn.extend({
                     at: "left-48px bottom",
                 },
                 show: null,
+                hide: false,
                 items: "div.state-button"
             });
         },
