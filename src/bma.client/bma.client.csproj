@@ -246,6 +246,7 @@
     <Content Include="images\selfloop-state.svg" />
     <Content Include="images\small-cross.svg" />
     <Content Include="images\small-tick.svg" />
+    <Content Include="images\state-container.svg" />
     <Content Include="images\state-line-del.svg" />
     <Content Include="images\state-variable.svg" />
     <Content Include="images\succeeded.png" />
