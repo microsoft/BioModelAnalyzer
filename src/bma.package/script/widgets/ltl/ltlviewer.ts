@@ -4,6 +4,7 @@
 (function ($) {
     $.widget("BMA.ltlviewer", {
         options: {
+            opentpeditor: undefined
         },
 
         _create: function () {
@@ -23,6 +24,11 @@
             this.temp_prop = $('<div></div>').appendTo(elem);
 
             this.temp_content = $('<div></div>').width(400).height(150).temporalpropertiesviewer();
+            this.temp_content.click(function () {
+                if (that.options.opentpeditor !== undefined) {
+                    that.options.opentpeditor();
+                }
+            });
 
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
