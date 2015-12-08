@@ -11501,10 +11501,10 @@ jQuery.fn.extend({
                 content: function () {
                     var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
                     var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
-                    if (value.decription !== undefined && value.description != null && value.description != "")
-                        description.hide();
-                    else
+                    if (value.description)
                         description.show();
+                    else
+                        description.hide();
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
@@ -12575,7 +12575,7 @@ var BMA;
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.appModel.States[i];
-                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                        if (st.Name !== appst.Name || st.Description !== appst.Description || st.GetFormula() !== appst.GetFormula())
                             return true;
                     }
                     return false;

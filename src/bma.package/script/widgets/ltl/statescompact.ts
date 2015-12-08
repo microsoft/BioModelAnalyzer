@@ -116,10 +116,10 @@
                 content: function () {
                     var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
                     var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
-                    if (value.decription !== undefined && value.description != null && value.description != "")
-                        description.hide();
-                    else
+                    if (value.description)
                         description.show();
+                    else
+                        description.hide();
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
