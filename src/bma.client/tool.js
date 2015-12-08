@@ -4291,6 +4291,11 @@ var BMA;
                 var _this = this;
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
+                this.ltlviewer.ltlviewer({
+                    opentpeditor: function () {
+                        window.Commands.Execute("Expand", "LTLTempProp");
+                    }
+                });
                 accordion.bmaaccordion({
                     onactivetabchanged: function () {
                         _this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
@@ -10706,7 +10711,9 @@ jQuery.fn.extend({
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.ltlviewer", {
-        options: {},
+        options: {
+            opentpeditor: undefined
+        },
         _create: function () {
             var that = this;
             var elem = this.element.addClass('ltl-results-tab');
@@ -10720,6 +10727,11 @@ jQuery.fn.extend({
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
             this.temp_content = $('<div></div>').width(400).height(150).temporalpropertiesviewer();
+            this.temp_content.click(function () {
+                if (that.options.opentpeditor !== undefined) {
+                    that.options.opentpeditor();
+                }
+            });
             this.temp_prop.resultswindowviewer({
                 header: "Temporal properties",
                 icon: "max",

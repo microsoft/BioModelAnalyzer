@@ -34,6 +34,12 @@ module BMA {
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
 
+                this.ltlviewer.ltlviewer({
+                    opentpeditor: function () {
+                        window.Commands.Execute("Expand", "LTLTempProp");
+                    }
+                });
+
                 accordion.bmaaccordion({
                     onactivetabchanged: () => {
                         this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
