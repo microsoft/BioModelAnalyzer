@@ -284,8 +284,10 @@
             switch (key) {
                 case "commands":
                     this._drawingSurface.drawingsurface({ commands: value });
+                    break;
                 case "states":
                     needRefreshStates = true;
+                    break;
                 case "copyzoneoperation":
                     that.updateCopyZoneIcon(value);
                     break;

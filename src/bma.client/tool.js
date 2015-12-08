@@ -12149,8 +12149,10 @@ jQuery.fn.extend({
             switch (key) {
                 case "commands":
                     this._drawingSurface.drawingsurface({ commands: value });
+                    break;
                 case "states":
                     needRefreshStates = true;
+                    break;
                 case "copyzoneoperation":
                     that.updateCopyZoneIcon(value);
                     break;
@@ -12177,8 +12179,6 @@ jQuery.fn.extend({
                 that.copyzonesvg.configure({
                     viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
                 }, true);
-                //var scale = 40 / bbox.height;
-                //that.operation.Scale = { x: scale, y: scale };
                 that.operation.Refresh();
             }
         },
