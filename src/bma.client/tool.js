@@ -4782,18 +4782,23 @@ var BMA;
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     tags.push([]);
-                    if (i != 0) {
-                        data.push([]);
-                    }
+                    //if (i != 0) {
+                    data.push([]);
+                    //tags.push([]);
+                    //}
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
+                                    if (i == 0)
+                                        init.push(ij.Lo);
+                                    data[i].push(ij.Lo);
                                 }
                                 else {
-                                    (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
+                                    if (i == 0)
+                                        init.push(ij.Lo + ' - ' + ij.Hi);
+                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
@@ -4822,16 +4827,16 @@ var BMA;
                         throw "Unknown equation type";
                     }
                 };
-                var initTags = [];
+                //var initTags = [];
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
-                    var result = true;
-                    for (var j = 0; j < state.Operands.length; j++) {
-                        var op = state.Operands[j];
-                        result = result && checkEquation(op, init);
-                    }
-                    if (state.Operands.length !== 0 && result)
-                        tags[0].push(state.Name);
+                    //var result = true;
+                    //for (var j = 0; j < state.Operands.length; j++) {
+                    //    var op = state.Operands[j];
+                    //    result = result && checkEquation(op, init);
+                    //}
+                    //if (state.Operands.length !== 0 && result)
+                    //    tags[0].push(state.Name);
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
@@ -4839,7 +4844,7 @@ var BMA;
                             result = result && checkEquation(op, data[k]);
                         }
                         if (state.Operands.length !== 0 && result)
-                            tags[k + 1].push(state.Name);
+                            tags[k].push(state.Name);
                     }
                 }
                 var labels_height = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
@@ -10865,7 +10870,7 @@ jQuery.fn.extend({
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
                 pData.push(this.options.init[i]);
-                for (var j = 0; j < this.options.data.length; j++)
+                for (var j = 1; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
                 plotData.push({
                     Id: that.options.id[i],
@@ -12583,8 +12588,8 @@ var BMA;
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
-                //tpEditorDriver.SetCopyZoneVisibility(false);
-                //tpEditorDriver.SetDeleteZoneVisibility(false);
+                tpEditorDriver.SetCopyZoneVisibility(false);
+                tpEditorDriver.SetDeleteZoneVisibility(false);
                 commands.On("AddOperatorSelect", function (operatorName) {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });

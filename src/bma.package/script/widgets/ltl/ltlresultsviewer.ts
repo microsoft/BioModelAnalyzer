@@ -173,7 +173,7 @@
                     this.options.id.push(i);
 
                 pData.push(this.options.init[i]);
-                for (var j = 0; j < this.options.data.length; j++)
+                for (var j = 1; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
 
                 plotData.push({

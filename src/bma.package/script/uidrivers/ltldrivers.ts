@@ -635,19 +635,21 @@ module BMA {
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     tags.push([]);
-                    if (i != 0) {
+                    //if (i != 0) {
                         data.push([]);
                         //tags.push([]);
-                    }
+                    //}
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
+                                    if(i == 0) init.push(ij.Lo);
+                                    data[i].push(ij.Lo);
                                 }
                                 else {
-                                    (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
+                                    if (i == 0) init.push(ij.Lo + ' - ' + ij.Hi);
+                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
@@ -676,18 +678,18 @@ module BMA {
                     }
                 }
 
-                var initTags = [];
+                //var initTags = [];
 
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
-                    var result = true;
-                    for (var j = 0; j < state.Operands.length; j++) {
-                        var op = state.Operands[j];
-                        result = result && checkEquation(op, init);
-                    }
+                    //var result = true;
+                    //for (var j = 0; j < state.Operands.length; j++) {
+                    //    var op = state.Operands[j];
+                    //    result = result && checkEquation(op, init);
+                    //}
 
-                    if (state.Operands.length !== 0 && result)
-                        tags[0].push(state.Name);
+                    //if (state.Operands.length !== 0 && result)
+                    //    tags[0].push(state.Name);
 
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
@@ -696,7 +698,7 @@ module BMA {
                             result = result && checkEquation(op, data[k]);
                         }
                         if (state.Operands.length !== 0 && result)
-                            tags[k + 1].push(state.Name);
+                            tags[k].push(state.Name);
                     }
                 }
 
