@@ -220,6 +220,7 @@ module BMA {
                         this.clipboard = {
                             operation: clonned,
                         };
+                        this.tpEditorDriver.SetCopyZoneIcon(clonned);
 
                         if (unpinned.isRoot) {
                             this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
@@ -238,6 +239,8 @@ module BMA {
                         this.clipboard = {
                             operation: clonned
                         };
+                        this.tpEditorDriver.SetCopyZoneIcon(clonned);
+
                         tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
                     }
                 });
@@ -469,6 +472,7 @@ module BMA {
                                     this.clipboard = {
                                         operation: this.stagingOperation.operation.Operation.Clone()
                                     };
+                                    this.tpEditorDriver.SetCopyZoneIcon(this.clipboard.operation);
 
                                     //Operation should stay in its origin place
                                     if (this.stagingOperation.isRoot) {

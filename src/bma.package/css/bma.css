@@ -3467,28 +3467,32 @@ textarea:focus {
   left: 627px;
 }
 .temporal-dropzones {
-  position: absolute;
+  position: relative;
   bottom: 0px;
-  width: 800px;
+  /*width: 800px;*/
   height: 60px;
-  padding: 15px 10px;
+  /*padding: 15px 10px;*/
 }
 .temporal-dropzones .dropzone {
+  position: absolute;
   display: inline-block;
-  height: 100%;
+  height: 60px;
   width: 385px;
   text-align: center;
   background-color: white;
+  bottom: 15px;
 }
 .temporal-dropzones .dropzone img {
   margin-top: 10px;
 }
 .temporal-dropzones .dropzone.delete {
+  right: 10px;
   border: 1px solid #CF451B;
 }
 .temporal-dropzones .dropzone.copy {
+  left: 10px;
   border: 1px solid #606060;
-  margin-right: 5px;
+  /*margin-right: 5px;*/
 }
 .temporal-dropzones .dropzone:hover {
   background-color: #EDEDED;

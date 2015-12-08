@@ -186,6 +186,12 @@ module BMA {
                     this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             }
+
+            SetCopyZoneIcon(operation: BMA.LTLOperations.Operation) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ copyzoneoperation: operation });
+                }
+            }
         }
 
         export class StatesViewerDriver implements IStatesViewer {
