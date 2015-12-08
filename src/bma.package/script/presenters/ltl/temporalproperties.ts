@@ -753,6 +753,7 @@ module BMA {
                                     });
 
                                     driver.SetStatus("success");
+                                    driver.Expand();
                                     operation.AnalysisStatus = "success";
                                     operation.Tag = {
                                         data: res.Ticks
@@ -766,6 +767,7 @@ module BMA {
                                     });
 
                                     driver.SetStatus("partialsuccess");
+                                    driver.Expand();
                                     operation.AnalysisStatus = "partialsuccess";
                                     operation.Tag = {
                                         data: res.Ticks,
@@ -780,6 +782,7 @@ module BMA {
                                     });
 
                                     driver.SetStatus("fail");
+                                    driver.Expand();
                                     operation.AnalysisStatus = "fail";
                                     operation.Tag = {
                                         data: res.NegTicks
