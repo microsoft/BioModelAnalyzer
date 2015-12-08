@@ -11441,9 +11441,6 @@ jQuery.fn.extend({
                     this._emptyStateAddButton.hide();
                     this._emptyStatePlaceholder.hide();
                 }
-                else {
-                    that.executeCommand("AddFirstStateRequested", {});
-                }
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
@@ -12688,15 +12685,15 @@ var BMA;
                 this.statesEditor.SetStates(appModel.States);
                 this.statesViewer.SetStates(appModel.States);
                 this.statesViewer.SetCommands(commands);
-                commands.On("AddFirstStateRequested", function (args) {
-                    if (appModel.States.length === 0) {
-                        var newState = new BMA.LTLOperations.Keyframe("A", "", []);
-                        appModel.States.push(newState);
-                        _this.statesEditor.SetStates(appModel.States);
-                        _this.statesViewer.SetStates(appModel.States);
-                    }
-                    stateseditordriver.Show();
-                });
+                //commands.On("AddFirstStateRequested",(args) => {
+                //    if (appModel.States.length === 0) {
+                //        var newState = new BMA.LTLOperations.Keyframe("A", "", [])
+                //        appModel.States.push(newState);
+                //        this.statesEditor.SetStates(appModel.States);
+                //        this.statesViewer.SetStates(appModel.States);
+                //    }
+                //    stateseditordriver.Show();
+                //});
                 commands.On("KeyframesChanged", function (args) {
                     if (_this.CompareStatesToAppModel(args.states)) {
                         appModel.States = args.states;

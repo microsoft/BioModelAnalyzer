@@ -23,9 +23,7 @@
                     this._stateButtons.show();
                     this._emptyStateAddButton.hide();
                     this._emptyStatePlaceholder.hide();
-                } else {
-                    that.executeCommand("AddFirstStateRequested", {});
-                }
+                } 
             });
 
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
