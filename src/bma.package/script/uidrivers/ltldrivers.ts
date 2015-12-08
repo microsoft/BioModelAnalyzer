@@ -641,19 +641,21 @@ module BMA {
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     tags.push([]);
-                    if (i != 0) {
+                    //if (i != 0) {
                         data.push([]);
                         //tags.push([]);
-                    }
+                    //}
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
+                                    if(i == 0) init.push(ij.Lo);
+                                    data[i].push(ij.Lo);
                                 }
                                 else {
-                                    (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
+                                    if (i == 0) init.push(ij.Lo + ' - ' + ij.Hi);
+                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
@@ -676,49 +678,24 @@ module BMA {
                             return that.Compare(curValue, rightOp, op.Operator);
                         } else {
                             throw "Variable must be first in equation";
-                            //var varName = (<BMA.LTLOperations.NameOperand>op.RightOperand).Name;
-                            //var ind;
-                            //for (var n = 0; n < vars.length; n++)
-                            //    if (vars[n].Name == varName) {
-                            //        ind = n;
-                            //        break;
-                            //    }
-                            //var curValue = data[k][ind];
-                            //var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.LeftOperand).Value :
-                            //    undefined;
-                            //result = result && this.Compare(leftOp, curValue, op.Operator);
                         }
                     } else {
                         throw "Unknown equation type";
-                        //if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
-                        //var varName = (<BMA.LTLOperations.NameOperand>op.MiddleOperand).Name;
-                        //var ind;
-                        //for (var n = 0; n < vars.length; n++)
-                        //    if (vars[n].Name == varName) {
-                        //        ind = n;
-                        //        break;
-                        //    }
-                        //var curValue = data[k][ind];
-                        //var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
-                        //    undefined;
-                        //var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.LeftOperand).Value :
-                        //    undefined;
-                        //result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
                     }
                 }
 
-                var initTags = [];
+                //var initTags = [];
 
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
-                    var result = true;
-                    for (var j = 0; j < state.Operands.length; j++) {
-                        var op = state.Operands[j];
-                        result = result && checkEquation(op, init);
-                    }
+                    //var result = true;
+                    //for (var j = 0; j < state.Operands.length; j++) {
+                    //    var op = state.Operands[j];
+                    //    result = result && checkEquation(op, init);
+                    //}
 
-                    if (state.Operands.length !== 0 && result)
-                        tags[0].push(state.Name);
+                    //if (state.Operands.length !== 0 && result)
+                    //    tags[0].push(state.Name);
 
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
@@ -727,7 +704,7 @@ module BMA {
                             result = result && checkEquation(op, data[k]);
                         }
                         if (state.Operands.length !== 0 && result)
-                            tags[k + 1].push(state.Name);
+                            tags[k].push(state.Name);
                     }
                 }
 
@@ -737,9 +714,10 @@ module BMA {
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
                 var prevState = undefined;
+                var currState = [];
 
                 var compareTags = function (prev, curr) {
-                    if (prev === undefined)
+                    if (prev === undefined || curr === undefined)
                         return false;
                     if (prev.length === curr.length) {
                         for (var j = 0; j < prev.length; j++) {
@@ -751,9 +729,23 @@ module BMA {
                     return false;
                 }
 
-                for (var i = 0; i < tags.length; i++) {
-                    if (!compareTags(prevState, tags[i])) {
-                        if (prevState !== undefined && prevState.length !== 0 && count > 1)
+
+                for (var i = 0; i < tags.length - 1; i++) {
+                    currState.push([]);
+                    for (var j = 0; j < tags[i].length; j++) {
+                        for (var k = 0; k < tags[i + 1].length; k++)
+                            if (tags[i][j] == tags[i + 1][k]) {
+                                currState[i].push(tags[i][j]);
+                                break;
+                            }
+                    }
+                }
+
+                prevState = currState[0];
+
+                for (var i = 1; i < tags.length; i++){
+                    if (!compareTags(prevState, currState[i])) {
+                        if (prevState && prevState.length !== 0)// && count > 1)
                             labels.push({
                                 text: prevState,
                                 width: count,
@@ -761,21 +753,47 @@ module BMA {
                                 x: firstTime,
                                 y: 0,
                             });
-                        prevState = tags[i];
+                        prevState = currState[i];
                         firstTime = i;
                         count = 1;
                     } else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
+                        if (i == tags.length - 1 && prevState.length !== 0)// && count > 1)
                             labels.push({
                                 text: prevState,
-                                width: count - 1,
+                                width: count,
                                 height: labels_height,
                                 x: firstTime,
                                 y: 0,
                             });
-                    }
+                    } 
                 }
+
+                //for (var i = 0; i < tags.length; i++) {
+                //    if (!compareTags(prevState, tags[i])) {
+                //        if (prevState !== undefined && prevState.length !== 0 && count > 1)
+                //            labels.push({
+                //                text: prevState,
+                //                width: count,
+                //                height: labels_height,
+                //                x: firstTime,
+                //                y: 0,
+                //            });
+                //        prevState = tags[i];
+                //        firstTime = i;
+                //        count = 1;
+                //    } else {
+                //        count++;
+                //        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
+                //            labels.push({
+                //                text: prevState,
+                //                width: count - 1,
+                //                height: labels_height,
+                //                x: firstTime,
+                //                y: 0,
+                //            });
+                //    }
+                //}
 
                 var interval = this.CreateInterval(vars);
 

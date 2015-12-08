@@ -211,6 +211,7 @@
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
     <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
     <TypeScriptCompile Include="test\ExportImportTest.ts" />
+    <TypeScriptCompile Include="test\ExportImportTests.ts" />
     <TypeScriptCompile Include="test\FormulaConvertationTests.ts" />
     <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
     <TypeScriptCompile Include="test\FurtherTestingTest.ts" />

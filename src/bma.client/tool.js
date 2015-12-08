@@ -186,10 +186,10 @@
                     context.fillStyle = "rgb(37,96,159)";
                     context.textBaseline = "top";
                     var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
-                    context.font = textheight + "px Segoe";
+                    context.font = textheight + "px Segoe-UI";
                     while (context.measureText(str).width > width * 0.8) {
                         var textheight = 0.8 * textheight;
-                        context.font = textheight + "px Segoe";
+                        context.font = textheight + "px Segoe-UI";
                     }
                     context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
                 }
@@ -4787,18 +4787,23 @@ var BMA;
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
                     tags.push([]);
-                    if (i != 0) {
-                        data.push([]);
-                    }
+                    //if (i != 0) {
+                    data.push([]);
+                    //tags.push([]);
+                    //}
                     for (var k = 0; k < vars.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
                             if (tick[j].Id == vars[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    (i == 0) ? init.push(ij.Lo) : data[i - 1].push(ij.Lo);
+                                    if (i == 0)
+                                        init.push(ij.Lo);
+                                    data[i].push(ij.Lo);
                                 }
                                 else {
-                                    (i == 0) ? init.push(ij.Lo + ' - ' + ij.Hi) : data[i - 1].push(ij.Lo + ' - ' + ij.Hi);
+                                    if (i == 0)
+                                        init.push(ij.Lo + ' - ' + ij.Hi);
+                                    data[i].push(ij.Lo + ' - ' + ij.Hi);
                                 }
                             }
                         }
@@ -4827,16 +4832,16 @@ var BMA;
                         throw "Unknown equation type";
                     }
                 };
-                var initTags = [];
+                //var initTags = [];
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
-                    var result = true;
-                    for (var j = 0; j < state.Operands.length; j++) {
-                        var op = state.Operands[j];
-                        result = result && checkEquation(op, init);
-                    }
-                    if (state.Operands.length !== 0 && result)
-                        tags[0].push(state.Name);
+                    //var result = true;
+                    //for (var j = 0; j < state.Operands.length; j++) {
+                    //    var op = state.Operands[j];
+                    //    result = result && checkEquation(op, init);
+                    //}
+                    //if (state.Operands.length !== 0 && result)
+                    //    tags[0].push(state.Name);
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
@@ -4844,7 +4849,7 @@ var BMA;
                             result = result && checkEquation(op, data[k]);
                         }
                         if (state.Operands.length !== 0 && result)
-                            tags[k + 1].push(state.Name);
+                            tags[k].push(state.Name);
                     }
                 }
                 var labels_height = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
@@ -4853,8 +4858,9 @@ var BMA;
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
                 var prevState = undefined;
+                var currState = [];
                 var compareTags = function (prev, curr) {
-                    if (prev === undefined)
+                    if (prev === undefined || curr === undefined)
                         return false;
                     if (prev.length === curr.length) {
                         for (var j = 0; j < prev.length; j++) {
@@ -4865,9 +4871,20 @@ var BMA;
                     }
                     return false;
                 };
-                for (var i = 0; i < tags.length; i++) {
-                    if (!compareTags(prevState, tags[i])) {
-                        if (prevState !== undefined && prevState.length !== 0 && count > 1)
+                for (var i = 0; i < tags.length - 1; i++) {
+                    currState.push([]);
+                    for (var j = 0; j < tags[i].length; j++) {
+                        for (var k = 0; k < tags[i + 1].length; k++)
+                            if (tags[i][j] == tags[i + 1][k]) {
+                                currState[i].push(tags[i][j]);
+                                break;
+                            }
+                    }
+                }
+                prevState = currState[0];
+                for (var i = 1; i < tags.length; i++) {
+                    if (!compareTags(prevState, currState[i])) {
+                        if (prevState && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
                                 width: count,
@@ -4875,22 +4892,47 @@ var BMA;
                                 x: firstTime,
                                 y: 0,
                             });
-                        prevState = tags[i];
+                        prevState = currState[i];
                         firstTime = i;
                         count = 1;
                     }
                     else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
+                        if (i == tags.length - 1 && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
-                                width: count - 1,
+                                width: count,
                                 height: labels_height,
                                 x: firstTime,
                                 y: 0,
                             });
                     }
                 }
+                //for (var i = 0; i < tags.length; i++) {
+                //    if (!compareTags(prevState, tags[i])) {
+                //        if (prevState !== undefined && prevState.length !== 0 && count > 1)
+                //            labels.push({
+                //                text: prevState,
+                //                width: count,
+                //                height: labels_height,
+                //                x: firstTime,
+                //                y: 0,
+                //            });
+                //        prevState = tags[i];
+                //        firstTime = i;
+                //        count = 1;
+                //    } else {
+                //        count++;
+                //        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
+                //            labels.push({
+                //                text: prevState,
+                //                width: count - 1,
+                //                height: labels_height,
+                //                x: firstTime,
+                //                y: 0,
+                //            });
+                //    }
+                //}
                 var interval = this.CreateInterval(vars);
                 var options = {
                     id: id,
@@ -9431,10 +9473,12 @@ var BMA;
                 .attr("id", "glPlot")
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
-            var rectsPlotDiv = $("<div></div>")
-                .attr("id", "rectsPlot")
-                .attr("data-idd-plot", "rectsPlot")
-                .appendTo(this.chartdiv);
+            if (that.options.labels !== undefined && that.options.labels !== null) {
+                var rectsPlotDiv = $("<div></div>")
+                    .attr("id", "rectsPlot")
+                    .attr("data-idd-plot", "rectsPlot")
+                    .appendTo(this.chartdiv);
+            }
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
             ///states markers on plot
@@ -10868,7 +10912,7 @@ jQuery.fn.extend({
                 if (this.options.id.length < i + 1)
                     this.options.id.push(i);
                 pData.push(this.options.init[i]);
-                for (var j = 0; j < this.options.data.length; j++)
+                for (var j = 1; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
                 plotData.push({
                     Id: that.options.id[i],
@@ -11462,10 +11506,10 @@ jQuery.fn.extend({
                 content: function () {
                     var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
                     var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
-                    if (value.decription !== undefined && value.description != null && value.description != "")
-                        description.hide();
-                    else
+                    if (value.description)
                         description.show();
+                    else
+                        description.hide();
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
@@ -11500,7 +11544,28 @@ jQuery.fn.extend({
                         }
                         case "operator": {
                             var td = $("<td></td>").appendTo(tr);
-                            var op = $("<div>" + formula[i].value + "</div>").appendTo(td);
+                            var op = $("<img>").attr("width", "30px").attr("height", "30px").appendTo(td);
+                            switch (formula[i].value) {
+                                case ">":
+                                    op.attr("src", "images/ltlimgs/mo.png");
+                                    break;
+                                case ">=":
+                                    op.attr("src", "images/ltlimgs/moeq.png");
+                                    break;
+                                case "<":
+                                    op.attr("src", "images/ltlimgs/le.png");
+                                    break;
+                                case "<=":
+                                    op.attr("src", "images/ltlimgs/leeq.png");
+                                    break;
+                                case "=":
+                                    op.attr("src", "images/ltlimgs/eq.png");
+                                    break;
+                                case "!=":
+                                    op.attr("src", "images/ltlimgs/noeq.png");
+                                    break;
+                                default: break;
+                            }
                             break;
                         }
                         default: break;
@@ -12548,7 +12613,7 @@ var BMA;
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.appModel.States[i];
-                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                        if (st.Name !== appst.Name || st.Description !== appst.Description || st.GetFormula() !== appst.GetFormula())
                             return true;
                     }
                     return false;
@@ -13210,6 +13275,8 @@ var BMA;
                 else {
                     operation.HighlightEmptySlots("red");
                     driver.SetStatus("nottested");
+                    operation.AnalysisStatus = "nottested";
+                    domplot.updateLayout();
                 }
             };
             /*

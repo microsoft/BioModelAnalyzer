@@ -116,10 +116,10 @@
                 content: function () {
                     var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
                     var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
-                    if (value.decription !== undefined && value.description != null && value.description != "")
-                        description.hide();
-                    else
+                    if (value.description)
                         description.show();
+                    else
+                        description.hide();
                     var table = $("<table></table>").appendTo(stateTooltip);
                     var tbody = $("<tbody></tbody>").appendTo(table);
                     for (var j = 0; j < value.formula.length; j++) {
@@ -155,7 +155,28 @@
                         }
                         case "operator": {
                             var td = $("<td></td>").appendTo(tr);
-                            var op = $("<div>" + formula[i].value + "</div>").appendTo(td);
+                            var op = $("<img>").attr("width", "30px").attr("height", "30px").appendTo(td);
+                            switch (formula[i].value) {
+                                case ">":
+                                    op.attr("src", "images/ltlimgs/mo.png");
+                                    break;
+                                case ">=":
+                                    op.attr("src", "images/ltlimgs/moeq.png");
+                                    break;
+                                case "<":
+                                    op.attr("src", "images/ltlimgs/le.png");
+                                    break;
+                                case "<=":
+                                    op.attr("src", "images/ltlimgs/leeq.png");
+                                    break;
+                                case "=":
+                                    op.attr("src", "images/ltlimgs/eq.png");
+                                    break;
+                                case "!=":
+                                    op.attr("src", "images/ltlimgs/noeq.png");
+                                    break;
+                                default: break;
+                            }
                             break;
                         }
                         default: break;

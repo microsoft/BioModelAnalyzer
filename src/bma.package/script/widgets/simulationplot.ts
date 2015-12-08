@@ -43,10 +43,12 @@
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
 
-            var rectsPlotDiv = $("<div></div>")
-                .attr("id", "rectsPlot")
-                .attr("data-idd-plot", "rectsPlot")
-                .appendTo(this.chartdiv);
+            if (that.options.labels !== undefined && that.options.labels !== null) {
+                var rectsPlotDiv = $("<div></div>")
+                    .attr("id", "rectsPlot")
+                    .attr("data-idd-plot", "rectsPlot")
+                    .appendTo(this.chartdiv);
+            }
             
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
