@@ -31,7 +31,7 @@
                 ]
             ],
         });
-        equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
+        equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<=", new BMA.LTLOperations.ConstOperand(56))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state1", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
@@ -185,7 +185,7 @@
                 ],
             });
         equation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(4), "<",
-            new BMA.LTLOperations.NameOperand("var1"), ">", new BMA.LTLOperations.ConstOperand(55))];
+            new BMA.LTLOperations.NameOperand("var1"), ">=", new BMA.LTLOperations.ConstOperand(56))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state8", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });

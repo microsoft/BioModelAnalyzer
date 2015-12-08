@@ -9426,10 +9426,12 @@ var BMA;
                 .attr("id", "glPlot")
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
-            var rectsPlotDiv = $("<div></div>")
-                .attr("id", "rectsPlot")
-                .attr("data-idd-plot", "rectsPlot")
-                .appendTo(this.chartdiv);
+            if (that.options.labels !== undefined && that.options.labels !== null) {
+                var rectsPlotDiv = $("<div></div>")
+                    .attr("id", "rectsPlot")
+                    .attr("data-idd-plot", "rectsPlot")
+                    .appendTo(this.chartdiv);
+            }
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
             //
             ///states markers on plot
@@ -11495,7 +11497,28 @@ jQuery.fn.extend({
                         }
                         case "operator": {
                             var td = $("<td></td>").appendTo(tr);
-                            var op = $("<div>" + formula[i].value + "</div>").appendTo(td);
+                            var op = $("<img>").attr("width", "30px").attr("height", "30px").appendTo(td);
+                            switch (formula[i].value) {
+                                case ">":
+                                    op.attr("src", "images/ltlimgs/mo.png");
+                                    break;
+                                case ">=":
+                                    op.attr("src", "images/ltlimgs/moeq.png");
+                                    break;
+                                case "<":
+                                    op.attr("src", "images/ltlimgs/le.png");
+                                    break;
+                                case "<=":
+                                    op.attr("src", "images/ltlimgs/leeq.png");
+                                    break;
+                                case "=":
+                                    op.attr("src", "images/ltlimgs/eq.png");
+                                    break;
+                                case "!=":
+                                    op.attr("src", "images/ltlimgs/noeq.png");
+                                    break;
+                                default: break;
+                            }
                             break;
                         }
                         default: break;

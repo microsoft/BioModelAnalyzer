@@ -670,34 +670,9 @@ module BMA {
                             return that.Compare(curValue, rightOp, op.Operator);
                         } else {
                             throw "Variable must be first in equation";
-                            //var varName = (<BMA.LTLOperations.NameOperand>op.RightOperand).Name;
-                            //var ind;
-                            //for (var n = 0; n < vars.length; n++)
-                            //    if (vars[n].Name == varName) {
-                            //        ind = n;
-                            //        break;
-                            //    }
-                            //var curValue = data[k][ind];
-                            //var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.LeftOperand).Value :
-                            //    undefined;
-                            //result = result && this.Compare(leftOp, curValue, op.Operator);
                         }
                     } else {
                         throw "Unknown equation type";
-                        //if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
-                        //var varName = (<BMA.LTLOperations.NameOperand>op.MiddleOperand).Name;
-                        //var ind;
-                        //for (var n = 0; n < vars.length; n++)
-                        //    if (vars[n].Name == varName) {
-                        //        ind = n;
-                        //        break;
-                        //    }
-                        //var curValue = data[k][ind];
-                        //var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
-                        //    undefined;
-                        //var leftOp = (op.LeftOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.LeftOperand).Value :
-                        //    undefined;
-                        //result = result && this.Compare(leftOp, curValue, op.LeftOperator) && this.Compare(curValue, rightOp, op.RightOperator);
                     }
                 }
 
