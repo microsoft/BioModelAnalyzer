@@ -30,9 +30,7 @@
 
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
 
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
-                that.executeStatesEditorExpand();//executeCommand("AddFirstStateRequested", {});
-            });
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
 
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);

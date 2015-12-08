@@ -37,6 +37,9 @@ module BMA {
                 this.ltlviewer.ltlviewer({
                     opentpeditor: function () {
                         window.Commands.Execute("Expand", "LTLTempProp");
+                    },
+                    openstateseditor: function () {
+                        window.Commands.Execute("Expand", "LTLStates");
                     }
                 });
 
@@ -270,12 +273,8 @@ module BMA {
                     wstates.push(ws);
                 }
 
-                var statesEditorExpand = function () {
-                    window.Commands.Execute("Expand", "LTLStates");
-                }
-
                 if (this.statesViewer !== undefined) {
-                    this.statesViewer.statescompact({ states: wstates, statesEditorExpand: statesEditorExpand });
+                    this.statesViewer.statescompact({ states: wstates });
                 }
             }
         }

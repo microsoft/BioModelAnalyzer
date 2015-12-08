@@ -4,7 +4,8 @@
 (function ($) {
     $.widget("BMA.ltlviewer", {
         options: {
-            opentpeditor: undefined
+            opentpeditor: undefined,
+            openstateseditor: undefined,
         },
 
         _create: function () {
@@ -13,6 +14,10 @@
             this.key_div = $('<div></div>').appendTo(elem);
 
             this.key_content = $('<div></div>').width(400).statescompact();
+            this.key_content.click(function () {
+                if (that.options.openstateseditor !== undefined)
+                    that.options.openstateseditor();
+            });
 
             this.key_div.resultswindowviewer({
                 header: "States",

@@ -4294,6 +4294,9 @@ var BMA;
                 this.ltlviewer.ltlviewer({
                     opentpeditor: function () {
                         window.Commands.Execute("Expand", "LTLTempProp");
+                    },
+                    openstateseditor: function () {
+                        window.Commands.Execute("Expand", "LTLStates");
                     }
                 });
                 accordion.bmaaccordion({
@@ -4481,11 +4484,8 @@ var BMA;
                     }
                     wstates.push(ws);
                 }
-                var statesEditorExpand = function () {
-                    window.Commands.Execute("Expand", "LTLStates");
-                };
                 if (this.statesViewer !== undefined) {
-                    this.statesViewer.statescompact({ states: wstates, statesEditorExpand: statesEditorExpand });
+                    this.statesViewer.statescompact({ states: wstates });
                 }
             };
             return StatesViewerDriver;
@@ -10712,13 +10712,18 @@ jQuery.fn.extend({
 (function ($) {
     $.widget("BMA.ltlviewer", {
         options: {
-            opentpeditor: undefined
+            opentpeditor: undefined,
+            openstateseditor: undefined,
         },
         _create: function () {
             var that = this;
             var elem = this.element.addClass('ltl-results-tab');
             this.key_div = $('<div></div>').appendTo(elem);
             this.key_content = $('<div></div>').width(400).statescompact();
+            this.key_content.click(function () {
+                if (that.options.openstateseditor !== undefined)
+                    that.options.openstateseditor();
+            });
             this.key_div.resultswindowviewer({
                 header: "States",
                 icon: "max",
@@ -11441,9 +11446,7 @@ jQuery.fn.extend({
                 }
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
-            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element).click(function () {
-                that.executeStatesEditorExpand(); //executeCommand("AddFirstStateRequested", {});
-            });
+            this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
                 that.createToolTip(this.options.states[i], stateButton);
