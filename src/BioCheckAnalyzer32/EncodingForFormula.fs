@@ -8,9 +8,29 @@ open Microsoft.Z3
 
 type VariableRange = Map<QN.var, int list>
 type QN = QN.node list
+// The location is a formula is its location of the parse tree of the formula.
+// So, a U b would be U in location [], a in location [0] and [b] in location [1].
+// This is abused in the following way:
+// 1. Upto formulas have three subormulas 0::loc for the first operand, 1::loc
+//    for the second operand, and 2::loc for the until that is required
+//    to consider the truth of the Upto.
+//    This is referred to as the "hidden-subformula" of the Upto.
+// 2. For Loop, SelfLoop, and Oscillation they are encoded as:
+//    Loop - time::3
+//    SelfLoop - time::4
+//    Oscillation - time::5
+// A similar thing could be done for propositions.
 type FormulaLocation = int list 
 type FormulaConstraint = Map<FormulaLocation, Term>
 type FormulaConstraintList = FormulaConstraint list
+
+
+let encode_location_of_constant time (formula : LTLFormulaType) =
+    match formula with
+    | Loop -> time::[3]
+    | SelfLoop -> time::[4]
+    | Oscillation -> time::[5]
+    | _ -> []
 
 let create_z3_bool_var (location : FormulaLocation) time (z: Context) =
     let var_name = BioCheckPlusZ3.get_z3_bool_var_formula_in_location_at_time location time
@@ -20,7 +40,7 @@ let create_z3_bool_var (location : FormulaLocation) time (z: Context) =
 // Inefficient:
 // If the same formula appears twice in different positions (particularly true for propositions!)
 // then it is encoded twice!
-let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaType) (network : QN) (range : VariableRange) (step : int) (z : Context) =
+let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaType) (network : QN) (range : VariableRange) (step : int) (last : int) (z : Context) (ranges : VariableRange list) =
     let return_map = ref Map.empty
     let rec encode_truth_of_formula ltl_formula =
         // Encoding
@@ -230,6 +250,43 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
             | PropLt (_ , var , _) 
             | PropLtEq (_ , var , _) ->
                 compute_constraint_for_prop_lt var comparison_function variable_range step
+            | Loop ->
+                BioCheckPlusZ3.constraint_for_time_is_part_of_loop step last z
+            | SelfLoop ->
+                // A self loop is in one of these cases:
+                // 1. It is the last step, and the loop closes at the last step: l_{t-1} is true
+                // 2. It is the last step and it is equivalent to the one before last step (if exists)
+                // 2. It is not the last step and it is equivalent to the next step
+                if step = last then
+                    let loop_closes_at_last = BioCheckPlusZ3.constraint_for_loop_closes_at_last last z
+                    let equal_to_prev = 
+                        if step = 0 then
+                            z.MkTrue() 
+                        else 
+                            BioCheckPlusZ3.constraint_for_valuation_of_vars_is_equivalent (List.nth ranges (last - 1)) (last - 1) range last z
+                    z.MkOr(loop_closes_at_last, equal_to_prev)
+                else
+                    let equal_to_next = BioCheckPlusZ3.constraint_for_valuation_of_vars_is_equivalent range step (List.nth ranges (step + 1)) (step + 1) z
+                    equal_to_next
+            | Oscillation ->
+                // A state in a loop is an oscillation if:
+                // 1. It is the last, the loop closes before the last, and the last is not equivalent to prev
+                // 2. It is not the last and it is not equivalent to next
+                if step = last then
+                    let loop_closes_at_last = BioCheckPlusZ3.constraint_for_loop_closes_at_last last z
+                    let not_loop_closes_at_last = z.MkNot(loop_closes_at_last)
+                    let equal_to_prev = 
+                        if step = 0 then
+                            z.MkFalse()
+                        else 
+                            BioCheckPlusZ3.constraint_for_valuation_of_vars_is_equivalent (List.nth ranges (last - 1)) (last - 1) range last  z
+                    let not_equal_to_prev = z.MkNot(equal_to_prev)
+                    z.MkAnd(not_loop_closes_at_last, not_equal_to_prev)
+                else
+                    let in_loop = BioCheckPlusZ3.constraint_for_time_is_part_of_loop step last z
+                    let equal_to_next = BioCheckPlusZ3.constraint_for_valuation_of_vars_is_equivalent range step (List.nth ranges (step + 1)) (step + 1) z
+                    let not_equal_to_next = z.MkNot(equal_to_next)
+                    z.MkAnd(in_loop, not_equal_to_next)
             | False ->
                 z.MkFalse()
             | _ ->
@@ -261,8 +318,12 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
         | PropGt (location, _, _) 
         | PropGtEq (location, _, _) 
         | PropLt (location , _, _) 
-        | PropLtEq (location , _, _) ->      
+        | PropLtEq (location , _, _) ->
             ignore(return_map := Map.add location z3_constraint !return_map)
+        | Loop
+        | SelfLoop 
+        | Oscillation ->      
+            ignore(return_map := Map.add (encode_location_of_constant step ltl_formula) z3_constraint !return_map)
         | _ ->
             ()
 
@@ -309,6 +370,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
 
         let truez3 = z.MkTrue()
         let falsez3 = z.MkFalse()
+
         // Call recursively the encoding of the formula
         // Get the encoding of the formula for current and next
         // Compute their negations and return all four
@@ -335,6 +397,14 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
                 let op_at_curr = Map.find location current_map
                 let not_op_at_prev = z.MkNot(op_at_prev) // This does not work for propositions!
                 let not_op_at_curr = z.MkNot(op_at_curr) // This does not work for propositions!
+                (op_at_prev,not_op_at_prev,op_at_curr,not_op_at_curr)
+            | Loop 
+            | Oscillation 
+            | SelfLoop  ->
+                let op_at_prev = Map.find (encode_location_of_constant step_prev operand) previous_map
+                let op_at_curr = Map.find (encode_location_of_constant step_curr operand) current_map
+                let not_op_at_prev = z.MkNot(op_at_prev)
+                let not_op_at_curr = z.MkNot(op_at_curr)
                 (op_at_prev,not_op_at_prev,op_at_curr,not_op_at_curr)
             | False ->
                 (falsez3, truez3, falsez3, truez3)
@@ -379,7 +449,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
             | _ ->
                 (truez3, truez3, truez3, truez3)
 
-        let constraint_for_hidden_subformula_and_neg_prev_curr operand =
+(*        let constraint_for_hidden_subformula_and_neg_prev_curr operand =
             match operand with 
             | Until (location, _, _)
             | Wuntil (location, _, _)
@@ -407,7 +477,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
                 (falsez3, truez3, falsez3, truez3)
             | _ ->
                 (truez3, falsez3, truez3, falsez3)
-
+*)
         let (hidden_sub_at_prev, not_hidden_sub_at_prev, hidden_sub_at_current, not_hidden_sub_at_current) =
             match ltl_formula with
             | Upto (location, _, _) ->
@@ -535,7 +605,7 @@ let create_list_of_maps_of_formula_constraints (ltl_formula : LTLFormulaType) (n
     let time = ref 0
     let list_of_maps = ref []
     for range in ranges do
-        let map = produce_constraints_for_truth_of_formula_at_time ltl_formula network range !time z
+        let map = produce_constraints_for_truth_of_formula_at_time ltl_formula network range !time (ranges.Length - 1) z ranges
         list_of_maps := !list_of_maps @ (map::[])
 
         incr time
@@ -573,7 +643,7 @@ let constraint_of_hidden_subformula (ltl_formula : LTLFormulaType) (map : Formul
     | _ ->
         z.MkFalse()
 
-let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstraint) (z : Context)=
+let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstraint) (step : int) (z : Context)=
     match ltl_formula with
     | Until (location, _, _)
     | Wuntil (location, _, _)
@@ -592,6 +662,10 @@ let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstrain
     | PropLt (location, _, _)
     | PropLtEq (location, _, _) ->
         Map.find location map
+    | Loop
+    | SelfLoop
+    | Oscillation ->
+        Map.find (encode_location_of_constant step ltl_formula) map
     | False ->
         z.MkFalse()
     | _ ->
@@ -599,7 +673,7 @@ let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstrain
 
 //     EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head
 let assert_top_most_formula (ltl_formula : LTLFormulaType) (z : Context) (map : FormulaConstraint) =
-    let top_most_formula = constraint_of_formula ltl_formula map z
+    let top_most_formula = constraint_of_formula ltl_formula map 0 z
     z.AssertCnstr(top_most_formula)
 
 // Go recursively over the formula structure
@@ -628,7 +702,7 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
         for formula_constraint in formula_constraints do
             let constraint_loop_possible_at_time = compute_loop_possible_at_time !time last_time
             
-            let constraint_for_formula = constraint_of_formula ltl_formula formula_constraint z
+            let constraint_for_formula = constraint_of_formula ltl_formula formula_constraint !time z
 
             let constraint_for_hidden_subformula = 
                 match ltl_formula with
@@ -641,22 +715,22 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
                 match ltl_formula with
                 | Until (_, _, op) 
                 | Eventually (_, op) ->
-                    let constraint_for_op = constraint_of_formula op formula_constraint z
+                    let constraint_for_op = constraint_of_formula op formula_constraint !time z
                     let not_constraint_for_formula = z.MkNot (constraint_for_formula)
                     z.MkOr(not_constraint_for_formula, constraint_for_op)
                 | Release (_, _, op) 
                 | Always (_, op) ->
-                    let constraint_for_op = constraint_of_formula op formula_constraint z
+                    let constraint_for_op = constraint_of_formula op formula_constraint !time z
                     let not_constraint_for_op = z.MkNot(constraint_for_op)
                     z.MkOr(constraint_for_formula,not_constraint_for_op)
                 | Wuntil (_, op1, op2) ->
-                    let constraint_for_op1 = constraint_of_formula op1 formula_constraint z
+                    let constraint_for_op1 = constraint_of_formula op1 formula_constraint !time z
                     let not_constraint_for_op1 = z.MkNot(constraint_for_op1)
-                    let constraint_for_op2 = constraint_of_formula op2 formula_constraint z
+                    let constraint_for_op2 = constraint_of_formula op2 formula_constraint !time z
                     let not_constraint_for_op2 = z.MkNot(constraint_for_op2)
                     z.MkOr(constraint_for_formula,z.MkAnd(not_constraint_for_op1,not_constraint_for_op2))
                 | Upto (_, _, op) ->
-                    let constraint_for_op = constraint_of_formula op formula_constraint z
+                    let constraint_for_op = constraint_of_formula op formula_constraint !time z
                     let not_constraint_for_hidden_sub = z.MkNot(constraint_for_hidden_subformula)
                     z.MkOr(not_constraint_for_hidden_sub,constraint_for_op)
                 | _ ->

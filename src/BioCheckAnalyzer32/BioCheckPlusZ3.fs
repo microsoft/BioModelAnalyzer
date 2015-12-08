@@ -13,10 +13,15 @@ open Microsoft.Z3
 open Expr
 open QN
 
+type VariableRange = Map<QN.var, int list>
+
 // Naming convension for Z3 variables
+
 let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
 
-let get_z3_bool_var_at_time_in_val (node : QN.node) time value = sprintf "v%d^%d^%d" node.var time value 
+let get_z3_bool_var_at_time_in_val_from_var variable time value = sprintf "v%d^%d^%d" variable time value
+
+let get_z3_bool_var_at_time_in_val (node : QN.node) time value =  get_z3_bool_var_at_time_in_val_from_var node.var time value
 
 // let get_z3_bool_var_trans_of_var_at_time (node : QN.node) time = sprintf "tv%d^%d" node.var time
 
@@ -150,6 +155,75 @@ let apply_target_function value target min  max =
     elif value > target && value > min then value - 1
     else value
 
+// Create the constraint that says that the valuation at time1 is the same as that in time2
+// For each variable
+let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time1 (range2 : VariableRange) time2 (z : Context) =
+    // Create a pair of the ranges of a single variable
+    let var_ranges (variable : var) =
+        let r1 = Map.find variable range1
+        let r2 = Map.find variable range2
+        (r1, r2)
+
+    let value_of_var_at_time_is_val varname time (range : int list) index prev_index = 
+        if range.Length = 1 then
+            z.MkTrue()
+        elif index=0 then
+            make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range 0)) z
+        elif index = (range.Length - 1) then
+            z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range prev_index)) z)
+        else
+            let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range index)) z
+            let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range prev_index)) z
+            z.MkAnd (z.MkNot(z3_var_prev), z3_var)
+
+    let value_of_var_at_time_is_not_val varname time (range : int list) index prev_index = 
+        z.MkNot(value_of_var_at_time_is_val varname time range index prev_index)
+
+    let value_of_var_at_time_and_time_is_same varname time1 time2 range1 range2 index1 index2 prev_index1 prev_index2 =
+        z.MkIff((value_of_var_at_time_is_val varname time1 range1 index1 prev_index1), 
+                (value_of_var_at_time_is_val varname time2 range2 index2 prev_index2))
+
+    let pair_of_ranges_to_constraint_list (varname : var) ((range1 : int list), (range2 : int list)) =
+        let mutable prev1=0
+        let mutable prev2=0
+        let mutable i1=0
+        let mutable i2=0
+        let mutable constraint_list = []
+        while (i1<range1.Length || i2<range2.Length) do
+            let val1 = List.nth range1 i1
+            let val2 = List.nth range2 i2
+            let new_constraint = 
+                if val1<val2 then
+                    value_of_var_at_time_is_not_val varname time1 range1 i1 prev1
+                elif val2<val1 then
+                    value_of_var_at_time_is_not_val varname time2 range2 i2 prev2
+                else // val1=val2
+                    value_of_var_at_time_and_time_is_same varname time1 time2 range1 range2 i1 i2 prev1 prev2
+            constraint_list <- new_constraint::constraint_list
+
+            prev1 <- i1
+            prev2 <- i2
+
+            if val1<val2 then
+                i1 <- i1+1
+            elif val2<val1 then
+                i2 <- i2+1
+            else // val1=val2
+                i1 <- i1+1
+                i2 <- i2+1
+
+        constraint_list
+
+    let variables = List.map (fun (name, range) -> name) (Map.toList range1)
+    let variable_ranges = List.map (fun name -> (var_ranges name)) variables
+
+    let add_list_to_list target_list source_list =
+        List.append target_list source_list
+    let constraints_list_list = List.map2 (pair_of_ranges_to_constraint_list) variables variable_ranges
+    let constraints_list = List.fold (fun target_list source_list -> List.append target_list source_list) ([]) constraints_list_list
+    let final_constraint = List.fold (fun (t1 : Term) (t2 : Term) -> z.MkAnd(t1, t2)) (z.MkTrue()) constraints_list
+    final_constraint
+
 // The inputs are:
 // node - the node for which the constraint on next time point is added
 // inputnodes - the list of nodes that are inputs to this node (including itself at the head)
@@ -275,6 +349,26 @@ let constraint_for_loop_at_time time last (z : Context) =
         let z3_loop_var_t_min_1 =  make_z3_bool_var loop_var_t_min_1 z
         let not_z3_loop_var_t_min_1 = z.MkNot(z3_loop_var_t_min_1)
         z.MkAnd(not_z3_loop_var_t_min_1,z3_loop_var_t)
+
+// Constraint that says that time time is inside the loop
+let constraint_for_time_is_part_of_loop time last (z : Context) = 
+    let z3_loop_var_t =
+        if (time = last) then
+            z.MkTrue()
+        else
+            let loop_var_t = get_z3_bool_var_loop_at_time time
+            make_z3_bool_var loop_var_t z
+    z3_loop_var_t
+
+// Constraint that says that the loop closes at the last time
+// This assumes that time is the last time and does not check it!
+let constraint_for_loop_closes_at_last time (z : Context) =
+    if time = 0 then
+        z.MkTrue()
+    else
+        let loop_var_t_minus_1 = get_z3_bool_var_loop_at_time (time - 1)
+        let z3_loop_var_t_minus_1 = make_z3_bool_var loop_var_t_minus_1 z
+        z.MkNot(z3_loop_var_t_minus_1)
 
 type BoolVarType = 
     | VarEncode of int * int * int // variable id * time * value

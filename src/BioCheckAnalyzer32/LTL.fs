@@ -25,9 +25,9 @@ type LTLFormulaType =
     | PropGtEq of int list * QN.node * int
     | PropLt of int list * QN.node * int
     | PropLtEq of int list * QN.node * int
-//    | SelfLoop
-//    | Loop
-//    | Oscillation
+    | SelfLoop
+    | Loop
+    | Oscillation
     | False 
     | True
     | Error 
@@ -45,15 +45,7 @@ let left_formula phi =
     | Next(_,phi0)
     | Always(_,phi0)
     | Eventually(_,phi0) -> Some phi0
-    | PropEq(_)
-    | PropNeq(_)
-    | PropGt(_) 
-    | PropGtEq(_) 
-    | PropLt(_) 
-    | PropLtEq(_) 
-    | False 
-    | True
-    | Error -> None
+    | _ -> None
 
 let right_formula phi = 
     match phi with 
@@ -64,19 +56,7 @@ let right_formula phi =
     | And (_,_,phi1) 
     | Or (_,_,phi1) 
     | Implies (_,_,phi1) -> Some phi1
-    | Not(_)
-    | Next(_)
-    | Always(_)
-    | Eventually(_) 
-    | PropEq(_)
-    | PropNeq(_)
-    | PropGt(_) 
-    | PropGtEq(_) 
-    | PropLt(_) 
-    | PropLtEq(_) 
-    | False 
-    | True
-    | Error -> None
+    | _ -> None
 
 let formula_location phi = 
     match phi with
@@ -97,7 +77,7 @@ let formula_location phi =
     | PropGtEq (loc, _, _) 
     | PropLt (loc , _, _) 
     | PropLtEq (loc , _, _) -> Some loc
-    | False | True | Error -> None
+    | _ -> None 
 
 let prop_var_range phi = 
     match phi with
@@ -125,9 +105,9 @@ let print_in_order(formula : LTLFormulaType) =
             | Next (_, _) -> "Next"
             | Always (_, _) -> "Always"
             | Eventually (_, _) -> "Eventually"
-//            | Loop -> "Loop"
-//            | SelfLoop -> "SelfLoop"
-//            | Oscillation -> "Oscillation"
+            | Loop -> "Loop"
+            | SelfLoop -> "SelfLoop"
+            | Oscillation -> "Oscillation"
             | False -> "FF"
             | True -> "TT"
             | _ -> "Err"
@@ -209,9 +189,9 @@ let string_to_LTL_formula (s:string) (network) =
     let implication = "Implies"
     let negation = "Not"
     let next = "Next"
-//    let loop_string = "Loop"
-//    let self_loop_string = "SelfLoop"
-//    let oscillation_string = "Oscillation"
+    let loop_string = "Loop"
+    let self_loop_string = "SelfLoop"
+    let oscillation_string = "Oscillation"
     let true_string = "True"
     let false_string = "False"
     let eq = "="
@@ -233,9 +213,9 @@ let string_to_LTL_formula (s:string) (network) =
     let length_of_next = next.Length
     let length_of_always = always.Length
     let length_of_eventually = eventually.Length
-//    let length_of_Loop = loop_string.Length
-//    let length_of_self_loop = self_loop_string.Length
-//    let length_of_oscillation = oscillation_string.Length
+    let length_of_Loop = loop_string.Length
+    let length_of_self_loop = self_loop_string.Length
+    let length_of_oscillation = oscillation_string.Length
     let length_of_true = true_string.Length
     let length_of_false = false_string.Length
     let length_of_prop_eq = eq.Length
@@ -263,9 +243,9 @@ let string_to_LTL_formula (s:string) (network) =
     let IsPropGtEq (s : string) = s.StartsWith(gt_eq + space)
     let IsPropLt (s : string) = s.StartsWith(lt + space)
     let IsPropLtEq (s : string) = s.StartsWith(lt_eq + space)
-//    let IsLoop (s : string) = s.Equals(loop_string)
-//    let IsSelfLoop (s : string) = s.Equals(self_loop_string)
-//    let IsOscillation (s : string) = s.Equals(oscillation_string)
+    let IsLoop (s : string) = s.Equals(loop_string)
+    let IsSelfLoop (s : string) = s.Equals(self_loop_string)
+    let IsOscillation (s : string) = s.Equals(oscillation_string)
     let IsTrue (s : string) = s.Equals(true_string)
     let IsFalse(s : string) = s.Equals(false_string)
 
@@ -326,14 +306,13 @@ let string_to_LTL_formula (s:string) (network) =
             sub_formula
 
         if (not(s.StartsWith("(")) || not(s.EndsWith(")"))) then
-//            if (IsLoop(s)) then
-//                Loop
-//            elif (IsSelfLoop(s)) then
-//                SelfLoop
-//            elif (IsOscillation(s)) then
-//                Oscillation
-//            elif (IsTrue(s)) then
-            if (IsTrue(s)) then
+            if (IsLoop(s)) then
+                Loop
+            elif (IsSelfLoop(s)) then
+                SelfLoop
+            elif (IsOscillation(s)) then
+                Oscillation
+            elif (IsTrue(s)) then
                 True
             elif (IsFalse(s)) then
                 False
@@ -443,6 +422,12 @@ let string_to_LTL_formula (s:string) (network) =
                     Error
                 else
                     (PropLtEq (location, var, value))
+            elif (IsSelfLoop(without_paren)) then
+                SelfLoop
+            elif (IsLoop(without_paren)) then
+                Loop
+            elif (IsOscillation(without_paren)) then
+                Oscillation
             elif (IsTrue(without_paren)) then
                 True
             elif (IsFalse(without_paren)) then
@@ -479,7 +464,7 @@ let test_LTL_parser (network) =
     let formula_seven = string_to_LTL_formula formula_seven_string  network
     let formula_eight_string = "(Upto (Not (> a 5)) (> b 6))"
     let formula_eight = string_to_LTL_formula formula_eight_string  network
-//    let formula_nine_string = "(Always (Or (And (Not SelfLoop) Oscillation)) (Eventually (Or (Next (<= v1 343245) Loop)))))"
-//    let formula_nine = string_to_LTL_formula formula_nine_string network
+    let formula_nine_string = "(Always (Or (And (Not SelfLoop) Oscillation)) (Eventually (Or (Next (<= v1 343245) Loop)))))"
+    let formula_nine = string_to_LTL_formula formula_nine_string network
 
     ignore(formula_three)
