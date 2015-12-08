@@ -4411,6 +4411,11 @@ var BMA;
                     this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             };
+            TemporalPropertiesEditorDriver.prototype.SetCopyZoneIcon = function (operation) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ copyzoneoperation: operation });
+                }
+            };
             return TemporalPropertiesEditorDriver;
         })();
         UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
@@ -12020,6 +12025,8 @@ jQuery.fn.extend({
         _drawingSurface: undefined,
         copyzone: undefined,
         deletezone: undefined,
+        copyzonesvg: undefined,
+        operation: undefined,
         options: {
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
@@ -12158,11 +12165,22 @@ jQuery.fn.extend({
             </div>
             */
             var dom = drawingSurface.drawingsurface("getCentralPart");
-            var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dom.host);
+            var dropzonescnt = $("<div></div>").css("position", "absolute").css("bottom", 0).prependTo(dom.host);
+            dropzonescnt.width("100%");
+            var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
             this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
-            $("<img>").attr("src", "../images/LTL-copy.svg").attr("alt", "").appendTo(this.copyzone);
+            var copyzonesvgdiv = $("<div></div>").width("100%").height("calc(100% - 20px)").css("margin-top", 10).css("margin-bottom", 10).appendTo(this.copyzone);
+            copyzonesvgdiv.svg({
+                loadURL: "../images/LTL-copy.svg",
+                onLoad: function (svg) {
+                    that.copyzonesvg = svg;
+                    if (that.options.copyzoneoperation !== undefined) {
+                        that.updateCopyZoneIcon(that.options.copyzoneoperation);
+                    }
+                }
+            });
             this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
             this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
@@ -12238,8 +12256,13 @@ jQuery.fn.extend({
             switch (key) {
                 case "commands":
                     this._drawingSurface.drawingsurface({ commands: value });
+                    break;
                 case "states":
                     needRefreshStates = true;
+                    break;
+                case "copyzoneoperation":
+                    that.updateCopyZoneIcon(value);
+                    break;
                 default:
                     break;
             }
@@ -12250,6 +12273,21 @@ jQuery.fn.extend({
         },
         destroy: function () {
             this.element.empty();
+        },
+        updateCopyZoneIcon: function (op) {
+            var that = this;
+            if (that.operation !== undefined) {
+                that.operation.Clear();
+            }
+            if (that.copyzonesvg !== undefined) {
+                that.copyzonesvg.clear();
+                that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
+                var bbox = that.operation.BoundingBox;
+                that.copyzonesvg.configure({
+                    viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
+                }, true);
+                that.operation.Refresh();
+            }
         },
         setcopyzonevisibility: function (isVisible) {
             if (isVisible) {
@@ -12851,6 +12889,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned,
                         };
+                        _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         if (unpinned.isRoot) {
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
                             _this.contextElement.operationlayoutref.IsVisible = false;
@@ -12866,6 +12905,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned
                         };
+                        _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         tpEditorDriver.SetCopyZoneVisibility(_this.clipboard !== undefined);
                     }
                 });
@@ -13059,6 +13099,7 @@ var BMA;
                                 _this.clipboard = {
                                     operation: _this.stagingOperation.operation.Operation.Clone()
                                 };
+                                _this.tpEditorDriver.SetCopyZoneIcon(_this.clipboard.operation);
                                 //Operation should stay in its origin place
                                 if (_this.stagingOperation.isRoot) {
                                     _this.stagingOperation.originRef.IsVisible = true;
@@ -13297,6 +13338,7 @@ var BMA;
                                     });
                                 });
                                 driver.SetStatus("success");
+                                driver.Expand();
                                 operation.AnalysisStatus = "success";
                                 operation.Tag = {
                                     data: res.Ticks
@@ -13309,6 +13351,7 @@ var BMA;
                                     });
                                 });
                                 driver.SetStatus("partialsuccess");
+                                driver.Expand();
                                 operation.AnalysisStatus = "partialsuccess";
                                 operation.Tag = {
                                     data: res.Ticks,
@@ -13322,6 +13365,7 @@ var BMA;
                                     });
                                 });
                                 driver.SetStatus("fail");
+                                driver.Expand();
                                 operation.AnalysisStatus = "fail";
                                 operation.Tag = {
                                     data: res.NegTicks
