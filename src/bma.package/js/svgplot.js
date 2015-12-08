@@ -186,10 +186,10 @@
                     context.fillStyle = "rgb(37,96,159)";
                     context.textBaseline = "top";
                     var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
-                    context.font = textheight + "px Segoe";
+                    context.font = textheight + "px Segoe-UI";
                     while (context.measureText(str).width > width * 0.8) {
                         var textheight = 0.8 * textheight;
-                        context.font = textheight + "px Segoe";
+                        context.font = textheight + "px Segoe-UI";
                     }
                     context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
                 }

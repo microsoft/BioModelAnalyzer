@@ -186,10 +186,10 @@
                     context.fillStyle = "rgb(37,96,159)";
                     context.textBaseline = "top";
                     var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
-                    context.font = textheight + "px Segoe";
+                    context.font = textheight + "px Segoe-UI";
                     while (context.measureText(str).width > width * 0.8) {
                         var textheight = 0.8 * textheight;
-                        context.font = textheight + "px Segoe";
+                        context.font = textheight + "px Segoe-UI";
                     }
                     context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
                 }
@@ -4853,8 +4853,9 @@ var BMA;
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
                 var prevState = undefined;
+                var currState = [];
                 var compareTags = function (prev, curr) {
-                    if (prev === undefined)
+                    if (prev === undefined || curr === undefined)
                         return false;
                     if (prev.length === curr.length) {
                         for (var j = 0; j < prev.length; j++) {
@@ -4865,9 +4866,20 @@ var BMA;
                     }
                     return false;
                 };
-                for (var i = 0; i < tags.length; i++) {
-                    if (!compareTags(prevState, tags[i])) {
-                        if (prevState !== undefined && prevState.length !== 0 && count > 1)
+                for (var i = 0; i < tags.length - 1; i++) {
+                    currState.push([]);
+                    for (var j = 0; j < tags[i].length; j++) {
+                        for (var k = 0; k < tags[i + 1].length; k++)
+                            if (tags[i][j] == tags[i + 1][k]) {
+                                currState[i].push(tags[i][j]);
+                                break;
+                            }
+                    }
+                }
+                prevState = currState[0];
+                for (var i = 1; i < tags.length; i++) {
+                    if (!compareTags(prevState, currState[i])) {
+                        if (prevState && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
                                 width: count,
@@ -4875,22 +4887,47 @@ var BMA;
                                 x: firstTime,
                                 y: 0,
                             });
-                        prevState = tags[i];
+                        prevState = currState[i];
                         firstTime = i;
                         count = 1;
                     }
                     else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
+                        if (i == tags.length - 1 && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
-                                width: count - 1,
+                                width: count,
                                 height: labels_height,
                                 x: firstTime,
                                 y: 0,
                             });
                     }
                 }
+                //for (var i = 0; i < tags.length; i++) {
+                //    if (!compareTags(prevState, tags[i])) {
+                //        if (prevState !== undefined && prevState.length !== 0 && count > 1)
+                //            labels.push({
+                //                text: prevState,
+                //                width: count,
+                //                height: labels_height,
+                //                x: firstTime,
+                //                y: 0,
+                //            });
+                //        prevState = tags[i];
+                //        firstTime = i;
+                //        count = 1;
+                //    } else {
+                //        count++;
+                //        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
+                //            labels.push({
+                //                text: prevState,
+                //                width: count - 1,
+                //                height: labels_height,
+                //                x: firstTime,
+                //                y: 0,
+                //            });
+                //    }
+                //}
                 var interval = this.CreateInterval(vars);
                 var options = {
                     id: id,
