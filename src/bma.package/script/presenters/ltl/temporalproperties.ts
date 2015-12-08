@@ -80,8 +80,8 @@ module BMA {
 
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
 
-                //tpEditorDriver.SetCopyZoneVisibility(false);
-                //tpEditorDriver.SetDeleteZoneVisibility(false);
+                tpEditorDriver.SetCopyZoneVisibility(false);
+                tpEditorDriver.SetDeleteZoneVisibility(false);
 
                 commands.On("AddOperatorSelect", (operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };
