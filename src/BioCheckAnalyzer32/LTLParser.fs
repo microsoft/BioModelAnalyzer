@@ -27,9 +27,9 @@ type Prop =
     | PLtEq of Prop * Prop //
     | PEq of Prop * Prop
     | PNeq of Prop * Prop
-//    | PLoop
-//    | PSelfLoop
-//    | POscillation
+    | PLoop
+    | PSelfLoop
+    | POscillation
     | PFalse
     | PTrue
     | PNum of int
@@ -63,9 +63,9 @@ let numberLit = numberLiteral numberFormat "number" .>> ws
 // "Grammar productions". 
 let number = numberLit .>> ws |>> (fun x -> PNum((int32)x.String))
 let ident  = str "var" >>. str "(" >>. pythonIdentifier .>> str ")" |>> (fun x -> PId(x))
-//let ll = str "Loop" .>> ws |>> (fun _x -> PLoop)
-//let sl = str "SelfLoop" .>> ws |>> (fun _x -> PSelfLoop)
-//let os = str "Oscillation" .>> ws |>> (fun _x -> POscillation)
+let (ll : Parser<Prop,unit>) = str "Loop" .>> ws |>> (fun _x -> PLoop)
+let (sl : Parser<Prop,unit>) = str "SelfLoop" .>> ws |>> (fun _x -> PSelfLoop)
+let (os : Parser<Prop,unit>) = str "Oscillation" .>> ws |>> (fun _x -> POscillation)
 let tt = str "True" .>> ws |>> (fun _x -> PTrue)
 let ff = str "False" .>> ws |>> (fun _x -> PFalse)
 let paren = between (str "(") (str ")") expr 
@@ -125,9 +125,9 @@ let rec ltl_of_p qn p loc =
     | PLt(_,_) -> LTL.Error
     | PLtEq(PId(x),PNum(n)) -> LTL.PropLtEq(loc, find_node_by_name qn x, n)
     | PLtEq(_,_) -> LTL.Error
-//    | PLoop -> LTL.Loop
-//    | PSelfLoop -> LTL.SelfLoop
-//    | POscillation -> LTL.Oscillation
+    | PLoop -> LTL.Loop
+    | PSelfLoop -> LTL.SelfLoop
+    | POscillation -> LTL.Oscillation
     | PFalse -> LTL.False
     | PTrue -> LTL.True
     | PNum(_) 
@@ -176,8 +176,8 @@ let unit_tests _ =
     check   "((!(var(v1) > 5)) upto (next (var(v2) >= 17))) weakuntil ((var(v2) > 6) && (var(v2) <= 564))" 
             (ParseOK(PWuntil (PUpto (PNot (PGt (PId "v1",PNum 5)),PNext (PGtEq (PId "v2",PNum 17))),PAnd (PGt (PId "v2",PNum 6),PLtEq (PId "v2",PNum 564)))))
 
-//    check   "((!(var(v1) > 5)) upto (next Oscillation)) weakuntil (Loop && SelfLoop)" 
-//            (ParseOK(PWuntil (PUpto (PNot (PGt (PId "v1",PNum 5)),PNext (POscillation),PAnd (PLoop,PSelfLoop))))
+    check   "((!(var(v1) > 5)) upto (next Oscillation)) weakuntil (Loop && SelfLoop)" 
+            (ParseOK(PWuntil (PUpto (PNot (PGt (PId "v1",PNum 5)),PNext (POscillation)),PAnd (PLoop,PSelfLoop))))
 
 //    let formula_three_string = "(Always (Or (Not (Next (>= v2 6344))) (Eventually (Next (<= v3 343245)))))"
 //    let formula_three = string_to_LTL_formula formula_three_string network
