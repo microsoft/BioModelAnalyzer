@@ -4444,7 +4444,6 @@ var BMA;
                         name: s.Name,
                         description: s.Description,
                         formula: [],
-                        tooltip: s.GetFormula()
                     };
                     for (var j = 0; j < s.Operands.length; j++) {
                         var opnd = s.Operands[j];
@@ -11467,7 +11466,7 @@ jQuery.fn.extend({
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                                 .addClass("state-button").appendTo(this._stateButtons);
-                            that.createToolTip(value[i], stateButton);
+                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -11511,82 +11510,39 @@ jQuery.fn.extend({
         },
         addState: function (state) {
         },
-        createToolTip: function (value, button) {
-            var that = this;
-            button.tooltip({
-                tooltipClass: "state-tooltip",
-                content: function () {
-                    var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
-                    var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
-                    if (value.description)
-                        description.show();
-                    else
-                        description.hide();
-                    var table = $("<table></table>").appendTo(stateTooltip);
-                    var tbody = $("<tbody></tbody>").appendTo(table);
-                    for (var j = 0; j < value.formula.length; j++) {
-                        var tr = that.getFormula(value.formula[j]);
-                        tr.appendTo(tbody);
-                    }
-                    return stateTooltip;
-                },
-                position: {
-                    at: "left-48px bottom",
-                },
-                show: null,
-                hide: false,
-                items: "div.state-button"
-            });
-        },
-        getFormula: function (formula) {
-            var tr = $("<tr></tr>");
-            for (var i = 0; i < 5; i++) {
-                if (formula[i] !== undefined) {
-                    switch (formula[i].type) {
-                        case "variable": {
-                            var td = $("<td></td>").addClass("variable-name").appendTo(tr);
-                            var img = $("<img>").attr("src", "../../images/state-variable.svg").appendTo(td);
-                            var br = $("<br>").appendTo(td);
-                            var variableName = $("<div>" + formula[i].value + "</div>").appendTo(td);
-                            break;
-                        }
-                        case "const": {
-                            var td = $("<td></td>").appendTo(tr);
-                            var cons = $("<div>" + formula[i].value + "</div>").appendTo(td);
-                            break;
-                        }
-                        case "operator": {
-                            var td = $("<td></td>").appendTo(tr);
-                            var op = $("<img>").attr("width", "30px").attr("height", "30px").appendTo(td);
-                            switch (formula[i].value) {
-                                case ">":
-                                    op.attr("src", "images/ltlimgs/mo.png");
-                                    break;
-                                case ">=":
-                                    op.attr("src", "images/ltlimgs/moeq.png");
-                                    break;
-                                case "<":
-                                    op.attr("src", "images/ltlimgs/le.png");
-                                    break;
-                                case "<=":
-                                    op.attr("src", "images/ltlimgs/leeq.png");
-                                    break;
-                                case "=":
-                                    op.attr("src", "images/ltlimgs/eq.png");
-                                    break;
-                                case "!=":
-                                    op.attr("src", "images/ltlimgs/noeq.png");
-                                    break;
-                                default: break;
+        convertForTooltip: function (state) {
+            var formulas = [];
+            for (var j = 0; j < state.formula.length; j++) {
+                var formula = state.formula[j];
+                var newFormula = {
+                    variable: undefined,
+                    operator: undefined,
+                    const: undefined
+                };
+                for (var i = 0; i < 5; i++) {
+                    if (formula[i] !== undefined) {
+                        switch (formula[i].type) {
+                            case "variable": {
+                                newFormula.variable = formula[i].value;
+                                break;
                             }
-                            break;
+                            case "const": {
+                                newFormula.const = formula[i].value;
+                                break;
+                            }
+                            case "operator": {
+                                newFormula.operator = formula[i].value;
+                                break;
+                            }
+                            default: break;
                         }
-                        default: break;
                     }
                 }
+                if (newFormula.variable && newFormula.const !== undefined && newFormula.operator)
+                    formulas.push(newFormula);
             }
-            return tr;
-        }
+            return { description: state.description, formula: formulas };
+        },
     });
 }(jQuery));
 //# sourceMappingURL=statescompact.js.map
@@ -11603,7 +11559,7 @@ jQuery.fn.extend({
                 this.element.tooltip({
                     tooltipClass: "state-tooltip",
                     content: function () {
-                        var stateTooltip = $("<div></div>"); //.addClass("state-tooltip");
+                        var stateTooltip = $("<div></div>");
                         var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
                         if (that.options.state.description)
                             description.show();
@@ -11755,6 +11711,10 @@ jQuery.fn.extend({
                                 li.addClass("spin");
                                 that.createWaitAnim().appendTo(btn);
                                 that.options.ontestrequested();
+                                minusd.addClass("testing");
+                                plusd.addClass("testing");
+                                plusb.addClass("testing").unbind("click");
+                                minusb.addClass("testing").unbind("click");
                             }
                         });
                     }
@@ -11826,7 +11786,8 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv); //
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("true").appendTo(opDiv); //
+                        var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -11901,7 +11862,8 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv); //
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("true").appendTo(opDiv); //
+                        var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -11973,7 +11935,8 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("false").appendTo(opDiv); //
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("false").appendTo(opDiv); //
+                        var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("red").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -12051,6 +12014,7 @@ jQuery.fn.extend({
             this.statesbtns.empty();
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateName = this.options.states[i].Name;
+                var stateTooltip = that._convertForTooltip(that.options.states[i]);
                 var stateDiv = $("<div></div>")
                     .addClass("state-button")
                     .addClass("ltl-tp-droppable")
@@ -12068,6 +12032,7 @@ jQuery.fn.extend({
                         that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
                 });
+                stateDiv.statetooltip({ state: stateTooltip });
             }
             var addState = $("<div></div>").addClass("state-button new").text("+").appendTo(that.statesbtns);
             addState.click(function () {
@@ -12075,6 +12040,43 @@ jQuery.fn.extend({
                     that.options.onaddstaterequested();
                 }
             });
+        },
+        _convertForTooltip: function (state) {
+            var formulas = [];
+            for (var i = 0; i < state.Operands.length; i++) {
+                var op = state.Operands[i];
+                var formula = {
+                    variable: undefined,
+                    operator: undefined,
+                    const: undefined
+                };
+                op.LeftOperand.Name === undefined ? formula.const = op.LeftOperand.value : formula.variable = op.LeftOperand.Name;
+                var invOperator = function (operator) {
+                    switch (operator) {
+                        case ">":
+                            return "<";
+                        case "<":
+                            return ">";
+                        case ">=":
+                            return "<=";
+                        case "<=":
+                            return ">=";
+                        default: break;
+                    }
+                    return operator;
+                };
+                if (op.MiddleOperand) {
+                    formula.operator = invOperator(op.LeftOperator);
+                    formula.variable = op.MiddleOperand.Name;
+                    formulas.push(formula);
+                    formula.operator = op.RightOperator;
+                }
+                else
+                    formula.operator = formula.variable ? op.Operator : invOperator(op.Operator);
+                op.RightOperand.Name === undefined ? formula.const = op.RightOperand.Value : formula.variable = op.RightOperand.Name;
+                formulas.push(formula);
+            }
+            return { description: state.Description, formula: formulas };
         },
         _addCustomState: function (statesbtns, name, imagePath) {
             var that = this;
@@ -12685,15 +12687,6 @@ var BMA;
                 this.statesEditor.SetStates(appModel.States);
                 this.statesViewer.SetStates(appModel.States);
                 this.statesViewer.SetCommands(commands);
-                //commands.On("AddFirstStateRequested",(args) => {
-                //    if (appModel.States.length === 0) {
-                //        var newState = new BMA.LTLOperations.Keyframe("A", "", [])
-                //        appModel.States.push(newState);
-                //        this.statesEditor.SetStates(appModel.States);
-                //        this.statesViewer.SetStates(appModel.States);
-                //    }
-                //    stateseditordriver.Show();
-                //});
                 commands.On("KeyframesChanged", function (args) {
                     if (_this.CompareStatesToAppModel(args.states)) {
                         appModel.States = args.states;

@@ -729,13 +729,13 @@
 	margin-left: -15px;
 }
 
-.LTL-test-options{
+/*.LTL-test-options{
     display: inline-block;
     vertical-align: middle;
     width: 130px;
     padding: 5px 5px 0px 5px;
     /*margin-left: 10px;*/
-    .border-radius(5px);
+    /*.border-radius(5px);
 
     border: 1px solid @darkgrey;
     color: @darkgrey;
@@ -746,9 +746,41 @@
             margin-bottom: 0px;
         }
     }
+}*/
+
+.LTL-test-results {
+   
+	.pill-button-box{
+		.pill-button{
+			margin-top: 5px;
+			margin-bottom: 0px;
+            &.testing {
+                &:hover{
+                    background-color:@lightgrey;
+                    color:@darkgrey;
+                }
+
+                button.testing{
+                    color:@darkgrey;
+                    &:hover{
+                        background-color:@lightgrey;
+                        color:@darkgrey;
+                    }
+                }
+		    }
+	    }
+    }
 }
 
 .LTL-test-results {
+
+    img {
+        display:inline-block;
+        vertical-align:middle;
+    }
+}
+
+/*.LTL-test-results {
 
     img {
         display:inline-block;
@@ -772,7 +804,7 @@
     &.false {
         color:@darkred;
     }
-}
+}*/
 
 .ui-icon {
     width:20px;

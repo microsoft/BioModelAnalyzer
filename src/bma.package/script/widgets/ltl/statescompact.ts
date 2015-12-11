@@ -54,7 +54,8 @@
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                                 .addClass("state-button").appendTo(this._stateButtons);
-                            that.createToolTip(value[i], stateButton);
+                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
+                            //that.createToolTip(value[i], stateButton);
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -105,83 +106,117 @@
 
         },
 
-        createToolTip: function (value, button) {
-            var that = this;
-            button.tooltip({
-                tooltipClass: "state-tooltip",
-                content: function () {
-                    var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
-                    var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
-                    if (value.description)
-                        description.show();
-                    else
-                        description.hide();
-                    var table = $("<table></table>").appendTo(stateTooltip);
-                    var tbody = $("<tbody></tbody>").appendTo(table);
-                    for (var j = 0; j < value.formula.length; j++) {
-                        var tr = that.getFormula(value.formula[j]);
-                        tr.appendTo(tbody);
-                    }
-                    return stateTooltip;
-                },
-                position: {
-                    at: "left-48px bottom",
-                },
-                show: null,
-                hide: false,
-                items: "div.state-button"
-            });
-        },
-
-        getFormula: function (formula) {
-            var tr = $("<tr></tr>");
-            for (var i = 0; i < 5; i++) {
-                if (formula[i] !== undefined) {
-                    switch (formula[i].type) {
-                        case "variable": {
-                            var td = $("<td></td>").addClass("variable-name").appendTo(tr);
-                            var img = $("<img>").attr("src", "../../images/state-variable.svg").appendTo(td);
-                            var br = $("<br>").appendTo(td);
-                            var variableName = $("<div>" + formula[i].value + "</div>").appendTo(td);
-                            break;
-                        }
-                        case "const": {
-                            var td = $("<td></td>").appendTo(tr);
-                            var cons = $("<div>" + formula[i].value + "</div>").appendTo(td);
-                            break;
-                        }
-                        case "operator": {
-                            var td = $("<td></td>").appendTo(tr);
-                            var op = $("<img>").attr("width", "30px").attr("height", "30px").appendTo(td);
-                            switch (formula[i].value) {
-                                case ">":
-                                    op.attr("src", "images/ltlimgs/mo.png");
-                                    break;
-                                case ">=":
-                                    op.attr("src", "images/ltlimgs/moeq.png");
-                                    break;
-                                case "<":
-                                    op.attr("src", "images/ltlimgs/le.png");
-                                    break;
-                                case "<=":
-                                    op.attr("src", "images/ltlimgs/leeq.png");
-                                    break;
-                                case "=":
-                                    op.attr("src", "images/ltlimgs/eq.png");
-                                    break;
-                                case "!=":
-                                    op.attr("src", "images/ltlimgs/noeq.png");
-                                    break;
-                                default: break;
+        convertForTooltip: function (state) {
+            var formulas = [];
+            for (var j = 0; j < state.formula.length; j++) {
+                var formula = state.formula[j];
+                var newFormula = {
+                    variable: undefined,
+                    operator: undefined,
+                    const: undefined
+                };
+                for (var i = 0; i < 5; i++) {
+                    if (formula[i] !== undefined) {
+                        switch (formula[i].type) {
+                            case "variable": {
+                                newFormula.variable = formula[i].value;                                
+                                break;
                             }
-                            break;
+                            case "const": {
+                                newFormula.const = formula[i].value;
+                                break;
+                            }
+                            case "operator": {
+                                newFormula.operator = formula[i].value;
+                                break;
+                            }
+                            default: break;
                         }
-                        default: break;
                     }
                 }
+                if (newFormula.variable && newFormula.const !== undefined && newFormula.operator)
+                    formulas.push(newFormula);
             }
-            return tr;
-        }
+            return { description: state.description, formula: formulas };
+        },
+
+        //createToolTip: function (value, button) {
+        //    var that = this;
+        //    button.tooltip({
+        //        tooltipClass: "state-tooltip",
+        //        content: function () {
+        //            var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
+        //            var description = $("<div>" + value.description + "</div>").appendTo(stateTooltip);
+        //            if (value.description)
+        //                description.show();
+        //            else
+        //                description.hide();
+        //            var table = $("<table></table>").appendTo(stateTooltip);
+        //            var tbody = $("<tbody></tbody>").appendTo(table);
+        //            for (var j = 0; j < value.formula.length; j++) {
+        //                var tr = that.getFormula(value.formula[j]);
+        //                tr.appendTo(tbody);
+        //            }
+        //            return stateTooltip;
+        //        },
+        //        position: {
+        //            at: "left-48px bottom",
+        //        },
+        //        show: null,
+        //        hide: false,
+        //        items: "div.state-button"
+        //    });
+        //},
+
+        //getFormula: function (formula) {
+        //    var tr = $("<tr></tr>");
+        //    for (var i = 0; i < 5; i++) {
+        //        if (formula[i] !== undefined) {
+        //            switch (formula[i].type) {
+        //                case "variable": {
+        //                    var td = $("<td></td>").addClass("variable-name").appendTo(tr);
+        //                    var img = $("<img>").attr("src", "../../images/state-variable.svg").appendTo(td);
+        //                    var br = $("<br>").appendTo(td);
+        //                    var variableName = $("<div>" + formula[i].value + "</div>").appendTo(td);
+        //                    break;
+        //                }
+        //                case "const": {
+        //                    var td = $("<td></td>").appendTo(tr);
+        //                    var cons = $("<div>" + formula[i].value + "</div>").appendTo(td);
+        //                    break;
+        //                }
+        //                case "operator": {
+        //                    var td = $("<td></td>").appendTo(tr);
+        //                    var op = $("<img>").attr("width", "30px").attr("height", "30px").appendTo(td);
+        //                    switch (formula[i].value) {
+        //                        case ">":
+        //                            op.attr("src", "images/ltlimgs/mo.png");
+        //                            break;
+        //                        case ">=":
+        //                            op.attr("src", "images/ltlimgs/moeq.png");
+        //                            break;
+        //                        case "<":
+        //                            op.attr("src", "images/ltlimgs/le.png");
+        //                            break;
+        //                        case "<=":
+        //                            op.attr("src", "images/ltlimgs/leeq.png");
+        //                            break;
+        //                        case "=":
+        //                            op.attr("src", "images/ltlimgs/eq.png");
+        //                            break;
+        //                        case "!=":
+        //                            op.attr("src", "images/ltlimgs/noeq.png");
+        //                            break;
+        //                        default: break;
+        //                    }
+        //                    break;
+        //                }
+        //                default: break;
+        //            }
+        //        }
+        //    }
+        //    return tr;
+        //}
     });
 } (jQuery));
 

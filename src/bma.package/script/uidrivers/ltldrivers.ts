@@ -225,7 +225,6 @@ module BMA {
                         name: s.Name,
                         description: s.Description,
                         formula: [],
-                        tooltip: s.GetFormula()
                     };
 
                     for (var j = 0; j < s.Operands.length; j++) {

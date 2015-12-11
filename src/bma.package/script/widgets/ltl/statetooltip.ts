@@ -14,7 +14,7 @@
                 this.element.tooltip({
                     tooltipClass: "state-tooltip",
                     content: function () {
-                        var stateTooltip = $("<div></div>");//.addClass("state-tooltip");
+                        var stateTooltip = $("<div></div>");
                         var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
                         if (that.options.state.description)
                             description.show();

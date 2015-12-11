@@ -64,6 +64,10 @@
                                 li.addClass("spin");
                                 that.createWaitAnim().appendTo(btn);
                                 that.options.ontestrequested();
+                                minusd.addClass("testing");
+                                plusd.addClass("testing");
+                                plusb.addClass("testing").unbind("click");
+                                minusb.addClass("testing").unbind("click");
                             }
                         });
 
@@ -144,8 +148,8 @@
 
                     } else {
 
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv);//
-
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("true").appendTo(opDiv);//
+                        var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -229,8 +233,8 @@
 
                     } else {
 
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("true").appendTo(opDiv);//
-
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("true").appendTo(opDiv);//
+                        var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
@@ -317,8 +321,8 @@
                         //});
 
                     } else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("LTL-results-not-expanded").addClass("false").appendTo(opDiv);//
-
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("false").appendTo(opDiv);//
+                        var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("red").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);

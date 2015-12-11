@@ -22,6 +22,7 @@
             this.statesbtns.empty();
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateName = this.options.states[i].Name;
+                var stateTooltip = that._convertForTooltip(that.options.states[i]);
 
                 var stateDiv = $("<div></div>")
                     .addClass("state-button")
@@ -42,6 +43,8 @@
                     }
 
                 });
+
+                stateDiv.statetooltip({ state: stateTooltip });
             }
 
             var addState = $("<div></div>").addClass("state-button new").text("+").appendTo(that.statesbtns);
@@ -50,6 +53,46 @@
                     that.options.onaddstaterequested();
                 }
             });
+        },
+
+        _convertForTooltip: function(state) {
+            var formulas = [];
+            for (var i = 0; i < state.Operands.length; i++) {
+                var op = state.Operands[i];
+                var formula = {
+                    variable: undefined,
+                    operator: undefined,
+                    const: undefined
+                };
+
+                (<any>op).LeftOperand.Name === undefined ? formula.const = op.LeftOperand.value : formula.variable = op.LeftOperand.Name;
+
+                var invOperator = function (operator) {
+                    switch (operator) {
+                        case ">":
+                            return "<";
+                        case "<":
+                            return ">";
+                        case ">=":
+                            return "<=";
+                        case "<=":
+                            return ">=";
+                        default: break;
+                    }
+                    return operator;
+                };
+
+                if ((<any>op).MiddleOperand) {
+                    formula.operator = invOperator((<any>op).LeftOperator);
+                    formula.variable = (<any>op).MiddleOperand.Name;
+                    formulas.push(formula);
+                    formula.operator = (<any>op).RightOperator;
+                } else formula.operator = formula.variable ? (<any>op).Operator : invOperator((<any>op).Operator);
+
+                (<any>op).RightOperand.Name === undefined ? formula.const = (<any>op).RightOperand.Value : formula.variable = (<any>op).RightOperand.Name;
+                formulas.push(formula);
+            }
+            return { description: state.Description, formula: formulas };
         },
 
         _addCustomState: function (statesbtns: JQuery, name, imagePath: string) {
