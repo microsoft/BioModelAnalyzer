@@ -95,7 +95,7 @@
             return { description: state.Description, formula: formulas };
         },
 
-        _addCustomState: function (statesbtns: JQuery, name, imagePath: string) {
+        _addCustomState: function (statesbtns: JQuery, name, description, imagePath: string) {
             var that = this;
 
             var state = $("<div></div>")
@@ -106,6 +106,12 @@
                 .css("cursor", "pointer")
                 .appendTo(statesbtns);
             $("<img>").attr("src", imagePath).appendTo(state);
+
+            state.statetooltip({
+                state: {
+                    description: description, formula: undefined
+                }
+            });
 
             state.draggable({
                 helper: "clone",
@@ -139,13 +145,13 @@
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             
             //Oscilation state
-            this._addCustomState(statesbtns, "oscillationstate", "../images/oscillation-state.svg");
+            this._addCustomState(statesbtns, "oscillationstate", "Oscillation", "../images/oscillation-state.svg");
 
             //Selfloop state
-            this._addCustomState(statesbtns, "selfloopstate", "../images/selfloop-state.svg");
+            this._addCustomState(statesbtns, "selfloopstate", "Self loop", "../images/selfloop-state.svg");
 
             //True-state state
-            this._addCustomState(statesbtns, "truestate", "../images/true-state.svg");
+            this._addCustomState(statesbtns, "truestate", "True", "../images/true-state.svg");
 
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);

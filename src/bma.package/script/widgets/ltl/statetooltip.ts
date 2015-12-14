@@ -10,7 +10,7 @@
         _create: function () {
             var that = this;
 
-            if (this.options.state && this.options.state.formula && this.options.state.formula.lenght !== 0) {
+           // if (this.options.state && this.options.state.formula && this.options.state.formula.lenght !== 0) {
                 this.element.tooltip({
                     tooltipClass: "state-tooltip",
                     content: function () {
@@ -20,11 +20,13 @@
                             description.show();
                         else
                             description.hide();
-                        var table = $("<table></table>").appendTo(stateTooltip);
-                        var tbody = $("<tbody></tbody>").appendTo(table);
-                        for (var j = 0; j < that.options.state.formula.length; j++) {
-                            var tr = that.getFormula(that.options.state.formula[j]);
-                            tr.appendTo(tbody);
+                        if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
+                            var table = $("<table></table>").appendTo(stateTooltip);
+                            var tbody = $("<tbody></tbody>").appendTo(table);
+                            for (var j = 0; j < that.options.state.formula.length; j++) {
+                                var tr = that.getFormula(that.options.state.formula[j]);
+                                tr.appendTo(tbody);
+                            }
                         }
                         return stateTooltip;
                     },
@@ -36,7 +38,7 @@
                     hide: false,
                     items: "div.state-button"
                 });
-            }
+            //}
 
             this.refresh();
         },
@@ -103,18 +105,18 @@
             //}
         },
 
-        _setOption: function (key, value) {
-            var that = this;
-            switch (key) {
-                case "state":
-                    if (value && value.formula && value.formula.length != 0)
-                        that.options.state = value;
-                    break;
-                default: break;
-            }
+        //_setOption: function (key, value) {
+        //    var that = this;
+        //    switch (key) {
+        //        case "state":
+        //            if (value && value.formula && value.formula.length != 0)
+        //                that.options.state = value;
+        //            break;
+        //        default: break;
+        //    }
 
-            this.refresh();
-        }
+        //    this.refresh();
+        //}
     });
 } (jQuery));
 

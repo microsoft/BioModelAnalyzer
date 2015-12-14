@@ -11603,33 +11603,35 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
-            if (this.options.state && this.options.state.formula && this.options.state.formula.lenght !== 0) {
-                this.element.tooltip({
-                    tooltipClass: "state-tooltip",
-                    content: function () {
-                        var stateTooltip = $("<div></div>");
-                        var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
-                        if (that.options.state.description)
-                            description.show();
-                        else
-                            description.hide();
+            // if (this.options.state && this.options.state.formula && this.options.state.formula.lenght !== 0) {
+            this.element.tooltip({
+                tooltipClass: "state-tooltip",
+                content: function () {
+                    var stateTooltip = $("<div></div>");
+                    var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
+                    if (that.options.state.description)
+                        description.show();
+                    else
+                        description.hide();
+                    if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
                         var table = $("<table></table>").appendTo(stateTooltip);
                         var tbody = $("<tbody></tbody>").appendTo(table);
                         for (var j = 0; j < that.options.state.formula.length; j++) {
                             var tr = that.getFormula(that.options.state.formula[j]);
                             tr.appendTo(tbody);
                         }
-                        return stateTooltip;
-                    },
-                    position: {
-                        at: "left-48px bottom",
-                        collision: 'none',
-                    },
-                    show: null,
-                    hide: false,
-                    items: "div.state-button"
-                });
-            }
+                    }
+                    return stateTooltip;
+                },
+                position: {
+                    at: "left-48px bottom",
+                    collision: 'none',
+                },
+                show: null,
+                hide: false,
+                items: "div.state-button"
+            });
+            //}
             this.refresh();
         },
         getFormula: function (formula) {
@@ -11687,17 +11689,6 @@ jQuery.fn.extend({
             //    });
             //}
         },
-        _setOption: function (key, value) {
-            var that = this;
-            switch (key) {
-                case "state":
-                    if (value && value.formula && value.formula.length != 0)
-                        that.options.state = value;
-                    break;
-                default: break;
-            }
-            this.refresh();
-        }
     });
 }(jQuery));
 //# sourceMappingURL=statetooltip.js.map
@@ -12126,7 +12117,7 @@ jQuery.fn.extend({
             }
             return { description: state.Description, formula: formulas };
         },
-        _addCustomState: function (statesbtns, name, imagePath) {
+        _addCustomState: function (statesbtns, name, description, imagePath) {
             var that = this;
             var state = $("<div></div>")
                 .addClass("state-button")
@@ -12136,6 +12127,11 @@ jQuery.fn.extend({
                 .css("cursor", "pointer")
                 .appendTo(statesbtns);
             $("<img>").attr("src", imagePath).appendTo(state);
+            state.statetooltip({
+                state: {
+                    description: description, formula: undefined
+                }
+            });
             state.draggable({
                 helper: "clone",
                 cursorAt: { left: 0, top: 0 },
@@ -12160,11 +12156,11 @@ jQuery.fn.extend({
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             //Oscilation state
-            this._addCustomState(statesbtns, "oscillationstate", "../images/oscillation-state.svg");
+            this._addCustomState(statesbtns, "oscillationstate", "Oscillation", "../images/oscillation-state.svg");
             //Selfloop state
-            this._addCustomState(statesbtns, "selfloopstate", "../images/selfloop-state.svg");
+            this._addCustomState(statesbtns, "selfloopstate", "Self loop", "../images/selfloop-state.svg");
             //True-state state
-            this._addCustomState(statesbtns, "truestate", "../images/true-state.svg");
+            this._addCustomState(statesbtns, "truestate", "True", "../images/true-state.svg");
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
