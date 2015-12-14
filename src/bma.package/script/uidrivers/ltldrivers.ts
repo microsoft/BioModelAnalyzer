@@ -369,13 +369,17 @@ module BMA {
                 };
 
                 for (var i = 0; i < model.Variables.length; i++) {
-                    allGroup.vars.push(model.Variables[i].Name);
+                    if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
+                        allGroup.vars.push(model.Variables[i].Name);
                 }
 
                 var variables = [allGroup];
 
                 for (var i = 0; i < layout.Containers.length; i++) {
                     var vars = [];
+
+                    if (!layout.Containers[i].Name)
+                        continue;
 
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)

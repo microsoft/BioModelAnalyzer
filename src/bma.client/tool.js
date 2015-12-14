@@ -4559,11 +4559,14 @@ var BMA;
                     vars: []
                 };
                 for (var i = 0; i < model.Variables.length; i++) {
-                    allGroup.vars.push(model.Variables[i].Name);
+                    if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
+                        allGroup.vars.push(model.Variables[i].Name);
                 }
                 var variables = [allGroup];
                 for (var i = 0; i < layout.Containers.length; i++) {
                     var vars = [];
+                    if (!layout.Containers[i].Name)
+                        continue;
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
                             vars.push(model.Variables[j].Name);
@@ -11115,6 +11118,10 @@ jQuery.fn.extend({
                         formula[1].value = "<";
                     case "<":
                         formula[1].value = ">";
+                    case ">=":
+                        formula[1].value = "<=";
+                    case "<=":
+                        formula[1].value = ">=";
                     default: break;
                 }
                 formula = [
@@ -11320,17 +11327,22 @@ jQuery.fn.extend({
             var divContainers = $("<div></div>").addClass("scrollable").appendTo(tdContainersList);
             var tdVariablesList = $("<td></td>").addClass("variable list").appendTo(trList);
             var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
-            if (currSymbol.value.container === undefined)
+            if (currSymbol.value.container === undefined) {
                 currSymbol.value.container = 0;
+                for (var i = 1; i < this.options.variables.length; i++)
+                    if (that.options.variables[i].vars.indexOf(currSymbol.value.variable) >= 0) {
+                        currSymbol.value.container = that.options.variables[i].id;
+                        break;
+                    }
+            }
             for (var i = 0; i < this.options.variables.length; i++) {
-                if (this.options.variables[i].name) {
-                    var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
-                        .appendTo(divContainers).click(function () {
-                        that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
-                    });
-                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
-                        that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
-                }
+                //if (this.options.variables[i].name) {
+                var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
+                    .appendTo(divContainers).click(function () {
+                    that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                });
+                if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
+                    that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
             }
             if (currSymbol.value == 0)
                 that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);
@@ -11340,7 +11352,13 @@ jQuery.fn.extend({
             var that = this;
             divContainers.find(".active").removeClass("active");
             divVariables.children().remove();
-            var idx = $(container).index();
+            var id = $(container).attr("data-container-id");
+            var idx = 0;
+            for (var i = 0; i < that.options.variables.length; i++)
+                if (that.options.variables[i].id == id) {
+                    idx = i;
+                    break;
+                }
             $(container).addClass("active");
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
                 var variableName = that.options.variables[idx].vars[j];
