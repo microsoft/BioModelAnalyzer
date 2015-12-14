@@ -135,7 +135,7 @@
 
             var containers = json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY));
             for (var i = 0; i < containers.length; i++) {
-                if (containers[i].Name === undefined)
+                if (containers[i].Name === undefined || containers[i].Name === "")
                     containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
             }
 

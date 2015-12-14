@@ -2484,7 +2484,7 @@ var BMA;
             var model = new Model.BioModel(json.Model.Name, json.Model.Variables.map(function (v) { return new Model.Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo, MapVariableNames(v.Formula, function (s) { return id[parseInt(s)].Name; })); }), json.Model.Relationships.map(function (r) { return new Model.Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type); }));
             var containers = json.Layout.Containers.map(function (c) { return new Model.ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY); });
             for (var i = 0; i < containers.length; i++) {
-                if (containers[i].Name === undefined)
+                if (containers[i].Name === undefined || containers[i].Name === "")
                     containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
             }
             var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }));
@@ -4396,6 +4396,7 @@ var BMA;
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
                 }
                 this.popupWindow.trigger("resize");
+                this.tpeditor.temporalpropertieseditor("updateLayout");
             };
             TemporalPropertiesEditorDriver.prototype.OnResize = function () {
                 this.tpeditor.temporalpropertieseditor("updateLayout");
@@ -8732,6 +8733,7 @@ var BMA;
         },
         updateLayout: function () {
             this._plot.updateLayout();
+            this._domPlot.updateLayout();
         }
     });
 }(jQuery));
