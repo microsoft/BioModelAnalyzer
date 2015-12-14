@@ -323,5 +323,27 @@ module BMA {
                 this.angle = angle;
             }
         }
+
+        export function GenerateNewContainerName(containerLayouts: ContainerLayout[]): string {
+            var prefix = "C";
+            var index = 0;
+            while (true) {
+                var name = prefix + index;
+                var matchFound = false
+
+                for (var i = 0; i < containerLayouts.length; i++) {
+                    if (containerLayouts[i].Name === name) {
+                        matchFound = true;
+                        continue;
+                    }
+                }
+
+                if (matchFound) {
+                    index++;
+                    continue;
+                } else
+                    return name;
+            }
+        }
     }
 } 

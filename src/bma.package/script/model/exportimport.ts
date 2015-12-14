@@ -126,14 +126,27 @@
             json.Layout.Variables.forEach(v => {
                 id[v.Id] = v;
             });
-            return {
-                Model: new BioModel(json.Model.Name,
-                    json.Model.Variables.map(v => new Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo,
-                        MapVariableNames(v.Formula, s => id[parseInt(s)].Name))),
-                    json.Model.Relationships.map(r => new Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type))),
-                Layout: new Layout(json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY)),
-                    json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle)))
+
+            var model = new BioModel(json.Model.Name,
+                json.Model.Variables.map(v => new Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo,
+                    MapVariableNames(v.Formula, s => id[parseInt(s)].Name))),
+                json.Model.Relationships.map(r => new Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type)));
+
+
+            var containers = json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY));
+            for (var i = 0; i < containers.length; i++) {
+                if (containers[i].Name === undefined)
+                    containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
             }
+
+            var layout = new Layout(containers,
+                json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle)));
+
+
+            return {
+                Model: model,
+                Layout: layout
+            };
         }
 
 
