@@ -2046,6 +2046,27 @@ var BMA;
             return VariableLayout;
         })();
         Model.VariableLayout = VariableLayout;
+        function GenerateNewContainerName(containerLayouts) {
+            var prefix = "C";
+            var index = 0;
+            while (true) {
+                var name = prefix + index;
+                var matchFound = false;
+                for (var i = 0; i < containerLayouts.length; i++) {
+                    if (containerLayouts[i].Name === name) {
+                        matchFound = true;
+                        continue;
+                    }
+                }
+                if (matchFound) {
+                    index++;
+                    continue;
+                }
+                else
+                    return name;
+            }
+        }
+        Model.GenerateNewContainerName = GenerateNewContainerName;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=biomodel.js.map
@@ -2460,9 +2481,16 @@ var BMA;
             json.Layout.Variables.forEach(function (v) {
                 id[v.Id] = v;
             });
+            var model = new Model.BioModel(json.Model.Name, json.Model.Variables.map(function (v) { return new Model.Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo, MapVariableNames(v.Formula, function (s) { return id[parseInt(s)].Name; })); }), json.Model.Relationships.map(function (r) { return new Model.Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type); }));
+            var containers = json.Layout.Containers.map(function (c) { return new Model.ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY); });
+            for (var i = 0; i < containers.length; i++) {
+                if (containers[i].Name === undefined || containers[i].Name === "")
+                    containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
+            }
+            var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }));
             return {
-                Model: new Model.BioModel(json.Model.Name, json.Model.Variables.map(function (v) { return new Model.Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo, MapVariableNames(v.Formula, function (s) { return id[parseInt(s)].Name; })); }), json.Model.Relationships.map(function (r) { return new Model.Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type); })),
-                Layout: new Model.Layout(json.Layout.Containers.map(function (c) { return new Model.ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY); }), json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }))
+                Model: model,
+                Layout: layout
             };
         }
         Model.ImportModelAndLayout = ImportModelAndLayout;
@@ -4368,6 +4396,7 @@ var BMA;
                     this.contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver(this.tpeditor.temporalpropertieseditor("getContextMenuPanel"));
                 }
                 this.popupWindow.trigger("resize");
+                this.tpeditor.temporalpropertieseditor("updateLayout");
             };
             TemporalPropertiesEditorDriver.prototype.OnResize = function () {
                 this.tpeditor.temporalpropertieseditor("updateLayout");
@@ -5851,7 +5880,7 @@ var BMA;
                                 }
                             }
                             else {
-                                containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, "", 1, gridCell.x, gridCell.y));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, BMA.Model.GenerateNewContainerName(containerLayouts), 1, gridCell.x, gridCell.y));
                             }
                             var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(containerLayouts, variableLayouts);
@@ -8707,6 +8736,7 @@ var BMA;
         },
         updateLayout: function () {
             this._plot.updateLayout();
+            this._domPlot.updateLayout();
         }
     });
 }(jQuery));
@@ -13238,7 +13268,7 @@ var BMA;
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.states[i];
-                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula() || st.Description !== appst.Description)
                             return true;
                     }
                     return false;

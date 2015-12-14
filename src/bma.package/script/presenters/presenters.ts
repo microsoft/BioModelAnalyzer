@@ -964,7 +964,7 @@ module BMA {
                                     }
                                 }
                             } else {
-                                containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, "", 1, gridCell.x, gridCell.y));
+                                containerLayouts.push(new BMA.Model.ContainerLayout(that.variableIndex++, BMA.Model.GenerateNewContainerName(containerLayouts), 1, gridCell.x, gridCell.y));
                             }
 
                             var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, model.Relationships);

@@ -131,6 +131,7 @@ module BMA {
                 }
 
                 this.popupWindow.trigger("resize");
+                this.tpeditor.temporalpropertieseditor("updateLayout");
             }
 
             OnResize() {

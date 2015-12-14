@@ -603,7 +603,7 @@ module BMA {
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.states[i];
-                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula())
+                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula() || st.Description !== appst.Description)
                             return true;
                     }
 

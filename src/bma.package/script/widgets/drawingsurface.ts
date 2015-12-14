@@ -538,6 +538,7 @@ declare var Rx: any;
 
         updateLayout: function () {
             this._plot.updateLayout();
+            this._domPlot.updateLayout();
         }
 
     });
