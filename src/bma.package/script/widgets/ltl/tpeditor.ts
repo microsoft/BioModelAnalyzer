@@ -242,6 +242,10 @@
                 onLoad: function (svg) {
                     that.copyzonesvg = svg;
 
+                    svg.configure({
+                        height: "40px"
+                    });
+
                     if (that.options.copyzoneoperation !== undefined) {
                         that.updateCopyZoneIcon(that.options.copyzoneoperation);
                     }
@@ -366,6 +370,7 @@
                 var bbox = that.operation.BoundingBox;
                 
                 that.copyzonesvg.configure({
+                    height: "40px",
                     viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
                 }, true);
 

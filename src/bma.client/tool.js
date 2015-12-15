@@ -12246,6 +12246,9 @@ jQuery.fn.extend({
                 loadURL: "../images/LTL-copy.svg",
                 onLoad: function (svg) {
                     that.copyzonesvg = svg;
+                    svg.configure({
+                        height: "40px"
+                    });
                     if (that.options.copyzoneoperation !== undefined) {
                         that.updateCopyZoneIcon(that.options.copyzoneoperation);
                     }
@@ -12354,6 +12357,7 @@ jQuery.fn.extend({
                 that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
                 var bbox = that.operation.BoundingBox;
                 that.copyzonesvg.configure({
+                    height: "40px",
                     viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
                 }, true);
                 that.operation.Refresh();
