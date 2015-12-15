@@ -56,7 +56,7 @@
             });
             
             this.zoomslider.removeClass().addClass("zoomslider-bar");
-            this.zoomslider.find('a').removeClass().addClass('zoomslider-pointer');
+            this.zoomslider.find('span').removeClass().addClass('zoomslider-pointer');
 
             zoomplus.bind("click", function () {
                 var val = that.zoomslider.slider("option", "value") - that.options.step;
