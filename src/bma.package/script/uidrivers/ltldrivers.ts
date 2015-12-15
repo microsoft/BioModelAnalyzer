@@ -118,7 +118,7 @@ module BMA {
                 }
 
 
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: () => { that.OnResize(); } });
+                this.popupWindow.resultswindowviewer({ header: "Temporal Properties", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: () => { that.OnResize(); }, paddingOn: false });
                 popup_position();
                 this.popupWindow.show();
 
@@ -327,7 +327,7 @@ module BMA {
                     this.statesEditor = $("<div></div>");
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false });
+                this.popupWindow.resultswindowviewer({ header: "LTL States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false, paddingOn: false });
                 popup_position();
                 this.popupWindow.show();
 
@@ -575,7 +575,7 @@ module BMA {
                     this.ltlResultsViewer = $("<div></div>");
                 }
 
-                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false });
+                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false, paddingOn: true });
                 popup_position();
                 this.popupWindow.show();
 

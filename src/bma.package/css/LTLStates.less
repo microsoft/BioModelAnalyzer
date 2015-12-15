@@ -1,6 +1,20 @@
 ﻿@import "StyleSheet.less";
 @import "LTL_less.less";
 
+
+.popup-window {
+    &.no-frames{
+        padding-left:0px;
+        padding-right:0px;
+
+        .analysis-title {
+            &.no-frames-title{
+                padding-left:10px;
+                padding-right:10px;
+            }
+        } 
+    }
+}
 /*.state-toolbar {
     margin-top: 5px;
 
@@ -53,7 +67,7 @@
     }
 }*/
 .state-toolbar {
-    max-width:360px;
+    max-width:380px;
 
     .state-buttons{
         padding-bottom:10px;

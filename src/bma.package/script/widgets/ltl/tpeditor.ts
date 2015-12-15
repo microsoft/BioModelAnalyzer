@@ -132,7 +132,7 @@
 
             var root = this.element;
 
-            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
             
             //Adding states

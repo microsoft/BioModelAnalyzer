@@ -10,7 +10,8 @@
             icon: "",
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () { } },
             tabid: "",
-            onresize: undefined
+            onresize: undefined,
+            paddingOn: true,
         },
 
         reseticon: function () {
@@ -49,6 +50,7 @@
         _create: function () {
             var that = this;
             var options = this.options;
+            if(!options.paddingOn) this.element.addClass("no-frames");
 
             if (options.isResizable) {
                 this.element.resizable({
@@ -74,6 +76,8 @@
             this.header = $('<div></div>')
                 .addClass('analysis-title')
                 .appendTo(this.element);
+            if (!options.paddingOn) this.header.addClass("no-frames-title");
+
             $('<span></span>')
                 .text(options.header)
                 .appendTo(this.header);
@@ -132,6 +136,12 @@
                             this.element.css("width", '');
                             this.element.css("height", '');
                         }
+                    }
+                    break;
+                case "paddingOn":
+                    if (this.options.paddingOn !== value) {
+                        value ? this.element.removeClass("no-frames") : this.element.addClass("no-frames");
+                        value ? this.header.removeClass("no-frames-title") : this.header.addClass("no-frames-title");
                     }
                     break;
             }

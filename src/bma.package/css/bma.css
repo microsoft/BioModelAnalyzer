@@ -3684,6 +3684,14 @@ ui-icon-arrowthickstop-1-n {
   overflow-y: auto;
   height: 64px;
 }
+.popup-window.no-frames {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.popup-window.no-frames .analysis-title.no-frames-title {
+  padding-left: 10px;
+  padding-right: 10px;
+}
 /*.state-toolbar {
     margin-top: 5px;
 
@@ -3735,7 +3743,7 @@ ui-icon-arrowthickstop-1-n {
     }
 }*/
 .state-toolbar {
-  max-width: 360px;
+  max-width: 380px;
 }
 .state-toolbar .state-buttons {
   padding-bottom: 10px;

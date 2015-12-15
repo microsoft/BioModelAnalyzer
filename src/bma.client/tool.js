@@ -4004,7 +4004,7 @@ var BMA;
                         //this.popupWindow.addClass('analysis-popout');
                         break;
                 }
-                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min", isResizable: false });
+                this.popupWindow.resultswindowviewer({ header: header, tabid: params.tab, content: params.content, icon: "min", isResizable: false, paddingOn: true });
                 popup_position();
                 this.popupWindow.show();
             };
@@ -4386,7 +4386,7 @@ var BMA;
                 if (shouldInit) {
                     this.tpeditor = $("<div></div>").css("height", "100%");
                 }
-                this.popupWindow.resultswindowviewer({ header: "", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: function () { that.OnResize(); } });
+                this.popupWindow.resultswindowviewer({ header: "Temporal Properties", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: function () { that.OnResize(); }, paddingOn: false });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -4555,7 +4555,7 @@ var BMA;
                 if (shouldInit) {
                     this.statesEditor = $("<div></div>");
                 }
-                this.popupWindow.resultswindowviewer({ header: "States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false });
+                this.popupWindow.resultswindowviewer({ header: "LTL States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false, paddingOn: false });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -4758,7 +4758,7 @@ var BMA;
                 if (shouldInit) {
                     this.ltlResultsViewer = $("<div></div>");
                 }
-                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false });
+                this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false, paddingOn: true });
                 popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
@@ -9353,7 +9353,8 @@ var BMA;
             icon: "",
             effects: { effect: 'size', easing: 'easeInExpo', duration: 200, complete: function () { } },
             tabid: "",
-            onresize: undefined
+            onresize: undefined,
+            paddingOn: true,
         },
         reseticon: function () {
             var that = this;
@@ -9386,6 +9387,8 @@ var BMA;
         _create: function () {
             var that = this;
             var options = this.options;
+            if (!options.paddingOn)
+                this.element.addClass("no-frames");
             if (options.isResizable) {
                 this.element.resizable({
                     minWidth: 800,
@@ -9410,6 +9413,8 @@ var BMA;
             this.header = $('<div></div>')
                 .addClass('analysis-title')
                 .appendTo(this.element);
+            if (!options.paddingOn)
+                this.header.addClass("no-frames-title");
             $('<span></span>')
                 .text(options.header)
                 .appendTo(this.header);
@@ -9465,6 +9470,12 @@ var BMA;
                             this.element.css("width", '');
                             this.element.css("height", '');
                         }
+                    }
+                    break;
+                case "paddingOn":
+                    if (this.options.paddingOn !== value) {
+                        value ? this.element.removeClass("no-frames") : this.element.addClass("no-frames");
+                        value ? this.header.removeClass("no-frames-title") : this.header.addClass("no-frames-title");
                     }
                     break;
             }
@@ -12146,7 +12157,7 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             var root = this.element;
-            var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
