@@ -246,13 +246,13 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
         let correct_length_paths = Paths.change_list_to_length paths length_of_path
     
         // given the # of steps and the path, do BMC   
-        let (res,model) =
-            BMC.BoundedMC ltl_formula qn nuRangel correct_length_paths
+        let (res1,model1,res2,model2) =
+            BMC.BoundedMC ltl_formula qn nuRangel correct_length_paths false
 
-        BioCheckPlusZ3.check_model model res qn
+        BioCheckPlusZ3.check_model model1 res1 qn
 
         LTL.print_in_order ltl_formula
-        BioCheckPlusZ3.print_model model res qn output_model
+        BioCheckPlusZ3.print_model model1 res1 qn output_model
 
 let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
     Log.log_debug "Running path search"
