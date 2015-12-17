@@ -717,7 +717,7 @@ let AnalysisResult_of_stability_result (sr:Result.stability_result) =
     | Result.SRNotStabilizing(hist) -> 
         mk_AnalysisResult StatusType.NotStabilizing "" hist
 
-let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
+let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) (negative: Option<bool * (int * Map<int,Map<QN.var,int>>)>) = 
     let (loop,model_map) = model
 
     let getvariables (variable: Map<QN.var,int>) = 
@@ -730,14 +730,18 @@ let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) =
             incr j
         varlist
 
-    let ticks = Array.zeroCreate model_map.Count
-    let i = ref 0
-    while (Map.containsKey !i model_map) do            
-        ticks.[i.Value] <- new AnalysisResult.Tick() 
-        ticks.[i.Value].Time <- i.Value
-        let vrb = Map.find !i model_map
-        ticks.[i.Value].Variables <- getvariables vrb
-        incr i
+    let ticks (model_map:Map<int,Map<QN.var,int>>) = 
+        let ticks = Array.zeroCreate model_map.Count
+        let i = ref 0
+        while (Map.containsKey !i model_map) do            
+            ticks.[i.Value] <- new AnalysisResult.Tick() 
+            ticks.[i.Value].Time <- i.Value
+            let vrb = Map.find !i model_map
+            ticks.[i.Value].Variables <- getvariables vrb
+            incr i
+        ticks
+
+
 //    match result with 
 //    | true -> 
 //        let status = new XElement(xn "Status", "True")
@@ -745,10 +749,18 @@ let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) =
 //    | false -> 
 //        let status = new XElement(xn "Status", "False")
 //        root.Add(status) 
-    let ltlresult = new AnalysisResultDTO()
+
+    let ltlresult = new LTLAnalysisResultDTO()
     ltlresult.Loop <- loop
-    ltlresult.Ticks <- ticks
-    ltlresult.Status <- (fun (i: bool) -> if i then StatusType.True else StatusType.False) result
+    ltlresult.Ticks <- ticks model_map
+    ltlresult.Status <- if result then StatusType.True else StatusType.False
+    
+    match negative with
+    | Some(resultneg, (loopneg, modelneg)) -> 
+        ltlresult.NegTicks <- ticks modelneg
+        ltlresult.NegStatus <- if resultneg then StatusType.True else StatusType.False
+    | None -> ()
+
     ltlresult
 
 let xml_of_ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
@@ -804,6 +816,12 @@ let AnalysisResult_of_error id msg =
 
 let AnalysisResultDTO_of_error id msg = 
     let r = new AnalysisResultDTO()
+    r.Status <- StatusType.Error
+    r.Error <- (string)id + msg
+    r
+
+let LTLAnalysisResultDTO_of_error id msg = 
+    let r = new LTLAnalysisResultDTO()
     r.Status <- StatusType.Error
     r.Error <- (string)id + msg
     r

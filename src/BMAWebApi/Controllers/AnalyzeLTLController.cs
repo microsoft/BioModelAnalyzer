@@ -81,7 +81,6 @@ namespace bma.client.Controllers
 
                 var model = (Model)input;
                 var result = analyzer.checkLTL((Model)input, formula, num_of_steps); //Utilities.RunWithTimeLimit(() => analyzer.checkLTL((Model)input, formula, num_of_steps);//, Utilities.GetTimeLimitFromConfig());
-                var negResult = analyzer.checkLTL((Model)input, "(Not " + formula + ")", num_of_steps);
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null
@@ -99,14 +98,14 @@ namespace bma.client.Controllers
                 //}
 
                 var status = result.Status;
-                if (result.Status == StatusType.True && negResult.Status == StatusType.True)
+                if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
                     status = StatusType.PartiallyTrue;
 
                 return new LTLAnalysisOutputDTO
                 {
-                    Error = result.Error + " " + negResult.Error,
+                    Error = result.Error,
                     Ticks = result.Ticks,
-                    NegTicks = negResult.Ticks,
+                    NegTicks = result.NegTicks,
                     Status = status,
                     Time = (int)time,
                     Loop = result.Loop,
