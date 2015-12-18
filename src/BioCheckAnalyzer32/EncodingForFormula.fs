@@ -672,9 +672,12 @@ let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstrain
         z.MkTrue()
 
 //     EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head
-let assert_top_most_formula (ltl_formula : LTLFormulaType) (z : Context) (map : FormulaConstraint) =
+let assert_top_most_formula (ltl_formula : LTLFormulaType) (z : Context) (map : FormulaConstraint) polarity =
     let top_most_formula = constraint_of_formula ltl_formula map 0 z
-    z.AssertCnstr(top_most_formula)
+    if polarity then
+        z.AssertCnstr(top_most_formula)
+    else
+        z.AssertCnstr(z.MkNot(top_most_formula))
 
 // Go recursively over the formula structure
 // For each temporal formula that requires fairness (until, release, always, eventually)

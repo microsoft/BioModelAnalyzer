@@ -145,10 +145,10 @@
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             
             //Oscilation state
-            this._addCustomState(statesbtns, "oscillationstate", "Oscillation", "../images/oscillation-state.svg");
+            this._addCustomState(statesbtns, "oscillationstate", "Part of an unstable loop.", "../images/oscillation-state.svg");
 
             //Selfloop state
-            this._addCustomState(statesbtns, "selfloopstate", "Self loop", "../images/selfloop-state.svg");
+            this._addCustomState(statesbtns, "selfloopstate", "Fixpoint of the network.", "../images/selfloop-state.svg");
 
             //True-state state
             this._addCustomState(statesbtns, "truestate", "True", "../images/true-state.svg");

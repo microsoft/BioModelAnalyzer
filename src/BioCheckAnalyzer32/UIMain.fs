@@ -83,12 +83,12 @@ type Analyzer2() =
 
                     // SI: right now, we're just dumping res,model back to the UI.
                     // We should structure the data that res,model,model_checked are.
-                    let (res,model) = BMC.BoundedMC formula network range padded_paths
-                    let model_checked = BioCheckPlusZ3.check_model model res network
+                    let (res1,model1,negative) = BMC.BoundedMC formula network range padded_paths false
+                    let model_checked = BioCheckPlusZ3.check_model model1 res1 network
 //                    let string_model = BioCheckPlusZ3.print_model_to_string model res network true
 //                    Marshal.xml_of_ltl_string_result res string_model
 //                    Marshal.xml_of_ltl_result res model
-                    Marshal.xml_of_ltl_result_full res model
+                    Marshal.xml_of_ltl_result_full res1 model1
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.xml_of_error id msg
 
@@ -231,7 +231,7 @@ type Analyzer () =
                 let formula = LTL.string_to_LTL_formula formula network
                 let num_of_steps = (int)num_of_steps 
                 if (formula = LTL.Error) then
-                    Marshal.AnalysisResultDTO_of_error -1 "unable to parse formula"                  
+                    Marshal.LTLAnalysisResultDTO_of_error -1 "unable to parse formula"                  
                 else             
                     let range = Rangelist.nuRangel network
                     // SI: pass default value of 3rd argument. 
@@ -240,14 +240,15 @@ type Analyzer () =
 
                     // SI: right now, we're just dumping res,model back to the UI.
                     // We should structure the data that res,model,model_checked are.
-                    let (res,model) = BMC.BoundedMC formula network range padded_paths
-                    let model_checked = BioCheckPlusZ3.check_model model res network
+                    //let (res,model) = BMC.BoundedMC formula network range padded_paths
+                    let (res1,model1,negative) = BMC.BoundedMC formula network range padded_paths true
+                    let model_checked = BioCheckPlusZ3.check_model model1 res1 network
 //                    let string_model = BioCheckPlusZ3.print_model_to_string model res network true
 //                    Marshal.xml_of_ltl_string_result res string_model
 //                    Marshal.xml_of_ltl_result res model
-                    Marshal.ltl_result_full res model
+                    Marshal.ltl_result_full res1 model1 negative
 
-            with Marshal.MarshalInFailed(id,msg) -> Marshal.AnalysisResultDTO_of_error id msg
+            with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
 ////
 ////        // 3. SYN interface 
 ////        member this.checkSynth(input_model:Model) = 
