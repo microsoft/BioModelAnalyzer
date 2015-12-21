@@ -117,6 +117,10 @@ module BMA {
                     this.tpeditor = $("<div></div>").css("height", "100%");
                 }
 
+                this.popupWindow.removeClass('further-testing-popout')
+                    .removeClass('proof-propagation-popout')
+                    .removeClass('proof-variables-popout')
+                    .removeClass('simulation-popout');
 
                 this.popupWindow.resultswindowviewer({ header: "Temporal Properties", tabid: "", content: this.tpeditor, icon: "min", isResizable: true, onresize: () => { that.OnResize(); }, paddingOn: false });
                 popup_position();
@@ -326,6 +330,11 @@ module BMA {
                 if (shouldInit) {
                     this.statesEditor = $("<div></div>");
                 }
+
+                this.popupWindow.removeClass('further-testing-popout')
+                    .removeClass('proof-propagation-popout')
+                    .removeClass('proof-variables-popout')
+                    .removeClass('simulation-popout');
 
                 this.popupWindow.resultswindowviewer({ header: "LTL States", tabid: "", content: this.statesEditor, icon: "min", isResizable: false, paddingOn: false });
                 popup_position();
@@ -617,49 +626,45 @@ module BMA {
                 }
             }
 
-            public SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any, states: BMA.LTLOperations.Keyframe[]) {
+            public CheckEquation(op: LTLOperations.KeyframeEquation | LTLOperations.DoubleKeyframeEquation,
+                value: any[], variables: Model.Variable[]): boolean {
+
+                var that = this;
+                if (op instanceof BMA.LTLOperations.KeyframeEquation) {
+                    if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
+                        var varName = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Name;
+                        var ind;
+                        for (var n = 0; n < variables.length; n++)
+                            if (variables[n].Name == varName) {
+                                ind = n;
+                                break;
+                            }
+                        var curVal = value[ind];
+                        var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
+                            undefined;
+                        return that.Compare(curVal, rightOp, op.Operator);
+                    } else {
+                        throw "Variable must be first in equation";
+                    }
+                } else {
+                    throw "Unknown equation type";
+                }
+            }
+
+            public PrepareTableData(variables: Model.Variable[], ticks: any): { init: any[], data: any[][] } {
                 var that = this;
 
-                var vars = model.Variables.sort((x, y) => {
-                    return x.Id < y.Id ? -1 : 1;
-                });
-
-                var id = [];
                 var init = [];
                 var data = [];
-                var pData = [];
-                var ranges = [];
-                var variables = [];
-                var tags = [];
-
-                for (var i = 0; i < vars.length; i++) {
-                    id.push(vars[i].Id);
-                    ranges.push({
-                        min: vars[i].RangeFrom,
-                        max: vars[i].RangeTo
-                    });
-
-                    var color = this.getRandomColor();
-                    variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
-                }
-
-                ticks = ticks.sort((x, y) => {
-                    return x.Time < y.Time ? -1 : 1;
-                });
-
                 for (var i = 0; i < ticks.length; i++) {
                     var tick = ticks[i].Variables;
-                    tags.push([]);
-                    //if (i != 0) {
-                        data.push([]);
-                        //tags.push([]);
-                    //}
-                    for (var k = 0; k < vars.length; k++) {
+                    data.push([]);
+                    for (var k = 0; k < variables.length; k++) {
                         for (var j = 0; j < tick.length; j++) {
-                            if (tick[j].Id == vars[k].Id) {
+                            if (tick[j].Id == variables[k].Id) {
                                 var ij = tick[j];
                                 if (ij.Lo === ij.Hi) {
-                                    if(i == 0) init.push(ij.Lo);
+                                    if (i == 0) init.push(ij.Lo);
                                     data[i].push(ij.Lo);
                                 }
                                 else {
@@ -670,59 +675,36 @@ module BMA {
                         }
                     }
                 }
+                return { init: init, data: data };
+            }
 
-                var checkEquation = function (op, curValue) {
-                    if (op instanceof BMA.LTLOperations.KeyframeEquation) {
-                        if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
-                            var varName = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Name;
-                            var ind;
-                            for (var n = 0; n < vars.length; n++)
-                                if (vars[n].Name == varName) {
-                                    ind = n;
-                                    break;
-                                }
-                            curValue = curValue[ind];
-                            var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
-                                undefined;
-                            return that.Compare(curValue, rightOp, op.Operator);
-                        } else {
-                            throw "Variable must be first in equation";
-                        }
-                    } else {
-                        throw "Unknown equation type";
-                    }
-                }
+            public PrepareTableTags(data: any[], states: BMA.LTLOperations.Keyframe[], variables: Model.Variable[]) {
+                var that = this;
 
-                //var initTags = [];
+                var tags = [];
+                for (var i = 0; i < data.length; i++)
+                    tags.push([]);
 
                 for (var i = 0; i < states.length; i++) {
                     var state = states[i];
-                    //var result = true;
-                    //for (var j = 0; j < state.Operands.length; j++) {
-                    //    var op = state.Operands[j];
-                    //    result = result && checkEquation(op, init);
-                    //}
-
-                    //if (state.Operands.length !== 0 && result)
-                    //    tags[0].push(state.Name);
-
                     for (var k = 0; k < data.length; k++) {
                         var result = true;
                         for (var j = 0; j < state.Operands.length; j++) {
                             var op = state.Operands[j];
-                            result = result && checkEquation(op, data[k]);
+                            result = result && that.CheckEquation(op, data[k], variables);
                         }
                         if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
                     }
                 }
+                return tags;
+            }
 
-                var labels_height = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
-                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+            public PreparePlotLabels(tags: any[], labelsHeight: number) {
+                
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
-                var prevState = undefined;
                 var currState = [];
 
                 var compareTags = function (prev, curr) {
@@ -750,15 +732,15 @@ module BMA {
                     }
                 }
 
-                prevState = currState[0];
+                var prevState = currState[0];
 
-                for (var i = 1; i < tags.length; i++){
+                for (var i = 1; i < currState.length; i++) {
                     if (!compareTags(prevState, currState[i])) {
-                        if (prevState && prevState.length !== 0)// && count > 1)
+                        if (prevState && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
                                 width: count,
-                                height: labels_height,
+                                height: labelsHeight,
                                 x: firstTime,
                                 y: 0,
                             });
@@ -767,43 +749,56 @@ module BMA {
                         count = 1;
                     } else {
                         count++;
-                        if (i == tags.length - 1 && prevState.length !== 0)// && count > 1)
+                        if (i == currState.length - 1 && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
                                 width: count,
-                                height: labels_height,
+                                height: labelsHeight,
                                 x: firstTime,
                                 y: 0,
                             });
-                    } 
+                    }
+                }
+                return labels;
+            }
+
+            public SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any, states: BMA.LTLOperations.Keyframe[]) {
+                var that = this;
+
+                var vars = model.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+
+                var id = [];
+                
+                var pData = [];
+                var ranges = [];
+                var variables = [];
+
+                for (var i = 0; i < vars.length; i++) {
+                    id.push(vars[i].Id);
+                    ranges.push({
+                        min: vars[i].RangeFrom,
+                        max: vars[i].RangeTo
+                    });
+
+                    var color = this.getRandomColor();
+                    variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
 
-                //for (var i = 0; i < tags.length; i++) {
-                //    if (!compareTags(prevState, tags[i])) {
-                //        if (prevState !== undefined && prevState.length !== 0 && count > 1)
-                //            labels.push({
-                //                text: prevState,
-                //                width: count,
-                //                height: labels_height,
-                //                x: firstTime,
-                //                y: 0,
-                //            });
-                //        prevState = tags[i];
-                //        firstTime = i;
-                //        count = 1;
-                //    } else {
-                //        count++;
-                //        if (i == tags.length - 1 && prevState.length !== 0 && count > 1)
-                //            labels.push({
-                //                text: prevState,
-                //                width: count - 1,
-                //                height: labels_height,
-                //                x: firstTime,
-                //                y: 0,
-                //            });
-                //    }
-                //}
+                ticks = ticks.sort((x, y) => {
+                    return x.Time < y.Time ? -1 : 1;
+                });
 
+                var tableData = that.PrepareTableData(vars, ticks);
+                var init = tableData.init;
+                var data = tableData.data;
+                var tags = that.PrepareTableTags(data, states, vars);
+
+                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
+                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+                var labels = that.PreparePlotLabels(tags, labelsHeight);
+                
                 var interval = this.CreateInterval(vars);
 
                 var options = {

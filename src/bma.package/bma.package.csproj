@@ -219,6 +219,7 @@
     <TypeScriptCompile Include="test\KeyframesTest.ts" />
     <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
     <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
+    <TypeScriptCompile Include="test\LTLResultsViewerTests.ts" />
     <TypeScriptCompile Include="test\ModelHelperTests.ts" />
     <TypeScriptCompile Include="test\ModelTest.ts" />
     <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
