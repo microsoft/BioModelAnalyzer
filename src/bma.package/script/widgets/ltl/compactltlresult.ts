@@ -38,11 +38,23 @@
                         var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
                         var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
+
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing");
+                        }
+
                         minusb.click((e) => {
-                            that.options.steps--;
-                            d.text(that.options.steps + " steps");
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
+                            if (that.options.steps > 1) {
+                                that.options.steps--;
+                                d.text(that.options.steps + " steps");
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+                            }
+                            if (that.options.steps == 1) {
+                                minusd.addClass("testing");
+                                minusb.addClass("testing");
                             }
                         });
                         var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
@@ -53,6 +65,8 @@
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
+                            minusd.removeClass("testing");
+                            minusb.removeClass("testing");
                         });
 
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
@@ -108,17 +122,25 @@
                         var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
-                        minusb.click((e) => {
-                            that.options.steps--;
-                            d.text(that.options.steps + " steps");
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing").addClass("green");
+                        }
+
+                        minusb.click((e) => {
+                            if (that.options.steps > 1) {
+                                that.options.steps--;
+                                d.text(that.options.steps + " steps");
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
                         var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
@@ -135,6 +157,8 @@
                             if (that.options.onexpanded !== undefined) {
                                 that.options.onexpanded();
                             }
+                            minusd.removeClass("testing");
+                            minusb.removeClass("testing");
                         });
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin", "5px 0 5px 0").appendTo(ltlresdiv);
@@ -185,17 +209,25 @@
                         var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
-                        minusb.click((e) => {
-                            that.options.steps--;
-                            d.text(that.options.steps + " steps");
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing").addClass("green");
+                        }
+
+                        minusb.click((e) => {
+                            if (that.options.steps > 1) {
+                                that.options.steps--;
+                                d.text(that.options.steps + " steps");
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
                         var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
@@ -212,6 +244,8 @@
                             if (that.options.onexpanded !== undefined) {
                                 that.options.onexpanded();
                             }
+                            minusd.removeClass("testing");
+                            minusb.removeClass("testing");
                         });
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).appendTo(ltlresdiv);
@@ -274,17 +308,25 @@
                         var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
-                        minusb.click((e) => {
-                            that.options.steps--;
-                            d.text(that.options.steps + " steps");
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing").addClass("red");
+                        }
+
+                        minusb.click((e) => {
+                            if (that.options.steps > 1) {
+                                that.options.steps--;
+                                d.text(that.options.steps + " steps");
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
                         var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
@@ -301,6 +343,8 @@
                             if (that.options.onexpanded !== undefined) {
                                 that.options.onexpanded();
                             }
+                            minusd.removeClass("testing");
+                            minusb.removeClass("testing");
                         });
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltlresdiv);
                         var li = $("<li></li>").appendTo(ul);

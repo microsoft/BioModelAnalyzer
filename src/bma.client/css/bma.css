@@ -3692,6 +3692,10 @@ ui-icon-arrowthickstop-1-n {
   padding-left: 10px;
   padding-right: 10px;
 }
+.model-repository ol {
+  max-height: 200px;
+  overflow-y: auto;
+}
 /*.state-toolbar {
     margin-top: 5px;
 
@@ -4407,6 +4411,20 @@ ui-icon-arrowthickstop-1-n {
 .LTL-test-results .pill-button-box .pill-button.testing button.testing:hover {
   background-color: #EDEDED;
   color: #606060;
+}
+.LTL-test-results .pill-button-box .pill-button.testing button.testing.green {
+  color: #81BB83;
+}
+.LTL-test-results .pill-button-box .pill-button.testing button.testing.green:hover {
+  background-color: #EDEDED;
+  color: #81BB83;
+}
+.LTL-test-results .pill-button-box .pill-button.testing button.testing.red {
+  color: #CF451B;
+}
+.LTL-test-results .pill-button-box .pill-button.testing button.testing.red:hover {
+  background-color: #EDEDED;
+  color: #CF451B;
 }
 .LTL-test-results img {
   display: inline-block;
