@@ -14,7 +14,10 @@
 
             root.css("overflow-y", "auto").css("overflow-x", "auto");
 
-            this.attentionDiv = $("<div></div>").text("No temporal properties. Open editor to create some").appendTo(root);
+            this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
+            $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
+            $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+            
 
             var svgdiv = $("<div></div>").appendTo(root);
 

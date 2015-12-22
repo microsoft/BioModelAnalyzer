@@ -12460,7 +12460,9 @@ jQuery.fn.extend({
             var that = this;
             var root = this.element;
             root.css("overflow-y", "auto").css("overflow-x", "auto");
-            this.attentionDiv = $("<div></div>").text("No temporal properties. Open editor to create some").appendTo(root);
+            this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
+            $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
+            $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
             var svgdiv = $("<div></div>").appendTo(root);
             this.svgdiv = svgdiv;
             var pixofs = this._pixelOffset;
@@ -13044,13 +13046,13 @@ var BMA;
                     }
                 });
                 commands.On("TemporalPropertiesEditorExpanded", function (args) {
-                    if (that.isUpdateControlRequested) {
-                        that.UpdateControlPanels();
-                        that.isUpdateControlRequested = false;
-                    }
                     for (var i = 0; i < that.operations.length; i++) {
                         that.operations[i].Refresh();
                     }
+                    //if (that.isUpdateControlRequested) {
+                    that.UpdateControlPanels();
+                    that.isUpdateControlRequested = false;
+                    //}
                 });
                 commands.On("VisibleRectChanged", function (param) {
                     //if (param < this.zoomConstraints.minWidth) {
