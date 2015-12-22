@@ -8353,9 +8353,9 @@ var BMA;
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
-            var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
-            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
+            var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
             this.lightSVGDiv = svgPlotDiv2;
             //empty div for event handling
             //$("<div></div>").attr("data-idd-plot", "plot").appendTo(plotDiv);
@@ -8504,6 +8504,12 @@ var BMA;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+            this._dragService.dragStart.subscribe(function () {
+                svgPlotDiv2.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
+            });
+            this._dragService.dragEnd.subscribe(function () {
+                svgPlotDiv2.css("z-index", '');
+            });
             this._mouseMoves = that._plot.centralPart.onAsObservable("mousemove").select(function (mm) {
                 var cs = svgPlot.getScreenToDataTransform();
                 var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
@@ -12264,7 +12270,7 @@ jQuery.fn.extend({
             dropzonescnt.width("100%");
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
-            this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
             var copyzonesvgdiv = $("<div></div>").width("100%").height("calc(100% - 20px)").css("margin-top", 10).css("margin-bottom", 10).appendTo(this.copyzone);
             copyzonesvgdiv.svg({
@@ -12279,7 +12285,7 @@ jQuery.fn.extend({
                     }
                 }
             });
-            this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            this.deletezone = $("<div></div>").addClass("dropzone delete").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
             var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("cursor", "pointer").css("position", "relative").appendTo(dom.host);

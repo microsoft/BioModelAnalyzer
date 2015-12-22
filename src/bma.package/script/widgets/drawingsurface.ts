@@ -74,10 +74,11 @@ declare var Rx: any;
             var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
             var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
-            var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
-            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
 
             var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+            var domPlotDiv = $("<div></div>").attr("data-idd-plot", "dom").appendTo(plotDiv);
+            var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
+
             this.lightSVGDiv = svgPlotDiv2;
 
             //empty div for event handling
@@ -276,6 +277,15 @@ declare var Rx: any;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+
+            this._dragService.dragStart.subscribe(function () {
+                svgPlotDiv2.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
+            });
+
+            this._dragService.dragEnd.subscribe(function () {
+                svgPlotDiv2.css("z-index", '');
+            });
+
 
             this._mouseMoves = that._plot.centralPart.onAsObservable("mousemove").select(function (mm) {
 

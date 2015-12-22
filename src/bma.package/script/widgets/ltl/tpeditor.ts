@@ -232,7 +232,7 @@
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
 
-            this.copyzone = $("<div></div>").addClass("dropzone copy").appendTo(dropzones);
+            this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
 
             var copyzonesvgdiv = $("<div></div>").width("100%").height("calc(100% - 20px)").css("margin-top", 10).css("margin-bottom", 10).appendTo(this.copyzone);
@@ -253,7 +253,7 @@
             });
 
 
-            this.deletezone = $("<div></div>").addClass("dropzone delete").appendTo(dropzones);
+            this.deletezone = $("<div></div>").addClass("dropzone delete").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.deletezone.width("calc(50% - 15px - 3px)");
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
 
