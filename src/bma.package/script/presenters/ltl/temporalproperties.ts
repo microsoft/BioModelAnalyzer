@@ -297,14 +297,15 @@ module BMA {
                 });
 
                 commands.On("TemporalPropertiesEditorExpanded", (args) => {
-                    if (that.isUpdateControlRequested) {
-                        that.UpdateControlPanels();
-                        that.isUpdateControlRequested = false;
-                    }
 
                     for (var i = 0; i < that.operations.length; i++) {
                         that.operations[i].Refresh();
                     }
+
+                    //if (that.isUpdateControlRequested) {
+                        that.UpdateControlPanels();
+                        that.isUpdateControlRequested = false;
+                    //}
                 });
 
                 commands.On("VisibleRectChanged", (param) => {
