@@ -5,7 +5,11 @@
 module BMA {
     export module Test {
 
-
+        export class TestWaitScreen implements BMA.UIDrivers.IWaitScreen {
+            constructor() { }
+            Show() { }
+            Hide() { }
+        }
 
         export class ModelRepositoryTest implements BMA.UIDrivers.IModelRepository {
 

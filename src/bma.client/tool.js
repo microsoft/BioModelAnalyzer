@@ -4289,6 +4289,19 @@ var BMA;
             return ExportService;
         })();
         UIDrivers.ExportService = ExportService;
+        var LoadingWaitScreen = (function () {
+            function LoadingWaitScreen(bannerDiv) {
+                this.bannerDiv = bannerDiv;
+            }
+            LoadingWaitScreen.prototype.Show = function () {
+                this.bannerDiv.show();
+            };
+            LoadingWaitScreen.prototype.Hide = function () {
+                this.bannerDiv.hide();
+            };
+            return LoadingWaitScreen;
+        })();
+        UIDrivers.LoadingWaitScreen = LoadingWaitScreen;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=commondrivers.js.map
@@ -6812,7 +6825,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var ModelStoragePresenter = (function () {
-            function ModelStoragePresenter(appModel, fileLoaderDriver, checker, logService, exportService) {
+            function ModelStoragePresenter(appModel, fileLoaderDriver, checker, logService, exportService, waitScreen) {
                 var that = this;
                 window.Commands.On("NewModel", function (args) {
                     try {
@@ -6890,6 +6903,7 @@ var BMA;
                         window.Commands.Execute('SetPlotSettings', { MaxWidth: 3200, MinWidth: 800 });
                         window.Commands.Execute('ModelFitToView', '');
                         fileLoaderDriver.OpenFileDialog().done(function (fileName) {
+                            waitScreen.Show();
                             var fileReader = new FileReader();
                             fileReader.onload = function () {
                                 var fileContent = fileReader.result;
@@ -6909,6 +6923,7 @@ var BMA;
                                     }
                                 }
                                 checker.Snapshot(appModel);
+                                waitScreen.Hide();
                             };
                             fileReader.readAsText(fileName);
                         });
@@ -7229,7 +7244,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LocalStoragePresenter = (function () {
-            function LocalStoragePresenter(appModel, editor, tool, messagebox, checker, logService) {
+            function LocalStoragePresenter(appModel, editor, tool, messagebox, checker, logService, waitScreen) {
                 var that = this;
                 this.appModel = appModel;
                 this.driver = editor;
@@ -7301,6 +7316,7 @@ var BMA;
                         load();
                     }
                     function load() {
+                        waitScreen.Show();
                         if (that.tool.IsInRepo(key)) {
                             appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
                             that.checker.Snapshot(that.appModel);
@@ -7309,6 +7325,7 @@ var BMA;
                             that.messagebox.Show("The model was removed from outside");
                             window.Commands.Execute("LocalStorageChanged", {});
                         }
+                        waitScreen.Hide();
                     }
                 });
                 window.Commands.On("LocalStorageInitModel", function (key) {

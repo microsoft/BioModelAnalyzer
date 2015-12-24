@@ -3,6 +3,7 @@
     window.Commands = new BMA.CommandRegistry();
 
     var appModel = new BMA.Model.AppModel();
+    var testWaitScreen = new BMA.Test.TestWaitScreen();
 
     var name = "TestBioModel";
     var v1 = new BMA.Model.Variable(34, 15, "type1", "name1", 3, 7, "formula1");
@@ -34,12 +35,12 @@
     
 
     it("should be defined", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         expect(localStorageTestPresenter).toBeDefined();
     });
 
     it("should GetModelList and SetItems on 'LocalStorageChanged' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(modelRepositoryTest, "GetModelList");
         spyOn(localStorageTestDriver, "SetItems");
         window.Commands.Execute("LocalStorageChanged", {});
@@ -49,7 +50,7 @@
     });
 
     it("should RemoveModel on 'LocalStorageRemoveModel' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(modelRepositoryTest, "RemoveModel");
         var key = "3";
         window.Commands.Execute("LocalStorageRemoveModel", key);
@@ -57,21 +58,21 @@
     });
 
     it("should Show storage viewer on 'LocalStorageRequested' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(localStorageTestDriver, "Show");
         window.Commands.Execute("LocalStorageRequested", {});
         expect(localStorageTestDriver.Show).toHaveBeenCalledWith();
     });
 
     it("should SaveModel on 'LocalStorageSaveModel' command", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(modelRepositoryTest, "SaveModel");
         window.Commands.Execute("LocalStorageSaveModel", {});
         expect(modelRepositoryTest.SaveModel).toHaveBeenCalledWith(name, JSON.parse(appModel.Serialize()));
     });
 
     xit("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(appModel, "Reset");
         //var key = '4';
         window.Commands.Execute("LocalStorageSaveModel", {});
@@ -80,7 +81,7 @@
     });
 
     xit("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService);
+        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(appModel, "Reset");
         var key = 'testkey';
         window.Commands.Execute("LocalStorageLoadModel", key);

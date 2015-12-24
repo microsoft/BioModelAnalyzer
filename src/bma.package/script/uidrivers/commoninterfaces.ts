@@ -153,6 +153,10 @@ module BMA {
             IsChanged(model);
         }
 
+        export interface IWaitScreen {
+            Show();
+            Hide();
+        }
        
     }
 } 

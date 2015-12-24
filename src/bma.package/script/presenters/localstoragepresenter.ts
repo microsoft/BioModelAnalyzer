@@ -13,7 +13,8 @@
                 tool: BMA.UIDrivers.IModelRepository,
                 messagebox: BMA.UIDrivers.IMessageServiсe,
                 checker: BMA.UIDrivers.ICheckChanges,
-                logService: BMA.ISessionLog
+                logService: BMA.ISessionLog,
+                waitScreen: BMA.UIDrivers.IWaitScreen
                 ) {
                 var that = this;
                 this.appModel = appModel;
@@ -91,6 +92,7 @@
                     }
 
                     function load() {
+                        waitScreen.Show();
                         if (that.tool.IsInRepo(key)) {
                             appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
                             that.checker.Snapshot(that.appModel);
@@ -99,6 +101,7 @@
                             that.messagebox.Show("The model was removed from outside");
                             window.Commands.Execute("LocalStorageChanged", {});
                         }
+                        waitScreen.Hide();
                     }
                 });
 

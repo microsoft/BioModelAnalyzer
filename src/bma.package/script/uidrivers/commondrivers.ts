@@ -615,6 +615,22 @@ module BMA {
             }
         }
 
+        export class LoadingWaitScreen implements IWaitScreen {
+            private bannerDiv: JQuery;
+
+            constructor(bannerDiv: JQuery) {
+                this.bannerDiv = bannerDiv;
+            }
+
+            public Show() {
+                this.bannerDiv.show();
+            }
+
+            public Hide() {
+                this.bannerDiv.hide();
+            }
+        }
+
        
     }
 } 

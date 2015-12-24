@@ -6,7 +6,8 @@
                 fileLoaderDriver: BMA.UIDrivers.IFileLoader,
                 checker: BMA.UIDrivers.ICheckChanges,
                 logService: BMA.ISessionLog,
-                exportService: BMA.UIDrivers.ExportService) {
+                exportService: BMA.UIDrivers.ExportService,
+                waitScreen: BMA.UIDrivers.IWaitScreen) {
                 var that = this;
 
                 window.Commands.On("NewModel",(args) => {
@@ -87,6 +88,8 @@
                         window.Commands.Execute('SetPlotSettings', { MaxWidth: 3200, MinWidth: 800 });
                         window.Commands.Execute('ModelFitToView', '');
                         fileLoaderDriver.OpenFileDialog().done(function (fileName) {
+                            waitScreen.Show();
+
                             var fileReader: any = new FileReader();
                             fileReader.onload = function () {
                                 var fileContent = fileReader.result;
@@ -108,7 +111,9 @@
                                     }
                                 }
                                 checker.Snapshot(appModel);
+                                waitScreen.Hide();
                             };
+                            
                             fileReader.readAsText(fileName);
                         });
                         

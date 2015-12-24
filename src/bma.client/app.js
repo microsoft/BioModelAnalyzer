@@ -128,7 +128,7 @@ $(document).ready(function () {
         return dfd.promise();
     };
     deferredLoad().done(function () {
-        $('.page-loading').detach();
+        $('.page-loading').hide();
     }).fail(function (err) {
         alert("Page loading failed: " + err);
     });
@@ -480,15 +480,16 @@ function loadScript(version) {
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
     var ltlService = new BMA.UIDrivers.LTLAnalyzeService();
+    var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
     //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(appModel, furtherTestingDriver, popupDriver, furtherTestingServiсe, messagebox, logService);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, $("#analytics"), fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService, messagebox);
-    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
+    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
-    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
+    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
     var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService, fileLoaderDriver);
     //Loading model from URL
