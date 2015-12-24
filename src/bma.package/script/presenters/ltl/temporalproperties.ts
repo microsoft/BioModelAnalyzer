@@ -196,8 +196,8 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorExport", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        var operation = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
-                        var clonned = operation !== undefined ? operation.Clone() : undefined;
+                        var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
                         commands.Execute("ExportLTLFormula", { operation: clonned });
                     }
                 });
@@ -234,8 +234,8 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorCopy", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        var operation = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
-                        var clonned = operation !== undefined ? operation.Clone() : undefined;
+                        var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
                         this.clipboard = {
                             operation: clonned
                         };
@@ -389,31 +389,40 @@ module BMA {
                             } else {
                                 var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                                 if (staginOp !== undefined) {
-                                    tpEditorDriver.SetCopyZoneVisibility(true);
-                                    tpEditorDriver.SetDeleteZoneVisibility(true);
-
-
-                                    staginOp.AnalysisStatus = "nottested";
-                                    staginOp.Tag = undefined;
-
-                                    that.navigationDriver.TurnNavigation(false);
-                                    var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
-                                    this.stagingOperation = {
-                                        operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
-                                        originRef: staginOp,
-                                        originIndex: this.operations.indexOf(staginOp),
-                                        isRoot: unpinned.isRoot,
-                                        parentoperation: unpinned.parentoperation,
-                                        parentoperationindex: unpinned.parentoperationindex,
-                                        fromclipboard: false
-                                    };
-
-                                    if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                        that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                    if (staginOp.AnalysisStatus !== "processing") {
+                                        staginOp.AnalysisStatus = "nottested";
+                                        staginOp.Tag = undefined;
                                     }
 
-                                    //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                                    staginOp.IsVisible = !unpinned.isRoot;
+                                    that.navigationDriver.TurnNavigation(false);
+
+
+                                    //Can't drag parts of processing operations
+                                    var picked = staginOp.PickOperation(gesture.x, gesture.y);
+                                    if (staginOp.AnalysisStatus === "processing" && picked !== undefined && !picked.isRoot) {
+                                        this.stagingOperation = undefined;
+                                    } else {
+                                        tpEditorDriver.SetCopyZoneVisibility(true);
+                                        tpEditorDriver.SetDeleteZoneVisibility(true);
+
+                                        var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
+                                        this.stagingOperation = {
+                                            operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
+                                            originRef: staginOp,
+                                            originIndex: this.operations.indexOf(staginOp),
+                                            isRoot: unpinned.isRoot,
+                                            parentoperation: unpinned.parentoperation,
+                                            parentoperationindex: unpinned.parentoperationindex,
+                                            fromclipboard: false
+                                        };
+
+                                        if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                                            that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                        }
+
+                                        //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                                        staginOp.IsVisible = !unpinned.isRoot;
+                                    }
                                 }
                             }
                         });
@@ -524,27 +533,40 @@ module BMA {
                                     } else {
                                         var operation = this.GetOperationAtPoint(position.x, position.y);
                                         if (operation !== undefined) {
-                                            var emptyCell = undefined;
-                                            emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
-                                            if (emptyCell !== undefined) {
-                                                //emptyCell.opLayout = operation;
-                                                emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
-                                                operation.Refresh();
-                                                operation.AnalysisStatus = "nottested";
-                                                operation.Tag = undefined;
-
-                                                if (this.stagingOperation.isRoot) {
-                                                    this.operations[this.stagingOperation.originIndex].IsVisible = false;
-                                                    this.operations.splice(this.stagingOperation.originIndex, 1);
-                                                }
-                                            } else {
+                                            if (operation.AnalysisStatus === "processing") {
                                                 if (!this.stagingOperation.fromclipboard) {
-                                                    //Operation should stay in its origin place
+                                                    //Operation should stay in its origin place bacuse editing of processing operations is not allowed
                                                     if (this.stagingOperation.isRoot) {
                                                         this.stagingOperation.originRef.IsVisible = true;
                                                     } else {
                                                         this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
                                                         this.stagingOperation.originRef.Refresh();
+                                                    }
+                                                }
+                                            } else {
+
+                                                var emptyCell = undefined;
+                                                emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                                if (emptyCell !== undefined) {
+                                                    //emptyCell.opLayout = operation;
+                                                    emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
+                                                    operation.Refresh();
+                                                    operation.AnalysisStatus = "nottested";
+                                                    operation.Tag = undefined;
+
+                                                    if (this.stagingOperation.isRoot) {
+                                                        this.operations[this.stagingOperation.originIndex].IsVisible = false;
+                                                        this.operations.splice(this.stagingOperation.originIndex, 1);
+                                                    }
+                                                } else {
+                                                    if (!this.stagingOperation.fromclipboard) {
+                                                        //Operation should stay in its origin place
+                                                        if (this.stagingOperation.isRoot) {
+                                                            this.stagingOperation.originRef.IsVisible = true;
+                                                        } else {
+                                                            this.stagingOperation.parentoperation.Operands[this.stagingOperation.parentoperationindex] = this.stagingOperation.operation.Operation;
+                                                            this.stagingOperation.originRef.Refresh();
+                                                        }
                                                     }
                                                 }
                                             }
@@ -724,6 +746,8 @@ module BMA {
                 var that = this;
 
                 if (operation.IsCompleted) {
+                    operation.AnalysisStatus = "processing";
+                    driver.SetStatus("processing");
 
                     var formula = operation.Operation.GetFormula();
 

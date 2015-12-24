@@ -3114,6 +3114,10 @@ var BMA;
                             this.status = value;
                             this.Fill = "white";
                             break;
+                        case "processing":
+                            this.status = value;
+                            this.Fill = "white";
+                            break;
                         case "success":
                             this.status = value;
                             this.Fill = "rgb(217,255,182)";
@@ -3681,8 +3685,12 @@ var BMA;
             OperationLayout.prototype.PickOperation = function (x, y) {
                 if (this.layout !== undefined) {
                     var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, false);
-                    if (layoutPart !== undefined)
-                        return layoutPart.operation;
+                    if (layoutPart !== undefined) {
+                        return {
+                            operation: layoutPart.operation,
+                            isRoot: layoutPart.parentoperation === undefined
+                        };
+                    }
                 }
                 return undefined;
             };
@@ -4749,7 +4757,13 @@ var BMA;
                 this.compactltlresult.compactltlresult({ isexpanded: true });
             };
             LTLResultsCompactViewer.prototype.SetStatus = function (status) {
-                this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
+                var options = {
+                    status: status
+                };
+                if (status !== "processing") {
+                    options.isexpanded = false;
+                }
+                this.compactltlresult.compactltlresult(options);
             };
             LTLResultsCompactViewer.prototype.GetSteps = function () {
                 return this.steps;
@@ -11781,9 +11795,6 @@ jQuery.fn.extend({
                         var btn = $("<button>TEST </button>").appendTo(li);
                         btn.click(function () {
                             if (that.options.ontestrequested !== undefined) {
-                                btn.empty();
-                                li.addClass("spin");
-                                that.createWaitAnim().appendTo(btn);
                                 that.options.ontestrequested();
                                 minusd.addClass("testing");
                                 plusd.addClass("testing");
@@ -11803,6 +11814,35 @@ jQuery.fn.extend({
                                 that.options.onexpanded();
                             }
                         });
+                    }
+                    break;
+                case "processing":
+                    if (this.options.isexpanded) {
+                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                        var d = $("<div>" + that.options.steps + " steps</div>")
+                            .css("display", "inline-block")
+                            .appendTo(ltltestdiv);
+                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var minusb = $("<button>-</button>").appendTo(minusd);
+                        minusd.addClass("testing");
+                        minusb.addClass("testing");
+                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusb = $("<button>+</button>").appendTo(plusd);
+                        plusd.addClass("testing");
+                        plusb.addClass("testing");
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                        var btn = $("<button></button>").appendTo(li);
+                        li.addClass("spin");
+                        that.createWaitAnim().appendTo(btn);
+                    }
+                    else {
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                        var btn = $("<button></button>").appendTo(li);
+                        li.addClass("spin");
+                        that.createWaitAnim().appendTo(btn);
                     }
                     break;
                 case "success":
@@ -12983,8 +13023,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorExport", function (args) {
                     if (_this.contextElement !== undefined) {
-                        var operation = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
-                        var clonned = operation !== undefined ? operation.Clone() : undefined;
+                        var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
                         commands.Execute("ExportLTLFormula", { operation: clonned });
                     }
                 });
@@ -13015,8 +13055,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorCopy", function (args) {
                     if (_this.contextElement !== undefined) {
-                        var operation = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
-                        var clonned = operation !== undefined ? operation.Clone() : undefined;
+                        var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
                         _this.clipboard = {
                             operation: clonned
                         };
@@ -13146,26 +13186,35 @@ var BMA;
                         else {
                             var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                             if (staginOp !== undefined) {
-                                tpEditorDriver.SetCopyZoneVisibility(true);
-                                tpEditorDriver.SetDeleteZoneVisibility(true);
-                                staginOp.AnalysisStatus = "nottested";
-                                staginOp.Tag = undefined;
-                                that.navigationDriver.TurnNavigation(false);
-                                var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
-                                _this.stagingOperation = {
-                                    operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
-                                    originRef: staginOp,
-                                    originIndex: _this.operations.indexOf(staginOp),
-                                    isRoot: unpinned.isRoot,
-                                    parentoperation: unpinned.parentoperation,
-                                    parentoperationindex: unpinned.parentoperationindex,
-                                    fromclipboard: false
-                                };
-                                if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                    that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                if (staginOp.AnalysisStatus !== "processing") {
+                                    staginOp.AnalysisStatus = "nottested";
+                                    staginOp.Tag = undefined;
                                 }
-                                //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
-                                staginOp.IsVisible = !unpinned.isRoot;
+                                that.navigationDriver.TurnNavigation(false);
+                                //Can't drag parts of processing operations
+                                var picked = staginOp.PickOperation(gesture.x, gesture.y);
+                                if (staginOp.AnalysisStatus === "processing" && picked !== undefined && !picked.isRoot) {
+                                    _this.stagingOperation = undefined;
+                                }
+                                else {
+                                    tpEditorDriver.SetCopyZoneVisibility(true);
+                                    tpEditorDriver.SetDeleteZoneVisibility(true);
+                                    var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);
+                                    _this.stagingOperation = {
+                                        operation: new BMA.LTLOperations.OperationLayout(that.driver.GetLightSVGRef(), unpinned.operation, gesture),
+                                        originRef: staginOp,
+                                        originIndex: _this.operations.indexOf(staginOp),
+                                        isRoot: unpinned.isRoot,
+                                        parentoperation: unpinned.parentoperation,
+                                        parentoperationindex: unpinned.parentoperationindex,
+                                        fromclipboard: false
+                                    };
+                                    if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                                        that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                    }
+                                    //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                                    staginOp.IsVisible = !unpinned.isRoot;
+                                }
                             }
                         }
                     });
@@ -13256,28 +13305,42 @@ var BMA;
                                 else {
                                     var operation = _this.GetOperationAtPoint(position.x, position.y);
                                     if (operation !== undefined) {
-                                        var emptyCell = undefined;
-                                        emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
-                                        if (emptyCell !== undefined) {
-                                            //emptyCell.opLayout = operation;
-                                            emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
-                                            operation.Refresh();
-                                            operation.AnalysisStatus = "nottested";
-                                            operation.Tag = undefined;
-                                            if (_this.stagingOperation.isRoot) {
-                                                _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
-                                                _this.operations.splice(_this.stagingOperation.originIndex, 1);
-                                            }
-                                        }
-                                        else {
+                                        if (operation.AnalysisStatus === "processing") {
                                             if (!_this.stagingOperation.fromclipboard) {
-                                                //Operation should stay in its origin place
+                                                //Operation should stay in its origin place bacuse editing of processing operations is not allowed
                                                 if (_this.stagingOperation.isRoot) {
                                                     _this.stagingOperation.originRef.IsVisible = true;
                                                 }
                                                 else {
                                                     _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
                                                     _this.stagingOperation.originRef.Refresh();
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            var emptyCell = undefined;
+                                            emptyCell = operation.GetEmptySlotAtPosition(position.x, position.y);
+                                            if (emptyCell !== undefined) {
+                                                //emptyCell.opLayout = operation;
+                                                emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
+                                                operation.Refresh();
+                                                operation.AnalysisStatus = "nottested";
+                                                operation.Tag = undefined;
+                                                if (_this.stagingOperation.isRoot) {
+                                                    _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
+                                                    _this.operations.splice(_this.stagingOperation.originIndex, 1);
+                                                }
+                                            }
+                                            else {
+                                                if (!_this.stagingOperation.fromclipboard) {
+                                                    //Operation should stay in its origin place
+                                                    if (_this.stagingOperation.isRoot) {
+                                                        _this.stagingOperation.originRef.IsVisible = true;
+                                                    }
+                                                    else {
+                                                        _this.stagingOperation.parentoperation.Operands[_this.stagingOperation.parentoperationindex] = _this.stagingOperation.operation.Operation;
+                                                        _this.stagingOperation.originRef.Refresh();
+                                                    }
                                                 }
                                             }
                                         }
@@ -13428,6 +13491,8 @@ var BMA;
             TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, domplot, driver) {
                 var that = this;
                 if (operation.IsCompleted) {
+                    operation.AnalysisStatus = "processing";
+                    driver.SetStatus("processing");
                     var formula = operation.Operation.GetFormula();
                     var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
                     var proofInput = {

@@ -74,9 +74,6 @@
                         var btn = $("<button>TEST </button>").appendTo(li);
                         btn.click(function () {
                             if (that.options.ontestrequested !== undefined) {
-                                btn.empty();
-                                li.addClass("spin");
-                                that.createWaitAnim().appendTo(btn);
                                 that.options.ontestrequested();
                                 minusd.addClass("testing");
                                 plusd.addClass("testing");
@@ -97,6 +94,35 @@
                                 that.options.onexpanded();
                             }
                         });
+                    }
+                    break;
+                case "processing":
+                    if (this.options.isexpanded) {
+
+                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                        var d = $("<div>" + that.options.steps + " steps</div>")
+                            .css("display", "inline-block")
+                            .appendTo(ltltestdiv);
+                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var minusb = $("<button>-</button>").appendTo(minusd);
+                        minusd.addClass("testing");
+                        minusb.addClass("testing");
+                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusb = $("<button>+</button>").appendTo(plusd);
+                        plusd.addClass("testing");
+                        plusb.addClass("testing");
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                        var btn = $("<button></button>").appendTo(li);
+                        li.addClass("spin");
+                        that.createWaitAnim().appendTo(btn);
+                    } else {
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                        var btn = $("<button></button>").appendTo(li);
+                        li.addClass("spin");
+                        that.createWaitAnim().appendTo(btn);
                     }
                     break;
                 case "success":
