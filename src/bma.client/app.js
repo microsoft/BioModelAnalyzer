@@ -233,7 +233,7 @@ function loadScript(version) {
         autoFocus: true,
         preventContextMenuForPopup: true,
         preventSelect: true,
-        taphold: true,
+        //taphold: true,
         menu: [
             { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },

@@ -8477,7 +8477,7 @@ var BMA;
                 if (arg.originalEvent !== undefined) {
                     arg = arg.originalEvent;
                 }
-                arg.stopPropagation();
+                //arg.stopPropagation();
                 that._executeCommand("DrawingSurfaceClick", {
                     x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
                     y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
@@ -8486,7 +8486,7 @@ var BMA;
                 });
             });
             plotDiv.mousedown(function (e) {
-                e.stopPropagation();
+                //e.stopPropagation();
             });
             plotDiv.dblclick(function (arg) {
                 var cs = svgPlot.getScreenToDataTransform();
@@ -12405,7 +12405,7 @@ jQuery.fn.extend({
                 autoFocus: true,
                 preventContextMenuForPopup: true,
                 preventSelect: true,
-                taphold: true,
+                //taphold: true,
                 menu: [
                     { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
@@ -12434,6 +12434,10 @@ jQuery.fn.extend({
                     args.top = y - drawingSurface.offset().top;
                     that._executeCommand(commandName, args);
                 }
+            });
+            root.mousedown(function (e) {
+                e.stopPropagation();
+                drawingSurfaceCnt.contextmenu("close");
             });
         },
         getContextMenuPanel: function () {

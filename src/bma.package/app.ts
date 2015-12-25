@@ -292,7 +292,7 @@ function loadScript(version) {
         autoFocus: true,
         preventContextMenuForPopup: true,
         preventSelect: true,
-        taphold: true,
+        //taphold: true,
         menu: [
             { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
@@ -345,6 +345,7 @@ function loadScript(version) {
             window.Commands.Execute(commandName, args);
         }
     });
+
     var contextmenu = $('body').children('ul').filter('.ui-menu');
     contextmenu.addClass('command-list window canvas-contextual');
     contextmenu.children('li').children('ul').filter('.ui-menu').addClass('command-list');

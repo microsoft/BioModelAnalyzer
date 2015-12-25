@@ -143,7 +143,7 @@ declare var Rx: any;
                     arg = arg.originalEvent;
                 }
 
-                arg.stopPropagation();
+                //arg.stopPropagation();
 
                 that._executeCommand("DrawingSurfaceClick",
                     {
@@ -156,7 +156,7 @@ declare var Rx: any;
 
 
             plotDiv.mousedown(function (e) {
-                e.stopPropagation();
+                //e.stopPropagation();
             });
 
             plotDiv.dblclick(function (arg) {
