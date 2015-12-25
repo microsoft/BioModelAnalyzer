@@ -2552,48 +2552,54 @@ var BMA;
         function ExportOperation(operation, withStates) {
             var result = {};
             result["_type"] = "Operation";
-            result.operator = {
-                name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
-            };
+            if (operation.Operator && operation.Operator.Name && operation.Operator.OperandsCount) {
+                result.operator = {
+                    name: operation.Operator.Name,
+                    operandsCount: operation.Operator.OperandsCount
+                };
+            }
+            else
+                throw "Operation must have operator";
             result.operands = [];
-            for (var i = 0; i < operation.Operands.length; i++) {
-                var op = operation.Operands[i];
-                if (op === undefined || op === null) {
-                    result.operands.push(undefined);
-                }
-                else if (op instanceof BMA.LTLOperations.Operation) {
-                    result.operands.push(ExportOperation(op, withStates));
-                }
-                else if (op instanceof BMA.LTLOperations.Keyframe) {
-                    if (withStates) {
-                        result.operands.push(ExportState(op));
+            if (operation.Operands) {
+                for (var i = 0; i < operation.Operands.length; i++) {
+                    var op = operation.Operands[i];
+                    if (op === undefined || op === null) {
+                        result.operands.push(undefined);
                     }
-                    else {
+                    else if (op instanceof BMA.LTLOperations.Operation) {
+                        result.operands.push(ExportOperation(op, withStates));
+                    }
+                    else if (op instanceof BMA.LTLOperations.Keyframe) {
+                        if (withStates) {
+                            result.operands.push(ExportState(op));
+                        }
+                        else {
+                            result.operands.push({
+                                _type: "Keyframe",
+                                name: op.Name
+                            });
+                        }
+                    }
+                    else if (op instanceof BMA.LTLOperations.TrueKeyframe) {
                         result.operands.push({
-                            _type: "Keyframe",
-                            name: op.Name
+                            _type: "TrueKeyframe",
                         });
                     }
-                }
-                else if (op instanceof BMA.LTLOperations.TrueKeyframe) {
-                    result.operands.push({
-                        _type: "TrueKeyframe",
-                    });
-                }
-                else if (op instanceof BMA.LTLOperations.OscillationKeyframe) {
-                    result.operands.push({
-                        _type: "OscillationKeyframe",
-                    });
-                }
-                else if (op instanceof BMA.LTLOperations.SelfLoopKeyframe) {
-                    result.operands.push({
-                        _type: "SelfLoopKeyframe",
-                    });
-                }
-                else {
-                    //Unknown operand type
-                    result.operands.push(undefined);
+                    else if (op instanceof BMA.LTLOperations.OscillationKeyframe) {
+                        result.operands.push({
+                            _type: "OscillationKeyframe",
+                        });
+                    }
+                    else if (op instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                        result.operands.push({
+                            _type: "SelfLoopKeyframe",
+                        });
+                    }
+                    else {
+                        //Unknown operand type
+                        result.operands.push(undefined);
+                    }
                 }
             }
             return result;
@@ -2604,11 +2610,15 @@ var BMA;
                 states: [],
                 operations: []
             };
-            for (var i = 0; i < states.length; i++) {
-                result.states.push(ExportState(states[i]));
+            if (states) {
+                for (var i = 0; i < states.length; i++) {
+                    result.states.push(ExportState(states[i]));
+                }
             }
-            for (var i = 0; i < operations.length; i++) {
-                result.operations.push(ExportOperation(operations[i], false));
+            if (operations) {
+                for (var i = 0; i < operations.length; i++) {
+                    result.operations.push(ExportOperation(operations[i], false));
+                }
             }
             return result;
         }
@@ -2661,34 +2671,41 @@ var BMA;
                     if (states !== undefined) {
                         for (var i = 0; i < states.length; i++) {
                             var state = states[i];
-                            if (state.Name === obj.name)
+                            if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
                         throw "No suitable states found";
                     }
                     else {
                         var operands = [];
-                        for (var i = 0; i < obj.operands.length; i++) {
-                            operands.push(ImportOperand(obj.operands[i], states));
+                        if (obj.operands) {
+                            for (var i = 0; i < obj.operands.length; i++) {
+                                operands.push(ImportOperand(obj.operands[i], states));
+                            }
                         }
                         return new BMA.LTLOperations.Keyframe(obj.name, obj.description, operands);
                     }
                     break;
                 case "Operation":
                     var operands = [];
-                    for (var i = 0; i < obj.operands.length; i++) {
-                        var operand = obj.operands[i];
-                        if (operand === undefined || operand === null) {
-                            operands.push(undefined);
-                        }
-                        else {
-                            operands.push(ImportOperand(operand, states));
+                    if (obj.operands) {
+                        for (var i = 0; i < obj.operands.length; i++) {
+                            var operand = obj.operands[i];
+                            if (operand === undefined || operand === null) {
+                                operands.push(undefined);
+                            }
+                            else {
+                                operands.push(ImportOperand(operand, states));
+                            }
                         }
                     }
                     var op = new BMA.LTLOperations.Operation();
                     op.Operands = operands;
                     //TODO: improve operator restoring
-                    op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
+                    if (obj.operator && obj.operator.name)
+                        op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
+                    else
+                        throw "Operation must have name of operator";
                     return op;
                     break;
                 case "TrueKeyframe":
@@ -10071,7 +10088,7 @@ var BMA;
         },
         _create: function () {
             var that = this;
-            this.element.addClass("window dialog");
+            this.element.addClass("window dialog").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 100);
             this.element.draggable({ containment: "parent", scroll: false });
             this._add_close_button();
             this.message = $('<div><div>')

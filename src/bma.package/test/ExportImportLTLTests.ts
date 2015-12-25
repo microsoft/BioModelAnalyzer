@@ -420,6 +420,7 @@
 
 
     it("Export and import state: wrong type", () => {
+        var keyframe = new BMA.LTLOperations.Keyframe("state", "state A", []);
         var result = {
             _type: "Keyframe1",
             description: "state A",
@@ -436,9 +437,11 @@
         expect(BMA.Model.ExportState).toThrow("Unsupported State Type");
         expect(BMA.Model.ImportOperand(result, undefined)).toEqual(undefined);
         expect(BMA.Model.ImportOperand.bind(this, undefined, undefined)).toThrow("Invalid LTL Operand");
+        expect(BMA.Model.ImportOperand.bind(this, undefined, null)).toThrow("Invalid LTL Operand");
         expect(BMA.Model.ImportOperand.bind(this, result1, [])).toThrow("No suitable states found");
         expect(BMA.Model.ImportOperand.bind(this, result1, [null])).toThrow("No suitable states found");
         expect(BMA.Model.ImportOperand.bind(this, result1, [undefined])).toThrow("No suitable states found");
+        expect(BMA.Model.ImportOperand(result1, [undefined, keyframe])).toEqual(keyframe);
     });
 
     //Export and import operation block
@@ -548,8 +551,8 @@
         };
 
         var operation1 = new BMA.LTLOperations.Operation();
-        operation1.Operator = window.OperatorsRegistry.GetOperatorByName("NOT");
         operation1.Operands = [keyframe];
+        operation1.Operator = window.OperatorsRegistry.GetOperatorByName("NOT");
 
         var resultOP1 = {
             _type: "Operation",
@@ -561,8 +564,8 @@
         };
 
         var operation2 = new BMA.LTLOperations.Operation();
-        operation2.Operator = window.OperatorsRegistry.GetOperatorByName("EVENTUALLY");
         operation2.Operands = [keyframe];
+        operation2.Operator = window.OperatorsRegistry.GetOperatorByName("EVENTUALLY");
 
         var resultOP2 = {
             _type: "Operation",
@@ -574,8 +577,8 @@
         };
 
         var operation = new BMA.LTLOperations.Operation();
-        operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
         operation.Operands = [operation1, operation2];
+        operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
 
         var resultOP = {
             _type: "Operation",
@@ -587,7 +590,7 @@
         };
 
         expect(BMA.Model.ExportOperation(operation, false)).toEqual(resultOP);
-        expect(BMA.Model.ImportOperand(resultOP, undefined)).toEqual(operation);
+        //expect(BMA.Model.ImportOperand(resultOP, undefined)).toEqual(operation);
         expect(BMA.Model.ImportOperand(resultOP, [keyframe])).toEqual(operation);
     });
 
@@ -600,16 +603,16 @@
             operands: []
         };
 
-        expect(BMA.Model.ExportOperation(operation, false)).toEqual(result);
-        expect(BMA.Model.ImportOperand(result, undefined)).toEqual(operation);
+        expect(BMA.Model.ExportOperation.bind(this, operation, false)).toThrow("Operation must have operator");
+        expect(BMA.Model.ImportOperand.bind(this, result, undefined)).toThrow("Operation must have name of operator");
 
         var result = {
             _type: "Operation",
             operator: null,
             operands: []
         };
-        expect(BMA.Model.ExportOperation(operation, false)).toEqual(result);
-        expect(BMA.Model.ImportOperand(result, undefined)).toEqual(operation);
+        expect(BMA.Model.ExportOperation.bind(this, operation, false)).toThrow("Operation must have operator");
+        expect(BMA.Model.ImportOperand.bind(this, result, undefined)).toThrow("Operation must have name of operator");
     });
 
     it("Export and import operation: operation with keyframe", () => {
@@ -693,8 +696,8 @@
         };
 
         var operation = new BMA.LTLOperations.Operation();
-        operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
         operation.Operands = [keyframe];
+        operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
 
         var resultOP = {
             _type: "Operation",
@@ -706,8 +709,10 @@
         };
 
         expect(BMA.Model.ExportOperation(operation, false)).toEqual(resultOP);
-        //expect(BMA.Model.ImportOperand(resultOP, undefined)).toEqual(operation);
         expect(BMA.Model.ImportOperand(resultOP, [keyframe])).toEqual(operation);
+
+        operation.Operands = [new BMA.LTLOperations.Keyframe("state", undefined, [])];
+        expect(BMA.Model.ImportOperand(resultOP, undefined)).toEqual(operation);
     });
 
     it("Export and import operation: operation with empty keyframe", () => {
@@ -936,7 +941,7 @@
         
         var result = {
             states: [resultKeyframe],
-            operations: undefined
+            operations: []
         };
 
         expect(BMA.Model.ExportLTLContents([keyframe], undefined)).toEqual(result);
@@ -970,14 +975,12 @@
 
         var resultKeyframe = {
             _type: "Keyframe",
-            description: "state A",
             name: "state",
-            operands: [kfrmEq, dblKfrmEq, kfrmEq]
         };
 
         var operation1 = new BMA.LTLOperations.Operation();
-        operation1.Operator = window.OperatorsRegistry.GetOperatorByName("NOT");
         operation1.Operands = [keyframe];
+        operation1.Operator = window.OperatorsRegistry.GetOperatorByName("NOT");
 
         var resultOP1 = {
             _type: "Operation",
@@ -992,8 +995,8 @@
         };
 
         var operation2 = new BMA.LTLOperations.Operation();
-        operation2.Operator = window.OperatorsRegistry.GetOperatorByName("EVENTUALLY");
         operation2.Operands = [keyframe];
+        operation2.Operator = window.OperatorsRegistry.GetOperatorByName("EVENTUALLY");
 
         var resultOP2 = {
             _type: "Operation",
@@ -1008,8 +1011,8 @@
         };
 
         var operation = new BMA.LTLOperations.Operation();
-        operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
         operation.Operands = [operation1, operation2];
+        operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
 
         var resultOP = {
             _type: "Operation",
@@ -1021,11 +1024,15 @@
         };
 
         var result = {
-            states: undefined,
+            states: [],
             operations: [resultOP]
         };
 
         expect(BMA.Model.ExportLTLContents(undefined, [operation])).toEqual(result);
+
+        operation1.Operands = [new BMA.LTLOperations.Keyframe("state", undefined, [])];
+        operation2.Operands = [new BMA.LTLOperations.Keyframe("state", undefined, [])];
+
         expect(BMA.Model.ImportLTLContents(result)).toEqual({ states: undefined, operations: [operation] });
     });
 });
