@@ -631,6 +631,29 @@ module BMA {
             }
         }
 
+        export class DrawingSurfaceDragnDropExtender implements IDragnDropExtender {
+            private popup: JQuery;
+            private drawingSurface: JQuery;
+
+            constructor(drawingSurface: JQuery, popup: JQuery) {
+                this.drawingSurface = drawingSurface;
+                this.popup = popup;
+            }
+
+            HandleDrop(screenLocation: { x: number; y: number }, dropObject: any): boolean {
+                if (!this.popup.is(":visible"))
+                    return false;
+
+                var popupPosition = this.popup.offset();
+                var w = this.popup.width();
+                var h = this.popup.height();
+
+                var isInsidePopup = (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h) &&
+                    (screenLocation.x > popupPosition.left && screenLocation.x < popupPosition.left + w)
+
+                return isInsidePopup;
+            }
+        }
        
     }
 } 

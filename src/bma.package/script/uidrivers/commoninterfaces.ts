@@ -157,6 +157,10 @@ module BMA {
             Show();
             Hide();
         }
+
+        export interface IDragnDropExtender {
+            HandleDrop(screenLocation: { x: number; y: number }, dropObject: any): boolean;
+        }
        
     }
 } 

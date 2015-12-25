@@ -512,7 +512,7 @@ declare var Rx: any;
 
         getLeft: function (x: number) {
             var cs = this._svgPlot.getTransform();
-            return -cs.dataToScreenX(x);
+            return cs.dataToScreenX(x);
         },
 
         getTop: function (y: number) {

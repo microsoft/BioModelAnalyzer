@@ -58,7 +58,8 @@ module BMA {
                 variableEditorDriver: BMA.UIDrivers.IVariableEditor,
                 containerEditorDriver: BMA.UIDrivers.IContainerEditor,
                 contextMenu: BMA.UIDrivers.IContextMenu,
-                exportservice: BMA.UIDrivers.IExportService
+                exportservice: BMA.UIDrivers.IExportService,
+                dragndropExtender: BMA.UIDrivers.IDragnDropExtender
                 ) {
 
                 var that = this;
@@ -502,8 +503,14 @@ module BMA {
                             var type = that.stagingVariable.model.Type;
                             var id = that.stagingVariable.model.Id;
                             that.stagingVariable = undefined;
-                            if (!that.TryAddVariable(x, y, type, id)) {
-                                that.RefreshOutput();
+
+                            //var top = svgPlotDriver.GetTop(-gesture.y);
+                            //var left = svgPlotDriver.GetLeft(gesture.x);
+
+                            if (dragndropExtender === undefined || !dragndropExtender.HandleDrop({ x: gesture.pageX, y: gesture.pageY }, { type: "variable", id: id })) {
+                                if (!that.TryAddVariable(x, y, type, id)) {
+                                    that.RefreshOutput();
+                                }
                             }
                         }
 

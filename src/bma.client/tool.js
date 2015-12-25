@@ -4310,6 +4310,24 @@ var BMA;
             return LoadingWaitScreen;
         })();
         UIDrivers.LoadingWaitScreen = LoadingWaitScreen;
+        var DrawingSurfaceDragnDropExtender = (function () {
+            function DrawingSurfaceDragnDropExtender(drawingSurface, popup) {
+                this.drawingSurface = drawingSurface;
+                this.popup = popup;
+            }
+            DrawingSurfaceDragnDropExtender.prototype.HandleDrop = function (screenLocation, dropObject) {
+                if (!this.popup.is(":visible"))
+                    return false;
+                var popupPosition = this.popup.offset();
+                var w = this.popup.width();
+                var h = this.popup.height();
+                var isInsidePopup = (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h) &&
+                    (screenLocation.x > popupPosition.left && screenLocation.x < popupPosition.left + w);
+                return isInsidePopup;
+            };
+            return DrawingSurfaceDragnDropExtender;
+        })();
+        UIDrivers.DrawingSurfaceDragnDropExtender = DrawingSurfaceDragnDropExtender;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=commondrivers.js.map
@@ -5130,7 +5148,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, dragService, variableEditorDriver, containerEditorDriver, contextMenu, exportservice) {
+            function DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, dragService, variableEditorDriver, containerEditorDriver, contextMenu, exportservice, dragndropExtender) {
                 var _this = this;
                 this.xOrigin = 0;
                 this.yOrigin = 0;
@@ -5528,8 +5546,12 @@ var BMA;
                         var type = that.stagingVariable.model.Type;
                         var id = that.stagingVariable.model.Id;
                         that.stagingVariable = undefined;
-                        if (!that.TryAddVariable(x, y, type, id)) {
-                            that.RefreshOutput();
+                        //var top = svgPlotDriver.GetTop(-gesture.y);
+                        //var left = svgPlotDriver.GetLeft(gesture.x);
+                        if (dragndropExtender === undefined || !dragndropExtender.HandleDrop({ x: gesture.pageX, y: gesture.pageY }, { type: "variable", id: id })) {
+                            if (!that.TryAddVariable(x, y, type, id)) {
+                                that.RefreshOutput();
+                            }
                         }
                     }
                     if (that.stagingContainer !== undefined) {
@@ -8734,7 +8756,7 @@ var BMA;
         },
         getLeft: function (x) {
             var cs = this._svgPlot.getTransform();
-            return -cs.dataToScreenX(x);
+            return cs.dataToScreenX(x);
         },
         getTop: function (y) {
             var cs = this._svgPlot.getTransform();
