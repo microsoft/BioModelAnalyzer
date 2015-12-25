@@ -289,6 +289,7 @@ module BMA {
             private statesEditor: JQuery;
             private statesToSet: BMA.LTLOperations.Keyframe[];
             private variablesToSet;
+            private model: BMA.Model.BioModel
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -353,6 +354,22 @@ module BMA {
 
                     this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated, onComboBoxOpen: onComboBoxOpen });
 
+                    window.Commands.On("HandlePopupDrop", (params) => {
+                        var screenLocation = params.screenLocation;
+                        var popupPosition = $(this.popupWindow).offset();
+                        var w = $(this.popupWindow).width();
+                        var h = $(this.popupWindow).height();
+                        if ((screenLocation.x > popupPosition.left && screenLocation.x < popupPosition.left + w)
+                            && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
+                            && (params.dropObject.type == "variable")) {
+                            var variable = that.model.GetVariableById(params.dropObject.id);
+                            that.statesEditor.stateseditor("checkDroppedItem", {
+                                screenLocation: params.screenLocation,
+                                variable: { container: variable.ContainerId, variable: variable.Name }
+                            });
+                        }
+                    });
+
                     if (this.variablesToSet !== undefined) {
                         this.statesEditor.stateseditor({ variables: this.variablesToSet });
                         this.variablesToSet = undefined;
@@ -408,6 +425,7 @@ module BMA {
                 } else {
                     this.variablesToSet = variables;
                 }
+                this.model = model;
             }
 
             public SetStates(states: BMA.LTLOperations.Keyframe[]) {

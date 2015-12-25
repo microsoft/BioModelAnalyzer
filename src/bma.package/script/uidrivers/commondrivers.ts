@@ -651,6 +651,12 @@ module BMA {
                 var isInsidePopup = (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h) &&
                     (screenLocation.x > popupPosition.left && screenLocation.x < popupPosition.left + w)
 
+                if (isInsidePopup)
+                    window.Commands.Execute("HandlePopupDrop", {
+                        screenLocation: screenLocation,
+                        dropObject: dropObject
+                    });
+
                 return isInsidePopup;
             }
         }

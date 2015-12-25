@@ -4340,6 +4340,11 @@ var BMA;
                 var h = this.popup.height();
                 var isInsidePopup = (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h) &&
                     (screenLocation.x > popupPosition.left && screenLocation.x < popupPosition.left + w);
+                if (isInsidePopup)
+                    window.Commands.Execute("HandlePopupDrop", {
+                        screenLocation: screenLocation,
+                        dropObject: dropObject
+                    });
                 return isInsidePopup;
             };
             return DrawingSurfaceDragnDropExtender;
@@ -4611,6 +4616,7 @@ var BMA;
                 return wstates;
             };
             StatesEditorDriver.prototype.Show = function () {
+                var _this = this;
                 var shouldInit = this.statesEditor === undefined;
                 if (shouldInit) {
                     this.statesEditor = $("<div></div>");
@@ -4632,6 +4638,21 @@ var BMA;
                         that.commands.Execute("UpdateStatesEditorOptions", {});
                     };
                     this.statesEditor.stateseditor({ onStatesUpdated: onStatesUpdated, onComboBoxOpen: onComboBoxOpen });
+                    window.Commands.On("HandlePopupDrop", function (params) {
+                        var screenLocation = params.screenLocation;
+                        var popupPosition = $(_this.popupWindow).offset();
+                        var w = $(_this.popupWindow).width();
+                        var h = $(_this.popupWindow).height();
+                        if ((screenLocation.x > popupPosition.left && screenLocation.x < popupPosition.left + w)
+                            && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
+                            && (params.dropObject.type == "variable")) {
+                            var variable = that.model.GetVariableById(params.dropObject.id);
+                            that.statesEditor.stateseditor("checkDroppedItem", {
+                                screenLocation: params.screenLocation,
+                                variable: { container: variable.ContainerId, variable: variable.Name }
+                            });
+                        }
+                    });
                     if (this.variablesToSet !== undefined) {
                         this.statesEditor.stateseditor({ variables: this.variablesToSet });
                         this.variablesToSet = undefined;
@@ -4676,6 +4697,7 @@ var BMA;
                 else {
                     this.variablesToSet = variables;
                 }
+                this.model = model;
             };
             StatesEditorDriver.prototype.SetStates = function (states) {
                 var wstates = [];
@@ -11483,6 +11505,36 @@ jQuery.fn.extend({
                         setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
                     }
                 }
+            }
+        },
+        isInsideVariableField: function (location) {
+            var that = this;
+            var statesPosition = $(this._ltlStates).offset();
+            var statesWidth = $(this._ltlStates).width();
+            var statesHeight = $(this._ltlStates).height();
+            if (!(location.x > statesPosition.left && location.x < statesPosition.left + statesWidth
+                && location.y > statesPosition.top && location.y < statesPosition.top + statesHeight))
+                return -1;
+            var states = $(this._ltlStates).find("[data-row-type='formula']");
+            for (var i = 0; i < states.length; i++) {
+                var formulaPosition = $(states[i]).offset();
+                var formulaWidth = $(states[i]).find(".variable").width();
+                var formulaHeight = $(states[i]).height();
+                if ((location.x > formulaPosition.left && location.x < formulaPosition.left + formulaWidth
+                    && location.y > formulaPosition.top && location.y < formulaPosition.top + formulaHeight))
+                    return i;
+            }
+            return -1;
+        },
+        checkDroppedItem: function (itemParams) {
+            var that = this;
+            var idx = that.isInsideVariableField(itemParams.screenLocation);
+            if (idx > -1) {
+                var stateIdx = that.options.states.indexOf(that._activeState);
+                that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
+                that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
+                that.refresh();
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             }
         },
         refresh: function () {

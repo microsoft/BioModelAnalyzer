@@ -506,6 +506,39 @@
             }
         },
 
+        isInsideVariableField: function (location) {
+            var that = this;
+            var statesPosition = $(this._ltlStates).offset();
+            var statesWidth = $(this._ltlStates).width();
+            var statesHeight = $(this._ltlStates).height();
+            if (!(location.x > statesPosition.left && location.x < statesPosition.left + statesWidth
+                && location.y > statesPosition.top && location.y < statesPosition.top + statesHeight))
+                return -1;
+            var states = $(this._ltlStates).find("[data-row-type='formula']");
+            for (var i = 0; i < states.length; i++) {
+                var formulaPosition = $(states[i]).offset();
+                var formulaWidth = $(states[i]).find(".variable").width();
+                var formulaHeight = $(states[i]).height();
+                if ((location.x > formulaPosition.left && location.x < formulaPosition.left + formulaWidth
+                    && location.y > formulaPosition.top && location.y < formulaPosition.top + formulaHeight))
+                    return i;
+            }
+            return -1;
+        },
+
+        checkDroppedItem: function (itemParams) {
+            var that = this;
+            var idx = that.isInsideVariableField(itemParams.screenLocation);
+            if (idx > -1) {
+                var stateIdx = that.options.states.indexOf(that._activeState);
+                that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
+                that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
+
+                that.refresh();
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+            }
+        },
+
         refresh: function () {
             var that = this;
             this._stateButtons.find("[data-state-name='" + this._activeState.name + "']").addClass("active");
@@ -574,5 +607,5 @@ interface JQuery {
     stateseditor(settings: Object): JQuery;
     stateseditor(optionLiteral: string, optionName: string): any;
     stateseditor(optionLiteral: string, optionName: string, optionValue: any): JQuery;
-    stateseditor(methodName: string, methodValue: any): JQuery;
+    stateseditor(methodName: string, methodValue: any): any;
 } 
