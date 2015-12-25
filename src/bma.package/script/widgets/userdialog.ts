@@ -14,7 +14,7 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("window dialog");
+            this.element.addClass("window dialog").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 100);
             this.element.draggable({ containment: "parent", scroll: false });
             this._add_close_button();
             this.message = $('<div><div>')

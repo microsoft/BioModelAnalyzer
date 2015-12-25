@@ -2610,11 +2610,15 @@ var BMA;
                 states: [],
                 operations: []
             };
-            for (var i = 0; i < states.length; i++) {
-                result.states.push(ExportState(states[i]));
+            if (states) {
+                for (var i = 0; i < states.length; i++) {
+                    result.states.push(ExportState(states[i]));
+                }
             }
-            for (var i = 0; i < operations.length; i++) {
-                result.operations.push(ExportOperation(operations[i], false));
+            if (operations) {
+                for (var i = 0; i < operations.length; i++) {
+                    result.operations.push(ExportOperation(operations[i], false));
+                }
             }
             return result;
         }
@@ -10062,7 +10066,7 @@ var BMA;
         },
         _create: function () {
             var that = this;
-            this.element.addClass("window dialog");
+            this.element.addClass("window dialog").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 100);
             this.element.draggable({ containment: "parent", scroll: false });
             this._add_close_button();
             this.message = $('<div><div>')
