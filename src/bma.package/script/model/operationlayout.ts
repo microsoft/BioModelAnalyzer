@@ -63,6 +63,10 @@
                         this.status = value;
                         this.Fill = "white";
                         break;
+                    case "processing":
+                        this.status = value;
+                        this.Fill = "white";
+                        break;
                     case "success":
                         this.status = value;
                         this.Fill = "rgb(217,255,182)";
@@ -689,8 +693,12 @@
             public PickOperation(x: number, y: number) {
                 if (this.layout !== undefined) {
                     var layoutPart = this.GetIntersectedChild(x, y, this.position, this.layout, false);
-                    if (layoutPart !== undefined)
-                        return layoutPart.operation;
+                    if (layoutPart !== undefined) {
+                        return {
+                            operation: layoutPart.operation,
+                            isRoot: layoutPart.parentoperation === undefined
+                        };
+                    }
                 }
 
                 return undefined;

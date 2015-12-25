@@ -542,7 +542,14 @@ module BMA {
             }
 
             public SetStatus(status: string) {
-                this.compactltlresult.compactltlresult({ status: status, isexpanded: false });
+                var options: any = {
+                    status: status
+                };
+                if (status !== "processing") {
+                    options.isexpanded = false;
+                }
+
+                this.compactltlresult.compactltlresult(options);
             }
 
             public GetSteps(): number {
