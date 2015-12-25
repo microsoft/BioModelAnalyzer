@@ -190,6 +190,7 @@
 
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
+            
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;
@@ -281,7 +282,7 @@
                 autoFocus: true,
                 preventContextMenuForPopup: true,
                 preventSelect: true,
-                taphold: true,
+                //taphold: true,
                 menu: [
                     { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
@@ -312,6 +313,11 @@
                     args.top = y - drawingSurface.offset().top;
                     that._executeCommand(commandName, args);
                 }
+            });
+
+            root.mousedown(function (e) {
+                e.stopPropagation();
+                drawingSurfaceCnt.contextmenu("close");
             });
         },
 
