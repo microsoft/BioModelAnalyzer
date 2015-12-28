@@ -1,6 +1,14 @@
-﻿describe("LTLResultsViewer", () => {
+﻿describe("LTLResultsViewerDriver", () => {
 
-    var widget = $('<div></div>');
+    var ltlResultsDriver: BMA.UIDrivers.LTLResultsViewer;
+    var popup = $("<div></div>");
+    var ltlcommands = new BMA.CommandRegistry();
 
-    //it("
+    beforeEach(() => {
+        ltlResultsDriver = new BMA.UIDrivers.LTLResultsViewer(ltlcommands, popup);
+    });
+
+    it("PreparePlotLabels", () => {
+
+    });
 });

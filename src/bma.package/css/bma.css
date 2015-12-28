@@ -2013,6 +2013,7 @@ textarea:focus {
   background-color: inherit;
   width: 100%;
   overflow: hidden;
+  overflow-y: auto;
   position: absolute;
   border-radius: 0 0 15px 15px;
 }
@@ -4409,7 +4410,6 @@ ui-icon-arrowthickstop-1-n {
   color: #606060;
 }
 .LTL-test-results .pill-button-box .pill-button.testing button.testing:hover {
-  background-color: #EDEDED;
   color: #606060;
 }
 .LTL-test-results .pill-button-box .pill-button.testing button.testing.green {
