@@ -5002,16 +5002,16 @@ var BMA;
                     }
                     else {
                         count++;
-                        if (i == currState.length - 1 && prevState.length !== 0)
-                            labels.push({
-                                text: prevState,
-                                width: count,
-                                height: labelsHeight,
-                                x: firstTime,
-                                y: 0,
-                            });
                     }
                 }
+                if (i == currState.length && prevState.length !== 0)
+                    labels.push({
+                        text: prevState,
+                        width: count,
+                        height: labelsHeight,
+                        x: firstTime,
+                        y: 0,
+                    });
                 return labels;
             };
             LTLResultsViewer.prototype.SetData = function (model, layout, ticks, states) {
